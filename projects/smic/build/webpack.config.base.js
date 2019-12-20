@@ -2,13 +2,14 @@ const path = require('path')
 const merge = require('webpack-merge')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = (env, options) => {
 	const config = {
 		entry: path.join(__dirname, '../src/index.js'),
 		output: {
 			filename: '[name].bundle.js',
-			path: path.resolve(__dirname, 'dist'),
+			path: path.resolve(__dirname, '../dist'),
 		},
 		node: {
 			__dirname: true,
@@ -19,6 +20,7 @@ module.exports = (env, options) => {
 				template: './public/index.html',
 			}),
 			new VueLoaderPlugin(),
+			new CleanWebpackPlugin()
 		],
 		module: {
 			rules: [
