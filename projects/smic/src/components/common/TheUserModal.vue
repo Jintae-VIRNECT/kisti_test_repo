@@ -1,9 +1,10 @@
 <template lang="pug">
   el-dialog(:visible.sync='dialogFormVisible')
-    user-scaffold(:currentPage="currentPage" :options="options")
+    user-scaffold(:currentPage="currentPage" :options="options" :defaultUrl="defaultUrl")
 </template>
 <script>
-import UserScaffold from '@virnect/scaffold-modules-user'
+// import UserScaffold from '@virnect/scaffold-modules-user'
+import UserScaffold from 'scaffold-modules-user'
 import EventBus from '@/utils/eventBus.js'
 
 export default {
@@ -19,6 +20,7 @@ export default {
 					passwordConfirm: '비밀번호를 입력해주세요',
 				},
 			},
+			defaultUrl: 'http://localhost:3000',
 		}
 	},
 	mounted() {

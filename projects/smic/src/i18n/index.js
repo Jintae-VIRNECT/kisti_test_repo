@@ -11,7 +11,7 @@ const messages = {
 	en: EN,
 	ko: KO,
 }
-console.log(messages)
+
 export default new VueI18n({
 	locale: store.getters.getLocale || 'ko',
 	fallbackLocale: 'en',

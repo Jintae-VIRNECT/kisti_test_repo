@@ -7,12 +7,15 @@
           .el-form-item__content
             .el-input
               slot(name="id")
-                input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id")
+                input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id" v-validate="'id|2,20'")
+                p(v-if="$errors.has('id')") {{ $errors.message('id') }}
+                p {{errorBag}}
         .el-form-item
           .el-form-item__content
             .el-input
               slot(name="password")
-                input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password")
+                input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password" type="password" name="password" v-validate="'password|2,20'")
+                p(v-if="$errors.has('password')") {{ $errors.message('password') }}
       .login-form--util.clearfix
         label.el-checkbox.keep-login
           span.el-checkbox__input(for="preserveLogin")
@@ -30,8 +33,15 @@
 </template>
 
 <script>
+import validateDirective from 'user-form-validate/src/directive'
+import validateMixin from 'user-form-validate/src/mixin'
+
 export default {
 	props: ['customClass', 'options'],
+	directives: {
+		...validateDirective,
+	},
+	mixins: [validateMixin],
 	data() {
 		return {
 			form: {
@@ -43,7 +53,13 @@ export default {
 	},
 	methods: {
 		onSubmit() {
-			console.log('submited!!!!')
+			this.$validator.validateAll()
+			console.log('this : ', this)
+			console.log('this.$errors : ', this.$errors)
+			console.log(
+				"this.$errors.has('password') : ",
+				this.$errors.has('password'),
+			)
 		},
 	},
 }

@@ -8,6 +8,7 @@
     "dev": "webpack-dev-server --open --mode development --progress --config build/webpack.config.base.js"
   },
   "dependencies": {
+    "scaffold-modules-user": "^1.0.1",
     "babel-polyfill": "^6.26.0",
     "element-ui": "^2.13.0",
     "es6-promise": "^4.2.8",
