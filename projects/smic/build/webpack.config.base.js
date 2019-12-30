@@ -2,7 +2,7 @@ const path = require('path')
 const merge = require('webpack-merge')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = (env, options) => {
 	const config = {
@@ -10,6 +10,7 @@ module.exports = (env, options) => {
 		output: {
 			filename: '[name].bundle.js',
 			path: path.resolve(__dirname, '../dist'),
+			// publicPath: '/',
 		},
 		node: {
 			__dirname: true,
@@ -20,8 +21,16 @@ module.exports = (env, options) => {
 				template: './public/index.html',
 			}),
 			new VueLoaderPlugin(),
-			new CleanWebpackPlugin()
+			new CleanWebpackPlugin(),
 		],
+		resolve: {
+			extensions: ['.js', '.vue'],
+			modules: ['node_modules', 'modules'],
+			alias: {
+				'@': path.join(__dirname, '../src'),
+				assets: path.join(__dirname, '../src/assets'),
+			},
+		},
 		module: {
 			rules: [
 				{
@@ -31,7 +40,7 @@ module.exports = (env, options) => {
 				},
 				{
 					test: /\.vue$/,
-					use: 'vue-loader',
+					use: ['vue-loader'],
 				},
 				{
 					test: /\.css$/,
@@ -58,6 +67,7 @@ module.exports = (env, options) => {
 							loader: 'url-loader',
 							options: {
 								limit: 10000,
+								esModule: false,
 								fallback: 'file-loader',
 								name: 'assets/image/[name].[hash:5].[ext]',
 							},
@@ -88,12 +98,6 @@ module.exports = (env, options) => {
 					],
 				},
 			],
-		},
-		resolve: {
-			extensions: ['.vue', '.js'],
-			alias: {
-				'@': path.resolve(__dirname, '../src'),
-			},
 		},
 	}
 

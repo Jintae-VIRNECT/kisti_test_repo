@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    page-header(title="Post List")
+    the-page-header(title="Post Detail")
     el-table(:data="tableData" style="width: 100%" @row-click="onClickRowPost")
       el-table-column(prop="date" label="Date" width="180")
       el-table-column(prop="name" label="Name" width="180")
@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import PageHeader from '@/components/common/ThePageHeader.vue'
+import ThePageHeader from '@/components/common/ThePageHeader.vue'
 
 export default {
-	components: { PageHeader },
+	components: { ThePageHeader },
 	data() {
 		return {
 			tableData: [

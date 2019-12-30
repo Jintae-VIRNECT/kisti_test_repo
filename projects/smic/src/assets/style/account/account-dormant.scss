@@ -1,0 +1,78 @@
+.dormant {
+    &-body {
+        height: calc(100vh - 180px);
+        text-align: center;
+    }
+
+    &-center {
+        position: relative;
+        display: inline-block;
+        top: 50%;
+        width:760px;
+        padding: 76px 0 50px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fff;
+        transform: translateY(-50%);
+    }
+
+    &--wrap {
+        padding: 0 0 40px; 
+
+        & + & {
+            padding-top: 40px;
+            border-top: 1px solid $color_division;
+            padding: 40px 170px;
+        }
+        
+        font-size: 16px;
+        white-space: nowrap;
+    }
+
+    //타이틀
+    &--title {
+        padding: 15px 0 25px;
+        color: #222;
+        font-size: 2.71rem;
+        text-align: center;
+    }
+
+
+    &--greeting {
+        margin-bottom: 28px;
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    &--time {
+        // margin: 20px -10px 0;
+        margin: 20px 160px 0;
+        padding: 10px 20px;
+        border-radius: 24px;
+        background-color: #f0f1f3;
+        color: $color_text_gray;
+        font-size: 15px;
+
+        time { margin-left: 15px; font-weight: 500; }
+    }
+
+    &-complete--notice {
+        margin: 22px 0 16px;
+        font-size: 20px;
+        font-weight: 300;
+
+        em { font-weight: 500; }
+    }
+
+    &-complete--image {
+
+    }
+
+    &--gray {
+        color: $color_text_gray;
+    }
+
+    &--buttons {
+        margin-top: 30px;
+    }
+}

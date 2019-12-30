@@ -16,7 +16,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import EventBus from '@/utils/eventBus.js'
-
 export default {
 	data() {
 		return {

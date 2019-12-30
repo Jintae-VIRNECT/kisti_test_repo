@@ -8,13 +8,14 @@
     "dev": "webpack-dev-server --open --mode development --progress --config build/webpack.config.base.js"
   },
   "dependencies": {
-    "scaffold-modules-user": "^1.0.1",
     "babel-polyfill": "^6.26.0",
+    "dayjs": "^1.8.18",
     "element-ui": "^2.13.0",
     "es6-promise": "^4.2.8",
     "file-system": "^2.2.2",
     "fs": "0.0.1-security",
     "lodash.merge": "^4.6.2",
+    "scaffold-modules-user": "^1.0.1",
     "vue": "^2.6.11",
     "vue-i18n": "^8.15.1",
     "vue-router": "^3.1.3",
@@ -47,6 +48,7 @@
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
+    "url-loader": "^3.0.0",
     "vue-loader": "^15.8.3",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",

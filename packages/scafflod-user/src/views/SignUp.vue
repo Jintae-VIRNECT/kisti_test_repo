@@ -35,11 +35,13 @@
 </template>
 
 <script>
+import {page} from '../enum'
 export default {
 	props: ['customClass', 'options'],
 	data() {
 		return {
 			form: {
+        page: page.SIGNUP,
 				id: null,
 				password: null,
 				passwordConfirm: null,

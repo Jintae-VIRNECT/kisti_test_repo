@@ -1,0 +1,51 @@
+@import "mixins/mixins";
+@import "common/var";
+
+@include b(card) {
+  padding: 1px; //border
+  border-radius: $--card-border-radius;
+  border: 2px solid $--card-border-color;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  background-color: $--color-white;
+  overflow: hidden;
+  color: $--color-text-primary;
+  transition: all 0.3s;
+
+  @include when(always-shadow) {
+    border: 2px solid #ceddfc;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 5px 0 rgba(20, 20, 22, 0.14);
+  }
+
+  @include when(hover-shadow) {
+    &:hover,
+    &:focus {
+      border: 2px solid #ceddfc;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 5px 0 rgba(20, 20, 22, 0.14);
+    }
+  }
+
+  @include when(selected) {
+    &,
+    &:hover,
+    &:focus {
+      border: 2px solid #a3c0ff;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+    }
+  }
+
+  @include e(header) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45px;
+    padding: #{$--card-padding - 2 $--card-padding};
+    border-bottom: 1px solid $--card-border-color;
+    box-sizing: border-box;
+  }
+
+  @include e(body) {
+    padding: $--card-padding;
+    text-align: center;
+  }
+}

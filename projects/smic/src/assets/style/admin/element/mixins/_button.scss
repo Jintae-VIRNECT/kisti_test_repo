@@ -1,0 +1,88 @@
+@import "../common/var";
+@mixin button-plain($color) {
+  color: $color;
+  background: mix($--color-white, $color, 90%);
+  border-color: mix($--color-white, $color, 60%);
+
+  &:hover,
+  &:focus {
+    background: $color;
+    border-color: $color;
+    color: $--color-white;
+  }
+
+  &:active {
+    background: mix($--color-black, $color, $--button-active-shade-percent);
+    border-color: mix($--color-black, $color, $--button-active-shade-percent);
+    color: $--color-white;
+    outline: none;
+  }
+
+  &.is-disabled {
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+      color: mix($--color-white, $color, 40%);
+      background-color: mix($--color-white, $color, 90%);
+      border-color: mix($--color-white, $color, 80%);
+    }
+  }
+}
+
+@mixin button-variant($color, $bgcolor-start, $bgcolor-end, $border-color) {
+  color: $color;
+  background-color: $bgcolor-start;
+  background-image: linear-gradient(to bottom, $bgcolor-start, $bgcolor-end);
+  border-color: $border-color;
+
+  &:hover,
+  &:focus {
+    background-color: mix(#000, $bgcolor-start, $--button-hover-tint-percent);
+    background-image: linear-gradient(to bottom, mix(#000, $bgcolor-start, $--button-hover-tint-percent), mix(#000, $bgcolor-end, $--button-hover-tint-percent));
+    border-color: mix($bgcolor-start, $border-color, $--button-hover-tint-percent);
+    color: $color;
+  }
+  
+  &:active {
+    // background: mix($--color-black, $bgcolor-start, $--button-active-shade-percent);
+    // background-image: linear-gradient(to bottom, mix(#000, $bgcolor-start, $--button-active-shade-percent), mix(#000, $bgcolor-end, $--button-active-shade-percent));
+    background: $border-color;
+    border-color: mix($bgcolor-start, $border-color, $--button-active-shade-percent);
+    color: $color;
+    outline: none;
+  }
+
+  &.is-active {
+    // background: mix($--color-black, $bgcolor-start, $--button-active-shade-percent);
+    // background-image: linear-gradient(to bottom, mix(#000, $bgcolor-start, $--button-active-shade-percent), mix(#000, $bgcolor-end, $--button-active-shade-percent));
+    background: $border-color;
+    border-color: mix($bgcolor-start, $border-color, $--button-active-shade-percent);
+    color: $color;
+  }
+
+  &.is-disabled {
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+      color: $color;
+      background-color: $bgcolor-start;
+      background-image: linear-gradient(to bottom, $bgcolor-start, $bgcolor-end);
+      border-color: $border-color;
+    }
+  }
+
+  &.is-plain {
+    @include button-plain($bgcolor-start);
+  }
+}
+
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $border-radius) {
+  padding: $padding-vertical $padding-horizontal;
+  font-size: $font-size;
+  border-radius: $border-radius;
+  &.is-round {
+    padding: $padding-vertical $padding-horizontal;
+  }
+}

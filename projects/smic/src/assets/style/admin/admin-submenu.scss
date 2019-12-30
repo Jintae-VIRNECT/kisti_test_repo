@@ -1,0 +1,81 @@
+.submenu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: $side_width;
+    width: $submenu_width;
+    z-index: 1;
+    
+    &--logo {
+        position: relative;
+        background-color: #3a3d47;
+        &__image {
+            height: 69px;
+            border-bottom: solid 1px #4c4e55;
+            margin: 0 18px;
+            >img {
+                margin-top: 18px;
+            }
+        }
+    }
+
+    &-inner {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        height: 100%;
+        padding: 16px;
+        background-color: #3a3d47;
+        z-index: 1;
+    }
+
+    &--item {
+        position: relative;
+        width: 100%;
+        color: #FFF;
+
+        &.title {
+            color: #ccd1d7;
+            font-size: 12px;
+            margin: 0 0 17px 6px;
+        }
+
+        >button {
+            width: 100%;
+            margin-bottom: 4px;
+            padding: 9px 18px;
+            border: 0;
+            border-radius: 6px;
+            background: none;
+            color: #afb4bc;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.66;
+            font-weight: normal;
+            box-shadow: none;
+            
+            &:hover,
+            &:focus {
+                background-color: #464b57;
+				color: #afb4bc;
+				background-image: none;
+            }
+            &:active {
+                opacity: 0.9;
+                background-color: #4c535f;
+				background-image: none;
+                color: #ffffff;
+            }
+        }
+
+        &.active {
+            >button {
+                opacity: 0.9;
+                color: #ffffff;
+                // background: rgba(98, 103, 115, 0.57) url('~assets/image/admin/ic-menu-arrow.svg') 202px center no-repeat;
+            }
+        }        
+    }
+
+}

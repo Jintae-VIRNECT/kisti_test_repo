@@ -1,0 +1,179 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: $side_width;
+    z-index: 10;
+
+    &--logo {
+        overflow: hidden;
+        width: $side_width;
+        height: 87px;
+        text-align: center;
+        
+        &__popover {
+            max-width: 176px;
+            padding: 8px 0;
+            border-radius: 6px;
+
+            &.el-popper[x-placement^="right"] { margin-left: 18px; }
+
+            .popover--item {
+                display: block;
+                height: 26px;
+                padding: 5px 16px;
+                color: #646d80;
+                font-size: 12px;
+                white-space: nowrap;
+
+                &:hover {
+                    color: #3957e1;
+                }
+            }
+            
+        }
+
+        .popover--button { 
+            position: relative;
+            width: 48px;
+            height: 48px;
+            margin: 11px 8px 20px 8px;
+            border-radius: 16px;
+            background-color: #1c3de4;
+            line-height: 0;
+
+            img { 
+                position: absolute;
+                width: 48px;
+                height: 48px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            
+            &:hover {
+                background-color: #2e50fd;
+            }
+            &:active {
+                background-color: #1330c3;
+            }
+        }
+        
+    }
+
+    &-inner {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        height: 100%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+        background-color: #121517;
+        z-index: 2;
+    }
+
+    &--item {
+        position: relative;
+        margin-bottom: 6px;
+        padding: 12px;
+        line-height: 1;
+        color: #FFF;
+        cursor: pointer;
+        
+        &__label {
+            visibility: hidden;
+            position: absolute;
+            top: 50%;
+            left: 100%;
+			min-width: 108px;
+			padding: 0 15px;
+            height: 42px;
+            margin-top: -21px;
+            margin-left: 10px;
+            border-radius: 4px;
+            background-color: #121517;
+            opacity: 0;
+            line-height: 42px;
+            text-align: center;
+            white-space: nowrap;
+
+            &::before {
+                position: absolute;
+                top: calc(50% - 4px);
+                left: -8px;
+                border: 4px solid transparent;
+                border-right-color:#121517;
+                content: '';
+            }
+        }
+
+        &:nth-child(3) {
+            position: absolute;
+            bottom: 264px;
+        }
+        &:nth-child(4) {
+            position: absolute;
+            bottom: 192px;
+        }
+        &:last-child {
+            position: absolute;
+            bottom: 18px;
+        }        
+        .sidebar--item__button {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border-radius: 14px;
+            background: none;
+            opacity: .3;
+            z-index: 2;
+            
+            &:hover {
+                background-color: #30363e;
+                opacity: 1;
+
+                img { opacity: 0.5; }
+
+                .sidebar--item__label {
+                    visibility: visible;
+                    display: block;
+                    opacity: 1;
+                    transition: .2s opacity .5s ease;
+                    z-index: 10;
+                }
+            }
+        }
+        
+        &:hover {
+            // position: relative;
+            z-index: 11;
+        }
+
+        
+        &.active {
+            .sidebar--item__button {
+                background-color: #30363e;
+                opacity: 1;
+
+                img { opacity: 0.5; }
+            }
+            
+            .sidebar--item__label {
+                display: none !important;
+            }
+        }
+        
+        &.current {
+            .sidebar--item__button {
+                background-color: #424955;
+                opacity: 1; 
+
+                img {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+}

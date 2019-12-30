@@ -1,0 +1,186 @@
+.login {
+    &-body {
+        margin: 0 auto;
+        height: calc(100vh - 180px);
+        text-align: center;
+
+        @include tablet {
+            display: flex;
+            flex-direction: column;
+            max-width: $size_m_max;
+            min-width: $size_m_min;
+            height: calc(100vh - 57px);
+            justify-content: space-between;
+        }
+    }
+
+    &-center {
+        padding: 0 $size_m_pad;
+        
+        @include desktop {
+            position: relative;
+            display: inline-block;
+            top: 50%;
+            width:540px;
+            padding: 60px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            transform: translateY(-50%);
+        }
+
+    }
+
+    //타이틀
+    &--title {
+        padding: 15px 0 25px;
+        color: #222;
+        font-size: 2.71rem;
+        text-align: center;
+
+        @include tablet {
+            padding: 20px 0 25px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+    }
+
+    &--subtitle {
+        margin-top: -17px;
+        margin-bottom: 35px;
+        font-size: 16px;
+        color: #545658;
+    }
+
+    //정보입력 영역
+    &-form {
+        
+        .el-form-item.is-error {
+            padding-bottom: 0;
+        }
+
+        &--input {
+            margin-top: 12px;
+        }
+
+        &--failmsg {
+            margin: 12px 0;
+            color: $color_warning;
+
+            @include tablet {
+                margin: 6px 0;
+                font-size: 14px;
+            }
+        }
+        
+        &--util {
+            margin-top: 30px;
+
+            .keep-login {
+                float: left;
+
+                .el-checkbox__label {
+                    padding-left: 6px;
+                }
+            }
+    
+            .password-find {
+                float: right;
+                vertical-align: middle;
+                color: #222;
+                border-bottom: 1px solid transparent;
+                line-height: 24px;
+    
+                &:hover {
+                    color: $color_remote_dark;
+                    border-bottom: 1px solid $color_virnect;
+                }
+            }
+
+            @include tablet {
+                margin-top: 22px;
+            }
+        }
+
+        &--submit {
+            width: 100%;
+            margin-top: 15px;
+
+            @include tablet {
+                margin-top: 10px;
+            }
+        }
+    }
+
+    //회원가입 안내 영역
+    &-join {
+        margin-top: 24px;
+        text-align: center;
+
+        &--info {
+            
+        }
+
+        &--link {
+            margin-left: 10px;
+            color: $color_remote_dark;
+            
+            &:hover {
+                color: $color_remote;
+            }
+        }
+    }
+
+    @include tablet {
+        &-mobile {
+            .family {
+                text-align: center;
+
+                &--item {
+                    display: inline-block;
+                    padding: 6px 10px;
+                    border-radius: 2px;
+                    border: 1px solid #e2e7ed;
+                    background-color: #fafafa;
+                    color: #2f3340;
+                    font-size: 12px;
+                    margin: 0 5px;
+                }
+            }
+
+            .etc {
+                margin: 8px 0 10px;
+                color: #717a84;
+                font-size: 11px;
+
+                .etc--item {
+                    display: inline-block;
+                }
+
+                .etc--item + .etc--item::before {
+                    height: 1em;
+                    margin: 0 10px 0 8px;
+                    line-height: 1;
+                    border-left: 1px solid #ccc;
+                    content: '';
+                }
+
+                .el-input .el-input__inner {
+                    width: 60px;
+                    padding: 0 0 3px 18px;
+                    border: none;
+                    font-size: 11px;
+                    background-size: 14px;
+                    background-position: 0 46%;
+					color: #717a84;
+					&:lang(zh) {
+						width: 75px;
+					}
+					&:focus, &:hover {
+						border: none;
+					}
+                }
+            }
+        }
+    }
+}

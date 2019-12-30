@@ -1,0 +1,27 @@
+.admin-message {
+
+	.board-list {
+		padding-top: 26px;
+	}
+	.table, .table-context {
+		.index {
+			width: 100px;
+			text-align: center;
+		}
+		.type {
+			width: 115px;
+		}
+		.context {
+			text-align: left;
+			margin-right: auto;
+		}
+		.datetime {
+			width: 168px;
+			text-align: center;
+		}
+		.sender {
+			width: 230px;
+			text-align: center;
+		}
+	}
+}

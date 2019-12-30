@@ -69,6 +69,7 @@ router.beforeEach((to, from, next) => {
 				toast: true,
 				position: 'bottom-end',
 				showConfirmButton: false,
+				timer: 1500,
 			})
 			destination = from.path
 			EventBus.$emit('toggleUserModal', true)

@@ -1,6 +1,6 @@
 <template lang="pug">
   el-dialog(:visible.sync='dialogFormVisible')
-    user-scaffold(:currentPage="currentPage" :options="options" :defaultUrl="defaultUrl")
+    user-scaffold(:currentPage="currentPage" :options="options" @onSubmit="onSubmit")
 </template>
 <script>
 // import UserScaffold from '@virnect/scaffold-modules-user'
@@ -28,6 +28,12 @@ export default {
 			'toggleUserModal',
 			boolean => (this.dialogFormVisible = boolean),
 		)
+	},
+	methods: {
+		onSubmit(params) {
+			console.log('params : ', params)
+			console.log('finally!!!!')
+		},
 	},
 }
 </script>

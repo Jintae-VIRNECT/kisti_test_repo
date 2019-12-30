@@ -1,0 +1,70 @@
+$table-border: 1px solid #eaecee;
+
+.admin-payment {
+    
+    .payment--wrapper {
+        position: relative;
+    }
+    
+    .board-list {
+        padding-top: 26px;
+        
+        .board--thead {
+            border: $table-border;
+            border-bottom: none;
+
+            &__column {
+                padding: 13px 0 12px;
+                background-color: #fff;
+                color: #646d80;
+                font-size: 13px;
+				font-weight: 500;
+				&.product {
+					padding-left: 20px;
+				}
+            }
+        }
+
+        .board--tbody {
+            .board--row {
+                .board--item img {
+                    overflow: hidden;
+                    margin-right: 8px;
+                    border-radius: 50%;
+                    border: 1px solid #dfe4ed;
+                    vertical-align: middle;
+                }
+                
+                .status {
+                    display: inline-block;
+                    min-width: 80px;
+                    padding: 6px 17px;
+                    border: solid 1px #7d99ff;
+                    border-radius: 19px;
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: #3957e1;
+                }
+
+                &:hover {
+                    background: none;
+                    cursor: default;
+                }
+
+                &.expired {
+                    background-color: #f7f9fb;
+                    
+                    .board--item {
+                        color: #bdc0c4;
+
+                        .status {
+                            border-color: #e2e7ed;
+                            background-color: #f3f6f9;
+                            color: #979fb0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

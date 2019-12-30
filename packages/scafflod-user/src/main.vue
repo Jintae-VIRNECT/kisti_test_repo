@@ -1,29 +1,31 @@
 <template lang="pug">
 	div
 		sign-in(
-			v-if='watchedCurrentPage=="SIGNIN"' 
-			key="SIGNIN" 
+			v-if='watchedCurrentPage === page.SIGNIN' 
+			:key="page.SIGNIN" 
 			:options="options" 
-			@pageSignUp="watchedCurrentPage = 'SIGNUP'"
-			@pageFindPassword="watchedCurrentPage = 'FINDPASSWORD'"
+			@pageSignUp="pageSignIn"
+			@pageFindPassword="pageFindPassword"
+			@onSubmit="onSubmit"
 		)
 		sign-up(
-			v-if='watchedCurrentPage=="SIGNUP"' 
-			key="SIGNUP" 
+			v-if='watchedCurrentPage === page.SIGNUP' 
+			:key="page.SIGNUP" 
 			:options="options" 
-			@pageSignIn="watchedCurrentPage = 'SIGNIN'"
-			@pageFindPassword="watchedCurrentPage = 'FINDPASSWORD'"
+			@pageSignIn="pageSignIn"
+			@pageFindPassword="pageFindPassword"
 		)
 		find-password(
-			v-if='watchedCurrentPage=="FINDPASSWORD"' 
-			key="FINDPASSWORD" 
+			v-if='watchedCurrentPage === page.FINDPASSWORD' 
+			:key='page.FINDPASSWORD' 
 			:options="options" 
-			@pageSignIn="watchedCurrentPage = 'SIGNIN'" 
-			@pageSignUp="watchedCurrentPage = 'SIGNUP'"
+			@pageSignIn="pageSignIn" 
+			@pageSignUp="pageSignIn"
 		)
 </template>
 
 <script>
+import { page } from './enum'
 import SignIn from './views/SignIn.vue'
 import SignUp from './views/SignUp.vue'
 import FindPassword from './views/FindPassword.vue'
@@ -39,7 +41,24 @@ export default {
 	data() {
 		return {
 			watchedCurrentPage: this.$props.currentPage,
+			page,
 		}
+	},
+	methods: {
+		pageSignUp() {
+			this.watchedCurrentPage = page.SIGNUP
+		},
+		pageSignIn() {
+			this.watchedCurrentPage = page.SIGNIN
+		},
+		pageFindPassword() {
+			this.watchedCurrentPage = page.FINDPASSWORD
+		},
+		onSubmit(params) {
+			console.log('here u r too!!!')
+			console.log('e : ', params)
+			this.$emit('onSubmit', params)
+		},
 	},
 	watch: {
 		watchedCurrentPage(val) {

@@ -1,0 +1,40 @@
+.admin-setting {
+	position: relative;
+
+	.setting-body {
+		margin: 26px 0 0 0;
+	}
+	.setting-language {
+		width: 600px;
+	}
+	.edit-wrapper__body {
+		padding: 16px 70px;
+		min-height: auto;
+	}
+}
+
+.popper-language {
+	&.el-popper[x-placement^="top"] {
+		margin: 0 0 -1px;
+	}
+	&.el-popper[x-placement^="bottom"] {
+		margin: -1px 0 0;
+	}
+	.el-select-dropdown__item {
+		height: 44px;
+		padding: 5px 20px;
+		color: #979fb0;
+		font-size: 14px;
+		font-weight: 400;
+
+		&.selected {
+			color: #646d80;
+			font-weight: 400;
+		}
+		
+		&:hover {
+			color: #646d80;
+			font-weight: 400;
+		}
+	}
+}
