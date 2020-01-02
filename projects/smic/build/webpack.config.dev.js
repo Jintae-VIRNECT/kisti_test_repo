@@ -1,8 +1,11 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const merge = require('webpack-merge')
+const base = require('./webpack.config.base')
 
-module.exports = {
+module.exports = merge(base, {
 	mode: 'development',
+	stats: 'errors-only',
 	plugins: [
 		new webpack.HotModuleReplacementPlugin(),
 		new HtmlWebpackPlugin({
@@ -19,4 +22,4 @@ module.exports = {
 			color: true,
 		},
 	},
-}
+})
