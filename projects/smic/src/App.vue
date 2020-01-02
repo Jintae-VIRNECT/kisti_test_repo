@@ -1,6 +1,6 @@
 <template lang="pug">
 	#app
-		the-sidebar
+		the-sidebar(:menus="menus")
 		.admin-container
 			the-top-nav
 			.body-wrapper
@@ -12,6 +12,7 @@
 import TheSidebar from '@/components/layout/TheSidebar.vue'
 import TheTopNav from '@/components/layout/TheTopNav.vue'
 import TheUserModal from '@/components/common/TheUserModal.vue'
+import menus from '@/mixins/menus'
 
 export default {
 	components: {
@@ -19,5 +20,6 @@ export default {
 		TheUserModal,
 		TheSidebar,
 	},
+	mixins: [menus],
 }
 </script>
