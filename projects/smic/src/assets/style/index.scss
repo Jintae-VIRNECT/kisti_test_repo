@@ -4,3 +4,9 @@
 .swal2-container {
   z-index: 9999 !important;
 }
+.el-card__header {
+	position: relative !important;
+}
+.el-card__body {
+	text-align: left !important;
+}

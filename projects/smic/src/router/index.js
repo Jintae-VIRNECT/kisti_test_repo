@@ -1,6 +1,7 @@
-/* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
+import Home from '@/views/Home.vue'
 
 import Post from '@/views/Post.vue'
 import PostList from '@/components/posts/PostList.vue'
@@ -10,17 +11,39 @@ import Member from '@/views/Member.vue'
 import MemberList from '@/components/members/MemberList.vue'
 import MemberDetail from '@/components/members/MemberDetail.vue'
 
+import User from '@/views/User.vue'
+// import UserSignIn from '@/components/user/UserSignIn.vue'
+// import UserSignUp from '@/components/user/UserSignUp.vue'
+
 import NotFound404 from '@/views/NotFound404.vue'
+
 import store from '@/store'
-import EventBus from '@/utils/eventBus.js'
+// import EventBus from '@/utils/eventBus.js'
 
 Vue.use(VueRouter)
 
 const routes = [
-	// {
-	// 	path: '/',
-	// 	component: Member,
-	// },
+	{
+		path: '/',
+		component: Home,
+		meta: {
+			requiresAuth: true,
+		},
+	},
+	{
+		path: '/user',
+		component: User,
+		// children: [
+		// 	{
+		// 		path: '/sign_in',
+		// 		component: UserSignIn,
+		// 	},
+		// 	{
+		// 		path: '/sign_up',
+		// 		component: UserSignUp,
+		// 	},
+		// ],
+	},
 	{
 		path: '/posts',
 		component: Post,
@@ -46,16 +69,10 @@ const routes = [
 			{
 				path: '',
 				component: MemberList,
-				meta: {
-					requiresAuth: true,
-				},
 			},
 			{
 				path: ':id',
 				component: MemberDetail,
-				meta: {
-					requiresAuth: true,
-				},
 			},
 		],
 	},
@@ -95,7 +112,6 @@ router.beforeEach((to, from, next) => {
 				timer: 1500,
 			})
 			destination = from.path
-			EventBus.$emit('toggleUserModal', true)
 			store.commit('USER_SET_LAST_ACCESS_PATH', {
 				path: to.path,
 			})
@@ -104,7 +120,7 @@ router.beforeEach((to, from, next) => {
 
 	if (destination !== to.path) {
 		next({
-			path: destination,
+			path: destination || to.path,
 		})
 	} else {
 		next()

@@ -1,5 +1,5 @@
 {
-  "name": "virnect-web-admin",
+  "name": "virnect-web-workstation",
   "version": "1.0.0",
   "private": true,
   "workspaces": [

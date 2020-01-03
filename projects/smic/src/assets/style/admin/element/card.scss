@@ -12,14 +12,14 @@
   transition: all 0.3s;
 
   @include when(always-shadow) {
-    border: 2px solid #ceddfc;
+    // border: 2px solid #ceddfc;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 5px 0 rgba(20, 20, 22, 0.14);
   }
 
   @include when(hover-shadow) {
     &:hover,
     &:focus {
-      border: 2px solid #ceddfc;
+      // border: 2px solid #ceddfc;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 5px 0 rgba(20, 20, 22, 0.14);
     }
   }

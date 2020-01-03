@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
+    "billboard.js": "^1.11.1",
     "dayjs": "^1.8.18",
     "element-ui": "^2.13.0",
     "es6-promise": "^4.2.8",
