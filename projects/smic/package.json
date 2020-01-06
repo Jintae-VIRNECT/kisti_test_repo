@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build-dev": "webpack --mode development --progress --config build/webpack.config.base.js",
-    "build": "webpack --mode production --progress --config build/webpack.config.base.js",
-    "dev": "webpack-dev-server --open --mode development --progress --config build/webpack.config.base.js"
+    "build": "webpack --progress --config build/webpack.config.build.js",
+    "dev": "webpack-dev-server --open --progress --config build/webpack.config.dev.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

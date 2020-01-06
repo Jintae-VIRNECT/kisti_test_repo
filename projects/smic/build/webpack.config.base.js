@@ -6,7 +6,8 @@ module.exports = {
 	entry: join(__dirname, '../src/index.js'),
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './public/index.html',
+			template: join(__dirname, '../public/index.html'),
+			favicon: join(__dirname, '../public/favicon.ico'),
 		}),
 		new VueLoaderPlugin(),
 	],
@@ -48,7 +49,7 @@ module.exports = {
 			},
 			{
 				test: /assets\/image\/|\.(png|jpg|jpeg|gif|svg|svgz)(\?.+)?$/,
-				exclude: /favicon\.png$/,
+				// exclude: /favicon\.png$/,
 				use: [
 					{
 						loader: 'url-loader',
@@ -56,7 +57,7 @@ module.exports = {
 							limit: 10000,
 							esModule: false,
 							fallback: 'file-loader',
-							name: 'assets/image/[name].[hash:5].[ext]',
+							// name: 'assets/image/[name].[hash:5].[ext]',
 						},
 					},
 				],
@@ -67,9 +68,9 @@ module.exports = {
 				use: [
 					{
 						loader: 'file-loader',
-						options: {
-							name: 'assets/font/[name].[hash:5].[ext]',
-						},
+						// options: {
+						// 	name: 'assets/font/[name].[hash:5].[ext]',
+						// },
 					},
 				],
 			},
@@ -78,9 +79,9 @@ module.exports = {
 				use: [
 					{
 						loader: 'file-loader',
-						options: {
-							name: 'assets/media/[name].[hash:5].[ext]',
-						},
+						// options: {
+						// 	name: 'assets/media/[name].[hash:5].[ext]',
+						// },
 					},
 				],
 			},
