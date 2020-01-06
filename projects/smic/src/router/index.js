@@ -2,14 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import Home from '@/views/Home.vue'
-
-import Post from '@/views/Post.vue'
-import PostList from '@/components/posts/PostList.vue'
-import PostDetail from '@/components/posts/PostDetail.vue'
-
 import Member from '@/views/Member.vue'
 import MemberList from '@/components/members/MemberList.vue'
-import MemberDetail from '@/components/members/MemberDetail.vue'
+import MemberForm from '@/components/members/MemberForm.vue'
+
+import Content from '@/views/Content.vue'
+import ContentList from '@/components/contents/ContentList.vue'
+import ContentDetail from '@/components/contents/ContentDetail.vue'
 
 import User from '@/views/User.vue'
 // import UserSignIn from '@/components/user/UserSignIn.vue'
@@ -26,9 +25,9 @@ const routes = [
 	{
 		path: '/',
 		component: Home,
-		meta: {
-			requiresAuth: true,
-		},
+		// meta: {
+		// 	requiresAuth: true,
+		// },
 	},
 	{
 		path: '/user',
@@ -45,24 +44,6 @@ const routes = [
 		// ],
 	},
 	{
-		path: '/posts',
-		component: Post,
-		children: [
-			{
-				path: '',
-				component: PostList,
-			},
-			{
-				path: ':id',
-				component: PostDetail,
-				meta: {
-					requiresAuth: true,
-					auth: 'manager',
-				},
-			},
-		],
-	},
-	{
 		path: '/members',
 		component: Member,
 		children: [
@@ -71,8 +52,23 @@ const routes = [
 				component: MemberList,
 			},
 			{
+				path: 'add',
+				component: MemberForm,
+			},
+		],
+	},
+	{
+		path: '/contents',
+		component: Content,
+		children: [
+			{
+				path: 'list',
+				alias: '',
+				component: ContentList,
+			},
+			{
 				path: ':id',
-				component: MemberDetail,
+				component: ContentDetail,
 			},
 		],
 	},
@@ -84,7 +80,7 @@ const routes = [
 
 const router = new VueRouter({
 	mode: 'history',
-	base: process.env.BASE_URL,
+	// base: process.env.BASE_URL,
 	routes,
 })
 

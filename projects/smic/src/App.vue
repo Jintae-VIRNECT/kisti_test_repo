@@ -3,7 +3,7 @@
 		the-sidebar(:menus="menus")
 		.admin-container
 			the-top-nav
-			.body-wrapper
+			el-main.body-wrapper
 				router-view
 		the-user-modal
 </template>

@@ -1,15 +1,9 @@
 <template lang="pug">
   div
-    el-breadcrumb(separator='/')
-      el-breadcrumb-item(:to="{ path: '/' }") homepage
-      el-breadcrumb-item
-        a(href='/') promotion management
-      el-breadcrumb-item promotion list
-      el-breadcrumb-item promotion detail
-    h1 {{title}}
+    h1 워크스페이스 관리 | {{submenu}}
 </template>
 <script>
 export default {
-	props: ['title'],
+	props: ['submenu'],
 }
 </script>

@@ -4,8 +4,8 @@
 		el-menu-item
 			el-button(type="text" v-if="$store.getters.getIsLoggedIn === false") Sign in
 			el-button(v-else @click="userLogout") Logout
-		el-menu-item(index="/posts" ) Posts
 		el-menu-item(index="/members" ) Members
+		el-menu-item(index="/contents" ) Contents
 		el-menu-item
 			span {{getUser.email}}
 </template>
@@ -35,7 +35,7 @@ export default {
 	watch: {
 		$route(to) {
 			const paths = to.path.split('/')
-			this.activeLink = paths.length > 2 ? '/' + paths[1] : to.path
+			this.activeLink = '/' + paths[1]
 		},
 	},
 }

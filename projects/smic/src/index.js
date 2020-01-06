@@ -3,6 +3,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import VueSweetalert2 from 'vue-sweetalert2'
+import locale from '@/plugins/i18n-ko'
 
 import App from '@/App.vue'
 import router from '@/router'
@@ -15,8 +16,12 @@ import '@/assets/style/admin.scss'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'billboard.js/dist/billboard.min.css'
 
-Vue.use(ElementUI)
+import ThePageHeader from '@/components/common/ThePageHeader'
+
+Vue.use(ElementUI, { locale })
 Vue.use(VueSweetalert2)
+
+Vue.component('the-page-header', ThePageHeader)
 
 Vue.config.productionTip = false
 

@@ -4,16 +4,37 @@
 			span {{tableOption.title}}
 			router-link(v-if="tableOption.moreHref" style="float: right; padding: 3px 0" type="text" :to="tableOption.moreHref") 더보기
 			
-		el-table(:data='tableData' style='width: 100%')
-			el-table-column(v-for="{label, width, prop} in tableOption.colSetting" :prop="prop" :label="label" :width="width || ''") 
+		el-table.inline-table(
+			:data='tableData' 
+			style='width: 100%'
+			:show-header="tableOption.showHeader || true"
+		)
+			el-table-column(
+				v-for="{label, width, prop} in tableOption.colSetting" 
+				:key="prop" 
+				:prop="prop" 
+				:label="label" 
+				:width="width || ''"
+				@cell-click="onClickCell"
+			) 
 				template(slot-scope='scope')
-					div(v-if="prop === 'status'")
-						el-button(size="mini" :type="filterClass(tableData[scope.$index][prop])" plain) {{filterName(tableData[scope.$index][prop])}}
+					div(v-if="['contentPublish', 'progressRegister'].includes(prop)") 
+						button.el-button--mini(
+							size="mini" 
+							:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
+							:plain='tableData[scope.$index][prop] ? false : true'
+						) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
+					div(v-else-if="prop === 'status'")
+						el-button(
+							size="mini" 
+							:type="statusFilterClass(tableData[scope.$index][prop])" 
+							plain
+						) {{ statusFilterName(tableData[scope.$index][prop]) }}
 					div(v-else)
-						span {{tableData[scope.$index][prop]}}
+						span {{ tableData[scope.$index][prop] }}
 				//- template(v-else) 
-				//- 	span {{tableData[scope.$index][prop]}}
-			el-table-column(v-if="tableOption.colSlot")
+				//- 	span {{ tableData[scope.$index][prop] }}
+			el-table-column(v-if="tableOption.colOptions")
 				template(slot='header') 설정
 				template(slot-scope='scope')
 					el-dropdown(trigger="click")
@@ -25,7 +46,18 @@
 							el-dropdown-item(icon='el-icon-circle-plus-outline') Action 3
 							el-dropdown-item(icon='el-icon-check') Action 4
 							el-dropdown-item(icon='el-icon-circle-check') Action 5
-
+		el-pagination.inline-table-pagination(
+			:hide-on-single-page='false' 
+			:page-size="pageSize" 
+			:pager-count="tableOption.pagerCount"
+			:total='tableData.length' 
+			layout='prev, jumper, next'
+			:current-page='currentPage'
+			@prev-click='currentPage -= 1'
+			@next-click='currentPage += 1'
+		)
+			template(v-slot)
+				h1 133
 </template>
 <script>
 export default {
@@ -35,27 +67,85 @@ export default {
 			title: String,
 			moreHref: String,
 			colSetting: Array,
-			colSlot: Array,
+			colOptions: Boolean,
+			showHeader: Boolean,
+			pagerCount: 5,
 		},
 	},
 	data() {
 		return {
 			dataKeys: null,
+			currentPage: 1,
+			pageSize: this.$props.tableOption.pageSize || 5,
 		}
 	},
 	methods: {
-		filterClass(value) {
+		statusFilterClass(value) {
 			if (value == 'done') return 'success'
 			else if (value == 'progress') return 'primary'
 			else if (value == 'pending') return 'warning'
 			else if (value == 'inadequate') return 'danger'
 		},
-		filterName(value) {
+		statusFilterName(value) {
 			if (value == 'done') return '완료'
 			else if (value == 'progress') return '진행'
 			else if (value == 'pending') return '지연'
 			else if (value == 'inadequate') return '미흡'
 		},
+		publishFilterClass(type, value) {
+			let suffix = ''
+			if (value === false) suffix = 'plain'
+
+			return `${type}-btn ${suffix}`
+		},
+		publishFilterName(type, value) {
+			let className, suffix
+			if (type === 'contentPublish') className = '배포'
+			else if (type === 'progressRegister') className = '등록'
+
+			if (value === true) suffix = '중'
+			else if (value === false) suffix = '대기'
+
+			return className + suffix
+		},
+		onClickCell(row) {
+			const { rowIdName, subdomain } = this.$props.tableOption
+			if (!rowIdName) return false
+			this.$router.push(`${subdomain}/${row[rowIdName]}`)
+		},
 	},
 }
 </script>
+
+<style lang="scss">
+.inline-table {
+	.inline-table-pagination .el-pagination__jump {
+		margin-left: 0px !important;
+	}
+	.el-table__row {
+		cursor: pointer;
+	}
+	.contentPublish-btn {
+		background-color: #3f88c6 !important;
+		color: white;
+		border-radius: 15px;
+		width: 80px;
+		&.plain {
+			background-color: white !important;
+			color: #3f88c6 !important;
+			border: solid 1px #3f88c6 !important;
+		}
+	}
+	.progressRegister-btn {
+		background-color: #ff216f !important;
+		color: white;
+		border-radius: 15px;
+		width: 80px;
+		&.plain {
+			background-color: white !important;
+			color: #ff216f !important;
+			border: solid 1px #ff216f !important;
+		}
+	}
+}
+</style>

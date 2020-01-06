@@ -1,7 +1,7 @@
 <template lang="pug">
-  div
-    div(v-for="ud in usersData")
-      member-profile-card(:profileData="ud")
+	el-row(:gutter='20')
+		el-col(:span='6' v-for="(ud, index) in usersData" :key="index")
+			member-profile-card(:profileData="ud")
 </template>
 
 <script>
