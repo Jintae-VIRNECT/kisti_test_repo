@@ -1,16 +1,11 @@
-const users = [
-	{
-		email: 'antmgu@gmail.com',
-		password: '12341234',
-	},
-]
+import users from '@/data/users'
 
 export default {
 	state: {
 		isLoggedIn: false,
 		me: {
 			uid: null,
-			email: null,
+			id: null,
 			role: null,
 		},
 		locale: null,
@@ -37,9 +32,9 @@ export default {
 		USER_SET_LAST_ACCESS_PATH(state, { path }) {
 			state.lastAccessPath = path
 		},
-		USER_LOGIN(state, { email, role, uid }) {
+		USER_LOGIN(state, { id, role, uid }) {
 			state.me.uid = uid
-			state.me.email = email
+			state.me.id = id
 			state.me.role = role
 			state.isLoggedIn = true
 		},
@@ -48,7 +43,7 @@ export default {
 		},
 		USER_LOGOUT(state) {
 			state.me.uid = null
-			state.me.email = null
+			state.me.id = null
 			state.me.role = null
 			state.isLoggedIn = false
 		},
@@ -57,7 +52,7 @@ export default {
 		USER_LOGIN(context, { user }) {
 			return new Promise((resolve, reject) => {
 				const checkUser = users.find(
-					u => u.email == user.email && u.password === user.password,
+					u => u.id == user.id && u.password === user.password,
 				)
 				if (checkUser) {
 					context.commit('USER_LOGIN', checkUser)

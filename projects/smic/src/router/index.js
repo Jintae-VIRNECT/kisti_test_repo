@@ -12,8 +12,6 @@ import ContentDetail from '@/views/contents/ContentDetail.vue'
 import ContentNew from '@/views/contents/ContentNew.vue'
 
 import User from '@/views/User.vue'
-// import UserSignIn from '@/components/user/UserSignIn.vue'
-// import UserSignUp from '@/components/user/UserSignUp.vue'
 
 import NotFound404 from '@/views/NotFound404.vue'
 
@@ -26,27 +24,20 @@ const routes = [
 	{
 		path: '/',
 		component: Home,
-		// meta: {
-		// 	requiresAuth: true,
-		// },
+		meta: {
+			requiresAuth: true,
+		},
 	},
 	{
-		path: '/user',
+		path: '/users',
 		component: User,
-		// children: [
-		// 	{
-		// 		path: '/sign_in',
-		// 		component: UserSignIn,
-		// 	},
-		// 	{
-		// 		path: '/sign_up',
-		// 		component: UserSignUp,
-		// 	},
-		// ],
 	},
 	{
 		path: '/members',
 		component: Member,
+		meta: {
+			requiresAuth: true,
+		},
 		children: [
 			{
 				path: '',
@@ -61,6 +52,9 @@ const routes = [
 	{
 		path: '/contents',
 		component: Content,
+		meta: {
+			requiresAuth: true,
+		},
 		children: [
 			{
 				path: '',
@@ -94,9 +88,11 @@ router.beforeEach((to, from, next) => {
 	// auth check
 	const matched = to.matched.find(record => record.meta.requiresAuth)
 	let destination = to.path
+	console.log('matched : ', matched)
 	if (matched) {
 		const user = store.state.user
-		if (user.isLoggedIn && store.getters.getAuth === matched.meta.auth) {
+		console.log('user.isLoggedIn : ', user.isLoggedIn)
+		if (user.isLoggedIn) {
 			// 마지막 접근루트로 이동
 			const lastAccessPath = store.getters.getLastAccessPath
 			if (lastAccessPath) {
@@ -111,7 +107,7 @@ router.beforeEach((to, from, next) => {
 				showConfirmButton: false,
 				timer: 1500,
 			})
-			destination = from.path
+			destination = '/users'
 			store.commit('USER_SET_LAST_ACCESS_PATH', {
 				path: to.path,
 			})

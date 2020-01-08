@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		sign-in(
-			v-if='watchedCurrentPage === page.SIGNIN' 
+			v-if='options.isSignIn !== false && watchedCurrentPage === page.SIGNIN' 
 			:key="page.SIGNIN" 
 			:options="options" 
 			@pageSignUp="pageSignIn"
@@ -9,14 +9,14 @@
 			@onSubmit="onSubmit"
 		)
 		sign-up(
-			v-if='watchedCurrentPage === page.SIGNUP' 
+			v-if='options.isSignUp !== false && watchedCurrentPage === page.SIGNUP' 
 			:key="page.SIGNUP" 
 			:options="options" 
-			@pageSignIn="pageSignIn"
+			@pageSignIn="options.pageSignIn"
 			@pageFindPassword="pageFindPassword"
 		)
 		find-password(
-			v-if='watchedCurrentPage === page.FINDPASSWORD' 
+			v-if='options.isFindPassword !== false && watchedCurrentPage === page.FINDPASSWORD' 
 			:key='page.FINDPASSWORD' 
 			:options="options" 
 			@pageSignIn="pageSignIn" 
@@ -32,7 +32,44 @@ import FindPassword from './views/FindPassword.vue'
 
 export default {
 	name: 'UserScaffold',
-	props: ['currentPage', 'options'],
+	props: {
+		customClass: String,
+		currentPage: String,
+		options: {
+			form: {
+				isFindPassword: {
+					type: Boolean,
+					default: true,
+				},
+				isSignUp: {
+					type: Boolean,
+					default: true,
+				},
+				isSignIn: {
+					type: Boolean,
+					default: true,
+				},
+				isPreserveLogin: {
+					type: Boolean,
+					default: true,
+				},
+			},
+			placeholder: {
+				id: {
+					type: String,
+					default: '이메일을 입력해주세요',
+				},
+				password: {
+					type: String,
+					default: '비밀번호를 입력해주세요',
+				},
+				passwordConfirm: {
+					type: String,
+					default: '비밀번호를 입력해주세요',
+				},
+			},
+		},
+	},
 	components: {
 		SignIn,
 		SignUp,
@@ -55,8 +92,6 @@ export default {
 			this.watchedCurrentPage = page.FINDPASSWORD
 		},
 		onSubmit(params) {
-			console.log('here u r too!!!')
-			console.log('e : ', params)
 			this.$emit('onSubmit', params)
 		},
 	},

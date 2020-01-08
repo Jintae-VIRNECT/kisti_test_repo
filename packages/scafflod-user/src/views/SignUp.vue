@@ -35,13 +35,13 @@
 </template>
 
 <script>
-import {page} from '../enum'
+import { page } from '../enum'
 export default {
 	props: ['customClass', 'options'],
 	data() {
 		return {
 			form: {
-        page: page.SIGNUP,
+				page: page.SIGNUP,
 				id: null,
 				password: null,
 				passwordConfirm: null,
@@ -49,8 +49,8 @@ export default {
 		}
 	},
 	methods: {
-		onSubmit() {
-			console.log('submited!!!!')
+		onSubmit(form) {
+			this.$emit('onSubmit', form)
 		},
 	},
 }

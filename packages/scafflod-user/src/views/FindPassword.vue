@@ -16,13 +16,13 @@
 </template>
 
 <script>
-import {page} from '../enum'
+import { page } from '../enum'
 export default {
 	props: ['customClass', 'options'],
 	data() {
 		return {
 			form: {
-        page: page.FINDPASSWORD,
+				page: page.FINDPASSWORD,
 				id: null,
 			},
 		}

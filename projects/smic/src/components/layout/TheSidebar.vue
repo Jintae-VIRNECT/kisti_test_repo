@@ -58,9 +58,6 @@ export default {
 			return path == this.currentMenuPath
 		},
 		isActiveMenu(path) {
-			console.log('path : ', path)
-			console.log('this.activeMenuPath : ', this.activeMenuPath)
-			console.log('path == this.activeMenuPath : ', path == this.activeMenuPath)
 			return path == this.activeMenuPath
 		},
 		isActiveSubMenu(path) {

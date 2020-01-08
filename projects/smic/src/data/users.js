@@ -1,5 +1,7 @@
 export default [
 	{
+		id: 'test1',
+		password: '12341234',
 		username: '테스트 1',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -9,6 +11,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test2',
+		password: '12341234',
 		username: '테스트 2',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -18,6 +22,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test3',
+		password: '12341234',
 		username: '테스트 3',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -27,6 +33,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test4',
+		password: '12341234',
 		username: '테스트 4',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -36,6 +44,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test5',
+		password: '12341234',
 		username: '테스트 5',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -45,6 +55,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test6',
+		password: '12341234',
 		username: '테스트 6',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -54,6 +66,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test7',
+		password: '12341234',
 		username: '테스트 7',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -63,6 +77,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test8',
+		password: '12341234',
 		username: '테스트 8',
 		email: 'test1@test.com',
 		auth: 'admin',
@@ -72,6 +88,8 @@ export default [
 		all: 10,
 	},
 	{
+		id: 'test9',
+		password: '12341234',
 		username: '테스트 9',
 		email: 'test1@test.com',
 		auth: 'admin',

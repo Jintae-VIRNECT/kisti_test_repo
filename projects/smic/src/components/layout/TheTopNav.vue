@@ -1,13 +1,11 @@
 <template lang="pug">
 	.top-nav
-		b SMIC
-		span Workstation
-		//- el-menu-item
-		//- 	el-button(type="text" v-if="$store.getters.getIsLoggedIn === false") Sign in
-		//- 	el-button(v-else @click="userLogout") Logout
-		//- el-menu-item(index="/members" ) Members
-		//- el-menu-item(index="/contents" ) Contents
-		//- el-menu-item
+		.logo
+			b SMIC
+			span Workstation
+		.top-nav__right
+			img.profile-img(src="") 
+			el-button(v-if="$store.getters.getIsLoggedIn === true" @click="userLogout") 로그아웃
 			span {{getUser.email}}
 </template>
 
