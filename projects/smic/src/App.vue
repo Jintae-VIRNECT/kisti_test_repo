@@ -27,12 +27,10 @@ export default {
 						{
 							label: '멤버 생성',
 							path: '/members/new',
-							// component: () => import('components/admin/groups/AdminGroup'),
 						},
 						{
 							label: '멤버 목록',
 							path: '/members',
-							// component: () => import('components/admin/groups/AdminUser'),
 						},
 					],
 				},
@@ -42,12 +40,12 @@ export default {
 					image: require('@/assets/image/admin/ic-organization.svg'),
 					subMenus: [
 						{
-							label: '공정 생성',
+							label: '콘텐츠 생성',
 							path: '/contents/new',
 							// component: () => import('components/admin/groups/AdminGroup'),
 						},
 						{
-							label: '공정 목록',
+							label: '콘텐츠 목록',
 							path: '/contents',
 							// component: () => import('components/admin/groups/AdminUser'),
 						},

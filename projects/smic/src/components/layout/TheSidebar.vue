@@ -22,7 +22,7 @@
 									span 테스트
 								li.submenu--item(@click="resetSubmenu" v-for='subMenu of menu.subMenus' :key='subMenu.path' :class="{'active' : isActiveSubMenu(subMenu.path)}")
 									router-link(:to="subMenu.path")
-										el-button {{ menu.label }}
+										el-button {{ subMenu.label }}
 
 </template>
 

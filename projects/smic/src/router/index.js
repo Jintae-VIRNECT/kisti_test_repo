@@ -94,9 +94,10 @@ router.beforeEach((to, from, next) => {
 		console.log('user.isLoggedIn : ', user.isLoggedIn)
 		if (user.isLoggedIn) {
 			// 마지막 접근루트로 이동
-			const lastAccessPath = store.getters.getLastAccessPath
+			const lastAccessPath = store.getters.getLastAccessPath || to.path
 			if (lastAccessPath) {
 				destination = lastAccessPath
+				store.commit('USER_SET_LAST_ACCESS_PATH', { path: null })
 			}
 		} else {
 			Vue.swal.fire({

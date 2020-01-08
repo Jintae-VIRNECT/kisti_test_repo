@@ -28,7 +28,7 @@ export default {
 		userLogout() {
 			this.$store
 				.dispatch('USER_LOGOUT', { user: this.$store.uid })
-				.then(() => this.$router.push('/'))
+				.then(() => this.$router.go('/'))
 		},
 	},
 	watch: {

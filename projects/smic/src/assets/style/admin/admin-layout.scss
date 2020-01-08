@@ -11,7 +11,7 @@ $color_bg_default: #ffffff;
 @import 'admin-submenu';
 
 .admin-container {
-    overflow: hidden;
+    // overflow: hidden;
     height: 100vh;
     padding-left: $side_width;
 }

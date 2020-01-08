@@ -5,6 +5,9 @@
 ## SMIC 명령어
 
 ```
+# 패키지 설치
+$ yarn
+
 # 로컬에서 개발모드로 실행
 $ yarn workspace smic dev
 

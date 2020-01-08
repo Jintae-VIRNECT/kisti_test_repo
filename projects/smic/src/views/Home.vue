@@ -1,6 +1,7 @@
 <template lang="pug">
 	div
 		page-header(submenu="홈")
+		#lineChart
 		el-row(:gutter="20")
 			el-col(:span="16")
 				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")
@@ -19,6 +20,8 @@ import InlineTable from '@/components/common/InlineTable.vue'
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
 import currentReportedProgress from '@/data/currentReportedProgress'
+
+import bb from 'billboard.js'
 
 const currentUploadedContentTableOption = {
 	title: '최근 업로드된 콘텐츠',
@@ -85,6 +88,19 @@ export default {
 			currentUploadedContentTableOption,
 			currentReportedProgressTableOption,
 		}
+	},
+	mounted() {
+		this.initProcessGraph()
+	},
+	methods: {
+		initProcessGraph() {
+			bb.generate({
+				data: {
+					columns: [['data1', 30, 200, 100, 400, 150, 250]],
+				},
+				bindto: '#lineChart',
+			})
+		},
 	},
 }
 </script>
