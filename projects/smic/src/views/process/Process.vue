@@ -1,0 +1,10 @@
+<template lang="pug">
+  div
+    page-header(submenu='공정')
+    div
+      router-link(to='/process/new')
+        el-button(type='primary' tag="el-button") 공정 등록
+      router-link(to='/process')
+        el-button(type='primary' tag="el-button") 전체 목록
+    router-view
+</template>

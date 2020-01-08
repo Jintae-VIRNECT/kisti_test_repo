@@ -8,6 +8,7 @@
 			:data='tableData' 
 			style='width: 100%'
 			:show-header="tableOption.showHeader || true"
+			@cell-click="onClickCell"
 		)
 			el-table-column(
 				v-for="{label, width, prop} in tableOption.colSetting" 
@@ -15,10 +16,11 @@
 				:prop="prop" 
 				:label="label" 
 				:width="width || ''"
-				@cell-click="onClickCell"
 			) 
 				template(slot-scope='scope')
-					div(v-if="['contentPublish', 'progressRegister'].includes(prop)") 
+					div(v-if="prop == 'index'") 
+						span {{scope.$index}}
+					div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
 						button.el-button--mini(
 							size="mini" 
 							:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
@@ -101,7 +103,7 @@ export default {
 		publishFilterName(type, value) {
 			let className, suffix
 			if (type === 'contentPublish') className = '배포'
-			else if (type === 'progressRegister') className = '등록'
+			else if (type === 'processRegister') className = '등록'
 
 			if (value === true) suffix = '중'
 			else if (value === false) suffix = '대기'
@@ -118,10 +120,10 @@ export default {
 </script>
 
 <style lang="scss">
+.inline-table-pagination .el-pagination__jump {
+	margin-left: 0px !important;
+}
 .inline-table {
-	.inline-table-pagination .el-pagination__jump {
-		margin-left: 0px !important;
-	}
 	.el-table__row {
 		cursor: pointer;
 	}
@@ -136,7 +138,7 @@ export default {
 			border: solid 1px #3f88c6 !important;
 		}
 	}
-	.progressRegister-btn {
+	.processRegister-btn {
 		background-color: #ff216f !important;
 		color: white;
 		border-radius: 15px;

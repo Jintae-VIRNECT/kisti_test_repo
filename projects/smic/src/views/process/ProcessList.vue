@@ -4,7 +4,6 @@
 			:tableData="currentUploadedContent" 
 			:tableOption="currentUploadedContentTableOption"
 		)
-
 </template>
 
 <script>
@@ -17,18 +16,17 @@ import currentUploadedContent from '@/data/currentUploadedContent'
 import currentReportedProcess from '@/data/currentReportedProcess'
 
 const currentUploadedContentTableOption = {
-	rowIdName: 'contentId',
-	subdomain: '/contents',
+	rowIdName: 'processId',
+	subdomain: '/process',
 	colOptions: true,
-	colIndex: true,
 	colSetting: [
 		{
-			prop: 'contentId',
-			label: '콘텐츠 ID',
+			prop: 'index',
+			label: '순번',
 		},
 		{
-			prop: 'contentName',
-			label: '콘텐츠 이름',
+			prop: 'processName',
+			label: '공정 이름',
 		},
 		{
 			prop: 'volume',
@@ -44,7 +42,7 @@ const currentUploadedContentTableOption = {
 		},
 		{
 			prop: 'contentPublish',
-			label: '콘텐츠 배포',
+			label: '공정 배포',
 		},
 		{
 			prop: 'processRegister',
@@ -59,7 +57,7 @@ export default {
 		return {
 			value1: '',
 			progressData: {
-				overallProgressPercent: 90,
+				overallProcessPercent: 90,
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},

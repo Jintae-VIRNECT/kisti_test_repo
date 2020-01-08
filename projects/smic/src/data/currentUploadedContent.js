@@ -7,7 +7,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577702',
@@ -17,7 +17,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: false,
+		processRegister: false,
 	},
 	{
 		contentId: '298577704',
@@ -27,7 +27,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: false,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -37,7 +37,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: false,
-		progressRegister: false,
+		processRegister: false,
 	},
 	{
 		contentId: '298577701',
@@ -47,7 +47,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -57,7 +57,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -67,7 +67,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -77,7 +77,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -87,7 +87,7 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 	{
 		contentId: '298577701',
@@ -97,6 +97,6 @@ export default [
 		profile_img: '',
 		volume: '20',
 		contentPublish: true,
-		progressRegister: true,
+		processRegister: true,
 	},
 ]

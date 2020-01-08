@@ -9,7 +9,7 @@
 				progress-card(:progressData='progressData')
 		el-row(:gutter="0")
 			el-col(:span="24")
-				inline-table(:tableData="currentReportedProgress" :tableOption="currentReportedProgressTableOption")
+				inline-table(:tableData="currentReportedProcess" :tableOption="currentReportedProcessTableOption")
 </template>
 
 <script>
@@ -19,7 +19,7 @@ import InlineTable from '@/components/common/InlineTable.vue'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
-import currentReportedProgress from '@/data/currentReportedProgress'
+import currentReportedProcess from '@/data/currentReportedProcess'
 
 import bb from 'billboard.js'
 
@@ -52,7 +52,7 @@ const currentUploadedContentTableOption = {
 	],
 }
 
-const currentReportedProgressTableOption = {
+const currentReportedProcessTableOption = {
 	title: '최근 보고된 공정   | 2020.03.20 14:30',
 	moreHref: '/progress',
 	colOptions: true,
@@ -84,9 +84,9 @@ export default {
 				progressByDayLastDate: '2020.01.13',
 			},
 			currentUploadedContent,
-			currentReportedProgress,
+			currentReportedProcess,
 			currentUploadedContentTableOption,
-			currentReportedProgressTableOption,
+			currentReportedProcessTableOption,
 		}
 	},
 	mounted() {

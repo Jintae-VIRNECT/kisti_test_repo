@@ -11,6 +11,11 @@ import ContentList from '@/views/contents/ContentList.vue'
 import ContentDetail from '@/views/contents/ContentDetail.vue'
 import ContentNew from '@/views/contents/ContentNew.vue'
 
+import Process from '@/views/process/Process.vue'
+import ProcessList from '@/views/process/ProcessList.vue'
+import ProcessDetail from '@/views/process/ProcessDetail.vue'
+import ProcessNew from '@/views/process/ProcessNew.vue'
+
 import User from '@/views/User.vue'
 
 import NotFound404 from '@/views/NotFound404.vue'
@@ -71,6 +76,27 @@ const routes = [
 		],
 	},
 	{
+		path: '/process',
+		component: Process,
+		meta: {
+			requiresAuth: true,
+		},
+		children: [
+			{
+				path: '',
+				component: ProcessList,
+			},
+			{
+				path: 'new',
+				component: ProcessNew,
+			},
+			{
+				path: ':id',
+				component: ProcessDetail,
+			},
+		],
+	},
+	{
 		path: '*',
 		component: NotFound404,
 	},
@@ -88,10 +114,8 @@ router.beforeEach((to, from, next) => {
 	// auth check
 	const matched = to.matched.find(record => record.meta.requiresAuth)
 	let destination = to.path
-	console.log('matched : ', matched)
 	if (matched) {
 		const user = store.state.user
-		console.log('user.isLoggedIn : ', user.isLoggedIn)
 		if (user.isLoggedIn) {
 			// 마지막 접근루트로 이동
 			const lastAccessPath = store.getters.getLastAccessPath || to.path
