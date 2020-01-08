@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "groups")
+@Table(name = "`groups`")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group extends TimeEntity {
     @Id
