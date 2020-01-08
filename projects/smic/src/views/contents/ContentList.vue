@@ -20,7 +20,6 @@ const currentUploadedContentTableOption = {
 	rowIdName: 'contentId',
 	subdomain: '/contents',
 	colOptions: true,
-	colIndex: true,
 	colSetting: [
 		{
 			prop: 'contentId',

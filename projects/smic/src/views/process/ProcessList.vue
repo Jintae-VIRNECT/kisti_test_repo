@@ -1,8 +1,8 @@
 <template lang="pug">
 	div
 		inline-table(
-			:tableData="currentUploadedContent" 
-			:tableOption="currentUploadedContentTableOption"
+			:tableData="currentReportedProcess" 
+			:tableOption="currentReportedProcessTableOption"
 		)
 </template>
 
@@ -12,10 +12,9 @@ import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 
 /// data
-import currentUploadedContent from '@/data/currentUploadedContent'
 import currentReportedProcess from '@/data/currentReportedProcess'
 
-const currentUploadedContentTableOption = {
+const currentReportedProcessTableOption = {
 	rowIdName: 'processId',
 	subdomain: '/process',
 	colOptions: true,
@@ -25,28 +24,32 @@ const currentUploadedContentTableOption = {
 			label: '순번',
 		},
 		{
+			prop: 'processId',
+			label: '공정 ID',
+		},
+		{
 			prop: 'processName',
 			label: '공정 이름',
 		},
 		{
-			prop: 'volume',
-			label: '크기',
+			prop: 'reportedAt',
+			label: '보고 날짜',
 		},
 		{
-			prop: 'uploadedAt',
-			label: '업로드일',
+			prop: 'status',
+			label: '상태',
 		},
 		{
 			prop: 'auth',
-			label: '업로드 멤버',
+			label: '보고자',
 		},
 		{
-			prop: 'contentPublish',
-			label: '공정 배포',
+			prop: 'processPercent',
+			label: '진행률',
 		},
 		{
-			prop: 'processRegister',
-			label: '공정 등록',
+			prop: 'workerNum',
+			label: '작업수',
 		},
 	],
 }
@@ -61,9 +64,8 @@ export default {
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},
-			currentUploadedContent,
 			currentReportedProcess,
-			currentUploadedContentTableOption,
+			currentReportedProcessTableOption,
 		}
 	},
 }

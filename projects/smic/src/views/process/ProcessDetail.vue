@@ -60,7 +60,7 @@
 
 <script>
 import InlineTable from '@/components/common/InlineTable'
-import currentUploadedContent from '@/data/currentUploadedContent'
+import currentReportedProcess from '@/data/currentReportedProcess'
 import sceneGroup from '@/data/sceneGroup'
 
 export default {
@@ -71,11 +71,11 @@ export default {
 		return {
 			process: {},
 			sceneGroup,
-			currentUploadedContent,
+			currentReportedProcess,
 		}
 	},
 	mounted() {
-		this.process = currentUploadedContent.find(c => {
+		this.process = currentReportedProcess.find(c => {
 			return c.processId === this.$route.params.id
 		})
 	},

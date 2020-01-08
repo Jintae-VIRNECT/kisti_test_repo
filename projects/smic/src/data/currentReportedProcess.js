@@ -12,7 +12,7 @@ export default [
 		processId: '2234502',
 		processName: "process' Name",
 		reportedAt: '2020.02.22',
-		status: 'process',
+		status: 'done',
 		auth: 'Jason',
 		processPercent: '90',
 		workerNum: 6,
