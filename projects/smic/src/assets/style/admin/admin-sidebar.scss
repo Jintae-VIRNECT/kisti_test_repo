@@ -108,18 +108,18 @@
             }
         }
 
-        &:nth-child(3) {
-            position: absolute;
-            bottom: 264px;
-        }
-        &:nth-child(4) {
-            position: absolute;
-            bottom: 192px;
-        }
-        &:last-child {
-            position: absolute;
-            bottom: 18px;
-        }        
+        // &:nth-child(3) {
+        //     position: absolute;
+        //     bottom: 264px;
+        // }
+        // &:nth-child(4) {
+        //     position: absolute;
+        //     bottom: 192px;
+        // }
+        // &:last-child {
+        //     position: absolute;
+        //     bottom: 18px;
+        // }        
         .sidebar--item__button {
             width: 42px;
             height: 42px;

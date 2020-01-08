@@ -13,6 +13,9 @@ $ yarn worskapce smic build
 
 # production 모드로 실행
 $ yarn workspace smic start
+
+# 빌드 & production 모드로 실행
+$ yarn workspace smic deploy
 ```
 
 ## Feature

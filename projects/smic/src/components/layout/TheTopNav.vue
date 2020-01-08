@@ -1,12 +1,13 @@
 <template lang="pug">
-	el-menu.el-menu-demo(:default-active="activeLink" mode="horizontal" :router="true")
-		el-menu-item(index="/") Home
-		el-menu-item
-			el-button(type="text" v-if="$store.getters.getIsLoggedIn === false") Sign in
-			el-button(v-else @click="userLogout") Logout
-		el-menu-item(index="/members" ) Members
-		el-menu-item(index="/contents" ) Contents
-		el-menu-item
+	.top-nav
+		b SMIC
+		span Workstation
+		//- el-menu-item
+		//- 	el-button(type="text" v-if="$store.getters.getIsLoggedIn === false") Sign in
+		//- 	el-button(v-else @click="userLogout") Logout
+		//- el-menu-item(index="/members" ) Members
+		//- el-menu-item(index="/contents" ) Contents
+		//- el-menu-item
 			span {{getUser.email}}
 </template>
 
