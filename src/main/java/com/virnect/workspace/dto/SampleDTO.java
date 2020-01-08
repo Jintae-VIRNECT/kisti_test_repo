@@ -1,4 +1,4 @@
-package com.virnect.workspace.domain.dto;
+package com.virnect.workspace.dto;
 
 import lombok.Getter;
 import lombok.Setter;

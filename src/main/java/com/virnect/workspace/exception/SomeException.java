@@ -1,4 +1,4 @@
-package com.virnect.workspace.domain.exception;
+package com.virnect.workspace.exception;
 
 /**
  * Project: base

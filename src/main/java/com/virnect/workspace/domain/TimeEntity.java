@@ -1,4 +1,4 @@
-package com.virnect.workspace.domain.domain;
+package com.virnect.workspace.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
