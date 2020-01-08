@@ -2,13 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import Home from '@/views/Home.vue'
-import Member from '@/views/Member.vue'
-import MemberList from '@/components/members/MemberList.vue'
-import MemberForm from '@/components/members/MemberForm.vue'
+import Member from '@/views/members/Member.vue'
+import MemberList from '@/views/members/MemberList.vue'
+import MemberNew from '@/views/members/MemberNew.vue'
 
-import Content from '@/views/Content.vue'
-import ContentList from '@/components/contents/ContentList.vue'
-import ContentDetail from '@/components/contents/ContentDetail.vue'
+import Content from '@/views/contents/Content.vue'
+import ContentList from '@/views/contents/ContentList.vue'
+import ContentDetail from '@/views/contents/ContentDetail.vue'
+import ContentNew from '@/views/contents/ContentNew.vue'
 
 import User from '@/views/User.vue'
 // import UserSignIn from '@/components/user/UserSignIn.vue'
@@ -52,8 +53,8 @@ const routes = [
 				component: MemberList,
 			},
 			{
-				path: 'add',
-				component: MemberForm,
+				path: 'new',
+				component: MemberNew,
 			},
 		],
 	},
@@ -62,9 +63,12 @@ const routes = [
 		component: Content,
 		children: [
 			{
-				path: 'list',
-				alias: '',
+				path: '',
 				component: ContentList,
+			},
+			{
+				path: 'new',
+				component: ContentNew,
 			},
 			{
 				path: ':id',

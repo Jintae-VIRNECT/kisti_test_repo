@@ -1,5 +1,20 @@
 # VirnectWebAdmin
 
+# 실행 명령어
+
+## SMIC 명령어
+
+```
+# 로컬에서 개발모드로 실행
+$ yarn workspace smic dev
+
+# 빌드 
+$ yarn worskapce smic build
+
+# production 모드로 실행
+$ yarn workspace smic start
+```
+
 ## Feature
 
 - Yarn workspace 적용

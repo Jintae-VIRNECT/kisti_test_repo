@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		the-page-header(submenu="홈")
+		page-header(submenu="홈")
 		el-row(:gutter="20")
 			el-col(:span="16")
 				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")

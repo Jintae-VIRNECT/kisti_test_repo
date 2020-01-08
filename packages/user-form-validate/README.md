@@ -5,7 +5,7 @@
 ## 참고 자료
 
 - [공식 Github Doc](https://help.github.com/en/github/managing-packages-with-github-packages)
-- [주요 참고](http://jeonghwan-kim.github.io/2018/05/31/vue-form-validation.html)
+- [주요 참고](https://jeonghwan-kim.github.io/2018/05/31/vue-form-validation.html)
 - [vee-validate](https://logaretm.github.io/vee-validate/)
 
 ## Github packages 사용법

@@ -8,59 +8,67 @@
 				ul.sidebar--mode
 					li.sidebar--item(
 						v-for='menu of menus' 
-						:key='menu.menu' 
-						:class='{\
-							current: true,\
-							active: true,\
-						}')
-						button.sidebar--item__button
+						:key='menu.path' 
+						:class='{ current: isCurrentMenu(menu.path), active: isActiveMenu(menu.path)}')
+						button.sidebar--item__button(@mouseover="currentMenuPath = menu.path")
 							img(:src='menu.image' :alt='menu.label')
-							//- img(:src='"~@/assets/image/admin/ic-settings.svg"'  :alt='menu.label')
 							span.sidebar--item__label {{ menu.label }}
+						nav.submenu(v-if="(menu.subMenus && menu.path === currentMenuPath)" @mouseleave="resetSubmenu")
+							.submenu--logo
+								h1.submenu--logo__image
+									img(src='~assets/image/admin/ic-logo-rectangle.svg')
+							ul.submenu-inner
+								li.submenu--item.title
+									span 테스트
+								li.submenu--item(@click="resetSubmenu" v-for='subMenu of menu.subMenus' :key='subMenu.path' :class="{'active' : isActiveSubMenu(subMenu.path)}")
+									router-link(:to="subMenu.path")
+										el-button {{ menu.label }}
 
 </template>
 
 <script>
 export default {
-	name: 'AdminSidebar',
 	props: {
 		menus: Array,
 	},
 	data() {
 		return {
-			openedMenu: false,
+			currentMenuPath: '',
+			currentSubMenuPath: '',
+			activeMenuPath: '',
+			activeSubMenuPath: '',
 		}
 	},
 	watch: {
-		mx_currentMenu: function() {
-			this.openedMenu = false
-		},
-		mx_currentTab: function() {
-			this.openedMenu = false
+		$route(to) {
+			const paths = to.path.split('/')
+			this.activeMenuPath = '/' + paths[1]
+			this.currentSubMenuPath = to.path
 		},
 	},
 	methods: {
 		showSubMenu(menu) {
-			// document.dispatchEvent(new Event('click'))
-
 			if (this.openedMenu === menu) {
 				this.openedMenu = false
 			} else {
 				this.openedMenu = menu
 			}
 		},
-		// documentClickHandler(event) {
-		// 	if (event.target !== this.$el) {
-		// 		this.openedMenu = false
-		// 	}
-		// },
+		isCurrentMenu(path) {
+			return path == this.currentMenuPath
+		},
+		isActiveMenu(path) {
+			console.log('path : ', path)
+			console.log('this.activeMenuPath : ', this.activeMenuPath)
+			console.log('path == this.activeMenuPath : ', path == this.activeMenuPath)
+			return path == this.activeMenuPath
+		},
+		isActiveSubMenu(path) {
+			return path == this.currentSubMenuPath
+		},
+		resetSubmenu() {
+			this.currentMenuPath = ''
+		},
 	},
-	// /* Lifecycles */
-	// mounted() {
-	// 	document.addEventListener('click', this.documentClickHandler)
-	// },
-	// beforeDestroy() {
-	// 	document.removeEventListener('click', this.documentClickHandler)
-	// },
 }
 </script>

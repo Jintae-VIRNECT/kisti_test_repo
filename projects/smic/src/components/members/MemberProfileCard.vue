@@ -18,8 +18,6 @@
 </template>
 
 <script>
-// import a from '@/assets/image/admin/ic-user.svg.png'
-
 export default {
 	props: ['profileData'],
 	methods: {

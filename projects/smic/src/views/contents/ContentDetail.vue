@@ -75,7 +75,7 @@ export default {
 		}
 	},
 	mounted() {
-		this.content = currentUploadedContent.tableData.find(c => {
+		this.content = currentUploadedContent.find(c => {
 			return c.contentId === this.$route.params.id
 		})
 	},

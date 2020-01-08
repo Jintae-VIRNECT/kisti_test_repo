@@ -16,12 +16,12 @@ import '@/assets/style/admin.scss'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'billboard.js/dist/billboard.min.css'
 
-import ThePageHeader from '@/components/common/ThePageHeader'
+import PageHeader from '@/components/common/PageHeader'
 
 Vue.use(ElementUI, { locale })
 Vue.use(VueSweetalert2)
 
-Vue.component('the-page-header', ThePageHeader)
+Vue.component('page-header', PageHeader)
 
 Vue.config.productionTip = false
 
