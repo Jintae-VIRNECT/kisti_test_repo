@@ -3,7 +3,7 @@
 		.sidebar-inner(@click.stop='')
 			h1.sidebar--logo
 				a.popover--button(href='/')
-					img(src='~@/assets/image/admin/ic-remote-symbol.svg' alt='Remote')
+					img(src='~@/assets/image/logo-smart-factory.png' alt='Remote')
 			.sidebar--tools
 				ul.sidebar--mode
 					li.sidebar--item(
@@ -69,3 +69,11 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+.sidebar__logo {
+	width: 44px;
+	height: 44px;
+	background-image: linear-gradient(332deg, #225bac 90%, #276ac7 6%);
+}
+</style>

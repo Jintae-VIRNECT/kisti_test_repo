@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		page-header(submenu="홈")
+		h1.admin-body__header 홈
 		#lineChart
 		el-row(:gutter="20")
 			el-col(:span="16")

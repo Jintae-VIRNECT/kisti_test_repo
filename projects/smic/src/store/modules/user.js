@@ -5,6 +5,7 @@ export default {
 		isLoggedIn: false,
 		me: {
 			uid: null,
+			username: null,
 			id: null,
 			role: null,
 		},
@@ -32,9 +33,10 @@ export default {
 		USER_SET_LAST_ACCESS_PATH(state, { path }) {
 			state.lastAccessPath = path
 		},
-		USER_LOGIN(state, { id, role, uid }) {
+		USER_LOGIN(state, { id, role, uid, username }) {
 			state.me.uid = uid
 			state.me.id = id
+			state.me.username = username
 			state.me.role = role
 			state.isLoggedIn = true
 		},
@@ -44,6 +46,7 @@ export default {
 		USER_LOGOUT(state) {
 			state.me.uid = null
 			state.me.id = null
+			state.me.username = null
 			state.me.role = null
 			state.isLoggedIn = false
 		},

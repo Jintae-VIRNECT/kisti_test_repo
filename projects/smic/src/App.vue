@@ -3,7 +3,7 @@
 		the-sidebar(:menus="menus")
 		.admin-container
 			the-top-nav
-			el-main.body-wrapper
+			main.admin-body
 				router-view
 </template>
 
@@ -22,7 +22,7 @@ export default {
 				{
 					path: '/members',
 					label: '멤버 관리',
-					image: require('@/assets/image/admin/ic-settings.svg'),
+					image: require('@/assets/image/ic-home.svg'),
 					subMenus: [
 						{
 							label: '멤버 생성',
@@ -37,7 +37,7 @@ export default {
 				{
 					path: '/contents',
 					label: '콘텐츠 관리',
-					image: require('@/assets/image/admin/ic-organization.svg'),
+					image: require('@/assets/image/ic-workspace-management.svg'),
 					subMenus: [
 						{
 							label: '콘텐츠 생성',
@@ -47,23 +47,6 @@ export default {
 						{
 							label: '콘텐츠 목록',
 							path: '/contents',
-							// component: () => import('components/admin/groups/AdminUser'),
-						},
-					],
-				},
-				{
-					path: '/process',
-					label: '공정 관리',
-					image: require('@/assets/image/admin/ic-group-member.svg'),
-					subMenus: [
-						{
-							label: '공정 생성',
-							path: '/process/new',
-							// component: () => import('components/admin/groups/AdminGroup'),
-						},
-						{
-							label: '공정 목록',
-							path: '/process',
 							// component: () => import('components/admin/groups/AdminUser'),
 						},
 					],

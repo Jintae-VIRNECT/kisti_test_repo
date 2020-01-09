@@ -17,7 +17,7 @@ $ yarn worskapce smic build
 # production 모드로 실행
 $ yarn workspace smic start
 
-# 빌드 & production 모드로 실행
+# 빌드 & production 모드로 실행 -> https://localhost:8887 에 띄움
 $ yarn workspace smic deploy
 ```
 

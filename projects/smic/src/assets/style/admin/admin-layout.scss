@@ -12,7 +12,7 @@ $color_bg_default: #ffffff;
 
 .admin-container {
     // overflow: hidden;
-    height: 100vh;
+    // height: 100vh;
     padding-left: $side_width;
 }
 .admin-body {
@@ -21,6 +21,11 @@ $color_bg_default: #ffffff;
     max-width: 1524px;
     padding: 0 50px 40px;
     margin: auto;
+    &__header {
+        box-shadow: inset 0 -1px 0 0 #eaedf3;
+        padding: 8px 0px;
+        margin-bottom: 24px;
+    }
 }
 
 .el-select-dropdown__wrap {
