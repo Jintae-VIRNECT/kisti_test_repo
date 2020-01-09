@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		h1.admin-body__header 홈
-		#lineChart
+		process-inprogress-status-graph
 		el-row(:gutter="20")
 			el-col(:span="16")
 				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")
@@ -14,14 +14,13 @@
 
 <script>
 // UI component
+import ProcessInprogressStatusGraph from '@/components/common/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
 import currentReportedProcess from '@/data/currentReportedProcess'
-
-import bb from 'billboard.js'
 
 const currentUploadedContentTableOption = {
 	title: '최근 업로드된 콘텐츠',
@@ -74,33 +73,20 @@ const currentReportedProcessTableOption = {
 }
 
 export default {
-	components: { ProgressCard, InlineTable },
+	components: { ProgressCard, InlineTable, ProcessInprogressStatusGraph },
 	data() {
 		return {
 			value1: '',
+			currentUploadedContent,
+			currentReportedProcess,
+			currentUploadedContentTableOption,
+			currentReportedProcessTableOption,
 			progressData: {
 				overallProgressPercent: 90,
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},
-			currentUploadedContent,
-			currentReportedProcess,
-			currentUploadedContentTableOption,
-			currentReportedProcessTableOption,
 		}
-	},
-	mounted() {
-		this.initProcessGraph()
-	},
-	methods: {
-		initProcessGraph() {
-			bb.generate({
-				data: {
-					columns: [['data1', 30, 200, 100, 400, 150, 250]],
-				},
-				bindto: '#lineChart',
-			})
-		},
 	},
 }
 </script>

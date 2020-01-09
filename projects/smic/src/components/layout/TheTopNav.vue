@@ -1,7 +1,8 @@
 <template lang="pug">
 	.top-nav
-		router-link.top-nav__left(to="/")
-			img.logo-img(src="~@/assets/image/logo-smic.jpg") 
+		.top-nav__left
+			router-link(to="/")
+				img.logo-img(src="~@/assets/image/logo-smic.jpg") 
 			.divider
 			label.workspace Workspace' name
 		.top-nav__right
