@@ -164,6 +164,11 @@ export default {
 						show: true,
 					},
 				},
+				bar: {
+					width: {
+						max: 12,
+					},
+				},
 				bindto: '#bar-chart',
 			})
 			const domains = document.querySelectorAll('path.domain')

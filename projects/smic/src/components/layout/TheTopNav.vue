@@ -5,10 +5,10 @@
 				img.logo-img(src="~@/assets/image/logo-smic.jpg") 
 			.divider
 			label.workspace Workspace' name
-		.top-nav__right
+		.top-nav__right(v-if="$store.getters.getIsLoggedIn === true")
 			img.profile-img(src="~@/assets/image/admin/ic-user.svg") 
 			span.username {{getUser.username}}
-			button.logout-btn(v-if="$store.getters.getIsLoggedIn === true" @click="userLogout") 로그아웃
+			button.logout-btn(@click="userLogout") 로그아웃
 </template>
 
 <script>

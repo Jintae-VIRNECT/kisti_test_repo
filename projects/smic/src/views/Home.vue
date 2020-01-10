@@ -3,10 +3,8 @@
 		h1.admin-body__header 홈
 		process-inprogress-status-graph
 		el-row(:gutter="20")
-			el-col(:span="16")
+			el-col(:span="24")
 				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")
-			el-col(:span="8")
-				progress-card(:progressData='progressData')
 		el-row(:gutter="0")
 			el-col(:span="24")
 				inline-table(:tableData="currentReportedProcess" :tableOption="currentReportedProcessTableOption")
