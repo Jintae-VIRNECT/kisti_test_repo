@@ -32,7 +32,55 @@
 .el-tabs__nav {
   margin: 0px 30px !important;
 }
-// .el-tabs__item {
-//   padding-left: 16px !important;
-//   padding-right: 16px !important;
-// }
+.btn.btn--status {
+  font-size: 12px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: center;
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 3px;
+  &.complete {
+    background-color: #2cbc65;
+  }
+  &.imcomplete {
+    background-color: #f55050;
+  }
+  &.idle {
+    background-color: #aebbcc;
+  }
+  &.progress {
+    background-color: #186ae2;
+  }
+}
+
+.card {
+	&__header {
+		padding: 22px 30px;
+		font-size: 18px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.56;
+		letter-spacing: normal;
+		color: #0d2a58;
+    box-shadow: inset 0 -1px 0 0 #eaedf3;
+    .more {
+      font-size: 12px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.67;
+      letter-spacing: normal;
+      color: #1665d8;
+      text-decoration: underline;
+    }
+	}
+
+	.bar-chart-wrapper {
+		padding: 20px 30px 10px 15px;
+	}
+}

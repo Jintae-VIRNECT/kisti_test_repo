@@ -1,9 +1,9 @@
 <template lang="pug">
 	el-card
-		.process-inprogress-status-graph
-			.process-inprogress-status-graph__header
+		.card
+			.card__header
 				span 시간별 공정 진행 상태 그래프
-			.process-inprogress-status-graph__body
+			.card__body
 				el-tabs(v-model='activeTab')
 					el-tab-pane(
 						v-for="(status, index) in tabs.processStatus" 
@@ -26,8 +26,6 @@
 					:picker-options="{start: '00:00',step: '01:00',end: '23:00',minTime: this.form.startTime == '23:00' ? '22:59' : this.form.startTime}"
 					@change="checkMinMaxTime"
 				)
-
-
 				#bar-chart
 </template>
 <script>
@@ -94,9 +92,6 @@ export default {
 					},
 					json: jsonData,
 					color(color, d) {
-						console.log('qweqweqweqweqeqwewee')
-						console.log('d.x : ', d.x)
-						console.log('startTime : ', startTime)
 						if (d.x >= startTime && d.x <= endTime) return 'rgba(24, 106, 226)'
 						else return 'rgba(24, 106, 226, 0.3)'
 					},
@@ -182,22 +177,3 @@ export default {
 	},
 }
 </script>
-<style lang="scss">
-.process-inprogress-status-graph {
-	&__header {
-		padding: 22px 30px;
-		font-size: 18px;
-		font-weight: 500;
-		font-stretch: normal;
-		font-style: normal;
-		line-height: 1.56;
-		letter-spacing: normal;
-		color: #0d2a58;
-		box-shadow: inset 0 -1px 0 0 #eaedf3;
-	}
-
-	.bar-chart-wrapper {
-		padding: 20px 30px 10px 15px;
-	}
-}
-</style>

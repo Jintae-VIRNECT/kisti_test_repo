@@ -1,9 +1,9 @@
 <template lang="pug">
-	.progress-card__header
-		el-card.box-card(shadow="always")
-			.clearfix(slot="header")
+	el-card
+		.card
+			.card__header
 				span SMIC 스마트툴
-				el-button(style="float: right; padding: 3px 0" type="text") 더보기
+				router-link.more(to="/" style="float: right; padding: 3px 0" type="text") 더보기
 			.card-body
 				p
 					span 평균 진행률

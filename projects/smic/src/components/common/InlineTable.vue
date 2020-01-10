@@ -1,65 +1,65 @@
 <template lang="pug">
 	el-card
-		slot(name="header")
-			span {{tableOption.title}}
-			router-link(v-if="tableOption.moreHref" style="float: right; padding: 3px 0" type="text" :to="tableOption.moreHref") 더보기
-			
-		el-table.inline-table(
-			:data='tableData' 
-			style='width: 100%'
-			:show-header="tableOption.showHeader || true"
-			@cell-click="onClickCell"
-		)
-			el-table-column(
-				v-for="{label, width, prop} in tableOption.colSetting" 
-				:key="prop" 
-				:prop="prop" 
-				:label="label" 
-				:width="width || ''"
-			) 
-				template(slot-scope='scope')
-					div(v-if="prop == 'index'") 
-						span {{scope.$index}}
-					div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
-						button.el-button--mini(
-							size="mini" 
-							:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
-							:plain='tableData[scope.$index][prop] ? false : true'
-						) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
-					div(v-else-if="prop === 'status'")
-						el-button(
-							size="mini" 
-							:type="statusFilterClass(tableData[scope.$index][prop])" 
-							plain
-						) {{ statusFilterName(tableData[scope.$index][prop]) }}
-					div(v-else)
-						span {{ tableData[scope.$index][prop] }}
-				//- template(v-else) 
-				//- 	span {{ tableData[scope.$index][prop] }}
-			el-table-column(v-if="tableOption.colOptions")
-				template(slot='header') 설정
-				template(slot-scope='scope')
-					el-dropdown(trigger="click")
-						span.el-dropdown-link
-							i.el-icon-arrow-down.el-icon--right
-						el-dropdown-menu(slot='dropdown')
-							el-dropdown-item(icon='el-icon-plus') Action 1
-							el-dropdown-item(icon='el-icon-circle-plus') Action 2
-							el-dropdown-item(icon='el-icon-circle-plus-outline') Action 3
-							el-dropdown-item(icon='el-icon-check') Action 4
-							el-dropdown-item(icon='el-icon-circle-check') Action 5
-		el-pagination.inline-table-pagination(
-			:hide-on-single-page='false' 
-			:page-size="pageSize" 
-			:pager-count="tableOption.pagerCount"
-			:total='tableData.length' 
-			layout='prev, jumper, next'
-			:current-page='currentPage'
-			@prev-click='currentPage -= 1'
-			@next-click='currentPage += 1'
-		)
-			template(v-slot)
-				h1 133
+		.card
+			slot(name="header")
+				.card__header
+					span {{tableOption.title}}
+					router-link.more(v-if="tableOption.moreHref" style="float: right; padding: 3px 0" type="text" :to="tableOption.moreHref") 더보기
+		.card__body
+			el-table.inline-table(
+				:data='tableData' 
+				style='width: 100%'
+				:show-header="tableOption.showHeader || true"
+				@cell-click="onClickCell"
+			)
+				el-table-column(
+					v-for="{label, width, prop} in tableOption.colSetting" 
+					:key="prop" 
+					:prop="prop" 
+					:label="label" 
+					:width="width || ''"
+				) 
+					template(slot-scope='scope')
+						div(v-if="prop == 'index'") 
+							span {{scope.$index}}
+						div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
+							button.el-button--mini(
+								size="mini" 
+								:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
+								:plain='tableData[scope.$index][prop] ? false : true'
+							) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
+						div(v-else-if="prop === 'status'")
+							button.btn.btn--status(
+								size="mini" 
+								:class="tableData[scope.$index][prop]" 
+								plain
+							) {{ statusFilterName(tableData[scope.$index][prop]) }}
+						div(v-else)
+							span {{ tableData[scope.$index][prop] }}
+					//- template(v-else) 
+					//- 	span {{ tableData[scope.$index][prop] }}
+				el-table-column(v-if="tableOption.colOptions")
+					template(slot='header') 설정
+					template(slot-scope='scope')
+						el-dropdown(trigger="click")
+							span.el-dropdown-link
+								i.el-icon-arrow-down.el-icon--right
+							el-dropdown-menu(slot='dropdown')
+								el-dropdown-item(icon='el-icon-plus') Action 1
+								el-dropdown-item(icon='el-icon-circle-plus') Action 2
+								el-dropdown-item(icon='el-icon-circle-plus-outline') Action 3
+								el-dropdown-item(icon='el-icon-check') Action 4
+								el-dropdown-item(icon='el-icon-circle-check') Action 5
+			el-pagination.inline-table-pagination(
+				:hide-on-single-page='false' 
+				:page-size="pageSize" 
+				:pager-count="tableOption.pagerCount"
+				:total='tableData.length' 
+				layout='prev, jumper, next'
+				:current-page='currentPage'
+				@prev-click='currentPage -= 1'
+				@next-click='currentPage += 1'
+			)
 </template>
 <script>
 export default {
@@ -82,17 +82,17 @@ export default {
 		}
 	},
 	methods: {
-		statusFilterClass(value) {
-			if (value == 'done') return 'success'
-			else if (value == 'progress') return 'primary'
-			else if (value == 'pending') return 'warning'
-			else if (value == 'inadequate') return 'danger'
-		},
+		// statusFilterClass(value) {
+		// 	if (value == 'complete') return 'success'
+		// 	else if (value == 'progress') return 'primary'
+		// 	else if (value == 'idle') return 'warning'
+		// 	else if (value == 'imcomplete') return 'danger'
+		// },
 		statusFilterName(value) {
-			if (value == 'done') return '완료'
+			if (value == 'complete') return '완료'
 			else if (value == 'progress') return '진행'
-			else if (value == 'pending') return '지연'
-			else if (value == 'inadequate') return '미흡'
+			else if (value == 'idle') return '미진행'
+			else if (value == 'imcomplete') return '미흡'
 		},
 		publishFilterClass(type, value) {
 			let suffix = ''
