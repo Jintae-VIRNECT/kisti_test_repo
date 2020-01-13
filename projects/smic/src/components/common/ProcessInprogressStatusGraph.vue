@@ -4,13 +4,12 @@
 			.card__header
 				span 시간별 공정 진행 상태 그래프
 			.card__body
-				el-tabs(v-model='activeTab')
+				el-tabs(v-model='activeTab' @tab-click="onClickToggleTab" )
 					el-tab-pane(
 						v-for="(status, index) in tabs.processStatus" 
 						:key="index" 
 						:label="status.label" 
 						:name="status.name"
-						@click="onClickToggleTab(status.label)"
 					)
 			.bar-chart-wrapper
 				el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
@@ -28,35 +27,46 @@
 				)
 				#bar-chart
 </template>
+<style lang="scss" scoped>
+#bar-chart {
+	height: 210px;
+}
+</style>
 <script>
 import bb from 'billboard.js'
-import processStatus from '@/models/processStatus'
-const jsonData = [
-	{ time: '0', value: 30 },
-	{ time: '1', value: 200 },
-	{ time: '2', value: 100 },
-	{ time: '3', value: 400 },
-	{ time: '4', value: 150 },
-	{ time: '5', value: 250 },
-	{ time: '6', value: 30 },
-	{ time: '7', value: 200 },
-	{ time: '8', value: 100 },
-	{ time: '9', value: 400 },
-	{ time: '10', value: 150 },
-	{ time: '11', value: 250 },
-	{ time: '12', value: 30 },
-	{ time: '13', value: 200 },
-	{ time: '14', value: 100 },
-	{ time: '15', value: 400 },
-	{ time: '16', value: 150 },
-	{ time: '17', value: 250 },
-	{ time: '18', value: 30 },
-	{ time: '19', value: 200 },
-	{ time: '20', value: 100 },
-	{ time: '21', value: 400 },
-	{ time: '22', value: 150 },
-	{ time: '23', value: 1 },
-]
+import { processStatus } from '@/models'
+
+function getRandomArbitrary() {
+	return Math.random() * (400 - 0) + 0
+}
+function jsonData() {
+	return [
+		{ time: '0', value: () => getRandomArbitrary() },
+		{ time: '1', value: getRandomArbitrary() },
+		{ time: '2', value: getRandomArbitrary() },
+		{ time: '3', value: getRandomArbitrary() },
+		{ time: '4', value: getRandomArbitrary() },
+		{ time: '5', value: getRandomArbitrary() },
+		{ time: '6', value: getRandomArbitrary() },
+		{ time: '7', value: getRandomArbitrary() },
+		{ time: '8', value: getRandomArbitrary() },
+		{ time: '9', value: getRandomArbitrary() },
+		{ time: '10', value: getRandomArbitrary() },
+		{ time: '11', value: getRandomArbitrary() },
+		{ time: '12', value: getRandomArbitrary() },
+		{ time: '13', value: getRandomArbitrary() },
+		{ time: '14', value: getRandomArbitrary() },
+		{ time: '15', value: getRandomArbitrary() },
+		{ time: '16', value: getRandomArbitrary() },
+		{ time: '17', value: getRandomArbitrary() },
+		{ time: '18', value: getRandomArbitrary() },
+		{ time: '19', value: getRandomArbitrary() },
+		{ time: '20', value: getRandomArbitrary() },
+		{ time: '21', value: getRandomArbitrary() },
+		{ time: '22', value: getRandomArbitrary() },
+		{ time: '23', value: getRandomArbitrary() },
+	]
+}
 export default {
 	data() {
 		return {
@@ -67,22 +77,23 @@ export default {
 			form: {
 				data: null,
 				startTime: '00:00',
+				value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
 				endTime: '23:00',
 			},
 			barChart: null,
 		}
 	},
 	mounted() {
-		this.initProcessGraph()
+		this.initProcessGraph(jsonData())
 	},
 	methods: {
 		checkMinMaxTime() {
 			const startTime = 3 // Number(this.form.startTime.split(':')[0])
 			const endTime = Number(this.form.endTime.split(':')[0])
 			if (startTime > endTime) this.form.endTime = this.form.startTime
-			this.initProcessGraph()
+			this.initProcessGraph(jsonData())
 		},
-		initProcessGraph() {
+		initProcessGraph(json) {
 			const startTime = Number(this.form.startTime.split(':')[0])
 			const endTime = Number(this.form.endTime.split(':')[0])
 			this.barChart = bb.generate({
@@ -90,7 +101,7 @@ export default {
 					axes: {
 						time: 'x',
 					},
-					json: jsonData,
+					json,
 					color(color, d) {
 						if (d.x >= startTime && d.x <= endTime) return 'rgba(24, 106, 226)'
 						else return 'rgba(24, 106, 226, 0.3)'
@@ -176,8 +187,9 @@ export default {
 				domains[i].style.stroke = 'none'
 			}
 		},
-		onClickToggleTab(label) {
+		onClickToggleTab({ label }) {
 			this.activeTab = label
+			this.initProcessGraph(jsonData())
 		},
 	},
 }

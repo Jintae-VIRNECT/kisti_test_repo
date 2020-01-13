@@ -5,6 +5,14 @@
 		el-row(:gutter="20")
 			el-col(:span="24")
 				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")
+					template(slot="tabs")
+						el-tabs(v-model='activeTab')
+							el-tab-pane(
+								v-for="(category, index) in tabs.reportedWorkCategory" 
+								:key="index" 
+								:label="category.label" 
+								:name="category.name"
+							)
 		el-row(:gutter="0")
 			el-col(:span="24")
 				inline-table(:tableData="currentReportedProcess" :tableOption="currentReportedProcessTableOption")
@@ -15,6 +23,7 @@
 import ProcessInprogressStatusGraph from '@/components/common/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
+import { processStatus, reportedWorkCategory } from '@/models'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
@@ -84,6 +93,11 @@ export default {
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},
+			tabs: {
+				processStatus,
+				reportedWorkCategory,
+			},
+			activeTab: reportedWorkCategory[0].name,
 		}
 	},
 }

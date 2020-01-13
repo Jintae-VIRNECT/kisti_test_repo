@@ -10,10 +10,13 @@
 						v-for='menu of menus' 
 						:key='menu.path' 
 						:class='{ current: isCurrentMenu(menu.path), active: isActiveMenu(menu.path)}')
-						button.sidebar--item__button(@mouseover="currentMenuPath = menu.path")
-							img(:src='menu.image' :alt='menu.label')
-							span.sidebar--item__label {{ menu.label }}
-						nav.submenu(v-if="(menu.subMenus && menu.path === currentMenuPath)" @mouseleave="resetSubmenu")
+						el-tooltip.item(effect='dark' :content='menu.label' placement='right')
+							router-link(:to="menu.path")
+								button.sidebar--item__button(@mouseover="currentMenuPath = menu.path")
+									img(:src='menu.image' :alt='menu.label')
+								//- span.sidebar--item__label {{ menu.label }}
+
+						//- nav.submenu(v-if="(menu.subMenus && menu.path === currentMenuPath)" @mouseleave="resetSubmenu")
 							.submenu--logo
 								h1.submenu--logo__image
 									img(src='~assets/image/admin/ic-logo-rectangle.svg')

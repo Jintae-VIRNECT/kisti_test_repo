@@ -6,6 +6,7 @@
         slot(name="body")
           .el-form-item
             .el-form-item__content
+              label.el-input--label 아이디
               .el-input
                 slot(name="id")
                   //- input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id" v-validate="'id|2,20'")
@@ -14,11 +15,17 @@
                   //- p {{errorBag}}
           .el-form-item
             .el-form-item__content
-              .el-input
+              label.el-input--label 비밀번호
+              .el-input.el-input--suffix
                 slot(name="password")
                   //- input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password" type="password" name="password" v-validate="'password|2,20'")
-                  input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password" type="password" name="password")
+                  div
+                    input.el-input__inner(v-model="form.password" autocomplete="off" :placeholder="options.placeholder.password" :type="passwordInputType" name="password" @focus="isPasswordView = true" @blur="isPasswordView = false;")
+                    span.el-input__suffix(v-if="form.password || isPasswordView" @click="onChangePasswordView")
+                      span.el-input__suffix-inner
+                        i.el-input__icon.el-icon-view.el-input__clear
                   //- p(v-if="$errors.has('password')") {{ $errors.message('password') }}
+                  
     
         slot(name="foot")
           slot(name="login_util")
@@ -35,7 +42,7 @@
               ) 비밀번호 재설정
           slot(name="submit")
             //- p(v-if="errorBag.password !== true || errorBag.id !== true") 아이디 또는 비밀번호가 일치하지 않습니다.
-            button.el-button.login-form--submit.el-button--primary.el-button--full(type="button" @click="onSubmit")
+            button.el-button.login-form--submit(type="button" @click="onSubmit")
               span 로그인
           .login-join(v-if="options.isSignUp")
             p.login-join--info
@@ -64,11 +71,18 @@ export default {
 				password: '12341234',
 				preserveLogin: false,
 			},
+			isPasswordView: false,
+			passwordInputType: 'password',
 		}
 	},
 	methods: {
 		onSubmit() {
 			this.$emit('onSubmit', this.form)
+		},
+		onChangePasswordView() {
+			this.isPasswordView = !this.isPasswordView
+			if (this.isPasswordView) this.passwordInputType = 'text'
+			else this.passwordInputType = 'password'
 		},
 	},
 }

@@ -1,11 +1,14 @@
 <template lang="pug">
 	el-card
 		.card
-			slot(name="header")
-				.card__header
-					span {{tableOption.title}}
+			.card__header
+				.card__header--left(v-if="tableOption.title")
+					span.title {{tableOption.title}}
 					router-link.more(v-if="tableOption.moreHref" style="float: right; padding: 3px 0" type="text" :to="tableOption.moreHref") 더보기
+				.card__header--right
+					slot(name="header-right")
 		.card__body
+			slot(name="tabs")
 			el-table.inline-table(
 				:data='tableData' 
 				style='width: 100%'
@@ -82,12 +85,6 @@ export default {
 		}
 	},
 	methods: {
-		// statusFilterClass(value) {
-		// 	if (value == 'complete') return 'success'
-		// 	else if (value == 'progress') return 'primary'
-		// 	else if (value == 'idle') return 'warning'
-		// 	else if (value == 'imcomplete') return 'danger'
-		// },
 		statusFilterName(value) {
 			if (value == 'complete') return '완료'
 			else if (value == 'progress') return '진행'
@@ -123,6 +120,23 @@ export default {
 .inline-table-pagination .el-pagination__jump {
 	margin-left: 0px !important;
 }
+
+.card__header {
+	.title {
+		font-size: 16px;
+		line-height: 1.75;
+		color: #0d2a58;
+	}
+	&--left {
+		width: 40%;
+		display: inline-block;
+	}
+	&--right {
+		width: 59%;
+		display: inline-block;
+	}
+}
+
 .inline-table {
 	.el-table__row {
 		cursor: pointer;
@@ -148,6 +162,25 @@ export default {
 			color: #ff216f !important;
 			border: solid 1px #ff216f !important;
 		}
+	}
+	th {
+		font-size: 12px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.5;
+		letter-spacing: normal;
+		color: #6d798b;
+	}
+	tr th:first-child .cell {
+		margin-left: 30px !important;
+	}
+	&.el-table th > .cell,
+	&.el-table .cell {
+		padding: 0px !important;
+	}
+	.el-table__row td:first-child .cell {
+		margin-left: 30px !important;
 	}
 }
 </style>

@@ -378,18 +378,16 @@ $footer_height: 100px;
         &--submit {
             width: 100%;
 			margin-top: 15px;
-			background-image: linear-gradient(to right, #0054f7, #6700ff);
-            height: 46px;
+			border-radius: 2px;
+            background-color: #4d5d74;
+            height: 48px;
             color: #fff;
 			font-weight: 500;
             border: none;
             &:hover, &:active, &:focus {
                 color: #fff;
-                border-color: #fff;
-				background-color: #0054f7;
-			}
-			&:hover {
-				background-image: linear-gradient(to right, #055ade, #5d05de);
+                // border-color: #fff;
+                background-color: #56657b;
 			}
         }
     }
