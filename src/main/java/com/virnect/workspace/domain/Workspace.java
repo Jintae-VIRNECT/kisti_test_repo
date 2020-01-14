@@ -1,9 +1,8 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -44,4 +43,12 @@ public class Workspace extends TimeEntity {
 
     @OneToMany(mappedBy = "workspace")
     List<WorkspaceUser> workspaceUserList = new ArrayList<>();
+
+    @Builder
+    public Workspace(String uuid, String pinNumber, String description, String userId) {
+        this.uuid = uuid;
+        this.pinNumber = pinNumber;
+        this.description = description;
+        this.userId = userId;
+    }
 }

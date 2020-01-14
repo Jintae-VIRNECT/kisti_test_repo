@@ -1,9 +1,6 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -36,5 +33,13 @@ public class WorkspaceUserPermission extends TimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_user")
     private WorkspaceUser workspaceUser;
+
+
+    @Builder
+    public WorkspaceUserPermission(WorkspaceRole workspaceRole, WorkspacePermission workspacePermission, WorkspaceUser workspaceUser) {
+        this.workspaceRole = workspaceRole;
+        this.workspacePermission = workspacePermission;
+        this.workspaceUser = workspaceUser;
+    }
 
 }

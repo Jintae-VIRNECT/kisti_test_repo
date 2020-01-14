@@ -1,9 +1,7 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,10 +28,16 @@ public class WorkspaceUser extends TimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId; // user uuid
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Workspace.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
     @OneToMany(mappedBy = "workspaceUser")
     private List<GroupUser> groupUserList = new ArrayList<>();
+
+    @Builder
+    public WorkspaceUser(String userId, Workspace workspace) {
+        this.userId = userId;
+        this.workspace = workspace;
+    }
 }
