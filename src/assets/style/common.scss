@@ -1,0 +1,11 @@
+@charset "utf-8";
+
+@import "mixin";
+@import "font";
+@import "reset";
+
+@include desktop {
+  body {
+    min-width: $size_tab_max;
+  }
+}

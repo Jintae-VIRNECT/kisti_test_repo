@@ -1,0 +1,115 @@
+
+.header {
+    &-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    // justify-content: space-between;
+    height: $header_height;
+    background-color: $color_header_bg_default;
+    color: $color_text_default;
+    text-align: center;
+    z-index: 2;
+
+    @include background-border(bottom);
+  }
+
+  &-logo {
+    max-width: 150px;
+    height: 30px;
+    margin: 13px 17px;
+  }
+
+  &-snb {
+    height: 100%;
+    &__button {
+      position: relative;
+      display: inline-flex;
+      height: 100%;
+      padding: 0 10px;
+      background-color: transparent;
+      // border-bottom: solid 2px transparent;
+      opacity: .6;
+      &.active {
+        // border-bottom: solid 2px #fff;
+        opacity: 1;
+        &::after {
+          content: '';
+          position: absolute;
+          background-color: #fff;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          z-index: 1;
+        }
+      }
+    }
+    &__image {
+      margin-right: 3px;
+    }
+    &__text {
+      margin: auto;
+    }
+  }
+
+  &-tools {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    padding: 11px 17px;
+    &__icon {
+      height: 100%;
+      margin-left: 8px;
+      background: center no-repeat;
+      @include ir();
+      &.video {
+        background-image: url(~assets/image/call/gnb_ic_video_on.png);
+        &.inactive {
+          background-image: url(~assets/image/call/gnb_ic_video_off.png);
+        }
+      }
+      &.mic {
+        background-image: url(~assets/image/call/gnb_ic_voice_on.png);
+        &.inactive {
+          background-image: url(~assets/image/call/gnb_ic_voice_off.png);
+        }
+      }
+      &.speaker {
+        background-image: url(~assets/image/call/gnb_ic_volum_on.png);
+        &.inactive {
+          background-image: url(~assets/image/call/gnb_ic_volum_off.png);
+        }
+      }
+      &.notice {
+        width: 36px;
+        background-image: url(~assets/image/call/gnb_ic_notifi_nor.png);
+        &.inactive {
+          background-image: url(~assets/image/call/gnb_ic_video_off.png);
+        }
+      }
+    }
+    &__time {
+      display: inline-flex;
+      height: 100%;
+      min-width: 80px;
+      font-size: 15px;
+      border-radius: 17px;
+      margin-left: 16px;
+      padding: 5px 20px;
+      background-color: #3a3b3f;
+      vertical-align: middle;
+    }
+    &__leave {
+      height: 100%;
+      padding: 6px 14px;
+      margin-left: 16px;
+      background: url(~assets/image/call/gnb_ic_callout.png) center no-repeat $color_red;
+      border-radius: 17px;
+      color: transparent;
+    }
+  }
+}

@@ -1,0 +1,15 @@
+.subview-wrapper {
+  position: absolute;
+  top: $header_height;
+  right: 0;
+  bottom: 0;
+  width: $subview_width;
+  z-index: 10;
+  color: $color_text_default;
+  background-color: $color_chat_bg_default;
+  @include background-border(left);
+}
+
+.subvideo {
+  height: 200px;
+}

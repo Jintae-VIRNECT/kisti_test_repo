@@ -1,0 +1,15 @@
+{
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "new_window": "New window opened",
+  "select": "Select",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "save": "Save",
+  "cookie_policy": "VIRNECT uses cookies to enable the VIRNECT service and to improve your experience with us. To learn more, <br class=\"noM\">check out our <a href='/policy/cookie' target='_blank'>cookie policy</a>. By clicking OK or continuing to use our site, you agree that we can place these cookies.",
+  "not_found": {
+    "not_found_page": "<span style=\"font-size:28px;font-weight:bold;\">Oops! </span> Requested page cannot be found.",
+    "require_url": "Please re-confirm the address. ",
+    "go_to_virnect": "Go to VIRNECT Remote"
+  }
+}

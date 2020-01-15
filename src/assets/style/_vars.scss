@@ -1,0 +1,89 @@
+/* Layout */
+$header_height: 56px;
+$recent_call_width: 400px;
+$subview_width: 360px;
+$videos_height: 100px;
+
+$tools_height: 78px;
+
+/* Color */
+
+
+/* Color - background */
+$color_bg_default: #1d1d1f;
+$color_bg_border: #434346;
+$color_bg_shadow: rgba(16, 16, 17, 0.2);
+$color_bg_shadow_border: 1px solid #040810;
+
+$color_header_bg_default: #242427;
+
+$color_chat_bg_default: #26262a;
+$color_chat_header: rgba(#a9a9a9, .2);
+
+/* Color - text */
+$color_text_default: #fff;
+$color_red: #eb001d;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * backup!!! Remote 1.x version
+ */
+/* Color */
+$color_remote: #0064ff;
+$color_remote_text: #ffffff;
+$color_remote_dark: #004ec6;
+$color_virnect: #6700ff;
+$color_virnect_text: #ffffff;
+$color_virnect_dark: #5600ee;
+$color_warning: #d50000;
+$color_division: #dddddd;
+$color_border: #e2e2e2;
+
+/* Color - text */
+$color_dark: #222222;
+$color_dark_blur: rgba(34,34,34,.5);
+$color_text_gray: #545658;
+$color_text_red: #d30a0a;
+
+/* Color - bg */
+// $color_bg_default: #262a31;
+$color_bg_gray: #898f98;
+$color_bg_input: #f4f5f6;
+
+/* Color -status */
+$color_online: #7ed321;
+$color_offline: #cccccc;
+$color_busy: #ef3e33;
+
+$color_white_hover: #eff3fb;
+
+/* Screen Size */
+$size_pc_max: 1920px;
+$size_pc_min: 1025px;
+$size_pc_pad: 25px;
+$size_tab_max: 1024px;
+$size_tab_min: 768px;
+$size_m_max: 767px;
+$size_m_min: 320px;
+$size_m_pad: 20px;
+
+/* Font */
+$font_family: "NotoSansKR";
+$font_family2: "Roboto";
+// $font_family2: "Noto Sans";
+$font_family3: "Noto Sans SC";

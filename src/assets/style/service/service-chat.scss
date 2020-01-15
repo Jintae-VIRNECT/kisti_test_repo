@@ -1,0 +1,238 @@
+.chat {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  >.vue-scrollbar__wrapper {
+    height: calc(100% - 120px);
+  }
+}
+
+.chat-header {
+  position: relative;
+  height: 60px;
+  background-color: $color_chat_header;
+  padding: 10px 22px;
+  &__title {
+    position: relative;
+    font-weight: 500;
+    color: rgba(#fff, .87);
+    width: fit-content;
+    &::after {
+      content: '';
+      position: absolute;
+      right: -27px;
+      width: 20px;
+      height: 20px;
+      background: url(~assets/image/call/chat_icn_moreinfor.png) right no-repeat;
+    }
+  }
+  &__description {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(#fafafa, .87);
+  }
+  &__fold {
+    position: absolute;
+    width: 20px;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: url(~assets/image/call/chat_ic_fullscre.png) center/22px no-repeat;
+
+    @include ir();
+  }
+}
+
+.chat-list {
+  position: relative;
+  height: calc(100% - 60px);
+  width: 100%;
+  padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.chat-item {
+  position: relative;
+  max-width: 80%;
+  margin: 6px 10px;
+
+  &.date {
+    position: relative;
+    color: rgba(#fafafa, .7);
+    font-size: 12px;
+    margin-bottom: 20px;
+    align-self: center;
+    >p {
+      &::after {
+        content: '';
+        width: 50%;
+        right: -50%;
+        height: 1px;
+        background-color: rgba(#fff, .15);
+      }
+    }
+  }
+
+  &.me {
+    .profile, .name {
+      display: none;
+      height: 0;
+    }
+    .chat-item__body {
+      .chatbox {
+        padding: 11px 13px;
+        border-radius: 7px 7px 0 7px;
+        background-color: #d1dffa;
+        line-height: 1.57;
+        word-break: break-word;
+        // white-space: pre-wrap;
+        width: fit-content;
+        margin-left: auto;
+        .text {
+          color: rgba(#000, .78);
+        }
+      }
+    }
+    .time {
+      display: block;
+      margin: 6px 0 14px;
+      color: #efefef;
+      font-size: .8em;
+      opacity: 0.5;
+      text-align: right;
+    }
+  }
+      
+  &.opponent {
+    display: flex;
+    align-self: flex-start;
+
+    .profile {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #fff;
+    }
+    .chat-item__body {
+      margin-left: 10px;
+      .chatbox {
+        padding: 7px 13px;
+        border-radius: 0 7px 7px 7px;
+        background-color: #fff;
+        line-height: 1.57;
+        word-break: break-word;
+        white-space: pre-wrap;
+        width: fit-content;
+        .name {
+          color: rgba(#000, .9);
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .text {
+          color: rgba(#000, .78);
+        }
+      }
+      .time {
+        display: block;
+        margin: 6px 0 14px;
+        color: #efefef;
+        font-size: .8em;
+        opacity: 0.5;
+        text-align: left;
+      }
+    }
+  }
+
+  &.system {
+    align-self: center;
+    max-width: 100%;
+    margin: 7px;
+    border-radius: 4px;
+    
+    .profile, .name {
+      display: none;
+    }
+    .chat-item__body {
+      .text {
+        color: rgba(#fafafa, .9);
+        line-height: 1.57;
+        &.alarm {
+          transform: translateX(14px);
+          &::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: -20px;
+            width: 14px;
+            height: 14px;
+            background: url(~assets/image/call/chat_ic_remote.png) center no-repeat;
+          }
+        }
+        &.people {
+          transform: translateX(14px);
+          &::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: -20px;
+            width: 14px;
+            height: 14px;
+            background: url(~assets/image/call/chat_ic_remote.png) center no-repeat;
+          }
+        }
+      }
+      .time {
+        display: block;
+        margin: 4px 0;
+        font-size: .8em;
+        opacity: 0.5;
+        color: #FFF;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.chat-input {
+  position: absolute;
+  display: flex;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  padding: 15px 18px 15px 12px;
+  background-color: rgba(#4c5259, .3);
+
+  &__upload {
+    width: 30px;
+    height: 100%;
+    background: url(~assets/image/call/chat_ic_attachfile.png) center no-repeat;
+
+    @include ir();
+  }
+
+  &__write {
+    border-radius: 4px;
+    width: 67%;
+    height: 30px;
+    margin-left: 10px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background-color: transparent;
+
+    &::placeholder { color: rgba(#fafafa, 0.42); }
+  }
+
+  &__button {
+    position: absolute;
+    right: 18px;
+    padding: 5px 12px;
+    font-size: 15px;
+    border-radius: 2px;
+    color: #fafafa;
+    background-color: #0f75f5;
+  }
+}

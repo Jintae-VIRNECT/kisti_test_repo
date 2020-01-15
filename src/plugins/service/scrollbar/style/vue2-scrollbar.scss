@@ -1,0 +1,30 @@
+@import "~assets/style/mixin";
+@import "~vue2-scrollbar/dist/style/vue2-scrollbar.css";
+
+.vue-scrollbar {
+    &__scrollbar-vertical,
+    &__scrollbar-horizontal {
+        opacity: 0;
+
+        .scrollbar {
+            background: rgba($color_dark, .5);
+        }
+    }
+
+    &__scrollbar-vertical {
+        
+        width: 8px;
+        margin: 1px;
+
+        .scrollbar {
+            overflow: hidden;
+            width: 8px;
+            border-radius: 4px;
+        }
+    }
+    &__wrapper {
+        margin-right: -10px;
+        padding-right: 10px;
+        background: none !important;
+    }
+}

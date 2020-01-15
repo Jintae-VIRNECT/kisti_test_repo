@@ -1,0 +1,30 @@
+.main-tools {
+  position: relative;
+  display: flex;
+  margin: 32px 0 24px auto;
+
+  &__button {
+    background-color: transparent;
+    border-left: solid 1px #d8d8d8;
+    opacity: .7;
+    font-size: 12px;
+    display: flex;
+    padding: 0 16px;
+
+    &:first-child {
+      border-left: none;
+    }
+    &:hover, &:active {
+      opacity: 1;
+    }
+    &.active {
+      opacity: 1;
+    }
+
+    >img {
+      width: 20px;
+      height: 20px;
+      margin-right: 7px;
+    }
+  }
+}
