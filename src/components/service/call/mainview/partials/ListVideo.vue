@@ -2,9 +2,23 @@
 <article>
 	<div
     class="list-video"
+    :class="{ 'current': isCurrent }"
     :id="'video-view__'+session.nodeId"
     @click="changeMain">
-    <button class="list-video__speaker" @click="mute">음소거</button>
+    <toggle-button
+      v-if="!isMain"
+      customClass="list-video__speaker"
+      description="음소거 on/off"
+      :active="onSpeaker"
+      :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
+      :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
+      :size="30"
+      @action="mute"
+    ></toggle-button>
+    
+    <div v-if="!isMain" class="list-video__status good">
+      <span>불안정</span>
+    </div>
     <div class="list-video__name">
       <span :class="{ 'active': isMain }">{{ session.nickName }}</span>
     </div>
@@ -13,22 +27,34 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+
+import ToggleButton from 'ToggleButton'
 
 export default {
 	name: "ListVideo",
-	components: {},
+	components: {
+    ToggleButton
+  },
 	data() {
-		return {}
+		return {
+      onSpeaker: true
+    }
   },
   props: {
     session: Object
   },
 	computed: {
+    ...mapGetters(['mainSession']),
     isMain() {
       if (this.session.nodeId === 'main') {
         return true
       }
+      return false
+    },
+    isCurrent() {
+      if(this.mainSession.nodeId === this.session.nodeId) 
+        return true
       return false
     }
   },
@@ -36,12 +62,15 @@ export default {
 	methods: {
     ...mapActions(['setMainSession']),
     changeMain() {
-      console.log(this.session)
       this.setMainSession(this.session)
     },
-    mute() {
-      this.$openvidu.disconnect(this.session.nodeId)
-    }
+    mute(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      this.onSpeaker = !this.onSpeaker
+      this.$openvidu.audioOnOff(this.session.nodeId, this.onSpeaker)
+    },
   },
 
 	/* Lifecycles */

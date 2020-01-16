@@ -29,13 +29,20 @@ export default {
         // Subscribe to the Stream to receive it
         // HTML video will be appended to element with 'video-container' id
       
-        addSession(event.stream)
+        let streamObj = addSession(event.stream)
         
         setTimeout(() => {
           let nodeId = event.stream.connection.connectionId
           var subscriber = session.subscribe(event.stream, 'video-view__' + nodeId, {
             insertMode: "PREPEND" //VideoInsertMode.PREPEND
           })
+          // Store.dispatch('addChat', {
+          //   text: streamObj.nickName + '님이 대화에 참여하셨습니다.',
+          //   name: 'people',
+          //   date: new Date,
+          //   chatId: null,
+          //   type: 'system'
+          // })
           subscribers.push(subscriber)
           // var subscriber = session.subscribe(event.stream)
           console.log(subscriber)
@@ -105,6 +112,7 @@ export default {
       }
       
       Store.dispatch('addSession', streamObj)
+      return streamObj
     }
 
     const getToken = (name, callback) => {
@@ -297,13 +305,29 @@ export default {
 
         })
       },
-      mute: () => {
-        // console.log(publisher.stream.audioActive)
-        publisher.publishAudio(false)
+      getState: () => {
+        return {
+          audio: publisher.stream.audioActive,
+          video: publisher.stream.videoActive
+        }
       },
-      unmute: () => {
+      videoOnOff: () => {
         // console.log(publisher.stream.audioActive)
-        publisher.publishAudio(true)
+        publisher.publishVideo(!publisher.stream.videoActive)
+      },
+      micOnOff: () => {
+        publisher.publishAudio(!publisher.stream.audioActive)
+      },
+      audioOnOff: (id, statue) => {
+        console.log(id)
+        console.log(subscribers)
+          let idx = subscribers.findIndex(subscriber => subscriber.id.indexOf(id) > -1)
+          if (idx < 0) {
+            console.log('can not find user')
+            return
+          }
+          let subscribe = subscribers[idx].subscribeToAudio(statue)
+          console.log(subscribe)
       },
       disconnect: (id) => {
         return new Promise((resolve, reject) => {

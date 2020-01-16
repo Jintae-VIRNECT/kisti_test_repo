@@ -4,7 +4,7 @@
   :class="{ 'active': active }"
   @click="$emit('action')">
   <img v-if="onActive" :src="activeSrc"/>
-  <img :src="src"/>
+  <img v-else :src="src"/>
   <span>{{ text }}</span>
 </button>
 </template>

@@ -6,7 +6,14 @@ $videos_height: 100px;
 
 $tools_height: 78px;
 
-/* Color */
+/* Main Color */
+$color_remote: #145fc6;
+$color_remote2: #0f75f5;
+$color_remote3: #6bb4f9;
+$color_remote4: #bfddff;
+$color_remote5:#d7e7f8;
+
+/* Other Color */
 
 
 /* Color - background */
@@ -21,8 +28,16 @@ $color_chat_bg_default: #26262a;
 $color_chat_header: rgba(#a9a9a9, .2);
 
 /* Color - text */
-$color_text_default: #fff;
+$color_text_default: #fafafa;
+$color_text_main: #ffffff;
 $color_red: #eb001d;
+
+$color_state_good: #3ce900;
+$color_state_normal: #4bc6ff;
+$color_state_bad: #eb001d;
+$color_state_good_bg: rgba(#0e2805, .6);
+$color_state_normal_bg: rgba(#1a1e00, .6);
+$color_state_bad_bg: rgba(#2c070c, .72);
 
 
 
@@ -44,7 +59,7 @@ $color_red: #eb001d;
  * backup!!! Remote 1.x version
  */
 /* Color */
-$color_remote: #0064ff;
+// $color_remote: #0064ff;
 $color_remote_text: #ffffff;
 $color_remote_dark: #004ec6;
 $color_virnect: #6700ff;

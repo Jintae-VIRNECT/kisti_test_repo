@@ -1,7 +1,9 @@
 <template>
 <div class="chat">
   <div class="chat-header">
-    <p class="chat-header__title">버넥트 리모트팀 외 5명</p>
+    <p class="chat-header__title">버넥트 리모트팀 외 5명
+      <button class="show-list">목록보기</button>
+    </p>
     <p class="chat-header__description">6명의 작업자</p>
     <button class="chat-header__fold">펼치기</button>
   </div>

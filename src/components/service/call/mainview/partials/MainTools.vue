@@ -12,9 +12,9 @@
     @action="capture"></tool-button>
   <tool-button
     text="녹화"
-    :active="active === 'recording'"
+    :active="isRecording"
     :src="require('assets/image/call/ic_record_off.png')"
-    :onActive="false"
+    :onActive="isRecording"
     :activeSrc="require('assets/image/call/ic_record_ing.png')"
     @action="recording"></tool-button>
 </div>
@@ -29,7 +29,8 @@ export default {
   },
 	data() {
 		return {
-      active: null
+      active: 'pointing',
+      isRecording: false
     }
 	},
 	computed: {
@@ -42,12 +43,37 @@ export default {
     },
     capture() {
       console.log('capture!!!!')
-      this.active = 'capture'
+      // this.active = 'capture'
+
+      this.$eventBus.$emit('capture')
     },
     recording() {
       console.log('recording!!!')
-      this.active = 'recording'
-    }
+      // this.active = 'recording'
+      if (!this.isRecording) {
+        this.record()
+      } else {
+        this.stop()
+      }
+    },
+    record() {
+      this.$openvidu.record()
+        .then(() => {
+          this.isRecording = true
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    stop() {
+      this.$openvidu.stop()
+        .then(() => {
+          this.isRecording = false
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
   },
 
   /* Lifecycles */

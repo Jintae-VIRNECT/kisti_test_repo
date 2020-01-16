@@ -2,14 +2,16 @@ import {
   CALL_MODE_SET,
   CALL_ACTION_SET,
   CALL_SPEAKER,
-  CALL_MIC
+  CALL_MIC,
+  MUTE_ON_OFF
 } from '../mutation-types'
 
 const state = {
   view: 'stream', // stream, sharing, ar
   action: 'pointing', // pointing, drawing
   mic: true,
-  speaker: true
+  speaker: true,
+  unmute: true
 }
 
 const mutations = {
@@ -24,6 +26,9 @@ const mutations = {
   },
   [CALL_MIC](state) {
     state.mic = !state.mic
+  },
+  [MUTE_ON_OFF](state) {
+    state.unmute = !state.unmute
   }
 }
 

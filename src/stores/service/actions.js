@@ -23,4 +23,8 @@ export default {
   changeAction({ commit }, state) {
     commit(types.CALL_ACTION_SET, state);
   },
+
+  muteOnOff({ commit }) {
+    commit(types.MUTE_ON_OFF)
+  }
 }

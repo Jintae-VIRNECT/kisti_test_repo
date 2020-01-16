@@ -17,7 +17,7 @@ const getDefaultState = () => {
       ]
     },
     chat: {
-      chatList: [{        
+      chatList: [{
         text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
         name: 'alarm',
         date: new Date,
@@ -40,6 +40,13 @@ const mutations = {
       return
     }
     state.call.sessions.push(payload)
+    state.chat.chatList.push({
+      text: payload.nickName + '님이 대화에 참여하셨습니다.',
+      name: 'people',
+      date: new Date,
+      chatId: null,
+      type: 'system'
+    })
   },
   UPDATE_SESSION_STREAM(state, payload) {
     const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload.nodeId)
@@ -48,8 +55,16 @@ const mutations = {
   },
   REMOVE_SESSION(state, payload) {
     const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload)
-    if(idx < 0) return
+    if (idx < 0) return
+    let nickName = state.call.sessions[idx].nickName
     state.call.sessions.splice(idx, 1)
+    state.chat.chatList.push({
+      text: nickName + '님이 대화에서 나가셨습니다.',
+      name: 'people',
+      date: new Date,
+      chatId: null,
+      type: 'system'
+    })
   },
   CLEAR_SESSION(state, payload) {
     state.call.sessions = []

@@ -1,5 +1,6 @@
 @import "_vars";
 
+// 구간 분기
 @mixin background-border($direction) {
   &::after {
     position: absolute;
@@ -33,7 +34,63 @@
   }
 }
 
-
+// 연결 상태값 색상 설정
+@mixin status-color($dot: false) {
+  &.good {
+    color: $color_state_good;
+    border-color: $color_state_good;
+    background-color: $color_state_good_bg;
+    @if $dot {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background-color: $color_state_good;
+      }
+    }
+  }
+  &.normal {
+    color: $color_state_normal;
+    border-color: $color_state_normal;
+    background-color: $color_state_normal_bg;
+    @if $dot {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background-color: $color_state_normal;
+      }
+    }
+  }
+  &.bad {
+    color: $color_state_bad;
+    border-color: $color_state_bad;
+    background-color: $color_state_bad_bg;
+    @if $dot {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background-color: $color_state_bad;
+      }
+    }
+  }
+}
 
 @function gradient($start_color, $end_color) {
   @return linear-gradient(to right, $start_color, $end_color);

@@ -6,7 +6,7 @@
     :image="require('assets/image/call/gnb_ic_shareframe.png')"
   ></snb-button>
   <snb-button
-    text="일반 기능"
+    text="협업 보드"
     keyvalue="drawing"
     :image="require('assets/image/call/gnb_ic_creat_basic.png')"
   ></snb-button>

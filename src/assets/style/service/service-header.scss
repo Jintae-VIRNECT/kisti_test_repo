@@ -10,7 +10,7 @@
     // justify-content: space-between;
     height: $header_height;
     background-color: $color_header_bg_default;
-    color: $color_text_default;
+    color: $color_text_main;
     text-align: center;
     z-index: 2;
 
@@ -61,36 +61,8 @@
     right: 0;
     height: 100%;
     padding: 11px 17px;
-    &__icon {
-      height: 100%;
+    >button {
       margin-left: 8px;
-      background: center no-repeat;
-      @include ir();
-      &.video {
-        background-image: url(~assets/image/call/gnb_ic_video_on.png);
-        &.inactive {
-          background-image: url(~assets/image/call/gnb_ic_video_off.png);
-        }
-      }
-      &.mic {
-        background-image: url(~assets/image/call/gnb_ic_voice_on.png);
-        &.inactive {
-          background-image: url(~assets/image/call/gnb_ic_voice_off.png);
-        }
-      }
-      &.speaker {
-        background-image: url(~assets/image/call/gnb_ic_volum_on.png);
-        &.inactive {
-          background-image: url(~assets/image/call/gnb_ic_volum_off.png);
-        }
-      }
-      &.notice {
-        width: 36px;
-        background-image: url(~assets/image/call/gnb_ic_notifi_nor.png);
-        &.inactive {
-          background-image: url(~assets/image/call/gnb_ic_video_off.png);
-        }
-      }
     }
     &__time {
       display: inline-flex;

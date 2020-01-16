@@ -17,19 +17,25 @@
     font-weight: 500;
     color: rgba(#fff, .87);
     width: fit-content;
-    &::after {
-      content: '';
-      position: absolute;
-      right: -27px;
-      width: 20px;
-      height: 20px;
-      background: url(~assets/image/call/chat_icn_moreinfor.png) right no-repeat;
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   right: -27px;
+    //   width: 20px;
+    //   height: 20px;
+    //   background: url(~assets/image/call/chat_icn_moreinfor.png) right no-repeat;
+    // }
+    .show-list {
+      margin-left: 5px;
+      background: url(~assets/image/call/chat_icn_moreinfor.png) center/20px no-repeat;
+
+      @include ir();
     }
   }
   &__description {
     font-size: 12px;
     font-weight: 500;
-    color: rgba(#fafafa, .87);
+    color: rgba($color_text_default, .87);
   }
   &__fold {
     position: absolute;
@@ -61,17 +67,30 @@
 
   &.date {
     position: relative;
-    color: rgba(#fafafa, .7);
+    color: rgba($color_text_default, .7);
     font-size: 12px;
     margin-bottom: 20px;
     align-self: center;
     >p {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        width: 100px;
+        height: 1px;
+        margin-right: 10px;
+        background-color: rgba(255, 255, 255, 0.15);
+      }
       &::after {
         content: '';
-        width: 50%;
-        right: -50%;
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        width: 100px;
         height: 1px;
-        background-color: rgba(#fff, .15);
+        margin-left: 10px;
+        background-color: rgba(255, 255, 255, 0.15);
       }
     }
   }
@@ -157,7 +176,7 @@
     }
     .chat-item__body {
       .text {
-        color: rgba(#fafafa, .9);
+        color: rgba($color_text_default, .9);
         line-height: 1.57;
         &.alarm {
           transform: translateX(14px);
@@ -180,7 +199,7 @@
             left: -20px;
             width: 14px;
             height: 14px;
-            background: url(~assets/image/call/chat_ic_remote.png) center no-repeat;
+            background: url(~assets/image/call/chat_ic_ppl.png) center no-repeat;
           }
         }
       }
@@ -223,7 +242,7 @@
     color: #fff;
     background-color: transparent;
 
-    &::placeholder { color: rgba(#fafafa, 0.42); }
+    &::placeholder { color: rgba($color_text_default, 0.42); }
   }
 
   &__button {
@@ -232,7 +251,7 @@
     padding: 5px 12px;
     font-size: 15px;
     border-radius: 2px;
-    color: #fafafa;
-    background-color: #0f75f5;
+    color: $color_text_default;
+    background-color: $color_remote2;
   }
 }
