@@ -57,7 +57,7 @@ import InlineTable from '@/components/common/InlineTable.vue'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
-import currentReportedProcess from '@/data/currentReportedProcess'
+import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 
 const currentUploadedContentTableOption = {
 	rowIdName: 'contentId',
@@ -107,7 +107,7 @@ export default {
 				progressByDayLastDate: '2020.01.13',
 			},
 			currentUploadedContent,
-			currentReportedProcess,
+			currentReportedDetailProcess,
 			currentUploadedContentTableOption,
 		}
 	},

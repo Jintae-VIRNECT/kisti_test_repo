@@ -6,6 +6,8 @@
 			:options="options" 
 			@onSubmit="onSubmit"
 		)
+			template(slot="id-alert")
+				h1 asdsad
 			template(slot="password-alert")
 				h1 asdsad
 </template>
@@ -30,9 +32,14 @@ export default {
 	},
 	methods: {
 		onSubmit(form) {
-			this.$store.dispatch('USER_LOGIN', { user: form }).then(() => {
-				this.$router.push({ path: '/' })
-			})
+			this.$store
+				.dispatch('USER_LOGIN', { user: form })
+				.then(() => {
+					this.$router.push({ path: '/' })
+				})
+				.catch(e => {
+					console.log('e : ', e)
+				})
 		},
 	},
 }

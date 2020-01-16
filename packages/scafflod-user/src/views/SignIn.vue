@@ -13,6 +13,7 @@
                   input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id")
                   //- p(v-if="$errors.has('id')") {{ $errors.message('id') }}
                   //- p {{errorBag}}
+                  slot(name="id-alert")
           .el-form-item
             .el-form-item__content
               label.el-input--label 비밀번호
@@ -24,6 +25,7 @@
                     span.el-input__suffix(v-if="form.password || isPasswordView" @click="onChangePasswordView")
                       span.el-input__suffix-inner
                         i.el-input__icon.el-icon-view.el-input__clear
+                    slot(name="password-alert")
                   //- p(v-if="$errors.has('password')") {{ $errors.message('password') }}
                   
     

@@ -9,7 +9,7 @@
 $ yarn
 
 # 로컬에서 개발모드로 실행
-$ yarn workspace smic dev
+$ yarn workspace smic local
 
 # 빌드 
 $ yarn worskapce smic build

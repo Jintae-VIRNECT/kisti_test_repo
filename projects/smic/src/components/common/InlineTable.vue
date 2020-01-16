@@ -1,22 +1,19 @@
 <template lang="pug">
-	el-card
-		.card
-			.card__header
-				.card__header--left(v-if="tableOption.title")
-					span.title {{tableOption.title}}
-					router-link.more(v-if="tableOption.moreHref" style="float: right; padding: 3px 0" type="text" :to="tableOption.moreHref") 더보기
-				.card__header--right
-					slot(name="header-right")
+	.card
+		.card__header(v-if="setHeader")
+			.card__header--left
+				slot(name="header-left")
+			.card__header--right
+				slot(name="header-right")
 		.card__body
 			slot(name="tabs")
 			el-table.inline-table(
 				:data='tableData' 
 				style='width: 100%'
-				:show-header="tableOption.showHeader || true"
 				@cell-click="onClickCell"
 			)
 				el-table-column(
-					v-for="{label, width, prop} in tableOption.colSetting" 
+					v-for="{label, width, prop} in colSetting" 
 					:key="prop" 
 					:prop="prop" 
 					:label="label" 
@@ -24,56 +21,81 @@
 				) 
 					template(slot-scope='scope')
 						div(v-if="prop == 'index'") 
-							span {{scope.$index}}
-						div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
-							button.el-button--mini(
-								size="mini" 
-								:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
-								:plain='tableData[scope.$index][prop] ? false : true'
-							) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
+							span {{scope.$index + 1}}
+						//- div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
+						//- 	button.el-button--mini(
+						//- 		size="mini" 
+						//- 		:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
+						//- 		:plain='tableData[scope.$index][prop] ? false : true'
+						//- 	) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
+						div(v-if="prop === 'contentPublish'")
+							span {{publishBoolean(tableData[scope.$index][prop])}}
+						//- 이슈 타입
+						
+						.content-name(v-else-if="dataType === 'contents' && prop === 'name'")
+							img.prefix-img(src="~@/assets/image/ic-content.svg")
+							span {{tableData[scope.$index][prop]}}
+						div(v-else-if="prop === 'type'")
+							span.issue-type {{tableData[scope.$index][prop]}}
+						//- auths String.substring(0,12) + '...'
+						div(v-else-if="prop === 'auths'")
+							span {{tableData[scope.$index][prop] | limitAuthsLength}}
+						//- schedule = (startAt ~ endAt)
+						.total-done(v-else-if="prop === 'schedule'")
+							span {{tableData[scope.$index]['startAt']}} 
+							span &nbsp;~ {{tableData[scope.$index]['endAt']}}
+						//- 체결 수
+						.total-done(v-else-if="prop === 'totalDone'")
+							span.count {{tableData[scope.$index]['count']}} 
+							span &nbsp;/ {{tableData[scope.$index]['total']}}
 						div(v-else-if="prop === 'status'")
 							button.btn.btn--status(
 								size="mini" 
 								:class="tableData[scope.$index][prop]" 
 								plain
 							) {{ statusFilterName(tableData[scope.$index][prop]) }}
+						.auth-wrapper(v-else-if="prop === 'auth'")
+							.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+							span {{tableData[scope.$index][prop]}}
 						div(v-else)
 							span {{ tableData[scope.$index][prop] }}
 					//- template(v-else) 
 					//- 	span {{ tableData[scope.$index][prop] }}
-				el-table-column(v-if="tableOption.colOptions")
-					template(slot='header') 설정
+				el-table-column(v-if="moreCol" :width="50")
 					template(slot-scope='scope')
 						el-dropdown(trigger="click")
 							span.el-dropdown-link
-								i.el-icon-arrow-down.el-icon--right
+								i.el-icon-more.el-icon--right
 							el-dropdown-menu(slot='dropdown')
 								el-dropdown-item(icon='el-icon-plus') Action 1
 								el-dropdown-item(icon='el-icon-circle-plus') Action 2
 								el-dropdown-item(icon='el-icon-circle-plus-outline') Action 3
 								el-dropdown-item(icon='el-icon-check') Action 4
 								el-dropdown-item(icon='el-icon-circle-check') Action 5
-			el-pagination.inline-table-pagination(
-				:hide-on-single-page='false' 
-				:page-size="pageSize" 
-				:pager-count="tableOption.pagerCount"
-				:total='tableData.length' 
-				layout='prev, jumper, next'
-				:current-page='currentPage'
-				@prev-click='currentPage -= 1'
-				@next-click='currentPage += 1'
-			)
+		el-pagination.inline-table-pagination(
+			v-if='setPagination'
+			:hide-on-single-page='false' 
+			:page-size="pageSize" 
+			:pager-count="tableOption ? tableOption.pagerCount : 5"
+			:total='tableData.length' 
+			layout='prev, jumper, next'
+			:current-page='currentPage'
+			@prev-click='currentPage -= 1'
+			@next-click='currentPage += 1'
+		)
 </template>
 <script>
 export default {
 	props: {
 		tableData: Array,
+		setPagination: Boolean,
+		dataType: String,
+		setHeader: Boolean,
+		colSetting: Array,
+		moreCol: Boolean,
 		tableOption: {
 			title: String,
-			moreHref: String,
-			colSetting: Array,
-			colOptions: Boolean,
-			showHeader: Boolean,
+			// colSetting: Array,
 			pagerCount: 5,
 		},
 	},
@@ -81,7 +103,7 @@ export default {
 		return {
 			dataKeys: null,
 			currentPage: 1,
-			pageSize: this.$props.tableOption.pageSize || 5,
+			pageSize: this.$props.tableOption ? this.$props.tableOption.pageSize : 5,
 		}
 	},
 	methods: {
@@ -96,6 +118,10 @@ export default {
 			if (value === false) suffix = 'plain'
 
 			return `${type}-btn ${suffix}`
+		},
+		publishBoolean(value) {
+			if (value === true) return 'ON'
+			else return 'OFF'
 		},
 		publishFilterName(type, value) {
 			let className, suffix
@@ -113,6 +139,21 @@ export default {
 			this.$router.push(`${subdomain}/${row[rowIdName]}`)
 		},
 	},
+	filters: {
+		limitAuthsLength(array) {
+			let answer = ''
+			let sumOfStrings = 0
+			const divider = ', '
+			for (let i = 0; i < array.length; i++) {
+				answer += array[i]
+				sumOfStrings += array[i].length + divider.length
+				if (sumOfStrings > 13) return answer + '...'
+				if (array.length - 1 === i) break
+				answer += divider
+			}
+			return answer
+		},
+	},
 }
 </script>
 
@@ -120,12 +161,27 @@ export default {
 .inline-table-pagination .el-pagination__jump {
 	margin-left: 0px !important;
 }
-
+.card {
+	border-radius: 4px;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+	border: solid 1px #e6e9ee;
+	background-color: #ffffff;
+	margin-bottom: 30px;
+}
 .card__header {
 	.title {
 		font-size: 16px;
 		line-height: 1.75;
+		vertical-align: middle;
 		color: #0d2a58;
+	}
+	.sub-title {
+		margin-left: 16px;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 2;
+		vertical-align: middle;
+		color: #455163;
 	}
 	&--left {
 		width: 40%;
@@ -135,32 +191,69 @@ export default {
 		width: 59%;
 		display: inline-block;
 	}
+	.more-link {
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.67;
+		color: #1665d8;
+		text-decoration: underline !important;
+	}
+
+	.value {
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.56;
+		color: #0065e0;
+		vertical-align: middle;
+	}
 }
 
 .inline-table {
+	.el-table__body td {
+		height: 64px !important;
+	}
 	.el-table__row {
 		cursor: pointer;
 	}
-	.contentPublish-btn {
-		background-color: #3f88c6 !important;
-		color: white;
-		border-radius: 15px;
-		width: 80px;
-		&.plain {
-			background-color: white !important;
-			color: #3f88c6 !important;
-			border: solid 1px #3f88c6 !important;
+	.auth-wrapper {
+		.auth-img {
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			display: inline-block;
+			margin-right: 8px;
+			&,
+			span {
+				vertical-align: middle;
+			}
 		}
 	}
-	.processRegister-btn {
-		background-color: #ff216f !important;
-		color: white;
-		border-radius: 15px;
-		width: 80px;
-		&.plain {
-			background-color: white !important;
-			color: #ff216f !important;
-			border: solid 1px #ff216f !important;
+	.total-done .count {
+		color: #186ae2;
+	}
+	.issue-type {
+		padding: 4px 8px;
+		border-radius: 4px;
+		border: solid 1px #dc2a2a;
+		font-size: 12px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.5;
+		letter-spacing: normal;
+		text-align: center;
+		color: #dc2a2a;
+	}
+	.content-name {
+		img {
+			margin-right: 5px;
+		}
+		span,
+		img {
+			vertical-align: middle;
 		}
 	}
 	th {

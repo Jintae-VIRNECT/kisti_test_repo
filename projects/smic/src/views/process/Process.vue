@@ -2,11 +2,8 @@
   div
     page-header(submenu='공정')
     page-tab-nav
-    div
-      router-link(to='/process/new')
-        el-button(type='primary' tag="el-button") 공정 등록
-      router-link(to='/process')
-        el-button(type='primary' tag="el-button") 전체 목록
+      template(slot='page-nav--right')
+        router-link(to="/contents/new") 신규 공정 등록
     router-view
 </template>
 

@@ -1,9 +1,42 @@
 <template lang="pug">
 	div
+		.page-nav
+			.search-wrapper.text-right
+				el-input.tool.search(placeholder='이름 또는 이메일 검색' v-model='search' )
+					el-button(slot='append' icon='el-icon-search')
+				span 필터 : 
+				el-dropdown.tool.filter
+					el-button(type='primary')
+						| 전체
+						i.el-icon-arrow-down.el-icon--right
+					el-dropdown-menu(slot='dropdown')
+						el-dropdown-item Action 1
+						el-dropdown-item Action 2
+						el-dropdown-item Action 3
+						el-dropdown-item Action 4
+						el-dropdown-item Action 5
+				span 정렬 : 
+				el-dropdown.tool.order
+					el-button(type='primary')
+						| ㄱ-ㅎ순
+						i.el-icon-arrow-down.el-icon--right
+					el-dropdown-menu(slot='dropdown')
+						el-dropdown-item Action 1
+						el-dropdown-item Action 2
+						el-dropdown-item Action 3
+						el-dropdown-item Action 4
+						el-dropdown-item Action 5
 		inline-table(
-			:tableData="currentReportedProcess" 
-			:tableOption="currentReportedProcessTableOption"
-		)
+			:setHeader='true'
+			:tableData="currentReportedDetailProcess" 
+			:colSetting="cols"
+			:moreCol="true")
+			template(slot="header-left")
+				span.title 공정 목록
+			template(slot="header-right")
+				.text-right
+					span.sub-title 등록된 공정 수 
+					span.value 102
 </template>
 
 <script>
@@ -11,48 +44,10 @@
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 
-/// data
-import currentReportedProcess from '@/data/currentReportedProcess'
+import { cols } from '@/models/contents'
 
-const currentReportedProcessTableOption = {
-	rowIdName: 'processId',
-	subdomain: '/process',
-	colOptions: true,
-	colSetting: [
-		{
-			prop: 'index',
-			label: '순번',
-		},
-		{
-			prop: 'processId',
-			label: '공정 ID',
-		},
-		{
-			prop: 'processName',
-			label: '공정 이름',
-		},
-		{
-			prop: 'reportedAt',
-			label: '보고 날짜',
-		},
-		{
-			prop: 'status',
-			label: '상태',
-		},
-		{
-			prop: 'auth',
-			label: '보고자',
-		},
-		{
-			prop: 'processPercent',
-			label: '진행률',
-		},
-		{
-			prop: 'workerNum',
-			label: '작업수',
-		},
-	],
-}
+/// data
+import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 
 export default {
 	components: { ProgressCard, InlineTable },
@@ -64,9 +59,14 @@ export default {
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},
-			currentReportedProcess,
-			currentReportedProcessTableOption,
+			currentReportedDetailProcess,
+			search: null,
 		}
+	},
+	computed: {
+		cols() {
+			return cols
+		},
 	},
 }
 </script>

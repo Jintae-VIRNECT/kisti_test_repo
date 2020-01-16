@@ -1,6 +1,5 @@
 export default {
 	tableOption: {
-		showHeader: false,
 		colSetting: [
 			{
 				prop: 'name',

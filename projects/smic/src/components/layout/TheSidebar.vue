@@ -3,16 +3,22 @@
 		.sidebar-inner(@click.stop='')
 			h1.sidebar--logo
 				a.popover--button(href='/')
-					img(src='~@/assets/image/logo-smart-factory.png' alt='Remote')
+					img(src='~@/assets/image/lnb-logo-smart-factory.png' alt='Remote')
 			.sidebar--tools
 				ul.sidebar--mode
+					//- li.sidebar--item(
+					//- 	v-for='menu of menus' 
+					//- 	:key='menu.path' 
+					//- 	:class='{ current: isCurrentMenu, active: isActiveMenu(menu.path)}'
+					//- )
 					li.sidebar--item(
 						v-for='menu of menus' 
 						:key='menu.path' 
-						:class='{ current: isCurrentMenu(menu.path), active: isActiveMenu(menu.path)}')
+						:class='{ current: isCurrentMenu(menu.path), active: isActiveMenu(menu)}'
+					)
 						el-tooltip.item(effect='dark' :content='menu.label' placement='right')
 							router-link(:to="menu.path")
-								button.sidebar--item__button(@mouseover="currentMenuPath = menu.path")
+								button.sidebar--item__button(@mouseover="currentMenuPath = menu.path" @mouseout="currentMenuPath = null")
 									img(:src='menu.image' :alt='menu.label')
 								//- span.sidebar--item__label {{ menu.label }}
 
@@ -60,8 +66,9 @@ export default {
 		isCurrentMenu(path) {
 			return path == this.currentMenuPath
 		},
-		isActiveMenu(path) {
-			return path == this.activeMenuPath
+		isActiveMenu(menu) {
+			if (menu.pathAlias) return menu.pathAlias.includes(this.activeMenuPath)
+			return menu.path == this.activeMenuPath
 		},
 		isActiveSubMenu(path) {
 			return path == this.currentSubMenuPath
@@ -79,4 +86,8 @@ export default {
 	height: 44px;
 	background-image: linear-gradient(332deg, #225bac 90%, #276ac7 6%);
 }
+// .sidebar--item:hover {
+// 	background-color: #424955;
+// 	opacity: 1;
+// }
 </style>

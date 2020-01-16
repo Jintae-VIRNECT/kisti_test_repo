@@ -4,18 +4,37 @@
 		process-inprogress-status-graph
 		el-row(:gutter="20")
 			el-col(:span="24")
-				inline-table(:tableData="currentUploadedContent" :tableOption="currentUploadedContentTableOption")
-					template(slot="tabs")
-						el-tabs(v-model='activeTab')
-							el-tab-pane(
-								v-for="(category, index) in tabs.reportedWorkCategory" 
-								:key="index" 
-								:label="category.label" 
-								:name="category.name"
-							)
+				inline-table(
+					:setHeader='true'
+					dataType="contents"
+					:tableData="currentUploadedContent" 
+					:colSetting="tableColSettings.contents"
+					:tableOption="currentUploadedContentTableOption"
+					:moreCol="true")
+					template(slot="header-left")
+						span.title 최근 업로드된 콘텐츠
+					template(slot="header-right")
+						.text-right
+							router-link.more-link(type="text" to="/contents") 더보기
 		el-row(:gutter="0")
 			el-col(:span="24")
-				inline-table(:tableData="currentReportedProcess" :tableOption="currentReportedProcessTableOption")
+				inline-table(
+					:setHeader='true'
+					:tableData="currentReportedDetailProcess" 
+					:colSetting="tableColSettings[activeTab]")
+					template(slot="header-left")
+						span.title 최근 보고 정보
+					template(slot="header-right")
+						.text-right
+							router-link.more-link(type="text" :to="currentUploadedContentTableOption.subdomain") 더보기
+					template(slot="tabs")
+						el-tabs(v-model='activeTab' @tab-click="setInlineTableByTabs")
+							el-tab-pane(
+								v-for="(category, index) in currentReportedInformationTabs" 
+								:key="index" 
+								:label="category.label" 
+								:name="category.name")
+
 </template>
 
 <script>
@@ -23,60 +42,15 @@
 import ProcessInprogressStatusGraph from '@/components/common/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
-import { processStatus, reportedWorkCategory } from '@/models'
+import { currentReportedInformationTabs, tableColSettings } from '@/models/home'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
-import currentReportedProcess from '@/data/currentReportedProcess'
+import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 
 const currentUploadedContentTableOption = {
-	title: '최근 업로드된 콘텐츠',
-	moreHref: '/contents',
 	rowIdName: 'contentId',
 	subdomain: '/contents',
-	colSetting: [
-		{
-			prop: 'contentId',
-			label: '콘텐츠 ID',
-		},
-		{
-			prop: 'contentName',
-			label: '콘텐츠 이름',
-		},
-		{
-			prop: 'volume',
-			label: '크기',
-		},
-		{
-			prop: 'uploadedAt',
-			label: '업로드일',
-		},
-		{
-			prop: 'auth',
-			label: '업로드 멤버',
-		},
-	],
-}
-
-const currentReportedProcessTableOption = {
-	title: '최근 보고된 공정   | 2020.03.20 14:30',
-	moreHref: '/progress',
-	colOptions: true,
-	colSetting: [
-		{
-			prop: 'progressId',
-			label: '공정 ID',
-		},
-		{ prop: 'progressName', label: '공정 이름' },
-		{ prop: 'reportedAt', label: '보고 시간' },
-		{
-			prop: 'status',
-			label: '상태',
-		},
-		{ prop: 'auth', label: '진행률' },
-		{ prop: 'progressPercent', label: '작업 수' },
-		{ prop: 'workerNum', label: '작업자' },
-	],
 }
 
 export default {
@@ -85,20 +59,27 @@ export default {
 		return {
 			value1: '',
 			currentUploadedContent,
-			currentReportedProcess,
+			currentReportedDetailProcess,
 			currentUploadedContentTableOption,
-			currentReportedProcessTableOption,
 			progressData: {
 				overallProgressPercent: 90,
 				progressByDay: [5, 10, 20, 30, 40, 66, 20],
 				progressByDayLastDate: '2020.01.13',
 			},
-			tabs: {
-				processStatus,
-				reportedWorkCategory,
+			currentReportedInformationTabs,
+			activeTab: currentReportedInformationTabs[0].name,
+			tableColSettings,
+			inlineTable: {
+				dataSet: currentReportedDetailProcess,
 			},
-			activeTab: reportedWorkCategory[0].name,
 		}
+	},
+	methods: {
+		setInlineTableByTabs(e) {
+			console.log('e : ', e)
+			this.currentUploadedContentTableOption.subdomain =
+				currentReportedInformationTabs[e.index].link
+		},
 	},
 }
 </script>

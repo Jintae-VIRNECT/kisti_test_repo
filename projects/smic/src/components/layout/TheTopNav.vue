@@ -2,7 +2,7 @@
 	.top-nav
 		.top-nav__left
 			router-link(to="/")
-				img.logo-img(src="~@/assets/image/logo-smic.jpg") 
+				img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
 			.divider
 			label.workspace Workspace' name
 		.top-nav__right(v-if="$store.getters.getIsLoggedIn === true")

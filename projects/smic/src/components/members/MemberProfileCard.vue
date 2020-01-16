@@ -19,13 +19,17 @@
         .stats.text-right
           span.done {{profileData.done}}&nbsp;
           span /{{profileData.all}}
+        router-link.direct-link(to="/process") 바로가기
         .profile-card--bottom-tool
           router-link(to="/process") 
-            img(src="~@/assets/image/ic-process.svg")
-            span 공정 관리
+            img(src="~@/assets/image/ic-process-dark.svg")
+            span 공정
+          router-link(to="/issue") 
+            img(src="~@/assets/image/ic-issue-dark.svg")
+            span 이슈
           router-link(to="/contents") 
-            img(src="~@/assets/image/ic-contents.svg")
-            span 콘텐츠 목록
+            img(src="~@/assets/image/ic-content-dark.svg")
+            span 콘텐츠
 
 </template>
 <style lang="scss">
@@ -87,8 +91,14 @@
 	}
 	.stats {
 		margin-top: 4px;
+		margin-bottom: 12px;
 	}
-
+	.direct-link {
+		margin-bottom: 10px;
+		font-size: 12px;
+		font-weight: 500;
+		color: #6d798b;
+	}
 	.label {
 		font-size: 12px;
 		color: #6d798b;
@@ -107,6 +117,12 @@
 			color: #186ae2;
 		}
 		&-tool {
+			a {
+				padding: 2px 8px 2px 6px;
+				border-radius: 4px;
+				background-color: #f2f5f9;
+				margin-right: 10px;
+			}
 			img,
 			span {
 				vertical-align: middle;

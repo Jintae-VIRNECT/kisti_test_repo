@@ -1,5 +1,4 @@
 import users from '@/data/users'
-import Vue from 'vue'
 
 export default {
 	state: {
@@ -61,17 +60,7 @@ export default {
 				if (checkUser) {
 					context.commit('USER_LOGIN', checkUser)
 					resolve(checkUser)
-				} else
-					reject(
-						Vue.swal.fire({
-							type: 'error',
-							title: '올바른 정보가 아닙니다. 확인 후 재시도 해주세요.',
-							toast: true,
-							position: 'center-center',
-							showConfirmButton: false,
-							timer: 3000,
-						}),
-					)
+				} else return reject(false)
 			})
 		},
 		USER_LOGOUT(context) {

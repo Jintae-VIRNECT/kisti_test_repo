@@ -1,31 +1,35 @@
 <template lang="pug">
-	el-card
-		.card
-			.card__header
-				span 시간별 공정 진행 상태 그래프
-			.card__body
-				el-tabs(v-model='activeTab' @tab-click="onClickToggleTab" )
-					el-tab-pane(
-						v-for="(status, index) in tabs.processStatus" 
-						:key="index" 
-						:label="status.label" 
-						:name="status.name"
-					)
-			.bar-chart-wrapper
-				el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
-				el-time-select(
-					:placeholder='form.startTime'
-					v-model='form.startTime' 
-					:picker-options="{ start: '00:00', step: '01:00', end: '23:00' }"
-					@change="checkMinMaxTime"
+	.card
+		.card__header
+			.card__header--left
+				span.title 공정 진행 그래프
+				span.sub-title 시간별 세부공정 진행 상태별 보고 수
+			.card__header--right
+				.text-right
+					router-link.more-link(type="text" to="/process") 더보기
+		.card__body
+			el-tabs(v-model='activeTab' @tab-click="onClickToggleTab" )
+				el-tab-pane(
+					v-for="(status, index) in tabs.processStatus" 
+					:key="index" 
+					:label="status.label" 
+					:name="status.name"
 				)
-				el-time-select(
-					:placeholder='form.endTime' 
-					v-model='form.endTime' 
-					:picker-options="{start: '00:00',step: '01:00',end: '23:00',minTime: this.form.startTime == '23:00' ? '22:59' : this.form.startTime}"
-					@change="checkMinMaxTime"
-				)
-				#bar-chart
+		.bar-chart-wrapper
+			el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
+			el-time-select(
+				:placeholder='form.startTime'
+				v-model='form.startTime' 
+				:picker-options="{ start: '00:00', step: '01:00', end: '23:00' }"
+				@change="checkMinMaxTime"
+			)
+			el-time-select(
+				:placeholder='form.endTime' 
+				v-model='form.endTime' 
+				:picker-options="{start: '00:00',step: '01:00',end: '23:00',minTime: this.form.startTime == '23:00' ? '22:59' : this.form.startTime}"
+				@change="checkMinMaxTime"
+			)
+			#bar-chart
 </template>
 <style lang="scss" scoped>
 #bar-chart {
@@ -34,7 +38,13 @@
 </style>
 <script>
 import bb from 'billboard.js'
-import { processStatus } from '@/models'
+
+const processStatus = [
+	{ label: '진행', name: 'progress' },
+	{ label: '완료', name: 'complete' },
+	{ label: '미흡', name: 'imcomplete' },
+	{ label: '미진행', name: 'idle' },
+]
 
 function getRandomArbitrary() {
 	return Math.random() * (400 - 0) + 0

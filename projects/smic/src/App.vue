@@ -10,7 +10,7 @@
 			.top-nav.border
 				.top-nav__center
 					router-link(to="/")
-						img.logo-img(src="~@/assets/image/logo-smic.jpg") 
+						img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
 					.divider
 					label.workspace Workstation
 			router-view
@@ -36,13 +36,14 @@ export default {
 				},
 				{
 					path: '/members',
+					pathAlias: ['/members', '/contents', '/process'],
 					label: '워크스페이스 관리',
 					image: require('@/assets/image/ic-workspace-management.svg'),
 				},
 				{
 					path: '/issue',
-					label: '콘텐츠 관리',
-					image: require('@/assets/image/ic-workspace-management.svg'),
+					label: '이슈 관리',
+					image: require('@/assets/image/ic-issue.svg'),
 				},
 			],
 		}
