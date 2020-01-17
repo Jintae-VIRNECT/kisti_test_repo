@@ -1,13 +1,10 @@
 package com.virnect.workspace.dto;
 
-import com.virnect.workspace.domain.Group;
-import com.virnect.workspace.domain.WorkspaceUser;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -18,7 +15,8 @@ import java.util.List;
  */
 
 public class WorkspaceDTO {
-    @Data
+    @Getter
+    @Setter
     public static class WorkspaceInfo {
         private Long id;
         private String pinNumber;
@@ -27,8 +25,22 @@ public class WorkspaceDTO {
         private String description;
         private LocalDateTime createdDate;
         private LocalDateTime updatedDate;
+
+        @Override
+        public String toString() {
+            return "WorkspaceInfo{" +
+                    "id=" + id +
+                    ", pinNumber='" + pinNumber + '\'' +
+                    ", userId='" + userId + '\'' +
+                    ", description='" + description + '\'' +
+                    ", createdDate=" + createdDate +
+                    ", updatedDate=" + updatedDate +
+                    '}';
+        }
     }
-    @Data
+
+    @Getter
+    @Setter
     public static class UserWorkspaceInfo {
         private String uuid;
         private String pinNumber;
@@ -36,6 +48,18 @@ public class WorkspaceDTO {
         private LocalDateTime createdDate;
         private LocalDateTime updatedDate;
         private String role;
+
+        @Override
+        public String toString() {
+            return "UserWorkspaceInfo{" +
+                    "uuid='" + uuid + '\'' +
+                    ", pinNumber='" + pinNumber + '\'' +
+                    ", description='" + description + '\'' +
+                    ", createdDate=" + createdDate +
+                    ", updatedDate=" + updatedDate +
+                    ", role='" + role + '\'' +
+                    '}';
+        }
     }
 
 }

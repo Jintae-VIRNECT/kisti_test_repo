@@ -11,5 +11,4 @@ import com.virnect.workspace.domain.WorkspaceRole;
  */
 public interface WorkspaceUserPermissionRepositoryCustom {
     WorkspaceRole findWorkspaceUserRole(String uuid, long workspaceId);
-
 }

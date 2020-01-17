@@ -4,7 +4,9 @@ import com.virnect.workspace.application.WorkspaceService;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.InvalidParamsException;
 import com.virnect.workspace.global.common.ResponseMessage;
-import com.virnect.workspace.global.error.ErrorMessage;
+import com.virnect.workspace.global.error.ErrorCode;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -23,18 +25,15 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/")
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
 
-    public WorkspaceController(WorkspaceService workspaceService) {
-        this.workspaceService = workspaceService;
-    }
-
     @PostMapping
-    public ResponseEntity createWorkspace(@RequestBody @Valid WorkspaceDTO.WorkspaceInfo WorkspaceInfo, BindingResult result) {
+    public ResponseEntity<ResponseMessage> createWorkspace(@RequestBody @Valid WorkspaceDTO.WorkspaceInfo WorkspaceInfo, BindingResult result) {
         log.info("createWorkspace : {}", WorkspaceInfo);
         if (result.hasErrors()) {
-            throw new InvalidParamsException(ErrorMessage.SOME_ERROR_MESSAGE);
+            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
         } else {
             ResponseMessage responseMessage = this.workspaceService.createWorkspace(WorkspaceInfo);
             return ResponseEntity.ok(responseMessage);
@@ -45,7 +44,7 @@ public class WorkspaceController {
     public ResponseEntity<ResponseMessage> getUserWorkspaces(@PathVariable("userId") String userId) {
         log.info("getWorkspace : {}", userId);
         if (!StringUtils.hasText(userId)) {
-            throw new InvalidParamsException(ErrorMessage.SOME_ERROR_MESSAGE);
+            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
         }
         ResponseMessage responseMessage = this.workspaceService.getUserWorkspaces(userId);
         return ResponseEntity.ok(responseMessage);
@@ -54,14 +53,14 @@ public class WorkspaceController {
     @GetMapping("{workspaceId}/members/{userId}")
     public ResponseEntity<ResponseMessage> getMember(@PathVariable("workspaceId") long workspaceId, @PathVariable("userId") String userId, @RequestParam("search") String search, @RequestParam("filter") String filter, @RequestParam("align") String align) {
         if (!StringUtils.hasText(userId) || workspaceId <= 0) {
-            throw new InvalidParamsException(ErrorMessage.SOME_ERROR_MESSAGE);
+            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
         }
         ResponseMessage responseMessage = this.workspaceService.getMember(workspaceId, userId, search, filter, align);
         return ResponseEntity.ok(responseMessage);
     }
 
     @GetMapping("test")
-    public ResponseEntity getTest(@RequestParam("uuid") String uuid, @RequestParam("search") String search) {
+    public ResponseEntity<ResponseMessage> getTest(@RequestParam("uuid") String uuid, @RequestParam("search") String search) {
         ResponseMessage responseMessage = this.workspaceService.getUserWorkspaces(uuid);
         return ResponseEntity.ok(responseMessage);
     }

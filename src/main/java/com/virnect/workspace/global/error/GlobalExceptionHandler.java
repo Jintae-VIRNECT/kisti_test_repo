@@ -1,12 +1,10 @@
 package com.virnect.workspace.global.error;
 
 import com.virnect.workspace.global.common.ResponseMessage;
-import com.virnect.workspace.global.error.ErrorMessage;
 import com.virnect.workspace.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -26,11 +24,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity exception(Exception e) {
         log.error(e.getMessage());
         e.printStackTrace();
-        return new ResponseEntity<>(ErrorMessage.SOME_ERROR_MESSAGE, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ErrorCode.SOME_ERROR_MESSAGE, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<ResponseMessage> handleBusinessException(final BusinessException e) {
+    protected ResponseEntity<ErrorResponseMessage> handleBusinessException(final BusinessException e) {
         log.error("handleBusinessException", e);
-        return ResponseEntity.ok(new ResponseMessage().builder().code(e.getErrorMessage().getCode()).message(e.getErrorMessage().getMessage()).build());
+        return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.SOME_ERROR_MESSAGE));
     }
 }

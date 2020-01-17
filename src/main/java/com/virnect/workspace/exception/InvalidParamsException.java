@@ -1,6 +1,6 @@
 package com.virnect.workspace.exception;
 
-import com.virnect.workspace.global.error.ErrorMessage;
+import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.error.exception.BusinessException;
 
 /**
@@ -11,7 +11,7 @@ import com.virnect.workspace.global.error.exception.BusinessException;
  * DESCRIPTION:
  */
 public class InvalidParamsException extends BusinessException {
-    public InvalidParamsException(ErrorMessage errorMessage) {
-        super(errorMessage);
+    public InvalidParamsException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

@@ -1,6 +1,6 @@
 package com.virnect.workspace.global.error.exception;
 
-import com.virnect.workspace.global.error.ErrorMessage;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Workspace
@@ -11,15 +11,15 @@ import com.virnect.workspace.global.error.ErrorMessage;
  */
 public class BusinessException extends RuntimeException {
 
-    private ErrorMessage errorMessage;
+    private ErrorCode errorCode;
 
-    public BusinessException(ErrorMessage errorMessage) {
-        super(errorMessage.getMessage());
-        this.errorMessage = errorMessage;
+    public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
-    public ErrorMessage getErrorMessage() {
-        return errorMessage;
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 
 }

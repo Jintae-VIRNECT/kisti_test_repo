@@ -7,12 +7,12 @@ package com.virnect.workspace.global.error;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public enum ErrorMessage {
+public enum ErrorCode {
     SOME_ERROR_MESSAGE(1, "error message");
     private int code;
     private String message;
 
-    ErrorMessage(final int code, final String message){
+    ErrorCode(final int code, final String message){
         this.code = code;
         this.message = message;
     }
