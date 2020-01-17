@@ -10,7 +10,7 @@ pipeline {
     stage('Install Package') {
       steps {
         echo 'Install Package'
-        sh 'yarn'
+        sh 'npm install'
       }
     }
 
@@ -32,7 +32,7 @@ docker rm pf-webworkstation-develop'''
           }
         }
 
-        stage('') {
+        stage('error') {
           steps {
             echo 'Dockerizing Complete'
           }
