@@ -27,14 +27,8 @@ pipeline {
         stage('Delete Old Container') {
           steps {
             echo 'Delete Old Container'
-            sh '''docker stop pf-webworkstation-develop
-docker rm pf-webworkstation-develop'''
-          }
-        }
-
-        stage('error') {
-          steps {
-            echo 'Dockerizing Complete'
+            sh '''docker stop pf-webworkstation-develop || true
+docker rm pf-webworkstation-develop || true'''
           }
         }
 
