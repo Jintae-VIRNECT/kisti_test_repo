@@ -1,5 +1,5 @@
 <template>
-<div class="header-snb">
+<nav class="header-snb">
   <snb-button
     text="실시간 공유"
     keyvalue="stream"
@@ -15,7 +15,7 @@
     keyvalue="ar"
     :image="require('assets/image/call/gnb_ic_creat_ar.png')"
   ></snb-button>
-</div>
+</nav>
 </template>
 
 <script>

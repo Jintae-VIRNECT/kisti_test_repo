@@ -1,20 +1,20 @@
 <template>
-<header class="header-wrapper">
+<header class="header">
   <img class="header-logo" src="~assets/image/logo_symtext.svg"/>
 
-  <header-snb></header-snb>
+  <header-nav></header-nav>
 
   <header-tools></header-tools>
 </header>
 </template>
 
 <script>
-import HeaderSnb from './partials/HeaderSnb'
+import HeaderNav from './partials/HeaderSnb'
 import HeaderTools from './partials/HeaderTools'
 export default {
 	name: "Header",
 	components: {
-    HeaderSnb,
+    HeaderNav,
     HeaderTools
   },
 	data() {
