@@ -4,15 +4,17 @@ ENV PORT=8887
 
 WORKDIR $APP_HOME
 
-ADD . $APP_HOME
+ADD ./packages $APP_HOME/packages
+ADD ./projects $APP_HOME/projects
+ADD ./package.json $APP_HOME/package.json
 
-RUN npm install --production
-
-RUN yarn workspace smic build
+RUN yarn
 
 EXPOSE $PORT
 
-CMD ["yarn", "workspace", "smic", "deploy"]
+CMD ["yarn", "workspace", "smic", "start:production"]
+
+
 
 
 
