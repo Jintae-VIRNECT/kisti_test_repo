@@ -6,7 +6,7 @@ WORKDIR $APP_HOME
 
 ADD . $APP_HOME
 
-RUN yarn 
+RUN npm install --production
 
 RUN yarn workspace smic build
 
