@@ -7,10 +7,21 @@ pipeline {
       }
     }
 
-    stage('Install Package') {
-      steps {
-        echo 'Install Package'
-        sh 'npm install'
+    stage('Build') {
+      parallel {
+        stage('install package') {
+          steps {
+            echo 'Install Package'
+            sh 'npm install'
+          }
+        }
+
+        stage('build') {
+          steps {
+            sh 'yarn workspace smic build'
+          }
+        }
+
       }
     }
 
