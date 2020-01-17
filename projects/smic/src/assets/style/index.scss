@@ -156,6 +156,7 @@
     margin-top: 7px;
 	}
 	.search-wrapper {
+    margin-bottom: 20px;
 		.search {
 			width: 196px;
 			margin-right: 24px;
@@ -169,8 +170,10 @@
 			margin-right: 8px;
 		}
 		.el-input-group__append {
-			padding: 7px 8px;
-			background-color: rgba(233, 237, 244, 0.5);
+      padding: 7px 8px;
+      .el-button--default {
+			  background-color: rgb(241,243,247);
+      }
 			border: none;
 			color: #7a869a;
 			button {
@@ -183,7 +186,7 @@
 		.el-input__inner {
 			margin-right: 12px;
 			padding: 7px 8px;
-			background-color: rgba(233, 237, 244, 0.5);
+			background-color: rgb(241,243,247);
 			box-shadow: none;
 			border: none;
 			.tool i {
@@ -198,7 +201,7 @@
 			&.order button,
 			&.filter button {
 				padding: 7px 8px;
-				background-color: rgba(233, 237, 244, 0.5);
+				background-color: rgb(241,243,247);
 				border: none;
 				color: #7a869a;
 			}

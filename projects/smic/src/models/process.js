@@ -1,6 +1,6 @@
 export const cols = [
 	{
-		prop: 'name',
+		prop: 'processName',
 		label: '공정 이름',
 	},
 	{
@@ -11,6 +11,11 @@ export const cols = [
 	{
 		prop: 'schedule',
 		label: '공정 일정',
+	},
+	{
+		prop: 'processPercent',
+		label: '진행률',
+		width: 150,
 	},
 	{
 		prop: 'status',

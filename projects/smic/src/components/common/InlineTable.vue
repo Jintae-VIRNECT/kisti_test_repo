@@ -22,16 +22,13 @@
 					template(slot-scope='scope')
 						div(v-if="prop == 'index'") 
 							span {{scope.$index + 1}}
-						//- div(v-if="['contentPublish', 'processRegister'].includes(prop)") 
-						//- 	button.el-button--mini(
-						//- 		size="mini" 
-						//- 		:class="publishFilterClass(prop, tableData[scope.$index][prop])" 
-						//- 		:plain='tableData[scope.$index][prop] ? false : true'
-						//- 	) {{ publishFilterName(prop, tableData[scope.$index][prop]) }}
 						div(v-if="prop === 'contentPublish'")
 							span {{publishBoolean(tableData[scope.$index][prop])}}
+						.process-percent(v-else-if="prop === 'processPercent'")
+							el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
+						div(v-else-if="prop === 'numOfDetailProcess'")
+							span.nums {{tableData[scope.$index][prop]}}
 						//- 이슈 타입
-						
 						.content-name(v-else-if="dataType === 'contents' && prop === 'name'")
 							img.prefix-img(src="~@/assets/image/ic-content.svg")
 							span {{tableData[scope.$index][prop]}}
@@ -175,13 +172,33 @@ export default {
 		vertical-align: middle;
 		color: #0d2a58;
 	}
-	.sub-title {
+	.header-left__sub-title {
+		display: inline-block;
+		padding: 0px 6px;
+		border-radius: 4px;
+		background-color: #f2f5f9;
 		margin-left: 16px;
-		font-size: 14px;
-		font-weight: 500;
-		line-height: 2;
-		vertical-align: middle;
-		color: #455163;
+		.sub-title {
+			font-size: 13px;
+			font-weight: 500;
+			color: #0d2a58;
+		}
+		img {
+			margin-right: 3px;
+		}
+		& > * {
+			vertical-align: middle;
+		}
+	}
+	.header-right__sub-title {
+		.sub-title {
+			margin-left: 16px;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 2;
+			vertical-align: middle;
+			color: #455163;
+		}
 	}
 	&--left {
 		width: 40%;
@@ -211,6 +228,26 @@ export default {
 .inline-table {
 	.el-table__body td {
 		height: 64px !important;
+
+		.nums {
+			height: 28px;
+			padding: 6px 10px;
+			border-radius: 4px;
+			border: solid 1px #eaedf3;
+			background-color: #fbfbfd;
+			font-size: 14px;
+			font-weight: 500;
+			font-stretch: normal;
+			font-style: normal;
+			line-height: 1.57;
+			letter-spacing: normal;
+			color: #114997;
+		}
+	}
+	.process-percent {
+		.el-progress-bar__outer {
+			margin-right: 8px;
+		}
 	}
 	.el-table__row {
 		cursor: pointer;
@@ -271,6 +308,7 @@ export default {
 	&.el-table th > .cell,
 	&.el-table .cell {
 		padding: 0px !important;
+		overflow: initial;
 	}
 	.el-table__row td:first-child .cell {
 		margin-left: 30px !important;

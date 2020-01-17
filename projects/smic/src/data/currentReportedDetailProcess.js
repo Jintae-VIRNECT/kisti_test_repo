@@ -8,7 +8,8 @@ export default [
 		status: 'complete',
 		auths: ['김펭수', '이펭수', '박펭수', '문펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -25,7 +26,8 @@ export default [
 		status: 'complete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '작업 이슈',
 		// 체결수 = count / total
@@ -42,7 +44,8 @@ export default [
 		status: 'idle',
 		auths: ['김펭수', '이펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -59,7 +62,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '작업 이슈',
 		// 체결수 = count / total
@@ -76,7 +80,8 @@ export default [
 		status: 'progress',
 		auths: ['제갈펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '작업 이슈',
 		// 체결수 = count / total
@@ -93,7 +98,8 @@ export default [
 		status: 'progress',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -110,7 +116,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -127,7 +134,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -144,7 +152,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -161,7 +170,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
@@ -178,7 +188,8 @@ export default [
 		status: 'imcomplete',
 		auths: ['김펭수', '이펭수', '박펭수'],
 		profileImg: require('@/assets/image/profileImg.jpg'),
-		processPercent: '90',
+		numOfDetailProcess: 6,
+		processPercent: 90,
 		workerNum: 6,
 		type: '이슈',
 		// 체결수 = count / total
