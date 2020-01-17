@@ -63,10 +63,12 @@ export default {
       });
 
       session.on('signal:chat', (event) => {
+        console.log(event)
+        let data = event.data
         let chat = {
-          text: event.data.replace(/\</g, '&lt;'),
+          text: data.split('::')[1].replace(/\</g, '&lt;'),
           name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
-          date: event.from.creationTime,
+          date: data.split('::')[0],
           chatId: event.from.rpcSessionId,
           type: false
         }
@@ -100,13 +102,13 @@ export default {
         let connection = stream.connection
         
         let clientData = JSON.parse(connection.data.split('%/%')[0]).clientData,
-            serverData = JSON.parse(connection.data.split('%/%')[1]).serverData,
+            // serverData = JSON.parse(connection.data.split('%/%')[1]).serverData,
             nodeId = connection.connectionId
       
         streamObj = {
           stream: null,
           nickName: clientData,
-          userName: serverData,
+          // userName: serverData,
           nodeId: nodeId
         }
       }
@@ -276,9 +278,9 @@ export default {
         session = null;  
       },
       sendChat: (text) => {
-        if (text.length === 0) return
+        if (text.trim().length === 0) return
         session.signal({
-          data: text,
+          data: new Date+'::'+text.trim(),
           to: session.connection,
           type: 'signal:chat'
         })
@@ -311,23 +313,21 @@ export default {
           video: publisher.stream.videoActive
         }
       },
-      videoOnOff: () => {
+      streamOnOff: (active) => {
         // console.log(publisher.stream.audioActive)
-        publisher.publishVideo(!publisher.stream.videoActive)
+        publisher.publishVideo(active)
       },
-      micOnOff: () => {
-        publisher.publishAudio(!publisher.stream.audioActive)
+      micOnOff: (active) => {
+        publisher.publishAudio(active)
       },
       audioOnOff: (id, statue) => {
-        console.log(id)
-        console.log(subscribers)
           let idx = subscribers.findIndex(subscriber => subscriber.id.indexOf(id) > -1)
           if (idx < 0) {
             console.log('can not find user')
             return
           }
           let subscribe = subscribers[idx].subscribeToAudio(statue)
-          console.log(subscribe)
+          // console.log(subscribe)
       },
       disconnect: (id) => {
         return new Promise((resolve, reject) => {

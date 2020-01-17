@@ -61,7 +61,7 @@
     right: 0;
     height: 100%;
     padding: 11px 17px;
-    >button {
+    >.tooltip, >.popover--wrapper {
       margin-left: 8px;
     }
     &__time {
@@ -82,6 +82,19 @@
       background: url(~assets/image/call/gnb_ic_callout.png) center no-repeat $color_red;
       border-radius: 17px;
       color: transparent;
+    }
+    .notice {
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        top: 4px;
+        right: 4px;
+        background-color: $color_red;
+        border-radius: 50%;
+      }
     }
   }
 }

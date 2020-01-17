@@ -2,29 +2,34 @@
 @import "~vue2-scrollbar/dist/style/vue2-scrollbar.css";
 
 .vue-scrollbar {
-    &__scrollbar-vertical,
-    &__scrollbar-horizontal {
-        opacity: 0;
+  &__scrollbar-vertical,
+  &__scrollbar-horizontal {
+    opacity: 0;
+    height: 7px;
 
-        .scrollbar {
-            background: rgba($color_dark, .5);
-        }
+    .scrollbar {
+      background: rgba($color_dark, .5);
+      height: 7px;
+      border-radius: 4px;
     }
+  }
 
-    &__scrollbar-vertical {
-        
-        width: 8px;
-        margin: 1px;
+  &__scrollbar-vertical {
+      
+    width: 8px;
+    margin: 1px;
 
-        .scrollbar {
-            overflow: hidden;
-            width: 8px;
-            border-radius: 4px;
-        }
+    .scrollbar {
+      overflow: hidden;
+      width: 8px;
+      border-radius: 4px;
     }
-    &__wrapper {
-        margin-right: -10px;
-        padding-right: 10px;
-        background: none !important;
-    }
+  }
+  &__wrapper {
+    margin-right: -10px;
+    padding-right: 10px;
+    background: none !important;
+    margin-bottom: -10px;
+    padding-bottom: 10px;
+  }
 }

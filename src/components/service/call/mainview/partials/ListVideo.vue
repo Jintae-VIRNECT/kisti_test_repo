@@ -17,7 +17,7 @@
     ></toggle-button>
     
     <div v-if="!isMain" class="list-video__status good">
-      <span>불안정</span>
+      <span>우수</span>
     </div>
     <div class="list-video__name">
       <span :class="{ 'active': isMain }">{{ session.nickName }}</span>

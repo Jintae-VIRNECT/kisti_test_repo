@@ -3,12 +3,14 @@
   <div class="main-video__box">
     
     <video 
+        ref="mainVideo"
         id="main-video"
         :srcObject.prop="session.stream"
         @resize="optimizeVideoSize"
         @loadeddata="optimizeVideoSize"
+        :muted="!speaker"
         autoplay
-        :muted="mute?'muted':false"
+        playsinline 
         loop>
     </video>
 
@@ -37,12 +39,14 @@ export default {
 	computed: {
     ...mapGetters({
       session: 'mainSession',
-      mute: 'mute'
+      speaker: 'speaker'
     })
   },
 	watch: {
-    mute(val) {
+    speaker(val) {
       console.log(val)
+      // this.$refs['mainVideo'].muted = !val
+      // console.log(this.$refs['mainVideo'])
     }
   },
 	methods: {
@@ -119,11 +123,6 @@ export default {
     this.$openvidu.join(sessionName, nickName)
       .then(session => {
         console.log(session.connection)
-        // session.signal({
-        //   data: 'chatchat!!ㅎㅎㅎㅎㅎㅎ 채팅 메시지 잘 가능가!!!!',
-        //   to:Connection[], 
-        //   type: 'chat'
-        // })
       })
   }
 }

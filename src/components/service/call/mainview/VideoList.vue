@@ -1,5 +1,6 @@
 <template>
 	<div class="video-list" id="video-list">
+    <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
     <div class="video-list__view">
       <list-video 
           v-for="session of sessions" 
@@ -11,6 +12,7 @@
         </div>
       </article>
     </div>
+    </vue2-scrollbar>
   </div>
 </template>
 
@@ -36,8 +38,15 @@ export default {
     ...mapGetters(['sessions'])
   },
 	watch: {
-    sessions(val) {
-      console.log('sessions CHENGED:::::',val)
+    sessions (newVal, oldVal) {
+      // console.log(newVal.length, oldVal.length)
+      // if(newVal.length > oldVal.length) {
+        this.$nextTick(() => {
+          if (this.$refs['sessionListScrollbar']) {
+            this.$refs['sessionListScrollbar'].scrollToY(999999999)
+          }
+        })
+      // }
     }
   },
 	methods: {

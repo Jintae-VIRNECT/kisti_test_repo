@@ -2,11 +2,17 @@
 <div class="chat">
   <div class="chat-header">
     <p class="chat-header__title">버넥트 리모트팀 외 5명
-      <button class="show-list">목록보기</button>
+      <popover
+        trigger="hover"
+        placement="bottom">
+        <button slot="reference" class="show-list">목록보기</button>
+        <div>사용자 목록</div>
+      </popover>
     </p>
     <p class="chat-header__description">6명의 작업자</p>
     <button class="chat-header__fold">펼치기</button>
   </div>
+
   <vue2-scrollbar ref="chatListScrollbar">
     <ol class="chat-list">
       <li class="chat-item date">
@@ -15,6 +21,8 @@
       <chat-item
           v-for="(chat, idx) of chatList"
           :key="idx"
+          :beforeChat="idx === 0 ? null : chatList[idx-1]"
+          :afterChat="idx === chatList.length-1 ? null : chatList[idx+1]"
           :chat="chat"></chat-item>
     </ol>
   </vue2-scrollbar>
@@ -28,12 +36,14 @@ import { mapGetters } from 'vuex'
 
 import ChatItem from './partials/ChatItem'
 import ChatInput from './partials/ChatInput'
+import Popover from 'Popover'
 
 export default {
 	name: "Chat",
 	components: {
     ChatItem,
-    ChatInput
+    ChatInput,
+    Popover
   },
 	data() {
 		return {

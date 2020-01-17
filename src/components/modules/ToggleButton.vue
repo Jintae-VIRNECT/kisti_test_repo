@@ -16,8 +16,7 @@ export default {
 	name: "ToggleButton",
 	components: {},
 	data() {
-		return {
-    }
+		return {}
 	},
 	props: {
     customClass: {
@@ -54,8 +53,6 @@ export default {
         return this.activeSrc
       }
     }
-  },
-	methods: {
   },
 
 	/* Lifecycles */

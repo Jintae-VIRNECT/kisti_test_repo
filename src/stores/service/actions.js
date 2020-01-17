@@ -24,6 +24,15 @@ export default {
     commit(types.CALL_ACTION_SET, state);
   },
 
+  callStream({ commit }, state) {
+    commit(types.CALL_STREAM, state)
+  },
+  callMic({ commit }, state) {
+    commit(types.CALL_MIC, state)
+  },
+  callSpeaker({ commit }, state) {
+    commit(types.CALL_SPEAKER, state)
+  },
   muteOnOff({ commit }) {
     commit(types.MUTE_ON_OFF)
   }

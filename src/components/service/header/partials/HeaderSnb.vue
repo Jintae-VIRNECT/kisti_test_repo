@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import SnbButton from './SnbButton'
+import SnbButton from '../tools/SnbButton'
 export default {
 	name: "HeaderSnb",
 	components: {

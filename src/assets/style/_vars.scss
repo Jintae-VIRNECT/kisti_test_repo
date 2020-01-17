@@ -30,11 +30,13 @@ $color_chat_header: rgba(#a9a9a9, .2);
 /* Color - text */
 $color_text_default: #fafafa;
 $color_text_main: #ffffff;
+$color_greenyellow: #3ce900;
+$color_skyblue: #4bc6ff;
 $color_red: #eb001d;
 
-$color_state_good: #3ce900;
-$color_state_normal: #4bc6ff;
-$color_state_bad: #eb001d;
+$color_state_good: $color_greenyellow;
+$color_state_normal: $color_skyblue;
+$color_state_bad: $color_red;
 $color_state_good_bg: rgba(#0e2805, .6);
 $color_state_normal_bg: rgba(#1a1e00, .6);
 $color_state_bad_bg: rgba(#2c070c, .72);

@@ -18,6 +18,9 @@ Vue.use(VueMoment, {
   moment
 });
 
+const EventBus = new Vue();
+Vue.prototype.$eventBus = EventBus;
+
 export default new Vue({
   el: "#container",
   router: Router,

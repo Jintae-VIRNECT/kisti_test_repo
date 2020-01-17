@@ -72,6 +72,8 @@ const mutations = {
 
   // chat
   ADD_CHAT(state, payload) {
+    // let recentChat = state.chat.chatList[state.chat.chatList.length - 1]
+    // if (recentChat.type === payload.type, )
     state.chat.chatList.push(payload)
   },
   REMOVE_CHAT(state, payload) {
