@@ -1,27 +1,43 @@
-# VirnectWebAdmin
-
-# 실행 명령어
-
-## SMIC 명령어
+## Author
 
 ```
-# 패키지 설치
-$ yarn
+문승현 - dave@virnect.com
+```
 
+## Description
+
+```
+Platform Worstation Web Service
+```
+
+## Environment
+
+```
+Yarn workspace
+```
+
+## Build
+
+```
+$ yarn
+$ yarn worskapce smic build
+```
+
+## Running the application
+
+```
 # 로컬에서 개발모드로 실행
 $ yarn workspace smic local
 
-# 빌드 
-$ yarn worskapce smic build
-
-# production 모드로 실행
+# production 모드로 실행 -> https://localhost:8887 에 띄움
 $ yarn workspace smic start
 
-# 빌드 & production 모드로 실행 -> https://localhost:8887 에 띄움
+# 빌드 & production 모드로 실행 
 $ yarn workspace smic deploy
+
 ```
 
-## Feature
+## 추가 설명
 
 - Yarn workspace 적용
 - eslint & prettier 적용
