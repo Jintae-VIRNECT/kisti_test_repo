@@ -19,7 +19,7 @@ pipeline {
 
         stage('Notify Email') {
           steps {
-            mail(subject: '${env.PROJECT_NAME} - ${env.BUILD_NUMBER}', body: 'Build start... $BUILD_URL', charset: 'utf8', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
+            emailext(attachLog: true, subject: '${env.JOB_NAME} : ${env.BUILD_NUMBER}', body: '${env.BUILD_URL}', compressLog: true, to: 'delbert@virnect.com')
           }
         }
 
