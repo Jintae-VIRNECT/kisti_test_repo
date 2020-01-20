@@ -4,13 +4,14 @@ pipeline {
     stage('Clean Old Artifacts') {
       steps {
         echo 'Clean Old Artifacts'
+        sh 'yarn cache clean'
       }
     }
 
     stage('Build') {
       steps {
         echo 'Install Package'
-        sh 'npm install'
+        sh 'yarn'
         sh 'yarn workspace smic build'
       }
     }
