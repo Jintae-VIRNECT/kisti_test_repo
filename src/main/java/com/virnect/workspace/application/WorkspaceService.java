@@ -1,6 +1,5 @@
 package com.virnect.workspace.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceUser;
@@ -36,9 +35,9 @@ public class WorkspaceService {
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceInfo workspaceInfo) {
         //이메일 계정이 있는 사용자 인지 체크 : 마스터가 만들어낸 계정은 워크스페이스를 생성할 수 없다. -> UserServer 에 요청
-        ResponseMessage userServerResponse  = this.userRestService.getUserInfoByUserId(workspaceInfo.getUserId());
+        ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(workspaceInfo.getUserId());
         log.info("data: {}", userServerResponse.getData());
-        UserDTO.UserInfoDTO  requestUserInfo = modelMapper.map(userServerResponse.getData().get("userInfo"), UserDTO.UserInfoDTO.class);
+        UserDTO.UserInfoDTO requestUserInfo = modelMapper.map(userServerResponse.getData().get("userInfo"), UserDTO.UserInfoDTO.class);
         if (requestUserInfo.getUserType().equals("SUB_USER")) {
             throw new SomeException();
         }
@@ -102,7 +101,9 @@ public class WorkspaceService {
 //        ArrayList<Map> tempResult = new HttpRequest().getUserSearchList(uriComponents);
 //        List<Map> result = new ArrayList<Map>();
 
-        List<UserDTO.UserInfoDTO> userInfoDTOList = (List<UserDTO.UserInfoDTO>) this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search).getData().get("userInfoList");
+        ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search);
+        log.info("responseMessage: {}, Data: {}", responseMessage, responseMessage.getData());
+        List<UserDTO.UserInfoDTO> userInfoDTOList = (List<UserDTO.UserInfoDTO>) responseMessage.getData().get("userInfoList");
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
 //
 //        //2. 필터 검증
@@ -153,9 +154,10 @@ public class WorkspaceService {
 
     /**
      * 워크스페이스 유저 역할 검사
-     * @param userId - 유저 고유 아이디
+     *
+     * @param userId      - 유저 고유 아이디
      * @param workspaceId - 워크스페이스 고유 아이디
-     * @param role - 비교 대상 역할
+     * @param role        - 비교 대상 역할
      * @return 역할 비교 결과
      */
     private boolean hasRoleIs(final String userId, final long workspaceId, final String role) {
