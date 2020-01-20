@@ -7,10 +7,11 @@ pipeline {
       }
     }
 
-    stage('Install Package') {
+    stage('Build') {
       steps {
         echo 'Install Package'
         sh 'npm install'
+        sh 'yarn workspace smic build'
       }
     }
 
@@ -27,14 +28,8 @@ pipeline {
         stage('Delete Old Container') {
           steps {
             echo 'Delete Old Container'
-            sh '''docker stop pf-webworkstation-develop
-docker rm pf-webworkstation-develop'''
-          }
-        }
-
-        stage('error') {
-          steps {
-            echo 'Dockerizing Complete'
+            sh '''docker stop pf-webworkstation-develop || true
+docker rm pf-webworkstation-develop || true'''
           }
         }
 
