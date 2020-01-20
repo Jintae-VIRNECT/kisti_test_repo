@@ -1,8 +1,11 @@
 <template lang="pug">
 	div
-		.small-title
-			span 공정
-		dash-banner
+		page-tab-nav
+			template(slot='page-nav--right')
+				router-link(to="/process/new")
+					button.enroll-new-process 신규 공정 등록
+		page-bread-crumb(title='공정')
+		process-dash-banner
 		.page-nav
 			.search-wrapper.text-right
 				el-input.tool.search(placeholder='이름 또는 이메일 검색' v-model='search' )
@@ -32,47 +35,41 @@
 		inline-table(
 			:setHeader='true'
 			:tableData="currentReportedDetailProcess" 
+			:tableOption="tableOption"
 			:colSetting="cols"
-			:toolCol="true")
+			:controlCol="true")
 			template(slot="header-left")
 				span.title 공정 목록
-				//- .header-left__sub-title
-					img(src="~@/assets/image/ic-graph.svg")
-					span.sub-title 일자별 공정 진행률 그래프
-			template(slot="header-right")
-				.text-right
-					span.sub-title 등록된 공정 수 
-					span.value 102
+			.inline-table__header.text-right(slot="header-right")
+				span.sub-title 등록된 공정 수 
+				span.value 102
 </template>
-<style lang="scss" scoped>
-.small-title {
-	margin: 0px 5px 12px 0px;
-	font-size: 12px;
-	color: #0d2a58;
-}
-.sub-title {
-	font-size: 14px;
-	font-weight: 500;
-	font-stretch: normal;
-	font-style: normal;
-	line-height: 2;
-	letter-spacing: normal;
-	color: #0d2a58;
-}
-</style>
 <script>
 // UI component
+import PageTabNav from '@/components/common/PageTabNav.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
-import DashBanner from '@/components/process/DashBanner.vue'
+import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
+import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 
 import { cols } from '@/models/process'
+
+const tableOption = {
+	rowIdName: 'processId',
+	subdomain: '/process',
+}
 
 /// data
 import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 
 export default {
-	components: { ProgressCard, InlineTable, DashBanner },
+	components: {
+		ProgressCard,
+		InlineTable,
+		ProcessDashBanner,
+		PageTabNav,
+		PageBreadCrumb,
+	},
 	data() {
 		return {
 			value1: '',
@@ -83,6 +80,7 @@ export default {
 			},
 			currentReportedDetailProcess,
 			search: null,
+			tableOption,
 		}
 	},
 	computed: {

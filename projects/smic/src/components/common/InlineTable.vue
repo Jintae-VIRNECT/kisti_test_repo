@@ -10,15 +10,13 @@
 			el-table.inline-table(
 				:data='tableData' 
 				style='width: 100%'
-				@cell-click="onClickCell"
-			)
+				@cell-click="onClickCell")
 				el-table-column(
 					v-for="{label, width, prop} in colSetting" 
 					:key="prop" 
 					:prop="prop" 
 					:label="label" 
-					:width="width || ''"
-				) 
+					:width="width || ''") 
 					template(slot-scope='scope')
 						div(v-if="prop == 'index'") 
 							span {{scope.$index + 1}}
@@ -62,9 +60,9 @@
 							span {{ tableData[scope.$index][prop] }}
 					//- template(v-else) 
 					//- 	span {{ tableData[scope.$index][prop] }}
-				el-table-column(v-if="toolCol" :width="50")
+				el-table-column(v-if="controlCol" :width="50" class-name="tool-col")
 					template(slot-scope='scope')
-						process-tool-dropdown(:processId="tableData[scope.$index].processId")
+						process-control-dropdown(:processId="tableData[scope.$index].processId")
 		el-pagination.inline-table-pagination(
 			v-if='setPagination'
 			:hide-on-single-page='false' 
@@ -78,11 +76,11 @@
 		)
 </template>
 <script>
-import processToolDropdown from '@/components/common/processToolDropdown'
+import processControlDropdown from '@/components/process/processControlDropdown'
 
 export default {
 	components: {
-		processToolDropdown,
+		processControlDropdown,
 	},
 	props: {
 		tableData: Array,
@@ -90,7 +88,8 @@ export default {
 		dataType: String,
 		setHeader: Boolean,
 		colSetting: Array,
-		toolCol: Boolean,
+		controlCol: Boolean,
+		cellClick: Function,
 		tableOption: {
 			title: String,
 			// colSetting: Array,
@@ -136,9 +135,9 @@ export default {
 			console.log('column : ', column)
 			console.log('cell : ', cell)
 			console.log('event : ', event)
-			// const { rowIdName, subdomain } = this.$props.tableOption
-			// if (!rowIdName) return false
-			// this.$router.push(`${subdomain}/${row[rowIdName]}`)
+			const { rowIdName, subdomain } = this.$props.tableOption
+			if (!rowIdName) return false
+			this.$router.push(`${subdomain}/${row[rowIdName]}`)
 		},
 	},
 	filters: {
@@ -208,6 +207,17 @@ export default {
 	&--left {
 		width: 40%;
 		display: inline-block;
+		.title {
+			font-size: 18px;
+			line-height: 1.56;
+			color: #0d2a58;
+			margin-right: 15px;
+		}
+		.sub-title {
+			font-size: 14px;
+			line-height: 2;
+			color: #455163;
+		}
 	}
 	&--right {
 		width: 59%;
@@ -233,7 +243,17 @@ export default {
 .inline-table {
 	.el-table__body td {
 		height: 64px !important;
-
+		&.tool-col {
+			padding: 0px;
+			.cell {
+				height: 100%;
+			}
+			.cell > div {
+				height: 100%;
+				display: flex;
+				align-items: center;
+			}
+		}
 		.nums {
 			height: 28px;
 			padding: 6px 10px;
@@ -248,6 +268,15 @@ export default {
 			letter-spacing: normal;
 			color: #114997;
 		}
+	}
+	&__header .sub-title {
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 2;
+		letter-spacing: normal;
+		color: #0d2a58;
 	}
 	.process-percent {
 		.el-progress-bar__outer {

@@ -10,7 +10,7 @@
 					:tableData="currentUploadedContent" 
 					:colSetting="tableColSettings.contents"
 					:tableOption="currentUploadedContentTableOption"
-					:toolCol="true")
+					:controlCol="true")
 					template(slot="header-left")
 						span.title 최근 업로드된 콘텐츠
 					template(slot="header-right")
@@ -39,7 +39,7 @@
 
 <script>
 // UI component
-import ProcessInprogressStatusGraph from '@/components/common/ProcessInprogressStatusGraph.vue'
+import ProcessInprogressStatusGraph from '@/components/home/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import { currentReportedInformationTabs, tableColSettings } from '@/models/home'

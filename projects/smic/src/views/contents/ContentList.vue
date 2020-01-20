@@ -1,18 +1,39 @@
 <template lang="pug">
 	div
-		inline-table(
-			:tableData="currentUploadedContent" 
-			:tableOption="currentUploadedContentTableOption"
-		)
-			templete(slot="header-right")
-				.inline-table__header--right
-					span.prefix 업로드된 컨텐츠 
-					span.value 102
-					span.suffix &nbsp;projects
-					.divider
-					span.prefix 배포중인 컨텐츠 수 컨텐츠 
-					span.value 22
-					span.suffix &nbsp;projects
+		.card
+			.card__header
+				.card__header--left
+					span.title 공정 콘텐츠 목록
+				.card__header--right
+					.inline-table__header--right
+						span.prefix 업로드된 컨텐츠 
+						span.value 102
+						span.suffix &nbsp;projects
+						.divider
+						span.prefix 배포중인 컨텐츠 수 컨텐츠 
+						span.value 22
+						span.suffix &nbsp;projects
+			.card__body
+				el-table.inline-table(
+					:data='tableData' 
+					style='width: 100%'
+					@cell-click="onClickCell")
+					el-table-column(
+						v-for="{label, width, prop} in colSetting" 
+						:key="prop" 
+						:prop="prop" 
+						:label="label" 
+						:width="width || ''") 
+						template(slot-scope='scope')
+							//- 이슈 타입
+							.content-name(v-if="prop === 'name'")
+								img.prefix-img(src="~@/assets/image/ic-content.svg")
+								span {{tableData[scope.$index][prop]}}
+							.auth-wrapper(v-else-if="prop === 'auth'")
+								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+								span {{tableData[scope.$index][prop]}}
+							div(v-else)
+								span {{ tableData[scope.$index][prop]}}
 				
 </template>
 <style lang="scss">
@@ -57,59 +78,25 @@ import InlineTable from '@/components/common/InlineTable.vue'
 
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
-import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 
-const currentUploadedContentTableOption = {
-	rowIdName: 'contentId',
-	subdomain: '/contents',
-	colOptions: true,
-	title: '콘텐츠 목록',
-	colSetting: [
-		{
-			prop: 'contentId',
-			label: '콘텐츠 ID',
-		},
-		{
-			prop: 'contentName',
-			label: '콘텐츠 이름',
-		},
-		{
-			prop: 'volume',
-			label: '크기',
-		},
-		{
-			prop: 'uploadedAt',
-			label: '업로드일',
-		},
-		{
-			prop: 'auth',
-			label: '업로드 멤버',
-		},
-		{
-			prop: 'contentPublish',
-			label: '콘텐츠 배포',
-		},
-		{
-			prop: 'processRegister',
-			label: '공정 등록',
-		},
-	],
-}
+// model
+import { tableColSettings } from '@/models/home'
 
 export default {
 	components: { ProgressCard, InlineTable },
 	data() {
 		return {
-			value1: '',
-			progressData: {
-				overallProgressPercent: 90,
-				progressByDay: [5, 10, 20, 30, 40, 66, 20],
-				progressByDayLastDate: '2020.01.13',
+			tableData: currentUploadedContent,
+			tableOption: {
+				rowIdName: 'contentId',
+				subdomain: '???',
 			},
-			currentUploadedContent,
-			currentReportedDetailProcess,
-			currentUploadedContentTableOption,
+			search: null,
+			colSetting: tableColSettings.contents,
 		}
+	},
+	methods: {
+		onClickCell() {},
 	},
 }
 </script>

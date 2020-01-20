@@ -30,6 +30,6 @@ export const cols = [
 	{
 		prop: 'issue',
 		label: '작업 이슈',
-		width: 100,
+		width: 80,
 	},
 ]

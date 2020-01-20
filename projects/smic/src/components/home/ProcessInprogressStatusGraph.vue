@@ -97,7 +97,7 @@ export default {
 	},
 	methods: {
 		checkMinMaxTime() {
-			const startTime = 3 // Number(this.form.startTime.split(':')[0])
+			const startTime = Number(this.form.startTime.split(':')[0])
 			const endTime = Number(this.form.endTime.split(':')[0])
 			if (startTime > endTime) this.form.endTime = this.form.startTime
 			this.initProcessGraph(jsonData())
