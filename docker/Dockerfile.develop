@@ -4,7 +4,7 @@ ENV PORT=8887
 
 WORKDIR $APP_HOME
 
-ADD . $APP_HOME
+ADD ../dist $APP_HOME/dist
 
 RUN npm install --production
 
