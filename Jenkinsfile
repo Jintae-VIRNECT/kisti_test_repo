@@ -4,7 +4,8 @@ pipeline {
     stage('Clean Old Artifacts') {
       steps {
         echo 'Clean Old Artifacts'
-        sh 'yarn cache clean'
+        sh '''yarn cache clean
+npm cache clear'''
       }
     }
 
