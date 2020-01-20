@@ -4,14 +4,16 @@ ENV PORT=8887
 
 WORKDIR $APP_HOME
 
-COPY ./packages $APP_HOME/packages
-COPY ./projects $APP_HOME/projects
-COPY ./package.json $APP_HOME/package.json
+
+ADD ./packages $APP_HOME/packages
+ADD ./projects $APP_HOME/projects
+ADD ./package.json $APP_HOME/package.json
 
 RUN yarn
 
 EXPOSE $PORT
 
+CMD ["yarn", "workspace", "smic", "build"]
 CMD ["yarn", "workspace", "smic", "start:production"]
 
 
