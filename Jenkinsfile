@@ -19,7 +19,7 @@ pipeline {
 
         stage('Notify Email') {
           steps {
-            mail(subject: 'Stage - Build', body: 'Build...', charset: 'utf8', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
+            mail(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', charset: 'utf8', from: 'virnect.corp@gmail.com', to: '$DEFAULT_RECIPIENTS')
           }
         }
 
