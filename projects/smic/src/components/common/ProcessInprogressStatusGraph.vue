@@ -20,13 +20,13 @@
 			el-time-select(
 				:placeholder='form.startTime'
 				v-model='form.startTime' 
-				:picker-options="{ start: '00:00', step: '01:00', end: '23:00' }"
+				:picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
 				@change="checkMinMaxTime"
 			)
 			el-time-select(
 				:placeholder='form.endTime' 
 				v-model='form.endTime' 
-				:picker-options="{start: '00:00',step: '01:00',end: '23:00',minTime: this.form.startTime == '23:00' ? '22:59' : this.form.startTime}"
+				:picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
 				@change="checkMinMaxTime"
 			)
 			#bar-chart
@@ -47,11 +47,10 @@ const processStatus = [
 ]
 
 function getRandomArbitrary() {
-	return Math.random() * (400 - 0) + 0
+	return Math.random() * (40 - 0) + 0
 }
 function jsonData() {
 	return [
-		{ time: '0', value: () => getRandomArbitrary() },
 		{ time: '1', value: getRandomArbitrary() },
 		{ time: '2', value: getRandomArbitrary() },
 		{ time: '3', value: getRandomArbitrary() },
@@ -75,6 +74,7 @@ function jsonData() {
 		{ time: '21', value: getRandomArbitrary() },
 		{ time: '22', value: getRandomArbitrary() },
 		{ time: '23', value: getRandomArbitrary() },
+		{ time: '24', value: getRandomArbitrary() },
 	]
 }
 export default {
@@ -86,9 +86,8 @@ export default {
 			activeTab: processStatus[0].name,
 			form: {
 				data: null,
-				startTime: '00:00',
-				value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
-				endTime: '23:00',
+				startTime: '01:00',
+				endTime: '24:00',
 			},
 			barChart: null,
 		}
@@ -133,7 +132,6 @@ export default {
 								show: true,
 							},
 							values: [
-								'0',
 								'1',
 								'2',
 								'3',
@@ -157,6 +155,7 @@ export default {
 								'21',
 								'22',
 								'23',
+								'24',
 							],
 						},
 					},

@@ -4,7 +4,7 @@
     page-tab-nav
       template(slot="page-nav--right")
         .search-wrapper
-          el-input.tool.search(placeholder='이름 또는 이메일 검색' v-model='search' )
+          el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='search' )
             el-button(slot='append' icon='el-icon-search')
           span 필터 : 
           el-dropdown.tool.filter

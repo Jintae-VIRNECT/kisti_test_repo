@@ -156,6 +156,7 @@
     margin-top: 7px;
 	}
 	.search-wrapper {
+    margin-bottom: 20px;
 		.search {
 			width: 196px;
 			margin-right: 24px;
@@ -169,8 +170,10 @@
 			margin-right: 8px;
 		}
 		.el-input-group__append {
-			padding: 7px 8px;
-			background-color: rgba(233, 237, 244, 0.5);
+      padding: 7px 8px;
+      .el-button--default {
+			  background-color: rgb(241,243,247);
+      }
 			border: none;
 			color: #7a869a;
 			button {
@@ -183,7 +186,7 @@
 		.el-input__inner {
 			margin-right: 12px;
 			padding: 7px 8px;
-			background-color: rgba(233, 237, 244, 0.5);
+			background-color: rgb(241,243,247);
 			box-shadow: none;
 			border: none;
 			.tool i {
@@ -198,7 +201,7 @@
 			&.order button,
 			&.filter button {
 				padding: 7px 8px;
-				background-color: rgba(233, 237, 244, 0.5);
+				background-color: rgb(241,243,247);
 				border: none;
 				color: #7a869a;
 			}
@@ -208,4 +211,40 @@
 			height: 34px;
 		}
 	}
+}
+
+.el-tag.custom {
+  border: none;
+  padding: 3px 10px;
+  border-radius: 3px;
+  color:#ffffff;
+  height: fit-content;
+  line-height: normal;
+  &.silver {
+    background-color: #8d939c;
+  }
+  &.gray {
+    background-color: #aebbcc;
+  }
+  &.dark-gray {
+    background-color: #6e7277;
+  }
+  &.blue {
+    background-color: #186ae2;
+  }
+  &.dark-blue {
+    background-color: #1d5cb7;
+  }
+  &.dark-red {
+    background-color: #de3636;
+  }
+  &.orange {
+    background-color: #f89637;
+  }
+  &.green {
+    background-color: #2cbc65;
+  }
+}
+.color-red {
+  color: #dd1717;
 }

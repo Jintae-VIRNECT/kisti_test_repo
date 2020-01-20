@@ -4,13 +4,15 @@ pipeline {
     stage('Clean Old Artifacts') {
       steps {
         echo 'Clean Old Artifacts'
+        sh '''yarn cache clean
+'''
       }
     }
 
     stage('Build') {
       steps {
         echo 'Install Package'
-        sh 'npm install'
+        sh 'yarn'
         sh 'yarn workspace smic build'
       }
     }
@@ -20,7 +22,7 @@ pipeline {
         stage('Build Dockerfile') {
           steps {
             echo 'Begin Dockerizing'
-            echo 'Build Dockerfile'
+            sh 'cp docker/Dockerfile.develop ./'
             sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
           }
         }

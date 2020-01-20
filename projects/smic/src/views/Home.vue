@@ -10,7 +10,7 @@
 					:tableData="currentUploadedContent" 
 					:colSetting="tableColSettings.contents"
 					:tableOption="currentUploadedContentTableOption"
-					:moreCol="true")
+					:toolCol="true")
 					template(slot="header-left")
 						span.title 최근 업로드된 콘텐츠
 					template(slot="header-right")
