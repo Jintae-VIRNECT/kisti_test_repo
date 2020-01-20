@@ -19,7 +19,7 @@ pipeline {
 
         stage('Notify Email') {
           steps {
-            emailext(attachLog: true, subject: '$PROJECT_DEFAULT_SUBJECT', body: '$PROJECT_DEFAULT_CONTENT', compressLog: true, to: 'delbert@virnect.com')
+            emailext(attachLog: true, subject: 'PROJECT_DEFAULT_SUBJECT', body: 'PROJECT_DEFAULT_CONTENT', compressLog: true, to: 'delbert@virnect.com', from: 'BUILD_SERVER_#2')
           }
         }
 
