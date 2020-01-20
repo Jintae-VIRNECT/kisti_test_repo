@@ -5,7 +5,7 @@ pipeline {
       steps {
         echo 'Clean Old Artifacts'
         sh '''yarn cache clean
-npm cache clear'''
+'''
       }
     }
 
