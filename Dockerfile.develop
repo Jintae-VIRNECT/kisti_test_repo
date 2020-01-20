@@ -6,7 +6,7 @@ ADD . /
 
 RUN npm install --production
 
-ENV PORT=8887
+ENV PORT=8886
 
 ENV NODE_ENV=develop
 
