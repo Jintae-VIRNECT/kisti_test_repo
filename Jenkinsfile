@@ -10,8 +10,19 @@ pipeline {
     }
 
     stage('Build') {
-      steps {
-        echo 'Install Package'
+      parallel {
+        stage('Build') {
+          steps {
+            echo 'Install Package'
+          }
+        }
+
+        stage('Notify Email') {
+          steps {
+            mail(subject: 'Stage - Build', body: 'Build...', charset: 'utf8', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
+          }
+        }
+
       }
     }
 
