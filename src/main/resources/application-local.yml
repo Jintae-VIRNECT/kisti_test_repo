@@ -15,6 +15,11 @@ spring:
         format_sql: true
 
 
+#logging:
+#  level:
+#    com.virnect.workspace.application.*: DEBUG
+
+
 ## Server Configuration
 server:
   port: 8082

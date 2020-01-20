@@ -20,6 +20,9 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -102,8 +105,10 @@ public class WorkspaceService {
 //        List<Map> result = new ArrayList<Map>();
 
         ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search);
-        log.info("responseMessage: {}, Data: {}", responseMessage, responseMessage.getData());
-        List<UserDTO.UserInfoDTO> userInfoDTOList = (List<UserDTO.UserInfoDTO>) responseMessage.getData().get("userInfoList");
+        Map<String, Object> data = responseMessage.getData();
+        List<Object> results = ((List<Object>) data.get("userInfoList"));
+        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> modelMapper.map(object, UserDTO.UserInfoDTO.class)).collect(Collectors.toList());
+
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
 //
 //        //2. 필터 검증

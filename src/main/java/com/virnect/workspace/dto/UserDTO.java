@@ -3,6 +3,8 @@ package com.virnect.workspace.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-01-17
@@ -22,6 +24,8 @@ public class UserDTO {
         private String profile;
         private String loginLock;
         private String userType;
+        private LocalDateTime createdDate;
+        private LocalDateTime updatedDate;
 
         @Override
         public String toString() {
@@ -33,6 +37,8 @@ public class UserDTO {
                     ", profile='" + profile + '\'' +
                     ", loginLock='" + loginLock + '\'' +
                     ", userType='" + userType + '\'' +
+                    ", createdDate='" + createdDate + '\'' +
+                    ", updatedDate='" + updatedDate + '\'' +
                     '}';
         }
     }
