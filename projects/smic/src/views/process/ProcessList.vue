@@ -33,10 +33,10 @@
 			:setHeader='true'
 			:tableData="currentReportedDetailProcess" 
 			:colSetting="cols"
-			:moreCol="true")
+			:toolCol="true")
 			template(slot="header-left")
 				span.title 공정 목록
-				.header-left__sub-title
+				//- .header-left__sub-title
 					img(src="~@/assets/image/ic-graph.svg")
 					span.sub-title 일자별 공정 진행률 그래프
 			template(slot="header-right")
@@ -48,6 +48,15 @@
 .small-title {
 	margin: 0px 5px 12px 0px;
 	font-size: 12px;
+	color: #0d2a58;
+}
+.sub-title {
+	font-size: 14px;
+	font-weight: 500;
+	font-stretch: normal;
+	font-style: normal;
+	line-height: 2;
+	letter-spacing: normal;
 	color: #0d2a58;
 }
 </style>

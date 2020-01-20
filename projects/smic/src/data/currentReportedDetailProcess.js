@@ -15,6 +15,7 @@ export default [
 		count: 2,
 		total: 10,
 		workerNum: 6,
+		issue: true,
 	},
 	{
 		processId: '2234502',
@@ -29,6 +30,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '작업 이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -47,6 +49,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -65,6 +68,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '작업 이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -83,6 +87,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: false,
 		type: '작업 이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -101,6 +106,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: false,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -119,6 +125,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: false,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -137,6 +144,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -155,6 +163,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -173,6 +182,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,
@@ -191,6 +201,7 @@ export default [
 		numOfDetailProcess: 6,
 		processPercent: 90,
 		workerNum: 6,
+		issue: true,
 		type: '이슈',
 		// 체결수 = count / total
 		count: 2,

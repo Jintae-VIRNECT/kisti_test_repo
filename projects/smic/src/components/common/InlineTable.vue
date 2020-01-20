@@ -32,6 +32,10 @@
 						.content-name(v-else-if="dataType === 'contents' && prop === 'name'")
 							img.prefix-img(src="~@/assets/image/ic-content.svg")
 							span {{tableData[scope.$index][prop]}}
+							
+						div(v-else-if="prop === 'issue'")
+							.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
+							span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
 						div(v-else-if="prop === 'type'")
 							span.issue-type {{tableData[scope.$index][prop]}}
 						//- auths String.substring(0,12) + '...'
@@ -58,17 +62,9 @@
 							span {{ tableData[scope.$index][prop] }}
 					//- template(v-else) 
 					//- 	span {{ tableData[scope.$index][prop] }}
-				el-table-column(v-if="moreCol" :width="50")
+				el-table-column(v-if="toolCol" :width="50")
 					template(slot-scope='scope')
-						el-dropdown(trigger="click")
-							span.el-dropdown-link
-								i.el-icon-more.el-icon--right
-							el-dropdown-menu(slot='dropdown')
-								el-dropdown-item(icon='el-icon-plus') Action 1
-								el-dropdown-item(icon='el-icon-circle-plus') Action 2
-								el-dropdown-item(icon='el-icon-circle-plus-outline') Action 3
-								el-dropdown-item(icon='el-icon-check') Action 4
-								el-dropdown-item(icon='el-icon-circle-check') Action 5
+						process-tool-dropdown(:processId="tableData[scope.$index].processId")
 		el-pagination.inline-table-pagination(
 			v-if='setPagination'
 			:hide-on-single-page='false' 
@@ -82,14 +78,19 @@
 		)
 </template>
 <script>
+import processToolDropdown from '@/components/common/processToolDropdown'
+
 export default {
+	components: {
+		processToolDropdown,
+	},
 	props: {
 		tableData: Array,
 		setPagination: Boolean,
 		dataType: String,
 		setHeader: Boolean,
 		colSetting: Array,
-		moreCol: Boolean,
+		toolCol: Boolean,
 		tableOption: {
 			title: String,
 			// colSetting: Array,
@@ -130,10 +131,14 @@ export default {
 
 			return className + suffix
 		},
-		onClickCell(row) {
-			const { rowIdName, subdomain } = this.$props.tableOption
-			if (!rowIdName) return false
-			this.$router.push(`${subdomain}/${row[rowIdName]}`)
+		onClickCell(row, column, cell, event) {
+			console.log('row : ', row)
+			console.log('column : ', column)
+			console.log('cell : ', cell)
+			console.log('event : ', event)
+			// const { rowIdName, subdomain } = this.$props.tableOption
+			// if (!rowIdName) return false
+			// this.$router.push(`${subdomain}/${row[rowIdName]}`)
 		},
 	},
 	filters: {
@@ -312,6 +317,20 @@ export default {
 	}
 	.el-table__row td:first-child .cell {
 		margin-left: 30px !important;
+	}
+	.blub {
+		width: 6px;
+		height: 6px;
+		display: inline-block;
+		border-radius: 50%;
+		margin-right: 10px;
+		vertical-align: middle;
+		&.on {
+			background-color: #ee5c57;
+		}
+		&.off {
+			background-color: #aabbce;
+		}
 	}
 }
 </style>

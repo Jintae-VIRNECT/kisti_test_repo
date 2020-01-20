@@ -212,3 +212,39 @@
 		}
 	}
 }
+
+.el-tag.custom {
+  border: none;
+  padding: 3px 10px;
+  border-radius: 3px;
+  color:#ffffff;
+  height: fit-content;
+  line-height: normal;
+  &.silver {
+    background-color: #8d939c;
+  }
+  &.gray {
+    background-color: #aebbcc;
+  }
+  &.dark-gray {
+    background-color: #6e7277;
+  }
+  &.blue {
+    background-color: #186ae2;
+  }
+  &.dark-blue {
+    background-color: #1d5cb7;
+  }
+  &.dark-red {
+    background-color: #de3636;
+  }
+  &.orange {
+    background-color: #f89637;
+  }
+  &.green {
+    background-color: #2cbc65;
+  }
+}
+.color-red {
+  color: #dd1717;
+}

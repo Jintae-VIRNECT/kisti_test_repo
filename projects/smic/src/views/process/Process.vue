@@ -7,10 +7,6 @@
           el-button 신규 공정 등록
     router-view
 </template>
-<style lang="scss" scoped>
-.enroll-new-process {
-}
-</style>
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
 export default {

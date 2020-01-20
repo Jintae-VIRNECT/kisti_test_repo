@@ -18,7 +18,7 @@ $color_bg_default: #ffffff;
 .admin-body {
     overflow: hidden;
     position: relative;
-    width: 1300px;
+    max-width: 1300px;
     // padding: 0 50px 40px;
     margin: auto;
     &__header {
