@@ -8,7 +8,8 @@ const logger = require('./server/logger')
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
-app.use(express.static(path.join(__dirname, 'dist')))
+// app.use(express.static(path.join(__dirname, 'dist')))
+app.use('/dist', express.static(__dirname + '/dist'))
 
 app.post('/logs', bodyParser.json(), function(req, res) {
 	res.header('Content-Type', 'application/json')
