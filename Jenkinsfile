@@ -19,7 +19,7 @@ pipeline {
 
         stage('Notify Email') {
           steps {
-            mail(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', charset: 'utf8', from: 'virnect.corp@gmail.com', to: '$DEFAULT_RECIPIENTS')
+            mail(subject: '$PROJECT_NAME - $BUILD_NUMBER', body: 'Build start... $BUILD_URL', charset: 'utf8', from: 'virnect.corp@gmail.com', to: '$EMAUL_TO')
           }
         }
 
