@@ -10,7 +10,8 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Install Package'
-        sh 'npm install'
+        sh '''npm install
+yarn'''
         sh 'yarn workspace smic build'
       }
     }
