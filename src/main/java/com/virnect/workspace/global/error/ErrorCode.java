@@ -8,7 +8,12 @@ package com.virnect.workspace.global.error;
  * DESCRIPTION:
  */
 public enum ErrorCode {
-    SOME_ERROR_MESSAGE(1, "error message");
+    // 공통 에러
+    ERR_API_AUTHENTICATION(8003, "Authentication Error"),
+    ERR_INVALID_VALUE(8004,"Invalid Value"),
+    ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
+    ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+
     private int code;
     private String message;
 
