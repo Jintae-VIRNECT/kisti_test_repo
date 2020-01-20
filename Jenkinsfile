@@ -20,7 +20,7 @@ pipeline {
         stage('Build Dockerfile') {
           steps {
             echo 'Begin Dockerizing'
-            echo 'Build Dockerfile'
+            sh 'cp docker/Dockerfile.develop ./'
             sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
           }
         }
