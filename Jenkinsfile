@@ -10,10 +10,19 @@ pipeline {
     }
 
     stage('Build') {
-      steps {
-        echo 'Install Package'
-        sh 'yarn'
-        sh 'yarn workspace smic build'
+      parallel {
+        stage('Build') {
+          steps {
+            echo 'Install Package'
+          }
+        }
+
+        stage('Notify Email') {
+          steps {
+            emailext(attachLog: true, subject: 'WebWorkStation Operated..', body: 'Start Build...', compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
+          }
+        }
+
       }
     }
 
@@ -35,13 +44,30 @@ docker rm pf-webworkstation-develop || true'''
           }
         }
 
+        stage('Notify Email') {
+          steps {
+            emailext(subject: 'WebWorkStation Operated...', body: 'Start Dockerizing...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
+          }
+        }
+
       }
     }
 
     stage('Deploy') {
-      steps {
-        echo 'Start Deploy'
-        sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+      parallel {
+        stage('Deploy') {
+          steps {
+            echo 'Start Deploy'
+            sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+          }
+        }
+
+        stage('Notify Email') {
+          steps {
+            emailext(subject: 'WebWorkStation Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, to: 'delbert@virnect.com dave@virnect.com')
+          }
+        }
+
       }
     }
 
