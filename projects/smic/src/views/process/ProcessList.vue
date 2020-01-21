@@ -32,17 +32,72 @@
 						el-dropdown-item Action 3
 						el-dropdown-item Action 4
 						el-dropdown-item Action 5
-		inline-table(
-			:setHeader='true'
-			:tableData="currentReportedDetailProcess" 
-			:tableOption="tableOption"
-			:colSetting="cols"
-			:controlCol="true")
-			template(slot="header-left")
-				span.title 공정 목록
-			.inline-table__header.text-right(slot="header-right")
-				span.sub-title 등록된 공정 수 
-				span.value 102
+		//- inline-table(
+		//- 	:setHeader='true'
+		//- 	:tableData="currentReportedDetailProcess" 
+		//- 	:tableOption="tableOption"
+		//- 	:colSetting="cols"
+		//- 	:controlCol="true")
+		//- 	template(slot="header-left")
+		//- 		span.title 공정 목록
+		//- 	.inline-table__header.text-right(slot="header-right")
+		//- 		span.sub-title 등록된 공정 수 
+		//- 		span.value 102
+		.card
+			.card__header
+				.card__header--left
+					span.title 공정 목록
+				.card__header--right
+					.inline-table__header.text-right
+						span.sub-title 등록된 공정 수 
+						span.value 102
+			.card__body
+				el-table.inline-table(
+					:data='tableData' 
+					style='width: 100%'
+					@cell-click="onClickCell")
+					el-table-column(
+						v-for="{label, width, prop} in colSetting" 
+						:key="prop" 
+						:prop="prop" 
+						:label="label" 
+						:width="width || ''") 
+						template(slot-scope='scope')
+							.process-percent(v-if="prop === 'processPercent'")
+								el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
+							div(v-else-if="prop === 'numOfDetailProcess'")
+								span.nums {{tableData[scope.$index][prop]}}								
+							div(v-else-if="prop === 'issue'")
+								.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
+								span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
+							div(v-else-if="prop === 'auths'")
+								span {{tableData[scope.$index][prop] | limitAuthsLength}}
+							//- schedule = (startAt ~ endAt)
+							.total-done(v-else-if="prop === 'schedule'")
+								span {{tableData[scope.$index]['startAt']}} 
+								span &nbsp;~ {{tableData[scope.$index]['endAt']}}
+							div(v-else-if="prop === 'status'")
+								button.btn.btn--status(
+									size="mini" 
+									:class="tableData[scope.$index][prop]" 
+									plain
+								) {{ tableData[scope.$index][prop] | statusFilterName }}
+							div(v-else)
+								span {{ tableData[scope.$index][prop] }}
+					el-table-column(:width="50" class-name="control-col")
+						template(slot-scope='scope')
+							process-control-dropdown(:processId="tableData[scope.$index].processId")
+			//- el-pagination.inline-table-pagination(
+			//- 	v-if='setPagination'
+			//- 	:hide-on-single-page='false' 
+			//- 	:page-size="pageSize" 
+			//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
+			//- 	:total='tableData.length' 
+			//- 	layout='prev, jumper, next'
+			//- 	:current-page='currentPage'
+			//- 	@prev-click='currentPage -= 1'
+			//- 	@next-click='currentPage += 1'
+			//- )
 </template>
 <script>
 // UI component
@@ -51,13 +106,10 @@ import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 
+// model
 import { cols } from '@/models/process'
-
-const tableOption = {
-	rowIdName: 'processId',
-	subdomain: '/process',
-}
 
 /// data
 import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
@@ -69,23 +121,51 @@ export default {
 		ProcessDashBanner,
 		PageTabNav,
 		PageBreadCrumb,
+		ProcessControlDropdown,
 	},
 	data() {
 		return {
-			value1: '',
-			progressData: {
-				overallProcessPercent: 90,
-				progressByDay: [5, 10, 20, 30, 40, 66, 20],
-				progressByDayLastDate: '2020.01.13',
-			},
-			currentReportedDetailProcess,
+			tableData: currentReportedDetailProcess,
 			search: null,
-			tableOption,
+			tableOption: {
+				rowIdName: 'processId',
+				subdomain: '/process',
+			},
+			colSetting: cols,
 		}
 	},
 	computed: {
 		cols() {
 			return cols
+		},
+	},
+	methods: {
+		onClickCell(row, column) {
+			if (column.className === 'control-col') return false
+			const { rowIdName, subdomain } = this.tableOption
+			if (!rowIdName) return false
+			this.$router.push(`${subdomain}/${row[rowIdName]}`)
+		},
+	},
+	filters: {
+		statusFilterName(value) {
+			if (value == 'complete') return '완료'
+			else if (value == 'progress') return '진행'
+			else if (value == 'idle') return '미진행'
+			else if (value == 'imcomplete') return '미흡'
+		},
+		limitAuthsLength(array) {
+			let answer = ''
+			let sumOfStrings = 0
+			const divider = ', '
+			for (let i = 0; i < array.length; i++) {
+				answer += array[i]
+				sumOfStrings += array[i].length + divider.length
+				if (sumOfStrings > 13) return answer + '...'
+				if (array.length - 1 === i) break
+				answer += divider
+			}
+			return answer
 		},
 	},
 }

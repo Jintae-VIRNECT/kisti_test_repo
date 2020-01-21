@@ -8,7 +8,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -20,7 +20,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'publishing',
 		processRegister: false,
 	},
 	{
@@ -32,7 +32,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: false,
+		contentPublish: 'managing',
 		processRegister: true,
 	},
 	{
@@ -44,7 +44,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: false,
+		contentPublish: 'stop',
 		processRegister: false,
 	},
 	{
@@ -56,7 +56,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -68,7 +68,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -80,7 +80,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -92,7 +92,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -104,7 +104,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 	{
@@ -116,7 +116,7 @@ export default [
 		profileImg: require('@/assets/image/profileImg.jpg'),
 		profile_img: '',
 		volume: '20',
-		contentPublish: true,
+		contentPublish: 'stop',
 		processRegister: true,
 	},
 ]

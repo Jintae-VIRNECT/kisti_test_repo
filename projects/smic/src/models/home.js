@@ -29,8 +29,8 @@ export const tableColSettings = {
 		},
 		{
 			prop: 'contentPublish',
-			label: '배포중',
-			width: 70,
+			label: '배포상태',
+			width: 100,
 		},
 	],
 	// process: [

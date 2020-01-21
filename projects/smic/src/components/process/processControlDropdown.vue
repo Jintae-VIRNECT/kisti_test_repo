@@ -1,22 +1,21 @@
 <template lang="pug">
-	.process-tool-dropdown
-		el-dropdown(trigger="click")
-			span.el-dropdown-link
-				i.el-icon-more.el-icon--right
-			el-dropdown-menu(slot='dropdown')
-				el-dropdown-item 
-					a(@click="endProcess") 공정 마감
-				el-dropdown-item 
-					a(@click="addProcess") 공정 추가 생성
-				el-dropdown-item 
-					a(@click="editProcess") 공정 편집
-				el-dropdown-item.color-red(@click.prevent="deleteProcess") 삭제
+	el-dropdown(trigger="click")
+		span.el-dropdown-link
+			i.el-icon-more.el-icon--right
+		el-dropdown-menu(slot='dropdown')
+			el-dropdown-item 
+				div(@click="endProcess") 공정 마감
+			el-dropdown-item 
+				div(@click="addProcess") 공정 추가 생성
+			el-dropdown-item 
+				div(@click="editProcess") 공정 편집
+			el-dropdown-item
+				.color-red(@click.prevent="deleteProcess") 삭제
 		process-control-dropdown-new-modal(
 			@update="onProcessNewModal" 
 			:toggleProcessNewModal="toggleProcessNewModal"
 		)
 </template>
-
 <script>
 import ProcessControlDropdownNewModal from '@/components/process/ProcessControlDropdownNewModal'
 export default {
