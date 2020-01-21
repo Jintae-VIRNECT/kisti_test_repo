@@ -11,7 +11,7 @@
           v-html="chat.text"
         ></p>
       </div>
-      <span v-if="!hideTime" class="time">{{ $moment(chat.date).calendar(null, { sameElse: 'hh:mm'}) }}</span>
+      <span v-if="!hideTime" class="time">{{ $moment(chat.date).format('A hh:mm') }}</span>
       <!-- <span v-if="!hideTime" class="time">{{ chat.date }}</span> -->
     </div>
   </li>
@@ -48,10 +48,15 @@ export default {
         return false
       }
 
-      if(this.$moment(this.afterChat.date).calendar(null, { sameElse: 'L A h:mm'})
-         !== this.$moment(this.chat.date).calendar(null, { sameElse: 'L A h:mm'})) {
+      if(this.$moment(this.afterChat.date).format('A hh:mm')
+         !== this.$moment(this.chat.date).format('A hh:mm')) {
         return false
       }
+
+      if(this.afterChat.nodeId !== this.chat.nodeId) {
+        return false
+      }
+
       return true
     },
     hideProfile() {
@@ -59,9 +64,10 @@ export default {
         return false
       }
       
-      if(this.beforeChat.type === this.chat.type) {
+      if(this.beforeChat.type === this.chat.type && this.beforeChat.nodeId === this.chat.nodeId) {
         return true
       }
+
       return false
     }
   },
@@ -69,6 +75,8 @@ export default {
 	methods: {},
 
 	/* Lifecycles */
-	mounted() {}
+	mounted() {
+    console.log(this.chat)
+  }
 }
 </script>

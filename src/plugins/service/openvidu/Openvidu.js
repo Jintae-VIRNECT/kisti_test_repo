@@ -40,7 +40,7 @@ export default {
           //   text: streamObj.nickName + '님이 대화에 참여하셨습니다.',
           //   name: 'people',
           //   date: new Date,
-          //   chatId: null,
+          //   nodeId: null,
           //   type: 'system'
           // })
           subscribers.push(subscriber)
@@ -87,7 +87,7 @@ export default {
           text: data.replace(/\</g, '&lt;'),
           name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
           date: new Date(),
-          chatId: event.from.rpcSessionId,
+          nodeId: event.from.connectionId,
           type: false
         }
         if (session.connection.connectionId === event.from.connectionId) {
@@ -104,7 +104,7 @@ export default {
           text: data.split('::')[1].replace(/\</g, '&lt;'),
           name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
           date: data.split('::')[0],
-          chatId: event.from.rpcSessionId,
+          nodeId: event.from.connectionId,
           type: false
         }
         Store.dispatch('addChat', chat)

@@ -26,15 +26,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$dark-button: #000;
+$dark-button-text: #fff;
+$bright-button: #fff;
+$bright-button-text: #000;
+$button-color: $dark-button;
+$button-text-color: $dark-button-text;
 @mixin theme-dark() {
-  @at-root [theme="dark"] & {
+  @at-root [theme=dark] & {
     @content;
   }
 }
 @mixin theme-bright() {
-  @at-root [theme="bright"] & {
+  @at-root [theme=bright] & {
     @content;
   }
+}
+
+:root [theme=dark] {
+  $button-color: #{$dark-button} !global;
+  $button-text-color: #{$dark-button-text} !global;
+}
+
+:root [theme=bright] {
+  $button-color: #{$bright-button} !global;
+  $button-text-color: #{$bright-button-text} !global;
 }
 
 .theme {
@@ -61,14 +77,16 @@ export default {
   &-button {
     padding: 10px;
     border-radius: 4px;
-    @include theme-dark {
-      background-color: #000;
-      color: #fff;
-    }
-    @include theme-bright {
-      background-color: #eee;
-      color: #000;
-    }
+    background-color: $button-color;
+    color: $button-text-color;
+    // @include theme-dark {
+    //   background-color: #000;
+    //   color: #fff;
+    // }
+    // @include theme-bright {
+    //   background-color: #eee;
+    //   color: #000;
+    // }
   }
 }
 </style>
