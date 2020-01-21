@@ -24,8 +24,8 @@ public class UserDTO {
         private String profile;
         private String loginLock;
         private String userType;
-        private LocalDateTime createdDate;
-        private LocalDateTime updatedDate;
+        private String createdDate;
+        private String updatedDate;
 
         @Override
         public String toString() {
