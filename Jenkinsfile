@@ -64,7 +64,7 @@ docker rm pf-webworkstation-develop || true'''
 
         stage('Notify Email') {
           steps {
-            emailext(subject: 'WebWorkStation Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, to: 'delbert@virnect.com dave@virnect.com')
+            emailext(subject: 'WebWorkStation Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
           }
         }
 
