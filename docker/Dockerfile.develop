@@ -1,18 +1,14 @@
 FROM node:alpine
-
-WORKDIR /
-
-ADD . /
-
-RUN npm install --production
-
+ENV APP_HOME=/usr/app
 ENV PORT=8886
-
 ENV NODE_ENV=develop
-
 ENV SSL_ENV=private
 
-ENV PATH /usr/local/bin:$PATH
+WORKDIR $APP_HOME
+
+ADD . /$APP_HOME
+
+RUN npm install --production
 
 EXPOSE ${PORT}
 
