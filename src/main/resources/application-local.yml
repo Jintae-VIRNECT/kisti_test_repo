@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/smic?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: qjsprxm0!
+    password: root
   jpa:
     hibernate:
       ddl-auto: validate

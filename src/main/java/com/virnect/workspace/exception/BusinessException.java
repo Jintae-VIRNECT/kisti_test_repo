@@ -1,4 +1,4 @@
-package com.virnect.workspace.global.error.exception;
+package com.virnect.workspace.exception;
 
 import com.virnect.workspace.global.error.ErrorCode;
 
@@ -14,7 +14,6 @@ public class BusinessException extends RuntimeException {
     private ErrorCode errorCode;
 
     public BusinessException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 

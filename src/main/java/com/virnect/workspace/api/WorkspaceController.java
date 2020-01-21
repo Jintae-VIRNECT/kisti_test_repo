@@ -2,7 +2,7 @@ package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.WorkspaceService;
 import com.virnect.workspace.dto.WorkspaceDTO;
-import com.virnect.workspace.exception.InvalidParamsException;
+import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ResponseMessage;
 import com.virnect.workspace.global.error.ErrorCode;
 import lombok.AccessLevel;
@@ -33,7 +33,7 @@ public class WorkspaceController {
     public ResponseEntity<ResponseMessage> createWorkspace(@RequestBody @Valid WorkspaceDTO.WorkspaceInfo WorkspaceInfo, BindingResult result) {
         log.info("createWorkspace : {}", WorkspaceInfo);
         if (result.hasErrors()) {
-            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
+            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         } else {
             ResponseMessage responseMessage = this.workspaceService.createWorkspace(WorkspaceInfo);
             return ResponseEntity.ok(responseMessage);
@@ -44,7 +44,7 @@ public class WorkspaceController {
     public ResponseEntity<ResponseMessage> getUserWorkspaces(@PathVariable("userId") String userId) {
         log.info("getWorkspace : {}", userId);
         if (!StringUtils.hasText(userId)) {
-            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
+            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ResponseMessage responseMessage = this.workspaceService.getUserWorkspaces(userId);
         return ResponseEntity.ok(responseMessage);
@@ -53,7 +53,7 @@ public class WorkspaceController {
     @GetMapping("{workspaceId}/members/{userId}")
     public ResponseEntity<ResponseMessage> getMember(@PathVariable("workspaceId") long workspaceId, @PathVariable("userId") String userId, @RequestParam("search") String search, @RequestParam("filter") String filter, @RequestParam("align") String align) {
         if (!StringUtils.hasText(userId) || workspaceId <= 0) {
-            throw new InvalidParamsException(ErrorCode.SOME_ERROR_MESSAGE);
+            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ResponseMessage responseMessage = this.workspaceService.getMember(workspaceId, userId, search, filter, align);
         return ResponseEntity.ok(responseMessage);
