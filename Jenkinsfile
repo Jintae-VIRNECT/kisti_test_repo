@@ -9,15 +9,10 @@ pipeline {
 
     stage('Build') {
       parallel {
-        stage('Install Package') {
+        stage('Build Source') {
           steps {
             echo 'Install Package'
             sh 'npm install'
-          }
-        }
-
-        stage('Build Source') {
-          steps {
             sh 'npm run build:develop'
           }
         }
