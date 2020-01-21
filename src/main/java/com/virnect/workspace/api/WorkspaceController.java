@@ -51,8 +51,8 @@ public class WorkspaceController {
     }
 
     @GetMapping("{workspaceId}/members/{userId}")
-    public ResponseEntity<ResponseMessage> getMember(@PathVariable("workspaceId") long workspaceId, @PathVariable("userId") String userId, @RequestParam("search") String search, @RequestParam("filter") String filter, @RequestParam("align") String align) {
-        if (!StringUtils.hasText(userId) || workspaceId <= 0) {
+    public ResponseEntity<ResponseMessage> getMember(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam("search") String search, @RequestParam("filter") String filter, @RequestParam("align") String align) {
+        if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ResponseMessage responseMessage = this.workspaceService.getMember(workspaceId, userId, search, filter, align);

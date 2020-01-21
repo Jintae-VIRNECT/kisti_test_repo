@@ -1,6 +1,7 @@
 package com.virnect.workspace.dao;
 
 import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceUser;
 
 /**
  * Project: PF-Workspace
@@ -10,5 +11,5 @@ import com.virnect.workspace.domain.WorkspaceRole;
  * DESCRIPTION:
  */
 public interface WorkspaceUserPermissionRepositoryCustom {
-    WorkspaceRole findWorkspaceUserRole(String uuid, long workspaceId);
+    WorkspaceRole findWorkspaceUserRole(WorkspaceUser workspaceUser);
 }

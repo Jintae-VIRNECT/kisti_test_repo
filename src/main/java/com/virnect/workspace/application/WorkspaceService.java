@@ -1,8 +1,5 @@
 package com.virnect.workspace.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceUser;
@@ -37,7 +34,6 @@ public class WorkspaceService {
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceInfo workspaceInfo) {
         //이메일 계정이 있는 사용자 인지 체크 : 마스터가 만들어낸 계정은 워크스페이스를 생성할 수 없다. -> UserServer 에 요청
@@ -74,9 +70,6 @@ public class WorkspaceService {
                 .build();
         this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
-//        Map<String, Object> responseData = new HashMap<>();
-//        responseData.put("workspace", newWorkspace);
-//        return new ResponseMessage().builder().code(200).data(responseData).message("complete").build();
         return new ResponseMessage().addParam("workspace", newWorkspace);
     }
 
@@ -90,65 +83,22 @@ public class WorkspaceService {
             userWorkspaceList.add(userWorkspaceInfo);
         });
 
-//        Map<String, Object> responseData = new HashMap<>();
-//        responseData.put("workspace", userWorkspaceList);
-//        return new ResponseMessage().builder().code(200).data(responseData).message("complete").build();
         return new ResponseMessage().addParam("workspaceList", userWorkspaceList);
     }
 
-    public ResponseMessage getMember(long workspaceId, String userId, String search, String filter, String align) {
-//        //1. 검색 검증
-//        String url = "http://localhost:8080/workspaces/test"; //userServer url
-//        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
-//                .queryParam("uuid", userId)
-//                .queryParam("search", search)
-//                .build(false);    //자동으로 encode해주는 것을 막기 위해 false
-//
-//        ArrayList<Map> tempResult = new HttpRequest().getUserSearchList(uriComponents);
-//        List<Map> result = new ArrayList<Map>();
+    public ResponseMessage getMember(String workspaceUUID, String userId, String search, String filter, String align) {
 
         ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search);
         Map<String, Object> data = responseMessage.getData();
+        log.info("ResponseMessage: {}", data);
         List<Object> results = ((List<Object>) data.get("userInfoList"));
-        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {
-            UserDTO.UserInfoDTO userInfoDTO = null;
-            try {
-                userInfoDTO = modelMapper.map(objectMapper.writeValueAsString(object), UserDTO.UserInfoDTO.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            return userInfoDTO;
-        }).collect(Collectors.toList());
-
+        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> modelMapper.map(object, UserDTO.UserInfoDTO.class)).collect(Collectors.toList());
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
-//
-//        //2. 필터 검증
-//        Map<String, Object> responseData = new HashMap<>();
-//        if (filter.equals("MASTER")) {
-//            for (Map obj : tempResult) {
-//                String uuid = obj.get("uuid").toString();
-//                String workspaceRole = this.workspaceUserPermissionRepository.findWorkspaceUserRole(uuid, workspaceId).getRole();
-//                if (workspaceRole.equals("MASTER")) {
-//                    result.add(obj);
-//                }
-//            }
-//        } else {
-//            result = tempResult;
-//        }
-//
-//
-//        //3. 정렬 검증(기본값은 ㄱ~ㅎ)
-//        if (align.equals("asc") || !StringUtils.hasText(align)) {
-//            result.sort(Comparator.comparing(map -> map.get("name").toString()));
-//        } else {
-//            result.sort((first, second) -> second.get("name").toString().compareTo(first.get("name").toString()));
-//        }
-
 
         //2. 필터 검증
         if (filter.equals("MASTER")) {
             for (UserDTO.UserInfoDTO userInfo : userInfoDTOList) {
-                if (this.hasRoleIs(userInfo.getUuid(), workspaceId, "MASTER")) {
+                if (this.hasRoleIs(userInfo.getUuid(), workspaceUUID, "MASTER")) {
                     result.add(userInfo);
                 }
             }
@@ -163,8 +113,6 @@ public class WorkspaceService {
             result.sort((first, second) -> second.getName().compareTo(first.getName()));
         }
 
-//        responseData.put("memberList", result);
-//        return new ResponseMessage().builder().code(200).data(responseData).message("complete").build();
         return new ResponseMessage().addParam("memberList", result);
     }
 
@@ -172,12 +120,15 @@ public class WorkspaceService {
      * 워크스페이스 유저 역할 검사
      *
      * @param userId      - 유저 고유 아이디
-     * @param workspaceId - 워크스페이스 고유 아이디
+     * @param workspaceUUID - 워크스페이스 고유 아이디
      * @param role        - 비교 대상 역할
      * @return 역할 비교 결과
      */
-    private boolean hasRoleIs(final String userId, final long workspaceId, final String role) {
-        return this.workspaceUserPermissionRepository.findWorkspaceUserRole(userId, workspaceId).getRole().equals(role);
+    private boolean hasRoleIs(final String userId, final String workspaceUUID, final String role) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceUUID);
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId, workspace);
+        return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceUser).getRole().equals(role);
     }
+
 }
 
