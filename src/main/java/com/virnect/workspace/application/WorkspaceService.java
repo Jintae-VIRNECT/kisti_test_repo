@@ -1,5 +1,8 @@
 package com.virnect.workspace.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceUser;
@@ -34,6 +37,7 @@ public class WorkspaceService {
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceInfo workspaceInfo) {
         //이메일 계정이 있는 사용자 인지 체크 : 마스터가 만들어낸 계정은 워크스페이스를 생성할 수 없다. -> UserServer 에 요청
@@ -106,7 +110,15 @@ public class WorkspaceService {
         ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search);
         Map<String, Object> data = responseMessage.getData();
         List<Object> results = ((List<Object>) data.get("userInfoList"));
-        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> modelMapper.map(object, UserDTO.UserInfoDTO.class)).collect(Collectors.toList());
+        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {
+            UserDTO.UserInfoDTO userInfoDTO = null;
+            try {
+                userInfoDTO = modelMapper.map(objectMapper.writeValueAsString(object), UserDTO.UserInfoDTO.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return userInfoDTO;
+        }).collect(Collectors.toList());
 
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
 //
