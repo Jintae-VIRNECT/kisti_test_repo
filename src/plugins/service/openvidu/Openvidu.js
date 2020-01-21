@@ -62,7 +62,42 @@ export default {
         Store.dispatch('removeSession', connectionId)
       });
 
+      session.on('signal:audio', (event) => {
+        let updateSession = {
+          nodeId: event.from.connectionId,
+          audio: event.data === 'true' ? true: false
+        }
+
+        Store.dispatch('updateSessionInfo', updateSession)
+      })
+
+      session.on('signal:video', (event) => {
+        let updateSession = {
+          nodeId: event.from.connectionId,
+          video: event.data === 'true' ? true: false
+        }
+
+        Store.dispatch('updateSessionInfo', updateSession)
+      })
+
       session.on('signal:chat', (event) => {
+        console.log(event)
+        let data = event.data
+        let chat = {
+          text: data.replace(/\</g, '&lt;'),
+          name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
+          date: new Date(),
+          chatId: event.from.rpcSessionId,
+          type: false
+        }
+        if (session.connection.connectionId === event.from.connectionId) {
+          // 본인
+          chat.type = 'me'
+        }
+        Store.dispatch('addChat', chat)
+      })
+
+      session.on('signal:pointing', (event) => {
         console.log(event)
         let data = event.data
         let chat = {
@@ -71,10 +106,6 @@ export default {
           date: data.split('::')[0],
           chatId: event.from.rpcSessionId,
           type: false
-        }
-        if (session.connection.connectionId === event.from.connectionId) {
-          // 본인
-          chat.type = 'me'
         }
         Store.dispatch('addChat', chat)
       })
@@ -109,7 +140,9 @@ export default {
           stream: null,
           nickName: clientData,
           // userName: serverData,
-          nodeId: nodeId
+          nodeId: nodeId,
+          audio: true,
+          video: true
         }
       }
       
@@ -280,11 +313,18 @@ export default {
       sendChat: (text) => {
         if (text.trim().length === 0) return
         session.signal({
-          data: new Date+'::'+text.trim(),
+          data: text.trim(),
           to: session.connection,
           type: 'signal:chat'
         })
       },
+      // sendAudio: (type) => {
+      //   session.signal({
+      //     enable: type,
+      //     to: session.connection,
+      //     type: 'signal:audio'
+      //   })
+      // },
       getDevices: () => {
         return new Promise((resolve, reject) => {
           OV.getDevices()
@@ -316,9 +356,19 @@ export default {
       streamOnOff: (active) => {
         // console.log(publisher.stream.audioActive)
         publisher.publishVideo(active)
+        session.signal({
+          data: active ? "true" : "false",
+          to: session.connection,
+          type: 'signal:video'
+        })
       },
       micOnOff: (active) => {
         publisher.publishAudio(active)
+        session.signal({
+          data: active ? "true" : "false",
+          to: session.connection,
+          type: 'signal:audio'
+        })
       },
       audioOnOff: (id, statue) => {
           let idx = subscribers.findIndex(subscriber => subscriber.id.indexOf(id) > -1)

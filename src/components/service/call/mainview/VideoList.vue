@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import ListVideo from './partials/ListVideo'
 export default {
 	name: "VideoList",
@@ -35,21 +35,34 @@ export default {
     }
 	},
 	computed: {
-    ...mapGetters(['sessions'])
+    ...mapGetters(['sessions', 'mainSession'])
   },
 	watch: {
-    sessions (newVal, oldVal) {
-      // console.log(newVal.length, oldVal.length)
-      // if(newVal.length > oldVal.length) {
-        this.$nextTick(() => {
-          if (this.$refs['sessionListScrollbar']) {
-            this.$refs['sessionListScrollbar'].scrollToY(999999999)
+    'sessions.length' :{
+      deep: false,
+      handler(newVal, oldVal) {
+        if(newVal > oldVal) {
+          this.$nextTick(() => {
+            if (this.$refs['sessionListScrollbar']) {
+              this.$refs['sessionListScrollbar'].scrollToX(999999999)
+            }
+          })
+        } else if(newVal < oldVal) {
+          let idx = this.sessions.findIndex(session => session.nodeId === this.mainSession.nodeId)
+          if(idx < 0) {
+            this.setMainSession(this.sessions[0])
           }
-        })
-      // }
+          this.$nextTick(() => {
+            if (this.$refs['sessionListScrollbar']) {
+              this.$refs['sessionListScrollbar'].scrollToX(999999999)
+            }
+          })
+        }
+      }
     }
   },
 	methods: {
+    ...mapActions(['setMainSession']),
     more() {
       console.log('추가 초대하기')
     }

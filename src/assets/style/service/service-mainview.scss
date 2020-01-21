@@ -11,6 +11,13 @@
   position: relative;
   width: 100%;
   height: calc(100% - 230px);
+  &__pointing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
   &__box {
     position: relative;
     width: 100%;

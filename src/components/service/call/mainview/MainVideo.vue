@@ -11,13 +11,19 @@
         :muted="!speaker"
         autoplay
         playsinline 
-        loop>
-    </video>
+        loop
+    ></video>
+
+    <pointing
+        v-if="true"
+        :scale="1"
+        class="main-video__pointing"
+    ></pointing>
 
     <div class="main-video__info">
       <img class="profile" src="~assets/image/call/chat_img_user.png"/>
       <span class="name">{{ session.nickName }}</span>
-      <span class="status" :class="status">연결상태</span>
+      <span class="status" :class="status">우수</span>
     </div>
 
     <button v-if="session.nodeId === 'main'" class="main-video__setting">화면 설정</button>
@@ -28,9 +34,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+
+import Pointing from './partials/Pointing'
 export default {
 	name: "MainVideo",
-	components: {},
+	components: {
+    Pointing
+  },
 	data() {
 		return {
       status: 'good'  // good, normal, bad
@@ -63,11 +73,13 @@ export default {
         wrapperHeight = mainWrapper.offsetHeight
 
       if(videoHeight / videoWidth > wrapperHeight / wrapperWidth) {
+        videoBox.style.width = 'auto'
         videoEl.style.width = 'auto'
         videoEl.style.height = '100%'
         videoWidth = videoEl.offsetWidth
         videoBox.style.width = videoWidth + 'px'
       } else {
+        videoBox.style.height = 'auto'
         videoEl.style.width = '100%'
         videoEl.style.height = 'auto'
         videoHeight = videoEl.offsetHeight
@@ -106,9 +118,11 @@ export default {
   beforeDestroy() {
     this.$openvidu.leave()
     this.$eventBus.$off('capture', this.capture)
+    window.removeEventListener('resize', this.optimizeVideoSize)
   },
   created() {
     this.$eventBus.$on('capture', this.capture)
+    window.addEventListener('resize', this.optimizeVideoSize)
   },
 	mounted() {
     // console.log(this.optimizeVideoSize())

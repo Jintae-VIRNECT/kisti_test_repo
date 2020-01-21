@@ -5,16 +5,12 @@
     :class="{ 'current': isCurrent }"
     :id="'video-view__'+session.nodeId"
     @click="changeMain">
-    <toggle-button
+    <img 
       v-if="!isMain"
-      customClass="list-video__speaker"
-      description="음소거 on/off"
-      :active="onSpeaker"
-      :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
-      :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
-      :size="30"
-      @action="mute"
-    ></toggle-button>
+      class="list-video__speaker"
+      :src="session.audio ? require('assets/image/call/gnb_ic_voice_on.png') 
+                   : require('assets/image/call/gnb_ic_voice_off.png')"
+    />
     
     <div v-if="!isMain" class="list-video__status good">
       <span>우수</span>
@@ -29,12 +25,9 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
-import ToggleButton from 'ToggleButton'
-
 export default {
 	name: "ListVideo",
 	components: {
-    ToggleButton
   },
 	data() {
 		return {
@@ -69,7 +62,7 @@ export default {
       e.stopPropagation();
       
       this.onSpeaker = !this.onSpeaker
-      this.$openvidu.audioOnOff(this.session.nodeId, this.onSpeaker)
+      // this.$openvidu.audioOnOff(this.session.nodeId, this.onSpeaker)
     },
   },
 

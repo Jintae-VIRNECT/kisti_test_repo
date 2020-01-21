@@ -50,8 +50,21 @@ const mutations = {
   },
   UPDATE_SESSION_STREAM(state, payload) {
     const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload.nodeId)
-    if(idx < 0) return
+    if (idx < 0) return
     state.call.sessions[idx].stream = payload.stream
+  },
+  UPDATE_SESSION_INFO(state, payload) {
+    const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload.nodeId)
+    if (idx < 0) return
+    
+    let updateSession = state.call.sessions[idx]
+    
+    for (let key in payload) {
+      if( key in updateSession && payload[key] !== null && payload[key] !== 'nodeId') {
+        updateSession[key] = payload[key];
+      }
+    }
+    state.call.sessions.splice(idx, 1, updateSession)
   },
   REMOVE_SESSION(state, payload) {
     const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload)
@@ -115,6 +128,13 @@ const actions = {
    */
   updateSessionStream({ commit }, session) {
     commit('UPDATE_SESSION_STREAM', session);
+  },
+  /**
+   * Update Session Info
+   * @param {Object} session : { nodeId: String, audio: true, video: false } 
+   */
+  updateSessionInfo({ commit }, session) {
+    commit('UPDATE_SESSION_INFO', session)
   },
   /**
    * Remove Participants Session Object
