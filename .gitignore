@@ -34,3 +34,4 @@ out/
 
 ### QueryDSL QClass Directory ###
 /src/main/generated/
+src/main/resources/application-local.yml
