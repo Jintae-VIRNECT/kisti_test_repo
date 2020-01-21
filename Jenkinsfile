@@ -44,7 +44,7 @@ docker rm rm-web-develop || true'''
 
         stage('Notify Email') {
           steps {
-            emailext(subject: 'RM-Web Operated..', body: 'Start Dockerizing...', attachLog: true, compressLog: true, to: 'delbert@virnect.com wooka@virnect.com')
+            emailext(subject: 'RM-Web Operated..', body: 'Start Dockerizing...', attachLog: true, compressLog: true, to: 'delbert@virnect.com wooka@virnect.com', from: 'virnect.corp@gmail.com')
           }
         }
 
