@@ -16,6 +16,8 @@ import ProcessList from '@/views/process/ProcessList.vue'
 import ProcessDetail from '@/views/process/ProcessDetail.vue'
 import ProcessNew from '@/views/process/ProcessNew.vue'
 
+import Issue from '@/views/issue/Issue'
+
 import User from '@/views/User.vue'
 
 import NotFound404 from '@/views/NotFound404.vue'
@@ -36,6 +38,13 @@ const routes = [
 	{
 		path: '/users',
 		component: User,
+	},
+	{
+		path: '/issue',
+		component: Issue,
+		meta: {
+			requiresAuth: true,
+		},
 	},
 	{
 		path: '/members',
