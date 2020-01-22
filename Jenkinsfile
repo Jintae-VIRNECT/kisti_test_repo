@@ -71,5 +71,14 @@ docker rm pf-webworkstation-develop || true'''
       }
     }
 
+    stage('Notify Email') {
+      steps {
+        catchError(catchInterruptions: true, message: 'asdfas', buildResult: 'dfasdfasdf') {
+          emailext(subject: 'sadfasd', body: 'fasdfasdf', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
+        }
+
+      }
+    }
+
   }
 }
