@@ -23,8 +23,6 @@ logging:
 ## Server Configuration
 server:
   port: 8082
-  servlet:
-    context-path: "/workspaces"
 
 
 ## Project Configuration

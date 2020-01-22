@@ -24,7 +24,7 @@ import javax.validation.Valid;
  */
 @Slf4j
 @RestController
-@RequestMapping("/")
+@RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
