@@ -6,9 +6,10 @@ import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
 import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
-import com.virnect.workspace.exception.SomeException;
+import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ResponseMessage;
 import com.virnect.workspace.global.constant.UUIDType;
+import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,15 @@ public class WorkspaceService {
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceInfo workspaceInfo) {
         //이메일 계정이 있는 사용자 인지 체크 : 마스터가 만들어낸 계정은 워크스페이스를 생성할 수 없다. -> UserServer 에 요청
-        ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(workspaceInfo.getUserId());
+        /*ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(workspaceInfo.getUserId());
         log.info("data: {}", userServerResponse.getData());
         UserDTO.UserInfoDTO requestUserInfo = modelMapper.map(userServerResponse.getData().get("userInfo"), UserDTO.UserInfoDTO.class);
         if (requestUserInfo.getUserType().equals("SUB_USER")) {
             throw new SomeException();
+        }*/
+
+        if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
+            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
         //워크스페이스 생성 & 워크스페이스 자동 소속 & 워크스페이스 권한 마스터 등록
@@ -119,9 +124,9 @@ public class WorkspaceService {
     /**
      * 워크스페이스 유저 역할 검사
      *
-     * @param userId      - 유저 고유 아이디
+     * @param userId        - 유저 고유 아이디
      * @param workspaceUUID - 워크스페이스 고유 아이디
-     * @param role        - 비교 대상 역할
+     * @param role          - 비교 대상 역할
      * @return 역할 비교 결과
      */
     private boolean hasRoleIs(final String userId, final String workspaceUUID, final String role) {
@@ -130,5 +135,33 @@ public class WorkspaceService {
         return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceUser).getRole().equals(role);
     }
 
+    /**
+     * 워크스페이스 정보 조회(현재는 멤버수만 return 추후에.. +라이선스, +워크스페이스 Strorage 정보)
+     * @param workspaceId - 워크스페이스 uuid
+     * @param userId - 사용자 uuid
+     * @return
+     */
+    public ResponseMessage getWorkspace(String workspaceId, String userId) {
+        //마스터 인지 체크
+        if (getUserInfo(userId).getUserType().equals("SUB_USER")) {
+            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+        //멤버 수 조회
+        long countWorkspaceUsers = this.workspaceUserRepository.countWorkspaceUser(workspaceId);
+
+        //라이선스 수 조회
+        //제품 이용 멤버 수 조회(Remote, Make, View)
+        //워크스페이스 Storage 수 조회
+
+        return new ResponseMessage().addParam("workspaceMembers", countWorkspaceUsers);
+    }
+
+    private UserDTO.UserInfoDTO getUserInfo(String userId) {
+        ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(userId);
+        log.info("data: {}", userServerResponse.getData());
+        UserDTO.UserInfoDTO requestUserInfo = modelMapper.map(userServerResponse.getData().get("userInfo"), UserDTO.UserInfoDTO.class);
+        return requestUserInfo;
+
+    }
 }
 

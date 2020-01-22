@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
+public interface WorkspaceRepository extends JpaRepository<Workspace, Long>, WorkspaceRepositoryCustom{
     Workspace findByUuid(String workspaceUUID);
 }
