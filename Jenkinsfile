@@ -12,7 +12,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Install Package'
-        catchError(catchInterruptions: true) {
+        catchError(catchInterruptions: true, buildResult: 'FAILURE') {
           emailext(subject: 'PF-WebWorkStation Operated...', attachLog: true, compressLog: true, body: 'Build Fail', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
         }
 
