@@ -54,9 +54,7 @@ export default {
   },
 	watch: {
     speaker(val) {
-      console.log(val)
-      // this.$refs['mainVideo'].muted = !val
-      // console.log(this.$refs['mainVideo'])
+      this.$refs['mainVideo'].muted = val
     }
   },
 	methods: {

@@ -57,6 +57,10 @@ export default {
         return false
       }
 
+      if (this.chat.nodeId === null && this.chat.name === "alarm") {
+        return false
+      }
+
       return true
     },
     hideProfile() {
@@ -75,8 +79,6 @@ export default {
 	methods: {},
 
 	/* Lifecycles */
-	mounted() {
-    console.log(this.chat)
-  }
+	mounted() {}
 }
 </script>
