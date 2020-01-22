@@ -5,6 +5,7 @@
       :visible.sync="getProcessNewModal"
       width="540px"
       height="50vh"
+      @open="handleOpen"
       @close="handleCancel")
       div(slot="title")
         span.process-new-modal__header-title 신규 공정 등록
@@ -12,7 +13,7 @@
         .section.border-divider
           label 공정 이름
           .value
-            span Scene Group's name
+            span {{target.processName}}
         .section-body
           .section
             label.label-vertical-center.necessary 공정 일정
@@ -67,7 +68,7 @@
         .section.border-divider
           label 세부공정 목록
           .value
-            .number-label 8
+            .number-label {{total}}
         .detail-process-list.border-divider
           .detail-process-item
             .section
@@ -119,8 +120,8 @@
                 el-select.auth-select(v-model='form.auth' placeholder='Select')
                   el-option(v-for='item in usersData' :key='item.id' :label='item.username' :value='item.id')
               
-      span.dialog-footer.section.border-divider(slot='footer')
-        el-button(type='primary' @click='handleConfirm') Confirm
+      span.dialog-footer.section(slot='footer')
+        el-button(type='primary' @click='handleConfirm') 완료
 
 </template>
 <style lang="scss">
@@ -292,26 +293,28 @@ export default {
 		toggleProcessNewModal: {
 			type: Boolean,
 		},
+		target: {
+			type: Object,
+		},
 	},
 	computed: {
-		getProcessNewModal: {
-			get() {
-				return this.$props.toggleProcessNewModal
-			},
+		getProcessNewModal() {
+			return this.$props.toggleProcessNewModal
 		},
 	},
 	data() {
 		return {
 			form: {
-				auth: null,
-				location: null,
+				auth: this.$props.target.auth,
+				location: this.$props.target.location,
 				dateTime: {
-					startDate: String(new Date()),
-					startTime: '01:00',
-					endDate: String(new Date()),
-					endTime: '24:00',
+					startDate: this.$props.target.startAt.split(' ')[0],
+					startTime: this.$props.target.startAt.split(' ')[1],
+					endDate: this.$props.target.endAt.split(' ')[0],
+					endTime: this.$props.target.endAt.split(' ')[1],
 				},
 			},
+			total: this.$props.target.total,
 			usersData: users,
 		}
 	},
@@ -323,22 +326,32 @@ export default {
 				'공정 추가 생성 완료',
 				{
 					confirmButtonText: '확인',
-					cancelButtonText: '취소',
 				},
 			)
 				.then(() => {
+					this.$emit('emitEndProcessData')
+
+					let createdData = this.$props.target
+					for (let prop in this.form) {
+						createdData[prop] = this.form[prop]
+					}
+					const { dateTime } = this.form
+					createdData.id = String(Math.random() * (99999999 - 0) + 0)
+					createdData.startAt = `${dateTime.startDate} ${dateTime.startTime}`
+					createdData.endAt = `${dateTime.endDate} ${dateTime.endTime}`
+					createdData.issue = true
+					delete createdData.dateTime
+					this.$emit('onCreateData', createdData)
 					this.handleCancel()
-					// this.$emit('update', false)
-					// document.querySelector('body').style='overflow: hidden;'
-					// document.querySelector('body').style = ''
-					// this.processNewModal = false
 				})
 				.catch(e => console.log('e : ', e))
 		},
 		handleCancel() {
-			this.$emit('update', false)
+			this.$emit('onToggleProcessNewModal', false)
 			document.querySelector('body').style = ''
-			// this.processNewModal = false
+		},
+		handleOpen() {
+			document.querySelector('body').style = 'overflow-y: hidden;'
 		},
 		checkMinMaxTime() {
 			const startTime = Number(this.form.dateTime.startTime.split(':')[0])

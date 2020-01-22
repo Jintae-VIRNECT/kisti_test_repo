@@ -32,26 +32,14 @@
 						el-dropdown-item Action 3
 						el-dropdown-item Action 4
 						el-dropdown-item Action 5
-		//- inline-table(
-		//- 	:setHeader='true'
-		//- 	:tableData="currentReportedDetailProcess" 
-		//- 	:tableOption="tableOption"
-		//- 	:colSetting="cols"
-		//- 	:controlCol="true")
-		//- 	template(slot="header-left")
-		//- 		span.title 공정 목록
-		//- 	.inline-table__header.text-right(slot="header-right")
-		//- 		span.sub-title 등록된 공정 수 
-		//- 		span.value 102
-		.card
-			.card__header
-				.card__header--left
-					span.title 공정 목록
-				.card__header--right
-					.inline-table__header.text-right
-						span.sub-title 등록된 공정 수 
-						span.value 102
-			.card__body
+		inline-table(:setHeader="true")
+			template(slot="header-left")
+				span.title 공정 목록
+			template(slot="header-right")
+				.inline-table__header.text-right
+					span.sub-title 등록된 공정 수 
+					span.value 102
+			template(slot="body")
 				el-table.inline-table(
 					:data='tableData' 
 					style='width: 100%'
@@ -86,7 +74,11 @@
 								span {{ tableData[scope.$index][prop] }}
 					el-table-column(:width="50" class-name="control-col")
 						template(slot-scope='scope')
-							process-control-dropdown(:processId="tableData[scope.$index].processId")
+							process-control-dropdown(
+								:data="tableData"
+								:targetId="tableData[scope.$index].id" 
+								@onChangeData="onChangeData"
+								@onCreateData="onCreateData")
 			//- el-pagination.inline-table-pagination(
 			//- 	v-if='setPagination'
 			//- 	:hide-on-single-page='false' 
@@ -111,9 +103,6 @@ import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 // model
 import { cols } from '@/models/process'
 
-/// data
-import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
-
 export default {
 	components: {
 		ProgressCard,
@@ -123,9 +112,13 @@ export default {
 		PageBreadCrumb,
 		ProcessControlDropdown,
 	},
+	created() {
+		// 시연용
+		this.tableData = this.$store.getters.currentReportedDetailProcess
+	},
 	data() {
 		return {
-			tableData: currentReportedDetailProcess,
+			tableData: null,
 			search: null,
 			tableOption: {
 				rowIdName: 'processId',
@@ -145,6 +138,24 @@ export default {
 			const { rowIdName, subdomain } = this.tableOption
 			if (!rowIdName) return false
 			this.$router.push(`${subdomain}/${row[rowIdName]}`)
+		},
+		onChangeData(data) {
+			// const updatedTableData = this.tableData.map(row => {
+			// 	if (row.id === data.id) {
+			// 		for (let prop in data) {
+			// 			row[prop] = data[prop]
+			// 		}
+			// 	}
+			// 	return row
+			// })
+			// this.tableData = updatedTableData
+			// this.$store.commit('set_currentReportedDetailProcess', updatedTableData) // 시연용
+			this.tableData = data
+			this.$store.commit('set_currentReportedDetailProcess', data)
+		},
+		onCreateData(data) {
+			this.tableData.push(data)
+			this.$store.commit('set_currentReportedDetailProcess', this.tableData)
 		},
 	},
 	filters: {

@@ -12,20 +12,24 @@
 			el-dropdown-item
 				.color-red(@click.prevent="deleteProcess") 삭제
 		process-control-dropdown-new-modal(
-			@update="onProcessNewModal" 
-			:toggleProcessNewModal="toggleProcessNewModal"
-		)
+			:target="target"
+			@onToggleProcessNewModal="onToggleProcessNewModal" 	
+			:toggleProcessNewModal="toggleProcessNewModal" 
+			@onCreateData="onCreateData"
+			@onChangeData="emitEndProcessData")
 </template>
 <script>
 import ProcessControlDropdownNewModal from '@/components/process/ProcessControlDropdownNewModal'
+
 export default {
 	components: {
 		ProcessControlDropdownNewModal,
 	},
-	props: ['processId', 'detailProcessId', 'workId', 'detailWorkId'],
+	props: ['data', 'targetId'],
 	data() {
 		return {
 			toggleProcessNewModal: false,
+			target: this.$props.data.find(d => d.id === this.$props.targetId),
 		}
 	},
 	methods: {
@@ -38,13 +42,24 @@ export default {
 					cancelButtonText: '취소',
 				},
 			)
-				.then(() => {})
+				.then(() => {
+					this.emitEndProcessData()
+				})
 				.catch(() => {})
+		},
+		emitEndProcessData() {
+			const updatedTableData = this.$props.data.map(row => {
+				if (row.id === this.$props.targetId) {
+					row.issue = false
+				}
+				return row
+			})
+			this.$emit('onChangeData', updatedTableData)
 		},
 		addProcess() {
 			this.$confirm(
 				`선택한 공정을 추가 생성 하시겠습니까? \n
-			  추가 생성 시 기존 공정 항목에 데이터를 더이상 수집하지 않고 새로운 공정을 추가하여 새로운 데이터를 수집합니다.`,
+				추가 생성 시 기존 공정 항목에 데이터를 더이상 수집하지 않고 새로운 공정을 추가하여 새로운 데이터를 수집합니다.`,
 				'공정 추가 생성',
 				{
 					confirmButtonText: '확인',
@@ -52,11 +67,14 @@ export default {
 				},
 			)
 				.then(() => {
-					this.onProcessNewModal(true)
+					this.onToggleProcessNewModal(true)
 				})
 				.catch(() => {})
 		},
-		onProcessNewModal(boolean) {
+		onCreateData(data) {
+			this.$emit('onCreateData', data)
+		},
+		onToggleProcessNewModal(boolean) {
 			this.toggleProcessNewModal = boolean
 		},
 		editProcess() {
@@ -83,14 +101,20 @@ export default {
 		deleteProcess() {
 			this.$confirm(
 				`선택한 공정을 삭제 하시겠습니까? \n
-        삭제된 공정 관련 데이터를 더이상 수집하지 않습니다. \n
-        공정 삭제 시 관련 공정 데이터 기록은 모두 사라지며 복구되지 않습니다. `,
+	삭제된 공정 관련 데이터를 더이상 수집하지 않습니다. \n
+	    공정 삭제 시 관련 공정 데이터 기록은 모두 사라지며 복구되지 않습니다. `,
 				'공정 삭제',
 				{
 					confirmButtonText: 'OK',
+					cancelButtonText: '취소',
 				},
 			)
-				.then(() => {})
+				.then(() => {
+					const updatedTableData = this.$props.data.filter(
+						row => row.id !== this.$props.targetId,
+					)
+					this.$emit('onChangeData', updatedTableData)
+				})
 				.catch(() => {})
 		},
 	},
