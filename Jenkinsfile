@@ -31,8 +31,19 @@ pipeline {
     }
 
     stage('Build') {
-      steps {
-        sh './gradlew build -x test'
+      parallel {
+        stage('Build') {
+          steps {
+            sh './gradlew build -x test'
+          }
+        }
+
+        stage('Notify Email') {
+          steps {
+            emailext(subject: 'PF-Workspace Operated...', body: 'Start Build...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com sky456139@virnect.com ljk@virnect.com')
+          }
+        }
+
       }
     }
 
@@ -62,6 +73,12 @@ pipeline {
           }
         }
 
+        stage('Notify Email') {
+          steps {
+            emailext(to: 'delbert@virnect.com sky456139@virnect.com ljk@virnect.com', subject: 'PF-Workspace Operated..', body: 'Start Dockerizing...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
+          }
+        }
+
       }
     }
 
@@ -76,6 +93,12 @@ pipeline {
         stage('Remove Old Image') {
           steps {
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
+        }
+
+        stage('Notify Email') {
+          steps {
+            emailext(subject: 'PF-Workspace Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com sky456139@virnect.com ljk@virnect.com')
           }
         }
 
