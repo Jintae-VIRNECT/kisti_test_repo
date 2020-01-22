@@ -10,17 +10,10 @@ pipeline {
     }
 
     stage('Build') {
-      parallel {
-        stage('Build') {
-          steps {
-            echo 'Install Package'
-          }
-        }
-
-        stage('Notify Email') {
-          steps {
-            emailext(attachLog: true, subject: 'WebWorkStation Operated..', body: 'Start Build...', compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
-          }
+      steps {
+        echo 'Install Package'
+        catchError(catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', attachLog: true, compressLog: true, body: 'Build Fail', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
         }
 
       }
