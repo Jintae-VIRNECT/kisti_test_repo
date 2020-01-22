@@ -73,8 +73,8 @@ docker rm pf-webworkstation-develop || true'''
 
     stage('Notify Email') {
       steps {
-        catchError(catchInterruptions: true, message: 'asdfas', buildResult: 'FAILURE') {
-          emailext(subject: 'PF-WebWorkStation Operated...', body: 'Build Fail...', attachLog: true, compressLog: true, to: 'delbert@virnect.com', from: 'virnect.corp@gmail.com')
+        catchError(catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', body: '$buildResult', attachLog: true, compressLog: true, to: 'delbert@virnect.com', from: 'virnect.corp@gmail.com')
         }
 
       }
