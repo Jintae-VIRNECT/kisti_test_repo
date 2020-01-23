@@ -10,17 +10,10 @@ pipeline {
     }
 
     stage('Build') {
-      parallel {
-        stage('Build') {
-          steps {
-            echo 'Install Package'
-          }
-        }
-
-        stage('Notify Email') {
-          steps {
-            emailext(attachLog: true, subject: 'WebWorkStation Operated..', body: 'Start Build...', compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
-          }
+      steps {
+        echo 'Install Package'
+        catchError(catchInterruptions: true, buildResult: 'FAILURE') {
+          emailext(subject: 'PF-WebWorkStation Operated...', attachLog: true, compressLog: true, body: 'Build Fail', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
         }
 
       }
@@ -66,6 +59,15 @@ docker rm pf-webworkstation-develop || true'''
           steps {
             emailext(subject: 'WebWorkStation Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
           }
+        }
+
+      }
+    }
+
+    stage('Notify Email') {
+      steps {
+        catchError(catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', body: 'env.buildResult', attachLog: true, compressLog: true, to: 'delbert@virnect.com', from: 'virnect.corp@gmail.com')
         }
 
       }
