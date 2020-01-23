@@ -29,18 +29,31 @@ import javax.validation.Valid;
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
 
+    /**
+     * 워크스페이스 생성(only master user)
+     *
+     * @param WorkspaceInfo - 워크스페이스 정보(userId, description)
+     * @param result        - 생성된 워크스페이스 정보
+     * @return
+     */
     @PostMapping
     public ResponseEntity<ResponseMessage> createWorkspace(@RequestBody @Valid WorkspaceDTO.WorkspaceInfo WorkspaceInfo, BindingResult result) {
         log.info("createWorkspace : {}", WorkspaceInfo);
         if (result.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        } else {
-            ResponseMessage responseMessage = this.workspaceService.createWorkspace(WorkspaceInfo);
-            return ResponseEntity.ok(responseMessage);
         }
+        ResponseMessage responseMessage = this.workspaceService.createWorkspace(WorkspaceInfo);
+        return ResponseEntity.ok(responseMessage);
+
     }
 
-    @GetMapping("{userId}")
+    /**
+     * 사용자가 속한 워크스페이스 조회
+     *
+     * @param userId - 사용자 uuid
+     * @return
+     */
+    @GetMapping("/{userId}")
     public ResponseEntity<ResponseMessage> getUserWorkspaces(@PathVariable("userId") String userId) {
         log.info("getWorkspace : {}", userId);
         if (!StringUtils.hasText(userId)) {
@@ -50,7 +63,17 @@ public class WorkspaceController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @GetMapping("{workspaceId}/members/{userId}")
+    /**
+     * 사용자 조회(use 검색, 필터, 정렬 기능)
+     *
+     * @param workspaceId - 워크스페이스 uuid
+     * @param userId      - 사용자 uuid
+     * @param search      - 검색명
+     * @param filter      - 필터명(all USER or MASTER USER)
+     * @param align       - 정렬방식(asc or desc)
+     * @return
+     */
+    @GetMapping("/{workspaceId}/members/{userId}")
     public ResponseEntity<ResponseMessage> getMember(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam("search") String search, @RequestParam("filter") String filter, @RequestParam("align") String align) {
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -59,18 +82,28 @@ public class WorkspaceController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @GetMapping("test")
-    public ResponseEntity<ResponseMessage> getTest(@RequestParam("uuid") String uuid, @RequestParam("search") String search) {
-        ResponseMessage responseMessage = this.workspaceService.getUserWorkspaces(uuid);
+    /**
+     * 워크스페이스 정보 조회(only master user)
+     *
+     * @param workspaceId - 워크스페이스 uuid
+     * @param userId - 사용자 uuid
+     * @return
+     */
+    @GetMapping("/{workspaceId}/{userId}")
+    public ResponseEntity<ResponseMessage> getWorkspace(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ResponseMessage responseMessage = this.workspaceService.getWorkspace(workspaceId,userId);
         return ResponseEntity.ok(responseMessage);
     }
 
-    @GetMapping("{workspaceId}/permission/master_id")
+    @GetMapping("/{workspaceId}/permission/master_id")
     public ResponseEntity getWorkspacePermission() {
         return ResponseEntity.ok(200);
     }
 
-    @PostMapping("{workspaceId}/permission")
+    @PostMapping("/{workspaceId}/permission")
     public ResponseEntity setWorkspacePermission() {
         return ResponseEntity.ok(200);
     }

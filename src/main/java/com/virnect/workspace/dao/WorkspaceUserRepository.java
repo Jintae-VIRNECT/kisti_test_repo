@@ -13,7 +13,7 @@ import java.util.List;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Long> {
+public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Long>, WorkspaceUserRepositoryCustom {
     List<WorkspaceUser> findByUserId(String userId);
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
 }
