@@ -104,80 +104,80 @@ import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 import { cols } from '@/models/process'
 
 export default {
-	components: {
-		ProgressCard,
-		InlineTable,
-		ProcessDashBanner,
-		PageTabNav,
-		PageBreadCrumb,
-		ProcessControlDropdown,
-	},
-	created() {
-		// 시연용
-		this.tableData = this.$store.getters.currentReportedDetailProcess
-	},
-	data() {
-		return {
-			tableData: null,
-			search: null,
-			tableOption: {
-				rowIdName: 'processId',
-				subdomain: '/process',
-			},
-			colSetting: cols,
-		}
-	},
-	computed: {
-		cols() {
-			return cols
-		},
-	},
-	methods: {
-		onClickCell(row, column) {
-			if (column.className === 'control-col') return false
-			const { rowIdName, subdomain } = this.tableOption
-			if (!rowIdName) return false
-			this.$router.push(`${subdomain}/${row[rowIdName]}`)
-		},
-		onChangeData(data) {
-			// const updatedTableData = this.tableData.map(row => {
-			// 	if (row.id === data.id) {
-			// 		for (let prop in data) {
-			// 			row[prop] = data[prop]
-			// 		}
-			// 	}
-			// 	return row
-			// })
-			// this.tableData = updatedTableData
-			// this.$store.commit('set_currentReportedDetailProcess', updatedTableData) // 시연용
-			this.tableData = data
-			this.$store.commit('set_currentReportedDetailProcess', data)
-		},
-		onCreateData(data) {
-			this.tableData.push(data)
-			this.$store.commit('set_currentReportedDetailProcess', this.tableData)
-		},
-	},
-	filters: {
-		statusFilterName(value) {
-			if (value == 'complete') return '완료'
-			else if (value == 'progress') return '진행'
-			else if (value == 'idle') return '미진행'
-			else if (value == 'imcomplete') return '미흡'
-		},
-		limitAuthsLength(array) {
-			let answer = ''
-			let sumOfStrings = 0
-			const divider = ', '
-			for (let i = 0; i < array.length; i++) {
-				answer += array[i]
-				sumOfStrings += array[i].length + divider.length
-				if (sumOfStrings > 13) return answer + '...'
-				if (array.length - 1 === i) break
-				answer += divider
-			}
-			return answer
-		},
-	},
+  components: {
+    ProgressCard,
+    InlineTable,
+    ProcessDashBanner,
+    PageTabNav,
+    PageBreadCrumb,
+    ProcessControlDropdown,
+  },
+  created() {
+    // 시연용
+    this.tableData = this.$store.getters.currentReportedDetailProcess
+  },
+  data() {
+    return {
+      tableData: null,
+      search: null,
+      tableOption: {
+        rowIdName: 'processId',
+        subdomain: '/process',
+      },
+      colSetting: cols,
+    }
+  },
+  computed: {
+    cols() {
+      return cols
+    },
+  },
+  methods: {
+    onClickCell(row, column) {
+      if (column.className === 'control-col') return false
+      const { rowIdName, subdomain } = this.tableOption
+      if (!rowIdName) return false
+      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+    },
+    onChangeData(data) {
+      // const updatedTableData = this.tableData.map(row => {
+      // 	if (row.id === data.id) {
+      // 		for (let prop in data) {
+      // 			row[prop] = data[prop]
+      // 		}
+      // 	}
+      // 	return row
+      // })
+      // this.tableData = updatedTableData
+      // this.$store.commit('set_currentReportedDetailProcess', updatedTableData) // 시연용
+      this.tableData = data
+      this.$store.commit('set_currentReportedDetailProcess', data)
+    },
+    onCreateData(data) {
+      this.tableData.push(data)
+      this.$store.commit('set_currentReportedDetailProcess', this.tableData)
+    },
+  },
+  filters: {
+    statusFilterName(value) {
+      if (value == 'complete') return '완료'
+      else if (value == 'progress') return '진행'
+      else if (value == 'idle') return '미진행'
+      else if (value == 'imcomplete') return '미흡'
+    },
+    limitAuthsLength(array) {
+      let answer = ''
+      let sumOfStrings = 0
+      const divider = ', '
+      for (let i = 0; i < array.length; i++) {
+        answer += array[i]
+        sumOfStrings += array[i].length + divider.length
+        if (sumOfStrings > 13) return answer + '...'
+        if (array.length - 1 === i) break
+        answer += divider
+      }
+      return answer
+    },
+  },
 }
 </script>

@@ -1,13 +1,15 @@
 <template lang="pug">
 	div
-		page-header(submenu='공정')
+		page-header
 		router-view
 </template>
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 export default {
-	components: {
-		PageTabNav,
-	},
+  components: {
+    PageTabNav,
+    PageHeader,
+  },
 }
 </script>

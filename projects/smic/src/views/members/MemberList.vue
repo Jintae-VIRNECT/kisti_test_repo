@@ -9,13 +9,13 @@ import MemberProfileCard from '@/components/members/MemberProfileCard.vue'
 import usersData from '@/data/users'
 
 export default {
-	components: {
-		MemberProfileCard,
-	},
-	data() {
-		return {
-			usersData,
-		}
-	},
+  components: {
+    MemberProfileCard,
+  },
+  data() {
+    return {
+      usersData,
+    }
+  },
 }
 </script>

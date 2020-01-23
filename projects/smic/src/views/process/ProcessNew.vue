@@ -71,49 +71,49 @@
 </template>
 <style lang="scss">
 .inline-table__header--right {
-	text-align: right;
-	> * {
-		vertical-align: middle;
-	}
-	.divider {
-		width: 1px;
-		height: 20px;
-		opacity: 0.82;
-		background-color: #cdd1d6;
-		display: inline-block;
-		margin: 0px 20px;
-	}
-	.prefix {
-		font-size: 14px;
-		font-weight: 500;
-		line-height: 2;
-		color: #0d2a58;
-	}
-	.value {
-		font-size: 18px;
-		font-weight: 500;
-		line-height: 1.56;
-		color: #0065e0;
-	}
-	.suffix {
-		font-size: 12px;
-		font-weight: 500;
-		line-height: normal;
-		color: #566173;
-	}
+  text-align: right;
+  > * {
+    vertical-align: middle;
+  }
+  .divider {
+    width: 1px;
+    height: 20px;
+    opacity: 0.82;
+    background-color: #cdd1d6;
+    display: inline-block;
+    margin: 0px 20px;
+  }
+  .prefix {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 2;
+    color: #0d2a58;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.56;
+    color: #0065e0;
+  }
+  .suffix {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: normal;
+    color: #566173;
+  }
 }
 .process-new {
-	.card__header {
-		padding: 10px 16px;
-	}
-	.sub-title {
-		font-size: 14px;
-		line-height: 2;
-		color: #0d2a58;
-		.before-icon {
-			margin-right: 12px;
-		}
-	}
+  .card__header {
+    padding: 10px 16px;
+  }
+  .sub-title {
+    font-size: 14px;
+    line-height: 2;
+    color: #0d2a58;
+    .before-icon {
+      margin-right: 12px;
+    }
+  }
 }
 </style>
 
@@ -133,21 +133,21 @@ import { tableColSettings } from '@/models/home'
 // mixin
 import contentList from '@/mixins/contentList'
 export default {
-	mixins: [contentList],
-	components: { ProgressCard, InlineTable, PageTabNav, PageBreadCrumb },
-	data() {
-		return {
-			tableData: currentUploadedContent,
-			tableOption: {
-				rowIdName: 'contentId',
-				subdomain: '???',
-			},
-			search: null,
-			colSetting: tableColSettings.contents,
-		}
-	},
-	methods: {
-		onClickCell() {},
-	},
+  mixins: [contentList],
+  components: { ProgressCard, InlineTable, PageTabNav, PageBreadCrumb },
+  data() {
+    return {
+      tableData: currentUploadedContent,
+      tableOption: {
+        rowIdName: 'contentId',
+        subdomain: '???',
+      },
+      search: null,
+      colSetting: tableColSettings.contents,
+    }
+  },
+  methods: {
+    onClickCell() {},
+  },
 }
 </script>

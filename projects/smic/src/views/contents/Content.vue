@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    page-header(submenu='콘텐츠')
+    page-header
     page-tab-nav
       template(slot="page-nav--right")
         .search-wrapper.text-right
@@ -35,14 +35,14 @@
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 export default {
-	components: {
-		PageTabNav,
-		PageBreadCrumb,
-	},
-	data() {
-		return {
-			search: null,
-		}
-	},
+  components: {
+    PageTabNav,
+    PageBreadCrumb,
+  },
+  data() {
+    return {
+      search: null,
+    }
+  },
 }
 </script>

@@ -97,25 +97,25 @@ import currentUploadedContent from '@/data/currentUploadedContent'
 import sceneGroup from '@/data/sceneGroup'
 
 export default {
-	components: {
-		InlineTable,
-	},
-	data() {
-		return {
-			content: {},
-			sceneGroup,
-			tableData: sceneGroup.tableData,
-			colSetting: sceneGroup.tableOption.colSetting,
-		}
-	},
-	mounted() {
-		this.content = currentUploadedContent.find(c => {
-			return c.contentId === this.$route.params.id
-		})
-		console.log('colSetting : ', this.colSetting)
-	},
-	methods: {
-		onClickCell() {},
-	},
+  components: {
+    InlineTable,
+  },
+  data() {
+    return {
+      content: {},
+      sceneGroup,
+      tableData: sceneGroup.tableData,
+      colSetting: sceneGroup.tableOption.colSetting,
+    }
+  },
+  mounted() {
+    this.content = currentUploadedContent.find(c => {
+      return c.contentId === this.$route.params.id
+    })
+    console.log('colSetting : ', this.colSetting)
+  },
+  methods: {
+    onClickCell() {},
+  },
 }
 </script>

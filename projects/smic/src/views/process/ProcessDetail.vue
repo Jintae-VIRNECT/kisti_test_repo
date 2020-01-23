@@ -64,20 +64,20 @@ import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 import sceneGroup from '@/data/sceneGroup'
 
 export default {
-	components: {
-		InlineTable,
-	},
-	data() {
-		return {
-			process: {},
-			sceneGroup,
-			currentReportedDetailProcess,
-		}
-	},
-	mounted() {
-		this.process = currentReportedDetailProcess.find(c => {
-			return c.processId === this.$route.params.id
-		})
-	},
+  components: {
+    InlineTable,
+  },
+  data() {
+    return {
+      process: {},
+      sceneGroup,
+      currentReportedDetailProcess,
+    }
+  },
+  mounted() {
+    this.process = currentReportedDetailProcess.find(c => {
+      return c.processId === this.$route.params.id
+    })
+  },
 }
 </script>

@@ -76,58 +76,58 @@ import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 import contentList from '@/mixins/contentList'
 
 const currentUploadedContentTableOption = {
-	rowIdName: 'contentId',
-	subdomain: '/contents',
+  rowIdName: 'contentId',
+  subdomain: '/contents',
 }
 
 export default {
-	mixins: [contentList],
-	components: {
-		ProgressCard,
-		InlineTable,
-		InlineTabsTable,
-		ProcessInprogressStatusGraph,
-		ContentList,
-		ContentControlDropdown,
-	},
-	data() {
-		return {
-			currentReportedDetailProcess,
-			currentUploadedContentTableOption,
-			currentReportedInformationTabs,
-			tableColSettings,
-			currentContent: {
-				tableData: currentUploadedContent,
-				tableOption: {
-					rowIdName: 'contentId',
-					subdomain: '/contents',
-				},
-				search: null,
-				colSetting: tableColSettings.contents,
-			},
-			activeTab: currentReportedInformationTabs[0].name,
-			currentProcess: {
-				tableData: currentReportedDetailProcess,
-				tableOption: {
-					rowIdName: 'processId',
-					subdomain: '/process',
-				},
-				search: null,
-				colSetting: tableColSettings[currentReportedInformationTabs[0].name],
-			},
-		}
-	},
-	methods: {
-		setInlineTableByTabs(e) {
-			this.currentUploadedContentTableOption.subdomain =
-				currentReportedInformationTabs[e.index].link
-		},
-		onClickCell(row, column) {
-			if (column.className === 'control-col') return false
-			const { rowIdName, subdomain } = this.currentContent.tableOption
-			if (!rowIdName) return false
-			this.$router.push(`${subdomain}/${row[rowIdName]}`)
-		},
-	},
+  mixins: [contentList],
+  components: {
+    ProgressCard,
+    InlineTable,
+    InlineTabsTable,
+    ProcessInprogressStatusGraph,
+    ContentList,
+    ContentControlDropdown,
+  },
+  data() {
+    return {
+      currentReportedDetailProcess,
+      currentUploadedContentTableOption,
+      currentReportedInformationTabs,
+      tableColSettings,
+      currentContent: {
+        tableData: currentUploadedContent,
+        tableOption: {
+          rowIdName: 'contentId',
+          subdomain: '/contents',
+        },
+        search: null,
+        colSetting: tableColSettings.contents,
+      },
+      activeTab: currentReportedInformationTabs[0].name,
+      currentProcess: {
+        tableData: currentReportedDetailProcess,
+        tableOption: {
+          rowIdName: 'processId',
+          subdomain: '/process',
+        },
+        search: null,
+        colSetting: tableColSettings[currentReportedInformationTabs[0].name],
+      },
+    }
+  },
+  methods: {
+    setInlineTableByTabs(e) {
+      this.currentUploadedContentTableOption.subdomain =
+        currentReportedInformationTabs[e.index].link
+    },
+    onClickCell(row, column) {
+      if (column.className === 'control-col') return false
+      const { rowIdName, subdomain } = this.currentContent.tableOption
+      if (!rowIdName) return false
+      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+    },
+  },
 }
 </script>
