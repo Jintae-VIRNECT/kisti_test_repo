@@ -15,8 +15,8 @@
 </template>
 <script>
 export default {
-	props: {
-		setHeader: Boolean,
-	},
+  props: {
+    setHeader: Boolean,
+  },
 }
 </script>

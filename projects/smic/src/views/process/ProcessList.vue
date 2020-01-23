@@ -62,8 +62,8 @@
 								span {{tableData[scope.$index][prop] | limitAuthsLength}}
 							//- schedule = (startAt ~ endAt)
 							.total-done(v-else-if="prop === 'schedule'")
-								span {{tableData[scope.$index]['startAt']}} 
-								span &nbsp;~ {{tableData[scope.$index]['endAt']}}
+								span {{dayjs(tableData[scope.$index]['startAt']).format('YYYY-MM-DD HH:mm')}} 
+								span &nbsp;~ {{dayjs(tableData[scope.$index]['endAt']).format('YYYY-MM-DD HH:mm')}}
 							div(v-else-if="prop === 'status'")
 								button.btn.btn--status(
 									size="mini" 
@@ -75,6 +75,11 @@
 					el-table-column(:width="50" class-name="control-col")
 						template(slot-scope='scope')
 							process-control-dropdown(
+								:data="tableData[scope.$index]"
+								@onChangeData="onChangeData"
+								@onCreateData="onCreateData"
+								@onDeleteData="onDeleteData")
+							//- process-control-dropdown(
 								:data="tableData"
 								:targetId="tableData[scope.$index].id" 
 								@onChangeData="onChangeData"
@@ -103,6 +108,9 @@ import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 // model
 import { cols } from '@/models/process'
 
+// lib
+import dayjs from 'dayjs'
+
 export default {
   components: {
     ProgressCard,
@@ -125,6 +133,7 @@ export default {
         subdomain: '/process',
       },
       colSetting: cols,
+      dayjs,
     }
   },
   computed: {
@@ -140,22 +149,22 @@ export default {
       this.$router.push(`${subdomain}/${row[rowIdName]}`)
     },
     onChangeData(data) {
-      // const updatedTableData = this.tableData.map(row => {
-      // 	if (row.id === data.id) {
-      // 		for (let prop in data) {
-      // 			row[prop] = data[prop]
-      // 		}
-      // 	}
-      // 	return row
-      // })
-      // this.tableData = updatedTableData
-      // this.$store.commit('set_currentReportedDetailProcess', updatedTableData) // 시연용
-      this.tableData = data
-      this.$store.commit('set_currentReportedDetailProcess', data)
+      const updatedTableData = this.tableData.map(row => {
+        if (row.id === data.id) {
+          row = data
+        }
+        return row
+      })
+      this.tableData = updatedTableData
+      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
     },
     onCreateData(data) {
       this.tableData.push(data)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData)
+      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
+    },
+    onDeleteData(data) {
+      this.tableData = this.tableData.filter(row => row.id !== data.id)
+      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
     },
   },
   filters: {

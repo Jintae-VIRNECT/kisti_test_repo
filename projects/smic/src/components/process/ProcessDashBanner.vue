@@ -51,85 +51,85 @@
 </template>
 <style lang="scss" scoped>
 .process-dash-banner {
-	padding: 24px 30px;
-	.toggle-topic-btn {
-		float: right;
-	}
-	.box-wrapper {
-		display: inline-flex;
-		.box {
-			&:first-child {
-				padding-left: 0px;
-			}
-			padding: 0px 30px;
-			position: relative;
-			border-right: 1px solid rgba(205, 209, 214, 0.5);
-			&:last-child {
-				border-right: none;
-			}
-			.main-title {
-				margin-bottom: 16px;
-				font-size: 14px;
-				font-weight: 500;
-				color: #0d2a58;
-			}
-			.main-percent {
-				font-size: 32px;
-				font-weight: 500;
-				font-stretch: normal;
-				font-style: normal;
-				line-height: 1.38;
-				letter-spacing: normal;
-				color: #006deb;
-				margin-bottom: 8px;
-			}
-			.sub-title {
-				font-size: 12px;
-				font-weight: 500;
-				font-stretch: normal;
-				font-style: normal;
-				line-height: 1.5;
-				letter-spacing: normal;
-				color: #566173;
-				margin-bottom: 10px;
-			}
-		}
-	}
-	.item-container {
-		display: flex;
-		.item {
-			margin-left: 30px;
-			&:first-child {
-				margin-left: 0px;
-			}
-			& > * {
-				vertical-align: middle;
-			}
-			.value {
-				margin-left: 12px;
-				font-size: 24px;
-				font-weight: 500;
-				font-stretch: normal;
-				font-style: normal;
-				line-height: normal;
-				letter-spacing: normal;
-				color: #385370;
-			}
-		}
-	}
+  padding: 24px 30px;
+  .toggle-topic-btn {
+    float: right;
+  }
+  .box-wrapper {
+    display: inline-flex;
+    .box {
+      &:first-child {
+        padding-left: 0px;
+      }
+      padding: 0px 30px;
+      position: relative;
+      border-right: 1px solid rgba(205, 209, 214, 0.5);
+      &:last-child {
+        border-right: none;
+      }
+      .main-title {
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0d2a58;
+      }
+      .main-percent {
+        font-size: 32px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.38;
+        letter-spacing: normal;
+        color: #006deb;
+        margin-bottom: 8px;
+      }
+      .sub-title {
+        font-size: 12px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: #566173;
+        margin-bottom: 10px;
+      }
+    }
+  }
+  .item-container {
+    display: flex;
+    .item {
+      margin-left: 30px;
+      &:first-child {
+        margin-left: 0px;
+      }
+      & > * {
+        vertical-align: middle;
+      }
+      .value {
+        margin-left: 12px;
+        font-size: 24px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #385370;
+      }
+    }
+  }
 }
 </style>
 <script>
 export default {
-	data() {
-		return {
-			topic: 'table',
-		}
-	},
-	methods: {
-		toggleTopic() {
-			this.topic = this.topic === 'table' ? 'graph' : 'table'
-		},
-	},
+  data() {
+    return {
+      topic: 'table',
+    }
+  },
+  methods: {
+    toggleTopic() {
+      this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+  },
 }
 </script>

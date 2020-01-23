@@ -13,21 +13,21 @@
 </template>
 <script>
 const model = [
-	{ title: '멤버', to: '/members' },
-	{ title: '콘텐츠', to: '/contents' },
-	{ title: '공정', to: '/process' },
+  { title: '멤버', to: '/members' },
+  { title: '콘텐츠', to: '/contents' },
+  { title: '공정', to: '/process' },
 ]
 export default {
-	data() {
-		return {
-			model,
-			activeTab: '/' + this.$route.path.split('/')[1],
-		}
-	},
-	methods: {
-		pathToTab({ name }) {
-			this.$router.push(name)
-		},
-	},
+  data() {
+    return {
+      model,
+      activeTab: '/' + this.$route.path.split('/')[1],
+    }
+  },
+  methods: {
+    pathToTab({ name }) {
+      this.$router.push(name)
+    },
+  },
 }
 </script>
