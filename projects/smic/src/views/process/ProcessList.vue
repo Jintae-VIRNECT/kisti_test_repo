@@ -8,37 +8,21 @@
 		process-dash-banner
 		.page-nav
 			.search-wrapper.text-right
-				el-input.tool.search(placeholder='이름 또는 이메일 검색' v-model='search' )
+				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch")
 					el-button(slot='append' icon='el-icon-search')
 				span 필터 : 
-				el-dropdown.tool.filter
-					el-button(type='primary')
-						| 전체
-						i.el-icon-arrow-down.el-icon--right
-					el-dropdown-menu(slot='dropdown')
-						el-dropdown-item Action 1
-						el-dropdown-item Action 2
-						el-dropdown-item Action 3
-						el-dropdown-item Action 4
-						el-dropdown-item Action 5
+				el-select(v-model='filter.value' placeholder='Select' @change="onChangeSearch")
+					el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
 				span 정렬 : 
-				el-dropdown.tool.order
-					el-button(type='primary')
-						| ㄱ-ㅎ순
-						i.el-icon-arrow-down.el-icon--right
-					el-dropdown-menu(slot='dropdown')
-						el-dropdown-item Action 1
-						el-dropdown-item Action 2
-						el-dropdown-item Action 3
-						el-dropdown-item Action 4
-						el-dropdown-item Action 5
+				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch")
+					el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
 		inline-table(:setHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
 			template(slot="header-right")
 				.inline-table__header.text-right
 					span.sub-title 등록된 공정 수 
-					span.value 102
+					span.value {{tableData.length}}
 			template(slot="body")
 				el-table.inline-table(
 					:data='tableData' 
@@ -106,7 +90,8 @@ import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 
 // model
-import { cols } from '@/models/process'
+import { cols, processStatus } from '@/models/process'
+import { sortOptions } from '@/models/index'
 
 // lib
 import dayjs from 'dayjs'
@@ -127,13 +112,27 @@ export default {
   data() {
     return {
       tableData: null,
-      search: null,
       tableOption: {
         rowIdName: 'processId',
         subdomain: '/process',
       },
       colSetting: cols,
       dayjs,
+      searchInput: null,
+      filter: {
+        options: [
+          {
+            value: null,
+            label: '전체',
+          },
+          ...processStatus,
+        ],
+        value: null,
+      },
+      sort: {
+        options: sortOptions,
+        value: null,
+      },
     }
   },
   computed: {
@@ -165,6 +164,41 @@ export default {
     onDeleteData(data) {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
+    },
+    async onChangeSearch() {
+      let tmpTableData = this.$store.getters.currentReportedDetailProcess
+      tmpTableData = await this.onChangeSearchText(tmpTableData)
+      tmpTableData = await this.onChangeFilter(tmpTableData)
+      tmpTableData = await this.onChangeSort(tmpTableData)
+      this.tableData = tmpTableData
+    },
+    onChangeSearchText(tableData) {
+      return tableData.filter(row => {
+        console.log('row: ', row)
+        return (
+          row.processName.includes(this.searchInput) ||
+          row.auth.includes(this.searchInput)
+        )
+      })
+    },
+    onChangeFilter(tableData) {
+      if (!this.filter.value) return tableData
+      return tableData.filter(row => row.status === this.filter.value)
+    },
+    onChangeSort(tableData) {
+      if (!this.sort.value) return tableData
+      if (this.sort.value === 'alphabetDesc')
+        return tableData.sort((a, b) =>
+          a.processName - b.processName ? 1 : -1,
+        )
+      else if (this.sort.value === 'alphabetAsc')
+        return tableData.sort((a, b) =>
+          a.processName - b.processName ? -1 : 1,
+        )
+      else if (this.sort.value === 'createdAtDesc')
+        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
+      else if (this.sort.value === 'createdAtAsc')
+        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
     },
   },
   filters: {

@@ -357,7 +357,6 @@ export default {
     this.form.dateTime.endDate = endAt
     this.form.dateTime.endTime = dayjs(endAt).format('HH:00')
     this.total = total
-    console.log('this.form.dateTime : ', this.form.dateTime)
   },
   methods: {
     handleConfirm() {
