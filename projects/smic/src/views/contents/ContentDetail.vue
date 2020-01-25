@@ -1,74 +1,56 @@
 <template lang="pug">
   div
-    .card
-      .card__header
-        .card__header--left
-          span.title 콘텐츠 정보
-      .card__body
-        el-row
-          el-col(:span="6")
-            label | 콘텐츠 ID
-            label {{content.contentId}}
-          el-col(:span="6")
-            label | 업로드 일
-            label {{content.uploadedAt}}
-          el-col(:span="6")
-            label | 콘텐츠 배포
-            el-dropdown(trigger='click')
-              el-button(type="primary" size='mini') 
-                | Dropdown List
-                i.el-icon-arrow-down.el-icon--right
-              el-dropdown-menu(slot='dropdown')
-                el-dropdown-item 배포중
-                el-dropdown-item 배포대기
-
-          el-col(:span="6")
-            label | 공정 등록
-            el-dropdown(trigger='click')
-              el-button(type="primary" size='mini') 
-                | Dropdown List
-                i.el-icon-arrow-down.el-icon--right
-              el-dropdown-menu(slot='dropdown')
-                el-dropdown-item 등록중
-                el-dropdown-item 등록대기
-        
-        el-row
-          el-col(:span="6")
-            label | 콘텐츠 이름
-            label {{content.contentName}}
-          el-col(:span="6")
-            label | 업로드 멤버
-            label {{content.auth}}
-          el-col(:span="6")
-          el-col(:span="6")
-        
-        el-row
-          el-col(:span="6")
-            label | 콘텐츠 크기
-            label {{content.volume}}
-          el-col(:span="6")
-          el-col(:span="6")
-
-    //- el-card
-      slot(name="header")
-        h2 씬 그룹 목록
-      slot(name="body")
-        inline-table(
-          :tableData="sceneGroup.tableData" 
-          :tableOption="sceneGroup.tableOption"
-        )
-    .card
-      .card__header
-        .card__header--left
-          span.title 세부공정 콘텐츠 목록 
-      .card__body
-        slot(name="tabs")
+    page-bread-crumb(title='공정 콘텐츠')
+    inline-table(:setHeader="true")
+      template(slot="header-left")
+        span.title 공정 콘텐츠 목록
+      template(slot="header-right")
+        .inline-table__header--right
+          span.prefix 업로드된 컨텐츠 
+          span.value {{processContent.tableData | countAllContents}}
+          span.suffix &nbsp;projects
+          .divider
+          span.prefix 배포중인 컨텐츠 수 컨텐츠 
+          span.value {{processContent.tableData | countStopOfContentPublish}}
+          span.suffix &nbsp;projects
+      template(slot="body")
         el-table.inline-table(
-          :data='tableData' 
-          style='width: 100%'
-          @cell-click="onClickCell")
+          :data='processContent.tableData' 
+          style='width: 100%')
           el-table-column(
-            v-for="{label, width, prop} in colSetting" 
+            v-for="{label, width, prop} in processContent.colSetting" 
+            :key="prop" 
+            :prop="prop" 
+            :label="label" 
+            :width="width || ''") 
+            template(slot-scope='scope')
+              .content-name(v-if="prop === 'name'")
+                img.prefix-img(src="~@/assets/image/ic-content.svg")
+                span {{processContent.tableData[scope.$index][prop]}}
+              div(v-else-if="prop === 'contentPublish'")
+                span.publish-boolean(:class="processContent.tableData[scope.$index][prop]") {{processContent.tableData[scope.$index][prop] | publishBoolean}}
+              .auth-wrapper(v-else-if="prop === 'auth'")
+                .auth-img(:style="{'background-image': `url(${processContent.tableData[scope.$index]['profileImg']})`}")
+                span {{processContent.tableData[scope.$index][prop]}}
+              div(v-else-if="prop === 'uploadedAt'")
+                span {{processContent.tableData[scope.$index][prop] | filterDateTime}}
+              div(v-else)
+                span {{ processContent.tableData[scope.$index][prop]}}
+          el-table-column(:width="50" class-name="control-col")
+            template(slot-scope='scope')
+              content-control-dropdown(
+                :contentPublish="processContent.tableData[scope.$index].contentPublish"
+                @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
+
+    inline-table(:setHeader="true")
+      template(slot="header-left")
+        span.title 세부공정 콘텐츠 목록 
+      template(slot="body")
+        el-table.inline-table(
+          :data='detailProcessContents.tableData' 
+          style='width: 100%')
+          el-table-column(
+            v-for="{label, width, prop} in detailProcessContents.colSetting" 
             :key="prop" 
             :prop="prop" 
             :label="label" 
@@ -77,7 +59,7 @@
               div(v-if="prop == 'index'") 
                 span {{scope.$index + 1}}.
               div(v-else)
-                span {{ tableData[scope.$index][prop] }}
+                span {{ detailProcessContents.tableData[scope.$index][prop] }}
       //- el-pagination.inline-table-pagination(
       //-   v-if='setPagination'
       //-   :hide-on-single-page='false' 
@@ -93,29 +75,62 @@
 
 <script>
 import InlineTable from '@/components/common/InlineTable'
-import currentUploadedContent from '@/data/currentUploadedContent'
+import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
+import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
+
 import sceneGroup from '@/data/sceneGroup'
+import { tableColSettings } from '@/models/home'
+
+// mixin
+import contentList from '@/mixins/contentList'
+
+// utils
+import dayjs from '@/utils/dayjs'
 
 export default {
   components: {
     InlineTable,
+    ContentControlDropdown,
+    PageBreadCrumb,
+  },
+  mixins: [contentList, dayjs],
+  created() {
+    this.processContent.tableData = [
+      this.$store.getters.currentUploadedContent.find(
+        c => c.id === this.$route.params.id,
+      ),
+    ]
   },
   data() {
     return {
-      content: {},
-      sceneGroup,
-      tableData: sceneGroup.tableData,
-      colSetting: sceneGroup.tableOption.colSetting,
+      processContent: {
+        tableData: this.$store.getters.currentUploadedContent,
+        tableOption: {
+          rowIdName: 'id',
+          subdomain: '/contents',
+        },
+        search: null,
+        colSetting: tableColSettings.contents,
+      },
+      detailProcessContents: {
+        sceneGroup,
+        tableData: sceneGroup.tableData,
+        colSetting: sceneGroup.tableOption.colSetting,
+      },
     }
   },
-  mounted() {
-    this.content = currentUploadedContent.find(c => {
-      return c.contentId === this.$route.params.id
-    })
-    console.log('colSetting : ', this.colSetting)
-  },
   methods: {
-    onClickCell() {},
+    onChangeData(data, id) {
+      this.processContent.tableData[0].contentPublish = data
+      let updatedTable = this.$store.getters.currentUploadedContent
+      updatedTable = updatedTable.map(row => {
+        if (row.id === id) {
+          row.contentPublish = data
+        }
+        return row
+      })
+      this.$store.commit('set_currentUploadedContent', updatedTable)
+    },
   },
 }
 </script>

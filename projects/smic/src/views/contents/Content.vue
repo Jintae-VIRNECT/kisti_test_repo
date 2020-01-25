@@ -24,16 +24,13 @@
               el-dropdown-item 오래된 보고순
               el-dropdown-item 최신 등록순
               el-dropdown-item 오래된 등록순
-    page-bread-crumb(title='콘텐츠')
     router-view
 </template>
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
-import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 export default {
   components: {
     PageTabNav,
-    PageBreadCrumb,
   },
   data() {
     return {

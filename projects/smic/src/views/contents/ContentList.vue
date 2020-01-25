@@ -1,48 +1,47 @@
 <template lang="pug">
-	div
-		.card
-			.card__header
-				.card__header--left
-					span.title 공정 콘텐츠 목록
-				.card__header--right
-					.inline-table__header--right
-						span.prefix 업로드된 컨텐츠 
-						span.value {{tableData | countAllContents}}
-						span.suffix &nbsp;projects
-						.divider
-						span.prefix 배포중인 컨텐츠 수 컨텐츠 
-						span.value {{tableData | countStopOfContentPublish}}
-						span.suffix &nbsp;projects
-			.card__body
-				el-table.inline-table(
-					:data='tableData' 
-					style='width: 100%'
-					@cell-click="onClickCell")
-					el-table-column(
-						v-for="{label, width, prop} in colSetting" 
-						:key="prop" 
-						:prop="prop" 
-						:label="label" 
-						:width="width || ''") 
-						template(slot-scope='scope')
-							.content-name(v-if="prop === 'name'")
-								img.prefix-img(src="~@/assets/image/ic-content.svg")
-								span {{tableData[scope.$index][prop]}}
-							div(v-else-if="prop === 'contentPublish'")
-								span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-							.auth-wrapper(v-else-if="prop === 'auth'")
-								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
-								span {{tableData[scope.$index][prop]}}
-							div(v-else-if="prop === 'uploadedAt'")
-								span {{tableData[scope.$index][prop] | filterDateTime}}
-							div(v-else)
-								span {{ tableData[scope.$index][prop]}}
-					el-table-column(:width="50" class-name="control-col")
-						template(slot-scope='scope')
-							content-control-dropdown(
-								:contentPublish="tableData[scope.$index].contentPublish"
-								@onChangeData="data => onChangeData(data,tableData[scope.$index].id)")
-				
+  div
+    page-bread-crumb(title='공정 콘텐츠')
+    inline-table(:setHeader="true")
+      template(slot="header-left")
+        span.title 공정 콘텐츠 목록
+      template(slot="header-right")
+        .inline-table__header--right
+          span.prefix 업로드된 컨텐츠 
+          span.value {{tableData | countAllContents}}
+          span.suffix &nbsp;projects
+          .divider
+          span.prefix 배포중인 컨텐츠 수 컨텐츠 
+          span.value {{tableData | countStopOfContentPublish}}
+          span.suffix &nbsp;projects
+      template(slot="body")
+        el-table.inline-table(
+          :data='tableData' 
+          style='width: 100%'
+          @cell-click="onClickCell")
+          el-table-column(
+            v-for="{label, width, prop} in colSetting" 
+            :key="prop" 
+            :prop="prop" 
+            :label="label" 
+            :width="width || ''") 
+            template(slot-scope='scope')
+              .content-name(v-if="prop === 'name'")
+                img.prefix-img(src="~@/assets/image/ic-content.svg")
+                span {{tableData[scope.$index][prop]}}
+              div(v-else-if="prop === 'contentPublish'")
+                span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
+              .auth-wrapper(v-else-if="prop === 'auth'")
+                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+                span {{tableData[scope.$index][prop]}}
+              div(v-else-if="prop === 'uploadedAt'")
+                span {{tableData[scope.$index][prop] | filterDateTime}}
+              div(v-else)
+                span {{ tableData[scope.$index][prop]}}
+          el-table-column(:width="50" class-name="control-col")
+            template(slot-scope='scope')
+              content-control-dropdown(
+                :contentPublish="tableData[scope.$index].contentPublish"
+                @onChangeData="data => onChangeData(data,tableData[scope.$index].id)")
 </template>
 <style lang="scss">
 .inline-table__header--right {
@@ -83,6 +82,7 @@
 // UI component
 import InlineTable from '@/components/common/InlineTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
+import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 
 // model
 import { tableColSettings } from '@/models/home'
@@ -94,13 +94,13 @@ import contentList from '@/mixins/contentList'
 import dayjs from '@/utils/dayjs'
 
 export default {
-  components: { InlineTable, ContentControlDropdown },
+  components: { InlineTable, ContentControlDropdown, PageBreadCrumb },
   mixins: [contentList, dayjs],
   data() {
     return {
       tableData: this.$store.getters.currentUploadedContent,
       tableOption: {
-        rowIdName: 'contentId',
+        rowIdName: 'id',
         subdomain: '/contents',
       },
       search: null,
@@ -122,14 +122,6 @@ export default {
         return row
       })
       this.$store.commit('set_currentUploadedContent', this.tableData)
-    },
-  },
-  filters: {
-    countStopOfContentPublish(tableData) {
-      return tableData.filter(d => d.contentPublish === 'publishing').length
-    },
-    countAllContents(tableData) {
-      return tableData.length
     },
   },
 }
