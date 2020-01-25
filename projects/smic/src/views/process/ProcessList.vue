@@ -8,13 +8,13 @@
 		process-dash-banner
 		.page-nav
 			.search-wrapper.text-right
-				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch")
+				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch(searchInput, filter.value, sort.value)")
 					el-button(slot='append' icon='el-icon-search')
 				span 필터 : 
-				el-select(v-model='filter.value' placeholder='Select' @change="onChangeSearch")
+				el-select(v-model='filter.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
 					el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
 				span 정렬 : 
-				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch")
+				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
 					el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
 		inline-table(:setHeader="true")
 			template(slot="header-left")
@@ -46,8 +46,8 @@
 								span {{tableData[scope.$index][prop] | limitAuthsLength}}
 							//- schedule = (startAt ~ endAt)
 							.total-done(v-else-if="prop === 'schedule'")
-								span {{dayjs(tableData[scope.$index]['startAt']).format('YYYY-MM-DD HH:mm')}} 
-								span &nbsp;~ {{dayjs(tableData[scope.$index]['endAt']).format('YYYY-MM-DD HH:mm')}}
+								span {{tableData[scope.$index]['startAt'] | filterDateTime}} 
+								span &nbsp;~ {{tableData[scope.$index]['endAt'] | filterDateTime}}
 							div(v-else-if="prop === 'status'")
 								button.btn.btn--status(
 									size="mini" 
@@ -59,7 +59,7 @@
 					el-table-column(:width="50" class-name="control-col")
 						template(slot-scope='scope')
 							process-control-dropdown(
-								:data="tableData[scope.$index]"
+								:target="tableData[scope.$index]"
 								@onChangeData="onChangeData"
 								@onCreateData="onCreateData"
 								@onDeleteData="onDeleteData")
@@ -89,14 +89,18 @@ import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 
+// // model
+// import { cols, processStatus } from '@/models/process'
+// import { sortOptions } from '@/models/index'
 // model
 import { cols, processStatus } from '@/models/process'
 import { sortOptions } from '@/models/index'
 
 // lib
-import dayjs from 'dayjs'
+import dayjs from '@/utils/dayjs'
 
 export default {
+  mixins: [dayjs],
   components: {
     ProgressCard,
     InlineTable,
@@ -105,19 +109,14 @@ export default {
     PageBreadCrumb,
     ProcessControlDropdown,
   },
-  created() {
-    // 시연용
-    this.tableData = this.$store.getters.currentReportedDetailProcess
-  },
   data() {
     return {
-      tableData: null,
+      tableData: this.$store.getters.currentReportedDetailProcess, // 시연용
       tableOption: {
         rowIdName: 'processId',
         subdomain: '/process',
       },
       colSetting: cols,
-      dayjs,
       searchInput: null,
       filter: {
         options: [
@@ -165,39 +164,40 @@ export default {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
     },
-    async onChangeSearch() {
+    async onChangeSearch(searchInput, filterValue, sortValue) {
       let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData)
-      tmpTableData = await this.onChangeFilter(tmpTableData)
-      tmpTableData = await this.onChangeSort(tmpTableData)
+      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
+      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
+      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
       this.tableData = tmpTableData
     },
-    onChangeSearchText(tableData) {
+    onChangeSearchText(tableData, searchInput) {
       return tableData.filter(row => {
-        console.log('row: ', row)
+        console.log('row : ', row)
         return (
-          row.processName.includes(this.searchInput) ||
-          row.auth.includes(this.searchInput)
+          row.processName.includes(searchInput) ||
+          // row.auth.includes(searchInput)
+          row.auths.some(a => a.includes(searchInput))
         )
       })
     },
-    onChangeFilter(tableData) {
-      if (!this.filter.value) return tableData
-      return tableData.filter(row => row.status === this.filter.value)
+    onChangeFilter(tableData, filterValue) {
+      if (!filterValue) return tableData
+      return tableData.filter(row => row.status === filterValue)
     },
-    onChangeSort(tableData) {
-      if (!this.sort.value) return tableData
-      if (this.sort.value === 'alphabetDesc')
+    onChangeSort(tableData, sortValue) {
+      if (!sortValue) return tableData
+      if (sortValue === 'alphabetDesc')
         return tableData.sort((a, b) =>
           a.processName - b.processName ? 1 : -1,
         )
-      else if (this.sort.value === 'alphabetAsc')
+      else if (sortValue === 'alphabetAsc')
         return tableData.sort((a, b) =>
           a.processName - b.processName ? -1 : 1,
         )
-      else if (this.sort.value === 'createdAtDesc')
+      else if (sortValue === 'createdAtDesc')
         return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
-      else if (this.sort.value === 'createdAtAsc')
+      else if (sortValue === 'createdAtAsc')
         return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
     },
   },
@@ -211,12 +211,17 @@ export default {
     limitAuthsLength(array) {
       let answer = ''
       let sumOfStrings = 0
+
       const divider = ', '
       for (let i = 0; i < array.length; i++) {
         answer += array[i]
         sumOfStrings += array[i].length + divider.length
-        if (sumOfStrings > 13) return answer + '...'
-        if (array.length - 1 === i) break
+        if (sumOfStrings > 13) {
+          const midfix = sumOfStrings - divider.length <= 13 ? '' : '...'
+          const suffix =
+            array.length - 1 > i ? `+${array.length - (i + 1)}` : ''
+          return answer.slice(0, 13) + midfix + suffix
+        } else if (array.length - 1 === i) break
         answer += divider
       }
       return answer

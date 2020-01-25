@@ -26,12 +26,14 @@ export default {
   components: {
     ProcessControlDropdownModal,
   },
-  props: ['data', 'targetId'],
+  props: {
+    target: Object,
+    targetId: String,
+  },
   data() {
     return {
       modalType: null,
       toggleProcessModal: false,
-      target: this.$props.data,
     }
   },
   methods: {
@@ -49,18 +51,10 @@ export default {
         })
         .catch(() => {})
     },
-    // emitEndProcessData() {
-    //   const updatedTableData = this.$props.data.map(row => {
-    //     if (row.id === this.$props.targetId) {
-    //       row.issue = false
-    //     }
-    //     return row
-    //   })
-    //   this.$emit('onChangeData', updatedTableData)
-    // },
     emitEndProcessData() {
-      this.target.issue = false
-      this.$emit('onChangeData', this.target)
+      let updatedTarget = this.$props.target
+      updatedTarget = false
+      this.$emit('onChangeData', updatedTarget)
     },
     addProcess() {
       this.$confirm(
@@ -80,15 +74,6 @@ export default {
     onCreateData(data) {
       this.$emit('onCreateData', data)
     },
-    // onChangeData(data) {
-    //   const updatedTableData = this.$props.data.map(row => {
-    //     if (row.id === data.id) {
-    //       row = data
-    //     }
-    //     return row
-    //   })
-    //   this.$emit('onChangeData', updatedTableData)
-    // },
     onChangeData(data) {
       this.$emit('onChangeData', data)
     },
@@ -122,11 +107,7 @@ export default {
         },
       )
         .then(() => {
-          // const updatedTableData = this.$props.data.filter(
-          //   row => row.id !== this.$props.targetId,
-          // )
-          // this.$emit('onChangeData', updatedTableData)
-          this.$emit('onDeleteData', this.target)
+          this.$emit('onDeleteData', this.$props.target)
         })
         .catch(() => {})
     },

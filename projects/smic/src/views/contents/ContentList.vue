@@ -7,11 +7,11 @@
 				.card__header--right
 					.inline-table__header--right
 						span.prefix 업로드된 컨텐츠 
-						span.value 102
+						span.value {{tableData | countAllContents}}
 						span.suffix &nbsp;projects
 						.divider
 						span.prefix 배포중인 컨텐츠 수 컨텐츠 
-						span.value 22
+						span.value {{tableData | countStopOfContentPublish}}
 						span.suffix &nbsp;projects
 			.card__body
 				el-table.inline-table(
@@ -25,7 +25,6 @@
 						:label="label" 
 						:width="width || ''") 
 						template(slot-scope='scope')
-							//- 이슈 타입
 							.content-name(v-if="prop === 'name'")
 								img.prefix-img(src="~@/assets/image/ic-content.svg")
 								span {{tableData[scope.$index][prop]}}
@@ -34,11 +33,15 @@
 							.auth-wrapper(v-else-if="prop === 'auth'")
 								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
 								span {{tableData[scope.$index][prop]}}
+							div(v-else-if="prop === 'uploadedAt'")
+								span {{tableData[scope.$index][prop] | filterDateTime}}
 							div(v-else)
 								span {{ tableData[scope.$index][prop]}}
 					el-table-column(:width="50" class-name="control-col")
 						template(slot-scope='scope')
-							content-control-dropdown(:contentPublish="tableData[scope.$index].contentPublish")
+							content-control-dropdown(
+								:contentPublish="tableData[scope.$index].contentPublish"
+								@onChangeData="data => onChangeData(data,tableData[scope.$index].id)")
 				
 </template>
 <style lang="scss">
@@ -81,21 +84,21 @@
 import InlineTable from '@/components/common/InlineTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 
-/// data
-import currentUploadedContent from '@/data/currentUploadedContent'
-
 // model
 import { tableColSettings } from '@/models/home'
 
 // mixin
 import contentList from '@/mixins/contentList'
 
+// utils
+import dayjs from '@/utils/dayjs'
+
 export default {
   components: { InlineTable, ContentControlDropdown },
-  mixins: [contentList],
+  mixins: [contentList, dayjs],
   data() {
     return {
-      tableData: currentUploadedContent,
+      tableData: this.$store.getters.currentUploadedContent,
       tableOption: {
         rowIdName: 'contentId',
         subdomain: '/contents',
@@ -110,6 +113,23 @@ export default {
       const { rowIdName, subdomain } = this.tableOption
       if (!rowIdName) return false
       this.$router.push(`${subdomain}/${row[rowIdName]}`)
+    },
+    onChangeData(data, id) {
+      this.tableData = this.tableData.map(row => {
+        if (row.id === id) {
+          row.contentPublish = data
+        }
+        return row
+      })
+      this.$store.commit('set_currentUploadedContent', this.tableData)
+    },
+  },
+  filters: {
+    countStopOfContentPublish(tableData) {
+      return tableData.filter(d => d.contentPublish === 'publishing').length
+    },
+    countAllContents(tableData) {
+      return tableData.length
     },
   },
 }

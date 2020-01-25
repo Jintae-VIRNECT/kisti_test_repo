@@ -31,6 +31,8 @@
 									.auth-wrapper(v-else-if="prop === 'auth'")
 										.auth-img(:style="{'background-image': `url(${currentContent.tableData[scope.$index]['profileImg']})`}")
 										span {{currentContent.tableData[scope.$index][prop]}}
+									div(v-else-if="prop === 'uploadedAt'")
+										span {{currentContent.tableData[scope.$index][prop] | filterDateTime}}
 									div(v-else)
 										span {{ currentContent.tableData[scope.$index][prop]}}
 							el-table-column(:width="50" class-name="control-col")
@@ -57,8 +59,8 @@
 </template>
 
 <script>
-import ContentList from '@/views/contents/ContentList'
 // UI component
+import ContentList from '@/views/contents/ContentList'
 import ProcessInprogressStatusGraph from '@/components/home/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
@@ -75,13 +77,15 @@ import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
 // mixin
 import contentList from '@/mixins/contentList'
 
+import dayjs from '@/utils/dayjs'
+
 const currentUploadedContentTableOption = {
   rowIdName: 'contentId',
   subdomain: '/contents',
 }
 
 export default {
-  mixins: [contentList],
+  mixins: [contentList, dayjs],
   components: {
     ProgressCard,
     InlineTable,

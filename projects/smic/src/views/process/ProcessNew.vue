@@ -55,6 +55,8 @@
 								span {{tableData[scope.$index][prop]}}
 							div(v-else-if="prop === 'contentPublish'")
 								span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
+							div(v-else-if="prop === 'uploadedAt'")
+								span {{tableData[scope.$index][prop] | filterDateTime}}
 							div(v-else)
 								span {{ tableData[scope.$index][prop]}}
 			//- el-pagination.inline-table-pagination(
@@ -132,8 +134,10 @@ import { tableColSettings } from '@/models/home'
 
 // mixin
 import contentList from '@/mixins/contentList'
+import dayjs from '@/utils/dayjs'
+
 export default {
-  mixins: [contentList],
+  mixins: [contentList, dayjs],
   components: { ProgressCard, InlineTable, PageTabNav, PageBreadCrumb },
   data() {
     return {

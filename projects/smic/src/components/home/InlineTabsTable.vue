@@ -47,6 +47,9 @@
 						.total-done(v-else-if="prop === 'totalDone'")
 							span.count {{tableData[scope.$index]['count']}} 
 							span &nbsp;/ {{tableData[scope.$index]['total']}}
+						//- 보고일시
+						div(v-else-if="prop === 'reportedAt'")
+							span.count {{tableData[scope.$index][prop] | filterDateTime}} 
 						div(v-else-if="prop === 'status'")
 							button.btn.btn--status(
 								size="mini" 
@@ -78,82 +81,86 @@
 <script>
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 
+// utils
+import dayjs from '@/utils/dayjs'
+
 export default {
-	components: {
-		ProcessControlDropdown,
-	},
-	props: {
-		tableData: Array,
-		setPagination: Boolean,
-		dataType: String,
-		setHeader: Boolean,
-		colSetting: Array,
-		controlCol: Boolean,
-		cellClick: Function,
-		tableOption: {
-			title: String,
-			// colSetting: Array,
-			pagerCount: 5,
-		},
-	},
-	data() {
-		return {
-			dataKeys: null,
-			currentPage: 1,
-			pageSize: this.$props.tableOption ? this.$props.tableOption.pageSize : 5,
-		}
-	},
-	methods: {
-		statusFilterName(value) {
-			if (value == 'complete') return '완료'
-			else if (value == 'progress') return '진행'
-			else if (value == 'idle') return '미진행'
-			else if (value == 'imcomplete') return '미흡'
-		},
-		publishFilterClass(type, value) {
-			let suffix = ''
-			if (value === false) suffix = 'plain'
+  mixins: [dayjs],
+  components: {
+    ProcessControlDropdown,
+  },
+  props: {
+    tableData: Array,
+    setPagination: Boolean,
+    dataType: String,
+    setHeader: Boolean,
+    colSetting: Array,
+    controlCol: Boolean,
+    cellClick: Function,
+    tableOption: {
+      title: String,
+      // colSetting: Array,
+      pagerCount: 5,
+    },
+  },
+  data() {
+    return {
+      dataKeys: null,
+      currentPage: 1,
+      pageSize: this.$props.tableOption ? this.$props.tableOption.pageSize : 5,
+    }
+  },
+  methods: {
+    statusFilterName(value) {
+      if (value == 'complete') return '완료'
+      else if (value == 'progress') return '진행'
+      else if (value == 'idle') return '미진행'
+      else if (value == 'imcomplete') return '미흡'
+    },
+    publishFilterClass(type, value) {
+      let suffix = ''
+      if (value === false) suffix = 'plain'
 
-			return `${type}-btn ${suffix}`
-		},
-		publishBoolean(value) {
-			if (value === true) return 'ON'
-			else return 'OFF'
-		},
-		publishFilterName(type, value) {
-			let className, suffix
-			if (type === 'contentPublish') className = '배포'
-			else if (type === 'processRegister') className = '등록'
+      return `${type}-btn ${suffix}`
+    },
+    publishBoolean(value) {
+      if (value === true) return 'ON'
+      else return 'OFF'
+    },
+    publishFilterName(type, value) {
+      let className, suffix
+      if (type === 'contentPublish') className = '배포'
+      else if (type === 'processRegister') className = '등록'
 
-			if (value === true) suffix = '중'
-			else if (value === false) suffix = '대기'
+      if (value === true) suffix = '중'
+      else if (value === false) suffix = '대기'
 
-			return className + suffix
-		},
-		onClickCell(row, column, cell, event) {
-			console.log('row : ', row)
-			console.log('column : ', column)
-			console.log('cell : ', cell)
-			console.log('event : ', event)
-			const { rowIdName, subdomain } = this.$props.tableOption
-			if (!rowIdName) return false
-			this.$router.push(`${subdomain}/${row[rowIdName]}`)
-		},
-	},
-	filters: {
-		limitAuthsLength(array) {
-			let answer = ''
-			let sumOfStrings = 0
-			const divider = ', '
-			for (let i = 0; i < array.length; i++) {
-				answer += array[i]
-				sumOfStrings += array[i].length + divider.length
-				if (sumOfStrings > 13) return answer + '...'
-				if (array.length - 1 === i) break
-				answer += divider
-			}
-			return answer
-		},
-	},
+      return className + suffix
+    },
+    onClickCell(row, column, cell, event) {
+      console.log('row : ', row)
+      console.log('column : ', column)
+      console.log('cell : ', cell)
+      console.log('event : ', event)
+      const { rowIdName, subdomain } = this.$props.tableOption
+      if (!rowIdName) return false
+      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+    },
+  },
+  filters: {
+    limitAuthsLength(array) {
+      let answer = ''
+      let sumOfStrings = 0
+      const divider = ', '
+      for (let i = 0; i < array.length; i++) {
+        answer += array[i]
+        sumOfStrings += array[i].length + divider.length
+        if (sumOfStrings > 13) return answer + '...'
+        if (array.length - 1 === i) break
+        answer += divider
+      }
+      return answer
+    },
+  },
 }
 </script>
