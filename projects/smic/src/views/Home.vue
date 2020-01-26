@@ -4,7 +4,7 @@
 		process-inprogress-status-graph
 		el-row(:gutter="20")
 			el-col(:span="24")
-				inline-table(:setHeader="true")
+				inline-table(:setMainHeader="true")
 					template(slot="header-left")
 						span.title 최근 등록된 공정 콘텐츠
 					template(slot="header-right")
@@ -41,7 +41,6 @@
 		el-row(:gutter="0")
 			el-col(:span="24")
 				inline-tabs-table(
-					:setHeader='true'
 					:tableData="currentReportedDetailProcess" 
 					:colSetting="tableColSettings[activeTab]")
 					template(slot="header-left")

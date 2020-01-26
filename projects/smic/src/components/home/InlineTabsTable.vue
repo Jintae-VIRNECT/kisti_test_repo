@@ -1,6 +1,6 @@
 <template lang="pug">
 	.card
-		.card__header(v-if="setHeader")
+		.card__header
 			.card__header--left
 				slot(name="header-left")
 			.card__header--right
@@ -93,7 +93,6 @@ export default {
     tableData: Array,
     setPagination: Boolean,
     dataType: String,
-    setHeader: Boolean,
     colSetting: Array,
     controlCol: Boolean,
     cellClick: Function,
@@ -137,11 +136,7 @@ export default {
 
       return className + suffix
     },
-    onClickCell(row, column, cell, event) {
-      console.log('row : ', row)
-      console.log('column : ', column)
-      console.log('cell : ', cell)
-      console.log('event : ', event)
+    onClickCell(row) {
       const { rowIdName, subdomain } = this.$props.tableOption
       if (!rowIdName) return false
       this.$router.push(`${subdomain}/${row[rowIdName]}`)

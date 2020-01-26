@@ -1,10 +1,12 @@
 <template lang="pug">
   .card
-    .card__header
+    .card__header(v-if="setMainHeader")
       .card__header--left
         slot(name="header-left")
       .card__header--right
         slot(name="header-right")
+    .card__header--secondary(v-if="setSubHeader")
+      slot(name="header--secondary")
     .card__body
       div
         slot(name="tabs")
@@ -16,7 +18,8 @@
 <script>
 export default {
   props: {
-    setHeader: Boolean,
+    setMainHeader: Boolean,
+    setSubHeader: Boolean,
   },
 }
 </script>

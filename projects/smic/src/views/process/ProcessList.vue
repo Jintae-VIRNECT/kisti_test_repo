@@ -16,7 +16,7 @@
 				span 정렬 : 
 				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
 					el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
-		inline-table(:setHeader="true")
+		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
 			template(slot="header-right")

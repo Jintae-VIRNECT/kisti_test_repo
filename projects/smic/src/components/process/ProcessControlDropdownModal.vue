@@ -1,14 +1,13 @@
 <template lang="pug">
   .process-new-modal(@click="e => e.stopPropagation()")
     el-dialog(
-      title="Tips"
       :visible.sync="processModal"
       width="540px"
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
       :destroy-on-close="true")
-      div(slot="title")
+      template(slot="title")
         span.process-new-modal__header-title {{modalType === "create" ? '신규 공정 등록' : '공정 편집'}}
       .process-new-modal__body
         .section.border-divider
@@ -112,7 +111,8 @@
 
 </template>
 <style lang="scss">
-$label-width: 100px;
+$label-width: 130px;
+$sub-label-width: 80px;
 
 .process-new-modal {
   .el-dialog__header {
@@ -143,6 +143,7 @@ $label-width: 100px;
   .detail-process-list {
     .detail-process-item {
       .section label {
+        width: $sub-label-width;
         font-size: 12px;
         font-weight: 500;
         font-stretch: normal;
@@ -150,6 +151,9 @@ $label-width: 100px;
         line-height: 1.5;
         letter-spacing: normal;
         color: #0d2a58;
+      }
+      .value {
+        margin-left: $sub-label-width;
       }
       .title {
         font-size: 14px;

@@ -27,7 +27,7 @@
 						el-dropdown-item Action 3
 						el-dropdown-item Action 4
 						el-dropdown-item Action 5
-		inline-table(:setHeader="true")
+		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 최근 등록된 공정 콘텐츠
 			template(slot="header-right")

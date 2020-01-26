@@ -1,18 +1,11 @@
 <template lang="pug">
-  div
+  .content-detail
     page-bread-crumb(title='공정 콘텐츠')
-    inline-table(:setHeader="true")
-      template(slot="header-left")
-        span.title 공정 콘텐츠 목록
-      template(slot="header-right")
-        .inline-table__header--right
-          span.prefix 업로드된 컨텐츠 
-          span.value {{processContent.tableData | countAllContents}}
-          span.suffix &nbsp;projects
-          .divider
-          span.prefix 배포중인 컨텐츠 수 컨텐츠 
-          span.value {{processContent.tableData | countStopOfContentPublish}}
-          span.suffix &nbsp;projects
+    inline-table(:setMainHeader="true")
+      .header--before(slot="header-left")
+        router-link.title(to="/contents")
+          i.el-icon-back
+          | 선택 공정 콘텐츠 정보
       template(slot="body")
         el-table.inline-table(
           :data='processContent.tableData' 
@@ -42,7 +35,7 @@
                 :contentPublish="processContent.tableData[scope.$index].contentPublish"
                 @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
 
-    inline-table(:setHeader="true")
+    inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title 세부공정 콘텐츠 목록 
       template(slot="body")
@@ -72,7 +65,27 @@
       //-   @next-click='currentPage += 1'
       //- )
 </template>
-
+<style lang="scss">
+.content-detail {
+  .card__header {
+    padding: 9px 16px !important;
+    .header--before {
+      .title {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 2;
+        color: #0d2a58;
+        vertical-align: middle;
+      }
+      i {
+        font-size: 16px;
+        margin-right: 12px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+</style>
 <script>
 import InlineTable from '@/components/common/InlineTable'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'

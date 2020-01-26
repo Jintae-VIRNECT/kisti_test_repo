@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     page-bread-crumb(title='공정 콘텐츠')
-    inline-table(:setHeader="true")
+    inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title 공정 콘텐츠 목록
       template(slot="header-right")
