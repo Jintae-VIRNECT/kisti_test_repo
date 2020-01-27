@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Clean Old Artifacts') {
       steps {
-        echo 'Clean Old Artifacts'
+        echo 'Clean Old Artifacts Stage'
         sh '''yarn cache clean
 '''
       }
@@ -11,7 +11,8 @@ pipeline {
 
     stage('Build') {
       steps {
-        echo 'Install Package'
+        echo 'Build Stage'
+        sh 'npm install'
         catchError(catchInterruptions: true, buildResult: 'FAILURE') {
           emailext(subject: 'PF-WebWorkStation Operated...', attachLog: true, compressLog: true, body: 'Build Fail', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
         }
@@ -19,57 +20,44 @@ pipeline {
       }
     }
 
-    stage('Dockerizing') {
-      parallel {
-        stage('Build Dockerfile') {
-          steps {
-            echo 'Begin Dockerizing'
-            sh 'cp docker/Dockerfile.develop ./'
-            sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
-          }
+    stage('Build Dockerfile') {
+      steps {
+        echo 'Dockerizing Stage'
+        sh 'cp docker/Dockerfile.develop ./'
+        sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
+        catchError(buildResult: 'FAILURE', catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', attachLog: true, compressLog: true, body: 'Build Dockerfile Fail', from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
         }
 
-        stage('Delete Old Container') {
-          steps {
-            echo 'Delete Old Container'
-            sh '''docker stop pf-webworkstation-develop || true
+      }
+    }
+
+    stage('Clean Old Container') {
+      steps {
+        echo 'Clean Old Container Stage'
+        sh '''docker stop pf-webworkstation-develop || true
 docker rm pf-webworkstation-develop || true'''
-          }
-        }
-
-        stage('Notify Email') {
-          steps {
-            emailext(subject: 'WebWorkStation Operated...', body: 'Start Dockerizing...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
-          }
+        catchError(buildResult: 'FAILURE', catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', body: 'Clean Old Container Fail', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
         }
 
       }
     }
 
     stage('Deploy') {
-      parallel {
-        stage('Deploy') {
-          steps {
-            echo 'Start Deploy'
-            sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
-          }
-        }
-
-        stage('Notify Email') {
-          steps {
-            emailext(subject: 'WebWorkStation Operated...', body: 'Start Deploy...', attachLog: true, compressLog: true, to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com')
-          }
+      steps {
+        echo 'Deploy Stage'
+        sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+        catchError(buildResult: 'FAILURE', catchInterruptions: true) {
+          emailext(subject: 'PF-WebWorkStation Operated...', body: 'Deploy Fail', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
         }
 
       }
     }
 
-    stage('Notify Email') {
+    stage('') {
       steps {
-        catchError(catchInterruptions: true) {
-          emailext(subject: 'PF-WebWorkStation Operated...', body: 'env.buildResult', attachLog: true, compressLog: true, to: 'delbert@virnect.com', from: 'virnect.corp@gmail.com')
-        }
-
+        emailext(subject: 'PF-WebWorkStation Operated...', body: 'Success', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
       }
     }
 
