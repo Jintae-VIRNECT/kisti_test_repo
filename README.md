@@ -10,7 +10,7 @@ ljk@virnect.com / Lee Jukyoung
 VIRNECT PLATFORM WORKSPACE SERVICE SERVER
 
 /workspaces/** -> 워크스페이스 서버 API
-/workspaces/groups** -> 그룹 서버 API
+/workspaces/groups/** -> 그룹 서버 API
 ```
 
 ## Environment
