@@ -25,16 +25,19 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploy Stage'
-        sh '''docker stop pf-webworkstation-develop || true
+        catchError() {
+          sh '''docker stop pf-webworkstation-develop || true
 docker rm pf-webworkstation-develop || true
 '''
-        sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+          sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+        }
+
       }
     }
 
     stage('Notify') {
       steps {
-        emailext(to: 'delbert@virnect.com dave@virnect.com', subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
       }
     }
 
