@@ -13,7 +13,6 @@ RUN yarn
 
 EXPOSE $PORT
 
-CMD ["yarn", "workspace", "smic", "build"]
 CMD ["yarn", "workspace", "smic", "deploy"]
 
 
