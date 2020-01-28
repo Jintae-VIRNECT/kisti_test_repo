@@ -15,29 +15,29 @@
 import { mapGetters } from 'vuex'
 
 export default {
-	data() {
-		return {
-			activeLink: null,
-		}
-	},
-	computed: {
-		...mapGetters(['getUser', 'getLocale']),
-	},
-	mounted() {
-		this.activeLink = this.$route.path
-	},
-	methods: {
-		userLogout() {
-			this.$store
-				.dispatch('USER_LOGOUT', { user: this.$store.uid })
-				.then(() => this.$router.go('/'))
-		},
-	},
-	watch: {
-		$route(to) {
-			const paths = to.path.split('/')
-			this.activeLink = '/' + paths[1]
-		},
-	},
+  data() {
+    return {
+      activeLink: null,
+    }
+  },
+  computed: {
+    ...mapGetters(['getUser', 'getLocale']),
+  },
+  mounted() {
+    this.activeLink = this.$route.path
+  },
+  methods: {
+    userLogout() {
+      this.$store
+        .dispatch('USER_LOGOUT', { user: this.$store.uid })
+        .then(() => this.$router.go('/'))
+    },
+  },
+  watch: {
+    $route(to) {
+      const paths = to.path.split('/')
+      this.activeLink = '/' + paths[1]
+    },
+  },
 }
 </script>

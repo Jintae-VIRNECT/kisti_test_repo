@@ -4,7 +4,7 @@
       el-tabs.page-tab-nav(v-model='activeTab' @tab-click="pathToTab") 
         el-tab-pane(
           v-for="(m, index) in model" 
-          :key="index" 
+          :key="m.to" 
           :label="m.title" 
           :name="m.to"
       )
@@ -13,31 +13,21 @@
 </template>
 <script>
 const model = [
-	{ title: '멤버', to: '/members' },
-	{ title: '콘텐츠', to: '/contents' },
-	{ title: '공정', to: '/process' },
+  { title: '멤버', to: '/members' },
+  { title: '콘텐츠', to: '/contents' },
+  { title: '공정', to: '/process' },
 ]
 export default {
-	data() {
-		return {
-			model,
-			activeTab: null,
-		}
-	},
-	methods: {
-		pathToTab({ name }) {
-			this.$router.push(name)
-		},
-	},
-	mounted() {
-		const paths = this.$route.path.split('/')
-		this.activeTab = '/' + paths[1]
-	},
-	watch: {
-		$route(to) {
-			const paths = to.path.split('/')
-			this.activeTab = '/' + paths[1]
-		},
-	},
+  data() {
+    return {
+      model,
+      activeTab: '/' + this.$route.path.split('/')[1],
+    }
+  },
+  methods: {
+    pathToTab({ name }) {
+      this.$router.push(name)
+    },
+  },
 }
 </script>

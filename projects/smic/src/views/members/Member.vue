@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    page-header(submenu='멤버')
+    page-header
     page-tab-nav
       template(slot="page-nav--right")
         .search-wrapper
@@ -33,13 +33,13 @@
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
 export default {
-	components: {
-		PageTabNav,
-	},
-	data() {
-		return {
-			search: null,
-		}
-	},
+  components: {
+    PageTabNav,
+  },
+  data() {
+    return {
+      search: null,
+    }
+  },
 }
 </script>

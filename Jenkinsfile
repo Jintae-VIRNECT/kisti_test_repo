@@ -1,47 +1,49 @@
 pipeline {
   agent any
   stages {
-    stage('Clean Old Artifacts') {
-      steps {
-        echo 'Clean Old Artifacts'
-        sh '''yarn cache clean
-'''
-      }
-    }
-
     stage('Build') {
+      environment {
+        status = 'BuildSuccess'
+      }
       steps {
-        echo 'Install Package'
+        echo 'Build Stage'
+        sh 'yarn cache clean'
+        sh 'npm install'
+        sh 'cp docker/Dockerfile.develop ./'
+        sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
       }
     }
 
-    stage('Dockerizing') {
-      parallel {
-        stage('Build Dockerfile') {
-          steps {
-            echo 'Begin Dockerizing'
-            sh 'cp docker/Dockerfile.develop ./'
-            sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
-          }
-        }
-
-        stage('Delete Old Container') {
-          steps {
-            echo 'Delete Old Container'
-            sh '''docker stop pf-webworkstation-develop || true
-docker rm pf-webworkstation-develop || true'''
-          }
-        }
-
+    stage('Test') {
+      environment {
+        status = 'TestSuccess'
+      }
+      steps {
+        echo 'Test Stage'
       }
     }
 
     stage('Deploy') {
+      environment {
+        status = 'DeploySuccess'
+      }
       steps {
-        echo 'Start Deploy'
+        echo 'Deploy Stage'
+        sh '''docker stop pf-webworkstation-develop || true
+docker rm pf-webworkstation-develop || true
+'''
         sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
       }
     }
 
+    stage('Notify') {
+      steps {
+        emailext(to: '$DEFAULT_RECIPIENTS', subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
+      }
+    }
+
+  }
+  environment {
+    status = 'FAIL'
   }
 }

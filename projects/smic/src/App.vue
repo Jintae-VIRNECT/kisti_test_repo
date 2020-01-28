@@ -22,34 +22,34 @@ import TheTopNav from '@/components/layout/TheTopNav.vue'
 import { mapGetters } from 'vuex'
 
 export default {
-	components: {
-		TheTopNav,
-		TheSidebar,
-	},
-	data() {
-		return {
-			menus: [
-				{
-					path: '/',
-					label: '홈',
-					image: require('@/assets/image/ic-home.svg'),
-				},
-				{
-					path: '/members',
-					pathAlias: ['/members', '/contents', '/process'],
-					label: '워크스페이스 관리',
-					image: require('@/assets/image/ic-workspace-management.svg'),
-				},
-				{
-					path: '/issue',
-					label: '이슈 관리',
-					image: require('@/assets/image/ic-issue.svg'),
-				},
-			],
-		}
-	},
-	computed: {
-		...mapGetters(['getIsLoggedIn']),
-	},
+  components: {
+    TheTopNav,
+    TheSidebar,
+  },
+  data() {
+    return {
+      menus: [
+        {
+          path: '/',
+          label: '홈',
+          image: require('@/assets/image/ic-home.svg'),
+        },
+        {
+          path: '/members',
+          pathAlias: ['/members', '/contents', '/process'],
+          label: '워크스페이스 관리',
+          image: require('@/assets/image/ic-workspace-management.svg'),
+        },
+        {
+          path: '/issue',
+          label: '이슈 관리',
+          image: require('@/assets/image/ic-issue.svg'),
+        },
+      ],
+    }
+  },
+  computed: {
+    ...mapGetters(['getIsLoggedIn']),
+  },
 }
 </script>

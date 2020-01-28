@@ -37,54 +37,54 @@
 
 <script>
 export default {
-	props: {
-		menus: Array,
-	},
-	data() {
-		return {
-			currentMenuPath: '',
-			currentSubMenuPath: '',
-			activeMenuPath: '',
-			activeSubMenuPath: '',
-		}
-	},
-	watch: {
-		$route(to) {
-			const paths = to.path.split('/')
-			this.activeMenuPath = '/' + paths[1]
-			this.currentSubMenuPath = to.path
-		},
-	},
-	methods: {
-		showSubMenu(menu) {
-			if (this.openedMenu === menu) {
-				this.openedMenu = false
-			} else {
-				this.openedMenu = menu
-			}
-		},
-		isCurrentMenu(path) {
-			return path == this.currentMenuPath
-		},
-		isActiveMenu(menu) {
-			if (menu.pathAlias) return menu.pathAlias.includes(this.activeMenuPath)
-			return menu.path == this.activeMenuPath
-		},
-		isActiveSubMenu(path) {
-			return path == this.currentSubMenuPath
-		},
-		resetSubmenu() {
-			this.currentMenuPath = ''
-		},
-	},
+  props: {
+    menus: Array,
+  },
+  data() {
+    return {
+      currentMenuPath: '',
+      currentSubMenuPath: '',
+      activeMenuPath: '',
+      activeSubMenuPath: '',
+    }
+  },
+  watch: {
+    $route(to) {
+      const paths = to.path.split('/')
+      this.activeMenuPath = '/' + paths[1]
+      this.currentSubMenuPath = to.path
+    },
+  },
+  methods: {
+    showSubMenu(menu) {
+      if (this.openedMenu === menu) {
+        this.openedMenu = false
+      } else {
+        this.openedMenu = menu
+      }
+    },
+    isCurrentMenu(path) {
+      return path == this.currentMenuPath
+    },
+    isActiveMenu(menu) {
+      if (menu.pathAlias) return menu.pathAlias.includes(this.activeMenuPath)
+      return menu.path == this.activeMenuPath
+    },
+    isActiveSubMenu(path) {
+      return path == this.currentSubMenuPath
+    },
+    resetSubmenu() {
+      this.currentMenuPath = ''
+    },
+  },
 }
 </script>
 
 <style lang="scss">
 .sidebar__logo {
-	width: 44px;
-	height: 44px;
-	background-image: linear-gradient(332deg, #225bac 90%, #276ac7 6%);
+  width: 44px;
+  height: 44px;
+  background-image: linear-gradient(332deg, #225bac 90%, #276ac7 6%);
 }
 // .sidebar--item:hover {
 // 	background-color: #424955;
