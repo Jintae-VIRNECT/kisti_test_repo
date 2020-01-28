@@ -15,13 +15,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -91,9 +89,10 @@ public class WorkspaceService {
         return new ResponseMessage().addParam("workspaceList", userWorkspaceList);
     }
 
-    public ResponseMessage getMember(String workspaceUUID, String userId, String search, String filter, String align) {
+    public ResponseMessage getMember(String workspaceId, String userId, String search, String filter, Pageable pageable ) {
 
-        ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search);
+        //1. 검색어 검증(UserService에서)
+        ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, pageable);
         Map<String, Object> data = responseMessage.getData();
         log.info("ResponseMessage: {}", data);
         List<Object> results = ((List<Object>) data.get("userInfoList"));
@@ -101,36 +100,43 @@ public class WorkspaceService {
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
 
         //2. 필터 검증
-        if (filter.equals("MASTER")) {
+        if (StringUtils.hasText(filter)&&filter.equals("MASTER")) {
+            result= this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId);
+/*
             for (UserDTO.UserInfoDTO userInfo : userInfoDTOList) {
-                if (this.hasRoleIs(userInfo.getUuid(), workspaceUUID, "MASTER")) {
+                if (this.hasRoleIs(userInfoDTOList, workspaceId, "MASTER")) {
                     result.add(userInfo);
                 }
-            }
+            }*/
         } else {
             result = userInfoDTOList;
         }
 
-        //3. 정렬 검증(기본값은 ㄱ~ㅎ)
-        if (align.equals("asc") || !StringUtils.hasText(align)) {
+        //3. 정렬 검증(UserService에서!)
+       /* if (align.equals("asc") || !StringUtils.hasText(align)) {
             result.sort(Comparator.comparing(UserDTO.UserInfoDTO::getName));
         } else {
             result.sort((first, second) -> second.getName().compareTo(first.getName()));
-        }
+        }*/
 
-        return new ResponseMessage().addParam("memberList", result);
+       Map<String,Object> pageableResult = new HashMap<>();
+       pageableResult.put("currentPage",pageable.getPageNumber());
+       pageableResult.put("currentSize",pageable.getPageSize());
+        pageableResult.put("totalPage",data.get("totalPage"));
+        pageableResult.put("totalElements",result.size());
+        return new ResponseMessage().addParam("memberList", result).addParam("Pageable",pageableResult);
     }
 
     /**
      * 워크스페이스 유저 역할 검사
      *
      * @param userId        - 유저 고유 아이디
-     * @param workspaceUUID - 워크스페이스 고유 아이디
+     * @param workspaceId - 워크스페이스 고유 아이디
      * @param role          - 비교 대상 역할
      * @return 역할 비교 결과
      */
-    private boolean hasRoleIs(final String userId, final String workspaceUUID, final String role) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceUUID);
+    private boolean hasRoleIs(final String userId, final String workspaceId, final String role) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId, workspace);
         return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceUser).getRole().equals(role);
     }
@@ -141,7 +147,7 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return
      */
-    public ResponseMessage getWorkspace(String workspaceId, String userId) {
+    public ResponseMessage getWorkspaceInfo(String workspaceId, String userId) {
         //마스터 인지 체크
         if (getUserInfo(userId).getUserType().equals("SUB_USER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);

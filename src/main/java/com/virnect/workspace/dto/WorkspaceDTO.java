@@ -49,6 +49,7 @@ public class WorkspaceDTO {
         private LocalDateTime updatedDate;
         private String role;
 
+
         @Override
         public String toString() {
             return "UserWorkspaceInfo{" +

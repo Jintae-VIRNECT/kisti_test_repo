@@ -2,6 +2,9 @@ package com.virnect.workspace.dao;
 
 import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.dto.UserDTO;
+
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -12,4 +15,6 @@ import com.virnect.workspace.domain.WorkspaceUser;
  */
 public interface WorkspaceUserPermissionRepositoryCustom {
     WorkspaceRole findWorkspaceUserRole(WorkspaceUser workspaceUser);
+    List<UserDTO.UserInfoDTO> findUserInfoListFilterd(List<UserDTO.UserInfoDTO> userInfoDTOList, String workspaceId);
+
 }

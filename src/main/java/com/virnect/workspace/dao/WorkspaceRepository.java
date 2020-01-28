@@ -11,5 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * DESCRIPTION:
  */
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long>, WorkspaceRepositoryCustom{
-    Workspace findByUuid(String workspaceUUID);
+    Workspace findByUuid(String workspaceId);
 }
