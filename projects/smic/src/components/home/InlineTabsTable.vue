@@ -131,7 +131,6 @@ export default {
   },
   methods: {
     onClickCell(row, column) {
-      console.log('row : ', row)
       if (column.className === 'control-col') return false
       this.$router.push(`/process/${row.id}`)
     },
@@ -162,10 +161,8 @@ export default {
     },
     onChangeSearchText(tableData, searchInput) {
       return tableData.filter(row => {
-        console.log('row : ', row)
         return (
           row.processName.includes(searchInput) ||
-          // row.auth.includes(searchInput)
           row.auths.some(a => a.includes(searchInput))
         )
       })
