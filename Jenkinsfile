@@ -9,7 +9,7 @@ pipeline {
         sh 'npm run build:develop'
         sh 'cp docker/Dockerfile.develop ./'
         sh 'docker build -t rm-web/develop -f docker/Dockerfile.develop .'
-        catchError(catchInterruptions: true) {
+        catchError(catchInterruptions: true, buildResult: 'FAILURE') {
           emailext(subject: 'test', body: 'test', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
         }
 
