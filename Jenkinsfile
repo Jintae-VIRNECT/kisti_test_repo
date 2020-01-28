@@ -9,6 +9,7 @@ pipeline {
         echo 'Build Stage'
         sh 'yarn cache clean'
         sh 'npm install'
+        sh 'yarn workspace smic build'
         sh 'cp docker/Dockerfile.develop ./'
         sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
       }
