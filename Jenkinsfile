@@ -19,7 +19,7 @@ pipeline {
         status = 'TestSuccess'
       }
       steps {
-        sh 'Test Stage'
+        echo 'Test Stage'
       }
     }
 
