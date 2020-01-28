@@ -28,6 +28,7 @@ pipeline {
           sh '''docker stop rm-web-develop || true
 docker rm rm-web-develop || true'''
           sh 'docker run -p 8886:8886 -d --name rm-web-develop rm-web/develop'
+          sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
       }
