@@ -26,6 +26,7 @@ pipeline {
         catchError() {
           sh 'docker stop pf-workspace-develop && docker rm pf-workspace-develop || true'
           sh 'docker run -p 8082:8082 -d --name=pf-workspace-develop pf-workspace/develop'
+          sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
       }
