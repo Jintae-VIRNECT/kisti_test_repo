@@ -30,7 +30,7 @@ docker rm rm-web-develop || true'''
     stage('Notify') {
       steps {
         echo 'Notify Stage'
-        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com wooka@virnect.com')
       }
     }
 
