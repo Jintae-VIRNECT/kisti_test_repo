@@ -8,10 +8,11 @@ pipeline {
       steps {
         echo 'Build Stage'
         sh 'yarn cache clean'
-        sh 'npm install'
+        sh 'yarn install'
         sh 'yarn workspace smic build'
         sh 'cp docker/Dockerfile.develop ./'
         sh 'docker build -t pf-webworkstation/develop -f docker/Dockerfile.develop .'
+        sh 'sudo rm yarn.lock'
       }
     }
 
@@ -39,7 +40,7 @@ docker rm pf-webworkstation-develop || true
 
     stage('Notify') {
       steps {
-        emailext(to: '$DEFAULT_RECIPIENTS', subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
+        emailext(to: 'delbert@virnect.com', subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
       }
     }
 
