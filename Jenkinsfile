@@ -4,7 +4,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Build Stage'
-        sh 'npm cache verify'
+        sh 'npm cache clean'
         sh 'npm install'
         sh 'npm run build:develop'
         sh 'cp docker/Dockerfile.develop ./'
@@ -30,7 +30,10 @@ docker rm rm-web-develop || true'''
     stage('Notify') {
       steps {
         echo 'Notify Stage'
-        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com wooka@virnect.com')
+        catchError() {
+          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
+        }
+
       }
     }
 
