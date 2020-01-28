@@ -1,9 +1,13 @@
 import 'es6-promise/auto'
 import 'babel-polyfill'
+
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import VueSweetalert2 from 'vue-sweetalert2'
+
 import locale from '@/plugins/i18n-ko'
+import VueAxios from 'vue-axios'
+import axios from '@/plugins/customAxios'
 
 import App from '@/App.vue'
 import router from '@/router'
@@ -21,6 +25,7 @@ import PageHeader from '@/components/common/PageHeader'
 
 Vue.use(ElementUI, { locale })
 Vue.use(VueSweetalert2)
+Vue.use(VueAxios, axios)
 
 Vue.component('page-header', PageHeader)
 

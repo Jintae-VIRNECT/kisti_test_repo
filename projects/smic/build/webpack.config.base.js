@@ -1,8 +1,16 @@
 const { join } = require('path')
+const { DefinePlugin } = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const dotenv = require('dotenv')
+const fs = require('fs')
+const filePath = `.env.${process.env.NODE_ENV.trim()}`
+const env = dotenv.parse(fs.readFileSync(filePath))
 
 module.exports = {
+  node: {
+    fs: 'empty',
+  },
   entry: join(__dirname, '../src/index.js'),
   plugins: [
     new HtmlWebpackPlugin({
@@ -10,6 +18,14 @@ module.exports = {
       favicon: join(__dirname, '../public/favicon.ico'),
     }),
     new VueLoaderPlugin(),
+    new DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        SSL_ENV: JSON.stringify(process.env.SSL_ENV),
+        BASE_URL: JSON.stringify(env.BASE_URL),
+        USER_API_URL: JSON.stringify(env.USER_API_URL),
+      },
+    }),
   ],
   resolve: {
     extensions: ['.js', '.vue'],
@@ -49,7 +65,6 @@ module.exports = {
       },
       {
         test: /assets\/image\/|\.(png|jpg|jpeg|gif|svg|svgz)(\?.+)?$/,
-        // exclude: /favicon\.png$/,
         use: [
           {
             loader: 'url-loader',

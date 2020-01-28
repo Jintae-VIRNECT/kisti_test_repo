@@ -58,7 +58,7 @@
 								span {{ tableData[scope.$index][prop] }}
 					el-table-column(:width="50" class-name="control-col")
 						template(slot-scope='scope')
-							//- process-control-dropdown(
+							process-control-dropdown(
 								:target="tableData[scope.$index]"
 								@onChangeData="onChangeData"
 								@onCreateData="onCreateData"
@@ -82,7 +82,7 @@ import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
-// import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -99,7 +99,7 @@ export default {
     ProcessDashBanner,
     PageTabNav,
     PageBreadCrumb,
-    // ProcessControlDropdown,
+    ProcessControlDropdown,
   },
   data() {
     return {

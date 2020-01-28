@@ -1,5 +1,5 @@
 import axios from 'axios'
 
 export default axios.create({
-	baseUrl: process.NODE_ENV == 'production' ? '' : 'http://localhost:8080',
+  baseURL: process.env.USER_API_URL,
 })
