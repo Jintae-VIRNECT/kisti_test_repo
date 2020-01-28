@@ -41,7 +41,7 @@ docker rm pf-webworkstation-develop || true'''
 
     stage('Result') {
       steps {
-        emailext(subject: 'PF-WebWorkStation Operated...', body: '${buildResult}', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
+        emailext(subject: 'PF-WebWorkStation Operated...', body: 'currentBuild.result', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com dave@virnect.com')
         catchError() {
           emailext(to: 'delbert@virnect.com dave@virnect.com', from: 'virnect.corp@gmail.com', subject: 'PF-WebWorkStation Operated...', body: '${buildResult}', attachLog: true, compressLog: true)
         }
