@@ -39,6 +39,6 @@ docker rm pf-webworkstation-develop || true
 
   }
   environment {
-    statuss = 'FAIL'
+    status = 'FAIL'
   }
 }
