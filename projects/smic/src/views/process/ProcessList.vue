@@ -5,7 +5,7 @@
 				router-link(to="/process/new")
 					button.enroll-new-process 신규 공정 등록
 		page-bread-crumb(title='공정')
-		process-dash-banner
+		process-dash-banner(:data="tableData")
 		.page-nav
 			.search-wrapper.text-right
 				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch(searchInput, filter.value, sort.value)")
@@ -46,8 +46,8 @@
 								span {{tableData[scope.$index][prop] | limitAuthsLength}}
 							//- schedule = (startAt ~ endAt)
 							.total-done(v-else-if="prop === 'schedule'")
-								span {{tableData[scope.$index]['startAt'] | filterDateTime}} 
-								span &nbsp;~ {{tableData[scope.$index]['endAt'] | filterDateTime}}
+								span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
+								span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
 							div(v-else-if="prop === 'status'")
 								button.btn.btn--status(
 									size="mini" 
@@ -63,11 +63,6 @@
 								@onChangeData="onChangeData"
 								@onCreateData="onCreateData"
 								@onDeleteData="onDeleteData")
-							//- process-control-dropdown(
-								:data="tableData"
-								:targetId="tableData[scope.$index].id" 
-								@onChangeData="onChangeData"
-								@onCreateData="onCreateData")
 			//- el-pagination.inline-table-pagination(
 			//- 	v-if='setPagination'
 			//- 	:hide-on-single-page='false' 
@@ -89,11 +84,8 @@ import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 
-// // model
-// import { cols, processStatus } from '@/models/process'
-// import { sortOptions } from '@/models/index'
 // model
-import { cols, processStatus } from '@/models/process'
+import { cols as colSetting, processStatus } from '@/models/process'
 import { sortOptions } from '@/models/index'
 
 // lib
@@ -111,12 +103,7 @@ export default {
   },
   data() {
     return {
-      tableData: this.$store.getters.currentReportedDetailProcess, // 시연용
-      tableOption: {
-        rowIdName: 'processId',
-        subdomain: '/process',
-      },
-      colSetting: cols,
+      tableData: this.$store.getters.currentReportedDetailProcess,
       searchInput: null,
       filter: {
         options: [
@@ -135,16 +122,15 @@ export default {
     }
   },
   computed: {
-    cols() {
-      return cols
+    colSetting() {
+      return colSetting
     },
   },
   methods: {
     onClickCell(row, column) {
+      console.log('row : ', row)
       if (column.className === 'control-col') return false
-      const { rowIdName, subdomain } = this.tableOption
-      if (!rowIdName) return false
-      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+      this.$router.push(`/process/${row.id}`)
     },
     onChangeData(data) {
       const updatedTableData = this.tableData.map(row => {

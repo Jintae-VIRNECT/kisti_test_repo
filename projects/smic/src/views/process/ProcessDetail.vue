@@ -7,7 +7,7 @@
         el-row
           el-col(:span="6")
             label | 공정 ID
-            label {{process.processId}}
+            label {{process.id}}
           el-col(:span="6")
             label | 업로드 일
             label {{process.uploadedAt}}
@@ -76,7 +76,7 @@ export default {
   },
   mounted() {
     this.process = currentReportedDetailProcess.find(c => {
-      return c.processId === this.$route.params.id
+      return c.id === this.$route.params.id
     })
   },
 }

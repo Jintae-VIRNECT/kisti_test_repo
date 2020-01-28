@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 export default {
   filters: {
-    filterDateTime(params) {
+    dayJs_FilterDateTime(params) {
       return dayjs(params).format('YYYY.MM.DD HH:mm')
     },
   },

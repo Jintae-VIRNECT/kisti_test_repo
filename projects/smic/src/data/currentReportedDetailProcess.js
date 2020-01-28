@@ -14,11 +14,12 @@ export default [
     auths: ['김펭수', '이펭수', '박펭수', '문펭수'],
     profileImg: require('@/assets/image/profileImg.jpg'),
     numOfDetailProcess: 6,
-    processPercent: 90,
+    processPercent: 100,
     type: '이슈',
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
     workerNum: 6,
     issue: true,
   },
@@ -36,13 +37,14 @@ export default [
     auths: ['김펭수', '이펭수', '박펭수'],
     profileImg: require('@/assets/image/profileImg.jpg'),
     numOfDetailProcess: 6,
-    processPercent: 90,
+    processPercent: 100,
     workerNum: 6,
-    issue: true,
+    issue: false,
     type: '작업 이슈',
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '3',
@@ -65,6 +67,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '4',
@@ -87,6 +90,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '5',
@@ -109,6 +113,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '6',
@@ -131,6 +136,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '7',
@@ -153,6 +159,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '8',
@@ -175,6 +182,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '9',
@@ -197,6 +205,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '10',
@@ -219,6 +228,7 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
   {
     id: '11',
@@ -241,5 +251,6 @@ export default [
     // 체결수 = count / total
     count: 2,
     total: 10,
+    done: false,
   },
 ]

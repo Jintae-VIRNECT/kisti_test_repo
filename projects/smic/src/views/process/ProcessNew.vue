@@ -38,7 +38,7 @@
 								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
 								span {{tableData[scope.$index][prop]}}
 							div(v-else-if="prop === 'uploadedAt'")
-								span {{tableData[scope.$index][prop] | filterDateTime}}
+								span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
 							div(v-else)
 								span {{ tableData[scope.$index][prop]}}
 		process-new-modal(

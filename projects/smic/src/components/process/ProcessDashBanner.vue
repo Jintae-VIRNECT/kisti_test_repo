@@ -121,14 +121,25 @@
 </style>
 <script>
 export default {
+  props: {
+    data: Array,
+  },
   data() {
     return {
       topic: 'table',
+      done: [], // 마감된 공정
+      start: [], // 시작된 공정
+      idle: [], //시작 대기 공정
     }
   },
   methods: {
     toggleTopic() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+  },
+  watch: {
+    data() {
+      this.done
     },
   },
 }

@@ -26,7 +26,7 @@
                 .auth-img(:style="{'background-image': `url(${processContent.tableData[scope.$index]['profileImg']})`}")
                 span {{processContent.tableData[scope.$index][prop]}}
               div(v-else-if="prop === 'uploadedAt'")
-                span {{processContent.tableData[scope.$index][prop] | filterDateTime}}
+                span {{processContent.tableData[scope.$index][prop] | dayJs_FilterDateTime}}
               div(v-else)
                 span {{ processContent.tableData[scope.$index][prop]}}
           el-table-column(:width="50" class-name="control-col")
