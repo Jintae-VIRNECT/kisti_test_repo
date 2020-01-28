@@ -25,7 +25,6 @@ pipeline {
       }
     }
 
-
     stage('Build') {
       steps {
         sh './gradlew build -x test'
@@ -34,7 +33,7 @@ pipeline {
 
     stage('Notify Build Step  Email') {
       steps {
-        emailext(subject: 'PF-Workspace Operated..', body: 'Start Build...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com sky456139@virnect.com hkmin@virnect.com')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$DEFAULT_RECIPIENTS')
       }
     }
 
@@ -58,7 +57,7 @@ pipeline {
 
     stage('Notify Dockerizing Step Email') {
       steps {
-        emailext(subject: 'PF-Workspace Operated...', body: 'Start Dockerizing...', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com', to: 'delbert@virnect.com sky456139@virnect.com hkmin@virnect.com')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$DEFAULT_RECIPIENTS')
       }
     }
 
@@ -82,8 +81,9 @@ pipeline {
 
     stage('Notify Deploy Step Email') {
       steps {
-        emailext(subject: 'PF-Workspace Operated...', body: 'Start Deploy..', attachLog: true, compressLog: true, to: 'delbert@virnect.com sky456139@virnect.com hkmin@virnect.com', from: 'virnect.corp@gmail.com')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$DEFAULT_RECIPIENTS')
       }
     }
+
   }
 }
