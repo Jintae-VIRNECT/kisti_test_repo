@@ -33,7 +33,12 @@ pipeline {
 docker rm pf-webworkstation-develop || true
 '''
         sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
-        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$DEFAULT_RECIPIENTS', from: 'virnect.corp@gmail.com')
+      }
+    }
+
+    stage('Notify') {
+      steps {
+        emailext(to: '$DEFAULT_RECIPIENTS', subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, from: 'virnect.corp@gmail.com')
       }
     }
 
