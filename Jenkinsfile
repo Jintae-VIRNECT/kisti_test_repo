@@ -30,7 +30,7 @@ docker rm rm-web-develop || true'''
     stage('Notify') {
       steps {
         echo 'Notify Stage'
-        catchError() {
+        catchError(catchInterruptions: true, buildResult: 'FAILURE') {
           emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
         }
 
