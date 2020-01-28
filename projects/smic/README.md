@@ -7,11 +7,13 @@
 ## Docker 로컬 테스트해보기
 
 - 빌드
+
 ```shell
 $ docker build -t smic -f docker/Dockerfile.develop .
 ```
 
 - 런
+
 ```shell
 $ docker run smic
 ```
