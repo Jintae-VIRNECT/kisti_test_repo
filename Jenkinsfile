@@ -9,6 +9,10 @@ pipeline {
         sh 'npm run build:develop'
         sh 'cp docker/Dockerfile.develop ./'
         sh 'docker build -t rm-web/develop -f docker/Dockerfile.develop .'
+        catchError(catchInterruptions: true) {
+          emailext(subject: 'test', body: 'test', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
+        }
+
       }
     }
 
@@ -24,16 +28,6 @@ pipeline {
         sh '''docker stop rm-web-develop || true
 docker rm rm-web-develop || true'''
         sh 'docker run -p 8886:8886 -d --name rm-web-develop rm-web/develop'
-      }
-    }
-
-    stage('Notify') {
-      steps {
-        echo 'Notify Stage'
-        catchError(catchInterruptions: true, buildResult: 'FAILURE') {
-          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: 'delbert@virnect.com')
-        }
-
       }
     }
 
