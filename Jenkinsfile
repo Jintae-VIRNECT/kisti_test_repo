@@ -30,6 +30,7 @@ pipeline {
 docker rm pf-webworkstation-develop || true
 '''
           sh 'docker run -p 8887:8887 -d --name pf-webworkstation-develop pf-webworkstation/develop'
+          sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
       }
