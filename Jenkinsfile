@@ -4,7 +4,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Build Stage'
-        sh 'npm cache clean'
+        sh 'npm cache verify'
         sh 'npm install'
         sh 'npm run build:develop'
         sh 'cp docker/Dockerfile.develop ./'
