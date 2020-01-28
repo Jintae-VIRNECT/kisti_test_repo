@@ -50,7 +50,7 @@ export default {
   },
   watch: {
     $props: {
-      handler(a) {
+      handler() {
         this.processModal = this.$props.toggleProcessModal
       },
       deep: true,

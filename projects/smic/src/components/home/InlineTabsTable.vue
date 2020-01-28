@@ -82,7 +82,7 @@ import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
-import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
