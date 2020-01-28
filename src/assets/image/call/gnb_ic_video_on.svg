@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>35DA27EA-BD84-41E5-9154-4CCE00294BA4@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리" transform="translate(-1568.000000, -152.000000)">
+            <g id="gnb*1" transform="translate(30.000000, 144.000000)">
+                <g id="gnb_ic_video" transform="translate(1538.000000, 8.000000)">
+                    <g id="gnb_ic_video_on">
+                        <polygon points="0 0 40 0 40 40 0 40"></polygon>
+                        <g id="videocam-24px" transform="translate(8.000000, 8.000000)">
+                            <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                            <path d="M17,10.5 L17,7 C17,6.45 16.55,6 16,6 L4,6 C3.45,6 3,6.45 3,7 L3,17 C3,17.55 3.45,18 4,18 L16,18 C16.55,18 17,17.55 17,17 L17,13.5 L21,17.5 L21,6.5 L17,10.5 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

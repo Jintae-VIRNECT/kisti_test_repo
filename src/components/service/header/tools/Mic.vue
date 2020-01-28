@@ -6,8 +6,8 @@
     description="마이크 on/off"
     :size="34"
     :active="mic"
-    :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
-    :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
+    :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
+    :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
     @action="micOnOff"
   ></toggle-button>
 </tooltip>

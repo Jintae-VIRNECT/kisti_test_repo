@@ -8,7 +8,7 @@
     description="알림"
     :size="34"
     :toggle="false"
-    :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.png')"
+    :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
     @action="notice"
   ></toggle-button>
 

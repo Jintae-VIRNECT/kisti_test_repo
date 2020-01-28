@@ -6,7 +6,7 @@
     description="영상 on/off"
     :size="34"
     :active="stream"
-    :activeSrc="require('assets/image/call/gnb_ic_video_on.png')"
+    :activeSrc="require('assets/image/call/gnb_ic_video_on.svg')"
     :inactiveSrc="require('assets/image/call/gnb_ic_video_off.png')"
     @action="streamOnOff"
   ></toggle-button>

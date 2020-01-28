@@ -24,7 +24,7 @@ export default {
   },
 	data() {
 		return {
-      ifPdf: false
+      isPdf: false
     }
 	},
 	computed: {},

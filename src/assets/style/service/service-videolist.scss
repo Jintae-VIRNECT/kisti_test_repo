@@ -21,7 +21,7 @@
     width: 320px;
     height: 240px;
     text-align: center;
-    border: solid 1px rgba(151, 151, 151, 0.21);
+    border: solid 1px $color_videolist_border;
     border-radius: 2px;
     &.current {
       border: solid 2px $color_remote2;
@@ -56,11 +56,11 @@
       height: 30px;
       bottom: 0;
       text-align: center;
-      background-color: rgba(#000, .39);
+      background-color: rgba($color_black, .39);
       font-size: 13px;
       font-weight: 500;
       line-height: 30px;
-      color: #fff;
+      color: $color_text_main;
 
       >.active {
         position: relative;

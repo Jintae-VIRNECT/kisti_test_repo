@@ -28,6 +28,7 @@ export default {
       session.on('streamCreated', (event) => {
         // Subscribe to the Stream to receive it
         // HTML video will be appended to element with 'video-container' id
+        console.log(event.stream)
       
         let streamObj = addSession(event.stream)
         
@@ -46,7 +47,6 @@ export default {
           subscribers.push(subscriber)
           // var subscriber = session.subscribe(event.stream)
           console.log(subscriber)
-          console.log(subscriber.stream.getMediaStream())
           subscriber.on('streamPlaying', (event) => {
             console.log(event)
             console.log(subscriber.stream.getMediaStream())
@@ -141,8 +141,8 @@ export default {
           nickName: clientData,
           // userName: serverData,
           nodeId: nodeId,
-          audio: true,
-          video: true
+          audio: stream.audioActive,
+          video: stream.videoActive
         }
       }
       

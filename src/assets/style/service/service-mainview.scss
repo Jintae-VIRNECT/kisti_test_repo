@@ -44,7 +44,7 @@
       margin: auto 0 auto 8px;
       color: #fff;
       font-weight: 500;
-      text-shadow: 1px 1px 1px #000;
+      text-shadow: 1px 1px 1px $color_black;
     }
     .status {
       position: relative;
@@ -64,10 +64,10 @@
     bottom: 15px;
     right: 15px;
     padding: 6px 12px 6px 33px;
-    border: 1px solid rgba(#fff, .4);
+    border: 1px solid rgba($color_white, .4);
     border-radius: 15px;
     font-size: 12px;
-    color: rgba(#fff, .9);
-    background: url(~assets/image/call/ic_setting.png) 12px center/16px no-repeat rgba(#242427, .79);
+    color: rgba($color_text_main, .9);
+    background: url(~assets/image/call/ic_setting.svg) 12px center/16px no-repeat rgba(#242427, .79);
   }
 }

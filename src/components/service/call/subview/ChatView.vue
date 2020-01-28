@@ -56,19 +56,30 @@ export default {
   },
 	data() {
 		return {
-      // chatList: [{
-      //   name: '참여자1',
-      //   text: '하이염^^',
-      //   date: new Date()
-      // },{
-      //   name: '참여자2',
-      //   text: '안녕하심미까',
-      //   date: new Date()
-      // }]
+      chatList: [{
+        type: 'me',
+        name: '참여자1',
+        text: '하이염^^',
+        date: new Date()
+      },{
+        type: 'opponent',
+        name: '참여자2',
+        text: '안녕하심미까',
+        date: new Date()
+      }, {
+        type: 'opponent',
+        name: '참여자3',
+        text: '파일 전달합니다.',
+        file: [{
+          filename: 'Webex.png',
+          filesize: '10MB'
+        }],
+        date: new Date()
+      }]
     }
 	},
 	computed: {
-    ...mapGetters(['chatList'])
+    // ...mapGetters(['chatList'])
   },
 	watch: {
     chatList: {

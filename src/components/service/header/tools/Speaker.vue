@@ -6,8 +6,8 @@
     description="스피커 on/off"
     :size="34"
     :active="speaker"
-    :activeSrc="require('assets/image/call/gnb_ic_volum_on.png')"
-    :inactiveSrc="require('assets/image/call/gnb_ic_volum_off.png')"
+    :activeSrc="require('assets/image/call/gnb_ic_volum_on.svg')"
+    :inactiveSrc="require('assets/image/call/gnb_ic_volum_off.svg')"
     @action="speakerOnOff"
   ></toggle-button>
 </tooltip>

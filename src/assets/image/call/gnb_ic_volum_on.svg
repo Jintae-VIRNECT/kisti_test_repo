@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>B78C4A2B-C8DD-4EB2-A08F-56026E7D8DC0@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리" transform="translate(-1664.000000, -152.000000)">
+            <g id="gnb*1" transform="translate(30.000000, 144.000000)">
+                <g id="gnb_ic_volume" transform="translate(1634.000000, 8.000000)">
+                    <g id="gnb_ic_volum_on">
+                        <polygon points="0 0 40 0 40 40 0 40"></polygon>
+                        <path d="M11,16.77 L11,22.77 L15,22.77 L20,27.77 L20,11.77 L15,16.77 L11,16.77 Z M24.5,19.77 C24.5,18 23.48,16.48 22,15.74 L22,23.79 C23.48,23.06 24.5,21.54 24.5,19.77 Z M22,11 L22,13.06 C24.89,13.92 27,16.6 27,19.77 C27,22.94 24.89,25.62 22,26.48 L22,28.54 C26.01,27.63 29,24.05 29,19.77 C29,15.49 26.01,11.91 22,11 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -4,7 +4,7 @@
   <div class="drawing">
     <drawing-tools></drawing-tools>
     <drawing-canvas></drawing-canvas>
-    <video-list></video-list>
+    <!-- <video-list></video-list> -->
   </div>
 </main>
 </template>

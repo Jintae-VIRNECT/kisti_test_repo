@@ -15,8 +15,8 @@
               description="마이크 on/off"
               :size="34"
               :active="toggle"
-              :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
-              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
+              :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
+              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
               @action="toogleOnOff"
             ></toggle-button>
           </popover>
@@ -56,8 +56,8 @@
               description="마이크 on/off"
               :size="34"
               :active="toggle"
-              :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
-              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
+              :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
+              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
               @action="toogleOnOff"
             ></toggle-button>
           </tooltip>
@@ -95,8 +95,8 @@
               description="마이크 on/off"
               :size="34"
               :active="toggle"
-              :activeSrc="require('assets/image/call/gnb_ic_voice_on.png')"
-              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.png')"
+              :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
+              :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
               @action="toogleOnOff"
             ></toggle-button>
           </tooltip>

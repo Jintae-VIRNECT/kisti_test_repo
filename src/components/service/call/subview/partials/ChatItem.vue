@@ -1,15 +1,22 @@
 <template>
 	<li class="chat-item" :class="type">
-    <img class="profile" src="~assets/image/call/chat_img_user.png" v-if="!hideProfile"/>
+    <img class="profile" src="~assets/image/call/chat_img_user.svg" v-if="!hideProfile"/>
     <div class="chat-item__body" :class="{ 'hidden': hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
+        <div v-if="chat.file && chat.file.length > 0" class="file">
+          <p class="file__name">{{ chat.file[0].filename }}</p>
+          <p class="file__size">{{ chat.file[0].filesize }}</p>
+        </div>
         <p 
           class="text" 
           :class="{ 'alarm': type === 'system' && chat.name === 'alarm'
                   , 'people': type === 'system' && chat.name === 'people' }"
           v-html="chat.text"
         ></p>
+        <button 
+          v-if="chat.file && chat.file.length > 0"
+          class="file__button">다운로드</button>
       </div>
       <span v-if="!hideTime" class="time">{{ $moment(chat.date).format('A hh:mm') }}</span>
       <!-- <span v-if="!hideTime" class="time">{{ chat.date }}</span> -->
@@ -31,7 +38,7 @@ export default {
   },
 	computed: {
     type () {
-      if(false === this.chat.type) {
+      if(false === this.chat.type || this.chat.type === 'opponent') {
         return 'opponent';
       } else if(this.chat.type === 'me') {
         return 'me';

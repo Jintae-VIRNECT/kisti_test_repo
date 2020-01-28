@@ -1,10 +1,30 @@
 @import "_vars";
 
-// 구간 분기
+/*
+ * 테마 적용
+ */
+@mixin theme-dark() {
+  @at-root [theme=dark] & {
+    @content;
+  }
+}
+@mixin theme-bright() {
+  @at-root [theme=bright] & {
+    @content;
+  }
+}
+
+/*
+ * 구간 분기를 위한 보더
+ * @param {String} $direction : "right", "left", "top", "bottom"
+ */
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: $color_bg_border;
+    background-color: rgba($color_bg_border, .79);
+    @include theme-bright() {
+      background-color: #fff;
+    }
     content: '';
     @if $direction == "right" {
       // border-right: $color_bg_shadow_border;

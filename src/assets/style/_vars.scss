@@ -13,10 +13,14 @@ $color_remote3: #6bb4f9;
 $color_remote4: #bfddff;
 $color_remote5:#d7e7f8;
 
-/* Other Color */
+/* Color - value */
+$color_greenyellow: #3ce900;
+$color_skyblue: #4bc6ff;
+$color_red: #eb001d;
+$color_white: #ffffff;
+$color_black: #000;
 
-
-/* Color - background */
+/* Color - background, border */
 $color_bg_default: #1d1d1f;
 $color_bg_border: #434346;
 $color_bg_shadow: rgba(16, 16, 17, 0.2);
@@ -26,13 +30,15 @@ $color_header_bg_default: #242427;
 
 $color_chat_bg_default: #26262a;
 $color_chat_header: rgba(#a9a9a9, .2);
+$color_chat_bg_me: #d1dffa;
+$color_chat_bg_opponent: $color_white;
+$color_chat_bg_input: rgba(#4c5259, .3);
+
+$color_videolist_border: rgba(151, 151, 151, 0.21);
 
 /* Color - text */
 $color_text_default: #fafafa;
 $color_text_main: #ffffff;
-$color_greenyellow: #3ce900;
-$color_skyblue: #4bc6ff;
-$color_red: #eb001d;
 
 $color_state_good: $color_greenyellow;
 $color_state_normal: $color_skyblue;
