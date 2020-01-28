@@ -8,7 +8,7 @@ pipeline {
       steps {
         echo 'Build Stage'
         sh 'yarn cache clean'
-        sh 'sudo rm yarn.lock'
+        sh 'sudo -S rm yarn.lock'
         sh 'yarn install'
         sh 'yarn workspace smic build'
         sh 'cp docker/Dockerfile.develop ./'
