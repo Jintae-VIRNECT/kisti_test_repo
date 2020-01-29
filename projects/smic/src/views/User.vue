@@ -11,6 +11,26 @@
 			template(slot="password-alert")
 				h1 asdsad
 </template>
+<style lang="scss">
+.login-form-wrapper {
+  width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 80px;
+  .title {
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #0d2a58;
+  }
+}
+</style>
 <script>
 import UserScaffold from 'scaffold-modules-user'
 
@@ -32,9 +52,10 @@ export default {
   },
   methods: {
     onSubmit(form) {
+      const { email, password } = form
       this.$store
-        .dispatch('USER_LOGIN', { user: form })
-        .then(() => {
+        .dispatch('USER_LOGIN', { email, password })
+        .then(r => {
           this.$router.push({ path: '/' })
         })
         .catch(e => {
@@ -44,23 +65,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-.login-form-wrapper {
-  width: 380px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 80px;
-  .title {
-    margin-bottom: 40px;
-    text-align: center;
-    font-size: 28px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: #0d2a58;
-  }
-}
-</style>

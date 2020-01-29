@@ -8,9 +8,9 @@
             .el-form-item__content
               label.el-input--label 아이디
               .el-input
-                slot(name="id")
+                slot(name="email")
                   //- input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id" v-validate="'id|2,20'")
-                  input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id")
+                  input.el-input__inner(v-model="form.email" :placeholder="options.placeholder.email" name="email")
                   //- p(v-if="$errors.has('id')") {{ $errors.message('id') }}
                   //- p {{errorBag}}
                   slot(name="id-alert")
@@ -69,8 +69,8 @@ export default {
 				page: page.SIGNIN,
 				// id: null,
 				// password: null,
-				id: 'test1',
-				password: '12341234',
+				email: 'smic1',
+				password: 'smic1234',
 				preserveLogin: false,
 			},
 			isPasswordView: false,
