@@ -97,19 +97,21 @@ export default {
       this.initProcessGraph(jsonData())
     },
     initProcessGraph(json) {
+      console.log('json : ', json)
       const startTime = Number(this.form.startTime.split(':')[0])
       const endTime = Number(this.form.endTime.split(':')[0])
+      console.log('startTime : ', startTime)
+      console.log('endTime : ', endTime)
       this.barChart = bb.generate({
         data: {
-          axes: {
-            time: 'x',
-          },
           json,
           color(color, d) {
-            if (d.x >= startTime && d.x <= endTime) return 'rgba(24, 106, 226)'
+            if (d.x >= startTime - 1 && d.x < endTime)
+              return 'rgba(24, 106, 226)'
             else return 'rgba(24, 106, 226, 0.3)'
           },
           keys: {
+            x: 'time',
             value: ['value'],
           },
           type: 'bar',
@@ -125,32 +127,9 @@ export default {
               text: {
                 show: true,
               },
-              values: [
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '10',
-                '11',
-                '12',
-                '13',
-                '14',
-                '15',
-                '16',
-                '17',
-                '18',
-                '19',
-                '20',
-                '21',
-                '22',
-                '23',
-                '24',
-              ],
+              format: function(index, val) {
+                return index, val
+              },
             },
           },
           y: {
