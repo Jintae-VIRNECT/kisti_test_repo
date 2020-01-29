@@ -97,11 +97,8 @@ export default {
       this.initProcessGraph(jsonData())
     },
     initProcessGraph(json) {
-      console.log('json : ', json)
       const startTime = Number(this.form.startTime.split(':')[0])
       const endTime = Number(this.form.endTime.split(':')[0])
-      console.log('startTime : ', startTime)
-      console.log('endTime : ', endTime)
       this.barChart = bb.generate({
         data: {
           json,
