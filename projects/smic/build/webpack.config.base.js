@@ -1,4 +1,4 @@
-const { join } = require('path')
+const { join, resolve } = require('path')
 const { DefinePlugin } = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -31,8 +31,8 @@ module.exports = {
     extensions: ['.js', '.vue'],
     modules: ['node_modules', 'modules'],
     alias: {
-      '@': join(__dirname, '../src'),
-      assets: join(__dirname, '../src/assets'),
+      '@': resolve(__dirname, '../src'),
+      assets: resolve(__dirname, '../src/assets'),
     },
   },
   module: {
