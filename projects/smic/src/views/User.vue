@@ -55,7 +55,7 @@ export default {
       const { email, password } = form
       this.$store
         .dispatch('USER_LOGIN', { email, password })
-        .then(r => {
+        .then(() => {
           this.$router.push({ path: '/' })
         })
         .catch(e => {

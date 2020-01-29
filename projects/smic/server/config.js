@@ -2,7 +2,6 @@ const dotenv = require('dotenv')
 const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const envConfig = dotenv.parse(fs.readFileSync(filePath))
-console.log(' process.env : ', process.env)
 
 module.exports = {
   getAsNumber(key) {

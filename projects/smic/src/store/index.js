@@ -6,7 +6,7 @@ import SecureLS from 'secure-ls'
 
 const ls = new SecureLS({ isCompression: false })
 const secureSetting =
-  process.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'production'
     ? {
         storage: {
           getItem: key => ls.get(key),
@@ -15,13 +15,11 @@ const secureSetting =
         },
       }
     : {}
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules,
   mutations: {},
   actions: {},
-  // strict: true, // 시연용이라 주석처리함.
   plugins: [createPersistedState(secureSetting)],
 })

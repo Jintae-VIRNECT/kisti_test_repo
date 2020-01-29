@@ -68,7 +68,6 @@ export default {
 			form: {
 				page: page.SIGNIN,
 				// id: null,
-				// password: null,
 				email: 'smic1',
 				password: 'smic1234',
 				preserveLogin: false,

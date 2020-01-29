@@ -4,10 +4,10 @@
 			router-link(to="/")
 				img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
 			.divider
-			label.workspace Workspace' name
+			label.workspace {{getWorkspaceName}}
 		.top-nav__right(v-if="$store.getters.getIsLoggedIn === true")
-			img.profile-img(src="~@/assets/image/admin/ic-user.svg") 
-			span.username {{getUser.username}}
+			img.profile-img(:src="getUser.profile") 
+			span.username {{getUser.name}}
 			button.logout-btn(@click="userLogout") 로그아웃
 </template>
 
@@ -21,7 +21,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getUser', 'getLocale']),
+    ...mapGetters(['getUser', 'getLocale', 'getWorkspaceName']),
   },
   mounted() {
     this.activeLink = this.$route.path

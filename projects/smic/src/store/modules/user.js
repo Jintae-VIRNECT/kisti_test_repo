@@ -4,12 +4,22 @@ export default {
   state: {
     isLoggedIn: false,
     me: {
-      uid: null,
-      username: null,
-      id: null,
+      uuid: null,
+      name: null,
       email: null,
-      role: null,
+      description: null,
+      userType: null,
+      profile: null,
+      loginLock: null,
     },
+    workspaceInfoList: [
+      // {
+      //   uuid
+      //   pinNumber
+      //   description
+      //   role
+      // }...
+    ],
     locale: null,
     lastAccessPath: null,
   },
@@ -23,72 +33,78 @@ export default {
     getIsLoggedIn(state) {
       return state.isLoggedIn
     },
-    getAuth(state) {
-      return state.me.role
-    },
     getLastAccessPath(state) {
       return state.lastAccessPath
+    },
+    getWorkspaceName(state) {
+      // 레거시 코드 - 워크스페이스가 여러개가 되면 가져오는 방식을 바꿔야함.
+      if (!state.workspaceInfoList[0]) return null
+      return state.workspaceInfoList[0].description
     },
   },
   mutations: {
     USER_SET_LAST_ACCESS_PATH(state, { path }) {
       state.lastAccessPath = path
     },
-    USER_LOGIN(state, { id, role, uid, username, email }) {
-      state.me.uid = uid
-      state.me.id = id
-      state.me.username = username
-      state.me.email = email
-      state.me.role = role
+    USER_LOGIN(state, { user, workspaceInfoList }) {
+      state.me.uuid = user.uuid
+      state.me.name = user.name
+      state.me.email = user.email
+      state.me.description = user.description
+      state.me.userType = user.userType
+      state.me.profile = user.profile
+      state.me.loginLock = user.loginLock
       state.isLoggedIn = true
+      state.workspaceInfoList = workspaceInfoList
     },
     USER_SET_LOCALE(state, { locale }) {
       state.locale = locale
     },
     USER_LOGOUT(state) {
-      state.me.uid = null
-      state.me.id = null
-      state.me.username = null
-      state.me.role = null
+      state.me.uuid = null
+      state.me.name = null
+      state.me.email = null
+      state.me.description = null
+      state.me.userType = null
+      state.me.profile = null
+      state.me.loginLock = null
       state.isLoggedIn = false
+      state.workspaceInfoList = []
     },
   },
   actions: {
     USER_LOGIN(context, { email, password }) {
       return new Promise((resolve, reject) => {
         Vue.axios
-          .post('/users/login', { params: { email, password } })
+          .post('/users/login', { email, password })
           .then(res => {
-            context.commit('USER_LOGIN', { email })
+            const { data, code, message } = res.data
+            if (code !== 200) return console.log('message : ', message)
+            context.commit('USER_LOGIN', {
+              user: data.userInfo,
+              workspaceInfoList: data.workspaceInfoList,
+            })
             resolve(res)
           })
           .catch(e => {
-            // console.log('e : ', e)
             reject(e)
           })
       })
-      // return new Promise((resolve, reject) => {
-      //   const checkUser = users.find(
-      //     u => u.id == user.id && u.password === user.password,
-      //   )
-      //   if (checkUser) {
-      //     context.commit('USER_LOGIN', checkUser)
-      //     resolve(checkUser)
-      //   } else return reject(false)
-      // })
     },
     USER_LOGOUT(context) {
-      // return new Promise(resolve => {
-      //   context.commit('USER_LOGOUT')
-      //   resolve()
-      // })
-      Vue.axios
-        .get('/users/login')
-        .then(res => {
-          console.log('res : ', res)
-          context.commit('USER_LOGOUT')
-        })
-        .catch(e => console.log('e : ', e))
+      return new Promise((resolve, reject) => {
+        Vue.axios
+          .get('/users/logout')
+          .then(res => {
+            const { code, message } = res.data
+            if (code !== 200) return console.log('message : ', message)
+            context.commit('USER_LOGOUT')
+            resolve(res)
+          })
+          .catch(e => {
+            reject(e)
+          })
+      })
     },
   },
 }

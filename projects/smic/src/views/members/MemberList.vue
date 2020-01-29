@@ -6,7 +6,6 @@
 
 <script>
 import MemberProfileCard from '@/components/members/MemberProfileCard.vue'
-import usersData from '@/data/users'
 
 export default {
   components: {
@@ -14,8 +13,21 @@ export default {
   },
   data() {
     return {
-      usersData,
+      usersData: [],
     }
+  },
+  beforeCreate() {
+    this.axios
+      .get('users', {
+        params: {
+          uuid: this.$store.getters.getUser.uuid,
+          search: 'smic',
+        },
+      })
+      .then(res => {
+        const { data } = res.data
+        this.usersData = data.userInfoList
+      })
   },
 }
 </script>
