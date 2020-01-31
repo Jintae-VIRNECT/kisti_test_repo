@@ -51,16 +51,17 @@ export default {
     }
   },
   methods: {
-    onSubmit(form) {
-      const { email, password } = form
-      this.$store
-        .dispatch('USER_LOGIN', { email, password })
-        .then(() => {
-          this.$router.push({ path: '/' })
+    async onSubmit(form) {
+      try {
+        const { email, password } = form
+        await this.$store.dispatch('USER_LOGIN', {
+          email,
+          password,
         })
-        .catch(e => {
-          console.log('e : ', e)
-        })
+        this.$router.push({ path: '/' })
+      } catch (e) {
+        console.log(e)
+      }
     },
   },
 }

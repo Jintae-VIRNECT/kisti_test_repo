@@ -73,35 +73,30 @@ export default {
     },
   },
   actions: {
-    USER_LOGIN(context, { email, password }) {
-      return new Promise((resolve, reject) => {
-        Vue.axios
-          .post('/users/login', { email, password })
-          .then(res => {
-            const { data } = res.data
-            context.commit('USER_LOGIN', {
-              user: data.userInfo,
-              workspaceInfoList: data.workspaceInfoList,
-            })
-            resolve(res)
-          })
-          .catch(e => {
-            reject(e)
-          })
-      })
+    async USER_LOGIN(context, { email, password }) {
+      try {
+        const response = await Vue.axios.post('/users/login', {
+          email,
+          password,
+        })
+        const { data } = response.data
+        context.commit('USER_LOGIN', {
+          user: data.userInfo,
+          workspaceInfoList: data.workspaceInfoList,
+        })
+        return response.data
+      } catch (e) {
+        console.log('e : ', e)
+      }
     },
-    USER_LOGOUT(context) {
-      return new Promise((resolve, reject) => {
-        Vue.axios
-          .get('/users/logout')
-          .then(res => {
-            context.commit('USER_LOGOUT')
-            resolve(res)
-          })
-          .catch(e => {
-            reject(e)
-          })
-      })
+    async USER_LOGOUT(context) {
+      try {
+        const response = await Vue.axios.get('/users/logout')
+        context.commit('USER_LOGOUT')
+        return response.data
+      } catch (e) {
+        console.log('e : ', e)
+      }
     },
   },
 }

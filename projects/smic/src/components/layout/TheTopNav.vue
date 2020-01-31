@@ -27,10 +27,15 @@ export default {
     this.activeLink = this.$route.path
   },
   methods: {
-    userLogout() {
-      this.$store
-        .dispatch('USER_LOGOUT', { user: this.$store.uid })
-        .then(() => this.$router.go('/'))
+    async userLogout() {
+      try {
+        await this.$store.dispatch('USER_LOGOUT', {
+          user: this.$store.uid,
+        })
+        this.$router.go('/')
+      } catch (e) {
+        console.log('e : ', e)
+      }
     },
   },
   watch: {
