@@ -67,8 +67,8 @@ public class WorkspaceController {
      * @param userId - 사용자 uuid
      * @return
      */
-    @GetMapping
-    public ResponseEntity<ResponseMessage> getUserWorkspaces(@RequestParam("userId") String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseMessage> getUserWorkspaces(@PathVariable("userId") String userId) {
         log.info("getWorkspace : {}", userId);
         if (!StringUtils.hasText(userId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -127,5 +127,6 @@ public class WorkspaceController {
         ResponseMessage responseMessage = this.workspaceService.inviteWorkspace(workspaceId, userId, workspaceInviteMemberReq);
         return ResponseEntity.ok(responseMessage);
     }
+
 
 }
