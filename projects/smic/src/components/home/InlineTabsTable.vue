@@ -78,12 +78,12 @@
 		)
 </template>
 <script>
-import processControlDropdown from '@/components/process/processControlDropdown'
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 import dayjs from '@/utils/dayjs'
 
 export default {
   components: {
-    processControlDropdown,
+    ProcessControlDropdown,
   },
   mixins: [dayjs],
   props: {
