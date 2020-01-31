@@ -80,12 +80,13 @@
 <script>
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 import dayjs from '@/utils/dayjs'
+import filters from '@/mixins/filters'
 
 export default {
   components: {
     ProcessControlDropdown,
   },
-  mixins: [dayjs],
+  mixins: [dayjs, filters],
   props: {
     tableData: Array,
     setPagination: Boolean,
@@ -138,21 +139,6 @@ export default {
       const { rowIdName, subdomain } = this.$props.tableOption
       if (!rowIdName) return false
       this.$router.push(`${subdomain}/${row[rowIdName]}`)
-    },
-  },
-  filters: {
-    limitAuthsLength(array) {
-      let answer = ''
-      let sumOfStrings = 0
-      const divider = ', '
-      for (let i = 0; i < array.length; i++) {
-        answer += array[i]
-        sumOfStrings += array[i].length + divider.length
-        if (sumOfStrings > 13) return answer + '...'
-        if (array.length - 1 === i) break
-        answer += divider
-      }
-      return answer
     },
   },
 }

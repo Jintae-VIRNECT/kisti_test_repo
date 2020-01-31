@@ -11,7 +11,7 @@
 					span 정렬 : 
 					el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
 						el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
-		page-bread-crumb(title='공정')
+            
 		inline-table(:setSubHeader="true")
 			template(slot="header--secondary")
 				router-link.title(to="/contents")
