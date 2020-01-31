@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * DESCRIPTION:
  */
 public interface WorkspaceRoleRepository extends JpaRepository<WorkspaceRole, Long> {
+    WorkspaceRole findByRole(String roleName);
 }

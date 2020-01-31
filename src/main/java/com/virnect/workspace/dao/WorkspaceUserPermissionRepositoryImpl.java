@@ -21,12 +21,13 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public WorkspaceRole findWorkspaceUserRole(WorkspaceUser workspaceUser) {
+    public WorkspaceRole findWorkspaceUserRole(String workspaceId, String userId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
 
         return jpaQueryFactory.select(QWorkspaceUserPermission.workspaceUserPermission.workspaceRole)
                 .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.eq(workspaceUser)).fetchOne();
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
+                .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userId))).fetchOne();
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.virnect.workspace.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Project: PF-Workspace
@@ -17,31 +21,25 @@ import java.time.LocalDateTime;
 public class WorkspaceDTO {
     @Getter
     @Setter
-    public static class WorkspaceInfo {
-        private Long id;
-        private String pinNumber;
+    public static class WorkspaceCreateReq {
+        @ApiModelProperty(example = "userId")
         @NotNull
         private String userId;
+        @ApiModelProperty(example = "smic workspace")
         private String description;
-        private LocalDateTime createdDate;
-        private LocalDateTime updatedDate;
 
         @Override
         public String toString() {
             return "WorkspaceInfo{" +
-                    "id=" + id +
-                    ", pinNumber='" + pinNumber + '\'' +
-                    ", userId='" + userId + '\'' +
+                    "userId='" + userId + '\'' +
                     ", description='" + description + '\'' +
-                    ", createdDate=" + createdDate +
-                    ", updatedDate=" + updatedDate +
                     '}';
         }
     }
 
     @Getter
     @Setter
-    public static class UserWorkspaceInfo {
+    public static class WorkspaceInfoRes {
         private String uuid;
         private String pinNumber;
         private String description;
@@ -63,4 +61,15 @@ public class WorkspaceDTO {
         }
     }
 
+    @Getter
+    @Setter
+    public static class WorkspaceInviteMemberReq {
+        @NotNull
+        @Email
+        private String userEmail;
+        //private String license;
+        private List<Long> workspacePermission;
+        private List<Map<String, String>> groups;
+        private List<WorkspaceInviteMemberReq> userInfoList;
+    }
 }

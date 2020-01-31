@@ -1,9 +1,6 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -36,4 +33,11 @@ public class GroupUserPermission extends TimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_user_id")
     private GroupUser groupUser;
+
+    @Builder
+    public GroupUserPermission(GroupRole groupRole, GroupPermission groupPermission, GroupUser groupUser){
+        this.groupRole = groupRole;
+        this.groupPermission = groupPermission;
+        this.groupUser = groupUser;
+    }
 }

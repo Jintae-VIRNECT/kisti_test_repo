@@ -1,9 +1,6 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -41,4 +38,11 @@ public class GroupUser extends TimeEntity {
 
     @OneToMany(mappedBy = "groupUser")
     List<GroupUserPermission> permissions = new ArrayList<>();
+
+    @Builder
+    public GroupUser(Favorite favorite, Group group, WorkspaceUser workspaceUser){
+        this.favorite = favorite;
+        this.group = group;
+        this.workspaceUser = workspaceUser;
+    }
 }

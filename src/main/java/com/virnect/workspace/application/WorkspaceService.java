@@ -2,6 +2,7 @@ package com.virnect.workspace.application;
 
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.Workspace;
+import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
 import com.virnect.workspace.dto.UserDTO;
@@ -19,7 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,16 +37,9 @@ public class WorkspaceService {
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
+    private final GroupService groupService;
 
-    public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceInfo workspaceInfo) {
-        //이메일 계정이 있는 사용자 인지 체크 : 마스터가 만들어낸 계정은 워크스페이스를 생성할 수 없다. -> UserServer 에 요청
-        /*ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(workspaceInfo.getUserId());
-        log.info("data: {}", userServerResponse.getData());
-        UserDTO.UserInfoDTO requestUserInfo = modelMapper.map(userServerResponse.getData().get("userInfo"), UserDTO.UserInfoDTO.class);
-        if (requestUserInfo.getUserType().equals("SUB_USER")) {
-            throw new SomeException();
-        }*/
-
+    public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceCreateReq workspaceInfo) {
         if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
@@ -77,10 +74,10 @@ public class WorkspaceService {
     }
 
     public ResponseMessage getUserWorkspaces(String userId) {
-        List<WorkspaceDTO.UserWorkspaceInfo> userWorkspaceList = new ArrayList<>();
+        List<WorkspaceDTO.WorkspaceInfoRes> userWorkspaceList = new ArrayList<>();
         this.workspaceUserRepository.findByUserId(userId).forEach(workspaceUser -> {
             Workspace workspace = workspaceUser.getWorkspace();
-            WorkspaceDTO.UserWorkspaceInfo userWorkspaceInfo = modelMapper.map(workspace, WorkspaceDTO.UserWorkspaceInfo.class);
+            WorkspaceDTO.WorkspaceInfoRes userWorkspaceInfo = modelMapper.map(workspace, WorkspaceDTO.WorkspaceInfoRes.class);
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
             userWorkspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             userWorkspaceList.add(userWorkspaceInfo);
@@ -89,9 +86,9 @@ public class WorkspaceService {
         return new ResponseMessage().addParam("workspaceList", userWorkspaceList);
     }
 
-    public ResponseMessage getMember(String workspaceId, String userId, String search, String filter, Pageable pageable ) {
+    public ResponseMessage getMember(String workspaceId, String userId, String search, String filter, Pageable pageable) {
 
-        //1. 검색어 검증(UserService에서)
+        //1. 검색어 검증, 정렬(UserService에서)
         ResponseMessage responseMessage = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, pageable);
         Map<String, Object> data = responseMessage.getData();
         log.info("ResponseMessage: {}", data);
@@ -100,51 +97,25 @@ public class WorkspaceService {
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
 
         //2. 필터 검증
-        if (StringUtils.hasText(filter)&&filter.equals("MASTER")) {
-            result= this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId);
-/*
-            for (UserDTO.UserInfoDTO userInfo : userInfoDTOList) {
-                if (this.hasRoleIs(userInfoDTOList, workspaceId, "MASTER")) {
-                    result.add(userInfo);
-                }
-            }*/
+        if (StringUtils.hasText(filter) && filter.equals("MASTER")) {
+            result = this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId);
         } else {
             result = userInfoDTOList;
         }
 
-        //3. 정렬 검증(UserService에서!)
-       /* if (align.equals("asc") || !StringUtils.hasText(align)) {
-            result.sort(Comparator.comparing(UserDTO.UserInfoDTO::getName));
-        } else {
-            result.sort((first, second) -> second.getName().compareTo(first.getName()));
-        }*/
-
-       Map<String,Object> pageableResult = new HashMap<>();
-       pageableResult.put("currentPage",pageable.getPageNumber());
-       pageableResult.put("currentSize",pageable.getPageSize());
-        pageableResult.put("totalPage",data.get("totalPage"));
-        pageableResult.put("totalElements",result.size());
-        return new ResponseMessage().addParam("memberList", result).addParam("Pageable",pageableResult);
-    }
-
-    /**
-     * 워크스페이스 유저 역할 검사
-     *
-     * @param userId        - 유저 고유 아이디
-     * @param workspaceId - 워크스페이스 고유 아이디
-     * @param role          - 비교 대상 역할
-     * @return 역할 비교 결과
-     */
-    private boolean hasRoleIs(final String userId, final String workspaceId, final String role) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
-        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId, workspace);
-        return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceUser).getRole().equals(role);
+        Map<String, Object> pageableResult = new HashMap<>();
+        pageableResult.put("currentPage", pageable.getPageNumber());
+        pageableResult.put("currentSize", pageable.getPageSize());
+        pageableResult.put("totalPage", data.get("totalPage"));
+        pageableResult.put("totalElements", result.size());
+        return new ResponseMessage().addParam("memberList", result).addParam("Pageable", pageableResult);
     }
 
     /**
      * 워크스페이스 정보 조회(현재는 멤버수만 return 추후에.. +라이선스, +워크스페이스 Strorage 정보)
+     *
      * @param workspaceId - 워크스페이스 uuid
-     * @param userId - 사용자 uuid
+     * @param userId      - 사용자 uuid
      * @return
      */
     public ResponseMessage getWorkspaceInfo(String workspaceId, String userId) {
@@ -162,6 +133,12 @@ public class WorkspaceService {
         return new ResponseMessage().addParam("workspaceMembers", countWorkspaceUsers);
     }
 
+    /**
+     * 유저 조회(User Service)
+     *
+     * @param userId - 유저 uuid
+     * @return - 유저 목록
+     */
     private UserDTO.UserInfoDTO getUserInfo(String userId) {
         ResponseMessage userServerResponse = this.userRestService.getUserInfoByUserId(userId);
         log.info("data: {}", userServerResponse.getData());
@@ -169,5 +146,55 @@ public class WorkspaceService {
         return requestUserInfo;
 
     }
-}
 
+    /**
+     * 워크스페이스 유저 초대
+     *
+     * @param workspaceId              - 초대 할 워크스페이스 uuid
+     * @param workspaceInviteMemberReq - 초대 유저 정보
+     * @return
+     */
+    public ResponseMessage inviteWorkspace(String workspaceId, String userId, WorkspaceDTO.WorkspaceInviteMemberReq workspaceInviteMemberReq) {
+        //1. 요청한 사람이 마스터유저 또는 매니저유저인지 체크
+        if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
+            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+        //2. (옵션)라이선스검사 -> 라이선스 할당
+        //3. 이미 존재하는 사용자인지 이메일 체크(user Server)
+        List<WorkspaceDTO.WorkspaceInviteMemberReq> workspaceInviteMemberReqList = workspaceInviteMemberReq.getUserInfoList();
+        List<String> emailList = new ArrayList<>();
+        for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
+            emailList.add(userInfo.getUserEmail());
+            System.out.println(userInfo.getUserEmail());
+        }
+        this.userRestService.getInviteUserInfo(emailList);
+        //4. 워크스페이스 소속 넣기 (workspace_user)
+        for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
+            WorkspaceUser workspaceUser = WorkspaceUser.builder()
+                    .userId("e0a3608a-035f-408a-85ec-96e0542222")
+                    .workspace(this.workspaceRepository.findByUuid(workspaceId))
+                    .build();
+            this.workspaceUserRepository.save(workspaceUser);
+            //5. (매니저권한이면) 워크스페이스 권한 부여하기 (workspace_user_permission)
+            if (userInfo.getWorkspacePermission().size() < 1) {
+                for (long permissionId : userInfo.getWorkspacePermission()) {
+                    WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                            .workspaceRole(this.workspaceRoleRepository.findByRole("MANAGER"))
+                            .workspacePermission(this.workspacePermissionRepository.findById(permissionId).get())
+                            .workspaceUser(workspaceUser)
+                            .build();
+                    this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+                }
+            }
+            //6. 그룹 소속 넣기(group_user, group_user_permission)
+            if(userInfo.getGroups().size()>0){
+                this.groupService.setGroupUsers(userInfo.getGroups(),workspaceUser);
+            }
+        }
+        return new ResponseMessage();
+    }
+
+    public WorkspaceRole getWorkspaceUserRole(String workspaceId, String userId) {ad
+        return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceId, userId);
+    }
+}

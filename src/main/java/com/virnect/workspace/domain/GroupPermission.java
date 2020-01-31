@@ -1,9 +1,6 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -31,4 +28,9 @@ public class GroupPermission extends TimeEntity{
     @Lob
     @Column(name = "description")
     private String description;
+
+    @Builder
+    public GroupPermission(String permission){
+        this.permission = permission;
+    }
 }

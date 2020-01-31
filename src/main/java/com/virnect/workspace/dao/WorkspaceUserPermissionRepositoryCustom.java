@@ -14,7 +14,7 @@ import java.util.List;
  * DESCRIPTION:
  */
 public interface WorkspaceUserPermissionRepositoryCustom {
-    WorkspaceRole findWorkspaceUserRole(WorkspaceUser workspaceUser);
+    WorkspaceRole findWorkspaceUserRole(String workspaceId, String userId);
     List<UserDTO.UserInfoDTO> findUserInfoListFilterd(List<UserDTO.UserInfoDTO> userInfoDTOList, String workspaceId);
 
 }

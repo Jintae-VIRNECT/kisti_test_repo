@@ -13,5 +13,6 @@ import java.util.List;
  * DESCRIPTION:
  */
 public interface GroupRepository extends JpaRepository<Group,Long> {
+    Group findByName(String groupName);
 }
 
