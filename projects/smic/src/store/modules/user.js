@@ -78,8 +78,7 @@ export default {
         Vue.axios
           .post('/users/login', { email, password })
           .then(res => {
-            const { data, code, message } = res.data
-            if (code !== 200) return console.log('message : ', message)
+            const { data } = res.data
             context.commit('USER_LOGIN', {
               user: data.userInfo,
               workspaceInfoList: data.workspaceInfoList,
@@ -96,8 +95,6 @@ export default {
         Vue.axios
           .get('/users/logout')
           .then(res => {
-            const { code, message } = res.data
-            if (code !== 200) return console.log('message : ', message)
             context.commit('USER_LOGOUT')
             resolve(res)
           })
