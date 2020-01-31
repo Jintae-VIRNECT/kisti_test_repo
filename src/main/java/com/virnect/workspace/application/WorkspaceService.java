@@ -194,7 +194,7 @@ public class WorkspaceService {
         return new ResponseMessage();
     }
 
-    public WorkspaceRole getWorkspaceUserRole(String workspaceId, String userId) {ad
+    public WorkspaceRole getWorkspaceUserRole(String workspaceId, String userId) {
         return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceId, userId);
     }
 }
