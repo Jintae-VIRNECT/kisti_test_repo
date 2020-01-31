@@ -7,15 +7,7 @@
 		page-bread-crumb(title='공정')
 		process-dash-banner(:data="tableData")
 		.page-nav
-			.search-wrapper.text-right
-				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-button(slot='append' icon='el-icon-search')
-				span 필터 : 
-				el-select(v-model='filter.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
-				span 정렬 : 
-				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
+			search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :filter="filter" :sort="sort")
 		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
@@ -83,6 +75,7 @@ import InlineTable from '@/components/common/InlineTable.vue'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
+import SearchTabNav from '@/components/common/SearchTabNav.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -100,6 +93,7 @@ export default {
     PageTabNav,
     PageBreadCrumb,
     ProcessControlDropdown,
+    SearchTabNav,
   },
   data() {
     return {
@@ -148,40 +142,6 @@ export default {
     onDeleteData(data) {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    async onChangeSearch(searchInput, filterValue, sortValue) {
-      let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
-      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
-      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
-      this.tableData = tmpTableData
-    },
-    onChangeSearchText(tableData, searchInput) {
-      return tableData.filter(row => {
-        return (
-          row.processName.includes(searchInput) ||
-          row.auths.some(a => a.includes(searchInput))
-        )
-      })
-    },
-    onChangeFilter(tableData, filterValue) {
-      if (!filterValue) return tableData
-      return tableData.filter(row => row.status === filterValue)
-    },
-    onChangeSort(tableData, sortValue) {
-      if (!sortValue) return tableData
-      if (sortValue === 'alphabetDesc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? 1 : -1,
-        )
-      else if (sortValue === 'alphabetAsc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? -1 : 1,
-        )
-      else if (sortValue === 'createdAtDesc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
-      else if (sortValue === 'createdAtAsc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
     },
   },
   filters: {

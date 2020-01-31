@@ -16,18 +16,24 @@ export default {
       usersData: [],
     }
   },
-  beforeCreate() {
-    this.axios
-      .get('users', {
-        params: {
-          uuid: this.$store.getters.getUser.uuid,
-          search: 'smic',
-        },
-      })
-      .then(res => {
-        const { data } = res.data
-        this.usersData = data.userInfoList
-      })
+  methods: {
+    getUserList(searchData) {
+      console.log('run')
+      this.axios
+        .get('users', {
+          params: {
+            uuid: this.$store.getters.getUser.uuid,
+            search: 'smic',
+          },
+        })
+        .then(res => {
+          const { data } = res.data
+          this.usersData = data.userInfoList
+        })
+    },
+  },
+  created() {
+    this.getUserList()
   },
 }
 </script>
