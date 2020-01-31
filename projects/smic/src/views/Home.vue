@@ -96,7 +96,6 @@ export default {
   data() {
     return {
       currentReportedDetailProcess,
-      currentUploadedContentTableOption,
       currentReportedInformationTabs,
       tableColSettings,
       currentContent: {
@@ -122,7 +121,7 @@ export default {
   },
   methods: {
     setInlineTableByTabs(e) {
-      this.currentUploadedContentTableOption.subdomain =
+      currentUploadedContentTableOption.subdomain =
         currentReportedInformationTabs[e.index].link
     },
     onClickCell(row, column) {

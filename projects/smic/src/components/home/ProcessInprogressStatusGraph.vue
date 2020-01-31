@@ -1,35 +1,37 @@
 <template lang="pug">
-	.card
-		.card__header
-			.card__header--left
-				span.title 공정 진행 그래프
-				span.sub-title 시간별 세부공정 진행 상태별 보고 수
-			.card__header--right
-				.text-right
-					router-link.more-link(type="text" to="/process") 더보기
-		.card__body
-			el-tabs(v-model='activeTab' @tab-click="onClickToggleTab" )
-				el-tab-pane(
-					v-for="(status, index) in tabs.processStatus" 
-					:key="index" 
-					:label="status.label" 
-					:name="status.name"
-				)
-		.bar-chart-wrapper
-			el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
-			el-time-select(
-				:placeholder='form.startTime'
-				v-model='form.startTime' 
-				:picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
-				@change="checkMinMaxTime"
-			)
-			el-time-select(
-				:placeholder='form.endTime' 
-				v-model='form.endTime' 
-				:picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
-				@change="checkMinMaxTime"
-			)
-			#bar-chart
+  .card
+    .card__header
+      .card__header--left
+        span.title 공정 진행 그래프
+        span.sub-title 시간별 세부공정 진행 상태별 보고 수
+      .card__header--right
+        .text-right
+          router-link.more-link(type="text" to="/process") 더보기
+    .card__body
+      el-tabs(v-model='activeTab' @tab-click="onClickToggleTab" )
+        el-tab-pane(
+          v-for="(status, index) in tabs.processStatus" 
+          :key="index" 
+          :label="status.label" 
+          :name="status.name"
+        )
+    .bar-chart-wrapper
+      el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
+      el-time-select(
+        :clearable='false'
+        :placeholder='form.startTime'
+        v-model='form.startTime' 
+        :picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
+        @change="checkMinMaxTime"
+      )
+      el-time-select(
+        :clearable='false'
+        :placeholder='form.endTime' 
+        v-model='form.endTime' 
+        :picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
+        @change="checkMinMaxTime"
+      )
+      #bar-chart
 </template>
 <style lang="scss" scoped>
 #bar-chart {
