@@ -13,50 +13,19 @@
 <script>
 export default {
   props: {
+    search: String,
     placeholder: String,
     filter: Object,
     sort: Object,
   },
   data() {
     return {
-      searchInput: null,
+      searchInput: this.search,
     }
   },
   methods: {
-    async onChangeSearch(searchInput, filterValue, sortValue) {
-      this.$emit('onChangeSearch')
-      let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
-      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
-      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
-      this.tableData = tmpTableData
-    },
-    onChangeSearchText(tableData, searchInput) {
-      return tableData.filter(row => {
-        return (
-          row.processName.includes(searchInput) ||
-          row.auths.some(a => a.includes(searchInput))
-        )
-      })
-    },
-    onChangeFilter(tableData, filterValue) {
-      if (!filterValue) return tableData
-      return tableData.filter(row => row.status === filterValue)
-    },
-    onChangeSort(tableData, sortValue) {
-      if (!sortValue) return tableData
-      if (sortValue === 'alphabetDesc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? 1 : -1,
-        )
-      else if (sortValue === 'alphabetAsc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? -1 : 1,
-        )
-      else if (sortValue === 'createdAtDesc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
-      else if (sortValue === 'createdAtAsc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
+    onChangeSearch(searchInput, filterValue, sortValue) {
+      this.$emit('change', { searchInput, filterValue, sortValue })
     },
   },
 }

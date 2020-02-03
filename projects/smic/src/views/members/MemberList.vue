@@ -11,25 +11,15 @@ export default {
   components: {
     MemberProfileCard,
   },
-  data() {
-    return {
-      usersData: [],
-    }
+  props: ['query'],
+  computed: {
+    usersData() {
+      return this.$store.getters.getMemberList
+    },
   },
   methods: {
-    getUserList(searchData) {
-      console.log('run')
-      this.axios
-        .get('users', {
-          params: {
-            uuid: this.$store.getters.getUser.uuid,
-            search: 'smic',
-          },
-        })
-        .then(res => {
-          const { data } = res.data
-          this.usersData = data.userInfoList
-        })
+    getUserList() {
+      this.$store.dispatch('MEMBER_LIST', { search: 'smic' })
     },
   },
   created() {

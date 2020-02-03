@@ -3,7 +3,7 @@
     page-header
     page-tab-nav
       template(slot="page-nav--right")
-        search-tab-nav.search-wrapper(placeholder="멤버 이름, ID" :filter="filter" :sort="sort" @onChangeSearch="onChangeSearch")
+        search-tab-nav.search-wrapper(placeholder="멤버 이름, ID" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
     router-view
 </template>
 <script>
@@ -17,7 +17,7 @@ export default {
   },
   data() {
     return {
-      searchInput: null,
+      search: 'smic',
       filter: {
         options: [
           {
@@ -38,21 +38,24 @@ export default {
       sort: {
         options: [
           {
-            value: 'alphabetDesc',
+            value: 'name,asc',
             label: 'ㄱ-ㅎ순',
           },
           {
-            value: 'alphabetAsc',
+            value: 'name,desc',
             label: 'ㄱ-ㅎ역순',
           },
         ],
-        value: 'alphabetDesc',
+        value: 'name,asc',
       },
     }
   },
   methods: {
-    onChangeSearch: function() {
-      this.$emit('getUserList')
+    onChangeSearch: function({ searchInput, sortValue }) {
+      this.$store.dispatch('MEMBER_LIST', {
+        search: searchInput,
+        sort: sortValue,
+      })
     },
   },
 }
