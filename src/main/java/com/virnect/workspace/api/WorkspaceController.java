@@ -6,8 +6,6 @@ import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ResponseMessage;
 import com.virnect.workspace.global.error.ErrorCode;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +30,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Api(produces = MediaType.APPLICATION_JSON_VALUE,value = "워크스페이스 API", consumes = MediaType.APPLICATION_JSON_VALUE)
+@Api(produces = MediaType.APPLICATION_JSON_VALUE, value = "워크스페이스 API", consumes = MediaType.APPLICATION_JSON_VALUE)
 
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
@@ -115,8 +113,8 @@ public class WorkspaceController {
     /**
      * 워크스페이스 멤버 초대
      *
-     * @param workspaceId - 초대할 워크스페이스 uuid
-     * @param workspaceInviteMemberReq    - 워크스페이스 초대 정보
+     * @param workspaceId              - 초대할 워크스페이스 uuid
+     * @param workspaceInviteMemberReq - 워크스페이스 초대 정보
      * @return
      */
     @PostMapping("/{workspaceId}/invite")

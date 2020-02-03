@@ -5,6 +5,8 @@ import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
+import com.virnect.workspace.domain.mail.MailSender;
+import com.virnect.workspace.domain.mail.MailSubject;
 import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.BusinessException;
@@ -12,6 +14,7 @@ import com.virnect.workspace.global.common.ResponseMessage;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.mail.MailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +42,7 @@ public class WorkspaceService {
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
     private final GroupService groupService;
+    private final MailService mailService;
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceCreateReq workspaceInfo) {
         if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
@@ -160,21 +165,23 @@ public class WorkspaceService {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         //2. (옵션)라이선스검사 -> 라이선스 할당
-        //3. 이미 존재하는 사용자인지 이메일 체크(user Server)
-        List<WorkspaceDTO.WorkspaceInviteMemberReq> workspaceInviteMemberReqList = workspaceInviteMemberReq.getUserInfoList();
-        List<String> emailList = new ArrayList<>();
-        for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
-            emailList.add(userInfo.getUserEmail());
-            System.out.println(userInfo.getUserEmail());
+        //3. 이미 존재하는 사용자인지 이메일 체크(user Server) & 이메일 발송
+
+        for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
+            this.mailService.sendStringMail(MailSender.MASTER.getSender(),metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(),
+                    "test email");
         }
-        this.userRestService.getInviteUserInfo(emailList);
+        //this.userRestService.getInviteUserInfo(emailList);
+        //4. redis에 정보 넣기
+
         //4. 워크스페이스 소속 넣기 (workspace_user)
-        for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
+        /*for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
             WorkspaceUser workspaceUser = WorkspaceUser.builder()
                     .userId("e0a3608a-035f-408a-85ec-96e0542222")
                     .workspace(this.workspaceRepository.findByUuid(workspaceId))
                     .build();
             this.workspaceUserRepository.save(workspaceUser);
+
             //5. (매니저권한이면) 워크스페이스 권한 부여하기 (workspace_user_permission)
             if (userInfo.getWorkspacePermission().size() < 1) {
                 for (long permissionId : userInfo.getWorkspacePermission()) {
@@ -184,13 +191,15 @@ public class WorkspaceService {
                             .workspaceUser(workspaceUser)
                             .build();
                     this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+
                 }
             }
+
             //6. 그룹 소속 넣기(group_user, group_user_permission)
-            if(userInfo.getGroups().size()>0){
-                this.groupService.setGroupUsers(userInfo.getGroups(),workspaceUser);
+            if (userInfo.getGroups().size() > 0) {
+                this.groupService.setGroupUsers(userInfo.getGroups(), workspaceUser);
             }
-        }
+        }*/
         return new ResponseMessage();
     }
 
