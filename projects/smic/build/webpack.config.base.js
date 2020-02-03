@@ -6,7 +6,6 @@ const dotenv = require('dotenv')
 const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 module.exports = {
   node: {
@@ -26,10 +25,6 @@ module.exports = {
         BASE_URL: JSON.stringify(env.BASE_URL),
         USER_API_URL: JSON.stringify(env.USER_API_URL),
       },
-    }),
-    new BundleAnalyzerPlugin({
-      analyzerHost: '127.0.0.1',
-      analyzerPort: 8081,
     }),
   ],
   resolve: {
