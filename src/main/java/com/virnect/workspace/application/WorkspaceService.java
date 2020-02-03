@@ -5,8 +5,6 @@ import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
-import com.virnect.workspace.domain.mail.MailSender;
-import com.virnect.workspace.domain.mail.MailSubject;
 import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.BusinessException;
@@ -22,7 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,10 +164,10 @@ public class WorkspaceService {
         //2. (옵션)라이선스검사 -> 라이선스 할당
         //3. 이미 존재하는 사용자인지 이메일 체크(user Server) & 이메일 발송
 
-        for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
+      /*  for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
             this.mailService.sendStringMail(MailSender.MASTER.getSender(),metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(),
                     "test email");
-        }
+        }*/
         //this.userRestService.getInviteUserInfo(emailList);
         //4. redis에 정보 넣기
 

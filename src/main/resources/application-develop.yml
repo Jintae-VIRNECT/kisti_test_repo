@@ -13,7 +13,16 @@ spring:
     properties:
       hibnerate:
         format_sql: true
-
+  mail:
+    host: email-smtp.us-west-2.amazonaws.com
+    port: 587
+    username: AKIARQGLJD3UHE5MGO5U
+    password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  redis:
+    port: 6379
+    database: 0
+    password: qjsprxm0!
+    host: 192.168.0.121
 
 ## Server Configuration
 server:

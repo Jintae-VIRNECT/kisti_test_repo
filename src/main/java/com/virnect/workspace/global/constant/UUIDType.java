@@ -9,5 +9,6 @@ package com.virnect.workspace.global.constant;
  */
 public enum UUIDType {
     PIN_NUMBER,
-    UUID_WITH_SEQUENCE;
+    UUID_WITH_SEQUENCE,
+    INVITE_CODE;
 }
