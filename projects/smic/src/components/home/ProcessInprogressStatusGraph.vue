@@ -33,7 +33,11 @@
             :clearable='false'
             :placeholder='form.startTime'
             v-model='form.startTime' 
-            :picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
+            :picker-options="{\
+              start: '01:00',\
+              step: '01:00',\
+              end: form.endTime,minTime: '00:00'\
+            }"
             @change="checkMinMaxTime"
             popper-class="vn-time-range-select--dropdown"
           )
@@ -42,7 +46,12 @@
             :clearable='false'
             :placeholder='form.endTime' 
             v-model='form.endTime' 
-            :picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
+            :picker-options="{\
+              start: form.startTime,\
+              step: '01:00',\
+              end: '24:00',\
+              minTime: form.startTime == '24:00' ? '23:59' : form.startTime\
+            }"
             @change="checkMinMaxTime"
             popper-class="vn-time-range-select--dropdown"
           )
@@ -172,12 +181,6 @@ export default {
     this.initProcessGraph(jsonData())
   },
   methods: {
-    checkMinMaxTime() {
-      const startTime = Number(this.form.startTime.split(':')[0])
-      const endTime = Number(this.form.endTime.split(':')[0])
-      if (startTime > endTime) this.form.endTime = this.form.startTime
-      this.initProcessGraph(jsonData())
-    },
     initProcessGraph(json) {
       const startTime = Number(this.form.startTime.split(':')[0])
       const endTime = Number(this.form.endTime.split(':')[0])
@@ -247,6 +250,12 @@ export default {
       for (let i = 0; i < domains.length; i++) {
         domains[i].style.stroke = 'none'
       }
+    },
+    checkMinMaxTime() {
+      const startTime = Number(this.form.startTime.split(':')[0])
+      const endTime = Number(this.form.endTime.split(':')[0])
+      if (startTime > endTime) this.form.endTime = this.form.startTime
+      this.initProcessGraph(jsonData())
     },
     onClickToggleTab({ label }) {
       this.activeTab = label
