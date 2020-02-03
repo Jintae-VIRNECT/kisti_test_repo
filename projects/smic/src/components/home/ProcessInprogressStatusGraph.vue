@@ -15,32 +15,112 @@
           :label="status.label" 
           :name="status.name"
         )
+    .vn-date-time-select-wrapper
+      .vn-date-time-select-wrapper--left
+        i.el-icon-arrow-left.arrow-left(@click="onChangeDateArrow(-1)")
+        .date-label {{form.date | filterDayName}}
+        i.el-icon-arrow-right.arrow-right(@click="onChangeDateArrow(1)")
+      .vn-date-time-select-wrapper--right
+        .vn-date-range-select
+          el-date-picker(
+            :clearable='false'
+            v-model='form.date' 
+            type='date'
+            @change="checkMinMaxTime"
+            :placeholder='String(form.date)')
+        .vn-time-range-select
+          el-time-select(
+            :clearable='false'
+            :placeholder='form.startTime'
+            v-model='form.startTime' 
+            :picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
+            @change="checkMinMaxTime"
+            popper-class="vn-time-range-select--dropdown"
+          )
+          .time-divider ~
+          el-time-select(
+            :clearable='false'
+            :placeholder='form.endTime' 
+            v-model='form.endTime' 
+            :picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
+            @change="checkMinMaxTime"
+            popper-class="vn-time-range-select--dropdown"
+          )
     .bar-chart-wrapper
-      el-date-picker(v-model='form.data' type='date' placeholder='Pick a day')
-      el-time-select(
-        :clearable='false'
-        :placeholder='form.startTime'
-        v-model='form.startTime' 
-        :picker-options="{ start: form.startTime, step: '01:00', end: form.endTime }"
-        @change="checkMinMaxTime"
-      )
-      el-time-select(
-        :clearable='false'
-        :placeholder='form.endTime' 
-        v-model='form.endTime' 
-        :picker-options="{start: form.startTime,step: '01:00',end: form.endTime,minTime: form.startTime == '24:00' ? '23:59' : form.startTime}"
-        @change="checkMinMaxTime"
-      )
       #bar-chart
 </template>
-<style lang="scss" scoped>
+<style lang="scss">
+$el-date-height: 36px;
+$el-date-width: 80px;
 #bar-chart {
   height: 210px;
+}
+.vn-time-range-select--dropdown {
+  width: $el-date-width !important;
+}
+.vn-date-time-select-wrapper {
+  padding: 20px 30px 0px 15px;
+  &--left,
+  &--right {
+    width: 49.5%;
+    display: inline-block;
+    & > i {
+      padding: 3px;
+      cursor: pointer;
+      vertical-align: middle;
+      font-weight: 600;
+    }
+    & > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+  &--left {
+    .date-label {
+      font-size: 16px;
+      color: #0d2a58;
+      margin: 0px 15px;
+      width: 45px;
+      text-align: center;
+    }
+  }
+  &--right {
+    text-align: right;
+    .vn-date-range-select {
+      margin-right: 10px;
+      display: inline-block !important;
+    }
+    .time-divider {
+      display: inline-block;
+      margin: 0px 5px;
+    }
+    .vn-time-range-select {
+      display: inline-block !important;
+    }
+    input {
+      height: $el-date-height !important;
+      padding-right: 0px !important;
+      display: inline-block !important;
+    }
+    .el-date-editor {
+      width: $el-date-width !important;
+      i {
+        line-height: $el-date-height !important;
+      }
+    }
+    .el-date-editor--date {
+      width: 110px !important;
+    }
+    .vn-time-range-select {
+      display: inline-block;
+    }
+  }
 }
 </style>
 <script>
 import bb from 'billboard.js'
 import { processStatus } from '@/models/process'
+import dayjs from 'dayjs'
 
 function getRandomArbitrary() {
   return Math.random() * (40 - 0) + 0
@@ -81,7 +161,7 @@ export default {
       },
       activeTab: processStatus[0].name,
       form: {
-        data: null,
+        date: dayjs().toString(),
         startTime: '01:00',
         endTime: '24:00',
       },
@@ -171,6 +251,31 @@ export default {
     onClickToggleTab({ label }) {
       this.activeTab = label
       this.initProcessGraph(jsonData())
+    },
+    onChangeDateArrow(val) {
+      if (val === 1)
+        this.form.date = dayjs(this.form.date)
+          .add(1, 'day')
+          .toString()
+      else
+        this.form.date = dayjs(this.form.date)
+          .subtract(1, 'day')
+          .toString()
+      this.onChangeDate()
+    },
+    onChangeDate() {
+      this.initProcessGraph(jsonData())
+    },
+  },
+  filters: {
+    filterDayName(value) {
+      const today = dayjs().format('YYYY-MM-DD')
+      const inputDay = dayjs(value).format('YYYY-MM-DD')
+      const diffDay = dayjs(inputDay).diff(dayjs(today), 'day')
+      if (diffDay === 0) return '오늘'
+      else if (diffDay === -1) return '어제'
+      else if (diffDay > 0) return `${diffDay}일 후`
+      else if (diffDay < -1) return `${Math.abs(diffDay)}일 전`
     },
   },
 }
