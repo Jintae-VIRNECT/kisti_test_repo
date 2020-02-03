@@ -36,7 +36,6 @@
 							span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
 						div(v-else-if="prop === 'type'")
 							span.issue-type {{tableData[scope.$index][prop]}}
-						//- auths String.substring(0,12) + '...'
 						div(v-else-if="prop === 'auths'")
 							span {{tableData[scope.$index][prop] | limitAuthsLength}}
 						//- schedule = (startAt ~ endAt)
