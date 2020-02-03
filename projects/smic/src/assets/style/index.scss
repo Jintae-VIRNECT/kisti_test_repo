@@ -414,10 +414,18 @@
 			padding: 7px 8px;
 			background-color: rgb(241,243,247);
 			box-shadow: none;
-			border: none;
+			border: solid 2px rgba(0,0,0,0);
 			.tool i {
 				color: black;
 			}
+			width: 100px;
+		}
+		.el-select:hover .el-input__inner {
+			background-color: #e6e9ee;
+		}
+		.el-select .el-input.is-focus .el-input__inner {
+			border: #5696f0 solid 2px;
+			background-color: #fff;
 		}
 		.tool {
 			vertical-align: middle;
@@ -435,6 +443,13 @@
 		& .el-input__inner,
 		& button {
 			height: 34px;
+		}
+		.el-input__suffix {
+			right: 15px;
+		}
+		.el-icon-arrow-up,
+		.el-icon-arrow-down {
+			font-weight: bold;
 		}
 	}
 }

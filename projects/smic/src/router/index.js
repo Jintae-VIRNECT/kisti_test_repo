@@ -59,6 +59,7 @@ const routes = [
       {
         path: '',
         component: MemberList,
+        props: route => ({ query: route.query }),
       },
       {
         path: 'new',
