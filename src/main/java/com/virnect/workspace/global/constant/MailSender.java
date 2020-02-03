@@ -1,4 +1,4 @@
-package com.virnect.workspace.global.constant.mail;
+package com.virnect.workspace.global.constant;
 
 /**
  * Project: PF-Workspace
@@ -7,6 +7,7 @@ package com.virnect.workspace.global.constant.mail;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
+
 public enum MailSender {
     MASTER("발신전용 <no-reply@virnect.com>"),
     MASTER_NAME("관리자");

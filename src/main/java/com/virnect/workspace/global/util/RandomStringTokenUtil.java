@@ -34,7 +34,7 @@ public class RandomStringTokenUtil {
                 return String.valueOf(result);
             }
             case INVITE_CODE: {
-                return RandomStringUtils.randomAlphanumeric(digit);
+                return RandomStringUtils.randomAlphanumeric(digit).toUpperCase();
             }
         }
         return UUID.randomUUID().toString();

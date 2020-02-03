@@ -40,7 +40,7 @@ public class WorkspaceService {
     private final ModelMapper modelMapper;
     private final GroupService groupService;
     private final MailService mailService;
-
+    private final RedisService redisService;
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceCreateReq workspaceInfo) {
         if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -164,12 +164,14 @@ public class WorkspaceService {
         //2. (옵션)라이선스검사 -> 라이선스 할당
         //3. 이미 존재하는 사용자인지 이메일 체크(user Server) & 이메일 발송
 
-      /*  for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
-            this.mailService.sendStringMail(MailSender.MASTER.getSender(),metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(),
-                    "test email");
-        }*/
+        for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
+            //this.mailService.sendStringMail(MailSender.MASTER.getSender(), metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(), "test email");
+        }
+
         //this.userRestService.getInviteUserInfo(emailList);
         //4. redis에 정보 넣기
+        String inviteCode =RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
+        this.redisService.setInviteInfo(userId,workspaceId,inviteCode,workspaceInviteMemberReq.getUserInfoList());
 
         //4. 워크스페이스 소속 넣기 (workspace_user)
         /*for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {

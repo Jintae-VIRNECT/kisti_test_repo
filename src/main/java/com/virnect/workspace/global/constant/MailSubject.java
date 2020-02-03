@@ -1,4 +1,4 @@
-package com.virnect.workspace.global.constant.mail;
+package com.virnect.workspace.global.constant;
 
 /**
  * Project: PF-Workspace
