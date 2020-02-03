@@ -57,6 +57,13 @@ $top-nav-height: 60px;
 			padding: 7px 20px;
 			border-radius: 3px;
 			background-color: #eaedf3;
+			&:hover {
+				background-color: #e6e9ee;
+			}
+			&:active {
+				background-color: #1665d8;
+				color: #fff;
+			}
 		}
 	}
 	&__center {

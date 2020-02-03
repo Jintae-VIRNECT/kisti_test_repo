@@ -391,19 +391,39 @@
 				float: right;
 				margin-right: 0px;
 			}
+			.el-button--default {
+				border: solid 2px rgba(0,0,0,0);
+				border-left: none;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+				transition: .3s, background 0s;
+			}
+			&:hover {
+				.el-input__inner, .el-button--default {
+					background: #e6e9ee;
+					transition: 0s;
+				}
+			}
+			&:focus-within {
+				.el-input__inner, .el-button--default {
+					border-color: #5696f0;
+					background: #fff;
+					transition: .3s;
+				}
+			}
 		}
 		.filter {
 			margin-right: 8px;
 		}
 		.el-input-group__append {
-      padding: 7px 8px;
-      .el-button--default {
-			  background-color: rgb(241,243,247);
-      }
+      padding: 7px 8px 8px;
 			border: none;
 			color: #7a869a;
 			button {
 				padding: 7px 8px;
+				background-color: rgb(241,243,247);
+				box-shadow: none;
+				transition: none;
 			}
 			i {
 				color: black;

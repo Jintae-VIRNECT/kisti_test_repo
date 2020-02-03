@@ -121,6 +121,18 @@
         border-radius: 4px;
         background-color: #f2f5f9;
         margin-right: 10px;
+        &:hover {
+          background: #e6e9ee;
+        }
+        &:active {
+          background: #455163;
+          & img {
+            filter: brightness(2) grayscale(1);
+          }
+          & span {
+            color: #fff;
+          }
+        }
       }
       img,
       span {
