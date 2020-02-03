@@ -130,6 +130,11 @@ export default {
       return colSetting
     },
   },
+  filters: {
+    toggleTopic() {
+      this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+  },
   methods: {
     onClickCell(row, column) {
       if (column.className === 'control-col') return false

@@ -132,7 +132,7 @@ import { processStatus } from '@/models/process'
 import dayjs from 'dayjs'
 
 function getRandomArbitrary() {
-  return Math.random() * (40 - 0) + 0
+  return Math.floor(Math.random() * (40 - 0) + 0)
 }
 function jsonData() {
   return [
@@ -210,7 +210,7 @@ export default {
                 show: true,
               },
               format: function(index, val) {
-                return index, val
+                return val
               },
             },
           },
