@@ -1,6 +1,6 @@
 <template lang="pug">
   .header__bread-crumb
-    span {{title}}
+    slot(name="body")
 </template>
 <script>
 export default {

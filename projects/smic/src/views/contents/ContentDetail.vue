@@ -1,6 +1,7 @@
 <template lang="pug">
   .content-detail
-    page-bread-crumb(title='공정 콘텐츠')
+    el-breadcrumb.header__bread-crumb(separator="/")
+      el-breadcrumb-item(:to='{path: "/contents"}') 공정 콘텐츠
     inline-table(:setMainHeader="true")
       .header--before(slot="header-left")
         router-link.title(to="/contents")

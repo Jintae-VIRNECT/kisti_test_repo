@@ -4,7 +4,8 @@
 			template(slot='page-nav--right')
 				router-link(to="/process/new")
 					button.enroll-new-process 신규 공정 등록
-		page-bread-crumb(title='공정')
+		el-breadcrumb.header__bread-crumb(separator="/")
+			el-breadcrumb-item(:to='{path: "/process"}') 공정
 		process-dash-banner(:data="tableData")
 		.page-nav
 			search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :filter="filter" :sort="sort")
@@ -84,8 +85,11 @@ import { sortOptions } from '@/models/index'
 // lib
 import dayjs from '@/utils/dayjs'
 
+// mixins
+import filters from '@/mixins/filters'
+
 export default {
-  mixins: [dayjs],
+  mixins: [dayjs, filters],
   components: {
     ProgressCard,
     InlineTable,
@@ -142,32 +146,6 @@ export default {
     onDeleteData(data) {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-  },
-  filters: {
-    statusFilterName(value) {
-      if (value == 'complete') return '완료'
-      else if (value == 'progress') return '진행'
-      else if (value == 'idle') return '미진행'
-      else if (value == 'imcomplete') return '미흡'
-    },
-    limitAuthsLength(array) {
-      let answer = ''
-      let sumOfStrings = 0
-
-      const divider = ', '
-      for (let i = 0; i < array.length; i++) {
-        answer += array[i]
-        sumOfStrings += array[i].length + divider.length
-        if (sumOfStrings > 13) {
-          const midfix = sumOfStrings - divider.length <= 13 ? '' : '...'
-          const suffix =
-            array.length - 1 > i ? `+${array.length - (i + 1)}` : ''
-          return answer.slice(0, 13) + midfix + suffix
-        } else if (array.length - 1 === i) break
-        answer += divider
-      }
-      return answer
     },
   },
 }

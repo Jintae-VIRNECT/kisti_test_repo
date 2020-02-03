@@ -1,214 +1,349 @@
 <template lang="pug">
-	div
-		page-tab-nav
-			template(slot='page-nav--right')
-				router-link(to="/process/new")
-					button.enroll-new-process 신규 공정 등록
-		page-bread-crumb(title='공정')
-		process-dash-banner(:data="tableData")
-		.page-nav
-			.search-wrapper.text-right
-				el-input.tool.search(placeholder='공정 이름, 담당자 이름' v-model='searchInput' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-button(slot='append' icon='el-icon-search')
-				span 필터 : 
-				el-select(v-model='filter.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
-				span 정렬 : 
-				el-select(v-model='sort.value' placeholder='Select' @change="onChangeSearch(searchInput, filter.value, sort.value)")
-					el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
-		inline-table(:setMainHeader="true")
-			template(slot="header-left")
-				span.title 공정 목록
-			template(slot="header-right")
-				.inline-table__header.text-right
-					span.sub-title 등록된 공정 수 
-					span.value {{tableData.length}}
-			template(slot="body")
-				el-table.inline-table(
-					:data='tableData' 
-					style='width: 100%'
-					@cell-click="onClickCell")
-					el-table-column(
-						v-for="{label, width, prop} in colSetting" 
-						:key="prop" 
-						:prop="prop" 
-						:label="label" 
-						:width="width || ''") 
-						template(slot-scope='scope')
-							.process-percent(v-if="prop === 'processPercent'")
-								el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
-							div(v-else-if="prop === 'numOfDetailProcess'")
-								span.nums {{tableData[scope.$index][prop]}}								
-							div(v-else-if="prop === 'issue'")
-								.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
-								span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
-							div(v-else-if="prop === 'auths'")
-								span {{tableData[scope.$index][prop] | limitAuthsLength}}
-							//- schedule = (startAt ~ endAt)
-							.total-done(v-else-if="prop === 'schedule'")
-								span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-								span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
-							div(v-else-if="prop === 'status'")
-								button.btn.btn--status(
-									size="mini" 
-									:class="tableData[scope.$index][prop]" 
-									plain
-								) {{ tableData[scope.$index][prop] | statusFilterName }}
-							div(v-else)
-								span {{ tableData[scope.$index][prop] }}
-					el-table-column(:width="50" class-name="control-col")
-						template(slot-scope='scope')
-							process-control-dropdown(
-								:target="tableData[scope.$index]"
-								@onChangeData="onChangeData"
-								@onCreateData="onCreateData"
-								@onDeleteData="onDeleteData")
-			//- el-pagination.inline-table-pagination(
-			//- 	v-if='setPagination'
-			//- 	:hide-on-single-page='false' 
-			//- 	:page-size="pageSize" 
-			//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
-			//- 	:total='tableData.length' 
-			//- 	layout='prev, jumper, next'
-			//- 	:current-page='currentPage'
-			//- 	@prev-click='currentPage -= 1'
-			//- 	@next-click='currentPage += 1'
-			//- )
+	.card
+		.card__header
+			.card__header--left
+				slot(name="header-left")
+			.card__header--right
+				slot(name="header-right")
+		.card__body
+			slot(name="tabs")
+			el-table.inline-table(
+				:data='tableData' 
+				style='width: 100%'
+				@cell-click="onClickCell")
+				el-table-column(
+					v-for="{label, width, prop} in colSetting" 
+					:key="prop" 
+					:prop="prop" 
+					:label="label" 
+					:width="width || ''") 
+					template(slot-scope='scope')
+						div(v-if="prop == 'index'") 
+							span {{scope.$index + 1}}
+						div(v-if="prop === 'contentPublish'")
+							span {{publishBoolean(tableData[scope.$index][prop])}}
+						.process-percent(v-else-if="prop === 'processPercent'")
+							el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
+						div(v-else-if="prop === 'numOfDetailProcess'")
+							span.nums {{tableData[scope.$index][prop]}}
+						//- 이슈 타입
+						.content-name(v-else-if="dataType === 'contents' && prop === 'name'")
+							img.prefix-img(src="~@/assets/image/ic-content.svg")
+							span {{tableData[scope.$index][prop]}}
+							
+						div(v-else-if="prop === 'issue'")
+							.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
+							span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
+						div(v-else-if="prop === 'type'")
+							span.issue-type {{tableData[scope.$index][prop]}}
+						//- auths String.substring(0,12) + '...'
+						div(v-else-if="prop === 'auths'")
+							span {{tableData[scope.$index][prop] | limitAuthsLength}}
+						//- schedule = (startAt ~ endAt)
+						.total-done(v-else-if="prop === 'schedule'")
+							span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
+							span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
+						//- 체결 수
+						.total-done(v-else-if="prop === 'totalDone'")
+							span.count {{tableData[scope.$index]['count']}} 
+							span &nbsp;/ {{tableData[scope.$index]['total']}}
+						div(v-else-if="prop === 'reportedAt'")
+							span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}} 
+						div(v-else-if="prop === 'status'")
+							button.btn.btn--status(
+								size="mini" 
+								:class="tableData[scope.$index][prop]" 
+								plain
+							) {{ statusFilterName(tableData[scope.$index][prop]) }}
+						.auth-wrapper(v-else-if="prop === 'auth'")
+							.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+							span {{tableData[scope.$index][prop]}}
+						div(v-else)
+							span {{ tableData[scope.$index][prop] }}
+					//- template(v-else) 
+					//- 	span {{ tableData[scope.$index][prop] }}
+				el-table-column(v-if="controlCol" :width="50" class-name="tool-col")
+					template(slot-scope='scope')
+						process-control-dropdown(:processId="tableData[scope.$index].processId")
+		el-pagination.inline-table-pagination(
+			v-if='setPagination'
+			:hide-on-single-page='false' 
+			:page-size="pageSize" 
+			:pager-count="tableOption ? tableOption.pagerCount : 5"
+			:total='tableData.length' 
+			layout='prev, jumper, next'
+			:current-page='currentPage'
+			@prev-click='currentPage -= 1'
+			@next-click='currentPage += 1'
+		)
 </template>
 <script>
-// UI component
-import PageTabNav from '@/components/common/PageTabNav.vue'
-import ProgressCard from '@/components/home/ProgressCard.vue'
-import InlineTable from '@/components/common/InlineTable.vue'
-import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
-import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
-import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
-
-// model
-import { cols as colSetting, processStatus } from '@/models/process'
-import { sortOptions } from '@/models/index'
-
-// lib
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 import dayjs from '@/utils/dayjs'
+import filters from '@/mixins/filters'
 
 export default {
-  mixins: [dayjs],
   components: {
-    ProgressCard,
-    InlineTable,
-    ProcessDashBanner,
-    PageTabNav,
-    PageBreadCrumb,
     ProcessControlDropdown,
+  },
+  mixins: [dayjs, filters],
+  props: {
+    tableData: Array,
+    setPagination: Boolean,
+    dataType: String,
+    colSetting: Array,
+    controlCol: Boolean,
+    cellClick: Function,
+    tableOption: {
+      title: String,
+      // colSetting: Array,
+      pagerCount: 5,
+    },
   },
   data() {
     return {
-      tableData: this.$store.getters.currentReportedDetailProcess,
-      searchInput: null,
-      filter: {
-        options: [
-          {
-            value: null,
-            label: '전체',
-          },
-          ...processStatus,
-        ],
-        value: null,
-      },
-      sort: {
-        options: sortOptions,
-        value: null,
-      },
+      dataKeys: null,
+      currentPage: 1,
+      pageSize: this.$props.tableOption ? this.$props.tableOption.pageSize : 5,
     }
   },
-  computed: {
-    colSetting() {
-      return colSetting
-    },
-  },
   methods: {
-    onClickCell(row, column) {
-      if (column.className === 'control-col') return false
-      this.$router.push(`/process/${row.id}`)
-    },
-    onChangeData(data) {
-      const updatedTableData = this.tableData.map(row => {
-        if (row.id === data.id) {
-          row = data
-        }
-        return row
-      })
-      this.tableData = updatedTableData
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onCreateData(data) {
-      this.tableData.push(data)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onDeleteData(data) {
-      this.tableData = this.tableData.filter(row => row.id !== data.id)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    async onChangeSearch(searchInput, filterValue, sortValue) {
-      let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
-      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
-      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
-      this.tableData = tmpTableData
-    },
-    onChangeSearchText(tableData, searchInput) {
-      return tableData.filter(row => {
-        return (
-          row.processName.includes(searchInput) ||
-          row.auths.some(a => a.includes(searchInput))
-        )
-      })
-    },
-    onChangeFilter(tableData, filterValue) {
-      if (!filterValue) return tableData
-      return tableData.filter(row => row.status === filterValue)
-    },
-    onChangeSort(tableData, sortValue) {
-      if (!sortValue) return tableData
-      if (sortValue === 'alphabetDesc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? 1 : -1,
-        )
-      else if (sortValue === 'alphabetAsc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? -1 : 1,
-        )
-      else if (sortValue === 'createdAtDesc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
-      else if (sortValue === 'createdAtAsc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
-    },
-  },
-  filters: {
     statusFilterName(value) {
       if (value == 'complete') return '완료'
       else if (value == 'progress') return '진행'
       else if (value == 'idle') return '미진행'
       else if (value == 'imcomplete') return '미흡'
     },
-    limitAuthsLength(array) {
-      let answer = ''
-      let sumOfStrings = 0
-
-      const divider = ', '
-      for (let i = 0; i < array.length; i++) {
-        answer += array[i]
-        sumOfStrings += array[i].length + divider.length
-        if (sumOfStrings > 13) {
-          const midfix = sumOfStrings - divider.length <= 13 ? '' : '...'
-          const suffix =
-            array.length - 1 > i ? `+${array.length - (i + 1)}` : ''
-          return answer.slice(0, 13) + midfix + suffix
-        } else if (array.length - 1 === i) break
-        answer += divider
-      }
-      return answer
+    publishFilterClass(type, value) {
+      let suffix = ''
+      if (value === false) suffix = 'plain'
+      return `${type}-btn ${suffix}`
+    },
+    publishBoolean(value) {
+      if (value === true) return 'ON'
+      else return 'OFF'
+    },
+    publishFilterName(type, value) {
+      let className, suffix
+      if (type === 'contentPublish') className = '배포'
+      else if (type === 'processRegister') className = '등록'
+      if (value === true) suffix = '중'
+      else if (value === false) suffix = '대기'
+      return className + suffix
+    },
+    onClickCell(row, column, cell, event) {
+      console.log('row : ', row)
+      console.log('column : ', column)
+      console.log('cell : ', cell)
+      console.log('event : ', event)
+      const { rowIdName, subdomain } = this.$props.tableOption
+      if (!rowIdName) return false
+      this.$router.push(`${subdomain}/${row[rowIdName]}`)
     },
   },
 }
 </script>
+
+<style lang="scss">
+.inline-table-pagination .el-pagination__jump {
+  margin-left: 0px !important;
+}
+.card {
+  border-radius: 4px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  border: solid 1px #e6e9ee;
+  background-color: #ffffff;
+  margin-bottom: 30px;
+}
+.card__header {
+  .title {
+    font-size: 16px;
+    line-height: 1.75;
+    vertical-align: middle;
+    color: #0d2a58;
+  }
+  .header-left__sub-title {
+    display: inline-block;
+    padding: 0px 6px;
+    border-radius: 4px;
+    background-color: #f2f5f9;
+    margin-left: 16px;
+    .sub-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #0d2a58;
+    }
+    img {
+      margin-right: 3px;
+    }
+    & > * {
+      vertical-align: middle;
+    }
+  }
+  .header-right__sub-title {
+    .sub-title {
+      margin-left: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 2;
+      vertical-align: middle;
+      color: #455163;
+    }
+  }
+  &--left {
+    width: 40%;
+    display: inline-block;
+    .title {
+      font-size: 18px;
+      line-height: 1.56;
+      color: #0d2a58;
+      margin-right: 15px;
+    }
+    .sub-title {
+      font-size: 14px;
+      line-height: 2;
+      color: #455163;
+    }
+  }
+  &--right {
+    width: 59%;
+    display: inline-block;
+  }
+  .more-link {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.67;
+    color: #1665d8;
+    text-decoration: underline !important;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.56;
+    color: #0065e0;
+    vertical-align: middle;
+  }
+}
+.inline-table {
+  .el-table__body td {
+    height: 64px !important;
+    &.tool-col {
+      padding: 0px;
+      .cell {
+        height: 100%;
+      }
+      .cell > div {
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
+    }
+    .nums {
+      height: 28px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: solid 1px #eaedf3;
+      background-color: #fbfbfd;
+      font-size: 14px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.57;
+      letter-spacing: normal;
+      color: #114997;
+    }
+  }
+  &__header .sub-title {
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 2;
+    letter-spacing: normal;
+    color: #0d2a58;
+  }
+  .process-percent {
+    .el-progress-bar__outer {
+      margin-right: 8px;
+    }
+  }
+  .el-table__row {
+    cursor: pointer;
+  }
+  .auth-wrapper {
+    .auth-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: inline-block;
+      margin-right: 8px;
+      &,
+      span {
+        vertical-align: middle;
+      }
+    }
+  }
+  .total-done .count {
+    color: #186ae2;
+  }
+  .issue-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: solid 1px #dc2a2a;
+    font-size: 12px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: center;
+    color: #dc2a2a;
+  }
+  .content-name {
+    img {
+      margin-right: 5px;
+    }
+    span,
+    img {
+      vertical-align: middle;
+    }
+  }
+  th {
+    font-size: 12px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #6d798b;
+  }
+  tr th:first-child .cell {
+    margin-left: 30px !important;
+  }
+  &.el-table th > .cell,
+  &.el-table .cell {
+    padding: 0px !important;
+    overflow: initial;
+  }
+  .el-table__row td:first-child .cell {
+    margin-left: 30px !important;
+  }
+  .blub {
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+    &.on {
+      background-color: #ee5c57;
+    }
+    &.off {
+      background-color: #aabbce;
+    }
+  }
+}
+</style>

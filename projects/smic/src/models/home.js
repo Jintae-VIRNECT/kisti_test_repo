@@ -89,7 +89,7 @@ export const tableColSettings = {
   report: [
     {
       prop: 'processName',
-      label: '공정이름',
+      label: '공정 이름',
     },
     {
       prop: 'detailProcessName',
@@ -118,7 +118,7 @@ export const tableColSettings = {
     },
     {
       prop: 'processName',
-      label: '공정이름',
+      label: '공정 이름',
     },
     {
       prop: 'detailProcessName',
@@ -142,7 +142,7 @@ export const tableColSettings = {
   smartTool: [
     {
       prop: 'processName',
-      label: '공정이름',
+      label: '공정 이름',
     },
     {
       prop: 'detailProcessName',
