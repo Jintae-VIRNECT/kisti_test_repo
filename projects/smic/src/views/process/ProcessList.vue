@@ -12,14 +12,13 @@
 		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
-				.vn-label
-					.vn-label.toggle-topic-btn
-						a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
-							img(src="~@/assets/image/ic-graph.svg")
-							span 일자별 공정 진행률 그래프
-						a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
-							img(src="~@/assets/image/ic-list.svg")
-							span 리스트
+				.vn-label.toggle-topic-btn
+					a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+						img(src="~@/assets/image/ic-graph.svg")
+						span 일자별 공정 진행률 그래프
+					a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+						img(src="~@/assets/image/ic-list.svg")
+						span 리스트
 			template(slot="header-right")
 				.inline-table__header.text-right
 					span.sub-title 등록된 공정 수 
