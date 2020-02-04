@@ -1,15 +1,9 @@
 package com.virnect.workspace.dao;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.workspace.domain.QWorkspace;
 import com.virnect.workspace.domain.QWorkspaceUser;
-import com.virnect.workspace.domain.QWorkspaceUserPermission;
-import com.virnect.workspace.dto.UserDTO;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -18,8 +12,7 @@ import java.util.List;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@RequiredArgsConstructor
-
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkspaceUserRepositoryImpl implements WorkspaceUserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 

@@ -29,9 +29,9 @@ public class RedisService {
             UserInvite userInvite = UserInvite.builder()
                     .inviteUser(userId)
                     .workspace(workspaceId)
-                    .joinUser(userId)
-                    .code(inviteCode)
+                    .joinUser(metaUserInfo.getUserEmail())
                     .email(metaUserInfo.getUserEmail())
+                    .code(inviteCode)
                     .permission(metaUserInfo.getWorkspacePermission())
                     .groups(metaUserInfo.getGroups())
                     .expireTime(3L)
@@ -42,4 +42,7 @@ public class RedisService {
     }
 
 
+    public UserInvite getInviteInfo(String userId, String code) {
+        return this.userInviteRepository.findById(userId).orElse(null);
+    }
 }

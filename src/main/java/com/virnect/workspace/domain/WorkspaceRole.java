@@ -29,5 +29,4 @@ public class WorkspaceRole extends TimeEntity {
     @Column(name = "description")
     private String description;
 
-
 }

@@ -5,6 +5,7 @@ import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
+import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.BusinessException;
@@ -41,6 +42,7 @@ public class WorkspaceService {
     private final GroupService groupService;
     private final MailService mailService;
     private final RedisService redisService;
+
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceCreateReq workspaceInfo) {
         if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -95,14 +97,21 @@ public class WorkspaceService {
         Map<String, Object> data = responseMessage.getData();
         log.info("ResponseMessage: {}", data);
         List<Object> results = ((List<Object>) data.get("userInfoList"));
-        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> modelMapper.map(object, UserDTO.UserInfoDTO.class)).collect(Collectors.toList());
-        List<UserDTO.UserInfoDTO> result = new ArrayList<>();
+        //List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {modelMapper.map(object, UserDTO.UserInfoDTO.class)}).collect(Collectors.toList());
+        List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {
+            UserDTO.UserInfoDTO userInfo = modelMapper.map(object, UserDTO.UserInfoDTO.class);
+            System.out.println("uuid::"+userInfo.getUuid());
+            userInfo.setRole(getWorkspaceUserRole(workspaceId, userInfo.getUuid()).getRole());
+            return userInfo;
+        }).collect(Collectors.toList());
+        List<UserDTO.UserInfoDTO> result;
 
         //2. 필터 검증
         if (StringUtils.hasText(filter) && filter.equals("MASTER")) {
             result = this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId);
         } else {
             result = userInfoDTOList;
+
         }
 
         Map<String, Object> pageableResult = new HashMap<>();
@@ -161,48 +170,56 @@ public class WorkspaceService {
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        //2. (옵션)라이선스검사 -> 라이선스 할당
+        //2. 라이선스검사 -> 라이선스 할당
         //3. 이미 존재하는 사용자인지 이메일 체크(user Server) & 이메일 발송
-
         for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
             //this.mailService.sendStringMail(MailSender.MASTER.getSender(), metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(), "test email");
         }
 
         //this.userRestService.getInviteUserInfo(emailList);
         //4. redis에 정보 넣기
-        String inviteCode =RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
-        this.redisService.setInviteInfo(userId,workspaceId,inviteCode,workspaceInviteMemberReq.getUserInfoList());
+        String inviteCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
+        this.redisService.setInviteInfo(userId, workspaceId, inviteCode, workspaceInviteMemberReq.getUserInfoList());
 
-        //4. 워크스페이스 소속 넣기 (workspace_user)
-        /*for (WorkspaceDTO.WorkspaceInviteMemberReq userInfo : workspaceInviteMemberReq.getUserInfoList()) {
-            WorkspaceUser workspaceUser = WorkspaceUser.builder()
-                    .userId("e0a3608a-035f-408a-85ec-96e0542222")
-                    .workspace(this.workspaceRepository.findByUuid(workspaceId))
-                    .build();
-            this.workspaceUserRepository.save(workspaceUser);
 
-            //5. (매니저권한이면) 워크스페이스 권한 부여하기 (workspace_user_permission)
-            if (userInfo.getWorkspacePermission().size() < 1) {
-                for (long permissionId : userInfo.getWorkspacePermission()) {
-                    WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                            .workspaceRole(this.workspaceRoleRepository.findByRole("MANAGER"))
-                            .workspacePermission(this.workspacePermissionRepository.findById(permissionId).get())
-                            .workspaceUser(workspaceUser)
-                            .build();
-                    this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-
-                }
-            }
-
-            //6. 그룹 소속 넣기(group_user, group_user_permission)
-            if (userInfo.getGroups().size() > 0) {
-                this.groupService.setGroupUsers(userInfo.getGroups(), workspaceUser);
-            }
-        }*/
         return new ResponseMessage();
     }
 
     public WorkspaceRole getWorkspaceUserRole(String workspaceId, String userId) {
         return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceId, userId);
     }
+
+    public ResponseMessage inviteWorkspaceAccept(String workspaceId, String userId, String code) {
+        UserInvite userInvite = this.redisService.getInviteInfo(userId, code);
+        if (userInvite == null) {
+            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+
+        //1. 워크스페이스 소속 넣기 (workspace_user)
+        WorkspaceUser workspaceUser = WorkspaceUser.builder()
+                .userId(userId)
+                .workspace(this.workspaceRepository.findByUuid(workspaceId))
+                .build();
+        this.workspaceUserRepository.save(workspaceUser);
+
+        //2. 워크스페이스 권한 부여하기 (workspace_user_permission)
+        if (userInvite.getPermission().size() > 0) {
+            for (long permissionId : userInvite.getPermission()) {
+                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                        .workspaceRole(this.workspaceRoleRepository.findByRole("MANAGER"))
+                        .workspacePermission(this.workspacePermissionRepository.findById(permissionId).get())
+                        .workspaceUser(workspaceUser)
+                        .build();
+                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+            }
+        }
+
+        //3. 그룹 소속 넣기(group_user, group_user_permission)
+        if (userInvite.getGroups().size() > 0) {
+            this.groupService.setGroupUsers(userInvite.getGroups(), workspaceUser);
+        }
+
+        return new ResponseMessage();
+    }
+
 }

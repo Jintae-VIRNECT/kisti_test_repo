@@ -26,7 +26,6 @@ public class UserInvite implements Serializable {
 
     @Id
     private String joinUser;
-
     private String inviteUser;
     private String email;
     private String workspace;

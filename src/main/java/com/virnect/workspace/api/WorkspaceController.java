@@ -126,5 +126,21 @@ public class WorkspaceController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    /**
+     * 워크스페이스 멤버 초대 수락
+     *
+     * @param workspaceId - 수락한 워크스페이스 uuid
+     * @param userId      - 수락한 유저 uuid
+     * @param code        - 초대 코드
+     * @return
+     */
+    @GetMapping("/{workspaceId}/invite/accept")
+    public ResponseEntity<ResponseMessage> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ResponseMessage responseMessage = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
+        return ResponseEntity.ok(responseMessage);
+    }
 
 }
