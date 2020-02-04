@@ -473,7 +473,32 @@
 		}
 	}
 }
-
+.tag{
+	&.silver {
+		fill: #8d939c;
+	}
+	&.gray {
+		fill: #aebbcc;
+	}
+	&.dark-gray {
+		fill: #6e7277;
+	}
+	&.blue {
+		fill: #186ae2;
+	}
+	&.dark-blue {
+		fill: #1d5cb7;
+	}
+	&.dark-red {
+		fill: #de3636;
+	}
+	&.orange {
+		fill: #f89637;
+	}
+	&.green {
+		fill: #2cbc65;
+	}
+}
 .el-tag.custom {
   border: none;
   padding: 3px 10px;
@@ -590,4 +615,120 @@
 			margin-right: 2px;
 		}
 	}
+}
+
+.process-dash-banner {
+  .box-wrapper {
+    display: flex;
+    .box {
+      padding: 0px 30px;
+      position: relative;
+      border-right: 1px solid rgba(205, 209, 214, 0.5);
+      &:first-child {
+        padding-left: 0px;
+        flex: 1 1 150px;
+      }
+      &:last-child {
+        flex: 1 1 90%;
+        border-right: none;
+      }
+      .main-title {
+				width: max-content;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0d2a58;
+      }
+      .main-percent {
+        font-size: 32px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.38;
+        letter-spacing: normal;
+        color: #006deb;
+        margin-bottom: 8px;
+      }
+      .sub-title {
+        font-size: 12px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: #566173;
+        margin-bottom: 10px;
+      }
+    }
+  }
+  hr.divider {
+    margin: 24px 0px;
+    border: 1px solid #eaedf3;
+  }
+  .text-item {
+    margin-bottom: 12px;
+    &:last-child {
+      margin-bottom: 0px;
+    }
+    .key {
+      font-size: 12px;
+      color: #6d798b;
+    }
+    .value {
+      font-size: 12px;
+      float: right;
+      color: #0d2a58;
+    }
+  }
+  .item-container {
+    display: flex;
+    .item {
+			width: max-content;
+      margin-left: 30px;
+      &:first-child {
+        margin-left: 0px;
+      }
+      & > * {
+        vertical-align: middle;
+      }
+      .value {
+        margin-left: 12px;
+        font-size: 24px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #385370;
+      }
+    }
+  }
+}
+
+.vn-label {
+  display: inline-block;
+  a {
+    padding: 2px 8px 2px 6px;
+    border-radius: 4px;
+    background-color: #f2f5f9;
+    margin-right: 10px;
+  }
+  img,
+  span {
+    vertical-align: middle;
+  }
+  span {
+    font-size: 13px;
+    color: #0d2a58;
+  }
+  img {
+    margin-right: 4px;
+    // width: 24px;
+    // height: 24px;
+  }
+}
+
+
+input.on-error {
+	border-bottom-color: #db1717 !important;
 }

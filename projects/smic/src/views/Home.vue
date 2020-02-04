@@ -82,7 +82,6 @@ const currentUploadedContentTableOption = {
   rowIdName: 'contentId',
   subdomain: '/contents',
 }
-
 export default {
   mixins: [contentList, dayjs],
   components: {

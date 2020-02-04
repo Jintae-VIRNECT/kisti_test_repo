@@ -7,12 +7,6 @@
 				main.admin-body
 					router-view
 		div(v-else)
-			.top-nav.border
-				.top-nav__center
-					router-link(to="/")
-						img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
-					.divider
-					label.workspace Workstation
 			router-view
 </template>
 

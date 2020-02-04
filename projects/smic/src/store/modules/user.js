@@ -80,6 +80,10 @@ export default {
           password,
         })
         const { data } = response.data
+
+        if (Object.keys(data).length === 0) return { isLogin: false }
+
+        console.log('-----------')
         context.commit('USER_LOGIN', {
           user: data.userInfo,
           workspaceInfoList: data.workspaceInfoList,
@@ -87,6 +91,7 @@ export default {
         return response.data
       } catch (e) {
         console.log('e : ', e)
+        return e
       }
     },
     async USER_LOGOUT(context) {

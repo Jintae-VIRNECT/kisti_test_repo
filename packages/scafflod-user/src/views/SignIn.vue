@@ -9,11 +9,15 @@
               label.el-input--label 아이디
               .el-input
                 slot(name="email")
-                  //- input.el-input__inner(v-model="form.id" :placeholder="options.placeholder.id" name="id" v-validate="'id|2,20'")
-                  input.el-input__inner(v-model="form.email" :placeholder="options.placeholder.email" name="email")
-                  //- p(v-if="$errors.has('id')") {{ $errors.message('id') }}
+                  input.el-input__inner(
+                    name="email"
+                    v-model="form.email" 
+                    :placeholder="options.placeholder.email" 
+                    :class="{'on-error': onError === true}"
+                     @keyup.enter="onSubmit")
+                  //- input.el-input__inner(v-model="form.email" :placeholder="options.placeholder.email" name="email" v-validate="'email|2,20'")
+                  //- p(v-if="$errors.has('email')") {{ $errors.message('email') }}
                   //- p {{errorBag}}
-                  slot(name="id-alert")
           .el-form-item
             .el-form-item__content
               label.el-input--label 비밀번호
@@ -21,12 +25,23 @@
                 slot(name="password")
                   //- input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password" type="password" name="password" v-validate="'password|2,20'")
                   div
-                    input.el-input__inner(v-model="form.password" autocomplete="off" :placeholder="options.placeholder.password" :type="passwordInputType" name="password" @focus="isPasswordView = true" @blur="isPasswordView = false;")
-                    span.el-input__suffix(v-if="form.password || isPasswordView" @click="onChangePasswordView")
+                    input.el-input__inner(
+                      v-model="form.password" 
+                      autocomplete="off" 
+                      :placeholder="options.placeholder.password" 
+                      :type="passwordInputType" 
+                      name="password"
+                      @focus="isPasswordView = true" 
+                      @blur="isPasswordView = false"
+                      :class="{'on-error': onError === true}"
+                     @keyup.enter="onSubmit")
+                    span.el-input__suffix(
+                      v-if="form.password || isPasswordView" 
+                      @click="onChangePasswordView")
                       span.el-input__suffix-inner
                         i.el-input__icon.el-icon-view.el-input__clear
-                    slot(name="password-alert")
-                  //- p(v-if="$errors.has('password')") {{ $errors.message('password') }}
+              slot(name="error-alert")
+                //- p(v-if="$errors.has('password')") {{ $errors.message('password') }}
                   
     
         slot(name="foot")
@@ -51,23 +66,22 @@
               | 계정이 없으신가요?
               a.ui-anchor.login-join--link(href="#" @click="$emit('pageSignUp')") 회원가입
 </template>
-
 <script>
 import { page } from '../enum'
-// import validateDirective from 'user-form-validate/src/directive'
-// import validateMixin from 'user-form-validate/src/mixin'
+import validateDirective from 'user-form-validate/src/directive'
+import validateMixin from 'user-form-validate/src/mixin'
 
 export default {
-	// directives: {
-	// 	...validateDirective,
-	// },
-	// mixins: [validateMixin],
-	props: ['options'],
+	directives: {
+		...validateDirective,
+	},
+	mixins: [validateMixin],
+	props: ['options', 'onError'],
 	data() {
 		return {
 			form: {
 				page: page.SIGNIN,
-				// id: null,
+				// id: 'smic2',
 				email: 'smic1',
 				password: 'smic1234',
 				preserveLogin: false,
