@@ -1,9 +1,6 @@
 package com.virnect.workspace.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -19,7 +16,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "workspace_permission")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WorkspacePermission extends TimeEntity{
+public class WorkspacePermission extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "workspace_permission_id")
@@ -31,4 +28,9 @@ public class WorkspacePermission extends TimeEntity{
     @Lob
     @Column(name = "description")
     private String description;
+
+    @Builder
+    public WorkspacePermission(Long id) {
+        this.id = id;
+    }
 }

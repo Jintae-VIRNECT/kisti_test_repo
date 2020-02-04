@@ -29,4 +29,8 @@ public class WorkspaceRole extends TimeEntity {
     @Column(name = "description")
     private String description;
 
+    @Builder
+    public WorkspaceRole(Long id) {
+        this.id = id;
+    }
 }

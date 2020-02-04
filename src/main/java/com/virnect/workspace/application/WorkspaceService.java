@@ -1,16 +1,13 @@
 package com.virnect.workspace.application;
 
 import com.virnect.workspace.dao.*;
-import com.virnect.workspace.domain.Workspace;
-import com.virnect.workspace.domain.WorkspaceRole;
-import com.virnect.workspace.domain.WorkspaceUser;
-import com.virnect.workspace.domain.WorkspaceUserPermission;
+import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ResponseMessage;
-import com.virnect.workspace.global.constant.UUIDType;
+import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.mail.MailService;
@@ -67,9 +64,11 @@ public class WorkspaceService {
                 .build();
         this.workspaceUserRepository.save(newWorkspaceUser);
 
+        WorkspaceRole workspaceRole = WorkspaceRole.builder().id(Role.MASTER.getValue()).build();
+        WorkspacePermission workspacePermission = WorkspacePermission.builder().id(Permission.ALL.getValue()).build();
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
-                .workspaceRole(workspaceRoleRepository.findById(1L).get())
-                .workspacePermission(workspacePermissionRepository.findById(1L).get())
+                .workspaceRole(workspaceRole)
+                .workspacePermission(workspacePermission)
                 .workspaceUser(newWorkspaceUser)
                 .build();
         this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
@@ -100,7 +99,6 @@ public class WorkspaceService {
         //List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {modelMapper.map(object, UserDTO.UserInfoDTO.class)}).collect(Collectors.toList());
         List<UserDTO.UserInfoDTO> userInfoDTOList = results.stream().map(object -> {
             UserDTO.UserInfoDTO userInfo = modelMapper.map(object, UserDTO.UserInfoDTO.class);
-            System.out.println("uuid::"+userInfo.getUuid());
             userInfo.setRole(getWorkspaceUserRole(workspaceId, userInfo.getUuid()).getRole());
             return userInfo;
         }).collect(Collectors.toList());
@@ -185,10 +183,25 @@ public class WorkspaceService {
         return new ResponseMessage();
     }
 
+    /**
+     * 워크스페이스 내 role 조회
+     *
+     * @param workspaceId - 조회 대상 워크스페이스 uuid
+     * @param userId      - 조회 대상 사용자 uuid
+     * @return - WorkspaceRole 엔티티
+     */
     public WorkspaceRole getWorkspaceUserRole(String workspaceId, String userId) {
         return this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceId, userId);
     }
 
+    /**
+     * 워크스페이스 초대 수락(소속 권한 부여)
+     *
+     * @param workspaceId - 수락한 워크스페이스 uuid
+     * @param userId      - 수락한 사용자 uuid
+     * @param code        - 초대 시 받은 코드
+     * @return
+     */
     public ResponseMessage inviteWorkspaceAccept(String workspaceId, String userId, String code) {
         UserInvite userInvite = this.redisService.getInviteInfo(userId, code);
         if (userInvite == null) {
@@ -205,9 +218,13 @@ public class WorkspaceService {
         //2. 워크스페이스 권한 부여하기 (workspace_user_permission)
         if (userInvite.getPermission().size() > 0) {
             for (long permissionId : userInvite.getPermission()) {
+
+                WorkspaceRole workspaceRole = WorkspaceRole.builder().id(Role.MANAGER.getValue()).build();
+                WorkspacePermission workspacePermission = WorkspacePermission.builder().id(permissionId).build();
+
                 WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                        .workspaceRole(this.workspaceRoleRepository.findByRole("MANAGER"))
-                        .workspacePermission(this.workspacePermissionRepository.findById(permissionId).get())
+                        .workspaceRole(workspaceRole)
+                        .workspacePermission(workspacePermission)
                         .workspaceUser(workspaceUser)
                         .build();
                 this.workspaceUserPermissionRepository.save(workspaceUserPermission);
