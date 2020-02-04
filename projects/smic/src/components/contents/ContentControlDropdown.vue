@@ -29,7 +29,7 @@
   font-weight: 500;
   line-height: 1.5;
   color: #566173;
-  padding: 0px 16px;
+  padding: 0px 16px 4px;
   margin-top: 5px;
   &:last-child {
     margin-top: 0px;
