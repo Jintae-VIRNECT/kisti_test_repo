@@ -12,61 +12,72 @@
 		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
+				.vn-label
+					.vn-label.toggle-topic-btn
+						a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+							img(src="~@/assets/image/ic-graph.svg")
+							span 일자별 공정 진행률 그래프
+						a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+							img(src="~@/assets/image/ic-list.svg")
+							span 리스트
 			template(slot="header-right")
 				.inline-table__header.text-right
 					span.sub-title 등록된 공정 수 
 					span.value {{tableData.length}}
 			template(slot="body")
-				el-table.inline-table(
-					:data='tableData' 
-					style='width: 100%'
-					@cell-click="onClickCell")
-					el-table-column(
-						v-for="{label, width, prop} in colSetting" 
-						:key="prop" 
-						:prop="prop" 
-						:label="label" 
-						:width="width || ''") 
-						template(slot-scope='scope')
-							.process-percent(v-if="prop === 'processPercent'")
-								el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
-							div(v-else-if="prop === 'numOfDetailProcess'")
-								span.nums {{tableData[scope.$index][prop]}}								
-							div(v-else-if="prop === 'issue'")
-								.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
-								span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
-							div(v-else-if="prop === 'auths'")
-								span {{tableData[scope.$index][prop] | limitAuthsLength}}
-							//- schedule = (startAt ~ endAt)
-							.total-done(v-else-if="prop === 'schedule'")
-								span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-								span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
-							div(v-else-if="prop === 'status'")
-								button.btn.btn--status(
-									size="mini" 
-									:class="tableData[scope.$index][prop]" 
-									plain
-								) {{ tableData[scope.$index][prop] | statusFilterName }}
-							div(v-else)
-								span {{ tableData[scope.$index][prop] }}
-					el-table-column(:width="50" class-name="control-col")
-						template(slot-scope='scope')
-							process-control-dropdown(
-								:target="tableData[scope.$index]"
-								@onChangeData="onChangeData"
-								@onCreateData="onCreateData"
-								@onDeleteData="onDeleteData")
-			//- el-pagination.inline-table-pagination(
-			//- 	v-if='setPagination'
-			//- 	:hide-on-single-page='false' 
-			//- 	:page-size="pageSize" 
-			//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
-			//- 	:total='tableData.length' 
-			//- 	layout='prev, jumper, next'
-			//- 	:current-page='currentPage'
-			//- 	@prev-click='currentPage -= 1'
-			//- 	@next-click='currentPage += 1'
-			//- )
+				div(v-if="topic === 'table'")
+					el-table.inline-table(
+						:data='tableData' 
+						style='width: 100%'
+						@cell-click="onClickCell")
+						el-table-column(
+							v-for="{label, width, prop} in colSetting" 
+							:key="prop" 
+							:prop="prop" 
+							:label="label" 
+							:width="width || ''") 
+							template(slot-scope='scope')
+								.process-percent(v-if="prop === 'processPercent'")
+									el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
+								div(v-else-if="prop === 'numOfDetailProcess'")
+									span.nums {{tableData[scope.$index][prop]}}								
+								div(v-else-if="prop === 'issue'")
+									.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
+									span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
+								div(v-else-if="prop === 'auths'")
+									span {{tableData[scope.$index][prop] | limitAuthsLength}}
+								//- schedule = (startAt ~ endAt)
+								.total-done(v-else-if="prop === 'schedule'")
+									span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
+									span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
+								div(v-else-if="prop === 'status'")
+									button.btn.btn--status(
+										size="mini" 
+										:class="tableData[scope.$index][prop]" 
+										plain
+									) {{ tableData[scope.$index][prop] | statusFilterName }}
+								div(v-else)
+									span {{ tableData[scope.$index][prop] }}
+						el-table-column(:width="50" class-name="control-col")
+							template(slot-scope='scope')
+								process-control-dropdown(
+									:target="tableData[scope.$index]"
+									@onChangeData="onChangeData"
+									@onCreateData="onCreateData"
+									@onDeleteData="onDeleteData")
+					//- el-pagination.inline-table-pagination(
+					//- 	v-if='setPagination'
+					//- 	:hide-on-single-page='false' 
+					//- 	:page-size="pageSize" 
+					//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
+					//- 	:total='tableData.length' 
+					//- 	layout='prev, jumper, next'
+					//- 	:current-page='currentPage'
+					//- 	@prev-click='currentPage -= 1'
+					//- 	@next-click='currentPage += 1'
+					//- )
+				div(v-else)
+					process-list-graph
 </template>
 <script>
 // UI component
@@ -77,6 +88,7 @@ import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
+import ProcessListGraph from '@/components/process/ProcessListGraph.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -98,6 +110,7 @@ export default {
     PageBreadCrumb,
     ProcessControlDropdown,
     SearchTabNav,
+    ProcessListGraph,
   },
   data() {
     return {
@@ -117,16 +130,12 @@ export default {
         options: sortOptions,
         value: null,
       },
+      topic: 'table',
     }
   },
   computed: {
     colSetting() {
       return colSetting
-    },
-  },
-  filters: {
-    toggleTopic() {
-      this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
   },
   methods: {
@@ -151,6 +160,9 @@ export default {
     onDeleteData(data) {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
+    },
+    toggleGraphTable() {
+      this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
   },
 }

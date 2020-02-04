@@ -586,6 +586,7 @@
         border-right: none;
       }
       .main-title {
+				width: max-content;
         margin-bottom: 16px;
         font-size: 14px;
         font-weight: 500;
@@ -654,5 +655,28 @@
         color: #385370;
       }
     }
+  }
+}
+
+.vn-label {
+  display: inline-block;
+  a {
+    padding: 2px 8px 2px 6px;
+    border-radius: 4px;
+    background-color: #f2f5f9;
+    margin-right: 10px;
+  }
+  img,
+  span {
+    vertical-align: middle;
+  }
+  span {
+    font-size: 13px;
+    color: #0d2a58;
+  }
+  img {
+    margin-right: 4px;
+    // width: 24px;
+    // height: 24px;
   }
 }

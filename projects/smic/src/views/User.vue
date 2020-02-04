@@ -1,15 +1,22 @@
 <template lang="pug">
-	.login-form-wrapper
-		h1.title 로그인
-		user-scaffold(
-			:currentPage="currentPage" 
-			:options="options" 
-			@onSubmit="onSubmit"
-		)
-			template(slot="id-alert")
-				h1 asdsad
-			template(slot="password-alert")
-				h1 asdsad
+  div
+    .top-nav.border
+      .top-nav__center
+        router-link(to="/")
+          img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
+        .divider
+        label.workspace Workstation
+    .login-form-wrapper
+      h1.title 로그인
+      user-scaffold(
+        :currentPage="currentPage" 
+        :options="options" 
+        @onSubmit="onSubmit"
+      )
+        template(slot="id-alert")
+          h1 asdsad
+        template(slot="password-alert")
+          h1 asdsad
 </template>
 <style lang="scss">
 .login-form-wrapper {

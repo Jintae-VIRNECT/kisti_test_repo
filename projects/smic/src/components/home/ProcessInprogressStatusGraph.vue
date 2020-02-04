@@ -89,7 +89,6 @@ $el-date-width: 80px;
       font-size: 16px;
       color: #0d2a58;
       margin: 0px 15px;
-      width: 45px;
       text-align: center;
     }
   }

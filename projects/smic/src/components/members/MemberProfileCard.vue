@@ -20,16 +20,19 @@
           span.done 4&nbsp;
           span / 5
         router-link.direct-link(to="/process") 바로가기
-        .profile-card--bottom-tool
-          router-link(to="/process") 
-            img(src="~@/assets/image/ic-process-dark.svg")
-            span 공정
-          router-link(to="/issue") 
-            img(src="~@/assets/image/ic-issue-dark.svg")
-            span 이슈
-          router-link(to="/contents") 
-            img(src="~@/assets/image/ic-content-dark.svg")
-            span 콘텐츠
+        .tools
+          .vn-label
+            router-link(to="/process") 
+              img(src="~@/assets/image/ic-process-dark.svg")
+              span 공정
+          .vn-label
+            router-link(to="/issue") 
+              img(src="~@/assets/image/ic-issue-dark.svg")
+              span 이슈
+          .vn-label
+            router-link(to="/contents") 
+              img(src="~@/assets/image/ic-content-dark.svg")
+              span 콘텐츠
 
 </template>
 <style lang="scss">
@@ -114,27 +117,6 @@
     }
     .done {
       color: #186ae2;
-    }
-    &-tool {
-      a {
-        padding: 2px 8px 2px 6px;
-        border-radius: 4px;
-        background-color: #f2f5f9;
-        margin-right: 10px;
-      }
-      img,
-      span {
-        vertical-align: middle;
-      }
-      span {
-        font-size: 13px;
-        color: #0d2a58;
-      }
-      img {
-        margin-right: 4px;
-        width: 24px;
-        height: 24px;
-      }
     }
   }
 }

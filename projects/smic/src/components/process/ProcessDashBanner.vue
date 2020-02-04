@@ -1,9 +1,13 @@
 <template lang="pug">
   .card
     .process-dash-banner
-      a.toggle-topic-btn(href="#" @click.prevent="toggleTopic")
-        img(src="~@/assets/image/ic-graph.svg")
-        span {{topic === 'table' ? '그래프' : '테이블'}}
+      .vn-label.toggle-topic-btn
+        a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+          img(src="~@/assets/image/ic-graph.svg")
+          span 그래프
+        a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+          img(src="~@/assets/image/ic-table.svg")
+          span 테이블
       process-dash-banner-table(v-if="topic === 'table'" :key="topic")
       process-dash-banner-graph(v-else)
 </template>
@@ -33,14 +37,9 @@ export default {
     }
   },
   methods: {
-    toggleTopic() {
+    toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
   },
-  // watch: {
-  //   data() {
-  //     this.done
-  //   },
-  // },
 }
 </script>
