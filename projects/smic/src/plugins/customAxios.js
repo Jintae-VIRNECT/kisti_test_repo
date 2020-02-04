@@ -9,9 +9,9 @@ const customAxios = axios.create({
 customAxios.interceptors.response.use(
   function(res) {
     const { status, statusText } = res
-    if (status !== 200) return console.log('statusText : ', statusText)
+    if (status !== 200) console.log('statusText : ', statusText)
     const { code, message } = res.data
-    if (code !== 200) return console.log('message : ', message)
+    if (code !== 200) console.log('message : ', message)
 
     return res
   },

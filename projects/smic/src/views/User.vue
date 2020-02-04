@@ -12,11 +12,9 @@
         :currentPage="currentPage" 
         :options="options" 
         @onSubmit="onSubmit"
-      )
-        template(slot="id-alert")
-          h1 asdsad
-        template(slot="password-alert")
-          h1 asdsad
+        :onError="onError")
+        template(slot="error-alert")
+          p.error-text(v-if="onError") 아이디 또는 비밀번호가 일치하지 않습니다.
 </template>
 <style lang="scss">
 .login-form-wrapper {
@@ -36,10 +34,14 @@
     text-align: center;
     color: #0d2a58;
   }
+  .error-text {
+    font-size: 14px;
+    color: #db1717;
+  }
 }
 </style>
 <script>
-import UserScaffold from 'scaffold-modules-user'
+import UserScaffold from 'scaffold-modules-user/src/views/SignIn.vue'
 
 export default {
   components: { UserScaffold },
@@ -50,21 +52,24 @@ export default {
         isFindPassword: false,
         isSignUp: false,
         placeholder: {
-          id: '아이디를 입력해주세요',
+          email: '아이디를 입력해주세요',
           password: '비밀번호를 입력해주세요',
           passwordConfirm: '비밀번호를 입력해주세요',
         },
       },
+      onError: false,
     }
   },
   methods: {
     async onSubmit(form) {
       try {
         const { email, password } = form
-        await this.$store.dispatch('USER_LOGIN', {
+        const response = await this.$store.dispatch('USER_LOGIN', {
           email,
           password,
         })
+        console.log('---response : ', response)
+        if (response.isLogin === false) return (this.onError = true)
         this.$router.push({ path: '/' })
       } catch (e) {
         console.log(e)
