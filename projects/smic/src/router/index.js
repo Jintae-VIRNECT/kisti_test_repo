@@ -129,16 +129,13 @@ router.beforeEach((to, from, next) => {
 
   let destination = to.path
 
+  const user = store.state ? store.state.user : null
   if (requiresAuth) {
-    const user = store.state ? store.state.user : null
     if (user && user.isLoggedIn) {
       // 마지막 접근루트로 이동
       let lastAccessPath = store.getters.getLastAccessPath || to.path
-
-      if (lastAccessPath) {
-        destination = lastAccessPath
-        store.commit('USER_SET_LAST_ACCESS_PATH', { path: null })
-      }
+      destination = lastAccessPath
+      store.commit('USER_SET_LAST_ACCESS_PATH', { path: null })
     } else {
       Vue.swal.fire({
         type: 'error',
@@ -153,6 +150,8 @@ router.beforeEach((to, from, next) => {
         path: to.path,
       })
     }
+  } else if (destination === '/users' && user && user.isLoggedIn) {
+    destination = '/'
   }
 
   if (destination !== to.path) {
