@@ -17,16 +17,17 @@ export default {
   actions: {
     async MEMBER_LIST(context, param = {}) {
       try {
-        const response = await Vue.axios.get('/users', {
+        const response = await Vue.axios.get('@workspace/members', {
           params: {
-            uuid: this.getters.getUser.uuid,
+            userId: this.getters.getUser.uuid,
             search: param.search || '',
+            filter: param.filter || '',
             sort: param.sort || 'name,asc',
           },
         })
         const { data } = response.data
         context.commit('MEMBER_LIST', {
-          list: data.userInfoList,
+          list: data.memberList,
         })
         return response.data
       } catch (e) {

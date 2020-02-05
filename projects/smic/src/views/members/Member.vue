@@ -33,7 +33,7 @@ export default {
             label: '멤버',
           },
         ],
-        value: 'All',
+        value: ['All'],
       },
       sort: {
         options: [
@@ -51,9 +51,10 @@ export default {
     }
   },
   methods: {
-    onChangeSearch: function({ searchInput, sortValue }) {
+    onChangeSearch: function({ searchInput, filterValue, sortValue }) {
       this.$store.dispatch('MEMBER_LIST', {
         search: searchInput,
+        filter: filterValue.map(value => value.toUpperCase()).join(),
         sort: sortValue,
       })
     },

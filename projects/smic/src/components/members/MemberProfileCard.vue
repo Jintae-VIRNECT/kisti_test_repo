@@ -5,10 +5,10 @@
       .profile-card--profile.label 프로필
       .profile-card--top
         .profile-card--top-left
-          .profile-card--workspace-name {{profileData.workspaceName}}
+          .profile-card--workspace-name {{profileData.name}}
           .profile-card--email {{profileData.email}}
-          .profile-card--role.capitalize 
-            span {{profileData.userType | upperCases}}
+          .profile-card--role.capitalize(v-bind:class="profileData.role | lowserCase")
+            span {{profileData.role | upperCases}}
         .profile-card--top-right
           .img-wrapper
             img(:src='profileData.profile' )
@@ -44,12 +44,10 @@
     margin-bottom: 8px;
     border-bottom: 1px solid #e6e9ee;
     &-right {
-      width: 49%;
-      display: inline-block;
-      vertical-align: middle;
+      float: right;
     }
     &-left {
-      width: 49%;
+      max-width: 60%;
       display: inline-block;
       vertical-align: middle;
     }
@@ -80,6 +78,11 @@
     color: #186ae2;
     border-radius: 11px;
     border: solid 1px #186ae2;
+
+    &.master {
+      color: #4f42c0;
+      border-color: #4f42c0;
+    }
   }
   .img-wrapper {
     border-radius: 30%;
@@ -124,18 +127,6 @@
         border-radius: 4px;
         background-color: #f2f5f9;
         margin-right: 10px;
-        &:hover {
-          background: #e6e9ee;
-        }
-        &:active {
-          background: #455163;
-          & img {
-            filter: brightness(2) grayscale(1);
-          }
-          & span {
-            color: #fff;
-          }
-        }
       }
       img,
       span {
@@ -170,6 +161,9 @@ export default {
   filters: {
     upperCases(str) {
       return str.toUpperCase()
+    },
+    lowserCase(str) {
+      return str.toLowerCase()
     },
   },
 }
