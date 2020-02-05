@@ -28,6 +28,7 @@ import javax.validation.Valid;
  */
 @Slf4j
 @RestController
+@CrossOrigin
 @RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Api(produces = MediaType.APPLICATION_JSON_VALUE, value = "워크스페이스 API", consumes = MediaType.APPLICATION_JSON_VALUE)

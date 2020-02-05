@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
+@CrossOrigin
 @RequestMapping("/workspaces/groups")
 public class GroupController {
     @PostMapping
