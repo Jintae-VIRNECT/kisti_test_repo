@@ -111,7 +111,7 @@
 
 </template>
 <style lang="scss">
-$label-width: 130px;
+$label-width: 110px;
 $sub-label-width: 80px;
 
 .process-new-modal {
@@ -134,7 +134,7 @@ $sub-label-width: 80px;
     color: #0d2a58;
   }
   .section {
-    padding: 17px 30px;
+    padding: 17px 20px 17px 30px;
     cursor: initial;
     & > * {
       vertical-align: middle;
@@ -251,13 +251,20 @@ $sub-label-width: 80px;
   .date-picker {
     width: 100px !important;
   }
-  .time-divider,
-  .date-picker,
-  .time-picker {
-    margin-right: 5px;
+  .time-divider:not(:last-child),
+  .date-picker:not(:last-child),
+  .time-picker:not(:last-child) {
+    margin-right: 4px;
   }
   .auth-select {
     width: 100%;
+    & input {
+      width: 100%;
+      transition: 0s;
+    }
+    .el-input:hover:not(.is-focus) {
+      background: #e6e9ee;
+    }
   }
   .number-label {
     height: 28px;

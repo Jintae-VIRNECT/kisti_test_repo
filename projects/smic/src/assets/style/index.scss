@@ -398,19 +398,6 @@
 				border-bottom-left-radius: 0;
 				transition: .3s, background 0s;
 			}
-			&:hover {
-				.el-input__inner, .el-button--default {
-					background: #e6e9ee;
-					transition: 0s;
-				}
-			}
-			&:focus-within {
-				.el-input__inner, .el-button--default {
-					border-color: #5696f0;
-					background: #fff;
-					transition: .3s;
-				}
-			}
 		}
 		.filter {
 			margin-right: 8px;
@@ -433,8 +420,6 @@
 			margin-right: 12px;
 			padding: 7px 8px;
 			background-color: rgb(241,243,247);
-			box-shadow: none;
-			border: solid 2px rgba(0,0,0,0);
 			.tool i {
 				color: black;
 			}
@@ -469,6 +454,31 @@
 		.el-icon-arrow-up,
 		.el-icon-arrow-down {
 			font-weight: bold;
+		}
+	}
+}
+
+.page-nav .search-wrapper .search,
+.el-input {
+	.el-input__inner {
+		box-shadow: none;
+		border: solid 2px rgba(0,0,0,0);
+	}
+
+	&:hover {
+		.el-input__inner,
+		.el-button--default {
+			border-color: transparent;
+			background: #e6e9ee;
+			transition: 0s;
+		}
+	}
+	&:focus-within {
+		.el-input__inner,
+		.el-button--default {
+			border-color: #5696f0;
+			background: #fff;
+			transition: .3s;
 		}
 	}
 }
