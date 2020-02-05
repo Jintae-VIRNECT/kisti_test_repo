@@ -3,7 +3,7 @@
     el-input.tool.search(:placeholder='placeholder' v-model='searchInput' @change="onChangeSearch()")
       el-button(slot='append' icon='el-icon-search')
     span 필터 : 
-    el-select(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterValue[0] !== 'All' ? 'selected' : 'empty'")
+    el-select(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterSelected")
       el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
     span 정렬 : 
     el-select(v-model='sortValue' placeholder='Select' @change="onChangeSearch()")
@@ -24,6 +24,11 @@ export default {
       filterValue: this.filter.value,
       sortValue: this.sort.value,
     }
+  },
+  computed: {
+    filterSelected() {
+      return this.filterValue[0] !== 'All' ? 'selected' : 'empty'
+    },
   },
   methods: {
     onChangeSearch() {

@@ -8,7 +8,7 @@
 			el-breadcrumb-item(:to='{path: "/process"}') 공정
 		process-dash-banner(:data="tableData")
 		.page-nav
-			search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :filter="filter" :sort="sort")
+			search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeData")
 		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 공정 목록
@@ -119,12 +119,12 @@ export default {
       filter: {
         options: [
           {
-            value: null,
+            value: 'All',
             label: '전체',
           },
           ...processStatus,
         ],
-        value: null,
+        value: ['All'],
       },
       sort: {
         options: sortOptions,

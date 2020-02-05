@@ -2,31 +2,7 @@
 	div
 		h1.admin-body__header 이슈관리
 		.page-nav
-			.search-wrapper.text-right
-				el-input.tool.search(placeholder='이름 또는 이메일 검색' v-model='search' )
-					el-button(slot='append' icon='el-icon-search')
-				span 필터 : 
-				el-dropdown.tool.filter
-					el-button(type='primary')
-						| 전체
-						i.el-icon-arrow-down.el-icon--right
-					el-dropdown-menu(slot='dropdown')
-						el-dropdown-item Action 1
-						el-dropdown-item Action 2
-						el-dropdown-item Action 3
-						el-dropdown-item Action 4
-						el-dropdown-item Action 5
-				span 정렬 : 
-				el-dropdown.tool.order
-					el-button(type='primary')
-						| ㄱ-ㅎ순
-						i.el-icon-arrow-down.el-icon--right
-					el-dropdown-menu(slot='dropdown')
-						el-dropdown-item Action 1
-						el-dropdown-item Action 2
-						el-dropdown-item Action 3
-						el-dropdown-item Action 4
-						el-dropdown-item Action 5
+			search-tab-nav.search-wrapper.text-right(placeholder="이름 또는 이메일 검색" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
 		inline-table(:setMainHeader="true")
 			template(slot="header-left")
 				span.title 최근 등록된 공정 콘텐츠
@@ -62,6 +38,7 @@ import InlineTable from '@/components/common/InlineTable'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import PageHeader from '@/components/common/PageHeader.vue'
+import SearchTabNav from '@/components/common/SearchTabNav.vue'
 
 /// data
 import issueData from '@/data/issue'
@@ -78,17 +55,41 @@ export default {
     ContentControlDropdown,
     PageTabNav,
     PageHeader,
+    SearchTabNav,
   },
   mixins: [contentList],
   data() {
     return {
       tableData: issueData,
-      search: null,
       colSetting: tableColSettings,
+      search: '',
+      filter: {
+        options: [
+          {
+            value: 'All',
+            label: '전체',
+          },
+        ],
+        value: ['All'],
+      },
+      sort: {
+        options: [
+          {
+            value: 'name,asc',
+            label: 'ㄱ-ㅎ순',
+          },
+          {
+            value: 'name,desc',
+            label: 'ㄱ-ㅎ역순',
+          },
+        ],
+        value: 'name,asc',
+      },
     }
   },
   methods: {
     onClickCell() {},
+    onChangeSearch() {},
   },
 }
 </script>
