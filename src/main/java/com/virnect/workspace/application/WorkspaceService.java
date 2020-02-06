@@ -105,8 +105,8 @@ public class WorkspaceService {
         List<UserDTO.UserInfoDTO> result;
 
         //2. 필터 검증
-        if (StringUtils.hasText(filter) && filter.equals("MASTER")) {
-            result = this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId);
+        if (StringUtils.hasText(filter)) {
+            result = this.workspaceUserPermissionRepository.findUserInfoListFilterd(userInfoDTOList, workspaceId, filter);
         } else {
             result = userInfoDTOList;
 

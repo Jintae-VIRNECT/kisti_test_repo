@@ -1,8 +1,8 @@
 package com.virnect.workspace.dao;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.workspace.domain.*;
+import com.virnect.workspace.domain.QWorkspaceUserPermission;
+import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * DESCRIPTION:
  */
 @RequiredArgsConstructor
-public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermissionRepositoryCustom{
+public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermissionRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -27,11 +27,11 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
         return jpaQueryFactory.select(QWorkspaceUserPermission.workspaceUserPermission.workspaceRole)
                 .from(qWorkspaceUserPermission)
                 .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
-                .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userId))).fetchOne();
+                        .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userId))).fetchOne();
     }
 
     @Override
-    public List<UserDTO.UserInfoDTO> findUserInfoListFilterd(List<UserDTO.UserInfoDTO> userInfoDTOList, String workspaceId) {
+    public List<UserDTO.UserInfoDTO> findUserInfoListFilterd(List<UserDTO.UserInfoDTO> userInfoDTOList, String workspaceId, String filter) {
 
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
         List<UserDTO.UserInfoDTO> result = new ArrayList<>();
@@ -41,7 +41,9 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
                     .from(qWorkspaceUserPermission)
                     .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
                             .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userInfoDTO.getUuid()))).fetchOne();
-            if(role.equals("MASTER")) {
+            if (filter.equalsIgnoreCase("MASTER") && role.equals("MASTER")) {
+                result.add(userInfoDTO);
+            } else if (filter.equalsIgnoreCase("MEMBER") && role.equals("MEMBER")) {
                 result.add(userInfoDTO);
             }
         }
