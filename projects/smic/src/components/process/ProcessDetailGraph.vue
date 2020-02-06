@@ -3,15 +3,6 @@
     .box-wrapper
       .box
         #process-dash-banner-graph
-    process-detail-graph-tooltip(
-      user='작업자 1'
-      sceneGroupName=`Scene Group's name 1`
-      startAt='2020.02.03 14:00'
-      endAt='2020.02.03 16:00'
-      :issue='false'
-      status='complete'
-      :progress='10'
-    )
 </template>
 <style lang="scss">
 #process-dash-banner-graph .bb-axis.bb-axis-x g.tick text {
@@ -115,7 +106,6 @@ function jsonData() {
   ]
 }
 export default {
-  components: { ProcessDetailGraphTooltip },
   props: {
     tableData: Array,
   },
