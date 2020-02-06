@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     onChangeSearch() {
-      console.log('change event')
+      this.$store.dispatch('CONTENTS_LIST')
     },
   },
 }

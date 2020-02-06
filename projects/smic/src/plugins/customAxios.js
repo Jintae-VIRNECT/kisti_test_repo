@@ -11,6 +11,9 @@ customAxios.interceptors.request.use(function(req) {
   if (/^@workspace/.test(req.url)) {
     req.baseURL = process.env.WORKSPACE_API_URL
     req.url = req.url.replace('@workspace', `/workspaces/${smicId}`)
+  } else if (/^@content/.test(req.url)) {
+    req.baseURL = process.env.CONTENT_API_URL
+    req.url = req.url.replace('@content', '')
   }
   return req
 })
