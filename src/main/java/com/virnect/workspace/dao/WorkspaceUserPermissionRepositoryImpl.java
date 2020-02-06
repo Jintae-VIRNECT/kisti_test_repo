@@ -41,9 +41,11 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
                     .from(qWorkspaceUserPermission)
                     .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
                             .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userInfoDTO.getUuid()))).fetchOne();
-            if (filter.equalsIgnoreCase("MASTER") && role.equals("MASTER")) {
+            if (filter.contains("MASTER") && !filter.contains("MEMBER") &&  role.equals("MASTER")){
                 result.add(userInfoDTO);
-            } else if (filter.equalsIgnoreCase("MEMBER") && role.equals("MEMBER")) {
+            } else if (filter.contains("MEMBER") && !filter.contains("MASTER") && role.equals("MEMBER")) {
+                result.add(userInfoDTO);
+            }else{
                 result.add(userInfoDTO);
             }
         }
