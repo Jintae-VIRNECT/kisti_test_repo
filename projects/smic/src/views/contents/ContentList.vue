@@ -36,6 +36,8 @@
                 span {{tableData[scope.$index][prop]}}
               div(v-else-if="prop === 'uploadedAt'")
                 span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
+              div(v-else-if="prop === 'detailProcess'")
+                span.nums {{tableData[scope.$index][prop]}}
               div(v-else)
                 span {{ tableData[scope.$index][prop]}}
           el-table-column(:width="50" class-name="control-col")

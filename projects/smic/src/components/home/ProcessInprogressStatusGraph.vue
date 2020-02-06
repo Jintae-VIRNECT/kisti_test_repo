@@ -108,6 +108,7 @@ $el-date-width: 80px;
     input {
       height: $el-date-height !important;
       padding-right: 0px !important;
+      background-color: #f5f7fa;
       display: inline-block !important;
     }
     .el-date-editor {
