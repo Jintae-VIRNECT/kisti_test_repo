@@ -3,80 +3,125 @@
     .box-wrapper
       .box
         #process-dash-banner-graph
-    .card.tooltip(ref="tooltip")
-      .card__header--secondary
-        .card__header--left
-          span.sub-title 세부공정 정보
-        .card__header--right
-          .text-right
-            router-link.more-link(type="text" to="/process") 더보기
-      .card__body.tooltip__body
-        .item
-          label 세부공정 이름
-          p#tooltip-sceneGroupName(ref="tooltip-sceneGroupName") {{tooltip.sceneGroupName}}
-        .item.box-wrapper
-          .box
-            label 진행상태
-            button#tooltip-status 완료
-          .box
-            label 진행률
-            p#tooltip-progress 100%
-        .item
-          label 세부공정 일정
-          p#tooltip-date {{tooltip.startAt}} - {{tooltip.endAt}}
-        .item
-          label 작업 이슈
-          p#tooltip-issue 있음
-
-
-
+    process-detail-graph-tooltip(
+      user='작업자 1'
+      sceneGroupName=`Scene Group's name 1`
+      startAt='2020.02.03 14:00'
+      endAt='2020.02.03 16:00'
+      :issue='false'
+      status='complete'
+      :progress='10'
+    )
 </template>
-<style lang="scss" scoped>
-.tooltip {
-  width: 300px;
-  .tooltip__body {
-    padding: 16px;
+<style lang="scss">
+#process-dash-banner-graph .bb-axis.bb-axis-x g.tick text {
+  tspan:nth-child(1) {
+    font-size: 14px;
+    font-weight: 600;
+    fill: #0d2a58;
+  }
+  tspan:nth-child(3) {
+    font-size: 13px;
+    fill: #566173;
   }
 }
 </style>
 <script>
+import ProcessDetailGraphTooltip from '@/components/process/ProcessDetailGraphTooltip.vue'
+import Vue from 'vue'
+
 import bb from 'billboard.js'
 
+import customColors from '@/models/colors.js'
+
 function getRandomArbitrary() {
-  return Math.floor(Math.random() * (40 - 0) + 0)
+  return Math.floor(Math.random() * (100 - 0) + 0)
 }
 function jsonData() {
   return [
     {
       user: '작업자 1',
-      sceneGroupName: "Scene Group's name 1",
-      value: getRandomArbitrary(),
+      sceneGroupName: `Scene Group's name 1`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: false,
+      status: 'complete',
+      // progress: 20,
+      progress: getRandomArbitrary(),
     },
     {
       user: '작업자 2',
-      sceneGroupName: "Scene Group's name 2",
-      value: getRandomArbitrary(),
+      sceneGroupName: `Scene Group's name 2`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: false,
+      status: 'progress',
+      progress: getRandomArbitrary(),
     },
     {
       user: '작업자 3',
-      sceneGroupName: "Scene Group's name 3",
-      value: getRandomArbitrary(),
+      sceneGroupName: `Scene Group's name 3`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'idle',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 4',
+      sceneGroupName: `Scene Group's name 4`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 5',
+      sceneGroupName: `Scene Group's name 5`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 6',
+      sceneGroupName: `Scene Group's name 6`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 7',
+      sceneGroupName: `Scene Group's name 7`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 8',
+      sceneGroupName: `Scene Group's name 8`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
     },
   ]
 }
 export default {
+  components: { ProcessDetailGraphTooltip },
   props: {
     tableData: Array,
   },
   data() {
     return {
-      graphData: [],
       barChart: null,
-      tooltip: {
-        sceneGroupName: null,
-        startAt: null,
-        endAt: null,
-      },
     }
   },
   mounted() {
@@ -84,30 +129,31 @@ export default {
   },
   methods: {
     initProcessGraph(json) {
-      const xAxisTicks = json.map(row => row.user)
+      const xAxisTicks = json.map(row => row.sceneGroupName)
+      const maxLeftPadding = xAxisTicks.reduce((a, b) =>
+        a.length > b.length ? a : b,
+      ).length
+      const heightSize = 200 + json.length * 60
+
       const self = this
-      this.graphData = json.map(j => j.value)
+      const graphData = json.map(j => j.progress)
       this.barChart = bb.generate({
         data: {
           x: 'x',
           columns: [
             ['x', ...xAxisTicks],
-            ['value', ...this.graphData],
+            ['value', ...graphData],
           ],
-          // color(color, d) {
-          //   const label = xAxisTicks[d.index]
-          //   return self.$options.filters.processStatusColorFilter(label)
-          // },
+          color(color, d) {
+            return customColors[d.index]
+          },
           type: 'bar',
           axes: {
-            value: 'y2',
+            value: 'y',
           },
         },
         axis: {
           rotated: true,
-          // min: {
-          //   y: 0,
-          // },
           x: {
             type: 'category',
             tick: {
@@ -115,86 +161,60 @@ export default {
               text: {
                 show: true,
               },
-              format: function(index, val) {
-                if (!json[index]) return val
-                const tmp = `
-                ${json[index].sceneGroupName}
-                  ${json[index].user}
-                `
+              format(index) {
+                const data = json[index]
+                if (!data) return
+                const tmp = `${data.sceneGroupName}\n \n${data.user}`
                 return tmp
               },
             },
           },
           y: {
+            max: 100,
             show: false,
-            // tick: {
-            //   show: false,
-            //   text: {
-            //     show: true,
-            //   },
-            //   // count: 8,
-            // },
+            tick: {
+              show: false,
+              count: 6,
+            },
           },
           y2: {
             show: true,
             tick: {
               show: false,
-              text: {
-                show: true,
+              format(val) {
+                return val * 100
               },
-              // count: 8,
             },
+          },
+        },
+        grid: {
+          y: {
+            show: true,
           },
         },
         legend: {
           show: false,
         },
         tooltip: {
-          // format: {
-          //   name: () => '건수',
-          // },
           contents(rows) {
             const { index } = rows[0]
-            console.log(
-              'json[index].sceneGroupName : ',
-              json[index].sceneGroupName,
-            )
-            self
-              .$nextTick()
-              .then(() => {
-                console.log(
-                  'self.$refs.tooltip-sceneGroupName : ',
-                  self.$refs['tooltip-sceneGroupName'],
-                )
-                return self.$refs.tooltip.outerHTML
-              })
-              .catch(e => console.log('e : ', e))
-            self.tooltip.sceneGroupName = json[index].sceneGroupName
-            // self.$nextTick().then(() => {
-            //   // DOM updated
-            //   self.$el.querySelector('#tooltip-sceneGroupName').innerHTML =
-            //     self.tooltip.sceneGroupName
-            //   // self.$el.querySelector(
-            //   //   '#tooltip-date',
-            //   // ).innerHTML = `${self.tooltip.startAt} - ${self.tooltip.endAt}`
-            //   console.log('eeeee')
-            //   // return self.$refs.tooltip.outerHTML
-            // })
-            // self.$el.querySelector('#tooltip-sceneGroupName').innerHTML =
-            //   self.tooltip.sceneGroupName
-            // console.log(
-            //   "self.$el.querySelector('#tooltip-sceneGroupName') : ",
-            //   self.$el.querySelector('#tooltip-sceneGroupName'),
-            // )
-          },
-          // contents: {
-          //   bindto: self.$refs.tooltip,
-          // },
-        },
-        grid: {
-          y: {
-            show: true,
-            // ticks: 8,
+
+            const data = json[index]
+            const dataSet = {
+              sceneGroupName: data.sceneGroupName,
+              startAt: data.startAt,
+              endAt: data.endAt,
+              issue: data.issue,
+              progress: data.progress,
+              status: data.status,
+            }
+            const renderedTooltip = new Vue({
+              ...ProcessDetailGraphTooltip,
+              parent: self,
+              propsData: dataSet,
+            }).$mount().$el.outerHTML
+
+            return renderedTooltip
           },
         },
         bar: {
@@ -203,11 +223,11 @@ export default {
           },
         },
         size: {
-          height: 400,
+          height: heightSize,
         },
         padding: {
           top: 50,
-          left: 150,
+          left: 50 + maxLeftPadding * 7.5,
           right: 70,
           bottom: 20,
         },
@@ -217,6 +237,20 @@ export default {
       for (let i = 0; i < domains.length; i++) {
         domains[i].style.stroke = 'none'
       }
+
+      const firstGridLine = document.querySelector(
+        '.bb-ygrids .bb-ygrid:first-child',
+      )
+      const XpositionOfFirstGridLine = firstGridLine.getAttribute('x1')
+      firstGridLine.setAttribute('x1', XpositionOfFirstGridLine + 0.5)
+      firstGridLine.setAttribute('x2', XpositionOfFirstGridLine + 0.5)
+
+      const lastGridLine = document.querySelector(
+        '.bb-ygrids .bb-ygrid:last-child',
+      )
+      const XpositionOfLastGridLine = lastGridLine.getAttribute('x1')
+      lastGridLine.setAttribute('x1', XpositionOfLastGridLine - 2)
+      lastGridLine.setAttribute('x2', XpositionOfLastGridLine - 2)
     },
   },
 }
