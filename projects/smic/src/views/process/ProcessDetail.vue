@@ -70,41 +70,42 @@
 			template(slot="body")
 				div(v-if="topic === 'table'")
 					el-table.inline-table(
-						:data='tableData' 
+						:data='detailTableData' 
 						style='width: 100%'
 						@cell-click="onClickCell")
 						el-table-column(
-							v-for="{label, width, prop} in colSetting" 
+							v-for="{label, width, prop} in detailColSetting" 
 							:key="prop" 
 							:prop="prop" 
 							:label="label" 
 							:width="width || ''") 
 							template(slot-scope='scope')
 								.process-percent(v-if="prop === 'processPercent'")
-									el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
+									el-progress(:percentage="detailTableData[scope.$index][prop]" :show-text="true")
 								div(v-else-if="prop === 'numOfDetailProcess'")
-									span.nums {{tableData[scope.$index][prop]}}								
+									span.nums {{detailTableData[scope.$index][prop]}}								
 								div(v-else-if="prop === 'issue'")
-									.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
-									span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
+									.blub(:class="detailTableData[scope.$index][prop] ? 'on' : 'off'")
+									span {{detailTableData[scope.$index][prop] ? "있음" : "없음"}}
 								div(v-else-if="prop === 'auths'")
-									span {{tableData[scope.$index][prop] | limitAuthsLength}}
+									span {{detailTableData[scope.$index][prop] | limitAuthsLength}}
 								//- schedule = (startAt ~ endAt)
 								.total-done(v-else-if="prop === 'schedule'")
-									span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-									span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
+									span {{detailTableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
+									span &nbsp;~ {{detailTableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
 								div(v-else-if="prop === 'status'")
 									button.btn.btn--status(
 										size="mini" 
-										:class="tableData[scope.$index][prop]" 
+										:class="detailTableData[scope.$index][prop]" 
 										plain
-									) {{ tableData[scope.$index][prop] | statusFilterName }}
+									) {{ detailTableData[scope.$index][prop] | statusFilterName }}
 								div(v-else)
-									span {{ tableData[scope.$index][prop] }}
+									
+									span {{ detailTableData[scope.$index][prop] }}
 						el-table-column(:width="50" class-name="control-col")
 							template(slot-scope='scope')
 								process-control-dropdown(
-									:target="tableData[scope.$index]"
+									:target="detailTableData[scope.$index]"
 									@onChangeData="onChangeData"
 									@onCreateData="onCreateData"
 									@onDeleteData="onDeleteData")
@@ -136,11 +137,51 @@ import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
 import { cols as colSetting, processStatus } from '@/models/process'
 import { sortOptions } from '@/models/index'
 
+const detailColSetting = [
+  {
+    prop: 'name',
+    label: '공정 이름',
+  },
+  {
+    prop: 'numOfDetailProcess',
+    label: '세부공정 수',
+    width: 100,
+  },
+  {
+    prop: 'schedule',
+    label: '공정 일정',
+  },
+  {
+    prop: 'processPercent',
+    label: '진행률',
+    width: 150,
+  },
+  {
+    prop: 'status',
+    label: '진행 상태',
+    width: 100,
+  },
+  {
+    prop: 'auths',
+    label: '세부 공정 담당자',
+    width: 200,
+  },
+  {
+    prop: 'issue',
+    label: '작업 이슈',
+    width: 80,
+  },
+]
+
 // lib
 import dayjs from '@/utils/dayjs'
 
 // mixins
 import filters from '@/mixins/filters'
+
+// tmp data
+import sceneGroup from '@/data/sceneGroup'
+console.log(' sceneGroup.tableData : ', sceneGroup.tableData)
 
 export default {
   mixins: [dayjs, filters],
@@ -155,6 +196,7 @@ export default {
   },
   data() {
     return {
+      detailTableData: sceneGroup.tableData,
       tableData: [
         this.$store.getters.currentReportedDetailProcess.find(
           c => c.id === this.$route.params.id,
@@ -182,6 +224,9 @@ export default {
   computed: {
     colSetting() {
       return colSetting
+    },
+    detailColSetting() {
+      return detailColSetting
     },
   },
   methods: {

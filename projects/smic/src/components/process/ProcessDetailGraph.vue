@@ -25,104 +25,8 @@ import bb from 'billboard.js'
 
 import customColors from '@/models/colors.js'
 
-function getRandomArbitrary() {
-  return Math.floor(Math.random() * (100 - 0) + 0)
-}
-function jsonData() {
-  return [
-    {
-      user: '작업자 1',
-      sceneGroupName: `Scene Group's name 1`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: false,
-      status: 'complete',
-      // progress: 20,
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 2',
-      sceneGroupName: `Scene Group's name 2`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: false,
-      status: 'progress',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 3',
-      sceneGroupName: `Scene Group's name 3`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'idle',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 4',
-      sceneGroupName: `Scene Group's name 4`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 5',
-      sceneGroupName: `Scene Group's name 5`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 6',
-      sceneGroupName: `Scene Group's name 6`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 7',
-      sceneGroupName: `Scene Group's name 7`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 8',
-      sceneGroupName: `Scene Group's name 8`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 9',
-      sceneGroupName: `Scene Group's name 9`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-    {
-      user: '작업자 10',
-      sceneGroupName: `Scene Group's name 10`,
-      startAt: '2020.02.03 14:00',
-      endAt: '2020.02.03 16:00',
-      issue: true,
-      status: 'imcomplete',
-      progress: getRandomArbitrary(),
-    },
-  ]
-}
+import sceneGroup from '@/data/sceneGroup'
+const jsonData = sceneGroup.tableData
 export default {
   props: {
     tableData: Array,
@@ -133,11 +37,11 @@ export default {
     }
   },
   mounted() {
-    this.initProcessGraph(jsonData())
+    this.initProcessGraph(jsonData)
   },
   methods: {
     initProcessGraph(json) {
-      const xAxisTicks = json.map(row => row.sceneGroupName)
+      const xAxisTicks = json.map(row => row.name)
       const maxLeftPadding = xAxisTicks.reduce((a, b) =>
         a.length > b.length ? a : b,
       ).length
@@ -172,7 +76,7 @@ export default {
               format(index) {
                 const data = json[index]
                 if (!data) return
-                const tmp = `${data.sceneGroupName}\n \n${data.user}`
+                const tmp = `${data.name}\n \n${data.user}`
                 return tmp
               },
             },
@@ -235,7 +139,7 @@ export default {
         },
         padding: {
           top: 50,
-          left: 50 + maxLeftPadding * 7.5,
+          left: 50 + maxLeftPadding * 10,
           right: 70,
           bottom: 20,
         },

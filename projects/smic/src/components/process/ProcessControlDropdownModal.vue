@@ -284,6 +284,7 @@ $sub-label-width: 80px;
 }
 </style>
 <script>
+import users from '@/data/users'
 import dayjs from 'dayjs'
 
 export default {

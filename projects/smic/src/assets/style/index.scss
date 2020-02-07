@@ -798,6 +798,10 @@
     border-radius: 4px;
     background-color: #f2f5f9;
 		margin-right: 10px;
+		line-height: 0px;
+		& > img, & > span {
+			vertical-align: middle;
+		}
 		&:hover {
 			background: #e6e9ee;
 		}

@@ -47,7 +47,6 @@ module.exports = {
       "process": "readonly",
       "module": "readonly",
       "__dirname": "readonly",
-      "BASE_URL": "readonly",
       "USER_API_URL": "readonly"
     }
   }]
