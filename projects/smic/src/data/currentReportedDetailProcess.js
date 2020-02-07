@@ -21,6 +21,8 @@ export default [
     total: 10,
     done: false,
     workerNum: 6,
+    workName: '작업이름 1',
+    jobId: 'Job ID 1',
     issue: true,
   },
   {
@@ -39,6 +41,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 100,
     workerNum: 6,
+    workName: '작업이름 2',
+    jobId: 'Job ID 2',
     issue: false,
     type: '작업 이슈',
     // 체결수 = count / total
@@ -62,6 +66,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 3',
+    jobId: 'Job ID 3',
     issue: true,
     type: '이슈',
     // 체결수 = count / total
@@ -85,6 +91,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 4',
+    jobId: 'Job ID 4',
     issue: true,
     type: '작업 이슈',
     // 체결수 = count / total
@@ -108,6 +116,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 5',
+    jobId: 'Job ID 5',
     issue: false,
     type: '작업 이슈',
     // 체결수 = count / total
@@ -131,6 +141,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 6',
+    jobId: 'Job ID 6',
     issue: false,
     type: '이슈',
     // 체결수 = count / total
@@ -154,6 +166,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 7',
+    jobId: 'Job ID 7',
     issue: false,
     type: '이슈',
     // 체결수 = count / total
@@ -177,6 +191,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 8',
+    jobId: 'Job ID 8',
     issue: true,
     type: '이슈',
     // 체결수 = count / total
@@ -200,6 +216,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 9',
+    jobId: 'Job ID 9',
     issue: true,
     type: '이슈',
     // 체결수 = count / total
@@ -223,6 +241,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 10',
+    jobId: 'Job ID 10',
     issue: true,
     type: '이슈',
     // 체결수 = count / total
@@ -246,6 +266,8 @@ export default [
     numOfDetailProcess: 6,
     processPercent: 90,
     workerNum: 6,
+    workName: '작업이름 11',
+    jobId: 'Job ID 11',
     issue: true,
     type: '이슈',
     // 체결수 = count / total
