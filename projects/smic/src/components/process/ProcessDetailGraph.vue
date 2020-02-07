@@ -103,6 +103,24 @@ function jsonData() {
       status: 'imcomplete',
       progress: getRandomArbitrary(),
     },
+    {
+      user: '작업자 9',
+      sceneGroupName: `Scene Group's name 9`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
+    {
+      user: '작업자 10',
+      sceneGroupName: `Scene Group's name 10`,
+      startAt: '2020.02.03 14:00',
+      endAt: '2020.02.03 16:00',
+      issue: true,
+      status: 'imcomplete',
+      progress: getRandomArbitrary(),
+    },
   ]
 }
 export default {
