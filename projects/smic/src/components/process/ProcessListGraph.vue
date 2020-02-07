@@ -7,6 +7,11 @@
         i.el-icon-arrow-right.arrow-right(@click="onChangeDateArrow(1)")
     #process-graph-day-by-day(ref='processGraphDayByDay')
 </template>
+<style lang="scss" scoped>
+#process-graph-day-by-day {
+  height: 400px;
+}
+</style>
 <script>
 import bb from 'billboard.js'
 import dayjs from 'dayjs'
