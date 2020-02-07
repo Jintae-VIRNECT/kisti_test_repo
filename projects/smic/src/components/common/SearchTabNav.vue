@@ -3,13 +3,40 @@
     el-input.tool.search(:placeholder='placeholder' v-model='searchInput' @change="onChangeSearch()")
       el-button(slot='append' icon='el-icon-search')
     span 필터 : 
-    el-select(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterSelected")
+    el-select.filter(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterSelected")
       el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
     span 정렬 : 
-    el-select(v-model='sortValue' placeholder='Select' @change="onChangeSearch()")
+    el-select.sorter(v-model='sortValue' placeholder='Select' @change="onChangeSearch()")
       el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
 </template>
-
+<style lang="scss">
+.filter.el-select .el-select__tags > span {
+  width: 60px;
+}
+.filter.el-select .el-input__inner {
+  width: 80px;
+}
+.sorter.el-select .el-select__tags > span {
+  width: 90px;
+}
+.sorter.el-select .el-input__inner {
+  width: 110px;
+}
+.filter.el-select,
+.sorter.el-select {
+  .el-select__tags > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: left;
+    color: white;
+    span {
+      display: inline;
+    }
+  }
+}
+</style>
 <script>
 export default {
   props: {
