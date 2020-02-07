@@ -35,6 +35,29 @@
 
 </template>
 
+<style lang="scss">
+.sidebar--mode .sidebar--item {
+  .sidebar--item__button {
+    width: 40px;
+    height: 40px;
+    opacity: 0.75;
+  }
+  &.current .sidebar--item__button {
+    background: none;
+    img {
+      opacity: 1;
+    }
+  }
+  &.active .sidebar--item__button {
+    background-color: rgba(0, 0, 0, 0);
+    background: url('~@/assets/image/ic-bg.svg') no-repeat;
+    img {
+      opacity: 1;
+    }
+  }
+}
+</style>
+
 <script>
 export default {
   props: {
