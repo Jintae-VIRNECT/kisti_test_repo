@@ -42,8 +42,10 @@
 									content-control-dropdown(:contentPublish="currentContent.tableData[scope.$index].contentPublish")
 		el-row(:gutter="0")
 			el-col(:span="24")
+				//- inline-tabs-table(
+				//- 	:tableData="currentReportedDetailProcess" 
 				inline-tabs-table(
-					:tableData="currentReportedDetailProcess" 
+					:tableData="tabletabsData[activeTab]" 
 					:colSetting="tableColSettings[activeTab]")
 					template(slot="header-left")
 						span.title 최근 보고 정보
@@ -74,7 +76,7 @@ import { currentReportedInformationTabs, tableColSettings } from '@/models/home'
 /// data
 import currentUploadedContent from '@/data/currentUploadedContent'
 import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
-
+import tabletabsData from '@/data/tabletabsData'
 // mixin
 import contentList from '@/mixins/contentList'
 
@@ -96,13 +98,14 @@ export default {
   },
   data() {
     return {
+      tabletabsData,
       currentReportedDetailProcess,
       currentReportedInformationTabs,
       tableColSettings,
       currentContent: {
         tableData: currentUploadedContent,
         tableOption: {
-          rowIdName: 'contentId',
+          rowIdName: 'id',
           subdomain: '/contents',
         },
         search: null,
@@ -112,7 +115,7 @@ export default {
       currentProcess: {
         tableData: currentReportedDetailProcess,
         tableOption: {
-          rowIdName: 'processId',
+          rowIdName: 'id',
           subdomain: '/process',
         },
         search: null,
