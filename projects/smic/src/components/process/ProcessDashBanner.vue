@@ -15,6 +15,8 @@
 .process-dash-banner {
   padding: 24px 30px;
   .toggle-topic-btn {
+    position: relative;
+    z-index: 1;
     float: right;
   }
 }
