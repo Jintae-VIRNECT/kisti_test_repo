@@ -22,7 +22,6 @@ import User from '@/views/User.vue'
 import NotFound404 from '@/views/NotFound404.vue'
 
 import store from '@/store'
-// import EventBus from '@/utils/eventBus.js'
 
 Vue.use(VueRouter)
 
