@@ -34,6 +34,10 @@
                 span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
               div(v-else)
                 span {{ tableData[scope.$index][prop]}}
+    issue-modal(
+      :toggleIssueModal="toggleIssueModal"
+      @handleCancel="onHandleCancel")
+      
 </template>
 <script>
 import InlineTable from '@/components/common/InlineTable'
@@ -41,6 +45,7 @@ import ContentControlDropdown from '@/components/contents/ContentControlDropdown
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import PageHeader from '@/components/common/PageHeader.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
+import IssueModal from '@/components/issue/IssueModal.vue'
 
 /// data
 import issueData from '@/data/issue'
@@ -58,6 +63,7 @@ export default {
     PageTabNav,
     PageHeader,
     SearchTabNav,
+    IssueModal,
   },
   mixins: [contentList, dayjs],
   data() {
@@ -87,11 +93,21 @@ export default {
         ],
         value: 'name,asc',
       },
+      toggleIssueModal: false,
     }
   },
   methods: {
-    onClickCell() {},
+    onClickCell() {
+      this.toggleIssueModal = true
+    },
     onChangeSearch() {},
+    onToggleIssueModal(boolean, type) {
+      this.toggleIssueModal = boolean
+      this.modalType = type
+    },
+    onHandleCancel() {
+      this.toggleIssueModal = false
+    },
   },
 }
 </script>

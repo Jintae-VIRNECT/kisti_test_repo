@@ -1,3 +1,39 @@
+/* admin style override */
+#app {
+	th, td { padding: inherit; }
+	.admin-container { overflow: inherit; height: inherit; }
+	.admin-body { max-width: 1300px; padding: inherit; }
+	.login-form--submit {
+		border-radius: 2px;
+		background-color: #4d5d74;
+		height: 48px;
+		&:hover, &:active, &:focus { border-color: inherit; background-color: #56657b; }
+	}
+	.sidebar, .sidebar--logo { width: 60px; }
+	.sidebar {
+		&--logo .popover--button { width: 44px; height: 44px; margin: 11px 8px 24px 8px; }
+		&-inner { background-color: #1b293e; }
+		&--item { padding: 0px 10px 16px 10px; }
+		&--item:nth-child(3),
+		&--item:nth-child(4),
+		&--item:last-child { position: inherit; bottom: inherit; }
+	}
+}
+/* admin style override end */
+
+
+.admin-body__header {
+	padding: 8px 0px;
+	font-size: 24px;
+	font-weight: 500;
+	font-stretch: normal;
+	font-style: normal;
+	line-height: normal;
+	letter-spacing: normal;
+	color: #0d2a58;
+	margin-bottom: 24px;
+}
+
 .text-center {
   text-align: center;
 }

@@ -11,28 +11,16 @@ $color_bg_default: #ffffff;
 @import 'admin-submenu';
 
 .admin-container {
-    // overflow: hidden;
-    // height: 100vh;
+    overflow: hidden;
+    height: 100vh;
     padding-left: $side_width;
 }
 .admin-body {
     overflow: hidden;
     position: relative;
-    max-width: 1300px;
-    // padding: 0 50px 40px;
+    max-width: 1524px;
+    padding: 0 50px 40px;
     margin: auto;
-    &__header {
-        padding: 8px 0px;
-        font-size: 24px;
-        font-weight: 500;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #0d2a58;
-        margin-bottom: 24px;
-        // box-shadow: inset 0 -1px 0 0 #eaedf3;
-    }
 }
 
 .el-select-dropdown__wrap {

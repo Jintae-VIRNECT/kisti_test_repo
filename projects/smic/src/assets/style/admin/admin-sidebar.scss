@@ -36,9 +36,9 @@
 
         .popover--button { 
             position: relative;
-            width: 44px;
-            height: 44px;
-            margin: 11px 8px 24px 8px;
+            width: 48px;
+            height: 48px;
+            margin: 11px 8px 20px 8px;
             border-radius: 16px;
             background-color: #1c3de4;
             line-height: 0;
@@ -69,14 +69,14 @@
         align-items: stretch;
         height: 100%;
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
-        background-color: #1b293e;
+        background-color: #121517;
         z-index: 2;
     }
 
     &--item {
         position: relative;
         margin-bottom: 6px;
-        padding: 0px 10px 16px 10px;
+        padding: 12px;
         line-height: 1;
         color: #FFF;
         cursor: pointer;
@@ -108,18 +108,18 @@
             }
         }
 
-        // &:nth-child(3) {
-        //     position: absolute;
-        //     bottom: 264px;
-        // }
-        // &:nth-child(4) {
-        //     position: absolute;
-        //     bottom: 192px;
-        // }
-        // &:last-child {
-        //     position: absolute;
-        //     bottom: 18px;
-        // }        
+        &:nth-child(3) {
+            position: absolute;
+            bottom: 264px;
+        }
+        &:nth-child(4) {
+            position: absolute;
+            bottom: 192px;
+        }
+        &:last-child {
+            position: absolute;
+            bottom: 18px;
+        }        
         .sidebar--item__button {
             width: 42px;
             height: 42px;
