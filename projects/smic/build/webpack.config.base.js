@@ -22,7 +22,6 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         SSL_ENV: JSON.stringify(process.env.SSL_ENV),
-        BASE_URL: JSON.stringify(env.BASE_URL),
         USER_API_URL: JSON.stringify(env.USER_API_URL),
         WORKSPACE_API_URL: JSON.stringify(env.WORKSPACE_API_URL),
         CONTENT_API_URL: JSON.stringify(env.CONTENT_API_URL),

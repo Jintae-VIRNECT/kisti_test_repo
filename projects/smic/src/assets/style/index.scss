@@ -178,6 +178,13 @@
 				margin-right: 4px;
 				vertical-align: middle;
 			}
+			.more-link {
+				font-size: 12px;
+				font-weight: 500;
+				line-height: 1.67;
+				color: #1665d8;
+				text-decoration: underline !important;
+			}
 		}
 
 		.value {
@@ -791,6 +798,10 @@
     border-radius: 4px;
     background-color: #f2f5f9;
 		margin-right: 10px;
+		line-height: 0px;
+		& > img, & > span {
+			vertical-align: middle;
+		}
 		&:hover {
 			background: #e6e9ee;
 		}

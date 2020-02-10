@@ -169,10 +169,11 @@ export default {
           'http://www.w3.org/2000/svg',
           'rect',
         )
-        rect.setAttribute('rx', 4)
-        rect.setAttribute('ry', 4)
         rect.setAttribute('width', width)
         rect.setAttribute('height', height)
+        rect.setAttribute('shape-rendering', 'geometricPrecision')
+        rect.setAttribute('rx', 5)
+        rect.setAttribute('ry', 5)
         rect.setAttribute(
           'class',
           `tag ${this.$options.filters.processStatusNameFilter(xlabel)}`,

@@ -9,7 +9,6 @@ import MemberNew from '@/views/members/MemberNew.vue'
 import Content from '@/views/contents/Content.vue'
 import ContentList from '@/views/contents/ContentList.vue'
 import ContentDetail from '@/views/contents/ContentDetail.vue'
-import ContentNew from '@/views/contents/ContentNew.vue'
 
 import Process from '@/views/process/Process.vue'
 import ProcessList from '@/views/process/ProcessList.vue'
@@ -79,10 +78,6 @@ const routes = [
         component: ContentList,
       },
       {
-        path: 'new',
-        component: ContentNew,
-      },
-      {
         path: ':id',
         component: ContentDetail,
       },
@@ -117,7 +112,6 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  // base: process.env.BASE_URL,
   routes,
 })
 

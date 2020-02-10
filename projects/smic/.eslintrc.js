@@ -17,7 +17,6 @@ module.exports = {
     "require": "readonly",
     "__dirname": "readonly",
     "module": "readonly",
-    "BASE_URL": "readonly", // 환경변수
     "USER_API_URL": "readonly", // 환경변수
     
   },
