@@ -1,7 +1,7 @@
 ## Author
 
 ```
-문승현 - dave@virnect.com
+lsb@virnect.com
 ```
 
 ## Description
