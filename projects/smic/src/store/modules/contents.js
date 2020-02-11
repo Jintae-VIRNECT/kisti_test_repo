@@ -2,22 +2,22 @@ import Vue from 'vue'
 
 export default {
   state: {
-    conentsList: [],
+    contentsList: [],
   },
   getters: {
-    getConentsList(state) {
-      return state.conentsList
+    getContentsList(state) {
+      return state.contentsList
     },
   },
   mutations: {
     CONTENTS_LIST(state, { list }) {
-      state.conentsList = list
+      state.contentsList = list
     },
   },
   actions: {
     async CONTENTS_LIST(context, param = {}) {
       try {
-        const response = await Vue.axios.get('@content/conents', {
+        const response = await Vue.axios.get('@content/contents', {
           params: {
             search: param.search || '',
             filter: param.filter || '',
@@ -26,7 +26,7 @@ export default {
         })
         const { data } = response.data
         context.commit('CONTENTS_LIST', {
-          list: data.conentsList,
+          list: data.contentInfo,
         })
         return response.data
       } catch (e) {

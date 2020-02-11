@@ -9,26 +9,26 @@ export const tableColSettings = {
   members: [],
   contents: [
     {
-      prop: 'name',
+      prop: 'contentName',
       label: '콘텐츠 이름',
     },
     {
-      prop: 'detailProcess',
+      prop: 'contentSize',
       label: '세부공정 콘텐츠 수',
       width: 130,
     },
     {
-      prop: 'auth',
+      prop: 'uploaderName',
       label: '등록 멤버',
       width: 130,
     },
     {
-      prop: 'uploadedAt',
+      prop: 'uploadDate',
       label: '등록일시',
       width: 150,
     },
     {
-      prop: 'contentPublish',
+      prop: 'status',
       label: '배포상태',
       width: 100,
     },

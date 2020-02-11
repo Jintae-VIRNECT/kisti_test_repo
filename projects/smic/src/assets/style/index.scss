@@ -710,7 +710,7 @@
 }
 
 .publish-boolean {
-	&.stop {
+	&.WAIT {
 		color: #566173;
 		&:before {
 			content: '·';
@@ -719,7 +719,7 @@
 			margin-right: 2px;
 		}
 	}
-	&.publishing {
+	&.PUBLISH {
 		color: #186ae2;
 		&:before {
 			content: '·';
@@ -728,7 +728,7 @@
 			margin-right: 2px;
 		}
 	}
-	&.managing {
+	&.MANAGED {
 		color: #2cbc65;
 		&:before {
 			content: '·';

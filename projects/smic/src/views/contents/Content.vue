@@ -33,29 +33,25 @@ export default {
       sort: {
         options: [
           {
-            value: '1',
+            value: 'uploadDate',
             label: '최신 보고순',
           },
           {
-            value: '2',
+            value: 'uploadDate,desc',
             label: '오래된 보고순',
           },
-          {
-            value: '3',
-            label: '최신 등록순',
-          },
-          {
-            value: '4',
-            label: '오래된 등록순',
-          },
         ],
-        value: '1',
+        value: 'uploadDate',
       },
     }
   },
   methods: {
-    onChangeSearch() {
-      this.$store.dispatch('CONTENTS_LIST')
+    onChangeSearch: function({ searchInput, filterValue, sortValue }) {
+      this.$store.dispatch('CONTENTS_LIST', {
+        search: searchInput,
+        filter: filterValue.map(value => value.toUpperCase()).join(),
+        sort: sortValue,
+      })
     },
   },
 }

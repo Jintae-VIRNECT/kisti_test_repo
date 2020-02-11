@@ -26,25 +26,25 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              .content-name(v-if="prop === 'name'")
+              .content-name(v-if="prop === 'contentName'")
                 img.prefix-img(src="~@/assets/image/ic-content.svg")
                 span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'contentPublish'")
+              div(v-else-if="prop === 'status'")
                 span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'auth'")
-                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+              .auth-wrapper(v-else-if="prop === 'uploaderName'")
+                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['uploaderProfile']})`}")
                 span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'uploadedAt'")
+              div(v-else-if="prop === 'uploadDate'")
                 span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else-if="prop === 'detailProcess'")
+              div(v-else-if="prop === 'contentSize'")
                 span.nums {{tableData[scope.$index][prop]}}
               div(v-else)
                 span {{ tableData[scope.$index][prop]}}
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :contentPublish="tableData[scope.$index].contentPublish"
-                @onChangeData="data => onChangeData(data,tableData[scope.$index].id)")
+                :status="tableData[scope.$index].status"
+                @onChangeData="data => onChangeData(data,tableData[scope.$index].contentUUID)")
 </template>
 <style lang="scss">
 .inline-table__header--right {
@@ -101,14 +101,18 @@ export default {
   mixins: [contentList, dayjs],
   data() {
     return {
-      tableData: this.$store.getters.currentUploadedContent,
       tableOption: {
-        rowIdName: 'id',
+        rowIdName: 'contentUUID',
         subdomain: '/contents',
       },
       search: null,
       colSetting: tableColSettings.contents,
     }
+  },
+  computed: {
+    tableData() {
+      return this.$store.getters.getContentsList
+    },
   },
   methods: {
     onClickCell(row, column) {
@@ -126,6 +130,12 @@ export default {
       })
       this.$store.commit('set_currentUploadedContent', this.tableData)
     },
+    getContentList() {
+      this.$store.dispatch('CONTENTS_LIST', { search: 'smic', filter: 'ALL' })
+    },
+  },
+  created() {
+    this.getContentList()
   },
 }
 </script>

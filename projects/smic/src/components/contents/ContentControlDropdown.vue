@@ -5,19 +5,19 @@
 		el-dropdown-menu(slot='dropdown')
 			.group 배포 설정
 			el-dropdown-item 
-				.publish-boolean.publishing(@click="$emit('onChangeData', 'publishing')") 
+				.publish-boolean.PUBLISH(@click="$emit('onChangeData', 'PUBLISH')") 
 					span 배포중
-					span.check(v-if="contentPublish == 'publishing'")
+					span.check(v-if="status == 'PUBLISH'")
 						i.el-icon-check 
 			el-dropdown-item 
-				.publish-boolean.stop(@click="$emit('onChangeData', 'stop')") 
+				.publish-boolean.WAIT(@click="$emit('onChangeData', 'WAIT')") 
 					span 배포중지
-					span.check(v-if="contentPublish == 'stop'")
+					span.check(v-if="status == 'WAIT'")
 						i.el-icon-check 
 			el-dropdown-item 
-				.publish-boolean.managing(@click="$emit('onChangeData', 'managing')") 
+				.publish-boolean.MANAGED(@click="$emit('onChangeData', 'MANAGED')") 
 					span 공정관리중
-					span.check(v-if="contentPublish == 'managing'")
+					span.check(v-if="status == 'MANAGED'")
 						i.el-icon-check 
 			.group 콘텐츠 설정
 			el-dropdown-item
@@ -45,7 +45,7 @@
 </style>
 <script>
 export default {
-  props: ['contentPublish'],
+  props: ['status'],
   data() {
     return {
       toggleProcessNewModal: false,

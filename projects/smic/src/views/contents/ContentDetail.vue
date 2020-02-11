@@ -18,22 +18,22 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              .content-name(v-if="prop === 'name'")
+              .content-name(v-if="prop === 'contentName'")
                 img.prefix-img(src="~@/assets/image/ic-content.svg")
                 span {{processContent.tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'contentPublish'")
+              div(v-else-if="prop === 'status'")
                 span.publish-boolean(:class="processContent.tableData[scope.$index][prop]") {{processContent.tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'auth'")
-                .auth-img(:style="{'background-image': `url(${processContent.tableData[scope.$index]['profileImg']})`}")
+              .auth-wrapper(v-else-if="prop === 'uploaderName'")
+                .auth-img(:style="{'background-image': `url(${processContent.tableData[scope.$index]['uploaderProfile']})`}")
                 span {{processContent.tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'uploadedAt'")
+              div(v-else-if="prop === 'uploadDate'")
                 span {{processContent.tableData[scope.$index][prop] | dayJs_FilterDateTime}}
               div(v-else)
                 span {{ processContent.tableData[scope.$index][prop]}}
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :contentPublish="processContent.tableData[scope.$index].contentPublish"
+                :contentPublish="processContent.tableData[scope.$index].status"
                 @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
 
     inline-table(:setMainHeader="true")
@@ -108,17 +108,14 @@ export default {
     PageBreadCrumb,
   },
   mixins: [contentList, dayjs],
-  created() {
-    this.processContent.tableData = [
-      this.$store.getters.currentUploadedContent.find(
-        c => c.id === this.$route.params.id,
-      ),
-    ]
-  },
   data() {
     return {
       processContent: {
-        tableData: this.$store.getters.currentUploadedContent,
+        tableData: [
+          this.$store.getters.getContentsList.find(
+            c => c.contentUUID === this.$route.params.id,
+          ),
+        ],
         tableOption: {
           rowIdName: 'id',
           subdomain: '/contents',
