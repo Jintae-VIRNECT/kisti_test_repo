@@ -1,4 +1,4 @@
-package com.virnect.base.global.common;
+package com.virnect.message.global.common;
 
 /**
  * Project: base

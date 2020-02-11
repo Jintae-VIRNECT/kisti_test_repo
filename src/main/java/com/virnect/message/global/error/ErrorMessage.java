@@ -1,4 +1,4 @@
-package com.virnect.base.global.error;
+package com.virnect.message.global.error;
 
 /**
  * Project: base

@@ -1,4 +1,4 @@
-package com.virnect.base;
+package com.virnect.message;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

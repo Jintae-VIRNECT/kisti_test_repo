@@ -1,4 +1,4 @@
-package com.virnect.base.global.config;
+package com.virnect.message.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

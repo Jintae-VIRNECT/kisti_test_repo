@@ -1,4 +1,4 @@
-package com.virnect.base.global.config;
+package com.virnect.message.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

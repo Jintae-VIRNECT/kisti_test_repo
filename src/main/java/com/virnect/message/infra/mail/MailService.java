@@ -1,4 +1,4 @@
-package com.virnect.base.infra.mail;
+package com.virnect.message.infra.mail;
 
 import org.thymeleaf.context.Context;
 

@@ -1,4 +1,4 @@
-package com.virnect.base.infra.file;
+package com.virnect.message.infra.file;
 
 import org.springframework.web.multipart.MultipartFile;
 

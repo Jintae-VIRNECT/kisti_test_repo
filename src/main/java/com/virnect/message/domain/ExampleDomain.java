@@ -1,4 +1,4 @@
-package com.virnect.base.domain;
+package com.virnect.message.domain;
 
 /**
  * Project: base
