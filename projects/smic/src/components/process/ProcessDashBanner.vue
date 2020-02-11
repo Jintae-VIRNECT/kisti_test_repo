@@ -1,23 +1,32 @@
 <template lang="pug">
   .card
+    .card__header
+      .card__header--left
+        span.title 공정 진행 상태
     .process-dash-banner
       .vn-label.toggle-topic-btn
-        a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+        a(v-show="topic === 'table'" href="#" @click.prevent="toggleGraphTable") 
           img(src="~@/assets/image/ic-graph.svg")
-          span 그래프
-        a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+          span 그래프 보기
+        a(v-show="topic === 'graph' " href="#" @click.prevent="toggleGraphTable") 
           img(src="~@/assets/image/ic-table.svg")
-          span 테이블
-      process-dash-banner-table(v-if="topic === 'table'" :key="topic")
-      process-dash-banner-graph(v-else)
+          span 그래프 접기
+      process-dash-banner-table
+      process-dash-banner-graph(v-if="topic !== 'table'" :key="topic")
 </template>
-<style lang="scss" scoped>
+<style lang="scss">
 .process-dash-banner {
   padding: 24px 30px;
   .toggle-topic-btn {
     position: relative;
     z-index: 1;
     float: right;
+  }
+  .bb {
+    margin-top: 10px;
+  }
+  .bb-event-rects .bb-event-rect {
+    cursor: pointer;
   }
 }
 </style>
@@ -31,11 +40,12 @@ export default {
     ProcessDashBannerGraph,
   },
   props: {
+    initTopic: String,
     data: Array,
   },
   data() {
     return {
-      topic: 'table',
+      topic: this.initTopic,
     }
   },
   methods: {

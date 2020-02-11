@@ -1,11 +1,11 @@
 <template lang="pug">
   .box-wrapper
     .box
-      .main-title 전체 공정 진행률
+      hr.divider
+      .main-title 전체 공정 정보
       .total-process-progress
-        .main-percent 88%
-        el-progress(:percentage="88" :show-text="false")
-        hr.divider
+        //- .main-percent 88%
+        //- el-progress(:percentage="88" :show-text="false")
         .text-item
           span.key 전체 공정
           span.value 14
@@ -63,10 +63,16 @@ export default {
         endTime: '24:00',
       },
       barChart: null,
+      cursorData: null,
     }
   },
   mounted() {
     this.initProcessGraph(jsonData())
+    document
+      .querySelector('#process-dash-banner-graph')
+      .addEventListener('click', () => {
+        this.$router.push('/process')
+      })
   },
   methods: {
     initProcessGraph(json) {
@@ -126,6 +132,11 @@ export default {
         tooltip: {
           format: {
             name: () => '건수',
+          },
+          onshown() {
+            const tooltip = this.api.$.tooltip
+            const val = tooltip.select('.bb-tooltip th').text()
+            self.cursorData = val
           },
         },
         grid: {

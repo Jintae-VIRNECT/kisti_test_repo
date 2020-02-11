@@ -100,6 +100,10 @@ export default {
       this.currentMenuPath = ''
     },
   },
+  created() {
+    const paths = this.$route.path.split('/')
+    this.activeMenuPath = '/' + paths[1]
+  },
 }
 </script>
 

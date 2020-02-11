@@ -741,14 +741,18 @@
 
 .process-dash-banner {
   .box-wrapper {
-    display: flex;
+		display: flex;
+		.box-wrapper {
+			.box:first-child { min-width: inherit; }
+		}
     .box {
       padding: 0px 30px;
       position: relative;
       border-right: 1px solid rgba(205, 209, 214, 0.5);
       &:first-child {
         padding-left: 0px;
-        flex: 1 1 150px;
+				flex: 1 1 150px;
+				min-width: 150px;
       }
       &:last-child {
         flex: 1 1 90%;

@@ -6,7 +6,7 @@
 					button.enroll-new-process 신규 공정 등록
 		el-breadcrumb.header__bread-crumb(separator="/")
 			el-breadcrumb-item(:to='{path: "/process"}') 공정
-		process-dash-banner(:data="tableData")
+		process-dash-banner(:data="tableData" initTopic="table")
 		.page-nav
 			search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeData")
 		inline-table(:setMainHeader="true")

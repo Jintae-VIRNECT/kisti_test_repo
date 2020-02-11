@@ -181,7 +181,6 @@ import filters from '@/mixins/filters'
 
 // tmp data
 import sceneGroup from '@/data/sceneGroup'
-console.log(' sceneGroup.tableData : ', sceneGroup.tableData)
 
 export default {
   mixins: [dayjs, filters],
