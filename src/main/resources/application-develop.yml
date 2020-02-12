@@ -18,15 +18,12 @@ spring:
     port: 587
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
-  redis:
-    port: 6379
-    database: 0
-    password: qjsprxm0!
-    host: 192.168.0.121
-
+logging:
+  level:
+    com.virnect.message.application.*: DEBUG
 ## Server Configuration
 server:
-  port: 8083
+  port: 8084
 
 
 ## Project Configuration
@@ -34,7 +31,3 @@ file:
   upload-path: "upload/"
   url: "http://localhost:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
-
-# User Server Configuration
-user:
-  serverUrl: "http://192.168.6.3:8081/users"
