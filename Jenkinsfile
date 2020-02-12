@@ -25,7 +25,7 @@ pipeline {
       steps {
         catchError() {
           sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
-          sh 'docker run -p 8083:8083 -d --name=pf-message-develop pf-message/develop'
+          sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
           sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
@@ -66,7 +66,7 @@ pipeline {
        steps {
          catchError() {
            sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
-           sh 'docker run -p 8083:8083 -d --name=pf-message-develop pf-message/develop'
+           sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
          }
 
