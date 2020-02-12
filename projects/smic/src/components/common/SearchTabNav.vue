@@ -3,37 +3,45 @@
     el-input.tool.search(:placeholder='placeholder' v-model='searchInput' @change="onChangeSearch()")
       el-button(slot='append' icon='el-icon-search')
     span 필터 : 
-    el-select.filter(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterSelected")
+    el-select.filter(v-model='filterValue' multiple placeholder='Select' @change="onFilterChange(filterValue)" v-bind:class="filterSelected" collapse-tags)
       el-option(v-for='item in filter.options' :key='item.value' :label='item.label' :value='item.value')
     span 정렬 : 
     el-select.sorter(v-model='sortValue' placeholder='Select' @change="onChangeSearch()")
       el-option(v-for='item in sort.options' :key='item.value' :label='item.label' :value='item.value')
 </template>
 <style lang="scss">
-.filter.el-select .el-select__tags > span {
-  width: 60px;
-}
 .filter.el-select .el-input__inner {
-  width: 80px;
-}
-.sorter.el-select .el-select__tags > span {
   width: 90px;
 }
 .sorter.el-select .el-input__inner {
   width: 110px;
 }
-.filter.el-select,
-.sorter.el-select {
-  .el-select__tags > span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    text-align: left;
-    color: white;
-    span {
-      display: inline;
-    }
+.filter.el-select .el-select__tags > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  color: #fff;
+  span {
+    display: inline;
+  }
+}
+.page-nav .search-wrapper .el-select .el-tag {
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: #3f465a;
+
+  &:first-child {
+    margin-left: 8px;
+  }
+  &:last-child:not(:only-child) {
+    margin-left: 2px;
+    word-spacing: -0.2em;
+  }
+  .el-icon-close {
+    display: none;
   }
 }
 </style>

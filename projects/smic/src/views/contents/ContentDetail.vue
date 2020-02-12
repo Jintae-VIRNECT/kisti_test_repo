@@ -33,7 +33,7 @@
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :contentPublish="processContent.tableData[scope.$index].status"
+                :status="processContent.tableData[scope.$index].status"
                 @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
 
     inline-table(:setMainHeader="true")

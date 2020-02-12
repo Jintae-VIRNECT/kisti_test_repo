@@ -71,7 +71,7 @@ export default {
     document
       .querySelector('#process-dash-banner-graph')
       .addEventListener('click', () => {
-        this.$router.push('/process')
+        this.$router.push(`/process?filter=${this.cursorData}`)
       })
   },
   methods: {

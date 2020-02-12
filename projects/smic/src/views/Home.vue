@@ -40,7 +40,7 @@
                     span {{ contentsTableData[scope.$index][prop]}}
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
-                  content-control-dropdown(:contentPublish="contentsTableData[scope.$index].contentPublish")
+                  content-control-dropdown(:status="contentsTableData[scope.$index].status")
     el-row(:gutter="0")
       el-col(:span="24")
         //- inline-tabs-table(
@@ -106,7 +106,7 @@ export default {
       tableColSettings,
       currentContent: {
         tableOption: {
-          rowIdName: 'id',
+          rowIdName: 'contentUUID',
           subdomain: '/contents',
         },
         search: null,
@@ -127,7 +127,7 @@ export default {
   },
   computed: {
     contentsTableData() {
-      return this.$store.getters.getCurrentContentsList.slice(0, 5)
+      return this.$store.getters.getCurrentContentsList
     },
   },
   methods: {

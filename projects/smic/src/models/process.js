@@ -1,8 +1,12 @@
 export const processStatus = [
-  { label: '진행', name: 'progress', value: 'progress' },
-  { label: '완료', name: 'complete', value: 'complete' },
-  { label: '미흡', name: 'imcomplete', value: 'imcomplete' },
+  { label: '대기', name: 'wait', value: 'wait' },
   { label: '미진행', name: 'idle', value: 'idle' },
+  { label: '진행', name: 'progress', value: 'progress' },
+  { label: '미흡', name: 'insufficient', value: 'insufficient' },
+  { label: '완료', name: 'complete', value: 'complete' },
+  { label: '미완수', name: 'incompletion', value: 'incompletion' },
+  { label: '완수', name: 'fulfill', value: 'fulfill' },
+  { label: '결함', name: 'fault', value: 'fault' },
 ]
 
 export const cols = [

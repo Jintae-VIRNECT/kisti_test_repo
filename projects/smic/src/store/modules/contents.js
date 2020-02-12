@@ -11,6 +11,8 @@ async function requestContentsList(params = {}) {
         search: params.search || 'smic',
         filter: params.filter || 'All',
         sort: params.sort || '',
+        size: params.size || 20,
+        page: params.page || 0,
       },
     })
     return response.data
@@ -42,7 +44,7 @@ export default {
   },
   actions: {
     async CURRENT_CONTENTS_LIST(context) {
-      const res = await requestContentsList()
+      const res = await requestContentsList({ size: 5 })
       context.commit('CURRENT_CONTENTS_LIST', res.data.contentInfo)
       return res
     },
