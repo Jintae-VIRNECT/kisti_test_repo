@@ -131,6 +131,7 @@ $sub-label-width: 80px;
   }
   &__header-title {
     font-size: 20px;
+    font-weight: 500;
     color: #0d2a58;
   }
   .section {
