@@ -1,15 +1,13 @@
 package com.virnect.message.domain.application;
 
-import com.virnect.message.domain.dto.MailRequestDTO;
+import com.virnect.message.domain.dto.ContactRequestDTO;
 import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -34,7 +32,7 @@ public class JavaMailServiceImpl implements MailService {
     private final SpringTemplateEngine springTemplateEngine;
 
     @Override
-    public ResponseMessage sendTemplateMail(MailRequestDTO mailRequestDTO) {
+    public ResponseMessage sendTemplateMail(ContactRequestDTO mailRequestDTO) {
         Context context = new Context();
         context.setVariables(mailRequestDTO.getContext());
         String html = springTemplateEngine.process(mailRequestDTO.getTemplate(), context);

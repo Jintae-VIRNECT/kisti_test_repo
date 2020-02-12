@@ -1,7 +1,7 @@
 package com.virnect.message.domain.api;
 
 import com.virnect.message.domain.application.MailService;
-import com.virnect.message.domain.dto.MailRequestDTO;
+import com.virnect.message.domain.dto.ContactRequestDTO;
 import com.virnect.message.domain.exception.BusinessException;
 import com.virnect.message.global.common.ResponseMessage;
 import com.virnect.message.global.error.ErrorCode;
@@ -31,12 +31,12 @@ import javax.validation.Valid;
 public class MessageController {
     private final MailService mailService;
 
-    @PostMapping("/mail")
-    public ResponseEntity<ResponseMessage> sendMail(@RequestBody @Valid MailRequestDTO mailRequestDTO, BindingResult bindingResult) {
+    @PostMapping("/contact")
+    public ResponseEntity<ResponseMessage> sendMail(@RequestBody @Valid ContactRequestDTO contactRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = mailService.sendTemplateMail(mailRequestDTO);
+        ResponseMessage responseMessage = mailService.sendTemplateMail(contactRequestDTO);
         return ResponseEntity.ok(responseMessage);
     }
 }

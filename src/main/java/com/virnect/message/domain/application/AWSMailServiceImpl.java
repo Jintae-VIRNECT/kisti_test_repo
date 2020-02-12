@@ -2,7 +2,7 @@ package com.virnect.message.domain.application;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
 import com.amazonaws.services.simpleemail.model.*;
-import com.virnect.message.domain.dto.MailRequestDTO;
+import com.virnect.message.domain.dto.ContactRequestDTO;
 import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class AWSMailServiceImpl implements MailService {
     private final SpringTemplateEngine springTemplateEngine;
 
 
-    public ResponseMessage sendTemplateMail(MailRequestDTO mailRequestDTO) {
+    public ResponseMessage sendTemplateMail(ContactRequestDTO mailRequestDTO) {
         Context context = new Context();
         context.setVariables(mailRequestDTO.getContext());
         String html = this.springTemplateEngine.process(mailRequestDTO.getTemplate(), context);

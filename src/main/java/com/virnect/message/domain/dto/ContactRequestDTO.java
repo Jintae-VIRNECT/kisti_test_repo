@@ -16,17 +16,22 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class MailRequestDTO {
-    @NotBlank
-    private String sender;
+public class ContactRequestDTO {
+    //문의하기 -> message서비스 -> 버넥트 관계자
+    private List<String> category;
+    private String name;//회사명 or 이름
+    private String phone;//연락처
 
     @NotBlank
-    private List<String> receiver;
+    private String sender;//Email
 
     @NotBlank
-    private String subject;
+    private List<String> receiver; //버넥트
 
-    private Map<String, Object> context;
+    @NotBlank
+    private String subject;//제목
+
+    private Map<String, Object> context; //이름, Email, 연락처, 제목, 내용
 
     @NotBlank
     private String template; //none 이면 (필수값 : none)
