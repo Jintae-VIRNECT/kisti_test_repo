@@ -13,16 +13,20 @@
         .section.border-divider
           label 등록될 공정 이름
           .value
-            span {{target.name}}
+            span {{target.contentName}}
         .section.border-divider
           label 세부공정 목록
           .value
-            .number-label {{target.volume}}
+            .number-label {{target.contentSize}}
         .detail-process-list.border-divider
           .detail-process-item
-            .section
-              label.title 01.
-              .value.title
+            .section.title
+              label 01.
+              .value
+                span Scene Group's name
+            .section.title
+              label 02.
+              .value
                 span Scene Group's name
       span.dialog-footer.section(slot='footer')
         el-button(type='primary' @click='handleConfirm') 다음
@@ -43,10 +47,12 @@ export default {
   methods: {
     handleCancel() {
       this.processModal = false
-      this.$emit('handleCancel')
+      this.$emit('onToggleNewModal', false)
     },
     handleOpen() {},
-    handleConfirm() {},
+    handleConfirm() {
+      this.$emit('handleConfirm')
+    },
   },
   watch: {
     $props: {

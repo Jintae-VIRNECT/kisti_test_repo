@@ -61,11 +61,11 @@
           label 세부공정 목록
           .value
             .number-label {{total}}
-        .detail-process-list.border-divider
+        .detail-process-list
           .detail-process-item
-            .section
-              label.title 01.
-              .value.title
+            .section.title
+              label 01.
+              .value
                 span Scene Group's name
             .section
               label.necessary 세부공정 일정
@@ -119,9 +119,9 @@ $sub-label-width: 80px;
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .el-dialog__body {
+    max-height: 50vh;
     padding: 0px !important;
     overflow-y: auto;
-    max-height: 50vh;
   }
   .label-vertical-center {
     margin-top: 7px;
@@ -130,12 +130,12 @@ $sub-label-width: 80px;
     overflow-y: auto;
   }
   &__header-title {
-    font-size: 20px;
-    font-weight: 500;
     color: #0d2a58;
+    font-weight: 500;
+    font-size: 20px;
   }
   .section {
-    padding: 17px 20px 17px 30px;
+    padding: 12px 20px 12px 30px;
     cursor: initial;
     & > * {
       vertical-align: middle;
@@ -143,27 +143,31 @@ $sub-label-width: 80px;
   }
   .detail-process-list {
     .detail-process-item {
+      margin: 12px 0;
       .section label {
         width: $sub-label-width;
-        font-size: 12px;
-        font-weight: 500;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
         color: #0d2a58;
-      }
-      .value {
-        margin-left: $sub-label-width;
+        font-weight: 500;
+        font-size: 12px;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 3;
+        letter-spacing: normal;
       }
       .title {
-        font-size: 14px;
+        color: #0d2a58;
         font-weight: 500;
-        font-stretch: normal;
+        font-size: 14px;
         font-style: normal;
+        font-stretch: normal;
         line-height: 1.57;
         letter-spacing: normal;
-        color: #0d2a58;
+        & label {
+          line-height: inherit;
+        }
+        & .value span {
+          margin-left: -70px;
+        }
       }
     }
   }
@@ -171,37 +175,37 @@ $sub-label-width: 80px;
     padding: 10px 0px;
     border-bottom: 1px solid #d3dbec;
     label {
-      font-size: 14px;
+      color: #0d2a58;
       font-weight: 500;
-      font-stretch: normal;
+      font-size: 14px;
       font-style: normal;
+      font-stretch: normal;
       line-height: 2;
       letter-spacing: normal;
-      color: #0d2a58;
     }
   }
   label {
-    width: $label-width;
     float: left;
+    width: $label-width;
   }
   label.necessary {
-    line-height: 1.5;
     color: #0d2a58;
+    line-height: 1.5;
     &:after {
-      content: '*';
       margin-left: 2px;
       color: #ee5c57;
+      content: '*';
     }
   }
   .section__detail-process {
     label {
-      font-size: 12px;
+      color: #0d2a58;
       font-weight: 500;
-      font-stretch: normal;
+      font-size: 12px;
       font-style: normal;
+      font-stretch: normal;
       line-height: 1.5;
       letter-spacing: normal;
-      color: #0d2a58;
     }
   }
   .value {
@@ -210,36 +214,37 @@ $sub-label-width: 80px;
   input,
   .auth-select {
     height: 38px;
-    border-radius: 3px;
-    background-color: #f5f7fa;
-    border: none;
-    font-size: 14px;
+    color: #7a869a;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 14px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 1.71;
     letter-spacing: normal;
-    color: #7a869a;
+    background-color: #f5f7fa;
+    border: none;
+    border-radius: 3px;
   }
   .border-divider {
+    padding: 18px 20px 18px 30px;
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .auth-select {
     display: flex;
-    justify-content: center;
     flex-direction: column;
+    justify-content: center;
   }
   & .el-select:hover .el-input__inner {
     background-color: unset !important;
   }
   span.description {
-    font-size: 12px;
+    color: #566173;
     font-weight: normal;
-    font-stretch: normal;
+    font-size: 12px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: #566173;
   }
   .time-picker input,
   .date-picker input {
@@ -268,19 +273,25 @@ $sub-label-width: 80px;
     }
   }
   .number-label {
+    display: inline-block;
     height: 28px;
-    border-radius: 4px;
-    border: solid 1px #eaedf3;
-    background-color: #fbfbfd;
-    font-size: 14px;
+    padding: 2px 12px;
+    color: #114997;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 14px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 1.57;
     letter-spacing: normal;
-    color: #114997;
-    padding: 2px 12px;
-    display: inline-block;
+    background-color: #fbfbfd;
+    border: solid 1px #eaedf3;
+    border-radius: 4px;
+  }
+  .el-dialog__footer {
+    box-shadow: 0 -1px 0 0 #eaedf3;
+    .section {
+      padding: 0;
+    }
   }
 }
 </style>

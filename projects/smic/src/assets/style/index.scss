@@ -308,9 +308,6 @@
       margin-right: 8px;
     }
   }
-  .el-table__row {
-    cursor: pointer;
-  }
   .auth-wrapper {
     .auth-img {
       display: inline-block;
@@ -715,6 +712,15 @@
       color: #fff;
       background: #1468e2;
     }
+  }
+}
+.el-dialog .el-button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  &.el-button--primary {
+    color: #fff;
+    background: #1468e2;
   }
 }
 

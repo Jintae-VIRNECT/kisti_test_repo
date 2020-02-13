@@ -10,7 +10,6 @@ module.exports = {
     "stylelint-config-rational-order",
   ],
   rules: {
-    "max-nesting-depth": 3,
     "prettier/prettier": true,
     "order/properties-order": [],
     "plugin/rational-order": [true, {}]

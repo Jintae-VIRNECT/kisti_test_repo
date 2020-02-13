@@ -50,15 +50,15 @@
 </template>
 
 <style lang="scss">
-.issue-modal {
+.issue-modal .el-dialog {
   .section {
     position: relative;
-    padding: 0;
     margin: 20px 30px;
+    padding: 0;
 
     &.border-divider {
-      padding: 30px;
       margin: 0;
+      padding: 30px;
     }
     &:nth-child(2) {
       margin: 30px;
@@ -70,13 +70,13 @@
     & > .el-icon-full-screen {
       position: absolute;
       right: 30px;
-      font-size: 19px;
-      padding: 6px;
       margin: 12px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.5);
-      pointer-events: none;
+      padding: 6px;
       color: #fff;
+      font-size: 19px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
     }
     .issue-type {
       padding: 7px 8px;
@@ -85,8 +85,8 @@
       width: 130px;
     }
     .value {
-      font-weight: 500;
       margin-left: 130px;
+      font-weight: 500;
     }
   }
   .el-image img {
@@ -97,18 +97,18 @@
   }
   .el-button {
     display: block;
-    border-radius: 4px;
-    padding: 2px 10px;
     margin-top: 12px;
+    padding: 2px 10px;
+    color: #0d2a58;
     font-weight: 500;
     background-color: #f2f5f9;
-    color: #0d2a58;
     border: none;
+    border-radius: 4px;
     box-shadow: none;
     span > img {
       display: inline-block;
-      vertical-align: middle;
       margin: 0 4px 0 -2px;
+      vertical-align: middle;
     }
     span > span {
       display: inline-block;
