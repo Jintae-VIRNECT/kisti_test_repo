@@ -1,4 +1,7 @@
-package com.virnect.message.domain.domain;
+package com.virnect.message.domain;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Project: PF-Message
@@ -7,8 +10,10 @@ package com.virnect.message.domain.domain;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
+@Getter
 public enum MailSubject {
-    MAIL_SUBJECT_PREFIX("VIRNECT PLATFORM");
+    MAIL_SUBJECT_PREFIX("VIRNECT PLATFORM"),
+    CONTACT("문의하신 내용이 VIRNECT 팀에게 전달되었습니다.");
 
     private String subject;
 
@@ -16,7 +21,5 @@ public enum MailSubject {
         this.subject = subject;
     }
 
-    public String getSubject() {
-        return subject;
-    }
+
 }

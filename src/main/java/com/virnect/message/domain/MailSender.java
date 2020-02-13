@@ -1,4 +1,4 @@
-package com.virnect.message.domain.domain;
+package com.virnect.message.domain;
 
 /**
  * Project: PF-Message
@@ -9,10 +9,12 @@ package com.virnect.message.domain.domain;
  */
 public enum MailSender {
     MASTER("발신전용 <no-reply@virnect.com>"),
-    MASTER_NAME("관리자");
+    MASTER_NAME("관리자"),
+    CONTACT("contact@virnect.com");
+
     private String sender;
 
-    MailSender(String sender){
+    MailSender(String sender) {
         this.sender = sender;
     }
 

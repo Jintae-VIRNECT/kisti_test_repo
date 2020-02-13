@@ -1,6 +1,5 @@
-package com.virnect.message.domain.application;
+package com.virnect.message.application;
 
-import com.virnect.message.domain.dto.ContactRequestDTO;
 import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 
 /**
@@ -32,16 +32,16 @@ public class JavaMailServiceImpl implements MailService {
     private final SpringTemplateEngine springTemplateEngine;
 
     @Override
-    public ResponseMessage sendTemplateMail(ContactRequestDTO mailRequestDTO) {
-        Context context = new Context();
-        context.setVariables(mailRequestDTO.getContext());
-        String html = springTemplateEngine.process(mailRequestDTO.getTemplate(), context);
+    public ResponseMessage sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
+        String html = springTemplateEngine.process(mailTemplate, context);
+        //String html = templateCompiler(mailTemplate.getTemplate(), context);
         MimeMessage message = javaMailSender.createMimeMessage();
+
         try {
-            message.setSubject(mailRequestDTO.getSubject());
+            message.setSubject(subject);
             message.setText(html, "UTF-8", "html");
-            message.setFrom(mailRequestDTO.getSender());
-            for(String receiver : mailRequestDTO.getReceiver()){
+            message.setFrom(sender);
+            for (String receiver : receivers) {
                 message.addRecipients(Message.RecipientType.TO, receiver);
                 javaMailSender.send(message);
             }

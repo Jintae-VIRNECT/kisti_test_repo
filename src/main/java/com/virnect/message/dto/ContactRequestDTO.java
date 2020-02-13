@@ -1,9 +1,10 @@
-package com.virnect.message.domain.dto;
+package com.virnect.message.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 
@@ -17,17 +18,18 @@ import java.util.Map;
 @Getter
 @Setter
 public class ContactRequestDTO {
-    @NotBlank
-    private String sender;
+    @NotEmpty
+    private String[] category;// 솔루션문의, 채용문의.. etc
 
     @NotBlank
-    private List<String> receiver;
+    private String content;// 내용
 
     @NotBlank
-    private String subject;
-
-    private Map<String, Object> context;
+    private String subject;// 제목
 
     @NotBlank
-    private String template;
+    private String senderEmail;// 보낸이
+
+    @NotBlank
+    private String senderName;// 보낸 사람
 }

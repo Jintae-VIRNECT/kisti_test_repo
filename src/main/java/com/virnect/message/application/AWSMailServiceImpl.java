@@ -1,16 +1,19 @@
-package com.virnect.message.domain.application;
+package com.virnect.message.application;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
 import com.amazonaws.services.simpleemail.model.*;
-import com.virnect.message.domain.dto.ContactRequestDTO;
+import com.virnect.message.domain.MailTemplate;
 import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import java.util.List;
 
 
 /**
@@ -29,18 +32,16 @@ public class AWSMailServiceImpl implements MailService {
     private final SpringTemplateEngine springTemplateEngine;
 
 
-    public ResponseMessage sendTemplateMail(ContactRequestDTO mailRequestDTO) {
-        Context context = new Context();
-        context.setVariables(mailRequestDTO.getContext());
-        String html = this.springTemplateEngine.process(mailRequestDTO.getTemplate(), context);
-
+    public ResponseMessage sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
+        String html = this.springTemplateEngine.process(mailTemplate, context);
+        //String html = templateCompiler(mailTemplate.getTemplate(), context);
         Message message = new Message()
-                .withSubject(createContent(mailRequestDTO.getSubject()))
+                .withSubject(createContent(subject))
                 .withBody(new Body().withHtml(createContent(html)));
 
-        for(String receiver : mailRequestDTO.getReceiver()){
+        for (String receiver : receivers) {
             SendEmailRequest sendEmailRequest = new SendEmailRequest()
-                    .withSource(mailRequestDTO.getSender())
+                    .withSource(sender)
                     .withDestination(new Destination().withToAddresses(receiver))
                     .withMessage(message);
             this.amazonSimpleEmailServiceAsyncClient.sendEmailAsync(sendEmailRequest);
@@ -56,4 +57,6 @@ public class AWSMailServiceImpl implements MailService {
     public void sendStringMail(String sender, String to, String subject, String context) {
 
     }
+
+
 }

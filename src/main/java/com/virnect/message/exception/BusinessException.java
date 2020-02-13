@@ -1,4 +1,4 @@
-package com.virnect.message.domain.exception;
+package com.virnect.message.exception;
 
 import com.virnect.message.global.error.ErrorCode;
 
