@@ -29,15 +29,15 @@
 						:label="label" 
 						:width="width || ''") 
 						template(slot-scope='scope')
-							.content-name(v-if="prop === 'name'")
+							.content-name(v-if="prop === 'contentName'")
 								img.prefix-img(src="~@/assets/image/ic-content.svg")
 								span {{tableData[scope.$index][prop]}}
-							div(v-else-if="prop === 'contentPublish'")
+							div(v-else-if="prop === 'status'")
 								span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-							.auth-wrapper(v-else-if="prop === 'auth'")
-								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
+							.auth-wrapper(v-else-if="prop === 'uploaderName'")
+								.auth-img(:style="{'background-image': `url(${tableData[scope.$index]['uploaderProfile']})`}")
 								span {{tableData[scope.$index][prop]}}
-							div(v-else-if="prop === 'uploadedAt'")
+							div(v-else-if="prop === 'uploadDate'")
 								span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
 							div(v-else)
 								span {{ tableData[scope.$index][prop]}}
@@ -122,7 +122,7 @@ export default {
   },
   data() {
     return {
-      tableData: this.$store.getters.currentUploadedContent,
+      tableData: this.$store.getters.getCurrentContentsList,
       search: null,
       colSetting: tableColSettings.contents,
       searchInput: null,

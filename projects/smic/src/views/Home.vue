@@ -13,7 +13,7 @@
               router-link.more-link(type="text" to="/contents") 더보기
           template(slot="body")
             el-table.inline-table(
-              :data='contentsTableData' 
+              :data='contentsTableData.slice(0,5)' 
               style='width: 100%'
               @cell-click="onClickCell")
               el-table-column(

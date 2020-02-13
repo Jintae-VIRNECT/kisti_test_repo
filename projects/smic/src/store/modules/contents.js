@@ -44,7 +44,7 @@ export default {
   },
   actions: {
     async CURRENT_CONTENTS_LIST(context) {
-      const res = await requestContentsList({ size: 5 })
+      const res = await requestContentsList()
       context.commit('CURRENT_CONTENTS_LIST', res.data.contentInfo)
       return res
     },

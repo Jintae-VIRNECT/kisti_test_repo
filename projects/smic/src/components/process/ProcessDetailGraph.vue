@@ -7,8 +7,8 @@
 <style lang="scss">
 #process-dash-banner-graph .bb-axis.bb-axis-x g.tick text {
   tspan:nth-child(1) {
-    font-size: 14px;
     font-weight: 600;
+    font-size: 14px;
     fill: #0d2a58;
   }
   tspan:nth-child(3) {
