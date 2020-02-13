@@ -30,8 +30,13 @@ import java.util.Collections;
 public class MessageService {
     private final MailService mailService;
 
+    /**
+     * Contact 메일 전송
+     *
+     * @param contactRequestDTO - 메일 요청 정보
+     * @return
+     */
     public ResponseMessage sendContactMail(ContactRequestDTO contactRequestDTO) {
-        //0. 메일 폼 만들긔
         String categories = Arrays.toString(contactRequestDTO.getCategory());
         String contactResponseSubject = MailSubject.CONTACT.getSubject();
 

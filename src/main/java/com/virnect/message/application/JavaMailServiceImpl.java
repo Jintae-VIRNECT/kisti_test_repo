@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@Profile("!production")
+@Profile({"local", "develop"})
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JavaMailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Profile;
  */
 
 @Configuration
-@Profile("production")
+@Profile({"production", "staging"})
 public class AWSConfiguration {
 
     @Value("${cloud.aws.credentials.access-key}")

@@ -36,11 +36,3 @@ file:
   url: "http://localhost:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
 
-## Aws Configuration
-cloud:
-  aws:
-    credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
-    region:
-      auto: true

@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@Profile("production")
+@Profile({"production", "staging"})
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AWSMailServiceImpl implements MailService {
     private final AmazonSimpleEmailServiceAsyncClient amazonSimpleEmailServiceAsyncClient;

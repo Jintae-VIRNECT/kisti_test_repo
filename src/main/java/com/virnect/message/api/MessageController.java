@@ -6,8 +6,7 @@ import com.virnect.message.dto.ContactRequestDTO;
 import com.virnect.message.exception.BusinessException;
 import com.virnect.message.global.common.ResponseMessage;
 import com.virnect.message.global.error.ErrorCode;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 
 /**
  * Project: base
@@ -35,12 +35,16 @@ public class MessageController {
 
     private final MessageService messageService;
 
-
+    /**
+     * Contact 문의 메일 전송
+     *
+     * @param contactRequestDTO - 메일 요청 정보
+     * @param bindingResult
+     * @return
+     */
     @ApiOperation(
-            value = "contact 메일 전송",
-            notes = "사용자로부터 받은 문의사항을 버넥트 관계자에게 메일로 전송합니다.",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            httpMethod = "POST"
+            value = "CONTACT 메일 전송",
+            notes = "사용자로부터 받은 문의사항을 버넥트 관계자에게 메일로 전송합니다."
     )
     @PostMapping("/contact")
     public ResponseEntity<ResponseMessage> sendContactMail(@RequestBody @Valid ContactRequestDTO contactRequestDTO, BindingResult bindingResult) {
