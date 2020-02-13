@@ -34,7 +34,6 @@ public class JavaMailServiceImpl implements MailService {
     @Override
     public ResponseMessage sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
         String html = springTemplateEngine.process(mailTemplate, context);
-        //String html = templateCompiler(mailTemplate.getTemplate(), context);
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {

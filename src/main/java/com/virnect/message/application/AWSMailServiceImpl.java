@@ -34,7 +34,6 @@ public class AWSMailServiceImpl implements MailService {
 
     public ResponseMessage sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
         String html = this.springTemplateEngine.process(mailTemplate, context);
-        //String html = templateCompiler(mailTemplate.getTemplate(), context);
         Message message = new Message()
                 .withSubject(createContent(subject))
                 .withBody(new Body().withHtml(createContent(html)));
