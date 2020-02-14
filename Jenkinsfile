@@ -38,7 +38,7 @@ docker rm pf-webworkstation-develop || true
 
     stage('Notify') {
       steps {
-        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$DEFAULT_RECIPIENTS')
+        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       }
     }
 
