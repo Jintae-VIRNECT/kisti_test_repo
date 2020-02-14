@@ -33,15 +33,15 @@ export default {
       sort: {
         options: [
           {
-            value: 'uploadDate',
+            value: 'createdDate,desc',
             label: '최신 보고순',
           },
           {
-            value: 'uploadDate,desc',
+            value: 'createdDate,asc',
             label: '오래된 보고순',
           },
         ],
-        value: 'uploadDate',
+        value: 'createdDate,desc',
       },
     }
   },

@@ -81,7 +81,7 @@ import tabletabsData from '@/data/tabletabsData'
 // mixin
 import contentList from '@/mixins/contentList'
 
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 const currentUploadedContentTableOption = {
   rowIdName: 'contentId',

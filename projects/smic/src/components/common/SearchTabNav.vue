@@ -17,21 +17,21 @@
   width: 110px;
 }
 .filter.el-select .el-select__tags > span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: block;
+  overflow: hidden;
   color: #fff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   span {
     display: inline;
   }
 }
 .page-nav .search-wrapper .el-select .el-tag {
-  background: none;
-  padding: 0;
   margin: 0;
-  font-size: 13px;
+  padding: 0;
   color: #3f465a;
+  font-size: 13px;
+  background: none;
 
   &:first-child {
     margin-left: 8px;

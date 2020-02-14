@@ -13,10 +13,10 @@
       template(slot="header-left")
         span.title 공정 목록
         .vn-label.toggle-topic-btn
-          a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+          a(v-show="topic === 'table'" href="#" @click.prevent="toggleGraphTable") 
             img(src="~@/assets/image/ic-graph.svg")
             span 일자별 공정 진행률 그래프
-          a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+          a(v-show="topic === 'graph' " href="#" @click.prevent="toggleGraphTable") 
             img(src="~@/assets/image/ic-list.svg")
             span 리스트
       template(slot="header-right")
@@ -83,7 +83,7 @@ import { cols as colSetting, processStatus } from '@/models/process'
 import { sortOptions } from '@/models/index'
 
 // lib
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 // mixins
 import filters from '@/mixins/filters'

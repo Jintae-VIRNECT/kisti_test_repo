@@ -78,7 +78,7 @@
 </template>
 <script>
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 import filters from '@/mixins/filters'
 
 export default {
@@ -148,29 +148,29 @@ export default {
   margin-left: 0px !important;
 }
 .card {
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  border: solid 1px #e6e9ee;
   border-radius: 4px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-  border: solid 1px #e6e9ee;
-  background-color: #ffffff;
-  margin-bottom: 30px;
 }
 .card__header {
   .title {
+    color: #0d2a58;
     font-size: 16px;
     line-height: 1.75;
     vertical-align: middle;
-    color: #0d2a58;
   }
   .header-left__sub-title {
     display: inline-block;
-    padding: 0px 6px;
-    border-radius: 4px;
-    background-color: #f2f5f9;
     margin-left: 16px;
+    padding: 0px 6px;
+    background-color: #f2f5f9;
+    border-radius: 4px;
     .sub-title {
-      font-size: 13px;
-      font-weight: 500;
       color: #0d2a58;
+      font-weight: 500;
+      font-size: 13px;
     }
     img {
       margin-right: 3px;
@@ -182,44 +182,44 @@ export default {
   .header-right__sub-title {
     .sub-title {
       margin-left: 16px;
-      font-size: 14px;
+      color: #455163;
       font-weight: 500;
+      font-size: 14px;
       line-height: 2;
       vertical-align: middle;
-      color: #455163;
     }
   }
   &--left {
-    width: 40%;
     display: inline-block;
+    width: 40%;
     .title {
+      margin-right: 15px;
+      color: #0d2a58;
       font-size: 18px;
       line-height: 1.56;
-      color: #0d2a58;
-      margin-right: 15px;
     }
     .sub-title {
+      color: #455163;
       font-size: 14px;
       line-height: 2;
-      color: #455163;
     }
   }
   &--right {
-    width: 59%;
     display: inline-block;
+    width: 59%;
   }
   .more-link {
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.67;
     color: #1665d8;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.67;
     text-decoration: underline !important;
   }
   .value {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.56;
     color: #0065e0;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.56;
     vertical-align: middle;
   }
 }
@@ -232,34 +232,34 @@ export default {
         height: 100%;
       }
       .cell > div {
-        height: 100%;
         display: flex;
         align-items: center;
+        height: 100%;
       }
     }
     .nums {
       height: 28px;
       padding: 6px 10px;
-      border-radius: 4px;
-      border: solid 1px #eaedf3;
-      background-color: #fbfbfd;
-      font-size: 14px;
+      color: #114997;
       font-weight: 500;
-      font-stretch: normal;
+      font-size: 14px;
       font-style: normal;
+      font-stretch: normal;
       line-height: 1.57;
       letter-spacing: normal;
-      color: #114997;
+      background-color: #fbfbfd;
+      border: solid 1px #eaedf3;
+      border-radius: 4px;
     }
   }
   &__header .sub-title {
-    font-size: 14px;
+    color: #0d2a58;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 14px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 2;
     letter-spacing: normal;
-    color: #0d2a58;
   }
   .process-percent {
     .el-progress-bar__outer {
@@ -271,14 +271,14 @@ export default {
   }
   .auth-wrapper {
     .auth-img {
+      display: inline-block;
       width: 28px;
       height: 28px;
-      border-radius: 50%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      display: inline-block;
       margin-right: 8px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      border-radius: 50%;
       &,
       span {
         vertical-align: middle;
@@ -290,16 +290,16 @@ export default {
   }
   .issue-type {
     padding: 4px 8px;
-    border-radius: 4px;
-    border: solid 1px #dc2a2a;
-    font-size: 12px;
+    color: #dc2a2a;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 12px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
     text-align: center;
-    color: #dc2a2a;
+    border: solid 1px #dc2a2a;
+    border-radius: 4px;
   }
   .content-name {
     img {
@@ -311,13 +311,13 @@ export default {
     }
   }
   th {
-    font-size: 12px;
+    color: #6d798b;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 12px;
     font-style: normal;
+    font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: #6d798b;
   }
   tr th:first-child .cell {
     margin-left: 30px !important;
@@ -331,12 +331,12 @@ export default {
     margin-left: 30px !important;
   }
   .blub {
+    display: inline-block;
     width: 6px;
     height: 6px;
-    display: inline-block;
-    border-radius: 50%;
     margin-right: 10px;
     vertical-align: middle;
+    border-radius: 50%;
     &.on {
       background-color: #ee5c57;
     }

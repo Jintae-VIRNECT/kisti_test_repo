@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import API from '@/models/api'
 
 /**
  * 컨텐츠 리스트 API
@@ -6,11 +7,11 @@ import Vue from 'vue'
  */
 async function requestContentsList(params = {}) {
   try {
-    const response = await Vue.axios.get('@content/contents', {
+    const response = await Vue.axios.get(API.GET_CONTENTS_LIST(), {
       params: {
-        search: params.search || 'smic',
+        search: params.search || '',
         filter: params.filter || 'All',
-        sort: params.sort || '',
+        sort: params.sort || 'createdDate,desc',
         size: params.size || 20,
         page: params.page || 0,
       },
@@ -49,13 +50,7 @@ export default {
       return res
     },
     async CONTENTS_LIST(context, params = {}) {
-      const res = await requestContentsList({
-        params: {
-          search: params.search,
-          filter: params.filter,
-          sort: params.sort,
-        },
-      })
+      const res = await requestContentsList(params)
       context.commit('CONTENTS_LIST', res.data.contentInfo)
       return res
     },

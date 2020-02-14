@@ -34,9 +34,9 @@
               .auth-wrapper(v-else-if="prop === 'uploaderName'")
                 .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['uploaderProfile']})`}")
                 span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'uploadDate'")
+              div(v-else-if="prop === 'createdDate'")
                 span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else-if="prop === 'contentSize'")
+              div(v-else-if="prop === 'sceneGroupTotal'")
                 span.nums {{tableData[scope.$index][prop]}}
               div(v-else)
                 span {{ tableData[scope.$index][prop]}}
@@ -53,30 +53,30 @@
     vertical-align: middle;
   }
   .divider {
+    display: inline-block;
     width: 1px;
     height: 20px;
-    opacity: 0.82;
-    background-color: #cdd1d6;
-    display: inline-block;
     margin: 0px 20px;
+    background-color: #cdd1d6;
+    opacity: 0.82;
   }
   .prefix {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 2;
     color: #0d2a58;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 2;
   }
   .value {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.56;
     color: #0065e0;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.56;
   }
   .suffix {
-    font-size: 12px;
-    font-weight: 500;
-    line-height: normal;
     color: #566173;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
   }
 }
 </style>
@@ -94,7 +94,7 @@ import { tableColSettings } from '@/models/home'
 import contentList from '@/mixins/contentList'
 
 // utils
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   components: { InlineTable, ContentControlDropdown, PageBreadCrumb },

@@ -14,6 +14,7 @@ import Process from '@/views/process/Process.vue'
 import ProcessList from '@/views/process/ProcessList.vue'
 import ProcessDetail from '@/views/process/ProcessDetail.vue'
 import ProcessNew from '@/views/process/ProcessNew.vue'
+import SubProcessDetail from '@/views/process/SubProcessDetail.vue'
 
 import Issue from '@/views/issue/Issue'
 
@@ -100,6 +101,10 @@ const routes = [
       {
         path: ':id',
         component: ProcessDetail,
+      },
+      {
+        path: ':id/:subProcessId',
+        component: SubProcessDetail,
       },
     ],
   },

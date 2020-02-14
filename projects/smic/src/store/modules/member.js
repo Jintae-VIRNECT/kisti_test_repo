@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import API from '@/models/api'
 
 export default {
   state: {
@@ -17,7 +18,7 @@ export default {
   actions: {
     async MEMBER_LIST(context, param = {}) {
       try {
-        const response = await Vue.axios.get('@workspace/members', {
+        const response = await Vue.axios.get(API.GET_MEMBER_LIST(), {
           params: {
             userId: this.getters.getUser.uuid,
             search: param.search || '',

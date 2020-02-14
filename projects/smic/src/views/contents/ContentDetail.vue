@@ -72,15 +72,15 @@
     padding: 9px 16px !important;
     .header--before {
       .title {
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 2;
         color: #0d2a58;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 2;
         vertical-align: middle;
       }
       i {
-        font-size: 16px;
         margin-right: 12px;
+        font-size: 16px;
         vertical-align: middle;
       }
     }
@@ -99,7 +99,7 @@ import { tableColSettings } from '@/models/home'
 import contentList from '@/mixins/contentList'
 
 // utils
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   components: {

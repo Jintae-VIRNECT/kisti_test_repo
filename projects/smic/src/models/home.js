@@ -13,7 +13,7 @@ export const tableColSettings = {
       label: '콘텐츠 이름',
     },
     {
-      prop: 'contentSize',
+      prop: 'sceneGroupTotal',
       label: '세부공정 콘텐츠 수',
       width: 130,
     },
@@ -23,7 +23,7 @@ export const tableColSettings = {
       width: 130,
     },
     {
-      prop: 'uploadDate',
+      prop: 'createdDate',
       label: '등록일시',
       width: 150,
     },

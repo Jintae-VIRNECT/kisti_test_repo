@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import API from '@/models/api'
 
 export default {
   state: {
@@ -75,7 +76,7 @@ export default {
   actions: {
     async USER_LOGIN(context, { email, password }) {
       try {
-        const response = await Vue.axios.post('/users/login', {
+        const response = await Vue.axios.post(API.USER_LOGIN(), {
           email,
           password,
         })
@@ -96,7 +97,7 @@ export default {
     },
     async USER_LOGOUT(context) {
       try {
-        const response = await Vue.axios.get('/users/logout')
+        const response = await Vue.axios.get(API.USER_LOGOUT())
         context.commit('USER_LOGOUT')
         return response.data
       } catch (e) {

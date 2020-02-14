@@ -21,8 +21,9 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              //- 이슈 타입
-              .content-name(v-if="prop === 'name'")
+              div(v-if="prop === 'type'")
+                span.issue-type {{tableData[scope.$index][prop]}}
+              .content-name(v-else-if="prop === 'name'")
                 img.prefix-img(src="~@/assets/image/ic-content.svg")
                 span {{tableData[scope.$index][prop]}}
               div(v-else-if="prop === 'contentPublish'")
@@ -55,7 +56,7 @@ import tableColSettings from '@/models/issue'
 
 // mixin
 import contentList from '@/mixins/contentList'
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 export default {
   components: {
     InlineTable,

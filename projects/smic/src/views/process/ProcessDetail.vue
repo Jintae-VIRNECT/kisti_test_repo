@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		el-breadcrumb.header__bread-crumb(separator="/")
-			el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{tableData[0].processName}})
+			el-breadcrumb-item 공정({{tableData[0].processName}})
 			el-breadcrumb-item 세부공정
 		inline-table(:setSubHeader="true")
 			template(slot="header--secondary")
@@ -9,8 +9,7 @@
 			template(slot="body")
 				el-table.inline-table(
 					:data='tableData' 
-					style='width: 100%'
-					@cell-click="onClickCell")
+					style='width: 100%')
 					el-table-column(
 						v-for="{label, width, prop} in colSetting" 
 						:key="prop" 
@@ -61,10 +60,10 @@
 			template(slot="header-left")
 				span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
 				.vn-label.toggle-topic-btn
-					a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
+					a(v-show="topic === 'table'" href="#" @click.prevent="toggleGraphTable") 
 						img(src="~@/assets/image/ic-graph.svg")
-						span 일자별 공정 진행률 그래프
-					a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
+						span 그래프
+					a(v-show="topic === 'graph' " href="#" @click.prevent="toggleGraphTable") 
 						img(src="~@/assets/image/ic-list.svg")
 						span 리스트
 			template(slot="body")
@@ -139,12 +138,12 @@ import { sortOptions } from '@/models/index'
 
 const detailColSetting = [
   {
-    prop: 'name',
-    label: '공정 이름',
+    prop: 'subProcessName',
+    label: '세부공정 이름',
   },
   {
     prop: 'numOfDetailProcess',
-    label: '세부공정 수',
+    label: '작업 수',
     width: 100,
   },
   {
@@ -163,7 +162,7 @@ const detailColSetting = [
   },
   {
     prop: 'auths',
-    label: '세부 공정 담당자',
+    label: '세부공정 담당자',
     width: 200,
   },
   {
@@ -174,7 +173,7 @@ const detailColSetting = [
 ]
 
 // lib
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 // mixins
 import filters from '@/mixins/filters'
@@ -231,7 +230,7 @@ export default {
   methods: {
     onClickCell(row, column) {
       if (column.className === 'control-col') return false
-      this.$router.push(`/process/${row.id}`)
+      this.$router.push(`/process/${this.processId}/${row.id}`)
     },
     onChangeData(data) {
       const updatedTableData = this.tableData.map(row => {

@@ -20,6 +20,7 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
+              //- table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
               .content-name(v-if="prop === 'contentName'")
                 img.prefix-img(src="~@/assets/image/ic-content.svg")
                 span {{tableData[scope.$index][prop]}}
@@ -54,6 +55,7 @@ import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessNewModal from '@/components/process/ProcessNewModal.vue'
 import ProcessControlDropdownModal from '@/components/process/ProcessControlDropdownModal.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { tableColSettings } from '@/models/home'
@@ -62,7 +64,7 @@ import { sortOptions } from '@/models/index'
 
 // mixin
 import contentList from '@/mixins/contentList'
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   mixins: [contentList, dayjs],
@@ -74,6 +76,7 @@ export default {
     ProcessNewModal,
     ProcessControlDropdownModal,
     SearchTabNav,
+    TableColumn,
   },
   data() {
     return {
