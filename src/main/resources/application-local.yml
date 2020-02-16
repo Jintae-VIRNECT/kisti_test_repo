@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8083/eureka
+
+zuul:
+  routes:
+    auth:
+      path: /api/auth/**
+      serviceId: auth-server
+      stripPrefix: true
+    account:
+      path: /api/account/**
+      serviceid: account-server
+      stripPrefix: true
+  ribbon-isolation-strategy: thread
+  thread-pool:
+    use-separate-thread-pools: true
+    thread-pool-key-prefix: zuul-
