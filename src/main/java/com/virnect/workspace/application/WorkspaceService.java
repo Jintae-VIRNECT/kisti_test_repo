@@ -7,14 +7,16 @@ import com.virnect.workspace.dto.UserDTO;
 import com.virnect.workspace.dto.WorkspaceDTO;
 import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ResponseMessage;
-import com.virnect.workspace.global.constant.*;
+import com.virnect.workspace.global.constant.Permission;
+import com.virnect.workspace.global.constant.Role;
+import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.mail.MailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -37,8 +39,10 @@ public class WorkspaceService {
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
     private final GroupService groupService;
-    private final MailService mailService;
     private final RedisService redisService;
+    private final MessageRestService messageRestService;
+    @Value("${serverUrl}")
+    private String serverUrl;
 
     public ResponseMessage createWorkspace(WorkspaceDTO.WorkspaceCreateReq workspaceInfo) {
         if (getUserInfo(workspaceInfo.getUserId()).getUserType().equals("SUB_USER")) {
@@ -157,7 +161,7 @@ public class WorkspaceService {
     }
 
     /**
-     * 워크스페이스 유저 초대
+     * 워크스페이스 유저 초대(추후에 + User서버 api, +라이선스 검사)
      *
      * @param workspaceId              - 초대 할 워크스페이스 uuid
      * @param workspaceInviteMemberReq - 초대 유저 정보
@@ -168,19 +172,38 @@ public class WorkspaceService {
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        //2. 라이선스검사 -> 라이선스 할당
-        //3. 이미 존재하는 사용자인지 이메일 체크(user Server) & 이메일 발송
+        //2. 라이선스검사(해야됨)
+
+        //3. 이미 초대된 사용자인지 체크(해야됨)
+        /*ResponseMessage responseMessage = this.userRestService.getUserInfoByEmail();*/
+
+        //4. 이메일 발송
+        Map<String, String> inviteInfo = new HashMap<>();
+        List<Map<String, String>> inviteInfos = new ArrayList<>();
+        WorkspaceDTO.WorkspaceInviteMailReq workspaceInviteMailReq = new WorkspaceDTO.WorkspaceInviteMailReq();
+
         for (WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo : workspaceInviteMemberReq.getUserInfoList()) {
-            //this.mailService.sendStringMail(MailSender.MASTER.getSender(), metaUserInfo.getUserEmail(), MailSubject.MAIL_SUBJECT_PREFIX.getSubject(), "test email");
+            inviteInfo.put("inviteUserName", "초대받은사람");
+            inviteInfo.put("inviteUserEmail", metaUserInfo.getUserEmail());
+            inviteInfos.add(inviteInfo);
         }
 
-        //this.userRestService.getInviteUserInfo(emailList);
-        //4. redis에 정보 넣기
+        String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
         String inviteCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
+
+        workspaceInviteMailReq.setAcceptUrl(acceptUrl);
+        workspaceInviteMailReq.setInviteCode(inviteCode);
+        workspaceInviteMailReq.setInviteInfos(inviteInfos);
+        workspaceInviteMailReq.setRequestUserId(userId);
+        workspaceInviteMailReq.setRequestUserName("초대한사람");
+
+        ResponseMessage responseMessage = this.messageRestService.sendMail(workspaceInviteMailReq);
+        Map<String, Object> data = responseMessage.getData();
+        log.info("ResponseMessage: {}", data);
+
+        //5. redis에 초대 정보 넣기
         this.redisService.setInviteInfo(userId, workspaceId, inviteCode, workspaceInviteMemberReq.getUserInfoList());
-
-
-        return new ResponseMessage();
+        return new ResponseMessage().addParam("workspaceInvite", true);
     }
 
     /**

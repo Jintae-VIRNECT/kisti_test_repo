@@ -13,11 +13,6 @@ spring:
     properties:
       hibnerate:
         format_sql: true
-  mail:
-    host: email-smtp.us-west-2.amazonaws.com
-    port: 587
-    username: AKIARQGLJD3UHE5MGO5U
-    password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
   redis:
     port: 32768
     database: 0
@@ -32,7 +27,6 @@ logging:
 server:
   port: 8082
 
-
 ## Project Configuration
 file:
   upload-path: "upload/"
@@ -42,3 +36,9 @@ file:
 # User Server Configuration
 user:
   serverUrl: "http://localhost:8081/users"
+
+# Message Server Configuration
+message:
+  serverUrl: "http://localhost:8084/messages"
+
+serverUrl: "https://localhost:8082"
