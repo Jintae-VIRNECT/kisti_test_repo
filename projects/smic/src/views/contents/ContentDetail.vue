@@ -18,18 +18,7 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              .content-name(v-if="prop === 'contentName'")
-                img.prefix-img(src="~@/assets/image/ic-content.svg")
-                span {{processContent.tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'status'")
-                span.publish-boolean(:class="processContent.tableData[scope.$index][prop]") {{processContent.tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'uploaderName'")
-                .auth-img(:style="{'background-image': `url(${processContent.tableData[scope.$index]['uploaderProfile']})`}")
-                span {{processContent.tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'uploadDate'")
-                span {{processContent.tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else)
-                span {{ processContent.tableData[scope.$index][prop]}}
+              table-column(type="contents" :prop="prop" :data="processContent.tableData[scope.$index]")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
@@ -72,15 +61,15 @@
     padding: 9px 16px !important;
     .header--before {
       .title {
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 2;
         color: #0d2a58;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 2;
         vertical-align: middle;
       }
       i {
-        font-size: 16px;
         margin-right: 12px;
+        font-size: 16px;
         vertical-align: middle;
       }
     }
@@ -91,6 +80,7 @@
 import InlineTable from '@/components/common/InlineTable'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 import sceneGroup from '@/data/sceneGroup'
 import { tableColSettings } from '@/models/home'
@@ -99,13 +89,14 @@ import { tableColSettings } from '@/models/home'
 import contentList from '@/mixins/contentList'
 
 // utils
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   components: {
     InlineTable,
     ContentControlDropdown,
     PageBreadCrumb,
+    TableColumn,
   },
   mixins: [contentList, dayjs],
   data() {

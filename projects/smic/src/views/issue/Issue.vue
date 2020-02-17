@@ -21,19 +21,7 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              //- 이슈 타입
-              .content-name(v-if="prop === 'name'")
-                img.prefix-img(src="~@/assets/image/ic-content.svg")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'contentPublish'")
-                span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'auth'")
-                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['profileImg']})`}")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'reportedAt'")
-                span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else)
-                span {{ tableData[scope.$index][prop]}}
+              table-column(:prop="prop" :data="tableData[scope.$index]")
     issue-modal(
       :toggleIssueModal="toggleIssueModal"
       @handleCancel="onHandleCancel")
@@ -46,6 +34,7 @@ import PageTabNav from '@/components/common/PageTabNav.vue'
 import PageHeader from '@/components/common/PageHeader.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import IssueModal from '@/components/issue/IssueModal.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 /// data
 import issueData from '@/data/issue'
@@ -55,7 +44,7 @@ import tableColSettings from '@/models/issue'
 
 // mixin
 import contentList from '@/mixins/contentList'
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 export default {
   components: {
     InlineTable,
@@ -64,6 +53,7 @@ export default {
     PageHeader,
     SearchTabNav,
     IssueModal,
+    TableColumn,
   },
   mixins: [contentList, dayjs],
   data() {

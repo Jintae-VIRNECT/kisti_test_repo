@@ -1,127 +1,85 @@
 <template lang="pug">
-	div
-		el-breadcrumb.header__bread-crumb(separator="/")
-			el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{tableData[0].processName}})
-			el-breadcrumb-item 세부공정
-		inline-table(:setSubHeader="true")
-			template(slot="header--secondary")
-				span.title 공정 목록
-			template(slot="body")
-				el-table.inline-table(
-					:data='tableData' 
-					style='width: 100%'
-					@cell-click="onClickCell")
-					el-table-column(
-						v-for="{label, width, prop} in colSetting" 
-						:key="prop" 
-						:prop="prop" 
-						:label="label" 
-						:width="width || ''") 
-						template(slot-scope='scope')
-							.process-percent(v-if="prop === 'processPercent'")
-								el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
-							div(v-else-if="prop === 'numOfDetailProcess'")
-								span.nums {{tableData[scope.$index][prop]}}								
-							div(v-else-if="prop === 'issue'")
-								.blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
-								span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
-							div(v-else-if="prop === 'auths'")
-								span {{tableData[scope.$index][prop] | limitAuthsLength}}
-							//- schedule = (startAt ~ endAt)
-							.total-done(v-else-if="prop === 'schedule'")
-								span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-								span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
-							div(v-else-if="prop === 'status'")
-								button.btn.btn--status(
-									size="mini" 
-									:class="tableData[scope.$index][prop]" 
-									plain
-								) {{ tableData[scope.$index][prop] | statusFilterName }}
-							div(v-else)
-								span {{ tableData[scope.$index][prop] }}
-					el-table-column(:width="50" class-name="control-col")
-						template(slot-scope='scope')
-							process-control-dropdown(
-								:target="tableData[scope.$index]"
-								@onChangeData="onChangeData"
-								@onCreateData="onCreateData"
-								@onDeleteData="onDeleteData")
-			//- el-pagination.inline-table-pagination(
-			//- 	v-if='setPagination'
-			//- 	:hide-on-single-page='false' 
-			//- 	:page-size="pageSize" 
-			//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
-			//- 	:total='tableData.length' 
-			//- 	layout='prev, jumper, next'
-			//- 	:current-page='currentPage'
-			//- 	@prev-click='currentPage -= 1'
-			//- 	@next-click='currentPage += 1'
-			//- )
-		inline-table(:setMainHeader="true")
-			template(slot="header-left")
-				span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
-				.vn-label.toggle-topic-btn
-					a(v-show="topic === 'graph'" href="#" @click.prevent="toggleGraphTable") 
-						img(src="~@/assets/image/ic-graph.svg")
-						span 일자별 공정 진행률 그래프
-					a(v-show="topic === 'table' " href="#" @click.prevent="toggleGraphTable") 
-						img(src="~@/assets/image/ic-list.svg")
-						span 리스트
-			template(slot="body")
-				div(v-if="topic === 'table'")
-					el-table.inline-table(
-						:data='detailTableData' 
-						style='width: 100%'
-						@cell-click="onClickCell")
-						el-table-column(
-							v-for="{label, width, prop} in detailColSetting" 
-							:key="prop" 
-							:prop="prop" 
-							:label="label" 
-							:width="width || ''") 
-							template(slot-scope='scope')
-								.process-percent(v-if="prop === 'processPercent'")
-									el-progress(:percentage="detailTableData[scope.$index][prop]" :show-text="true")
-								div(v-else-if="prop === 'numOfDetailProcess'")
-									span.nums {{detailTableData[scope.$index][prop]}}								
-								div(v-else-if="prop === 'issue'")
-									.blub(:class="detailTableData[scope.$index][prop] ? 'on' : 'off'")
-									span {{detailTableData[scope.$index][prop] ? "있음" : "없음"}}
-								div(v-else-if="prop === 'auths'")
-									span {{detailTableData[scope.$index][prop] | limitAuthsLength}}
-								//- schedule = (startAt ~ endAt)
-								.total-done(v-else-if="prop === 'schedule'")
-									span {{detailTableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-									span &nbsp;~ {{detailTableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
-								div(v-else-if="prop === 'status'")
-									button.btn.btn--status(
-										size="mini" 
-										:class="detailTableData[scope.$index][prop]" 
-										plain
-									) {{ detailTableData[scope.$index][prop] | statusFilterName }}
-								div(v-else)
-									
-									span {{ detailTableData[scope.$index][prop] }}
-						el-table-column(:width="50" class-name="control-col")
-							template(slot-scope='scope')
-								process-control-dropdown(
-									:target="detailTableData[scope.$index]"
-									@onChangeData="onChangeData"
-									@onCreateData="onCreateData"
-									@onDeleteData="onDeleteData")
-					//- el-pagination.inline-table-pagination(
-					//- 	v-if='setPagination'
-					//- 	:hide-on-single-page='false' 
-					//- 	:page-size="pageSize" 
-					//- 	:pager-count="tableOption ? tableOption.pagerCount : 5"
-					//- 	:total='tableData.length' 
-					//- 	layout='prev, jumper, next'
-					//- 	:current-page='currentPage'
-					//- 	@prev-click='currentPage -= 1'
-					//- 	@next-click='currentPage += 1'
-					//- )
-				div(v-else)
-					process-detail-graph
+  div
+    el-breadcrumb.header__bread-crumb(separator="/")
+      el-breadcrumb-item 공정({{tableData[0].processName}})
+      el-breadcrumb-item 세부공정
+    inline-table(:setSubHeader="true")
+      template(slot="header--secondary")
+        span.title 공정 목록
+      template(slot="body")
+        el-table.inline-table(
+          :data='tableData' 
+          style='width: 100%')
+          el-table-column(
+            v-for="{label, width, prop} in colSetting" 
+            :key="prop" 
+            :prop="prop" 
+            :label="label" 
+            :width="width || ''") 
+            template(slot-scope='scope')
+              table-column(:prop="prop" :data="tableData[scope.$index]")
+          el-table-column(:width="50" class-name="control-col")
+            template(slot-scope='scope')
+              process-control-dropdown(
+                :target="tableData[scope.$index]"
+                @onChangeData="onChangeData"
+                @onCreateData="onCreateData"
+                @onDeleteData="onDeleteData")
+      //- el-pagination.inline-table-pagination(
+      //-   v-if='setPagination'
+      //-   :hide-on-single-page='false' 
+      //-   :page-size="pageSize" 
+      //-   :pager-count="tableOption ? tableOption.pagerCount : 5"
+      //-   :total='tableData.length' 
+      //-   layout='prev, jumper, next'
+      //-   :current-page='currentPage'
+      //-   @prev-click='currentPage -= 1'
+      //-   @next-click='currentPage += 1'
+      //- )
+    inline-table(:setMainHeader="true")
+      template(slot="header-left")
+        span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
+        .vn-label.toggle-topic-btn
+          a(v-show="topic === 'table'" href="#" @click.prevent="toggleGraphTable") 
+            img(src="~@/assets/image/ic-graph.svg")
+            span 그래프
+          a(v-show="topic === 'graph' " href="#" @click.prevent="toggleGraphTable") 
+            img(src="~@/assets/image/ic-list.svg")
+            span 리스트
+      template(slot="body")
+        div(v-if="topic === 'table'")
+          el-table.inline-table(
+            :data='detailTableData' 
+            style='width: 100%'
+            @cell-click="onClickCell")
+            el-table-column(
+              v-for="{label, width, prop} in detailColSetting" 
+              :key="prop" 
+              :prop="prop" 
+              :label="label" 
+              :width="width || ''") 
+              template(slot-scope='scope')
+                table-column(:prop="prop" :data="detailTableData[scope.$index]")
+            el-table-column(:width="50" class-name="control-col")
+              template(slot-scope='scope')
+                process-control-dropdown(
+                  :target="detailTableData[scope.$index]"
+                  @onChangeData="onChangeData"
+                  @onCreateData="onCreateData"
+                  @onDeleteData="onDeleteData")
+          //- el-pagination.inline-table-pagination(
+          //-   v-if='setPagination'
+          //-   :hide-on-single-page='false' 
+          //-   :page-size="pageSize" 
+          //-   :pager-count="tableOption ? tableOption.pagerCount : 5"
+          //-   :total='tableData.length' 
+          //-   layout='prev, jumper, next'
+          //-   :current-page='currentPage'
+          //-   @prev-click='currentPage -= 1'
+          //-   @next-click='currentPage += 1'
+          //- )
+        div(v-else)
+          process-detail-graph
 </template>
 <script>
 // UI component
@@ -132,6 +90,7 @@ import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -139,12 +98,12 @@ import { sortOptions } from '@/models/index'
 
 const detailColSetting = [
   {
-    prop: 'name',
-    label: '공정 이름',
+    prop: 'subProcessName',
+    label: '세부공정 이름',
   },
   {
     prop: 'numOfDetailProcess',
-    label: '세부공정 수',
+    label: '작업 수',
     width: 100,
   },
   {
@@ -163,7 +122,7 @@ const detailColSetting = [
   },
   {
     prop: 'auths',
-    label: '세부 공정 담당자',
+    label: '세부공정 담당자',
     width: 200,
   },
   {
@@ -174,7 +133,7 @@ const detailColSetting = [
 ]
 
 // lib
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 // mixins
 import filters from '@/mixins/filters'
@@ -192,6 +151,7 @@ export default {
     PageBreadCrumb,
     ProcessControlDropdown,
     ProcessDetailGraph,
+    TableColumn,
   },
   data() {
     return {
@@ -231,7 +191,7 @@ export default {
   methods: {
     onClickCell(row, column) {
       if (column.className === 'control-col') return false
-      this.$router.push(`/process/${row.id}`)
+      this.$router.push(`/process/${this.processId}/${row.id}`)
     },
     onChangeData(data) {
       const updatedTableData = this.tableData.map(row => {

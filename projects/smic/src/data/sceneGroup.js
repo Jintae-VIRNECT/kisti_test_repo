@@ -11,7 +11,7 @@ export default {
         width: '100px',
       },
       {
-        prop: 'name',
+        prop: 'subProcessName',
         label: '세부공정 콘텐츠 이름',
       },
     ],
@@ -19,7 +19,7 @@ export default {
   tableData: [
     {
       id: '1',
-      name: '자제 절단',
+      subProcessName: '자제 절단',
       progress: getRandomArbitrary(),
       user: '전문가 1',
       auths: ['전문가 1', '전문가 2', '전문가 3'],
@@ -32,7 +32,7 @@ export default {
     },
     {
       id: '2',
-      name: '모터펌프 가동',
+      subProcessName: '모터펌프 가동',
       progress: getRandomArbitrary(),
       user: '전문가 2',
       auths: ['전문가 1', '전문가 2', '전문가 3'],
@@ -45,7 +45,7 @@ export default {
     },
     {
       id: '3',
-      name: '배터리 조립',
+      subProcessName: '배터리 조립',
       progress: getRandomArbitrary(),
       user: '전문가 3',
       auths: ['전문가 1', '전문가 2', '전문가 3'],

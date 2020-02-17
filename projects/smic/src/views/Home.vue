@@ -13,7 +13,7 @@
               router-link.more-link(type="text" to="/contents") 더보기
           template(slot="body")
             el-table.inline-table(
-              :data='contentsTableData.slice(0,5)' 
+              :data='currentContent.tableData' 
               style='width: 100%'
               @cell-click="onClickCell")
               el-table-column(
@@ -23,24 +23,10 @@
                 :label="label" 
                 :width="width || ''") 
                 template(slot-scope='scope')
-                  //- 이슈 타입
-                  .content-name(v-if="prop === 'contentName'")
-                    img.prefix-img(src="~@/assets/image/ic-content.svg")
-                    span {{contentsTableData[scope.$index][prop]}}
-                  div(v-else-if="prop === 'status'")
-                    span.publish-boolean(:class="contentsTableData[scope.$index][prop]") {{contentsTableData[scope.$index][prop] | publishBoolean}}
-                  .auth-wrapper(v-else-if="prop === 'uploaderName'")
-                    .auth-img(:style="{'background-image': `url(${contentsTableData[scope.$index]['uploaderProfile']})`}")
-                    span {{contentsTableData[scope.$index][prop]}}
-                  div(v-else-if="prop === 'uploadDate'")
-                    span {{contentsTableData[scope.$index][prop] | dayJs_FilterDateTime}}
-                  div(v-else-if="prop === 'contentSize'")
-                    span.nums {{ contentsTableData[scope.$index][prop]}}
-                  div(v-else)
-                    span {{ contentsTableData[scope.$index][prop]}}
+                  table-column(type="contents" :prop="prop" :data="currentContent.tableData[scope.$index]")
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
-                  content-control-dropdown(:status="contentsTableData[scope.$index].status")
+                  content-control-dropdown(:status="currentContent.tableData[scope.$index].status")
     el-row(:gutter="0")
       el-col(:span="24")
         //- inline-tabs-table(
@@ -71,6 +57,7 @@ import InlineTable from '@/components/common/InlineTable.vue'
 import InlineTabsTable from '@/components/home/InlineTabsTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { currentReportedInformationTabs, tableColSettings } from '@/models/home'
@@ -81,7 +68,7 @@ import tabletabsData from '@/data/tabletabsData'
 // mixin
 import contentList from '@/mixins/contentList'
 
-import dayjs from '@/utils/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 const currentUploadedContentTableOption = {
   rowIdName: 'contentId',
@@ -97,6 +84,7 @@ export default {
     ContentList,
     ContentControlDropdown,
     ProcessDashBanner,
+    TableColumn,
   },
   data() {
     return {
@@ -105,6 +93,7 @@ export default {
       currentReportedInformationTabs,
       tableColSettings,
       currentContent: {
+        tableData: this.$store.getters.getCurrentContentsList.slice(0, 5),
         tableOption: {
           rowIdName: 'contentUUID',
           subdomain: '/contents',
@@ -124,11 +113,6 @@ export default {
       },
       processData: this.$store.getters.currentReportedDetailProcess,
     }
-  },
-  computed: {
-    contentsTableData() {
-      return this.$store.getters.getCurrentContentsList
-    },
   },
   methods: {
     setInlineTableByTabs(e) {
