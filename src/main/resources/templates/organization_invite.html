@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html style="background:#fcfcfc">
+<head>
+    <title>VIRNECT Remote</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body style="background:#fcfcfc">
+<div align="center">
+    <table width="680" cellpadding="0" cellspacing="0" background="#fff"
+           style="background:#fff;border:1px solid #e8edf1;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;">
+        <tbody>
+        <tr style="padding:0;margin:0;">
+            <td style="padding:0;margin:0;border-bottom:1px solid #e2e7ed">
+                <img src="https://virnect-remote.s3.ap-northeast-2.amazonaws.com/assets/img-logo%402x.png" width="680"
+                     height="85" alt="" style="border:0;vertical-align:top;margin:0;padding:0;">
+            </td>
+        </tr>
+        <tr style="padding:0;margin:0;">
+            <td style="padding:35px 40px;margin:0;font-size:16px;color:#333;line-height:1.5">
+                <p style="margin:0;padding:0;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;font-size:16px;color:#333;line-height:1.5">
+                    안녕하세요, {{inviteUserName}}님<br><br>
+                    {{masterName}} 님이 VIRNECT Remote에서 조직 사용자로 초대했습니다.<br>
+                    메일 수신일로부터 7일 이내에 사용자 초대를 수락하면 {{masterName}}님의 조직에서 서비스
+                    이용이 가능합니다.<br><br>감사합니다.</p>
+
+                <p style="margin:50px 0 8px;padding:0;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;font-size:16px;color:#333;font-weight:700;">
+                    조직정보</p>
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="margin:0 0 25px;padding:0;border-top:2px solid #1a1c1d;text-align:left;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;">
+                    <tbody>
+                    <tr style="padding:0;margin:0;">
+                        <td colspan="2" style="padding:8px 0;margin:0;"></td>
+                    </tr>
+                    <tr style="padding:0;margin:0;">
+                        <th style="width:120px;height:40px;color:#878d91;font-weight:400;vertical-align:middle;text-align:left;">
+                            마스터:
+                        </th>
+                        <td style="height:40px;color:#333333;font-weight:700;vertical-align:middle;text-align:left;">
+                            {{masterName}}
+                        </td>
+                    </tr>
+                    <tr style="padding:0;margin:0;">
+                        <th style="width:120px;height:40px;color:#878d91;font-weight:400;vertical-align:middle;text-align:left;">
+                            마스터 계정:
+                        </th>
+                        <td style="height:40px;color:#333333;font-weight:700;vertical-align:middle;text-align:left;">
+                            {{masterEmail}}
+                        </td>
+                    </tr>
+                    <tr style="padding:0;margin:0;">
+                        <th style="width:120px;height:40px;color:#878d91;font-weight:400;vertical-align:middle;text-align:left;">
+                            초대된 사용자:
+                        </th>
+                        <td style="height:40px;color:#333333;font-weight:700;vertical-align:middle;text-align:left;">
+                            {{inviteUserName}}
+                        </td>
+                    </tr>
+                    <tr style="padding:0;margin:0;">
+                        <td colspan="2" style="padding:8px 0;margin:0;border-bottom:1px solid #e2e7ed"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="btn btn--flat btn--medium" style="text-align:center;">
+
+                    <![if !mso]>
+                    <a href="{{inviteRejectUrl}}" target="_blank"
+                       style="border-radius: 4px;display: inline-block;font-size: 14px;font-weight: bold;line-height: 20px;padding: 10px 20px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;background-color: #898f98;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;">사용자
+                        초대 거절</a>
+                    <![endif]>
+                    <!--[if mso]>
+                    <p style="margin:0;padding:0;">&nbsp;</p>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+                                 href="{{inviteRejectUrl}}" target="_blank" style="width:140px" arcsize="10%"
+                                 fillcolor="#898f98" stroke="false">
+                        <v:textbox style="mso-fit-shape-to-text:true" inset="0px,9px,0px,9px">
+                            <center style="font-size:14px;line-height:20px;color:#FFFFFF;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;font-weight:bold;mso-line-height-rule:exactly">
+                                사용자 초대 거절
+                            </center>
+                        </v:textbox>
+                    </v:roundrect>
+                    <![endif]-->
+                    &nbsp;
+                    <![if !mso]>
+                    <a href="{{inviteAcceptUrl}}" target="_blank"
+                       style="border-radius: 4px;display: inline-block;font-size: 14px;font-weight: bold;line-height: 20px;padding: 10px 20px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;background-color: #284cf1;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;">사용자
+                        초대 수락</a>
+                    <![endif]>
+                    <!--[if mso]>
+                    <p style="margin:0;padding:0;">&nbsp;</p>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+                                 href="{{inviteAcceptUrl}}" target="_blank" style="width:140px" arcsize="10%"
+                                 fillcolor="#284CF1" stroke="false">
+                        <v:textbox style="mso-fit-shape-to-text:true" inset="0px,9px,0px,9px">
+                            <center style="font-size:14px;line-height:20px;color:#FFFFFF;font-family:'Apple SD Gothic Neo',sans-serif,Dotum,Arial;font-weight:bold;mso-line-height-rule:exactly">
+                                사용자 초대 수락
+                            </center>
+                        </v:textbox>
+                    </v:roundrect>
+                    <![endif]-->
+                </div>
+
+            </td>
+        </tr>
+        <tr style="padding:0;margin:0;">
+            <td height="70" style="height:70px;padding:0;margin:0;">&nbsp;</td>
+        </tr>
+        <tr style="padding:0;margin:0;">
+            <td style="padding:0;margin:0;">
+                <img src="https://virnect-remote.s3.ap-northeast-2.amazonaws.com/assets/img-banner%402x.png" width="680"
+                     height="180" alt="" style="border:0;vertical-align:top;margin:0;padding:0;">
+            </td>
+        </tr>
+        <tr background="#f3f6f9" style="padding:0;margin:0;background:#f3f6f9">
+            <td background="#f3f6f9" style="padding:12px 40px;margin:0;background:#f3f6f9">
+                <table cellpadding="0" cellspacing="0" align="right"
+                       style="float:right;font-size:12px;line-height:18px;text-align:center;">
+                    <tbody>
+                    <tr>
+                        <td style="padding:0 20px;margin:0">
+                            <a href="https://virnectremote.com" title="VIRNECT Remote 서비스 바로가기, 새창열림"
+                               style="font-size:12px;line-height:18px;font-weight:700;color:#646d80;text-decoration:none">VIRNECT
+                                Remote Service</a>
+                        </td>
+                        <td style="padding:0;margin:0" width="1" height="12">
+                            <div style="padding:0;margin:3px 0;border-left:1px solid #878d91;height:12px;">&nbsp;</div>
+                        </td>
+                        <td style="padding:0 20px;margin:0">
+                            <a href="https://virnectremote.com/admin" title="VIRNECT Remote 관리자 바로가기, 새창열림"
+                               style="font-size:12px;line-height:18px;font-weight:700;color:#646d80;text-decoration:none">VIRNECT
+                                Admin</a>
+                        </td>
+                        <td style="padding:0;margin:0" width="1" height="12">
+                            <div style="padding:0;margin:3px 0;border-left:1px solid #878d91;height:12px;">&nbsp;</div>
+                        </td>
+                        <td style="padding:0 0 0 20px;margin:0">
+                            <a href="https://virnect.com/" title="VIRNECT 회사 홈페이지 바로가기, 새창열림"
+                               style="font-size:12px;line-height:18px;font-weight:700;color:#646d80;text-decoration:none">VIRNECT</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:30px 40px 6px;margin:0;font-size:12px;color:#333;line-height:1.5">
+                본 메일은 발신전용 메일로 회신에 응답하지 않습니다.<br>문의사항이 있으시다면, 언제든지 <a href="{{ serviceCenter }}" target="_blank"
+                                                                      title="VIRNECT 고객센터 바로가기, 새창열림"
+                                                                      style="color:#0054f7;font-weight:bold;text-decoration:underline;">고객센터</a>로
+                문의해 주시기 바랍니다.
+            </td>
+        </tr>
+        <tr style="padding:0;margin:0">
+            <td style="padding:0;margin:0">
+                <img src="https://virnect-remote.s3.ap-northeast-2.amazonaws.com/assets/img-bottom%402x.png" width="680"
+                     height="140" alt="" style="border:0;vertical-align:top;margin:0;padding:0;">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@ package com.virnect.message.application;
 import com.virnect.message.domain.MailTemplate;
 import com.virnect.message.dto.ContactRequestDTO;
 import com.virnect.message.global.common.ResponseMessage;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.Model;
 import org.thymeleaf.context.Context;
 

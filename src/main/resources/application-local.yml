@@ -36,3 +36,6 @@ file:
   url: "http://localhost:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
 
+# Workspace Server Configuration
+workspace:
+  serverUrl: "http://localhost:8082/workspaces"

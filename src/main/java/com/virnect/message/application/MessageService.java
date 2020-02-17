@@ -4,18 +4,19 @@ import com.virnect.message.domain.MailSender;
 import com.virnect.message.domain.MailSubject;
 import com.virnect.message.domain.MailTemplate;
 import com.virnect.message.dto.ContactRequestDTO;
+import com.virnect.message.dto.InviteWorkspaceRequestDTO;
 import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 import org.thymeleaf.context.Context;
 
 import java.net.ConnectException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Project: PF-Message
@@ -60,4 +61,31 @@ public class MessageService {
 
         return new ResponseMessage().addParam("sendContactMail", true);
     }
+
+    /**
+     * 워크스페이스 초대 메일 전송
+     *
+     * @param inviteWorkspaceRequestDTO - 워크스페이스 초대 정보
+     * @return
+     */
+    public ResponseMessage sendInviteWorkspaceMail(InviteWorkspaceRequestDTO inviteWorkspaceRequestDTO) {
+        //1. 초대 된 사람에게 메일 발송
+        Context context = new Context();
+        String inviteAcceptUrl = inviteWorkspaceRequestDTO.getAcceptUrl() + "?userId=" + inviteWorkspaceRequestDTO.getRequestUserId() + "&code=" + inviteWorkspaceRequestDTO.getInviteCode();
+        context.setVariable("masterName", inviteWorkspaceRequestDTO.getRequestUserName());
+        context.setVariable("inviteAcceptUrl", inviteAcceptUrl);
+        context.setVariable("acceptUrl", inviteAcceptUrl);
+
+        List<String> inviteUserEmail = new ArrayList<>();
+        for (Map<String, String> inviteInfo : inviteWorkspaceRequestDTO.getInviteInfos()) {
+            context.setVariable("inviteUserName", inviteInfo.get("inviteUserName"));
+            inviteUserEmail.add(inviteInfo.get("inviteUserEmail"));
+        }
+        mailService.sendTemplateMail(MailSender.MASTER.getSender(), inviteUserEmail, MailSubject.CONTACT.getSubject(), MailTemplate.WORKSPACE_INVITE_ACCEPT.getTemplate(), context);
+        log.info("[초대 메일 전송 완료] - [초대자 이메일 - " + inviteUserEmail.toArray() + "]");
+
+        return new ResponseMessage().addParam("sendInviteAcceptMail", true);
+
+    }
 }
+

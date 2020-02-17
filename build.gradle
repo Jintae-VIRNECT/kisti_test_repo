@@ -58,6 +58,9 @@ dependencies {
     // Template Engine : Tymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+    // Netflix Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 }
 
 test {
@@ -86,5 +89,15 @@ sourceSets {
         java {
             srcDirs = ['src/main/java', querydslSrcDir]
         }
+    }
+}
+
+ext {
+    springCloudVersion = 'Greenwich.SR2'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }

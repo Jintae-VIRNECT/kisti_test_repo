@@ -3,6 +3,7 @@ package com.virnect.message.api;
 import com.virnect.message.application.MailService;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.dto.ContactRequestDTO;
+import com.virnect.message.dto.InviteWorkspaceRequestDTO;
 import com.virnect.message.exception.BusinessException;
 import com.virnect.message.global.common.ResponseMessage;
 import com.virnect.message.global.error.ErrorCode;
@@ -54,4 +55,21 @@ public class MessageController {
         ResponseMessage responseMessage = messageService.sendContactMail(contactRequestDTO);
         return ResponseEntity.ok(responseMessage);
     }
+
+    /**
+     * 워크스페이스 초대 메일 전송
+     *
+     * @param inviteWorkspaceRequestDTO - 워크스페이스 초대 요청 정보
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("/workspace/invite")
+    public ResponseEntity<ResponseMessage> sendInviteWorkspaceMail(@RequestBody @Valid InviteWorkspaceRequestDTO inviteWorkspaceRequestDTO, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ResponseMessage responseMessage = messageService.sendInviteWorkspaceMail(inviteWorkspaceRequestDTO);
+        return ResponseEntity.ok(responseMessage);
+    }
+
 }
