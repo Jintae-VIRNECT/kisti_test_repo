@@ -25,8 +25,8 @@ import bb from 'billboard.js'
 
 import customColors from '@/models/colors.js'
 
-import sceneGroup from '@/data/sceneGroup'
-const jsonData = sceneGroup.tableData
+import taskGroup from '@/data/taskGroup'
+const jsonData = taskGroup.tableData
 export default {
   props: {
     tableData: Array,

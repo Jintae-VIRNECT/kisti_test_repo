@@ -1,11 +1,11 @@
 export const cols = [
   {
-    prop: 'name',
-    label: '작업 이름',
+    prop: 'subProcessName',
+    label: '세부공정 이름',
   },
   {
     prop: 'numOfDetailProcess',
-    label: '세부공정 수',
+    label: '작업 수',
     width: 100,
   },
   {
@@ -24,7 +24,7 @@ export const cols = [
   },
   {
     prop: 'auths',
-    label: '세부 공정 담당자',
+    label: '세부공정 담당자',
     width: 200,
   },
   {

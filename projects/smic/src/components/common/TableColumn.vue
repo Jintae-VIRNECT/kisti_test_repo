@@ -41,7 +41,7 @@
     .blub(:class="data[prop] ? 'on' : 'off'")
     span {{ data[prop] ? "있음" : "없음" }}
   //- 이슈 타입
-  div(v-else-if="prop === 'type'")
+  div(v-else-if="/^(type)$/.test(prop)")
     span.issue-type {{ data[prop] }}
   //- 체결 수
   .total-done(v-else-if="/^(totalDone)$/.test(prop)")

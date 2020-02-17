@@ -3,34 +3,34 @@
 		span.el-dropdown-link
 			i.el-icon-more.el-icon--right
 		el-dropdown-menu(slot='dropdown')
-			.group 배포 설정
-			el-dropdown-item 
-				.publish-boolean.PUBLISH(@click="$emit('onChangeData', 'PUBLISH')") 
-					span 배포중
-					span.check(v-if="status == 'PUBLISH'")
-						i.el-icon-check 
-			el-dropdown-item 
-				.publish-boolean.WAIT(@click="$emit('onChangeData', 'WAIT')") 
-					span 배포중지
-					span.check(v-if="status == 'WAIT'")
-						i.el-icon-check 
-			el-dropdown-item 
-				.publish-boolean.MANAGED(@click="$emit('onChangeData', 'MANAGED')") 
-					span 공정관리중
-					span.check(v-if="status == 'MANAGED'")
-						i.el-icon-check 
+			//- .group 배포 설정
+			//- el-dropdown-item 
+			//- 	.publish-boolean.PUBLISH(@click="$emit('onChangeData', 'PUBLISH')") 
+			//- 		span 배포중
+			//- 		span.check(v-if="status == 'PUBLISH'")
+			//- 			i.el-icon-check 
+			//- el-dropdown-item 
+			//- 	.publish-boolean.WAIT(@click="$emit('onChangeData', 'WAIT')") 
+			//- 		span 배포중지
+			//- 		span.check(v-if="status == 'WAIT'")
+			//- 			i.el-icon-check 
+			//- el-dropdown-item 
+			//- 	.publish-boolean.MANAGED(@click="$emit('onChangeData', 'MANAGED')") 
+			//- 		span 공정관리중
+			//- 		span.check(v-if="status == 'MANAGED'")
+			//- 			i.el-icon-check 
 			.group 콘텐츠 설정
 			el-dropdown-item
 				.color-red(@click="onDelete") 삭제
 </template>
 <style lang="scss" scoped>
 .group {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: #566173;
-  padding: 0px 16px 4px;
   margin-top: 5px;
+  padding: 0px 16px 4px;
+  color: #566173;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
   &:last-child {
     margin-top: 0px;
   }

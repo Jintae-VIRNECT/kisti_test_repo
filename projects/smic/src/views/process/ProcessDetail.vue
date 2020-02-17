@@ -49,21 +49,21 @@
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
-            :data='detailTableData' 
+            :data='subProcessData' 
             style='width: 100%'
             @cell-click="onClickCell")
             el-table-column(
-              v-for="{label, width, prop} in detailColSetting" 
+              v-for="{label, width, prop} in subColSetting" 
               :key="prop" 
               :prop="prop" 
               :label="label" 
               :width="width || ''") 
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="detailTableData[scope.$index]")
+                table-column(:prop="prop" :data="subProcessData[scope.$index]")
             el-table-column(:width="50" class-name="control-col")
               template(slot-scope='scope')
                 process-control-dropdown(
-                  :target="detailTableData[scope.$index]"
+                  :target="subProcessData[scope.$index]"
                   @onChangeData="onChangeData"
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
@@ -94,43 +94,8 @@ import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
+import { cols as subColSetting } from '@/models/subProcess'
 import { sortOptions } from '@/models/index'
-
-const detailColSetting = [
-  {
-    prop: 'subProcessName',
-    label: '세부공정 이름',
-  },
-  {
-    prop: 'numOfDetailProcess',
-    label: '작업 수',
-    width: 100,
-  },
-  {
-    prop: 'schedule',
-    label: '공정 일정',
-  },
-  {
-    prop: 'processPercent',
-    label: '진행률',
-    width: 150,
-  },
-  {
-    prop: 'status',
-    label: '진행 상태',
-    width: 100,
-  },
-  {
-    prop: 'auths',
-    label: '세부공정 담당자',
-    width: 200,
-  },
-  {
-    prop: 'issue',
-    label: '작업 이슈',
-    width: 80,
-  },
-]
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -155,7 +120,7 @@ export default {
   },
   data() {
     return {
-      detailTableData: sceneGroup.tableData,
+      subProcessData: sceneGroup.tableData,
       tableData: [
         this.$store.getters.currentReportedDetailProcess.find(
           c => c.id === this.$route.params.id,
@@ -178,15 +143,9 @@ export default {
         value: null,
       },
       topic: 'table',
+      colSetting,
+      subColSetting,
     }
-  },
-  computed: {
-    colSetting() {
-      return colSetting
-    },
-    detailColSetting() {
-      return detailColSetting
-    },
   },
   methods: {
     onClickCell(row, column) {
@@ -210,40 +169,6 @@ export default {
     onDeleteData(data) {
       this.tableData = this.tableData.filter(row => row.id !== data.id)
       this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    async onChangeSearch(searchInput, filterValue, sortValue) {
-      let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
-      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
-      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
-      this.tableData = tmpTableData
-    },
-    onChangeSearchText(tableData, searchInput) {
-      return tableData.filter(row => {
-        return (
-          row.processName.includes(searchInput) ||
-          row.auths.some(a => a.includes(searchInput))
-        )
-      })
-    },
-    onChangeFilter(tableData, filterValue) {
-      if (!filterValue) return tableData
-      return tableData.filter(row => row.status === filterValue)
-    },
-    onChangeSort(tableData, sortValue) {
-      if (!sortValue) return tableData
-      if (sortValue === 'alphabetDesc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? 1 : -1,
-        )
-      else if (sortValue === 'alphabetAsc')
-        return tableData.sort((a, b) =>
-          a.processName - b.processName ? -1 : 1,
-        )
-      else if (sortValue === 'createdAtDesc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? 1 : -1))
-      else if (sortValue === 'createdAtAsc')
-        return tableData.sort((a, b) => (a.createdAt - b.createdAt ? -1 : 1))
     },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'

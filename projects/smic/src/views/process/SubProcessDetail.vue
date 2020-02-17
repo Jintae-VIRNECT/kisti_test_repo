@@ -1,8 +1,8 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{tableData[0].processName}})
-      el-breadcrumb-item 세부공정({{tableData[0].processName}})
+      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ lastProcess.processName }})
+      el-breadcrumb-item 세부공정({{tableData[0].subProcessName}})
       el-breadcrumb-item 작업
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")
@@ -12,7 +12,7 @@
           :data='tableData' 
           style='width: 100%')
           el-table-column(
-            v-for="{label, width, prop} in colSetting" 
+            v-for="{label, width, prop} in subProcessColSetting" 
             :key="prop" 
             :prop="prop" 
             :label="label" 
@@ -41,24 +41,16 @@
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
-            :data='detailTableData' 
-            style='width: 100%'
-            @cell-click="onClickCell")
+            :data='taskTableData' 
+            style='width: 100%')
             el-table-column(
-              v-for="{label, width, prop} in detailColSetting" 
+              v-for="{label, width, prop} in taskColSetting" 
               :key="prop" 
               :prop="prop" 
               :label="label" 
               :width="width || ''")
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="detailTableData[scope.$index]")
-            el-table-column(:width="50" class-name="control-col")
-              template(slot-scope='scope')
-                process-control-dropdown(
-                  :target="detailTableData[scope.$index]"
-                  @onChangeData="onChangeData"
-                  @onCreateData="onCreateData"
-                  @onDeleteData="onDeleteData")
+                table-column(:prop="prop" :data="taskTableData[scope.$index]")
         div(v-else)
           process-detail-graph
 </template>
@@ -74,44 +66,11 @@ import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
-import { cols as colSetting, processStatus } from '@/models/process'
-import { sortOptions } from '@/models/index'
+import { cols as subProcessColSetting } from '@/models/subProcess'
+import { cols as taskColSetting } from '@/models/task'
 
-const detailColSetting = [
-  {
-    prop: 'subProcessName',
-    label: '세부공정 이름',
-  },
-  {
-    prop: 'numOfDetailProcess',
-    label: '작업 수',
-    width: 100,
-  },
-  {
-    prop: 'schedule',
-    label: '공정 일정',
-  },
-  {
-    prop: 'processPercent',
-    label: '진행률',
-    width: 150,
-  },
-  {
-    prop: 'status',
-    label: '진행 상태',
-    width: 100,
-  },
-  {
-    prop: 'auths',
-    label: '세부공정 담당자',
-    width: 200,
-  },
-  {
-    prop: 'issue',
-    label: '작업 이슈',
-    width: 80,
-  },
-]
+// temp data
+import sceneGroup from '@/data/sceneGroup'
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -133,44 +92,20 @@ export default {
   },
   data() {
     return {
-      detailTableData: this.$store.getters.getTaskList,
+      lastProcess: this.$store.getters.getLastProcess || {},
+      taskTableData: this.$store.getters.getTaskList,
       tableData: [
-        this.$store.getters.sceneGroup.tableData.find(
+        sceneGroup.tableData.find(
           c => c.id === this.$route.params.subProcessId,
         ),
       ],
       processId: this.$route.params.id,
-      searchInput: null,
-      filter: {
-        options: [
-          {
-            value: null,
-            label: '전체',
-          },
-          ...processStatus,
-        ],
-        value: null,
-      },
-      sort: {
-        options: sortOptions,
-        value: null,
-      },
       topic: 'table',
+      subProcessColSetting,
+      taskColSetting,
     }
   },
-  computed: {
-    colSetting() {
-      return colSetting
-    },
-    detailColSetting() {
-      return detailColSetting
-    },
-  },
   methods: {
-    onClickCell(row, column) {
-      if (column.className === 'control-col') return false
-      this.$router.push(`/process/${this.processId}/task`)
-    },
     onChangeData(data) {
       const updatedTableData = this.tableData.map(row => {
         if (row.id === data.id) {

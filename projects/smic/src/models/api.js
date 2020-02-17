@@ -9,7 +9,7 @@ export default {
   // process
   GET_PROCESS_LIST: () => '',
   // scene group
-  GET_SCENE_GROUP_LIST: () => '',
+  GET_SCENE_GROUP_LIST: () => '@content/contents/metadata/sceneGroups',
   // issue
   GET_ISSUE_LIST: () => '',
 }

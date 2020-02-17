@@ -26,6 +26,7 @@ export default {
   state: {
     currentContentsList: [],
     contentsList: [],
+    sceneGroupList: [],
   },
   getters: {
     getCurrentContentsList(state) {
@@ -34,6 +35,9 @@ export default {
     getContentsList(state) {
       return state.contentsList
     },
+    getSceneGroupList(state) {
+      return state.sceneGroupList
+    },
   },
   mutations: {
     CURRENT_CONTENTS_LIST(state, list) {
@@ -41,6 +45,9 @@ export default {
     },
     CONTENTS_LIST(state, list) {
       state.contentsList = list
+    },
+    SCENE_GROUP_LIST(state, list) {
+      state.sceneGroupList = list
     },
   },
   actions: {
@@ -53,6 +60,20 @@ export default {
       const res = await requestContentsList(params)
       context.commit('CONTENTS_LIST', res.data.contentInfo)
       return res
+    },
+    async SCENE_GROUP_LIST(context, param = {}) {
+      try {
+        const response = await Vue.axios.get(API.GET_SCENE_GROUP_LIST(), {
+          params: {
+            contentUUID: param.contentUUID,
+          },
+        })
+        const { data } = response.data
+        context.commit('SCENE_GROUP_LIST', data.sceneGroupInfoList)
+        return response.data
+      } catch (e) {
+        console.error(e)
+      }
     },
   },
 }
