@@ -2,7 +2,7 @@
   div
     el-breadcrumb.header__bread-crumb(separator="/")
       el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{tableData[0].processName}})
-      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 세부공정({{tableData[0].processName}})
+      el-breadcrumb-item 세부공정({{tableData[0].processName}})
       el-breadcrumb-item 작업
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")

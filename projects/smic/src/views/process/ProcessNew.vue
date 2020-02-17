@@ -20,19 +20,7 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              //- table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
-              .content-name(v-if="prop === 'contentName'")
-                img.prefix-img(src="~@/assets/image/ic-content.svg")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'status'")
-                span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'uploaderName'")
-                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['uploaderProfile']})`}")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'uploadDate'")
-                span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else)
-                span {{ tableData[scope.$index][prop]}}
+              table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
     process-new-modal(
       :target='target'
       :toggleProcessModal="toggleNewModal"

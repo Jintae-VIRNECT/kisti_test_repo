@@ -26,20 +26,7 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              .content-name(v-if="prop === 'contentName'")
-                img.prefix-img(src="~@/assets/image/ic-content.svg")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'status'")
-                span.publish-boolean(:class="tableData[scope.$index][prop]") {{tableData[scope.$index][prop] | publishBoolean}}
-              .auth-wrapper(v-else-if="prop === 'uploaderName'")
-                .auth-img(:style="{'background-image': `url(${tableData[scope.$index]['uploaderProfile']})`}")
-                span {{tableData[scope.$index][prop]}}
-              div(v-else-if="prop === 'createdDate'")
-                span {{tableData[scope.$index][prop] | dayJs_FilterDateTime}}
-              div(v-else-if="prop === 'sceneGroupTotal'")
-                span.nums {{tableData[scope.$index][prop]}}
-              div(v-else)
-                span {{ tableData[scope.$index][prop]}}
+              table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
@@ -86,6 +73,7 @@
 import InlineTable from '@/components/common/InlineTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { tableColSettings } from '@/models/home'
@@ -97,7 +85,12 @@ import contentList from '@/mixins/contentList'
 import dayjs from '@/plugins/dayjs'
 
 export default {
-  components: { InlineTable, ContentControlDropdown, PageBreadCrumb },
+  components: {
+    InlineTable,
+    ContentControlDropdown,
+    PageBreadCrumb,
+    TableColumn,
+  },
   mixins: [contentList, dayjs],
   data() {
     return {

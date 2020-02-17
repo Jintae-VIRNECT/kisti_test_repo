@@ -36,27 +36,7 @@
               :label="label" 
               :width="width || ''") 
               template(slot-scope='scope')
-                .process-percent(v-if="prop === 'processPercent'")
-                  el-progress(:percentage="tableData[scope.$index][prop]" :show-text="true")
-                div(v-else-if="prop === 'numOfDetailProcess'")
-                  span.nums {{tableData[scope.$index][prop]}}                
-                div(v-else-if="prop === 'issue'")
-                  .blub(:class="tableData[scope.$index][prop] ? 'on' : 'off'")
-                  span {{tableData[scope.$index][prop] ? "있음" : "없음"}}
-                div(v-else-if="prop === 'auths'")
-                  span {{tableData[scope.$index][prop] | limitAuthsLength}}
-                //- schedule = (startAt ~ endAt)
-                .total-done(v-else-if="prop === 'schedule'")
-                  span {{tableData[scope.$index]['startAt'] | dayJs_FilterDateTime}} 
-                  span &nbsp;~ {{tableData[scope.$index]['endAt'] | dayJs_FilterDateTime}}
-                div(v-else-if="prop === 'status'")
-                  button.btn.btn--status(
-                    size="mini" 
-                    :class="tableData[scope.$index][prop]" 
-                    plain
-                  ) {{ tableData[scope.$index][prop] | statusFilterName }}
-                div(v-else)
-                  span {{ tableData[scope.$index][prop] }}
+                table-column(:prop="prop" :data="tableData[scope.$index]")
             el-table-column(:width="50" class-name="control-col")
               template(slot-scope='scope')
                 process-control-dropdown(
@@ -77,6 +57,7 @@ import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import ProcessListGraph from '@/components/process/ProcessListGraph.vue'
+import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -85,11 +66,8 @@ import { sortOptions } from '@/models/index'
 // lib
 import dayjs from '@/plugins/dayjs'
 
-// mixins
-import filters from '@/mixins/filters'
-
 export default {
-  mixins: [dayjs, filters],
+  mixins: [dayjs],
   components: {
     ProgressCard,
     InlineTable,
@@ -99,6 +77,7 @@ export default {
     ProcessControlDropdown,
     SearchTabNav,
     ProcessListGraph,
+    TableColumn,
   },
   data() {
     return {
