@@ -1,25 +1,19 @@
 pipeline {
   agent any
   stages {
-    stage('Pre-Build') {
-      steps {
-        echo 'Pre-Build Stage'
-        catchError() {
-          sh 'chmod +x ./gradlew'
-          sh './gradlew clean'
-          sh './gradlew cleanQuerydslSourcesDir'
-          sh './gradlew build -x test'
-          sh 'cp docker/Dockerfile ./'
-        }
-
-      }
-    }
-
     stage('Build') {
       parallel {
         stage('Build') {
           steps {
             echo 'Build Stage'
+            catchError() {
+              sh 'chmod +x ./gradlew'
+              sh './gradlew clean'
+              sh './gradlew cleanQuerydslSourcesDir'
+              sh './gradlew build -x test'
+              sh 'cp docker/Dockerfile ./'
+            }
+
           }
         }
 
@@ -60,11 +54,36 @@ pipeline {
     }
 
     stage('Deploy') {
-      steps {
-        catchError() {
-          sh 'docker stop pf-message && docker rm pf-message || true'
-          sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
-          sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+      parallel {
+        stage('Deploy') {
+          steps {
+            echo 'Deploy Stage'
+            catchError() {
+              sh 'docker stop pf-message && docker rm pf-message || true'
+            }
+
+          }
+        }
+
+        stage('Develop Branch') {
+          steps {
+            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message:develop'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
+        }
+
+        stage('Staging Branch') {
+          steps {
+            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message:staging'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
+        }
+
+        stage('Master Branch') {
+          steps {
+            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
         }
 
       }
