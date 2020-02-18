@@ -1,15 +1,24 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
+    stage('Pre-Build') {
       steps {
-        echo 'Build Stage'
+        echo 'Pre-Build Stage'
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
-          sh 'docker build -t pf-message/develop -f docker/Dockerfile.develop .'
+        }
+
+      }
+    }
+
+    stage('Build') {
+      steps {
+        echo 'Build Stage'
+        catchError() {
+          sh 'docker build -t pf-message .'
         }
 
       }
