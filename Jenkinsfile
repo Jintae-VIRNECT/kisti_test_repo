@@ -33,12 +33,18 @@ pipeline {
         }
 
         stage('Staging Branch') {
+          when {
+            branch 'staging'
+          }
           steps {
             echo 'q'
           }
         }
 
         stage('Master Branch') {
+          when {
+            branch 'master'
+          }
           steps {
             echo 'w'
           }
