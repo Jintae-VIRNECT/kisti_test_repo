@@ -135,7 +135,7 @@ router.beforeEach((to, from, next) => {
       destination = lastAccessPath
       store.commit('USER_SET_LAST_ACCESS_PATH', { path: null })
     } else {
-      Vue.swal.fire({
+      Vue.swal?.fire({
         type: 'error',
         title: '로그인이 필요합니다',
         toast: true,

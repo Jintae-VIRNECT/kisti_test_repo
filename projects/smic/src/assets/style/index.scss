@@ -304,6 +304,7 @@
     letter-spacing: normal;
   }
   .process-percent {
+    margin-right: 10px;
     .el-progress-bar__outer {
       margin-right: 8px;
     }
@@ -324,8 +325,16 @@
       }
     }
   }
-  .total-done .count {
-    color: #186ae2;
+  .total-done {
+    .count {
+      color: #186ae2;
+    }
+    .el-divider {
+      margin: 0 12px;
+    }
+    .el-button {
+      margin-left: 12px;
+    }
   }
   .content-name {
     img {
@@ -368,6 +377,22 @@
     }
     &.off {
       background-color: #aabbce;
+    }
+  }
+  .el-button {
+    padding: 8px;
+    color: #0d2a58;
+    font-weight: 500;
+    font-size: 13px;
+    background-color: #f2f5f9;
+    border: none;
+    border-radius: 4px;
+    &:hover {
+      background: #e6e9ee;
+    }
+    &:active {
+      color: #fff;
+      background: #455163;
     }
   }
 }

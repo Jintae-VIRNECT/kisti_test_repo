@@ -26,6 +26,7 @@ export default {
   state: {
     currentContentsList: [],
     contentsList: [],
+    sceneGroupList: [],
   },
   getters: {
     getCurrentContentsList(state) {
@@ -34,6 +35,9 @@ export default {
     getContentsList(state) {
       return state.contentsList
     },
+    getSceneGroupList(state) {
+      return state.sceneGroupList
+    },
   },
   mutations: {
     CURRENT_CONTENTS_LIST(state, list) {
@@ -41,6 +45,17 @@ export default {
     },
     CONTENTS_LIST(state, list) {
       state.contentsList = list
+    },
+    SCENE_GROUP_LIST(state, list) {
+      state.sceneGroupList = list
+    },
+    DELETE_CONTENT(state, contentUUID) {
+      state.currentContentsList = state.currentContentsList.filter(
+        content => content.contentUUID !== contentUUID,
+      )
+      state.contentsList = state.contentsList.filter(
+        content => content.contentUUID !== contentUUID,
+      )
     },
   },
   actions: {
@@ -53,6 +68,36 @@ export default {
       const res = await requestContentsList(params)
       context.commit('CONTENTS_LIST', res.data.contentInfo)
       return res
+    },
+    async SCENE_GROUP_LIST(context, contentUUID) {
+      try {
+        const response = await Vue.axios.get(API.GET_SCENE_GROUP_LIST(), {
+          params: { contentUUID },
+        })
+        const { data } = response.data
+        context.commit('SCENE_GROUP_LIST', data.sceneGroupInfoList)
+        return response.data
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async DELETE_CONTENT(context, contentUUID) {
+      try {
+        const response = await Vue.axios.delete(
+          API.DELETE_CONTENT(contentUUID),
+          {
+            params: {
+              uuid: context.getters.getUser.uuid,
+            },
+          },
+        )
+        const { code, message } = response.data
+        if (code === 200) context.commit('DELETE_CONTENT', contentUUID)
+        else throw new Error(message)
+        return response.data
+      } catch (e) {
+        console.error(e)
+      }
     },
   },
 }

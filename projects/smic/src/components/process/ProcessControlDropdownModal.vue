@@ -119,7 +119,8 @@ $sub-label-width: 80px;
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .el-dialog__body {
-    max-height: 50vh;
+    min-height: 30vh;
+    max-height: 70vh;
     padding: 0px !important;
     overflow-y: auto;
   }

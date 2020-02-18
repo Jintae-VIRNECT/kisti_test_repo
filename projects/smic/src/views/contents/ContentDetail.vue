@@ -22,7 +22,7 @@
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :status="processContent.tableData[scope.$index].status"
+                :data="processContent.tableData[scope.$index]"
                 @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
 
     inline-table(:setMainHeader="true")
@@ -30,10 +30,10 @@
         span.title 세부공정 콘텐츠 목록 
       template(slot="body")
         el-table.inline-table(
-          :data='detailProcessContents.tableData' 
+          :data='sceneGroupData' 
           style='width: 100%')
           el-table-column(
-            v-for="{label, width, prop} in detailProcessContents.colSetting" 
+            v-for="{label, width, prop} in sceneGroupColSetting" 
             :key="prop" 
             :prop="prop" 
             :label="label" 
@@ -42,18 +42,7 @@
               div(v-if="prop == 'index'") 
                 span {{scope.$index + 1}}.
               div(v-else)
-                span {{ detailProcessContents.tableData[scope.$index][prop] }}
-      //- el-pagination.inline-table-pagination(
-      //-   v-if='setPagination'
-      //-   :hide-on-single-page='false' 
-      //-   :page-size="pageSize" 
-      //-   :pager-count="tableOption ? tableOption.pagerCount : 5"
-      //-   :total='tableData.length' 
-      //-   layout='prev, jumper, next'
-      //-   :current-page='currentPage'
-      //-   @prev-click='currentPage -= 1'
-      //-   @next-click='currentPage += 1'
-      //- )
+                span {{ sceneGroupData[scope.$index][prop] }}
 </template>
 <style lang="scss">
 .content-detail {
@@ -82,7 +71,8 @@ import ContentControlDropdown from '@/components/contents/ContentControlDropdown
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
-import sceneGroup from '@/data/sceneGroup'
+import { cols as sceneGroupColSetting } from '@/models/sceneGroup'
+
 import { tableColSettings } from '@/models/home'
 
 // mixin
@@ -114,12 +104,13 @@ export default {
         search: null,
         colSetting: tableColSettings.contents,
       },
-      detailProcessContents: {
-        sceneGroup,
-        tableData: sceneGroup.tableData,
-        colSetting: sceneGroup.tableOption.colSetting,
-      },
+      sceneGroupColSetting,
     }
+  },
+  computed: {
+    sceneGroupData() {
+      return this.$store.getters.getSceneGroupList
+    },
   },
   methods: {
     onChangeData(data, id) {
@@ -133,6 +124,10 @@ export default {
       })
       this.$store.commit('set_currentUploadedContent', updatedTable)
     },
+  },
+  created() {
+    const contentUUID = this.$route.params.id
+    this.$store.dispatch('SCENE_GROUP_LIST', contentUUID)
   },
 }
 </script>

@@ -108,6 +108,7 @@ export default {
   methods: {
     onClickCell(row, column) {
       if (column.className === 'control-col') return false
+      this.$store.commit('LAST_PROCESS', row)
       this.$router.push(`/process/${row.id}`)
     },
     onChangeData(data) {
