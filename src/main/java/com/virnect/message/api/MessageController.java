@@ -1,10 +1,13 @@
 package com.virnect.message.api;
 
-import com.virnect.message.application.MailService;
 import com.virnect.message.application.MessageService;
-import com.virnect.message.dto.ContactRequestDTO;
-import com.virnect.message.dto.InviteWorkspaceRequestDTO;
+import com.virnect.message.dto.request.ContactRequest;
+import com.virnect.message.dto.request.InviteWorkspaceRequest;
+import com.virnect.message.dto.response.ContactResponse;
+import com.virnect.message.dto.response.InviteWorkspaceResponse;
 import com.virnect.message.exception.BusinessException;
+import com.virnect.message.global.common.ApiResponse;
+import com.virnect.message.global.common.CustomCollectionValidator;
 import com.virnect.message.global.common.ResponseMessage;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.*;
@@ -17,7 +20,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 
 /**
  * Project: base
@@ -35,25 +37,26 @@ import java.util.ArrayList;
 public class MessageController {
 
     private final MessageService messageService;
+    private final CustomCollectionValidator customCollectionValidator;
 
     /**
      * Contact 문의 메일 전송
      *
      * @param contactRequestDTO - 메일 요청 정보
      * @param bindingResult
-     * @return
+     * @return - 메일 전송 성공 여부(true or false)
      */
     @ApiOperation(
             value = "CONTACT 메일 전송",
             notes = "사용자로부터 받은 문의사항을 버넥트 관계자에게 메일로 전송합니다."
     )
     @PostMapping("/contact")
-    public ResponseEntity<ResponseMessage> sendContactMail(@RequestBody @Valid ContactRequestDTO contactRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<ContactResponse>> sendContactMail(@RequestBody @Valid ContactRequest contactRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = messageService.sendContactMail(contactRequestDTO);
-        return ResponseEntity.ok(responseMessage);
+        ApiResponse<ContactResponse> apiResponse = messageService.sendContactMail(contactRequestDTO);
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -61,15 +64,20 @@ public class MessageController {
      *
      * @param inviteWorkspaceRequestDTO - 워크스페이스 초대 요청 정보
      * @param bindingResult
-     * @return
+     * @return - 메일 전송 성공 여부(true or false)
      */
+    @ApiOperation(
+            value = "워크스페이스 초대 메일 전송",
+            notes = "워크스페이스에 초대된 사용자에게 메일을 전송합니다."
+    )
     @PostMapping("/workspace/invite")
-    public ResponseEntity<ResponseMessage> sendInviteWorkspaceMail(@RequestBody @Valid InviteWorkspaceRequestDTO inviteWorkspaceRequestDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public ResponseEntity<ApiResponse<InviteWorkspaceResponse>> sendInviteWorkspaceMail(@RequestBody @Valid InviteWorkspaceRequest inviteWorkspaceRequestDTO, BindingResult bindingResult) {
+        customCollectionValidator.validate(inviteWorkspaceRequestDTO.getInviteInfos(), bindingResult);
+        if (bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = messageService.sendInviteWorkspaceMail(inviteWorkspaceRequestDTO);
-        return ResponseEntity.ok(responseMessage);
+        ApiResponse<InviteWorkspaceResponse> apiResponse = messageService.sendInviteWorkspaceMail(inviteWorkspaceRequestDTO);
+        return ResponseEntity.ok(apiResponse);
     }
 
 }
