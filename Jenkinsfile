@@ -33,8 +33,8 @@ pipeline {
     stage('Deploy') {
       steps {
         catchError() {
-          sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
-          sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
+          sh 'docker stop pf-message && docker rm pf-message || true'
+          sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
           sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
