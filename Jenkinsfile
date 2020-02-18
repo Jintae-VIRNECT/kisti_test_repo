@@ -24,6 +24,9 @@ pipeline {
         }
 
         stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
           steps {
             echo 'e'
           }
