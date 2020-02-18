@@ -30,7 +30,7 @@
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :status="tableData[scope.$index].status"
+                :data="tableData[scope.$index]"
                 @onChangeData="data => onChangeData(data,tableData[scope.$index].contentUUID)")
 </template>
 <style lang="scss">

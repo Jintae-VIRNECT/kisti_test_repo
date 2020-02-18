@@ -7,17 +7,17 @@
 			//- el-dropdown-item 
 			//- 	.publish-boolean.PUBLISH(@click="$emit('onChangeData', 'PUBLISH')") 
 			//- 		span 배포중
-			//- 		span.check(v-if="status == 'PUBLISH'")
+			//- 		span.check(v-if="data.status == 'PUBLISH'")
 			//- 			i.el-icon-check 
 			//- el-dropdown-item 
 			//- 	.publish-boolean.WAIT(@click="$emit('onChangeData', 'WAIT')") 
 			//- 		span 배포중지
-			//- 		span.check(v-if="status == 'WAIT'")
+			//- 		span.check(v-if="data.status == 'WAIT'")
 			//- 			i.el-icon-check 
 			//- el-dropdown-item 
 			//- 	.publish-boolean.MANAGED(@click="$emit('onChangeData', 'MANAGED')") 
 			//- 		span 공정관리중
-			//- 		span.check(v-if="status == 'MANAGED'")
+			//- 		span.check(v-if="data.status == 'MANAGED'")
 			//- 			i.el-icon-check 
 			.group 콘텐츠 설정
 			el-dropdown-item
@@ -45,7 +45,7 @@
 </style>
 <script>
 export default {
-  props: ['status'],
+  props: ['data'],
   data() {
     return {
       toggleProcessNewModal: false,
@@ -62,7 +62,7 @@ export default {
         },
       )
         .then(() => {
-          this.$emit('onChangeData', 'delete')
+          this.$store.dispatch('DELETE_CONTENT', this.data.contentUUID)
         })
         .catch(() => {})
     },
