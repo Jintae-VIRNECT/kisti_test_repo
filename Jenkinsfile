@@ -9,6 +9,7 @@ pipeline {
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
+          sh 'cp docker/Dockerfile ./'
         }
 
       }
