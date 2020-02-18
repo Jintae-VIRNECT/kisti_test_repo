@@ -16,10 +16,29 @@ pipeline {
     }
 
     stage('Build') {
-      steps {
-        echo 'Build Stage'
-        catchError() {
-          sh 'docker build -t pf-message .'
+      parallel {
+        stage('Build') {
+          steps {
+            echo 'Build Stage'
+          }
+        }
+
+        stage('Develop Branch') {
+          steps {
+            echo 'e'
+          }
+        }
+
+        stage('Staging Branch') {
+          steps {
+            echo 'q'
+          }
+        }
+
+        stage('Master Branch') {
+          steps {
+            echo 'w'
+          }
         }
 
       }
