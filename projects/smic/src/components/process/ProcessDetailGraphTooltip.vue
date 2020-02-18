@@ -28,6 +28,21 @@
           span {{issue ? "있음" : "없음"}}
 </template>
 <style lang="scss">
+#process-detail-banner-graph .bb-tooltip-container {
+  display: block !important;
+  //right: 10%;
+  //left: auto !important;
+  margin-left: 50px;
+  visibility: visible !important;
+  pointer-events: auto !important;
+
+  &:before {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    content: '';
+  }
+}
 .process-detail-graph-tooltip {
   width: 300px;
   .tooltip__body {
@@ -40,9 +55,9 @@
     }
   }
   label {
-    font-size: 12px;
     margin-bottom: 0px;
     color: #6d798b;
+    font-size: 12px;
   }
   .item {
     margin-bottom: 20px;
@@ -55,12 +70,12 @@
   }
   p.value {
     margin: 4px 0px 0px 0px;
-    font-size: 14px;
     color: #0d2a58;
+    font-size: 14px;
   }
   .progress-percent {
-    font-size: 24px;
     color: #0d2a58;
+    font-size: 24px;
   }
   .btn.btn--status {
     margin-top: 7px;
@@ -72,12 +87,12 @@
     background-color: #aabbce;
   }
   .blub {
+    display: inline-block;
     width: 6px;
     height: 6px;
-    display: inline-block;
-    border-radius: 50%;
     margin-right: 10px;
     vertical-align: middle;
+    border-radius: 50%;
   }
 }
 </style>

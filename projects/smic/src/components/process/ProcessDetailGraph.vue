@@ -2,10 +2,10 @@
   div
     .box-wrapper
       .box
-        #process-dash-banner-graph
+        #process-detail-banner-graph
 </template>
 <style lang="scss">
-#process-dash-banner-graph .bb-axis.bb-axis-x g.tick text {
+#process-detail-banner-graph .bb-axis.bb-axis-x g.tick text {
   tspan:nth-child(1) {
     font-weight: 600;
     font-size: 14px;
@@ -143,7 +143,7 @@ export default {
           right: 70,
           bottom: 20,
         },
-        bindto: '#process-dash-banner-graph',
+        bindto: '#process-detail-banner-graph',
       })
       const domains = document.querySelectorAll('path.domain')
       for (let i = 0; i < domains.length; i++) {
