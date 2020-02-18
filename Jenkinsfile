@@ -28,7 +28,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            echo 'e'
+            sh 'docker build -t pf-message:develop .'
           }
         }
 
@@ -37,7 +37,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            echo 'q'
+            sh 'docker build -t pf-message:staging .'
           }
         }
 
@@ -46,7 +46,7 @@ pipeline {
             branch 'master'
           }
           steps {
-            echo 'w'
+            sh 'docker build -t pf-message .'
           }
         }
 
