@@ -17,26 +17,34 @@ pipeline {
 
     stage('Build') {
       parallel {
-        stage('"Develop"') {
-          steps {
-            echo 'Build Stage'
-            catchError() {
-              sh 'docker build -t pf-message .'
+        stage('Develop Branch') {
+           when {
+            steps {
+              catchError() {
+                sh 'docker build -t pf-message:develop .'
+              }
             }
-
           }
         }
 
-        stage('"Staging"') {
-          steps {
-            echo 'qweqwe'
-          }
+        stage('Staging Branch') {
+          when {
+            steps {
+              catchError() {
+                sh 'docker build -t pf-message:staging .'
+              }
+            }
+          } 
         }
 
-        stage('"Master"') {
-          steps {
-            echo 'asdfasdf'
-          }
+        stage('Master Branch') {
+          when {
+            steps {
+              catchError() {
+                sh 'docker build -t pf-message .'
+              }
+            }
+          }          
         }
 
       }
