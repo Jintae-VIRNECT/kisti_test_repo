@@ -50,9 +50,12 @@
               :label="label" 
               :width="width || ''")
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="taskTableData[scope.$index]")
+                table-column(:prop="prop" :data="taskTableData[scope.$index]" @buttonClick="onRowButtonClick")
         div(v-else)
           process-detail-graph
+    issue-modal(:toggleIssueModal="toggleIssueModal" @handleCancel="onHandleCancel")
+    report-modal(:toggleReportModal="toggleReportModal" @handleCancel="onHandleCancel")
+    smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" @handleCancel="onHandleCancel")
 </template>
 <script>
 // UI component
@@ -64,6 +67,9 @@ import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
 import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
+import IssueModal from '@/components/process/IssueModal.vue'
+import ReportModal from '@/components/process/ReportModal.vue'
+import SmartToolModal from '@/components/process/SmartToolModal.vue'
 
 // model
 import { cols as subProcessColSetting } from '@/models/subProcess'
@@ -71,6 +77,7 @@ import { cols as taskColSetting } from '@/models/task'
 
 // temp data
 import sceneGroup from '@/data/sceneGroup'
+import taskGroup from '@/data/taskGroup'
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -89,11 +96,17 @@ export default {
     ProcessControlDropdown,
     ProcessDetailGraph,
     TableColumn,
+    IssueModal,
+    ReportModal,
+    SmartToolModal,
   },
   data() {
     return {
+      toggleIssueModal: false,
+      toggleReportModal: false,
+      toggleSmartToolModal: false,
       lastProcess: this.$store.getters.getLastProcess || {},
-      taskTableData: this.$store.getters.getTaskList,
+      taskTableData: taskGroup.tableData,
       tableData: [
         sceneGroup.tableData.find(
           c => c.id === this.$route.params.subProcessId,
@@ -133,6 +146,16 @@ export default {
     },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+    onRowButtonClick({ prop, data }) {
+      if (prop === 'issueId') this.toggleIssueModal = true
+      else if (prop === 'reportId') this.toggleReportModal = true
+      else if (prop === 'smartTool') this.toggleSmartToolModal = true
+    },
+    onHandleCancel() {
+      this.toggleIssueModal = false
+      this.toggleReportModal = false
+      this.toggleSmartToolModal = false
     },
   },
 }

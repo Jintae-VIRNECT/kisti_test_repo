@@ -47,6 +47,21 @@
   .total-done(v-else-if="/^(totalDone)$/.test(prop)")
     span.count {{ data['count'] }} 
     span &nbsp;/ {{ data['total'] }}
+  //- 스마트툴
+  .total-done(v-else-if="/^(smartTool)$/.test(prop)")
+    span Job ID no.
+    el-divider(direction="vertical")
+    span.count {{ data['count'] }} 
+    span &nbsp;/ {{ data['total'] }} &nbsp;
+    el-button(v-if="data[prop]" v-on:click="buttonClick") 스마트툴 보기
+  //- 리포트 버튼
+  div(v-else-if="/^(reportId)$/.test(prop)")
+    el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트보기
+    span(v-else) ―
+  //- 작업 이슈 버튼
+  div(v-else-if="/^(issueId)$/.test(prop)")
+    el-button(v-if="data[prop]" v-on:click="buttonClick") 작업 이슈 보기
+    span(v-else) ―
   //- 기타
   div(v-else)
     span {{ data[prop] }}
@@ -63,6 +78,11 @@ export default {
     type: String,
     prop: String,
     data: Object,
+  },
+  methods: {
+    buttonClick() {
+      this.$emit('buttonClick', { prop: this.prop, data: this.data })
+    },
   },
 }
 </script>

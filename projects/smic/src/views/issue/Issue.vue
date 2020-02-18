@@ -33,7 +33,7 @@ import ContentControlDropdown from '@/components/contents/ContentControlDropdown
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import PageHeader from '@/components/common/PageHeader.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
-import IssueModal from '@/components/issue/IssueModal.vue'
+import IssueModal from '@/components/process/IssueModal.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
 /// data

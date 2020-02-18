@@ -13,7 +13,7 @@
         .section.border-divider
           el-image(:src="imgSrc" :preview-src-list="[imgSrc]")
           i.el-icon-full-screen
-        .section
+        .section.issue
           label 이슈 유형
           .value
             span.issue-type 작업 이슈
@@ -60,13 +60,12 @@
       margin: 0;
       padding: 30px;
     }
-    &:nth-child(2) {
+    &.issue {
       margin: 30px;
     }
     &:last-child {
       margin-bottom: 36px;
     }
-
     & > .el-icon-full-screen {
       position: absolute;
       right: 30px;
@@ -105,6 +104,16 @@
     border: none;
     border-radius: 4px;
     box-shadow: none;
+    &:hover {
+      background: #e6e9ee;
+    }
+    &:active {
+      color: #fff;
+      background: #455163;
+      span > img {
+        filter: brightness(20);
+      }
+    }
     span > img {
       display: inline-block;
       margin: 0 4px 0 -2px;

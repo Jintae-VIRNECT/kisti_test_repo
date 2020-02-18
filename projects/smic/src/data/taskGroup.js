@@ -29,6 +29,10 @@ export default {
       issue: true,
       status: 'complete',
       processPercent: 100,
+      count: 3,
+      total: 10,
+      issueId: 5,
+      reportId: 6,
     },
     {
       id: '2',
@@ -42,6 +46,11 @@ export default {
       issue: true,
       status: 'progress',
       processPercent: 50,
+      count: 3,
+      total: 10,
+      issueId: 3,
+      reportId: false,
+      smartTool: 9,
     },
     {
       id: '3',
@@ -55,6 +64,10 @@ export default {
       issue: true,
       status: 'progress',
       processPercent: 40,
+      count: 7,
+      total: 10,
+      issueId: false,
+      reportId: 2,
     },
   ],
 }
