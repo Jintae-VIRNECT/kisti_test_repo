@@ -9,10 +9,10 @@ pipeline {
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
+          sh 'cp docker/Dockerfile ./'
           sh 'docker build -t pf-message Dockerfile .'
         }
 
-        sh 'cp docker/Dockerfile ./'
       }
     }
 
