@@ -11,7 +11,6 @@ pipeline {
           sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
-
       }
     }
 
