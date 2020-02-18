@@ -15,6 +15,8 @@ pipeline {
     }
 
     stage('Build') {
+      steps {
+        echo 'Build Stage'
       parallel {
         stage('Develop Branch') {
            when {
@@ -24,7 +26,7 @@ pipeline {
               }
             }
           }
-        }
+        }      
 
         stage('Staging Branch') {
           when {
@@ -47,6 +49,8 @@ pipeline {
         }
 
       }
+      }
+
     }
 
     stage('Test') {
