@@ -1,56 +1,18 @@
 pipeline {
   agent any
   stages {
-    stage('Pre-Build') {
+    stage('Build') {
       steps {
-        echo 'Pre-Build Stage'
+        echo 'Build Stage'
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
-          sh 'cp docker/Dockerfile ./'
-        }
-      }
-    }
-
-    stage('Build') {
-      steps {
-        echo 'Build Stage'
-      parallel {
-        stage('Develop Branch') {
-           when {
-            steps {
-              catchError() {
-                sh 'docker build -t pf-message:develop .'
-              }
-            }
-          }
-        }      
-
-        stage('Staging Branch') {
-          when {
-            steps {
-              catchError() {
-                sh 'docker build -t pf-message:staging .'
-              }
-            }
-          } 
-        }
-
-        stage('Master Branch') {
-          when {
-            steps {
-              catchError() {
-                sh 'docker build -t pf-message .'
-              }
-            }
-          }          
+          sh 'docker build -t pf-message/develop -f docker/Dockerfile.develop .'
         }
 
       }
-      }
-
     }
 
     stage('Test') {
@@ -62,8 +24,8 @@ pipeline {
     stage('Deploy') {
       steps {
         catchError() {
-          sh 'docker stop pf-message && docker rm pf-message || true'
-          sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
+          sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
+          sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
           sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
