@@ -8,7 +8,8 @@ pipeline {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
-          sh './gradlew build -x test'          
+          sh './gradlew build -x test'
+          sh 'cp docker/Dockerfile ./'
         }
 
       }
@@ -17,7 +18,7 @@ pipeline {
       steps {
         echo 'Build Stage'
         catchError() {
-          sh 'docker build -t pf-message/develop -f docker/Dockerfile.develop .'
+          sh 'docker build -t pf-message .'
         }
       }
     }
