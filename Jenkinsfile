@@ -9,7 +9,7 @@ pipeline {
               sh '"echo <password> | sudo -S rm yarn.lock" || true'
               sh 'yarn install'
               sh 'yarn workspace smic build'
-              sh 'cp docker/Dockerfile.develop ./'
+              sh 'cp docker/Dockerfile ./'
             }    
           }
         }
