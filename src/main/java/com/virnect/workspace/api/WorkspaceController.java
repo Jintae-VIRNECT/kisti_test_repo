@@ -140,6 +140,7 @@ public class WorkspaceController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
         }
+        System.out.println("test");
         ResponseMessage responseMessage = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
         return ResponseEntity.ok(responseMessage);
     }
