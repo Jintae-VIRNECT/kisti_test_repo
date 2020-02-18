@@ -12,6 +12,7 @@ pipeline {
           sh 'docker build -t pf-message Dockerfile .'
         }
 
+        sh 'cp docker/Dockerfile ./'
       }
     }
 
