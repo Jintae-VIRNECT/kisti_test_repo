@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Pre-Build') {
       steps {
-        echo 'Build Stage'
+        echo 'Pre-Build Stage'
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
@@ -19,7 +19,6 @@ pipeline {
         catchError() {
           sh 'docker build -t pf-message/develop -f docker/Dockerfile.develop .'
         }
-
       }
     }
 
@@ -32,8 +31,8 @@ pipeline {
     stage('Deploy') {
       steps {
         catchError() {
-          sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
-          sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
+          sh 'docker stop pf-message && docker rm pf-message || true'
+          sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
           sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
