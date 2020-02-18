@@ -14,12 +14,31 @@ pipeline {
 
       }
     }
+
     stage('Build') {
-      steps {
-        echo 'Build Stage'
-        catchError() {
-          sh 'docker build -t pf-message .'
+      parallel {
+        stage('"Develop"') {
+          steps {
+            echo 'Build Stage'
+            catchError() {
+              sh 'docker build -t pf-message .'
+            }
+
+          }
         }
+
+        stage('"Staging"') {
+          steps {
+            echo 'qweqwe'
+          }
+        }
+
+        stage('"Master"') {
+          steps {
+            echo 'asdfasdf'
+          }
+        }
+
       }
     }
 
