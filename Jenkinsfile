@@ -9,7 +9,7 @@ pipeline {
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
-          sh 'docker build -t pf-message/develop -f docker/Dockerfile.develop .'
+          sh 'docker build -t pf-message Dockerfile .'
         }
 
       }
@@ -24,8 +24,8 @@ pipeline {
     stage('Deploy') {
       steps {
         catchError() {
-          sh 'docker stop pf-message-develop && docker rm pf-message-develop || true'
-          sh 'docker run -p 8084:8084 -d --name=pf-message-develop pf-message/develop'
+          sh 'docker stop pf-message && docker rm pf-message || true'
+          sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
           sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
 
