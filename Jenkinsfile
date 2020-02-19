@@ -1,15 +1,53 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
+    stage('Pre-Build') {
       steps {
-        echo 'Build Stage'
+        echo 'Pre-Build Stage'
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
           sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
-          sh 'docker build -t pf-workspace/develop -f docker/Dockerfile.develop .'
+          sh 'cp docker/Dockerfile ./'
+        }
+
+      }
+    }
+
+    stage('Build') {
+      parallel {
+        stage('Build') {
+          steps {
+            echo 'Build Stage'
+          }
+        }
+
+        stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
+          steps {
+            sh 'docker build -t pf-workspace:develop .'
+          }
+        }
+
+        stage('Staging Branch') {
+          when {
+            branch 'staging'
+          }
+          steps {
+            sh 'docker build -t pf-workspace:staging .'
+          }
+        }
+
+        stage('Master Branch') {
+          when {
+            branch 'master'
+          }
+          steps {
+            sh 'docker build -t pf-workspace .'
+          }
         }
 
       }
@@ -21,12 +59,52 @@ pipeline {
       }
     }
 
-    stage('Deploy') {
+    stage('Pre-Deploy') {
       steps {
+        echo 'Pre-Deploy Stage'
         catchError() {
-          sh 'docker stop pf-workspace-develop && docker rm pf-workspace-develop || true'
-          sh 'docker run -p 8082:8082 -d --name=pf-workspace-develop pf-workspace/develop'
-          sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          sh 'docker stop pf-workspace && docker rm pf-workspace || true'
+        }
+
+      }
+    }
+
+    stage('Deploy') {
+      parallel {
+        stage('Deploy') {
+          steps {
+            echo 'Deploy Stage'
+          }
+        }
+
+        stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
+          steps {
+            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:develop'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
+        }
+
+        stage('Staging Branch') {
+          when {
+            branch 'staging'
+          }
+          steps {
+            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:staging'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
+        }
+
+        stage('Master Branch') {
+          when {
+            branch 'master'
+          }
+          steps {
+            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+          }
         }
 
       }
