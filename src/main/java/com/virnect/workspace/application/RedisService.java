@@ -2,7 +2,7 @@ package com.virnect.workspace.application;
 
 import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.redis.UserInvite;
-import com.virnect.workspace.dto.WorkspaceDTO;
+import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,21 +24,20 @@ public class RedisService {
 
     private final UserInviteRepository userInviteRepository;
 
-    public void setInviteInfo(String userId, String workspaceId, String inviteCode, List<WorkspaceDTO.WorkspaceInviteMemberReq> userInfoList) {
-        for(WorkspaceDTO.WorkspaceInviteMemberReq metaUserInfo :userInfoList) {
+    public void setInviteInfo(String userId, String workspaceId, String inviteCode, List<WorkspaceInviteRequest> workspaceInviteRequestList) {
+        for (WorkspaceInviteRequest workspaceInviteInfo : workspaceInviteRequestList) {
             UserInvite userInvite = UserInvite.builder()
                     .inviteUser(userId)
                     .workspace(workspaceId)
-                    .joinUser(metaUserInfo.getUserEmail())
-                    .email(metaUserInfo.getUserEmail())
+                    .joinUser(workspaceInviteInfo.getUserEmail())//연동 후에 이름 가져오는 것으로 변경
+                    .email(workspaceInviteInfo.getUserEmail())
                     .code(inviteCode)
-                    .permission(metaUserInfo.getWorkspacePermission())
-                    .groups(metaUserInfo.getGroups())
+                    .permission(workspaceInviteInfo.getWorkspacePermission())
+                    .groups(workspaceInviteInfo.getGroups())
                     .expireTime(3L)
                     .build();
             this.userInviteRepository.save(userInvite);
         }
-
     }
 
 

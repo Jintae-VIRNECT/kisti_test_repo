@@ -3,7 +3,7 @@ package com.virnect.workspace.dao;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.workspace.domain.QWorkspaceUserPermission;
 import com.virnect.workspace.domain.WorkspaceRole;
-import com.virnect.workspace.dto.UserDTO;
+import com.virnect.workspace.dto.MemberInfoDTO;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -31,29 +31,29 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
     }
 
     @Override
-    public List<UserDTO.UserInfoDTO> findUserInfoListFilterd(List<UserDTO.UserInfoDTO> userInfoDTOList, String workspaceId, String filter) {
+    public List<MemberInfoDTO> findUserInfoListFilterd(List<MemberInfoDTO> memberInfoList, String workspaceId, String filter) {
 
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-        List<UserDTO.UserInfoDTO> result = new ArrayList<>();
+        List<MemberInfoDTO> resultList = new ArrayList<>();
 
-        for (UserDTO.UserInfoDTO userInfoDTO : userInfoDTOList) {
+        for (MemberInfoDTO memberInfo : memberInfoList) {
             String role = jpaQueryFactory.select(qWorkspaceUserPermission.workspaceRole.role)
                     .from(qWorkspaceUserPermission)
                     .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
-                            .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userInfoDTO.getUuid()))).fetchOne();
-            if (filter.contains("MASTER") && !filter.contains("MEMBER")){
-                if(role.equals("MASTER")) {
-                    result.add(userInfoDTO);
-                }
-            } else if (filter.contains("MEMBER") && !filter.contains("MASTER")) {
-                if(role.equals("MEMBER")) {
-                    result.add(userInfoDTO);
-                }
-            }else{
-                result.add(userInfoDTO);
+                            .and(qWorkspaceUserPermission.workspaceUser.userId.eq(memberInfo.getUuid()))).fetchOne();
+            switch (role) {
+                case "MASTER":
+                    if(filter.contains("MASTER")) resultList.add(memberInfo);
+                    break;
+                case "MANAGER":
+                    if(filter.contains("MANAGER")) resultList.add(memberInfo);
+                    break;
+                case "MEMBER":
+                    if(filter.contains("MEMBER")) resultList.add(memberInfo);
+                    break;
+                default:
             }
         }
-        return result;
-
+        return resultList;
     }
 }

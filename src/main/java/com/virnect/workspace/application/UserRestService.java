@@ -1,6 +1,8 @@
 package com.virnect.workspace.application;
 
-import com.virnect.workspace.global.common.ResponseMessage;
+import com.virnect.workspace.dto.response.UserInfoListResponse;
+import com.virnect.workspace.dto.response.UserInfoResponse;
+import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,7 @@ public interface UserRestService {
      * @return - 유저 정보
      */
     @GetMapping("/{userId}")
-    ResponseMessage getUserInfoByUserId(@PathVariable("userId") String userId);
+    ApiResponse<UserInfoResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
 
     /**
      * 유저 정보 리스트 검색
@@ -34,7 +36,7 @@ public interface UserRestService {
      * @return - 이름 또는 이메일이 검색어와 일치한 유저 정보들의 리스트 데이터
      */
     @GetMapping
-    ResponseMessage getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, Pageable pageable);
+    ApiResponse<UserInfoListResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, Pageable pageable);
 
 }
 
