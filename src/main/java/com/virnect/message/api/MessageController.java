@@ -2,13 +2,12 @@ package com.virnect.message.api;
 
 import com.virnect.message.application.MessageService;
 import com.virnect.message.dto.request.ContactRequest;
-import com.virnect.message.dto.request.InviteWorkspaceRequest;
+import com.virnect.message.dto.request.WorkspaceInviteMailRequest;
 import com.virnect.message.dto.response.ContactResponse;
 import com.virnect.message.dto.response.InviteWorkspaceResponse;
 import com.virnect.message.exception.BusinessException;
 import com.virnect.message.global.common.ApiResponse;
 import com.virnect.message.global.common.CustomCollectionValidator;
-import com.virnect.message.global.common.ResponseMessage;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.*;
 import lombok.AccessLevel;
@@ -71,7 +70,7 @@ public class MessageController {
             notes = "워크스페이스에 초대된 사용자에게 메일을 전송합니다."
     )
     @PostMapping("/workspace/invite")
-    public ResponseEntity<ApiResponse<InviteWorkspaceResponse>> sendInviteWorkspaceMail(@RequestBody @Valid InviteWorkspaceRequest inviteWorkspaceRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<InviteWorkspaceResponse>> sendInviteWorkspaceMail(@RequestBody @Valid WorkspaceInviteMailRequest inviteWorkspaceRequestDTO, BindingResult bindingResult) {
         customCollectionValidator.validate(inviteWorkspaceRequestDTO.getInviteInfos(), bindingResult);
         if (bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);

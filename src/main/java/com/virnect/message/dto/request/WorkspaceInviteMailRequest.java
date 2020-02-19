@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class InviteWorkspaceRequest {
+public class WorkspaceInviteMailRequest {
     @ApiModelProperty(value = "초대한 사용자 이름")
     @NotBlank(message = "초대한 마스터 또는 매니저 유저의 이름은 필수 값입니다.")
     private String requestUserName;

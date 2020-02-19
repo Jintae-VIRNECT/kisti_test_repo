@@ -15,5 +15,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InviteWorkspaceResponse {
     @ApiModelProperty(value = "워크스페이스 초대 메일 발송 결과")
-    private final boolean result;
+    private final boolean workspaceInvite;
 }

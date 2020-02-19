@@ -4,18 +4,20 @@ import com.virnect.message.domain.MailSender;
 import com.virnect.message.domain.MailSubject;
 import com.virnect.message.domain.MailTemplate;
 import com.virnect.message.dto.request.ContactRequest;
-import com.virnect.message.dto.request.InviteWorkspaceRequest;
+import com.virnect.message.dto.request.WorkspaceInviteMailRequest;
 import com.virnect.message.dto.response.ContactResponse;
 import com.virnect.message.dto.response.InviteWorkspaceResponse;
 import com.virnect.message.global.common.ApiResponse;
-import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Project: PF-Message
@@ -67,7 +69,7 @@ public class MessageService {
      * @param inviteWorkspaceRequestDTO - 워크스페이스 초대 정보
      * @return
      */
-    public ApiResponse<InviteWorkspaceResponse> sendInviteWorkspaceMail(InviteWorkspaceRequest inviteWorkspaceRequestDTO) {
+    public ApiResponse<InviteWorkspaceResponse> sendInviteWorkspaceMail(WorkspaceInviteMailRequest inviteWorkspaceRequestDTO) {
         //1. 초대 된 사람에게 메일 발송
         Context context = new Context();
         String inviteAcceptUrl = inviteWorkspaceRequestDTO.getAcceptUrl() + "?userId=" + inviteWorkspaceRequestDTO.getRequestUserId() + "&code=" + inviteWorkspaceRequestDTO.getInviteCode();
@@ -76,7 +78,7 @@ public class MessageService {
         context.setVariable("acceptUrl", inviteAcceptUrl);
 
         List<String> inviteUserEmail = new ArrayList<>();
-        for (InviteWorkspaceRequest.InviteInfo inviteInfo : inviteWorkspaceRequestDTO.getInviteInfos()) {
+        for (WorkspaceInviteMailRequest.InviteInfo inviteInfo : inviteWorkspaceRequestDTO.getInviteInfos()) {
             context.setVariable("inviteUserName", inviteInfo.getInviteUserName());
             inviteUserEmail.add(inviteInfo.getInviteUserEmail());
         }

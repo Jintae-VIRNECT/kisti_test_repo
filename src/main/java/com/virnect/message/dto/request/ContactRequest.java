@@ -21,8 +21,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class ContactRequest {
-    @NotEmpty(message = "카테고리 항목은 필수 값입니다.")
-    @ApiModelProperty(value = "카테고리")
+    @NotEmpty(message = "문의 유형은 최소 한 개 이상이어야 합니다.")
+    @ApiModelProperty(value = "문의 유형")
     private String[] category;
 
     @NotBlank(message = "내용은 필수 값입니다.")
@@ -40,4 +40,20 @@ public class ContactRequest {
     @NotBlank(message = "보내는 사람의 이름은 필수 값입니다.")
     @ApiModelProperty(value = "보낸 사람 이름")
     private String senderName;
+
+    @NotBlank(message = "보내는 사람의 기업/기관명은 필수 값입니다.")
+    @ApiModelProperty(value = "보낸 사람 이름")
+    private String senderCompanyName;
+
+    @NotBlank(message = "보내는 사람의 부서는 필수 값입니다.")
+    @ApiModelProperty(value = "보낸 사람 이름")
+    private String senderCompanyPart;
+
+    @NotBlank(message = "보내는 사람의 직책은 필수 값입니다.")
+    @ApiModelProperty(value = "보낸 사람 이름")
+    private String senderCompanyRole;
+
+    @NotBlank(message = "보내는 사람의 전화번호는 필수 값입니다.")
+    @ApiModelProperty(value = "보낸 사람 이름")
+    private String senderPhone;
 }
