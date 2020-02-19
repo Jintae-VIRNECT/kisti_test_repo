@@ -68,8 +68,8 @@ public class WorkspaceController {
             value = "워크스페이스 조회",
             notes = "사용자가 소속되어 있는 워크스페이스 정보를 반환합니다."
     )
-    @GetMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@PathVariable("userId") String userId) {
         if (!StringUtils.hasText(userId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
