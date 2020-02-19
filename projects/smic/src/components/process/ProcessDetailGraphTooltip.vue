@@ -29,10 +29,10 @@
 </template>
 <style lang="scss">
 #process-detail-banner-graph .bb-tooltip-container {
+  top: 15px !important;
+  right: 40px;
+  left: auto !important;
   display: block !important;
-  //right: 10%;
-  //left: auto !important;
-  margin-left: 50px;
   visibility: visible !important;
   pointer-events: auto !important;
 

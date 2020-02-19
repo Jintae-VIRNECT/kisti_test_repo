@@ -36,9 +36,6 @@ export default {
       barChart: null,
     }
   },
-  mounted() {
-    this.initProcessGraph(jsonData)
-  },
   methods: {
     initProcessGraph(json) {
       const xAxisTicks = json.map(row => row.name)
@@ -164,6 +161,14 @@ export default {
       lastGridLine.setAttribute('x1', XpositionOfLastGridLine - 2)
       lastGridLine.setAttribute('x2', XpositionOfLastGridLine - 2)
     },
+  },
+  mounted() {
+    this.initProcessGraph(jsonData)
+    // tooltip hide
+    this.$el.addEventListener('mouseleave', () => {
+      this.$el.querySelector('.process-detail-graph-tooltip').style.display =
+        'none'
+    })
   },
 }
 </script>
