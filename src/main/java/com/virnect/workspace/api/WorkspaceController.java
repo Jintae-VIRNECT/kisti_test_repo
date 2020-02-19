@@ -69,11 +69,11 @@ public class WorkspaceController {
             notes = "사용자가 소속되어 있는 워크스페이스 정보를 반환합니다."
     )
     @GetMapping
-    public ResponseEntity<ApiResponse<WorkspaceListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
         if (!StringUtils.hasText(userId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId);
+        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId);
         return ResponseEntity.ok(apiResponse);
     }
 

@@ -97,16 +97,16 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceListResponse> getUserWorkspaces(String userId) {
-        List<WorkspaceListResponse.WorkspaceInfo> workspaceListResponse = new ArrayList<>();
+    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId) {
+        List<WorkspaceInfoListResponse.WorkspaceInfoResponse> workspaceList = new ArrayList<>();
         this.workspaceUserRepository.findByUserId(userId).forEach(workspaceUser -> {
             Workspace workspace = workspaceUser.getWorkspace();
-            WorkspaceListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceListResponse.WorkspaceInfo.class);
+            WorkspaceInfoListResponse.WorkspaceInfoResponse workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfoResponse.class);
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-            workspaceListResponse.add(workspaceInfo);
+            workspaceList.add(workspaceInfo);
         });
-        return new ApiResponse<>(new WorkspaceListResponse(workspaceListResponse));
+        return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList));
     }
 
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, Pageable pageable) {
