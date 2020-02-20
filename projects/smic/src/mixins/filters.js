@@ -44,5 +44,10 @@ export default {
       }
       return answer
     },
+    leftZeroPad(num) {
+      let s = num + ''
+      if (s.length < 2) s = '0' + s
+      return s
+    },
   },
 }

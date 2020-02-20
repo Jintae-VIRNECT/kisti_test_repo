@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item 공정({{tableData[0].processName}})
+      el-breadcrumb-item 공정({{tableData[0].name}})
       el-breadcrumb-item 세부공정
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")

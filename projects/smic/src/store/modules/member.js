@@ -18,7 +18,7 @@ export default {
   actions: {
     async MEMBER_LIST(context, param = {}) {
       try {
-        const response = await Vue.axios.get(API.GET_MEMBER_LIST(), {
+        const response = await Vue.axios.get(API.MEMBER_LIST(), {
           params: {
             userId: this.getters.getUser.uuid,
             search: param.search || '',
@@ -28,7 +28,7 @@ export default {
         })
         const { data } = response.data
         context.commit('MEMBER_LIST', {
-          list: data.memberList,
+          list: data.memberInfoList,
         })
         return response.data
       } catch (e) {

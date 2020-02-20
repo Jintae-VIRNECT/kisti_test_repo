@@ -7,7 +7,7 @@ import API from '@/models/api'
  */
 async function requestContentsList(params = {}) {
   try {
-    const response = await Vue.axios.get(API.GET_CONTENTS_LIST(), {
+    const response = await Vue.axios.get(API.CONTENTS_LIST(), {
       params: {
         search: params.search || '',
         filter: params.filter || 'All',
@@ -24,57 +24,67 @@ async function requestContentsList(params = {}) {
 
 export default {
   state: {
-    currentContentsList: [],
     contentsList: [],
-    sceneGroupList: [],
+    contentDetail: {
+      info: {},
+      sceneGroupList: [],
+    },
   },
   getters: {
-    getCurrentContentsList(state) {
-      return state.currentContentsList
-    },
     getContentsList(state) {
       return state.contentsList
     },
-    getSceneGroupList(state) {
-      return state.sceneGroupList
+    getContentDetail(state) {
+      return state.contentDetail
     },
   },
   mutations: {
-    CURRENT_CONTENTS_LIST(state, list) {
-      state.currentContentsList = list
-    },
     CONTENTS_LIST(state, list) {
       state.contentsList = list
     },
+    CONTENT_INFO(state, obj) {
+      state.contentDetail.info = obj
+    },
     SCENE_GROUP_LIST(state, list) {
-      state.sceneGroupList = list
+      state.contentDetail.sceneGroupList = list
     },
     DELETE_CONTENT(state, contentUUID) {
-      state.currentContentsList = state.currentContentsList.filter(
-        content => content.contentUUID !== contentUUID,
-      )
       state.contentsList = state.contentsList.filter(
         content => content.contentUUID !== contentUUID,
       )
     },
   },
   actions: {
-    async CURRENT_CONTENTS_LIST(context) {
-      const res = await requestContentsList()
-      context.commit('CURRENT_CONTENTS_LIST', res.data.contentInfo)
-      return res
-    },
     async CONTENTS_LIST(context, params = {}) {
-      const res = await requestContentsList(params)
-      context.commit('CONTENTS_LIST', res.data.contentInfo)
-      return res
+      try {
+        const response = await Vue.axios.get(API.CONTENTS_LIST(), {
+          params: {
+            search: params.search || '',
+            filter: params.filter || 'All',
+            sort: params.sort || 'createdDate,desc',
+            size: params.size || 20,
+            page: params.page || 0,
+          },
+        })
+        const { data } = response.data
+        context.commit('CONTENTS_LIST', data.contentInfo)
+        return response.data
+      } catch (e) {
+        console.error(e)
+      }
     },
     async SCENE_GROUP_LIST(context, contentUUID) {
       try {
-        const response = await Vue.axios.get(API.GET_SCENE_GROUP_LIST(), {
+        const response = await Vue.axios.get(API.SCENE_GROUP_LIST(), {
           params: { contentUUID },
         })
         const { data } = response.data
+        context.commit(
+          'CONTENT_INFO',
+          context.state.contentsList.find(
+            content => content.contentUUID === contentUUID,
+          ),
+        )
         context.commit('SCENE_GROUP_LIST', data.sceneGroupInfoList)
         return response.data
       } catch (e) {
@@ -84,7 +94,7 @@ export default {
     async DELETE_CONTENT(context, contentUUID) {
       try {
         const response = await Vue.axios.delete(
-          API.DELETE_CONTENT(contentUUID),
+          API.CONTENT_DETAIL(contentUUID),
           {
             params: {
               uuid: context.getters.getUser.uuid,

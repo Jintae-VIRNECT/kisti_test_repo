@@ -14,6 +14,9 @@ customAxios.interceptors.request.use(function(req) {
   } else if (/^@contents/.test(req.url)) {
     req.baseURL = process.env.CONTENT_API_URL
     req.url = req.url.replace('@contents', '/contents')
+  } else if (/^@process/.test(req.url)) {
+    req.baseURL = process.env.CONTENT_API_URL
+    req.url = req.url.replace('@process', '/processes')
   }
   return req
 })

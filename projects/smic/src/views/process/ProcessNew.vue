@@ -22,13 +22,13 @@
             template(slot-scope='scope')
               table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
     process-new-modal(
-      :target='target'
+      :target="target"
       :toggleProcessModal="toggleNewModal"
       @handleConfirm="onNewModalConfirm"
       @onToggleNewModal="onToggleNewModal")
     process-control-dropdown-modal(
-      :target="target"
       modalType="create"
+      :target="target"
       :toggleProcessModal="toggleProcessModal"
       @onToggleProcessModal="onToggleProcessModal")
 </template>
@@ -68,7 +68,6 @@ export default {
   },
   data() {
     return {
-      tableData: this.$store.getters.getCurrentContentsList,
       search: 'smic',
       colSetting: tableColSettings.contents,
       filter: {
@@ -87,13 +86,21 @@ export default {
       },
       toggleNewModal: false,
       toggleProcessModal: false,
-      target: {},
     }
   },
+  computed: {
+    tableData() {
+      return this.$store.getters.getContentsList
+    },
+    target() {
+      return this.$store.getters.getContentDetail
+    },
+  },
   methods: {
-    onClickCell(row) {
+    async onClickCell(row) {
+      this.$store.commit('CONTENT_INFO', row)
+      await this.$store.dispatch('SCENE_GROUP_LIST', row.contentUUID)
       this.toggleNewModal = true
-      this.target = row
     },
     onToggleNewModal(bool) {
       this.toggleNewModal = bool
@@ -107,6 +114,9 @@ export default {
         this.toggleNewModal = false
       }
     },
+  },
+  created() {
+    this.$store.dispatch('CONTENTS_LIST')
   },
 }
 </script>

@@ -51,6 +51,10 @@
     font-size: 24px;
   }
 }
+.el-time-spinner__list::after,
+.el-time-spinner__list::before {
+  height: 72px;
+}
 /* admin style override end */
 
 .admin-body__header {

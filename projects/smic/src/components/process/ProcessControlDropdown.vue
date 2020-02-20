@@ -36,6 +36,11 @@ export default {
       toggleProcessModal: false,
     }
   },
+  computed: {
+    contentDetail() {
+      return this.$store.getters.getContentDetail
+    },
+  },
   methods: {
     endProcess() {
       this.$confirm(
