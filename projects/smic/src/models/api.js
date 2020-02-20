@@ -6,7 +6,7 @@ export default {
   MEMBER_LIST: () => '@workspace/members',
   // contents
   CONTENTS_LIST: () => '@contents',
-  CONTENTS_DETAIL: contentId => `@contents/${contentId}`,
+  CONTENT_DETAIL: contentId => `@contents/${contentId}`,
   // scene group
   SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
   // process

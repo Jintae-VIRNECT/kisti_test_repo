@@ -21,21 +21,31 @@
     span.nums {{ data[prop] }}
   //- 진행률
   .process-percent(v-else-if="/^.+(Percent)$/.test(prop)")
-    el-progress(:percentage="data[prop]" :show-text="true")
+    //- dummy data !!
+    el-progress(:percentage="randomProgress()" :show-text="true")
+    //- el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
   .total-done(v-else-if="/^(schedule)$/.test(prop)")
     span {{ data['startDate'] | dayJs_FilterDateTime }} 
     span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTime }}
   //- 진행 상태
   div(v-else-if="/^(status)$/.test(prop)")
+    //- dummy data !!
     button.btn.btn--status(
       size="mini" 
-      :class="data[prop]"
+      :class="randomStatus()"
       plain
-    ) {{ data[prop] | statusFilterName }}
+    ) {{ randomStatus() | statusFilterName }}
+    //- button.btn.btn--status(
+    //-   size="mini" 
+    //-   :class="data[prop]"
+    //-   plain
+    //- ) {{ data[prop] | statusFilterName }}
   //- 멤버들
   div(v-else-if="/^(auths)$/.test(prop)")
-    span {{ data[prop] | limitAuthsLength }}
+    //- dummy data !!
+    span {{ ['작업자1', '작업자2', '작업자3', '작업자4'] | limitAuthsLength }}
+    //- span {{ data[prop] | limitAuthsLength }}
   //- 이슈
   div(v-else-if="/^(issue)$/.test(prop)")
     .blub(:class="data[prop] ? 'on' : 'off'")
@@ -82,6 +92,18 @@ export default {
   methods: {
     buttonClick() {
       this.$emit('buttonClick', { prop: this.prop, data: this.data })
+    },
+    // dummy data !!
+    random(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return Math.floor(Math.random() * (max - min + 1)) + min
+    },
+    randomStatus() {
+      return ['complete', 'progress', 'idle', 'imcomplete'][this.random(0, 2)]
+    },
+    randomProgress() {
+      return this.random(0, 100)
     },
   },
 }

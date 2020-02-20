@@ -81,7 +81,6 @@ export default {
   },
   data() {
     return {
-      tableData: this.$store.getters.currentReportedDetailProcess,
       searchInput: null,
       filter: {
         options: [
@@ -103,6 +102,9 @@ export default {
   computed: {
     colSetting() {
       return colSetting
+    },
+    tableData() {
+      return this.$store.getters.getProcessList
     },
   },
   methods: {
@@ -141,6 +143,7 @@ export default {
         this.filter.options.find(option => option.label === filterQuery).value,
       ]
     }
+    this.$store.dispatch('PROCESS_LIST')
   },
 }
 </script>
