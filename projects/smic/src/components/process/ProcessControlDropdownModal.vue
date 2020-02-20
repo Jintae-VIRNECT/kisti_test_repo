@@ -174,6 +174,7 @@ export default {
     },
   },
   created() {
+    if (!this.target) return false
     this.form.contentUUID = this.target.info.contentUUID
     this.form.name = this.target.info.contentName
     this.form.subProcessList = this.target.sceneGroupList.map(scene => ({
