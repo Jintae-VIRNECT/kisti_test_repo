@@ -18,6 +18,17 @@ $ docker build -t smic -f docker/Dockerfile.develop .
 $ docker run smic
 ```
 
+## 라우팅
+`/` 홈  
+`/users` 로그인  
+`/members` 멤버 목록  
+`/contents` 컨텐츠 목록  
+└ `/contents/{sceneGroup}` 컨텐츠의 세부공정 목록  
+`/process` 공정 목록  
+└ `/process/{subProcess}` 공정의 세부공정 목록  
+　└ `/process/{subProcess}/{task}` 세부공정의 작업 목록  
+`/issue` 이슈 목록  
+
 ## 파일 구조
 
 ```

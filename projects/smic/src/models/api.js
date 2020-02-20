@@ -3,14 +3,22 @@ export default {
   USER_LOGIN: () => '/users/login',
   USER_LOGOUT: () => '/users/logout',
   // members
-  GET_MEMBER_LIST: () => '@workspace/members',
+  MEMBER_LIST: () => '@workspace/members',
   // contents
-  GET_CONTENTS_LIST: () => '@contents',
-  DELETE_CONTENT: id => `@contents/${id}`,
-  // process
-  GET_PROCESS_LIST: () => '',
+  CONTENTS_LIST: () => '@contents',
+  CONTENTS_DETAIL: contentId => `@contents/${contentId}`,
   // scene group
-  GET_SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
+  SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
+  // process
+  PROCESS_LIST: () => '@process',
+  CREATE_PROCESS: () => `@process/process`,
+  // sub process
+  SUB_PROCESS_LIST: processId => `@process/${processId}/subProcesses`,
+  // jobs
+  JOBS_LIST: subProcessesId => `@process/subProcesses/${subProcessesId}/jobs`,
   // issue
-  GET_ISSUE_LIST: () => '',
+  ISSUE_LIST: () => '@process/issues',
+  ISSUE_DETAIL: issueId => `@process/issue/${issueId}`,
+  // report
+  REPORT_DETAIL: reportId => `@process/report/${reportId}`,
 }

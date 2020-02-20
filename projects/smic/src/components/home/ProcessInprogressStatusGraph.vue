@@ -71,13 +71,13 @@ $el-date-width: 80px;
   padding: 20px 30px 0px 15px;
   &--left,
   &--right {
-    width: 49.5%;
     display: inline-block;
+    width: 49.5%;
     & > i {
       padding: 3px;
-      cursor: pointer;
-      vertical-align: middle;
       font-weight: 600;
+      vertical-align: middle;
+      cursor: pointer;
     }
     & > * {
       display: inline-block;
@@ -86,17 +86,17 @@ $el-date-width: 80px;
   }
   &--left {
     .date-label {
-      font-size: 16px;
-      color: #0d2a58;
       margin: 0px 15px;
+      color: #0d2a58;
+      font-size: 16px;
       text-align: center;
     }
   }
   &--right {
     text-align: right;
     .vn-date-range-select {
-      margin-right: 10px;
       display: inline-block !important;
+      margin-right: 10px;
     }
     .time-divider {
       display: inline-block;
@@ -106,10 +106,10 @@ $el-date-width: 80px;
       display: inline-block !important;
     }
     input {
+      display: inline-block !important;
       height: $el-date-height !important;
       padding-right: 0px !important;
       background-color: #f5f7fa;
-      display: inline-block !important;
     }
     .el-date-editor {
       width: $el-date-width !important;
@@ -244,6 +244,9 @@ export default {
             max: 12,
           },
         },
+        resize: {
+          auto: false,
+        },
         bindto: '#bar-chart',
       })
       const domains = document.querySelectorAll('path.domain')
@@ -257,8 +260,8 @@ export default {
       if (startTime > endTime) this.form.endTime = this.form.startTime
       this.initProcessGraph(jsonData())
     },
-    onClickToggleTab({ label }) {
-      this.activeTab = label
+    onClickToggleTab({ name }) {
+      this.activeTab = name
       this.initProcessGraph(jsonData())
     },
     onChangeDateArrow(val) {

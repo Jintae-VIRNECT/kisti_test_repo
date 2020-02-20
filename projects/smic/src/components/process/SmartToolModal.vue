@@ -39,10 +39,9 @@
     margin: 0 28px;
   }
   label {
-    width: 70px;
+    min-width: 70px;
   }
   .value {
-    margin-left: 70px;
     & > span {
       vertical-align: middle;
       &:first-child {

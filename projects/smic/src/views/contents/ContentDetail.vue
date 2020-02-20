@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     sceneGroupData() {
-      return this.$store.getters.getSceneGroupList
+      return this.$store.getters.getContentDetail.sceneGroupList
     },
   },
   methods: {

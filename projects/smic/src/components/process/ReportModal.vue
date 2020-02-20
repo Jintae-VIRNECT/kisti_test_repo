@@ -47,10 +47,10 @@
     }
   }
   label {
-    width: 70px;
+    min-width: 60px;
   }
   .value {
-    margin-left: 70px;
+    width: 390px;
   }
   .bool {
     display: block;

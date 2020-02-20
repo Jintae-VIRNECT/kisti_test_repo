@@ -2,10 +2,10 @@ import dayjs from 'dayjs'
 export default [
   {
     id: '1',
-    processName: '전기오토바이 제조',
+    name: '전기오토바이 제조',
     detailProcessName: '자제 절단',
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(1, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(1, 'month'),
@@ -13,7 +13,7 @@ export default [
     auth: 'Jason',
     auths: ['전문가 1', '전문가 2', '전문가 3'],
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 3,
+    subProcessTotal: 3,
     processPercent: 70,
     type: '이슈',
     // 체결수 = count / total
@@ -27,10 +27,10 @@ export default [
   },
   {
     id: '2',
-    processName: '터빈 조립',
+    name: '터빈 조립',
     detailProcessName: "detailProcess' Name 2",
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(2, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(2, 'month'),
@@ -38,7 +38,7 @@ export default [
     auth: 'Jason',
     auths: ['전문가 1', '전문가 2', '전문가 3', '전문가 4', '전문가 5'],
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 5,
+    subProcessTotal: 5,
     processPercent: 100,
     workerNum: 6,
     workName: '전원 연결',
@@ -52,10 +52,10 @@ export default [
   },
   {
     id: '3',
-    processName: '모터 펌프 조립',
+    name: '모터 펌프 조립',
     detailProcessName: "detailProcess' Name 3",
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(3, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(3, 'month'),
@@ -63,7 +63,7 @@ export default [
     auth: 'Jason',
     auths: ['전문가 4', '전문가 5', '전문가 6', '전문가 7'],
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 4,
+    subProcessTotal: 4,
     processPercent: 90,
     workerNum: 6,
     workName: '터빈 모터 전력 연결',
@@ -77,10 +77,10 @@ export default [
   },
   {
     id: '4',
-    processName: '배기관 조립',
+    name: '배기관 조립',
     detailProcessName: "detailProcess' Name 4",
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(4, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(4, 'month'),
@@ -88,7 +88,7 @@ export default [
     auths: ['전문가 3', '전문가 4', '전문가 5'],
     auth: 'Jason',
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 3,
+    subProcessTotal: 3,
     processPercent: 90,
     workerNum: 6,
     workName: '모터 펌프 구동 점검',
@@ -102,10 +102,10 @@ export default [
   },
   {
     id: '5',
-    processName: '계기판 조립',
+    name: '계기판 조립',
     detailProcessName: "detailProcess' Name 5",
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(5, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(5, 'month'),
@@ -113,7 +113,7 @@ export default [
     auths: ['전문가 4', '전문가 5', '전문가 6', '전문가 7', '전문가 8'],
     auth: 'Jason',
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 5,
+    subProcessTotal: 5,
     processPercent: 90,
     workerNum: 6,
     workName: '외부 배기구 정상 작동 점검',
@@ -127,10 +127,10 @@ export default [
   },
   {
     id: '6',
-    processName: '전기 배선 연결',
+    name: '전기 배선 연결',
     detailProcessName: "detailProcess' Name 6",
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(6, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(6, 'month'),
@@ -138,7 +138,7 @@ export default [
     auths: ['전문가 6', '전문가 7', '전문가 8', '전문가 9', '전문가 10'],
     auth: 'Jason',
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 4,
+    subProcessTotal: 4,
     processPercent: 90,
     workerNum: 6,
     workName: '계기판 전력량 반영 확인',
@@ -152,10 +152,10 @@ export default [
   },
   {
     id: '7',
-    processName: '게이지 조립',
+    name: '게이지 조립',
     detailProcessName: '자제 절단',
-    startAt: dayjs().minute(0),
-    endAt: dayjs()
+    startDate: dayjs().minute(0),
+    endDate: dayjs()
       .add(7, 'hour')
       .minute(0),
     reportedAt: dayjs().subtract(7, 'month'),
@@ -163,7 +163,7 @@ export default [
     auths: ['전문가 3', '전문가 4', '전문가 5'],
     auth: 'Jason',
     profileImg: require('@/assets/image/profileImg.jpg'),
-    numOfDetailProcess: 3,
+    subProcessTotal: 3,
     processPercent: 90,
     workerNum: 6,
     workName: '전기 배선 안전 점검',

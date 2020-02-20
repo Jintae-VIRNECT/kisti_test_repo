@@ -15,5 +15,12 @@ export default {
       state.lastProcess = obj
     },
   },
-  actions: {},
+  actions: {
+    async CREATE_PROCESS(state, form) {
+      const response = await Vue.axios.post(API.CREATE_PROCESS(), form)
+      const { code, message } = response.data
+      if (code === 200) return response.data
+      else throw new Error(message)
+    },
+  },
 }

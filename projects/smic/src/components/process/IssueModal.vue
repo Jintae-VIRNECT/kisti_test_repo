@@ -80,13 +80,6 @@
     .issue-type {
       padding: 7px 8px;
     }
-    label {
-      width: 130px;
-    }
-    .value {
-      margin-left: 130px;
-      font-weight: 500;
-    }
   }
   .el-image img {
     pointer-events: inherit;

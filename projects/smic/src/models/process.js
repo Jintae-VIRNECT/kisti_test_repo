@@ -11,11 +11,11 @@ export const processStatus = [
 
 export const cols = [
   {
-    prop: 'processName',
+    prop: 'name',
     label: '공정 이름',
   },
   {
-    prop: 'numOfDetailProcess',
+    prop: 'subProcessTotal',
     label: '세부공정 수',
     width: 100,
   },

@@ -155,6 +155,9 @@ export default {
         padding: {
           bottom: 50,
         },
+        resize: {
+          auto: false,
+        },
         bindto: '#process-dash-banner-graph',
       })
       const domains = document.querySelectorAll('path.domain')

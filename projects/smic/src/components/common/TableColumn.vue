@@ -17,15 +17,15 @@
     img.prefix-img(src="~@/assets/image/ic-content.svg")
     span {{ data[prop] }}
   //- 개수
-  div(v-else-if="/^(sceneGroupTotal|numOfDetailProcess)$/.test(prop)")
+  div(v-else-if="/^.+(Total)$/.test(prop)")
     span.nums {{ data[prop] }}
   //- 진행률
-  .process-percent(v-else-if="/^(processPercent)$/.test(prop)")
+  .process-percent(v-else-if="/^.+(Percent)$/.test(prop)")
     el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
   .total-done(v-else-if="/^(schedule)$/.test(prop)")
-    span {{ data['startAt'] | dayJs_FilterDateTime }} 
-    span &nbsp;~ {{ data['endAt'] | dayJs_FilterDateTime }}
+    span {{ data['startDate'] | dayJs_FilterDateTime }} 
+    span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTime }}
   //- 진행 상태
   div(v-else-if="/^(status)$/.test(prop)")
     button.btn.btn--status(
