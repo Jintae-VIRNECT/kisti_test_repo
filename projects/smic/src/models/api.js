@@ -14,6 +14,7 @@ export default {
   SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
   // process
   PROCESS_LIST: () => '@process',
+  PROCESS_DETAIL: processId => `@process/${processId}`,
   PROCESS_CREATE: () => `@process/process`,
   // sub process
   SUB_PROCESS_LIST: processId => `@process/${processId}/subProcesses`,

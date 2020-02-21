@@ -135,5 +135,8 @@ export default {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
   },
+  created() {
+    this.$store.dispatch('getSubProcessList', { processId: this.processId })
+  },
 }
 </script>

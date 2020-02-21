@@ -2,14 +2,13 @@ import Vue from 'vue'
 import API from '@/models/api'
 
 // tmp data
-import sceneGroup from '@/data/sceneGroup'
 import taskGroup from '@/data/taskGroup'
 
 export default {
   state: {
     processList: [],
     processDetail: {
-      subProcessList: sceneGroup.tableData,
+      subProcessList: [],
     },
     subProcessDetail: {
       jobsList: taskGroup.tableData,
@@ -44,6 +43,7 @@ export default {
     },
   },
   actions: {
+    // 공정 조회
     async getProcessList(state, params = {}) {
       const response = await Vue.axios.get(API.PROCESS_LIST(), {
         params: {
@@ -60,15 +60,33 @@ export default {
         return data
       } else throw new Error(message)
     },
+    // 공정 생성
     async createProcess(state, form) {
       const response = await Vue.axios.post(API.PROCESS_CREATE(), form)
       const { code, data, message } = response.data
       if (code === 200) return data
       else throw new Error(message)
     },
-
-    async getProcessDetail() {},
-    async getSubProcessList() {},
+    // 공정 상세조회
+    async getProcessInfo() {},
+    // 공정의 세부공정 리스트
+    async getSubProcessList(state, params = {}) {
+      const response = await Vue.axios.get(
+        API.SUB_PROCESS_LIST(params.processId),
+        {
+          params: {
+            sort: params.sort || '',
+            size: params.size || 20,
+            page: params.page || 0,
+          },
+        },
+      )
+      const { code, data, message } = response.data
+      if (code === 200) {
+        state.commit('SET_SUB_PROCESS_LIST', data.subProcesses)
+        return data
+      } else throw new Error(message)
+    },
     async getSubProcessDetail() {},
     async getJobsList() {},
   },
