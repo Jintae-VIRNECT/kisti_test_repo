@@ -9,6 +9,10 @@
   .auth-wrapper(v-else-if="/^(auth|uploaderName)$/.test(prop)")
     .auth-img(:style="{'background-image': `url(${ data['uploaderProfile'] })`}")
     span {{ data[prop] }}
+  //- 업로더 (uuid)
+  .auth-wrapper(v-else-if="/^(workerUUID)$/.test(prop)")
+    .auth-img(:style="{'background-image': `url(${ memberImg })`}")
+    span {{ memberName }}
   //- 일시
   div(v-else-if="/^(reportedAt|createdDate)$/.test(prop)")
     span {{data[prop] | dayJs_FilterDateTime}}
@@ -20,7 +24,7 @@
   div(v-else-if="/^.+(Total)$/.test(prop)")
     span.nums {{ data[prop] }}
   //- 진행률
-  .process-percent(v-else-if="/^.+(Percent)$/.test(prop)")
+  .process-percent(v-else-if="/^(.+Percent|.+Rate)$/.test(prop)")
     //- dummy data !!
     el-progress(:percentage="randomProgress()" :show-text="true")
     //- el-progress(:percentage="data[prop]" :show-text="true")
@@ -89,6 +93,12 @@ export default {
     prop: String,
     data: Object,
   },
+  data() {
+    return {
+      memberName: '',
+      memberImg: '',
+    }
+  },
   methods: {
     buttonClick() {
       this.$emit('buttonClick', { prop: this.prop, data: this.data })
@@ -105,6 +115,15 @@ export default {
     randomProgress() {
       return this.random(0, 100)
     },
+  },
+  created() {
+    if (/^(workerUUID)$/.test(this.prop)) {
+      const uuid = this.data[this.prop]
+      const memberList = this.$store.state.member.memberList
+      const member = memberList.find(member => member.uuid === uuid)
+      this.memberName = member.name
+      this.memberImg = member.profile
+    }
   },
 }
 </script>

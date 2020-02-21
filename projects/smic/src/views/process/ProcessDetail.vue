@@ -1,14 +1,14 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item 공정({{tableData[0].name}})
+      el-breadcrumb-item 공정({{processDetail.info.name}})
       el-breadcrumb-item 세부공정
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")
         span.title 공정 목록
       template(slot="body")
         el-table.inline-table(
-          :data='tableData' 
+          :data='[processDetail.info]' 
           style='width: 100%')
           el-table-column(
             v-for="{label, width, prop} in colSetting" 
@@ -17,25 +17,14 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              table-column(:prop="prop" :data="tableData[scope.$index]")
+              table-column(:prop="prop" :data="processDetail.info")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               process-control-dropdown(
-                :target="tableData[scope.$index]"
+                :target="processDetail.info"
                 @onChangeData="onChangeData"
                 @onCreateData="onCreateData"
                 @onDeleteData="onDeleteData")
-      //- el-pagination.inline-table-pagination(
-      //-   v-if='setPagination'
-      //-   :hide-on-single-page='false' 
-      //-   :page-size="pageSize" 
-      //-   :pager-count="tableOption ? tableOption.pagerCount : 5"
-      //-   :total='tableData.length' 
-      //-   layout='prev, jumper, next'
-      //-   :current-page='currentPage'
-      //-   @prev-click='currentPage -= 1'
-      //-   @next-click='currentPage += 1'
-      //- )
     inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
@@ -49,7 +38,7 @@
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
-            :data='subProcessData' 
+            :data='processDetail.subProcessList' 
             style='width: 100%'
             @cell-click="onClickCell")
             el-table-column(
@@ -59,29 +48,20 @@
               :label="label" 
               :width="width || ''") 
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="subProcessData[scope.$index]")
+                table-column(:prop="prop" :data="processDetail.subProcessList[scope.$index]")
             el-table-column(:width="50" class-name="control-col")
               template(slot-scope='scope')
                 process-control-dropdown(
-                  :target="subProcessData[scope.$index]"
+                  :target="processDetail.subProcessList[scope.$index]"
                   @onChangeData="onChangeData"
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
-          //- el-pagination.inline-table-pagination(
-          //-   v-if='setPagination'
-          //-   :hide-on-single-page='false' 
-          //-   :page-size="pageSize" 
-          //-   :pager-count="tableOption ? tableOption.pagerCount : 5"
-          //-   :total='tableData.length' 
-          //-   layout='prev, jumper, next'
-          //-   :current-page='currentPage'
-          //-   @prev-click='currentPage -= 1'
-          //-   @next-click='currentPage += 1'
-          //- )
         div(v-else)
           process-detail-graph
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 // UI component
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
@@ -103,9 +83,6 @@ import dayjs from '@/plugins/dayjs'
 // mixins
 import filters from '@/mixins/filters'
 
-// tmp data
-import sceneGroup from '@/data/sceneGroup'
-
 export default {
   mixins: [dayjs, filters],
   components: {
@@ -120,12 +97,7 @@ export default {
   },
   data() {
     return {
-      subProcessData: sceneGroup.tableData,
-      tableData: [
-        this.$store.getters.currentReportedDetailProcess.find(
-          c => c.id === this.$route.params.id,
-        ),
-      ],
+      tableData: [],
       processId: this.$route.params.id,
       searchInput: null,
       filter: {
@@ -147,32 +119,24 @@ export default {
       subColSetting,
     }
   },
+  computed: {
+    ...mapGetters(['processDetail']),
+  },
   methods: {
-    onClickCell(row, column) {
+    async onClickCell(row, column) {
       if (column.className === 'control-col') return false
+      this.$store.commit('SET_SUB_PROCESS_INFO', row)
       this.$router.push(`/process/${this.processId}/${row.id}`)
     },
-    onChangeData(data) {
-      const updatedTableData = this.tableData.map(row => {
-        if (row.id === data.id) {
-          row = data
-        }
-        return row
-      })
-      this.tableData = updatedTableData
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onCreateData(data) {
-      this.tableData.push(data)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onDeleteData(data) {
-      this.tableData = this.tableData.filter(row => row.id !== data.id)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
+    onChangeData(data) {},
+    onCreateData(data) {},
+    onDeleteData(data) {},
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
+  },
+  created() {
+    this.$store.dispatch('getSubProcessList', { processId: this.processId })
   },
 }
 </script>

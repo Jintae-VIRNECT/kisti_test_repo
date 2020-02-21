@@ -6,7 +6,7 @@
           button.enroll-new-process 신규 공정 등록
     el-breadcrumb.header__bread-crumb(separator="/")
       el-breadcrumb-item(:to='{path: "/process"}') 공정
-    process-dash-banner(:data="tableData" initTopic="table")
+    process-dash-banner(:data="processList" initTopic="table")
     .page-nav
       search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeData")
     inline-table(:setMainHeader="true")
@@ -22,11 +22,11 @@
       template(slot="header-right")
         .inline-table__header.text-right
           span.sub-title 등록된 공정 수 
-          span.value {{tableData.length}}
+          span.value {{processList.length}}
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
-            :data='tableData' 
+            :data='processList' 
             style='width: 100%'
             @cell-click="onClickCell")
             el-table-column(
@@ -36,11 +36,11 @@
               :label="label" 
               :width="width || ''") 
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="tableData[scope.$index]")
+                table-column(:prop="prop" :data="processList[scope.$index]")
             el-table-column(:width="50" class-name="control-col")
               template(slot-scope='scope')
                 process-control-dropdown(
-                  :target="tableData[scope.$index]"
+                  :target="processList[scope.$index]"
                   @onChangeData="onChangeData"
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
@@ -48,6 +48,8 @@
           process-list-graph
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 // UI component
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
@@ -103,34 +105,17 @@ export default {
     colSetting() {
       return colSetting
     },
-    tableData() {
-      return this.$store.getters.getProcessList
-    },
+    ...mapGetters(['processList']),
   },
   methods: {
     onClickCell(row, column) {
       if (column.className === 'control-col') return false
-      this.$store.commit('LAST_PROCESS', row)
+      this.$store.commit('SET_PROCESS_INFO', row)
       this.$router.push(`/process/${row.id}`)
     },
-    onChangeData(data) {
-      const updatedTableData = this.tableData.map(row => {
-        if (row.id === data.id) {
-          row = data
-        }
-        return row
-      })
-      this.tableData = updatedTableData
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onCreateData(data) {
-      this.tableData.push(data)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onDeleteData(data) {
-      this.tableData = this.tableData.filter(row => row.id !== data.id)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
+    onChangeData(data) {},
+    onCreateData(data) {},
+    onDeleteData(data) {},
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
@@ -143,7 +128,7 @@ export default {
         this.filter.options.find(option => option.label === filterQuery).value,
       ]
     }
-    this.$store.dispatch('PROCESS_LIST')
+    this.$store.dispatch('getProcessList')
   },
 }
 </script>

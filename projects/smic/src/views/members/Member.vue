@@ -17,7 +17,7 @@ export default {
   },
   data() {
     return {
-      search: 'smic',
+      search: '',
       filter: {
         options: [
           {
@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     onChangeSearch: function({ searchInput, filterValue, sortValue }) {
-      this.$store.dispatch('MEMBER_LIST', {
+      this.$store.dispatch('getMemberList', {
         search: searchInput,
         filter: filterValue.map(value => value.toUpperCase()).join(),
         sort: sortValue,

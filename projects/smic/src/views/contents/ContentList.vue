@@ -8,15 +8,15 @@
       template(slot="header-right")
         .inline-table__header--right
           span.prefix 업로드된 컨텐츠 
-          span.value {{tableData | countAllContents}}
+          span.value {{contentsList | countAllContents}}
           span.suffix &nbsp;projects
           .divider
           span.prefix 배포중인 컨텐츠 수 컨텐츠 
-          span.value {{tableData | countStopOfContentPublish}}
+          span.value {{contentsList | countStopOfContentPublish}}
           span.suffix &nbsp;projects
       template(slot="body")
         el-table.inline-table(
-          :data='tableData' 
+          :data='contentsList' 
           style='width: 100%'
           @cell-click="onClickCell")
           el-table-column(
@@ -26,12 +26,12 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
+              table-column(type="contents" :prop="prop" :data="contentsList[scope.$index]")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :data="tableData[scope.$index]"
-                @onChangeData="data => onChangeData(data,tableData[scope.$index].contentUUID)")
+                :data="contentsList[scope.$index]"
+                @onChangeData="data => onChangeData(data,contentsList[scope.$index].contentUUID)")
 </template>
 <style lang="scss">
 .inline-table__header--right {
@@ -69,6 +69,7 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
 // UI component
 import InlineTable from '@/components/common/InlineTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
@@ -103,9 +104,7 @@ export default {
     }
   },
   computed: {
-    tableData() {
-      return this.$store.getters.getContentsList
-    },
+    ...mapGetters(['contentsList']),
   },
   methods: {
     onClickCell(row, column) {
@@ -115,16 +114,16 @@ export default {
       this.$router.push(`${subdomain}/${row[rowIdName]}`)
     },
     onChangeData(data, id) {
-      this.tableData = this.tableData.map(row => {
+      this.contentsList = this.contentsList.map(row => {
         if (row.id === id) {
           row.contentPublish = data
         }
         return row
       })
-      this.$store.commit('set_currentUploadedContent', this.tableData)
+      this.$store.commit('set_currentUploadedContent', this.contentsList)
     },
     getContentList() {
-      this.$store.dispatch('CONTENTS_LIST', { search: 'smic', filter: 'ALL' })
+      this.$store.dispatch('getContentsList', { search: 'smic', filter: 'ALL' })
     },
   },
   created() {

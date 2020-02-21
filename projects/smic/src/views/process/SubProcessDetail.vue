@@ -1,15 +1,15 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ lastProcess.name }})
-      el-breadcrumb-item 세부공정({{tableData[0].subProcessName}})
+      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ processDetail.info.name }})
+      el-breadcrumb-item 세부공정({{subProcessDetail.info.name}})
       el-breadcrumb-item 작업
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")
         span.title 선택 세부공정 정보
       template(slot="body")
         el-table.inline-table(
-          :data='tableData' 
+          :data='[subProcessDetail.info]' 
           style='width: 100%')
           el-table-column(
             v-for="{label, width, prop} in subProcessColSetting" 
@@ -18,11 +18,11 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              table-column(:prop="prop" :data="tableData[scope.$index]")
+              table-column(:prop="prop" :data="subProcessDetail.info")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               process-control-dropdown(
-                :target="tableData[scope.$index]"
+                :target="subProcessDetail.info"
                 @onChangeData="onChangeData"
                 @onCreateData="onCreateData"
                 @onDeleteData="onDeleteData")
@@ -41,16 +41,16 @@
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
-            :data='taskTableData' 
+            :data='subProcessDetail.jobsList' 
             style='width: 100%')
             el-table-column(
-              v-for="{label, width, prop} in taskColSetting" 
+              v-for="{label, width, prop} in jobsColSetting" 
               :key="prop" 
               :prop="prop" 
               :label="label" 
               :width="width || ''")
               template(slot-scope='scope')
-                table-column(:prop="prop" :data="taskTableData[scope.$index]" @buttonClick="onRowButtonClick")
+                table-column(:prop="prop" :data="subProcessDetail.jobsList[scope.$index]" @buttonClick="onRowButtonClick")
         div(v-else)
           process-detail-graph
     issue-modal(:toggleIssueModal="toggleIssueModal" @handleCancel="onHandleCancel")
@@ -58,6 +58,8 @@
     smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" @handleCancel="onHandleCancel")
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 // UI component
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
@@ -73,11 +75,7 @@ import SmartToolModal from '@/components/process/SmartToolModal.vue'
 
 // model
 import { cols as subProcessColSetting } from '@/models/subProcess'
-import { cols as taskColSetting } from '@/models/task'
-
-// temp data
-import sceneGroup from '@/data/sceneGroup'
-import taskGroup from '@/data/taskGroup'
+import { cols as jobsColSetting } from '@/models/jobs'
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -105,49 +103,23 @@ export default {
       toggleIssueModal: false,
       toggleReportModal: false,
       toggleSmartToolModal: false,
-      lastProcess: this.$store.getters.getLastProcess || {},
-      taskTableData: taskGroup.tableData,
-      tableData: [
-        sceneGroup.tableData.find(
-          c => c.id === this.$route.params.subProcessId,
-        ),
-      ],
       processId: this.$route.params.id,
       topic: 'table',
       subProcessColSetting,
-      taskColSetting,
+      jobsColSetting,
     }
   },
+  computed: {
+    ...mapGetters(['processDetail', 'subProcessDetail']),
+  },
   methods: {
-    onChangeData(data) {
-      const updatedTableData = this.tableData.map(row => {
-        if (row.id === data.id) {
-          row = data
-        }
-        return row
-      })
-      this.tableData = updatedTableData
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onCreateData(data) {
-      this.tableData.push(data)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    onDeleteData(data) {
-      this.tableData = this.tableData.filter(row => row.id !== data.id)
-      this.$store.commit('set_currentReportedDetailProcess', this.tableData) // v2 에 axios로 수정
-    },
-    async onChangeSearch(searchInput, filterValue, sortValue) {
-      let tmpTableData = this.$store.getters.currentReportedDetailProcess
-      tmpTableData = await this.onChangeSearchText(tmpTableData, searchInput)
-      tmpTableData = await this.onChangeFilter(tmpTableData, filterValue)
-      tmpTableData = await this.onChangeSort(tmpTableData, sortValue)
-      this.tableData = tmpTableData
-    },
+    onChangeData(data) {},
+    onCreateData(data) {},
+    onDeleteData(data) {},
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
-    onRowButtonClick({ prop, data }) {
+    onRowButtonClick({ prop }) {
       if (prop === 'issueId') this.toggleIssueModal = true
       else if (prop === 'reportId') this.toggleReportModal = true
       else if (prop === 'smartTool') this.toggleSmartToolModal = true

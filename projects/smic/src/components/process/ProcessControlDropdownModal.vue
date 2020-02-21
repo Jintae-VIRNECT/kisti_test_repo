@@ -42,7 +42,7 @@
           .value
             .number-label {{ target.info.sceneGroupTotal }}
         .detail-process-list
-          .detail-process-item(v-for="scene in form.subProcessList")
+          .detail-process-item(v-for="scene in target.sceneGroupList")
             .section.title
               label {{ scene.priority | leftZeroPad }}.
               .value
@@ -123,7 +123,7 @@ export default {
   },
   computed: {
     memberList() {
-      return this.$store.getters.getMemberList
+      return this.$store.getters.memberList
     },
   },
   methods: {
@@ -136,7 +136,7 @@ export default {
     },
     async handleCreateConfirm() {
       try {
-        await this.$store.dispatch('CREATE_PROCESS', this.form)
+        await this.$store.dispatch('createProcess', this.form)
         await this.$confirm(
           `입력하신 정보로 공정을 추가 생성되었습니다. \n
             추가된 공정으로 새로운 보고를 받습니다.`,
@@ -146,6 +146,7 @@ export default {
           },
         )
         this.handleCancel()
+        this.$router.push('/process')
       } catch (e) {
         this.$confirm(`서버에러`, {
           confirmButtonText: '확인',

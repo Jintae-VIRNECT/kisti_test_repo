@@ -1,10 +1,10 @@
 export const cols = [
   {
-    prop: 'subProcessName',
+    prop: 'name',
     label: '세부공정 이름',
   },
   {
-    prop: 'numOfDetailProcess',
+    prop: 'jobTotal',
     label: '작업 수',
     width: 100,
   },
@@ -13,7 +13,7 @@ export const cols = [
     label: '공정 일정',
   },
   {
-    prop: 'processPercent',
+    prop: 'progressRate',
     label: '진행률',
     width: 150,
   },
@@ -23,7 +23,7 @@ export const cols = [
     width: 100,
   },
   {
-    prop: 'auths',
+    prop: 'workerUUID',
     label: '세부공정 담당자',
     width: 200,
   },

@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     onChangeSearch: function({ searchInput, filterValue, sortValue }) {
-      this.$store.dispatch('CONTENTS_LIST', {
+      this.$store.dispatch('getContentsList', {
         search: searchInput,
         filter: filterValue.map(value => value.toUpperCase()).join(),
         sort: sortValue,
