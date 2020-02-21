@@ -6,34 +6,30 @@ export default {
     memberList: [],
   },
   getters: {
-    getMemberList(state) {
+    memberList(state) {
       return state.memberList
     },
   },
   mutations: {
-    MEMBER_LIST(state, { list }) {
+    SET_MEMBER_LIST(state, list) {
       state.memberList = list
     },
   },
   actions: {
-    async MEMBER_LIST(context, param = {}) {
-      try {
-        const response = await Vue.axios.get(API.MEMBER_LIST(), {
-          params: {
-            userId: this.getters.getUser.uuid,
-            search: param.search || '',
-            filter: param.filter || '',
-            sort: param.sort || 'name,asc',
-          },
-        })
-        const { data } = response.data
-        context.commit('MEMBER_LIST', {
-          list: data.memberInfoList,
-        })
-        return response.data
-      } catch (e) {
-        console.error(e)
-      }
+    async getMemberList(state, param = {}) {
+      const response = await Vue.axios.get(API.MEMBER_LIST(), {
+        params: {
+          userId: this.getters.getUser.uuid,
+          search: param.search || '',
+          filter: param.filter || '',
+          sort: param.sort || 'name,asc',
+        },
+      })
+      const { code, data, message } = response.data
+      if (code === 200) {
+        state.commit('SET_MEMBER_LIST', data.memberInfoList)
+        return data
+      } else throw new Error(message)
     },
   },
 }

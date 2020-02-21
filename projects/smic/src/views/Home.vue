@@ -13,20 +13,20 @@
               router-link.more-link(type="text" to="/contents") 더보기
           template(slot="body")
             el-table.inline-table(
-              :data='currentContentsList.tableData' 
+              :data='currentContentsData' 
               style='width: 100%'
               @cell-click="onClickCell")
               el-table-column(
-                v-for="{label, width, prop} in currentContentsList.colSetting" 
+                v-for="{label, width, prop} in currentContents.colSetting" 
                 :key="prop" 
                 :prop="prop" 
                 :label="label" 
                 :width="width || ''") 
                 template(slot-scope='scope')
-                  table-column(type="contents" :prop="prop" :data="currentContentsList.tableData[scope.$index]")
+                  table-column(type="contents" :prop="prop" :data="currentContentsData[scope.$index]")
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
-                  content-control-dropdown(:status="currentContentsList.tableData[scope.$index].status")
+                  content-control-dropdown(:status="currentContentsData[scope.$index].status")
     el-row(:gutter="0")
       el-col(:span="24")
         //- inline-tabs-table(
@@ -92,8 +92,7 @@ export default {
       currentReportedDetailProcess,
       currentReportedInformationTabs,
       tableColSettings,
-      currentContentsList: {
-        tableData: this.$store.getters.getContentsList.slice(0, 5),
+      currentContents: {
         tableOption: {
           rowIdName: 'contentUUID',
           subdomain: '/contents',
@@ -114,6 +113,11 @@ export default {
       processData: this.$store.getters.currentReportedDetailProcess,
     }
   },
+  computed: {
+    currentContentsData() {
+      return this.$store.getters.contentsList.slice(0, 5)
+    },
+  },
   methods: {
     setInlineTableByTabs(e) {
       currentUploadedContentTableOption.subdomain =
@@ -121,13 +125,13 @@ export default {
     },
     onClickCell(row, column) {
       if (column.className === 'control-col') return false
-      const { rowIdName, subdomain } = this.currentContent.tableOption
+      const { rowIdName, subdomain } = this.currentContents.tableOption
       if (!rowIdName) return false
       this.$router.push(`${subdomain}/${row[rowIdName]}`)
     },
   },
   created() {
-    this.$store.dispatch('CONTENTS_LIST')
+    this.$store.dispatch('getContentsList')
   },
 }
 </script>

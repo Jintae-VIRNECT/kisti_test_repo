@@ -93,7 +93,7 @@ export default {
     return {
       processContent: {
         tableData: [
-          this.$store.getters.getContentsList.find(
+          this.$store.getters.contentsList.find(
             c => c.contentUUID === this.$route.params.id,
           ),
         ],
@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     sceneGroupData() {
-      return this.$store.getters.getContentDetail.sceneGroupList
+      return this.$store.getters.contentDetail.sceneGroupList
     },
   },
   methods: {
@@ -127,7 +127,7 @@ export default {
   },
   created() {
     const contentUUID = this.$route.params.id
-    this.$store.dispatch('SCENE_GROUP_LIST', contentUUID)
+    this.$store.dispatch('getSceneGroupList', contentUUID)
   },
 }
 </script>

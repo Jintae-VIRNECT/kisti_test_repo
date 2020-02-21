@@ -1,27 +1,6 @@
 import Vue from 'vue'
 import API from '@/models/api'
 
-/**
- * 컨텐츠 리스트 API
- * @param {Object} params
- */
-async function requestContentsList(params = {}) {
-  try {
-    const response = await Vue.axios.get(API.CONTENTS_LIST(), {
-      params: {
-        search: params.search || '',
-        filter: params.filter || 'All',
-        sort: params.sort || 'createdDate,desc',
-        size: params.size || 20,
-        page: params.page || 0,
-      },
-    })
-    return response.data
-  } catch (e) {
-    console.error(e)
-  }
-}
-
 export default {
   state: {
     contentsList: [],
@@ -31,21 +10,21 @@ export default {
     },
   },
   getters: {
-    getContentsList(state) {
+    contentsList(state) {
       return state.contentsList
     },
-    getContentDetail(state) {
+    contentDetail(state) {
       return state.contentDetail
     },
   },
   mutations: {
-    CONTENTS_LIST(state, list) {
+    SET_CONTENTS_LIST(state, list) {
       state.contentsList = list
     },
-    CONTENT_INFO(state, obj) {
+    SET_CONTENT_INFO(state, obj) {
       state.contentDetail.info = obj
     },
-    SCENE_GROUP_LIST(state, list) {
+    SET_SCENE_GROUP_LIST(state, list) {
       state.contentDetail.sceneGroupList = list
     },
     DELETE_CONTENT(state, contentUUID) {
@@ -55,59 +34,52 @@ export default {
     },
   },
   actions: {
-    async CONTENTS_LIST(context, params = {}) {
-      try {
-        const response = await Vue.axios.get(API.CONTENTS_LIST(), {
-          params: {
-            search: params.search || '',
-            filter: params.filter || 'All',
-            sort: params.sort || 'createdDate,desc',
-            size: params.size || 20,
-            page: params.page || 0,
-          },
-        })
-        const { data } = response.data
-        context.commit('CONTENTS_LIST', data.contentInfo)
-        return response.data
-      } catch (e) {
-        console.error(e)
-      }
+    // 컨텐츠 리스트
+    async getContentsList(context, params = {}) {
+      const response = await Vue.axios.get(API.CONTENTS_LIST(), {
+        params: {
+          search: params.search || '',
+          filter: params.filter || 'All',
+          sort: params.sort || 'createdDate,desc',
+          size: params.size || 20,
+          page: params.page || 0,
+        },
+      })
+      const { code, data, message } = response.data
+      if (code === 200) {
+        context.commit('SET_CONTENTS_LIST', data.contentInfo)
+        return data
+      } else throw new Error(message)
     },
-    async SCENE_GROUP_LIST(context, contentUUID) {
-      try {
-        const response = await Vue.axios.get(API.SCENE_GROUP_LIST(), {
-          params: { contentUUID },
-        })
-        const { data } = response.data
+    // 세부공정 컨텐츠 리스트
+    async getSceneGroupList(context, contentUUID) {
+      const response = await Vue.axios.get(API.SCENE_GROUP_LIST(), {
+        params: { contentUUID },
+      })
+      const { code, data, message } = response.data
+      if (code === 200) {
         context.commit(
-          'CONTENT_INFO',
+          'SET_CONTENT_INFO',
           context.state.contentsList.find(
             content => content.contentUUID === contentUUID,
           ),
         )
-        context.commit('SCENE_GROUP_LIST', data.sceneGroupInfoList)
-        return response.data
-      } catch (e) {
-        console.error(e)
-      }
+        context.commit('SET_SCENE_GROUP_LIST', data.sceneGroupInfoList)
+        return data
+      } else throw new Error(message)
     },
-    async DELETE_CONTENT(context, contentUUID) {
-      try {
-        const response = await Vue.axios.delete(
-          API.CONTENT_DETAIL(contentUUID),
-          {
-            params: {
-              uuid: context.getters.getUser.uuid,
-            },
-          },
-        )
-        const { code, message } = response.data
-        if (code === 200) context.commit('DELETE_CONTENT', contentUUID)
-        else throw new Error(message)
-        return response.data
-      } catch (e) {
-        console.error(e)
-      }
+    // 컨텐츠 삭제
+    async deleteContent(context, contentUUID) {
+      const response = await Vue.axios.delete(API.CONTENT_DETAIL(contentUUID), {
+        params: {
+          uuid: context.getters.getUser.uuid,
+        },
+      })
+      const { code, data, message } = response.data
+      if (code === 200) {
+        context.commit('DELETE_CONTENT', contentUUID)
+        return data
+      } else throw new Error(message)
     },
   },
 }

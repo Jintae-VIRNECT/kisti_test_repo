@@ -1,3 +1,6 @@
+/**
+ * 상수 이름에 _RUD는 적지 않음 (REST 메소드로 구분)
+ */
 export default {
   // auth
   USER_LOGIN: () => '/users/login',
@@ -11,7 +14,7 @@ export default {
   SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
   // process
   PROCESS_LIST: () => '@process',
-  CREATE_PROCESS: () => `@process/process`,
+  PROCESS_CREATE: () => `@process/process`,
   // sub process
   SUB_PROCESS_LIST: processId => `@process/${processId}/subProcesses`,
   // jobs

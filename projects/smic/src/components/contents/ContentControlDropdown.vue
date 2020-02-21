@@ -62,7 +62,7 @@ export default {
         },
       )
         .then(() => {
-          this.$store.dispatch('DELETE_CONTENT', this.data.contentUUID)
+          this.$store.dispatch('deleteContent', this.data.contentUUID)
         })
         .catch(() => {})
     },

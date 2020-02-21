@@ -90,16 +90,16 @@ export default {
   },
   computed: {
     tableData() {
-      return this.$store.getters.getContentsList
+      return this.$store.getters.contentsList
     },
     target() {
-      return this.$store.getters.getContentDetail
+      return this.$store.getters.contentDetail
     },
   },
   methods: {
     async onClickCell(row) {
-      this.$store.commit('CONTENT_INFO', row)
-      await this.$store.dispatch('SCENE_GROUP_LIST', row.contentUUID)
+      this.$store.commit('SET_CONTENT_INFO', row)
+      await this.$store.dispatch('getSceneGroupList', row.contentUUID)
       this.toggleNewModal = true
     },
     onToggleNewModal(bool) {
@@ -116,7 +116,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('CONTENTS_LIST')
+    this.$store.dispatch('getContentsList')
   },
 }
 </script>

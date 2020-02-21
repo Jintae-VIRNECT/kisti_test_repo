@@ -1,10 +1,12 @@
 <template lang="pug">
 	el-row(:gutter='20')
-		el-col(:span='6' v-for="(ud, index) in usersData" :key="index")
+		el-col(:span='6' v-for="(ud, index) in memberList" :key="index")
 			member-profile-card(:profileData="ud")
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import MemberProfileCard from '@/components/members/MemberProfileCard.vue'
 
 export default {
@@ -13,17 +15,10 @@ export default {
   },
   props: ['query'],
   computed: {
-    usersData() {
-      return this.$store.getters.getMemberList
-    },
-  },
-  methods: {
-    getUserList() {
-      this.$store.dispatch('MEMBER_LIST', { search: 'smic' })
-    },
+    ...mapGetters(['memberList']),
   },
   created() {
-    this.getUserList()
+    this.$store.dispatch('getMemberList')
   },
 }
 </script>

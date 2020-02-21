@@ -1,29 +1,50 @@
 import Vue from 'vue'
 import API from '@/models/api'
 
+// tmp data
+import sceneGroup from '@/data/sceneGroup'
+import taskGroup from '@/data/taskGroup'
+
 export default {
   state: {
-    lastProcess: null,
     processList: [],
+    processDetail: {
+      subProcessList: sceneGroup.tableData,
+    },
+    subProcessDetail: {
+      jobsList: taskGroup.tableData,
+    },
   },
   getters: {
-    getLastProcess(state) {
-      return state.lastProcess
-    },
-    getProcessList(state) {
+    processList(state) {
       return state.processList
+    },
+    processDetail(state) {
+      return state.processDetail
+    },
+    subProcessDetail(state) {
+      return state.subProcessDetail
     },
   },
   mutations: {
-    LAST_PROCESS(state, obj) {
-      state.lastProcess = obj
-    },
-    PROCESS_LIST(state, list) {
+    SET_PROCESS_LIST(state, list) {
       state.processList = list
+    },
+    SET_PROCESS_INFO(state, obj) {
+      state.processDetail.info = obj
+    },
+    SET_SUB_PROCESS_LIST(state, list) {
+      state.processDetail.subProcessList = list
+    },
+    SET_SUB_PROCESS_INFO(state, obj) {
+      state.subProcessDetail.info = obj
+    },
+    SET_JOBS_LIST(state, list) {
+      state.subProcessDetail.jobsList = list
     },
   },
   actions: {
-    async PROCESS_LIST(state, params = {}) {
+    async getProcessList(state, params = {}) {
       const response = await Vue.axios.get(API.PROCESS_LIST(), {
         params: {
           search: params.search || '',
@@ -35,15 +56,20 @@ export default {
       })
       const { code, data, message } = response.data
       if (code === 200) {
-        state.commit('PROCESS_LIST', data.processes)
-        return response.data
+        state.commit('SET_PROCESS_LIST', data.processes)
+        return data
       } else throw new Error(message)
     },
-    async CREATE_PROCESS(state, form) {
-      const response = await Vue.axios.post(API.CREATE_PROCESS(), form)
-      const { code, message } = response.data
-      if (code === 200) return response.data
+    async createProcess(state, form) {
+      const response = await Vue.axios.post(API.PROCESS_CREATE(), form)
+      const { code, data, message } = response.data
+      if (code === 200) return data
       else throw new Error(message)
     },
+
+    async getProcessDetail() {},
+    async getSubProcessList() {},
+    async getSubProcessDetail() {},
+    async getJobsList() {},
   },
 }
