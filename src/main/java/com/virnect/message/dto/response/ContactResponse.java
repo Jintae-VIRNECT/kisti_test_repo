@@ -13,6 +13,7 @@ import lombok.Setter;
  * DESCRIPTION:
  */
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class ContactResponse {
 

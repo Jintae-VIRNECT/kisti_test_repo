@@ -43,22 +43,22 @@ public class MessageService {
         String contactResponseSubject = MailSubject.CONTACT.getSubject();
 
         Context context = new Context();
-        context.setVariable("name", contactRequestDTO.getSenderName());
+        /*context.setVariable("name", contactRequestDTO.getSenderName());
         context.setVariable("category", categories);
         context.setVariable("email", contactRequestDTO.getSenderEmail());
-        context.setVariable("content", contactRequestDTO.getContent());
+        context.setVariable("content", contactRequestDTO.getContent());*/
 
         String contactRequestSubject = "[Platform] " + categories + " 관련 고객 문의";
 
         //1. 관리자에게 메일 전송
-        this.mailService.sendTemplateMail(MailSender.MASTER.getSender(), Collections.singletonList(MailSender.CONTACT.getSender()), contactRequestSubject
+        this.mailService.sendTemplateMail(MailSender.MASTER.getSender(), Collections.singletonList(contactRequestDTO.getUserInfo().getUserEmail()), contactRequestSubject
                 , MailTemplate.CONTACT_REQUEST.getTemplate(), context);
         log.info("[문의 메일 관리자 전송 완료] - [발신자 이메일 - " + Collections.singletonList(MailSender.CONTACT.getSender()) + "]" + " - [문의 종류] - " + categories);
 
 
         //2. 발신자에게 접수 완료 메일 전송
-        mailService.sendTemplateMail(MailSender.MASTER.getSender(), Collections.singletonList(contactRequestDTO.getSenderEmail()), contactResponseSubject, MailTemplate.CONTACT_RESPONSE.getTemplate(), context);
-        log.info("[문의 메일 접수 완료] - [발신자 이메일 - " + Collections.singletonList(contactRequestDTO.getSenderEmail()) + "]");
+        mailService.sendTemplateMail(MailSender.MASTER.getSender(), Collections.singletonList(contactRequestDTO.getUserInfo().getUserEmail()), contactResponseSubject, MailTemplate.CONTACT_RESPONSE.getTemplate(), context);
+        log.info("[문의 메일 접수 완료] - [발신자 이메일 - " + Collections.singletonList(contactRequestDTO.getUserInfo().getUserEmail()) + "]");
 
         return new ApiResponse<>(new ContactResponse(true));
     }

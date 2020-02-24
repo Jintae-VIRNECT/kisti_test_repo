@@ -4,12 +4,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Project: PF-Message
@@ -33,27 +30,60 @@ public class ContactRequest {
     @ApiModelProperty(value = "제목")
     private String subject;
 
-    @NotBlank(message = "보내는 사람의 이메일 주소는 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이메일")
-    private String senderEmail;
+    @ApiModelProperty(value = "문의 상세 내역")
+    private SubCategory subCategory;
 
-    @NotBlank(message = "보내는 사람의 이름은 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이름")
-    private String senderName;
+    @Valid
+    @ApiModelProperty(value = "고객 정보")
+    private UserInfo userInfo;
 
-    @NotBlank(message = "보내는 사람의 기업/기관명은 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이름")
-    private String senderCompanyName;
+    @Getter
+    @Setter
+    public static class SubCategory {
+        @ApiModelProperty(value = "산업군")
+        private String industry;
 
-    @NotBlank(message = "보내는 사람의 부서는 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이름")
-    private String senderCompanyPart;
+        @ApiModelProperty(value = "현재 직면한 문제")
+        private String problem;
 
-    @NotBlank(message = "보내는 사람의 직책은 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이름")
-    private String senderCompanyRole;
+        @ApiModelProperty(value = "업무 개선")
+        private String improve;
 
-    @NotBlank(message = "보내는 사람의 전화번호는 필수 값입니다.")
-    @ApiModelProperty(value = "보낸 사람 이름")
-    private String senderPhone;
+        @ApiModelProperty(value = "사용 경험")
+        private String experience;
+
+        @ApiModelProperty(value = "예산 편성 여부")
+        private String budget;
+
+        @ApiModelProperty(value = "도입 희망 시기")
+        private String introduction;
+    }
+
+    @Getter
+    @Setter
+    public static class UserInfo {
+        @NotBlank(message = "고객명은 필수 값입니다.")
+        @ApiModelProperty(value = "문의 고객")
+        private String userName;
+
+        @NotBlank(message = "고객의 기업/기관명은 필수 값입니다.")
+        @ApiModelProperty(value = "기업/기관")
+        private String userCompanyName;
+
+        @NotBlank(message = "고객의 부서명은 필수 값입니다.")
+        @ApiModelProperty(value = "부서")
+        private String userCompanyPart;
+
+        @NotBlank(message = "고객의 직책명은 필수 값입니다.")
+        @ApiModelProperty(value = "직책")
+        private String userCompanyRole;
+
+        @NotBlank(message = "고객 이메일은 필수 값입니다.")
+        @ApiModelProperty(value = "이메일")
+        private String userEmail;
+
+        @NotBlank(message = "고객 전화번호는 필수 값입니다.")
+        @ApiModelProperty(value = "전화번호")
+        private String userPhone;
+    }
 }
