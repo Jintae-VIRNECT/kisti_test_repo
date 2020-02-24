@@ -43,13 +43,13 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
                             .and(qWorkspaceUserPermission.workspaceUser.userId.eq(memberInfo.getUuid()))).fetchOne();
             switch (role) {
                 case "MASTER":
-                    if(filter.contains("MASTER")) resultList.add(memberInfo);
+                    if (filter.contains("MASTER") || filter.contains("ALL")) resultList.add(memberInfo);
                     break;
                 case "MANAGER":
-                    if(filter.contains("MANAGER")) resultList.add(memberInfo);
+                    if (filter.contains("MANAGER") || filter.contains("ALL")) resultList.add(memberInfo);
                     break;
                 case "MEMBER":
-                    if(filter.contains("MEMBER")) resultList.add(memberInfo);
+                    if (filter.contains("MEMBER") || filter.contains("ALL")) resultList.add(memberInfo);
                     break;
                 default:
             }
