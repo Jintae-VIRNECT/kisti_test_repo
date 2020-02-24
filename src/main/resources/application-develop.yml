@@ -26,3 +26,8 @@ zuul:
   thread-pool:
     use-separate-thread-pools: true
     thread-pool-key-prefix: zuul-
+
+
+management:
+  endpoints:
+    enabled-by-default: true
