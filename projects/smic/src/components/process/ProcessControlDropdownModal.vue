@@ -13,23 +13,23 @@
         .section.border-divider
           label 공정 이름
           .value
-            span {{target.info.contentName}}
+            span {{form.name}}
         .section-body
           .section
             label.label-vertical-center.necessary 공정 일정
             .value.flex-container
               el-date-picker(
-                v-model="processDate"
+                v-model="form.date"
                 type="datetimerange"
                 start-placeholder="시작일"
                 end-placeholder="마감일"
                 format="yyyy. MM. dd.  HH:mm"
                 :picker-options="pickerOptions"
               )
-          .section
+          .section(v-if="modalType === 'create'")
             label.label-vertical-center 공정 담당자
             .value
-              el-select.auth-select(v-model='form.ownerUUID' placeholder='Select')
+              el-select.auth-select( v-model='form.ownerUUID' :disabled="subWorkerSelected" placeholder='Select')
                 el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
               span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다
           .section
@@ -40,18 +40,18 @@
         .section.border-divider
           label 세부공정 목록
           .value
-            .number-label {{ target.info.sceneGroupTotal }}
+            .number-label {{ form.subProcessList.length }}
         .detail-process-list
-          .detail-process-item(v-for="scene in target.sceneGroupList")
+          .detail-process-item(v-for="(sub, index) in form.subProcessList")
             .section.title
-              label {{ scene.priority | leftZeroPad }}.
+              label {{ sub.priority | leftZeroPad }}.
               .value
-                span {{ scene.name }}
+                span {{ sub.name }}
             .section
               label.necessary 세부공정 일정
               .value.flex-container
                 el-date-picker(
-                  v-model="processDate"
+                  v-model="sub.date"
                   type="datetimerange"
                   start-placeholder="시작일"
                   end-placeholder="마감일"
@@ -61,7 +61,7 @@
             .section
               label.necessary 담당자
               .value
-                el-select.auth-select(v-model='form.ownerUUID' placeholder='Select')
+                el-select.auth-select(v-model='sub.workerUUID' placeholder='Select')
                   el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
             el-divider
               
@@ -73,6 +73,7 @@
 <script>
 import filters from '@/mixins/filters'
 import dayjs from '@/plugins/dayjs'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   mixins: [filters],
@@ -85,15 +86,15 @@ export default {
     return {
       processModal: this.toggleProcessModal,
       form: {
-        contentUUID: null,
+        id: null,
         name: null,
         ownerUUID: null,
-        startDate: null,
-        endDate: null,
         position: null,
+        date: [],
         subProcessList: [],
       },
-      processDate: [],
+      subWorkerSelected: false,
+      // 날짜
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < dayjs._().subtract(1, 'day')
@@ -105,20 +106,37 @@ export default {
     toggleProcessModal() {
       this.processModal = this.$props.toggleProcessModal
     },
-    processDate(val) {
-      this.form.startDate = dayjs.filters.dayJS_ConvertUTCTime(val[0])
-      this.form.endDate = dayjs.filters.dayJS_ConvertUTCTime(val[1])
-      // temp
+    'form.date'(val) {
+      // 일괄수정
       this.form.subProcessList.forEach(sub => {
-        sub.startDate = dayjs.filters.dayJS_ConvertUTCTime(val[0])
-        sub.endDate = dayjs.filters.dayJS_ConvertUTCTime(val[1])
+        if (!sub.date.length) sub.date = val
       })
     },
     'form.ownerUUID'(val) {
-      // temp
+      // 일괄수정
       this.form.subProcessList.forEach(sub => {
-        sub.workerUUID = val
+        if (!sub.workerUUID) sub.workerUUID = val
       })
+    },
+    'form.subProcessList': {
+      deep: true,
+      handler(list) {
+        list.forEach(sub => {
+          // 공정 일정 자동 조정
+          console.log(this.form)
+          if (this.form.date[0] > sub.date[0]) {
+            this.form.date = [sub.date[0], this.form.date[1]]
+          }
+          if (this.form.date[1] < sub.date[1]) {
+            this.form.date = [this.form.date[0], sub.date[1]]
+          }
+          // 세부 공정 담당자 지정시 공정담당자 비활성화
+          if (sub.workerUUID !== this.form.ownerUUID) {
+            this.form.ownerUUID = '세부공정 별 담당자가 지정되었습니다.'
+            this.subWorkerSelected = true
+          }
+        })
+      },
     },
   },
   computed: {
@@ -135,9 +153,23 @@ export default {
       }
     },
     async handleCreateConfirm() {
+      const form = cloneDeep(this.form)
+      form.contentUUID = form.id
+      delete form.id
+      form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[0])
+      form.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[1])
+      delete form.date
+      form.subProcessList.forEach(sub => {
+        sub.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[0])
+        sub.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[1])
+        delete sub.date
+      })
+      if (this.subWorkerSelected) {
+        form.ownerUUID = null
+      }
       try {
-        await this.$store.dispatch('createProcess', this.form)
-        await this.$confirm(
+        await this.$store.dispatch('createProcess', form)
+        await this.$alert(
           `입력하신 정보로 공정을 추가 생성되었습니다. \n
             추가된 공정으로 새로운 보고를 받습니다.`,
           '공정 추가 생성 완료',
@@ -148,44 +180,86 @@ export default {
         this.handleCancel()
         this.$router.push('/process')
       } catch (e) {
-        this.$confirm(`서버에러`, {
+        console.log(e)
+        this.$alert(`서버에러`, {
           confirmButtonText: '확인',
         })
       }
     },
-    handleEditConfirm() {
-      this.$confirm(
-        `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
-        '공정 편집 완료',
-        {
+    async handleEditConfirm() {
+      const form = cloneDeep(this.form)
+      form.ownerUUID = null
+      form.processId = form.id
+      delete form.id
+      form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[0])
+      form.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[1])
+      delete form.date
+      form.subProcessList.forEach(sub => {
+        sub.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[0])
+        sub.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[1])
+        delete sub.date
+      })
+
+      try {
+        await this.$store.dispatch('updateProcess', form)
+        await this.$alert(
+          `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
+          '공정 편집 완료',
+          {
+            confirmButtonText: '확인',
+          },
+        )
+        this.handleCancel()
+        this.$router.push(`/process/${form.processId}`)
+      } catch (e) {
+        console.log(e)
+        this.$alert(`서버에러`, {
           confirmButtonText: '확인',
-        },
-      )
-        .then(() => {
-          this.handleCancel()
         })
-        .catch(() => {})
+      }
     },
     handleCancel() {
       this.$emit('onToggleProcessModal', false)
       document.querySelector('body').style = ''
     },
-    handleOpen() {
+    async handleOpen() {
       document.querySelector('body').style = 'overflow-y: hidden;'
+
+      // create
+      if (this.modalType === 'create') {
+        this.form.id = this.target.info.contentUUID
+        this.form.name = this.target.info.contentName
+        this.form.subProcessList = this.target.sceneGroupList.map(scene => ({
+          id: scene.id,
+          name: scene.name,
+          priority: scene.priority,
+          date: [],
+          workerUUID: null,
+        }))
+      }
+      // edit
+      else if (this.modalType === 'edit') {
+        this.form.id = this.target.id
+        this.form.name = this.target.name
+        this.form.position = this.target.position
+        this.form.date = [
+          dayjs.filters.dayJS_ConvertLocalTime(this.target.startDate),
+          dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
+        ]
+        await this.$store.dispatch('getSubProcessList', {
+          processId: this.target.id,
+        })
+        this.form.subProcessList = this.$store.getters.processDetail.subProcessList.map(
+          sub => {
+            this.$set(sub, 'date', [
+              dayjs.filters.dayJS_ConvertLocalTime(sub.startDate),
+              dayjs.filters.dayJS_ConvertLocalTime(sub.endDate),
+            ])
+            return sub
+          },
+        )
+      }
     },
-  },
-  created() {
-    if (!this.target) return false
-    this.form.contentUUID = this.target.info.contentUUID
-    this.form.name = this.target.info.contentName
-    this.form.subProcessList = this.target.sceneGroupList.map(scene => ({
-      id: scene.id,
-      name: scene.name,
-      priority: scene.priority,
-      startDate: null,
-      endDate: null,
-      workerUUID: null,
-    }))
   },
 }
 </script>

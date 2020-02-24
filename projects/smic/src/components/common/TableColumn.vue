@@ -15,7 +15,7 @@
     span {{ memberName }}
   //- 일시
   div(v-else-if="/^(reportedAt|createdDate)$/.test(prop)")
-    span {{data[prop] | dayJs_FilterDateTime}}
+    span {{data[prop] | dayJs_FilterDateTimeFormat}}
   //- 컨텐츠이름
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
     img.prefix-img(src="~@/assets/image/ic-content.svg")
@@ -30,8 +30,8 @@
     //- el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
   .total-done(v-else-if="/^(schedule)$/.test(prop)")
-    span {{ data['startDate'] | dayJs_FilterDateTime }} 
-    span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTime }}
+    span {{ data['startDate'] | dayJs_FilterDateTimeFormat }} 
+    span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
   //- 진행 상태
   div(v-else-if="/^(status)$/.test(prop)")
     //- dummy data !!

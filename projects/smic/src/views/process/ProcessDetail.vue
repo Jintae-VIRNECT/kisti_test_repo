@@ -136,6 +136,7 @@ export default {
     },
   },
   created() {
+    this.$store.commit('SET_SUB_PROCESS_LIST', [])
     this.$store.dispatch('getSubProcessList', { processId: this.processId })
   },
 }
