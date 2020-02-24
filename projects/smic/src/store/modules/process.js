@@ -71,8 +71,23 @@ export default {
       if (code === 200) return data
       else throw new Error(message)
     },
-    // 공정 상세조회
-    async getProcessInfo() {},
+    // 공정 편집
+    async updateProcess(state, form) {
+      const response = await Vue.axios.post(
+        API.PROCESS_DETAIL(form.processId),
+        form,
+      )
+      const { code, data, message } = response.data
+      if (code === 200) return data
+      else throw new Error(message)
+    },
+    // 공정 삭제
+    async deleteProcess(state, processId) {
+      const response = await Vue.axios.delete(API.PROCESS_DETAIL(processId))
+      const { code, data, message } = response.data
+      if (code === 200) return data
+      else throw new Error(message)
+    },
     // 공정의 세부공정 리스트
     async getSubProcessList(state, params = {}) {
       const response = await Vue.axios.get(

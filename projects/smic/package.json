@@ -18,6 +18,7 @@
     "es6-promise": "^4.2.8",
     "file-system": "^2.2.2",
     "fs": "^0.0.1-security",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "log4js": "^6.1.0",
     "scaffold-modules-user": "^1.0.1",

@@ -26,7 +26,7 @@
                 format="yyyy. MM. dd.  HH:mm"
                 :picker-options="pickerOptions"
               )
-          .section
+          .section(v-if="modalType === 'create'")
             label.label-vertical-center 공정 담당자
             .value
               el-select.auth-select( v-model='form.ownerUUID' :disabled="subWorkerSelected" placeholder='Select')
@@ -73,6 +73,7 @@
 <script>
 import filters from '@/mixins/filters'
 import dayjs from '@/plugins/dayjs'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   mixins: [filters],
@@ -93,7 +94,6 @@ export default {
         subProcessList: [],
       },
       subWorkerSelected: false,
-      subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
       // 날짜
       pickerOptions: {
         disabledDate(time) {
@@ -123,6 +123,7 @@ export default {
       handler(list) {
         list.forEach(sub => {
           // 공정 일정 자동 조정
+          console.log(this.form)
           if (this.form.date[0] > sub.date[0]) {
             this.form.date = [sub.date[0], this.form.date[1]]
           }
@@ -131,7 +132,7 @@ export default {
           }
           // 세부 공정 담당자 지정시 공정담당자 비활성화
           if (sub.workerUUID !== this.form.ownerUUID) {
-            this.form.ownerUUID = this.subWorkerSelectedText
+            this.form.ownerUUID = '세부공정 별 담당자가 지정되었습니다.'
             this.subWorkerSelected = true
           }
         })
@@ -152,23 +153,23 @@ export default {
       }
     },
     async handleCreateConfirm() {
-      const form = { ...this.form }
+      const form = cloneDeep(this.form)
       form.contentUUID = form.id
       delete form.id
-      form.startDate = dayjs.filters.dayJS_ConvertUTCTime(form.date[0])
-      form.endDate = dayjs.filters.dayJS_ConvertUTCTime(form.date[1])
+      form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[0])
+      form.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[1])
       delete form.date
       form.subProcessList.forEach(sub => {
-        sub.startDate = dayjs.filters.dayJS_ConvertUTCTime(sub.date[0])
-        sub.endDate = dayjs.filters.dayJS_ConvertUTCTime(sub.date[1])
+        sub.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[0])
+        sub.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[1])
         delete sub.date
       })
-      if (this.form.ownerUUID === this.subWorkerSelectedText) {
+      if (this.subWorkerSelected) {
         form.ownerUUID = null
       }
       try {
         await this.$store.dispatch('createProcess', form)
-        await this.$confirm(
+        await this.$alert(
           `입력하신 정보로 공정을 추가 생성되었습니다. \n
             추가된 공정으로 새로운 보고를 받습니다.`,
           '공정 추가 생성 완료',
@@ -180,23 +181,42 @@ export default {
         this.$router.push('/process')
       } catch (e) {
         console.log(e)
-        this.$confirm(`서버에러`, {
+        this.$alert(`서버에러`, {
           confirmButtonText: '확인',
         })
       }
     },
-    handleEditConfirm() {
-      this.$confirm(
-        `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
-        '공정 편집 완료',
-        {
+    async handleEditConfirm() {
+      const form = cloneDeep(this.form)
+      form.ownerUUID = null
+      form.processId = form.id
+      delete form.id
+      form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[0])
+      form.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[1])
+      delete form.date
+      form.subProcessList.forEach(sub => {
+        sub.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[0])
+        sub.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[1])
+        delete sub.date
+      })
+
+      try {
+        await this.$store.dispatch('updateProcess', form)
+        await this.$alert(
+          `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
+          '공정 편집 완료',
+          {
+            confirmButtonText: '확인',
+          },
+        )
+        this.handleCancel()
+        this.$router.push(`/process/${form.processId}`)
+      } catch (e) {
+        console.log(e)
+        this.$alert(`서버에러`, {
           confirmButtonText: '확인',
-        },
-      )
-        .then(() => {
-          this.handleCancel()
         })
-        .catch(() => {})
+      }
     },
     handleCancel() {
       this.$emit('onToggleProcessModal', false)
@@ -205,6 +225,7 @@ export default {
     async handleOpen() {
       document.querySelector('body').style = 'overflow-y: hidden;'
 
+      // create
       if (this.modalType === 'create') {
         this.form.id = this.target.info.contentUUID
         this.form.name = this.target.info.contentName
@@ -215,11 +236,28 @@ export default {
           date: [],
           workerUUID: null,
         }))
-      } else if (this.modalType === 'edit') {
-        const detail = this.$store.getters.processDetail
-        this.form.id = detail.info.processId
-        this.form.name = detail.info.name
-        this.form.subProcessList = detail.subProcessList
+      }
+      // edit
+      else if (this.modalType === 'edit') {
+        this.form.id = this.target.id
+        this.form.name = this.target.name
+        this.form.position = this.target.position
+        this.form.date = [
+          dayjs.filters.dayJS_ConvertLocalTime(this.target.startDate),
+          dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
+        ]
+        await this.$store.dispatch('getSubProcessList', {
+          processId: this.target.id,
+        })
+        this.form.subProcessList = this.$store.getters.processDetail.subProcessList.map(
+          sub => {
+            this.$set(sub, 'date', [
+              dayjs.filters.dayJS_ConvertLocalTime(sub.startDate),
+              dayjs.filters.dayJS_ConvertLocalTime(sub.endDate),
+            ])
+            return sub
+          },
+        )
       }
     },
   },
