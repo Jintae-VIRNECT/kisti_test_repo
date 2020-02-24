@@ -190,7 +190,7 @@ $value-width: 374px;
       width: 100%;
       transition: 0s;
     }
-    .el-input:hover:not(.is-focus) {
+    .el-input:hover:not(.is-focus):not(.is-disabled) {
       background: #e6e9ee;
     }
   }

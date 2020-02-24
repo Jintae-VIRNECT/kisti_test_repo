@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import API from '@/models/api'
 
+import dayjs from '@/plugins/dayjs'
+
 // tmp data
 import taskGroup from '@/data/taskGroup'
 
@@ -8,9 +10,11 @@ export default {
   state: {
     processList: [],
     processDetail: {
+      info: {},
       subProcessList: [],
     },
     subProcessDetail: {
+      info: {},
       jobsList: taskGroup.tableData,
     },
   },

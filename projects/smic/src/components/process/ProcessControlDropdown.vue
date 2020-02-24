@@ -11,13 +11,13 @@
         div(@click="editProcess") 공정 편집
       el-dropdown-item
         .color-red(@click.prevent="deleteProcess") 삭제
-    //- process-control-dropdown-modal(
-    //-   :target="contentsDetail"
-    //-   :modalType="modalType"
-    //-   @onToggleProcessModal="onToggleProcessModal"   
-    //-   :toggleProcessModal="toggleProcessModal" 
-    //-   @onCreateData="onCreateData"
-    //-   @onChangeData="onChangeData")
+    process-control-dropdown-modal(
+      :target="target"
+      :modalType="modalType"
+      @onToggleProcessModal="onToggleProcessModal"   
+      :toggleProcessModal="toggleProcessModal" 
+      @onCreateData="onCreateData"
+      @onChangeData="onChangeData")
 </template>
 <script>
 import ProcessControlDropdownModal from '@/components/process/ProcessControlDropdownModal'
