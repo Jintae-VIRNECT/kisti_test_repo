@@ -29,7 +29,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t pf-gateway:develop -f Dockerfile.develop .'
+              sh 'docker build -t pf-gateway:develop .'
             }
 
           }
@@ -41,7 +41,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-gateway:staging -f Dockerfile.develop .'
+              sh 'docker build -t $registry_server/pf-gateway:staging .'
             }
 
           }
