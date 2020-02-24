@@ -7,7 +7,6 @@ pipeline {
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
-          sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
