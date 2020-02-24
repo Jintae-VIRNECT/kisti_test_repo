@@ -18,6 +18,8 @@ export default {
   PROCESS_CREATE: () => `@process/process`,
   // sub process
   SUB_PROCESS_LIST: processId => `@process/${processId}/subProcesses`,
+  SUB_PROCESS_DETAIL: subProcessesId =>
+    `@process/subProcesses/${subProcessesId}`,
   // jobs
   JOBS_LIST: subProcessesId => `@process/subProcesses/${subProcessesId}/jobs`,
   // issue

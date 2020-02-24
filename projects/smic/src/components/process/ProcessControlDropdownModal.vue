@@ -200,15 +200,15 @@ export default {
         delete sub.date
       })
 
+      await this.$alert(
+        `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
+        '공정 편집 완료',
+        {
+          confirmButtonText: '확인',
+        },
+      )
       try {
         await this.$store.dispatch('updateProcess', form)
-        await this.$alert(
-          `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
-          '공정 편집 완료',
-          {
-            confirmButtonText: '확인',
-          },
-        )
         this.handleCancel()
         this.$router.push(`/process/${form.processId}`)
       } catch (e) {

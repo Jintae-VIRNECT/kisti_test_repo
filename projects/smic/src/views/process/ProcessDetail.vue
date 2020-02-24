@@ -51,8 +51,9 @@
                 table-column(:prop="prop" :data="processDetail.subProcessList[scope.$index]")
             el-table-column(:width="50" class-name="control-col")
               template(slot-scope='scope')
-                process-control-dropdown(
+                sub-process-control-dropdown(
                   :target="processDetail.subProcessList[scope.$index]"
+                  :processId="processId"
                   @onChangeData="onChangeData"
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
@@ -69,6 +70,7 @@ import InlineTable from '@/components/common/InlineTable.vue'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner.vue'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.vue'
+import SubProcessControlDropdown from '@/components/process/SubProcessControlDropdown.vue'
 import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
@@ -92,6 +94,7 @@ export default {
     PageTabNav,
     PageBreadCrumb,
     ProcessControlDropdown,
+    SubProcessControlDropdown,
     ProcessDetailGraph,
     TableColumn,
   },
