@@ -23,7 +23,7 @@ VIRNECT Remote Web frontend project
  
 
 ```
-NODE_ENV: local, develop, production SSL_ENV: private, public
+NODE_ENV: local, develop, production / SSL_ENV: private, public
 ```
 
  
@@ -45,7 +45,7 @@ node -> v10.15.1
 
 ```
 $ npm install
-$ npm run build:develop
+$ npm run build
 ```
 
  
@@ -55,7 +55,7 @@ $ npm run build:develop
  
 
 ```shell script
-npm run start:develop
+npm run start
 ```
 
  
@@ -66,18 +66,15 @@ npm run start:develop
 
 #### Build docker image from dockerfile
 ```shell script
-docker build -t remoteweb:develop ./Dockerfile.develop .
+docker build -t rm-web ./docker/Dockerfile .
 ```
 
  
 
 #### Run application as docker container via docker image
 ```shell script
-docker run -d --name 'remoteweb-develop' -p 8886:8886 remoteweb:develop
-```
-## Running the application with Package
-1. run build files
-```
-npm run start:develop
+Needed SSL_ENV, NODE_ENV as Environment variables
+
+docker run -d --name 'rm-web' -p 8886:8886 -e SSL_ENV=public NODE_ENV=production rm-web
 ```
  

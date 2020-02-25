@@ -13,13 +13,10 @@
     ]
   },
   "scripts": {
-    "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
-    "build:production": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
+    "build": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
+    "start": "node server.js",
     "start:local": "export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
-    "start:develop": "export NODE_ENV=develop || set NODE_ENV=develop && export SSL_ENV=private || set SSL_ENV=private&&node server.js",
-    "start:production": "export NODE_ENV=production || set NODE_ENV=production && export SSL_ENV=public || set SSL_ENV=public&&node server.js",
-    "start:pkg": "pkg .",
-    "start": "node server.js"
+    "start:pkg": "pkg ."
   },
   "dependencies": {
     "axios": "^0.18.1",
