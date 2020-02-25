@@ -18,6 +18,16 @@ VIRNECT Remote Web frontend project
 
  
 
+## ENV
+
+ 
+
+```
+NODE_ENV: local, develop, production SSL_ENV: private, public
+```
+
+ 
+
 ## Environment
 
  

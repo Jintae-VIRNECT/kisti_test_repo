@@ -16,5 +16,5 @@ ENV PATH /usr/local/bin:$PATH
 
 EXPOSE ${PORT}
 
-CMD ["npm", "run", "start:production"]
+CMD ["npm", "run", "start"]
 
