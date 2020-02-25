@@ -15,7 +15,7 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
  * DESCRIPTION:
  */
 @Configuration
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.virnect.workspace.application")
 public class NetflixFeignConfiguration {
     @Bean
     Logger.Level feignLoggerLevel() {

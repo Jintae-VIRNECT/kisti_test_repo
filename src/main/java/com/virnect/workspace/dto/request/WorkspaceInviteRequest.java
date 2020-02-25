@@ -1,11 +1,10 @@
 package com.virnect.workspace.dto.request;
 
 import lombok.Getter;
-import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Project: PF-Workspace
@@ -15,10 +14,25 @@ import java.util.Map;
  * DESCRIPTION:
  */
 @Getter
-@Setter
 public class WorkspaceInviteRequest {
-    @NotBlank
-    private String userEmail;//초대할 유저
-    private List<Long> workspacePermission;//소속 할당할 워크스페이스 정보
-    private List<Map<String, String>> groups; //소속 할당할 그룹 정보
+    @Valid
+    private List<UserInfo> userInviteInfoList;
+
+    @Getter
+    public class UserInfo {
+        @NotBlank(message = "초대할 유저의 이메일 주소는 필수값입니다.")
+        private String userEmail;//초대할 유저
+
+        private List<Long> workspacePermission;//소속 할당할 워크스페이스 정보
+
+        private List<GroupInfo> groups; //소속 할당할 그룹 정보
+
+    }
+
+        @Getter
+        public class GroupInfo {
+            private String groupName;
+            private String managerAssign;
+    }
 }
+

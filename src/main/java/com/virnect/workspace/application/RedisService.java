@@ -6,6 +6,7 @@ import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,17 +24,17 @@ import java.util.List;
 public class RedisService {
 
     private final UserInviteRepository userInviteRepository;
-
-    public void setInviteInfo(String userId, String workspaceId, String inviteCode, List<WorkspaceInviteRequest> workspaceInviteRequestList) {
-        for (WorkspaceInviteRequest workspaceInviteInfo : workspaceInviteRequestList) {
+    private final ModelMapper modelMapper;
+    public void setInviteInfo(String userId, String workspaceId, String inviteCode, WorkspaceInviteRequest workspaceInviteRequest) {
+        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInviteInfoList()) {
             UserInvite userInvite = UserInvite.builder()
                     .inviteUser(userId)
                     .workspace(workspaceId)
-                    .joinUser(workspaceInviteInfo.getUserEmail())//연동 후에 이름 가져오는 것으로 변경
-                    .email(workspaceInviteInfo.getUserEmail())
+                    .joinUser(userInviteInfo.getUserEmail())//연동 후에 이름 가져오는 것으로 변경
+                    .email(userInviteInfo.getUserEmail())
                     .code(inviteCode)
-                    .permission(workspaceInviteInfo.getWorkspacePermission())
-                    .groups(workspaceInviteInfo.getGroups())
+                    .permission(userInviteInfo.getWorkspacePermission())
+                    .groups(modelMapper.map(userInviteInfo.getGroups(), List.class))
                     .expireTime(3L)
                     .build();
             this.userInviteRepository.save(userInvite);

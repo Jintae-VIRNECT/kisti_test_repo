@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto.response;
+package com.virnect.workspace.dto.rest;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class UserInfoResponse {
+public class UserInfoRestResponse {
     @ApiModelProperty(value = "사용자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String uuid;
     @ApiModelProperty(value = "사용자 이메일", position = 1, example = "smic1")

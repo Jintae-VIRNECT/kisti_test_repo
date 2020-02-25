@@ -1,9 +1,11 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.WorkspaceService;
+import com.virnect.workspace.dto.request.UsersCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
 import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.error.ErrorCode;
@@ -20,7 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -68,8 +69,8 @@ public class WorkspaceController {
             value = "워크스페이스 조회",
             notes = "사용자가 소속되어 있는 워크스페이스 정보를 반환합니다."
     )
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@PathVariable("userId") String userId) {
+    @GetMapping()
+    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
         if (!StringUtils.hasText(userId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -125,14 +126,14 @@ public class WorkspaceController {
      *
      * @param workspaceId                - 초대할 워크스페이스 uuid
      * @param workspaceInviteRequestList - 워크스페이스 초대 정보
-     * @return
+     * @return - 멤버 초대 성공 여부
      */
     @PostMapping("/{workspaceId}/invite")
-    public ResponseEntity<ApiResponse<WorkspaceInviteResponse>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody List<WorkspaceInviteRequest> workspaceInviteRequestList) {
+    public ResponseEntity<ApiResponse<WorkspaceInviteRestResponse>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequestList) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<WorkspaceInviteResponse> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, userId, workspaceInviteRequestList);
+        ApiResponse<WorkspaceInviteRestResponse> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, userId, workspaceInviteRequestList);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -142,7 +143,7 @@ public class WorkspaceController {
      * @param workspaceId - 수락한 워크스페이스 uuid
      * @param userId      - 수락한 유저 uuid
      * @param code        - 초대 코드
-     * @return
+     * @return - 멤버 초대 수락 성공 여부
      */
     @GetMapping("/{workspaceId}/invite/accept")
     public ResponseEntity<ApiResponse<WorkspaceInviteAcceptResponse>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
@@ -150,6 +151,24 @@ public class WorkspaceController {
             throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse<WorkspaceInviteAcceptResponse> apiResponse = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * 워크스페이스 멤버 생성
+     *
+     * @param workspaceId       - 대상 워크스페이스 uuid
+     * @param userId            - 생성하는 유저 uuid
+     * @param userCreateRequest - 생성 되는 userInfo List
+     * @param bindingResult
+     * @return - 멤버 생성 성공 여부
+     */
+    @PostMapping("/{workspaceId}/create")
+    public ResponseEntity<ApiResponse> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {
+        if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse<WorkspaceInviteAcceptResponse> apiResponse = this.workspaceService.createUsers(workspaceId, userId, userCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
