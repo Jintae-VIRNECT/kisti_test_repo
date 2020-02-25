@@ -15,7 +15,7 @@
   "scripts": {
     "build": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",
-    "start:local": "export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
+    "start:local": "export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
     "start:pkg": "pkg ."
   },
   "dependencies": {

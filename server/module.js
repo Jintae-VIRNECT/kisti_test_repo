@@ -4,16 +4,15 @@ const path = require('path')
 const os = require('os');
 const fs = require('fs');
 const logger = require('./logger');
-const configService = require('./config');
 
 var ServerModule = (function () {
   'use strict';
 
   let instance;
 
-  const NODE_ENV = configService.getEnv() || 'production';
-  const SSL_ENV = configService.getSSLEnv() || 'public';
-  const PORT = configService.getPort() || '8887';
+  const NODE_ENV = process.env.NODE_ENV || 'production';
+  const SSL_ENV = NODE_ENV === 'production' ? 'public' : 'private';
+  const PORT = process.env.PORT || 8886;
 
   function start(app) {
     return new Promise(function (resolve, reject) {

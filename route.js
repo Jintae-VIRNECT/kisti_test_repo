@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const reader = require("./server/reader");
-const urls = reader.getURLs();
-const weblog = require("./server/weblog");
-const log = weblog.putLogs;
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers["user-agent"];
@@ -51,11 +47,6 @@ router.get("/service/*", function(req, res) {
     res.redirect("/support");
     return;
   }
-});
-
-router.post("/urls", function(req, res) {
-  res.header("Content-Type", "application/json");
-  res.send(urls);
 });
 
 router.get("/*", function(req, res) {

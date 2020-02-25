@@ -5,8 +5,7 @@ const baseWebpackConfig = require("./webpack.base.conf");
 const path = require("path");
 const fs = require("fs");
 const host = "0.0.0.0";
-const configService = require("../server/config");
-const port = configService.getPort();
+const port = process.env.port;
 const logger = require("../server/logger");
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -43,33 +42,28 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       ]
     },
     proxy: {
-      "/api/admin/*": {
-        target: configService.getAsString("GATEWAY_ADMIN_URL"),
-        headers: {
-          "Access-Control-Allow-Origin": "*"
-        },
-        secure: false,
-        changeOrigin: true
-      },
-      "/api/*": {
-        target: configService.getAsString("GATEWAY_SERVICE_URL"),
-        headers: {
-          "Access-Control-Allow-Origin": "*"
-        },
-        secure: false,
-        changeOrigin: true
-      }
+      // "/api/admin/*": {
+      //   target: configService.getAsString("GATEWAY_ADMIN_URL"),
+      //   headers: {
+      //     "Access-Control-Allow-Origin": "*"
+      //   },
+      //   secure: false,
+      //   changeOrigin: true
+      // },
+      // "/api/*": {
+      //   target: configService.getAsString("GATEWAY_SERVICE_URL"),
+      //   headers: {
+      //     "Access-Control-Allow-Origin": "*"
+      //   },
+      //   secure: false,
+      //   changeOrigin: true
+      // }
     },
     noInfo: true,
     open: false,
     before: function(app, server) {
       var bodyParser = require("body-parser");
       app.use(bodyParser.json());
-
-      app.post("/urls", function(req, res) {
-        const a = configService.getAll();
-        res.json(a);
-      });
 
       app.post("/logs", bodyParser.json(), function(req, res) {
         logger.log(req.body.data, "CONSOLE");
