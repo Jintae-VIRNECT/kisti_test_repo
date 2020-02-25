@@ -25,11 +25,12 @@
                 end-placeholder="마감일"
                 format="yyyy. MM. dd.  HH:mm"
                 :picker-options="pickerOptions"
+                @focus="onProcessDateClick"
               )
           .section(v-if="modalType === 'create'")
             label.label-vertical-center 공정 담당자
             .value
-              el-select.auth-select( v-model='form.ownerUUID' :disabled="subWorkerSelected" placeholder='Select')
+              el-select.auth-select( v-model='form.ownerUUID' placeholder='Select')
                 el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
               span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다
           .section
@@ -93,7 +94,7 @@ export default {
         date: [],
         subProcessList: [],
       },
-      subWorkerSelected: false,
+      subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
       // 날짜
       pickerOptions: {
         disabledDate(time) {
@@ -109,13 +110,13 @@ export default {
     'form.date'(val) {
       // 일괄수정
       this.form.subProcessList.forEach(sub => {
-        if (!sub.date.length) sub.date = val
+        if (!sub.date.length || !this.date) sub.date = val
       })
     },
     'form.ownerUUID'(val) {
       // 일괄수정
       this.form.subProcessList.forEach(sub => {
-        if (!sub.workerUUID) sub.workerUUID = val
+        if (val !== this.subWorkerSelectedText) sub.workerUUID = val
       })
     },
     'form.subProcessList': {
@@ -131,8 +132,7 @@ export default {
           }
           // 세부 공정 담당자 지정시 공정담당자 비활성화
           if (sub.workerUUID !== this.form.ownerUUID) {
-            this.form.ownerUUID = '세부공정 별 담당자가 지정되었습니다.'
-            this.subWorkerSelected = true
+            this.form.ownerUUID = this.subWorkerSelectedText
           }
         })
       },
@@ -151,6 +151,9 @@ export default {
         this.handleCreateConfirm()
       }
     },
+    onProcessDateClick() {
+      this.form.date = []
+    },
     async handleCreateConfirm() {
       const form = cloneDeep(this.form)
       form.contentUUID = form.id
@@ -163,7 +166,7 @@ export default {
         sub.endDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(sub.date[1])
         delete sub.date
       })
-      if (this.subWorkerSelected) {
+      if (this.form.ownerUUID === this.subWorkerSelectedText) {
         form.ownerUUID = null
       }
       try {
@@ -223,6 +226,9 @@ export default {
     },
     async handleOpen() {
       document.querySelector('body').style = 'overflow-y: hidden;'
+      this.form.position = ''
+      this.form.date = []
+      this.form.ownerUUID = null
 
       // create
       if (this.modalType === 'create') {
