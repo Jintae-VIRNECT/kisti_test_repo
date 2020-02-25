@@ -1,8 +1,9 @@
 package com.virnect.workspace.dto.request;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -14,12 +15,16 @@ import java.util.List;
  * DESCRIPTION:
  */
 @Getter
+@Setter
+@RequiredArgsConstructor
 public class WorkspaceInviteRequest {
-    @Valid
-    private List<UserInfo> userInviteInfoList;
+
+    private List<UserInfo> userInfoList;
 
     @Getter
-    public class UserInfo {
+    @Setter
+    @RequiredArgsConstructor
+    public static class UserInfo {
         @NotBlank(message = "초대할 유저의 이메일 주소는 필수값입니다.")
         private String userEmail;//초대할 유저
 
@@ -29,10 +34,10 @@ public class WorkspaceInviteRequest {
 
     }
 
-        @Getter
-        public class GroupInfo {
-            private String groupName;
-            private String managerAssign;
+    @Getter
+    private class GroupInfo {
+        private String groupName;
+        private String managerAssign;
     }
 }
 

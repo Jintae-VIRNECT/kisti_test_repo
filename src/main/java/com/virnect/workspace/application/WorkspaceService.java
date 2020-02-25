@@ -188,20 +188,25 @@ public class WorkspaceService {
         }
         //2. 라이선스검사(해야됨)
 
-        //3. 이미 초대된 사용자인지 체크(해야됨)
-        /*ResponseMessage responseMessage = this.userRestService.getUserInfoByEmail();*/
 
-        //4. 이메일 발송
+
+
+        //3. 계정 중복 체크 & 이메일 발송
         WorkspaceInviteMailRequest.InviteInfo inviteInfo = new WorkspaceInviteMailRequest.InviteInfo();
         List<WorkspaceInviteMailRequest.InviteInfo> inviteInfos = new ArrayList<>();
         WorkspaceInviteMailRequest workspaceInviteMailRequest = new WorkspaceInviteMailRequest();
-        System.out.println(workspaceInviteRequest.getUserInviteInfoList());
-        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInviteInfoList()) {
+        List<String> emailList = new ArrayList<>();
+        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInfoList()) {
+            emailList.add(userInviteInfo.getUserEmail());
             inviteInfo.setInviteUserEmail(userInviteInfo.getUserEmail());
             inviteInfo.setInviteUserName("초대받은사람");
             inviteInfos.add(inviteInfo);
         }
-
+        //걔정 중복 체크
+        this.userRestService.getUserInfoByEmailList(emailList).getData().getInviteUserInfoList().stream().map(inviteUserInfoResponse -> {
+            System.out.println(inviteUserInfoResponse.getEmail());
+           return inviteUserInfoResponse;
+        });
         String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
         String inviteCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
 
@@ -211,13 +216,13 @@ public class WorkspaceService {
         workspaceInviteMailRequest.setRequestUserId(userId);
         workspaceInviteMailRequest.setRequestUserName("초대한사람");
 
-        WorkspaceInviteRestResponse workspaceInvite = this.messageRestService.sendMail(workspaceInviteMailRequest).getData();
+        //WorkspaceInviteRestResponse workspaceInvite = this.messageRestService.sendMail(workspaceInviteMailRequest).getData();
 
 
         //5. redis에 초대 정보 넣기
         //this.redisService.setInviteInfo(userId, workspaceId, inviteCode, workspaceInviteRequestList);
-        return new ApiResponse<>(workspaceInvite);
-
+        //return new ApiResponse<>(workspaceInvite);
+        return new ApiResponse<>();
     }
 
     /**

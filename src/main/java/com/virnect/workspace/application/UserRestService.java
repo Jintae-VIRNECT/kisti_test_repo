@@ -1,5 +1,6 @@
 package com.virnect.workspace.application;
 
+import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 
 /**
@@ -39,5 +42,13 @@ public interface UserRestService {
     @GetMapping
     ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, Pageable pageable);
 
+    /**
+     * 유저 중복 여부 조회
+     *
+     * @param emailList - 조회 요청 유저 이메일 리스트
+     * @return - 유저 정보
+     */
+    @GetMapping
+    ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(List<String> emailList);
 }
 

@@ -26,7 +26,7 @@ public class RedisService {
     private final UserInviteRepository userInviteRepository;
     private final ModelMapper modelMapper;
     public void setInviteInfo(String userId, String workspaceId, String inviteCode, WorkspaceInviteRequest workspaceInviteRequest) {
-        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInviteInfoList()) {
+        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInfoList()) {
             UserInvite userInvite = UserInvite.builder()
                     .inviteUser(userId)
                     .workspace(workspaceId)
