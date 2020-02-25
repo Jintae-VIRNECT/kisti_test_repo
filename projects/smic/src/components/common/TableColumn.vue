@@ -14,7 +14,7 @@
     .auth-img(:style="{'background-image': `url(${ member.profile })`}")
     span {{ member.name }}
   //- 일시
-  div(v-else-if="/^(reportedAt|createdDate)$/.test(prop)")
+  div(v-else-if="/^(reportedAt|.*Date)$/.test(prop)")
     span {{data[prop] | dayJs_FilterDateTimeFormat}}
   //- 컨텐츠이름
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
@@ -62,7 +62,7 @@
     span.count {{ data['count'] }} 
     span &nbsp;/ {{ data['total'] }}
   //- 스마트툴
-  .total-done(v-else-if="/^(smartTool)$/.test(prop)")
+  .total-done(v-else-if="/^(smartToolJobId)$/.test(prop)")
     span Job ID no.
     el-divider(direction="vertical")
     span.count {{ data['count'] }} 
@@ -76,10 +76,23 @@
   div(v-else-if="/^(issueId)$/.test(prop)")
     el-button(v-if="data[prop]" v-on:click="buttonClick") 작업 이슈 보기
     span(v-else) ―
+  //- 디버깅용
+  div(v-else-if="/^(name)$/.test(prop) && data['id']")
+    span {{ data[prop] }}
+    span.debug (id: {{ data['id'] }})
   //- 기타
   div(v-else)
     span {{ data[prop] }}
 </template>
+
+<style lang="scss">
+span.debug {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.5em;
+  opacity: 0.5;
+}
+</style>
 
 <script>
 import filters from '@/mixins/filters'
