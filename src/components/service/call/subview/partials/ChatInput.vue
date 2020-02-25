@@ -14,7 +14,13 @@
         </div>
       </vue2-scrollbar>
     </div>
-    <div class="chat-input__form">
+    <div 
+      class="chat-input__form" 
+      @dragenter.stop.prevent="dragenterHandler"
+      @dragleave.stop.prevent="dragleaveHandler"
+      @dragover.stop.prevent="dragoverHandler"
+      @drop.stop.prevent="dropHandler"
+    >
       <button class="chat-input__form-upload" @click="clickUpload">파일 업로드</button>
       <input 
           type="file"
@@ -125,6 +131,20 @@ export default {
     removeFile(idx) {
       // console.log(file)
       this.fileList.splice(idx, 1)
+    },
+
+    dragenterHandler (event) {
+      // console.log(event);
+    },
+    dragleaveHandler (event) {
+      // console.log(event);
+    },
+    dragoverHandler (event) {
+      // console.log(event);
+    },
+    dropHandler (event) {
+      const file = event.dataTransfer.files[0]
+      this.loadFile(file)
     }
   },
 

@@ -1,8 +1,6 @@
 FROM node:alpine
 ENV APP_HOME=/usr/app
 ENV PORT=8886
-ENV NODE_ENV=develop
-ENV SSL_ENV=private
 
 WORKDIR $APP_HOME
 
@@ -12,5 +10,5 @@ RUN npm install --production
 
 EXPOSE ${PORT}
 
-CMD ["npm", "run", "start:develop"]
+CMD ["npm", "run", "start"]
 

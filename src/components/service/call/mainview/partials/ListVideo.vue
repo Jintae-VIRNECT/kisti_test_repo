@@ -8,8 +8,8 @@
     <img 
       v-if="!isMain"
       class="list-video__speaker"
-      :src="session.audio ? require('assets/image/call/gnb_ic_voice_on.png') 
-                   : require('assets/image/call/gnb_ic_voice_off.png')"
+      :src="session.audio ? require('assets/image/call/gnb_ic_voice_on.svg') 
+                   : require('assets/image/call/gnb_ic_voice_off.svg')"
     />
     
     <div v-if="!isMain" class="list-video__status good">
@@ -38,7 +38,7 @@ export default {
     session: Object
   },
 	computed: {
-    ...mapGetters(['mainSession']),
+    ...mapGetters(['mainSession', 'speaker']),
     isMain() {
       if (this.session.nodeId === 'main') {
         return true
@@ -51,7 +51,13 @@ export default {
       return false
     }
   },
-	watch: {},
+	watch: {
+    speaker(val) {
+      if(this.$el.querySelector('video')) {
+        this.$el.querySelector('video').muted = val
+      }
+    }
+  },
 	methods: {
     ...mapActions(['setMainSession']),
     changeMain() {

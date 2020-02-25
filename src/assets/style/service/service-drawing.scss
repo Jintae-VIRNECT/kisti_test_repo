@@ -1,0 +1,14 @@
+.drawing {
+  position: relative;
+  height: 100%;
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawing-canvas {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 230px);
+}

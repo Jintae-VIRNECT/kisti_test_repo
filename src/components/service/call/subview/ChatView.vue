@@ -10,13 +10,20 @@
       </popover>
     </p>
     <p class="chat-header__description">6명의 작업자</p>
-    <button class="chat-header__fold">펼치기</button>
+    <!-- <tooltip
+      class="chat-header__fold"
+      content="펼치기">
+    </tooltip> -->
+    <button
+      slot="body"
+      class="chat-header__fold"
+    >펼치기</button>
   </div>
 
   <vue2-scrollbar ref="chatListScrollbar">
     <ol class="chat-list">
       <li class="chat-item date">
-        <p>2020년 01월 06일</p>
+        <p>{{ $moment().format('LL') }}</p>
       </li>
       <chat-item
           v-for="(chat, idx) of chatList"
@@ -37,29 +44,42 @@ import { mapGetters } from 'vuex'
 import ChatItem from './partials/ChatItem'
 import ChatInput from './partials/ChatInput'
 import Popover from 'Popover'
+import Tooltip from 'Tooltip'
 
 export default {
 	name: "Chat",
 	components: {
     ChatItem,
     ChatInput,
-    Popover
+    Popover,
+    Tooltip
   },
 	data() {
 		return {
-      // chatList: [{
-      //   name: '참여자1',
-      //   text: '하이염^^',
-      //   date: new Date()
-      // },{
-      //   name: '참여자2',
-      //   text: '안녕하심미까',
-      //   date: new Date()
-      // }]
+      chatList: [{
+        type: 'me',
+        name: '참여자1',
+        text: '하이염^^',
+        date: new Date()
+      },{
+        type: 'opponent',
+        name: '참여자2',
+        text: '안녕하심미까',
+        date: new Date()
+      }, {
+        type: 'opponent',
+        name: '참여자3',
+        text: '파일 전달합니다.',
+        file: [{
+          filename: 'Webex.png',
+          filesize: '10MB'
+        }],
+        date: new Date()
+      }]
     }
 	},
 	computed: {
-    ...mapGetters(['chatList'])
+    // ...mapGetters(['chatList'])
   },
 	watch: {
     chatList: {

@@ -29,11 +29,11 @@
     //   right: -27px;
     //   width: 20px;
     //   height: 20px;
-    //   background: url(~assets/image/call/chat_icn_moreinfor.png) right no-repeat;
+    //   background: url(~assets/image/call/chat_icn_moreinfor.svg) right no-repeat;
     // }
     .show-list {
       margin-left: 5px;
-      background: url(~assets/image/call/chat_icn_moreinfor.png) center/20px no-repeat;
+      background: url(~assets/image/call/chat_icn_moreinfor.svg) center/20px no-repeat;
 
       @include ir();
     }
@@ -49,7 +49,7 @@
     right: 22px;
     top: 50%;
     transform: translateY(-50%);
-    background: url(~assets/image/call/chat_ic_fullscre.png) center/22px no-repeat;
+    background: url(~assets/image/call/chat_ic_fullscre.svg) center/22px no-repeat;
 
     @include ir();
   }
@@ -87,7 +87,7 @@
         width: 100px;
         height: 1px;
         margin-right: 10px;
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba($color_white, 0.15);
       }
       &::after {
         content: '';
@@ -97,7 +97,7 @@
         width: 100px;
         height: 1px;
         margin-left: 10px;
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba($color_white, 0.15);
       }
     }
   }
@@ -111,14 +111,14 @@
       .chatbox {
         padding: 11px 13px;
         border-radius: 7px 7px 0 7px;
-        background-color: #d1dffa;
+        background-color: $color_chat_bg_me;
         line-height: 1.57;
         word-break: break-word;
         // white-space: pre-wrap;
         width: fit-content;
         margin-left: auto;
         .text {
-          color: rgba(#000, .78);
+          color: rgba($color_black, .78);
           white-space: pre-wrap;
         }
       }
@@ -126,7 +126,7 @@
     .time {
       display: block;
       margin: 6px 0 8px;
-      color: #efefef;
+      color: $color_text_main;
       font-size: .8em;
       opacity: 0.5;
       text-align: right;
@@ -149,24 +149,24 @@
       .chatbox {
         padding: 7px 13px;
         border-radius: 0 7px 7px 7px;
-        background-color: #fff;
+        background-color: $color_chat_bg_opponent;
         line-height: 1.57;
         word-break: break-word;
         white-space: pre-wrap;
         width: fit-content;
         .name {
-          color: rgba(#000, .9);
+          color: rgba($color_black, .9);
           font-size: 12px;
           font-weight: 500;
         }
         .text {
-          color: rgba(#000, .78);
+          color: rgba($color_black, .78);
         }
       }
       .time {
         display: block;
         margin: 6px 0 8px;
-        color: #efefef;
+        color: $color_text_main;
         font-size: .8em;
         opacity: 0.5;
         text-align: left;
@@ -200,7 +200,7 @@
             left: -20px;
             width: 14px;
             height: 14px;
-            background: url(~assets/image/call/chat_ic_remote.png) center no-repeat;
+            background: url(~assets/image/call/chat_ic_remote.svg) center no-repeat;
           }
         }
         &.people {
@@ -212,7 +212,7 @@
             left: -20px;
             width: 14px;
             height: 14px;
-            background: url(~assets/image/call/chat_ic_ppl.png) center no-repeat;
+            background: url(~assets/image/call/chat_ic_ppl.svg) center no-repeat;
           }
         }
       }
@@ -221,9 +221,33 @@
         margin: 4px 0;
         font-size: .8em;
         opacity: 0.5;
-        color: #FFF;
+        color: $color_text_main;
         text-align: center;
       }
+    }
+  }
+
+  .file {
+    &__name {
+      background: url() no-repeat;
+      color: rgba(#000, .78);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    &__size {
+      color: rgba(#000, .78);
+      font-size: 12px;
+    }
+
+    &__button {
+      color: rgba(0, 0, 0, 0.78);
+      font-weight: 500;
+      width: calc(100% + 26px);
+      height: 44px;
+      border-top: solid 1px #d8d8d8;
+      background-color: transparent;
+      margin: 0 -13px -7px -13px;
     }
   }
 }
@@ -232,7 +256,7 @@
   flex-shrink: 0;
   bottom: 0;
   width: 100%;
-  background-color: rgba(#4c5259, .3);
+  background-color: $color_chat_bg_input;
 
   &__preview {
     height: 120px;
@@ -256,7 +280,6 @@
       height: 100%;
       width: fit-content;
       margin-right: 20px;
-      border: 1px solid rgba(151, 151, 151, 0.21);
       &:last-child {
         margin-right: 0;
       }
@@ -288,7 +311,7 @@
     &-upload {
       width: 30px;
       height: 100%;
-      background: url(~assets/image/call/chat_ic_attachfile.png) center no-repeat;
+      background: url(~assets/image/call/chat_ic_attachfile.svg) center no-repeat;
 
       @include ir();
     }
@@ -300,7 +323,7 @@
       margin-left: 10px;
       border: none;
       outline: none;
-      color: #fff;
+      color: $color_text_main;
       background-color: transparent;
 
       &::placeholder { color: rgba($color_text_default, 0.42); }

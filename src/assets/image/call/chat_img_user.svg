@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>3CBE58DA-E4F4-4246-A0A7-84E275F0DF37@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="4.9132948%" x2="50%" y2="98.2071893%" id="linearGradient-1">
+            <stop stop-color="#CDD2DA" offset="0%"></stop>
+            <stop stop-color="#B5B7BC" offset="100%"></stop>
+        </linearGradient>
+        <ellipse id="path-2" cx="15" cy="14.7761194" rx="15" ry="14.7761194"></ellipse>
+    </defs>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_전체" transform="translate(-1585.000000, -765.000000)">
+            <g id="message" transform="translate(1560.000000, 56.000000)">
+                <g id="texting-area">
+                    <g id="speechbb_left02-copy" transform="translate(25.000000, 709.000000)">
+                        <g id="chat_img_user">
+                            <mask id="mask-3" fill="white">
+                                <use xlink:href="#path-2"></use>
+                            </mask>
+                            <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+                            <path d="M14.6428571,18.1428571 C17.6026786,18.1428571 20,15.7455357 20,12.7857143 C20,9.82589286 17.6026786,7.42857143 14.6428571,7.42857143 C11.6830357,7.42857143 9.28571429,9.82589286 9.28571429,12.7857143 C9.28571429,15.7455357 11.6830357,18.1428571 14.6428571,18.1428571 Z M15,20.2857143 C11.1857143,20.2857143 3.57142857,22.132271 3.57142857,25.7978239 L3.57142857,28.5538787 C8.09919085,31.1370072 11.6706194,32.4285714 14.2857143,32.4285714 C16.9008092,32.4285714 20.9484282,31.1370072 26.4285714,28.5538787 L26.4285714,25.7978239 C26.4285714,22.132271 18.8142857,20.2857143 15,20.2857143 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

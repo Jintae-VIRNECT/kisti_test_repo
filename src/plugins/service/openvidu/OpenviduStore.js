@@ -21,7 +21,7 @@ const getDefaultState = () => {
         text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
         name: 'alarm',
         date: new Date,
-        chatId: null,
+        nodeId: null,
         type: 'system'
       }]
     }
@@ -44,7 +44,7 @@ const mutations = {
       text: payload.nickName + '님이 대화에 참여하셨습니다.',
       name: 'people',
       date: new Date,
-      chatId: null,
+      nodeId: null,
       type: 'system'
     })
   },
@@ -75,7 +75,7 @@ const mutations = {
       text: nickName + '님이 대화에서 나가셨습니다.',
       name: 'people',
       date: new Date,
-      chatId: null,
+      nodeId: null,
       type: 'system'
     })
   },
@@ -90,7 +90,7 @@ const mutations = {
     state.chat.chatList.push(payload)
   },
   REMOVE_CHAT(state, payload) {
-    const idx = state.chat.chatList.findIndex(obj => obj.chatId === payload)
+    const idx = state.chat.chatList.findIndex(obj => obj.nodeId === payload)
     if(idx < 0) return
     state.chat.chatList.splice(idx, 1)
   },
@@ -159,10 +159,10 @@ const actions = {
   },
   /**
    * Remove Chat Object
-   * @param {String} chatId 
+   * @param {String} nodeId 
    */
-  removeChat({ commit }, chatId) {
-    commit('REMOVE_CHAT', chatId);
+  removeChat({ commit }, nodeId) {
+    commit('REMOVE_CHAT', nodeId);
   },
   /**
    * Clear Chat Object

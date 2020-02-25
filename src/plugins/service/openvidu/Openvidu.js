@@ -28,6 +28,7 @@ export default {
       session.on('streamCreated', (event) => {
         // Subscribe to the Stream to receive it
         // HTML video will be appended to element with 'video-container' id
+        console.log(event.stream)
       
         let streamObj = addSession(event.stream)
         
@@ -40,13 +41,12 @@ export default {
           //   text: streamObj.nickName + '님이 대화에 참여하셨습니다.',
           //   name: 'people',
           //   date: new Date,
-          //   chatId: null,
+          //   nodeId: null,
           //   type: 'system'
           // })
           subscribers.push(subscriber)
           // var subscriber = session.subscribe(event.stream)
           console.log(subscriber)
-          console.log(subscriber.stream.getMediaStream())
           subscriber.on('streamPlaying', (event) => {
             console.log(event)
             console.log(subscriber.stream.getMediaStream())
@@ -87,7 +87,7 @@ export default {
           text: data.replace(/\</g, '&lt;'),
           name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
           date: new Date(),
-          chatId: event.from.rpcSessionId,
+          nodeId: event.from.connectionId,
           type: false
         }
         if (session.connection.connectionId === event.from.connectionId) {
@@ -104,7 +104,7 @@ export default {
           text: data.split('::')[1].replace(/\</g, '&lt;'),
           name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
           date: data.split('::')[0],
-          chatId: event.from.rpcSessionId,
+          nodeId: event.from.connectionId,
           type: false
         }
         Store.dispatch('addChat', chat)
@@ -141,8 +141,8 @@ export default {
           nickName: clientData,
           // userName: serverData,
           nodeId: nodeId,
-          audio: true,
-          video: true
+          audio: stream.audioActive,
+          video: stream.videoActive
         }
       }
       

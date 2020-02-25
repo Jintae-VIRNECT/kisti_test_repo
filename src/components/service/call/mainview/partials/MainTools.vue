@@ -13,9 +13,9 @@
   <tool-button
     text="녹화"
     :active="isRecording"
-    :src="require('assets/image/call/ic_record_off.png')"
+    :src="require('assets/image/call/ic_record_off.svg')"
     :onActive="isRecording"
-    :activeSrc="require('assets/image/call/ic_record_ing.png')"
+    :activeSrc="require('assets/image/call/ic_record_ing.svg')"
     @action="recording"></tool-button>
 </div>
 </template>

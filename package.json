@@ -13,11 +13,9 @@
     ]
   },
   "scripts": {
-    "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
-    "build:production": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
+    "build": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
+    "start": "node server.js",
     "start:local": "export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
-    "start:develop": "export NODE_ENV=develop || set NODE_ENV=develop && export SSL_ENV=private || set SSL_ENV=private&&node server.js",
-    "start:production": "export NODE_ENV=production || set NODE_ENV=production && export SSL_ENV=public || set SSL_ENV=public&&node server.js",
     "start:pkg": "pkg ."
   },
   "dependencies": {
@@ -28,6 +26,7 @@
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
     "eslint-plugin-vue": "^5.2.3",
+    "log4js": "^6.1.0",
     "express": "^4.17.1",
     "vue": "^2.6.11",
     "vue-moment": "^4.1.0",
@@ -57,7 +56,6 @@
     "file-loader": "^1.1.11",
     "html-loader": "^0.5.0",
     "html-webpack-plugin": "^3.2.0",
-    "log4js": "^6.1.0",
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.13.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
@@ -77,7 +75,9 @@
     "webpack-merge": "^4.2.2",
     "openvidu-browser": "^2.11.0",
     "vue2-scrollbar": "^0.0.3",
-    "lottie-web": "^5.6.2"
+    "lottie-web": "^5.6.2",
+    "pdfjs-dist": "^2.2.228",
+    "pptx2html": "^0.3.4"
   },
   "lint": "eslint --ext .js,.vue src"
 }
