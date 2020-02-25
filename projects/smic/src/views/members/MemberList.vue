@@ -17,8 +17,5 @@ export default {
   computed: {
     ...mapGetters(['memberList']),
   },
-  created() {
-    this.$store.dispatch('getMemberList')
-  },
 }
 </script>

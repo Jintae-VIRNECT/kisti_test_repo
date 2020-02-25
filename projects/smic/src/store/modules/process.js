@@ -34,10 +34,10 @@ export default {
       state.processList = list
     },
     SET_PROCESS_INFO(state, obj) {
-      state.processDetail.info = obj
+      state.processDetail = { ...state.processDetail, info: obj }
     },
     SET_SUB_PROCESS_LIST(state, list) {
-      state.processDetail.subProcessList = list
+      state.processDetail = { ...state.processDetail, subProcessList: list }
     },
     SET_SUB_PROCESS_INFO(state, obj) {
       state.subProcessDetail.info = obj
@@ -48,7 +48,7 @@ export default {
   },
   actions: {
     // 공정 조회
-    async getProcessList(state, params = {}) {
+    async getProcessList(context, params = {}) {
       const response = await Vue.axios.get(API.PROCESS_LIST(), {
         params: {
           search: params.search || '',
@@ -60,19 +60,28 @@ export default {
       })
       const { code, data, message } = response.data
       if (code === 200) {
-        state.commit('SET_PROCESS_LIST', data.processes)
+        context.commit('SET_PROCESS_LIST', data.processes)
+        return data
+      } else throw new Error(message)
+    },
+    // 공정 상세조회
+    async getProcessInfo(context, processId) {
+      const response = await Vue.axios.get(API.PROCESS_DETAIL(processId))
+      const { code, data, message } = response.data
+      if (code === 200) {
+        context.commit('SET_PROCESS_INFO', data)
         return data
       } else throw new Error(message)
     },
     // 공정 생성
-    async createProcess(state, form) {
+    async createProcess(context, form) {
       const response = await Vue.axios.post(API.PROCESS_CREATE(), form)
       const { code, data, message } = response.data
       if (code === 200) return data
       else throw new Error(message)
     },
     // 공정 편집
-    async updateProcess(state, form) {
+    async updateProcess(context, form) {
       const response = await Vue.axios.post(
         API.PROCESS_DETAIL(form.processId),
         form,
@@ -82,14 +91,14 @@ export default {
       else throw new Error(message)
     },
     // 공정 삭제
-    async deleteProcess(state, processId) {
+    async deleteProcess(context, processId) {
       const response = await Vue.axios.delete(API.PROCESS_DETAIL(processId))
       const { code, data, message } = response.data
       if (code === 200) return data
       else throw new Error(message)
     },
     // 공정의 세부공정 리스트
-    async getSubProcessList(state, params = {}) {
+    async getSubProcessList(context, params = {}) {
       const response = await Vue.axios.get(
         API.SUB_PROCESS_LIST(params.processId),
         {
@@ -102,9 +111,19 @@ export default {
       )
       const { code, data, message } = response.data
       if (code === 200) {
-        state.commit('SET_SUB_PROCESS_LIST', data.subProcesses)
+        context.commit('SET_SUB_PROCESS_LIST', data.subProcesses)
         return data
       } else throw new Error(message)
+    },
+    // 세부공정 편집
+    async updateSubProcess(context, form) {
+      const response = await Vue.axios.post(
+        API.SUB_PROCESS_DETAIL(form.subProcessId),
+        form,
+      )
+      const { code, data, message } = response.data
+      if (code === 200) return data
+      else throw new Error(message)
     },
     async getSubProcessDetail() {},
     async getJobsList() {},

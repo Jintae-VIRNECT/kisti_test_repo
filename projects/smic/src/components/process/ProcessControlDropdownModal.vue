@@ -123,7 +123,6 @@ export default {
       handler(list) {
         list.forEach(sub => {
           // 공정 일정 자동 조정
-          console.log(this.form)
           if (this.form.date[0] > sub.date[0]) {
             this.form.date = [sub.date[0], this.form.date[1]]
           }
@@ -200,15 +199,15 @@ export default {
         delete sub.date
       })
 
+      await this.$alert(
+        `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
+        '공정 편집 완료',
+        {
+          confirmButtonText: '확인',
+        },
+      )
       try {
         await this.$store.dispatch('updateProcess', form)
-        await this.$alert(
-          `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
-          '공정 편집 완료',
-          {
-            confirmButtonText: '확인',
-          },
-        )
         this.handleCancel()
         this.$router.push(`/process/${form.processId}`)
       } catch (e) {

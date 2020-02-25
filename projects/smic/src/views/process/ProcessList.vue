@@ -8,7 +8,7 @@
       el-breadcrumb-item(:to='{path: "/process"}') 공정
     process-dash-banner(:data="processList" initTopic="table")
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeData")
+      search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeSearch")
     inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title 공정 목록
@@ -63,7 +63,6 @@ import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
-import { sortOptions } from '@/models/index'
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -95,8 +94,25 @@ export default {
         value: ['All'],
       },
       sort: {
-        options: sortOptions,
-        value: null,
+        options: [
+          {
+            value: 'name,asc',
+            label: 'ㄱ-ㅎ순',
+          },
+          {
+            value: 'name,desc',
+            label: 'ㄱ-ㅎ역순',
+          },
+          {
+            value: 'createdDate,desc',
+            label: '최신 등록순',
+          },
+          {
+            value: 'createdDate,asc',
+            label: '오래된 등록순',
+          },
+        ],
+        value: 'createdDate,desc',
       },
       topic: 'table',
     }
@@ -113,6 +129,13 @@ export default {
       this.$store.commit('SET_PROCESS_INFO', row)
       this.$router.push(`/process/${row.id}`)
     },
+    onChangeSearch({ searchInput, filterValue, sortValue }) {
+      this.$store.dispatch('getProcessList', {
+        search: searchInput,
+        filter: filterValue.map(value => value.toUpperCase()).join(),
+        sort: sortValue,
+      })
+    },
     onChangeData(data) {},
     onCreateData(data) {},
     onDeleteData(data) {},
@@ -128,7 +151,11 @@ export default {
         this.filter.options.find(option => option.label === filterQuery).value,
       ]
     }
-    this.$store.dispatch('getProcessList')
+    this.$store.dispatch('getProcessList', {
+      search: this.searchInput,
+      filter: this.filter.value.map(value => value.toUpperCase()).join(),
+      sort: this.sort.value,
+    })
   },
 }
 </script>

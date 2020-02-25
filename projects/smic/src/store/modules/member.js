@@ -21,7 +21,7 @@ export default {
         params: {
           userId: this.getters.getUser.uuid,
           search: param.search || '',
-          filter: param.filter || '',
+          filter: param.filter || 'ALL',
           sort: param.sort || 'name,asc',
         },
       })
