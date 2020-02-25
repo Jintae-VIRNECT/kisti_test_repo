@@ -95,6 +95,7 @@ export default {
       try {
         await this.$store.dispatch('updateSubProcess', this.form)
         this.handleCancel()
+        this.$store.commit('SET_SUB_PROCESS_LIST', [])
         this.$store.dispatch('getSubProcessList', { processId: this.processId })
       } catch (e) {
         console.log(e)

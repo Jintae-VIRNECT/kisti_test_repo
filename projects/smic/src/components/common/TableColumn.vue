@@ -11,8 +11,8 @@
     span {{ data[prop] }}
   //- 업로더 (uuid)
   .auth-wrapper(v-else-if="/^(workerUUID)$/.test(prop)")
-    .auth-img(:style="{'background-image': `url(${ memberImg })`}")
-    span {{ memberName }}
+    .auth-img(:style="{'background-image': `url(${ member.profile })`}")
+    span {{ member.name }}
   //- 일시
   div(v-else-if="/^(reportedAt|createdDate)$/.test(prop)")
     span {{data[prop] | dayJs_FilterDateTimeFormat}}
@@ -93,12 +93,6 @@ export default {
     prop: String,
     data: Object,
   },
-  data() {
-    return {
-      memberName: '',
-      memberImg: '',
-    }
-  },
   methods: {
     buttonClick() {
       this.$emit('buttonClick', { prop: this.prop, data: this.data })
@@ -116,14 +110,12 @@ export default {
       return this.random(0, 100)
     },
   },
-  created() {
-    if (/^(workerUUID)$/.test(this.prop)) {
+  computed: {
+    member() {
       const uuid = this.data[this.prop]
-      const memberList = this.$store.state.member.memberList
-      const member = memberList.find(member => member.uuid === uuid)
-      this.memberName = member.name
-      this.memberImg = member.profile
-    }
+      const memberList = this.$store.getters.memberList
+      return memberList.find(member => member.uuid === uuid) || {}
+    },
   },
 }
 </script>

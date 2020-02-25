@@ -151,7 +151,11 @@ export default {
         this.filter.options.find(option => option.label === filterQuery).value,
       ]
     }
-    this.$store.dispatch('getProcessList')
+    this.$store.dispatch('getProcessList', {
+      search: this.searchInput,
+      filter: this.filter.value.map(value => value.toUpperCase()).join(),
+      sort: this.sort.value,
+    })
   },
 }
 </script>

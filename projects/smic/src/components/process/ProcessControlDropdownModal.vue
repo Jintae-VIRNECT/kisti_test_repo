@@ -123,7 +123,6 @@ export default {
       handler(list) {
         list.forEach(sub => {
           // 공정 일정 자동 조정
-          console.log(this.form)
           if (this.form.date[0] > sub.date[0]) {
             this.form.date = [sub.date[0], this.form.date[1]]
           }

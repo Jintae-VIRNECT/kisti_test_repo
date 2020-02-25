@@ -64,6 +64,15 @@ export default {
         return data
       } else throw new Error(message)
     },
+    // 공정 상세조회
+    async getProcessInfo(context, processId) {
+      const response = await Vue.axios.get(API.PROCESS_DETAIL(processId))
+      const { code, data, message } = response.data
+      if (code === 200) {
+        context.commit('SET_PROCESS_INFO', data)
+        return data
+      } else throw new Error(message)
+    },
     // 공정 생성
     async createProcess(context, form) {
       const response = await Vue.axios.post(API.PROCESS_CREATE(), form)

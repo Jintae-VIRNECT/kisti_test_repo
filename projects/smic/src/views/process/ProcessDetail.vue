@@ -129,7 +129,7 @@ export default {
     async onClickCell(row, column) {
       if (column.className === 'control-col') return false
       this.$store.commit('SET_SUB_PROCESS_INFO', row)
-      this.$router.push(`/process/${this.processId}/${row.id}`)
+      this.$router.push(`/process/${this.processId}/${row.subProcessId}`)
     },
     onChangeData(data) {},
     onCreateData(data) {},
@@ -140,6 +140,7 @@ export default {
   },
   created() {
     this.$store.commit('SET_SUB_PROCESS_LIST', [])
+    this.$store.dispatch('getProcessInfo', this.processId)
     this.$store.dispatch('getSubProcessList', { processId: this.processId })
   },
 }

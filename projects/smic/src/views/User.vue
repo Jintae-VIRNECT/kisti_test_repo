@@ -19,24 +19,24 @@
 <style lang="scss">
 .login-form-wrapper {
   width: 380px;
-  margin-left: auto;
-  margin-right: auto;
   margin-top: 80px;
+  margin-right: auto;
+  margin-left: auto;
   .title {
     margin-bottom: 40px;
-    text-align: center;
-    font-size: 28px;
+    color: #0d2a58;
     font-weight: 500;
-    font-stretch: normal;
+    font-size: 28px;
     font-style: normal;
+    font-stretch: normal;
     line-height: normal;
     letter-spacing: normal;
     text-align: center;
-    color: #0d2a58;
+    text-align: center;
   }
   .error-text {
-    font-size: 14px;
     color: #db1717;
+    font-size: 14px;
   }
 }
 </style>
@@ -68,8 +68,8 @@ export default {
           email,
           password,
         })
-        console.log('---response : ', response)
         if (response.isLogin === false) return (this.onError = true)
+        this.$store.dispatch('getMemberList')
         this.$router.push({ path: '/' })
       } catch (e) {
         console.log(e)
