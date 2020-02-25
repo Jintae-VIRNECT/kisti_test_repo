@@ -138,7 +138,9 @@ export default {
     },
     onChangeData(data) {},
     onCreateData(data) {},
-    onDeleteData(data) {},
+    onDeleteData(data) {
+      this.$store.dispatch('deleteProcess', data.id)
+    },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },

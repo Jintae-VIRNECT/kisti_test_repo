@@ -4,12 +4,12 @@ export const cols = [
     label: '작업 이름',
   },
   {
-    prop: 'createdDate',
+    prop: 'startDate',
     label: '보고 일시',
     width: 150,
   },
   {
-    prop: 'processPercent',
+    prop: 'progressRate',
     label: '진행률',
     width: 150,
   },
@@ -29,7 +29,7 @@ export const cols = [
     width: 140,
   },
   {
-    prop: 'smartTool',
+    prop: 'smartToolJobId',
     label: '스마트툴(Job ID / 체결정보)',
     width: 270,
   },

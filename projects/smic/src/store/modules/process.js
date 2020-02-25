@@ -15,7 +15,7 @@ export default {
     },
     subProcessDetail: {
       info: {},
-      jobsList: taskGroup.tableData,
+      jobsList: [],
     },
   },
   getters: {
@@ -36,14 +36,19 @@ export default {
     SET_PROCESS_INFO(state, obj) {
       state.processDetail = { ...state.processDetail, info: obj }
     },
+    DELETE_PROCESS(state, processId) {
+      state.processList = state.processList.filter(
+        process => process.id !== processId,
+      )
+    },
     SET_SUB_PROCESS_LIST(state, list) {
       state.processDetail = { ...state.processDetail, subProcessList: list }
     },
     SET_SUB_PROCESS_INFO(state, obj) {
-      state.subProcessDetail.info = obj
+      state.subProcessDetail = { ...state.subProcessDetail, info: obj }
     },
     SET_JOBS_LIST(state, list) {
-      state.subProcessDetail.jobsList = list
+      state.subProcessDetail = { ...state.subProcessDetail, jobsList: list }
     },
   },
   actions: {
@@ -94,8 +99,10 @@ export default {
     async deleteProcess(context, processId) {
       const response = await Vue.axios.delete(API.PROCESS_DETAIL(processId))
       const { code, data, message } = response.data
-      if (code === 200) return data
-      else throw new Error(message)
+      if (code === 200) {
+        context.commit('DELETE_PROCESS', processId)
+        return data
+      } else throw new Error(message)
     },
     // 공정의 세부공정 리스트
     async getSubProcessList(context, params = {}) {
@@ -126,6 +133,19 @@ export default {
       else throw new Error(message)
     },
     async getSubProcessDetail() {},
-    async getJobsList() {},
+    async getJobsList(context, params = {}) {
+      const response = await Vue.axios.get(API.JOBS_LIST(params.subProcessId), {
+        params: {
+          sort: params.sort || '',
+          size: params.size || 20,
+          page: params.page || 0,
+        },
+      })
+      const { code, data, message } = response.data
+      if (code === 200) {
+        context.commit('SET_JOBS_LIST', data.jobs)
+        return data
+      } else throw new Error(message)
+    },
   },
 }

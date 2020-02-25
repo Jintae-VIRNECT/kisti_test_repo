@@ -130,5 +130,10 @@ export default {
       this.toggleSmartToolModal = false
     },
   },
+  created() {
+    this.$store.dispatch('getJobsList', {
+      subProcessId: this.$route.params.subProcessId,
+    })
+  },
 }
 </script>
