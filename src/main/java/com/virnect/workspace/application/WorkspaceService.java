@@ -137,7 +137,7 @@ public class WorkspaceService {
         PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-        pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
+        pageMetadataResponse.setTotalElements(resultMemberListResponse.size());
         pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
