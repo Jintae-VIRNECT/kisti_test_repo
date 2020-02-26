@@ -2,7 +2,31 @@
   div
     h1.admin-body__header 홈
     process-dash-banner(:data="processData" initTopic="graph")
-    process-inprogress-status-graph
+    //- process-inprogress-status-graph
+    el-row(:gutter="20")
+      el-col(:span="24")
+        inline-table(:setMainHeader="true")
+          template(slot="header-left")
+            span.title 최근 등록된 공정
+          template(slot="header-right")
+            .text-right
+              router-link.more-link(type="text" to="/process") 더보기
+          template(slot="body")
+            el-table.inline-table(
+              :data='currentProcessData' 
+              style='width: 100%'
+              @cell-click="onClickProcess")
+              el-table-column(
+                v-for="{label, width, prop} in processColSetting" 
+                :key="prop" 
+                :prop="prop" 
+                :label="label" 
+                :width="width || ''") 
+                template(slot-scope='scope')
+                  table-column(:prop="prop" :data="currentProcessData[scope.$index]")
+              el-table-column(:width="50" class-name="control-col")
+                template(slot-scope='scope')
+                  content-control-dropdown(:status="currentProcessData[scope.$index].status")
     el-row(:gutter="20")
       el-col(:span="24")
         inline-table(:setMainHeader="true")
@@ -15,9 +39,9 @@
             el-table.inline-table(
               :data='currentContentsData' 
               style='width: 100%'
-              @cell-click="onClickCell")
+              @cell-click="onClickContent")
               el-table-column(
-                v-for="{label, width, prop} in currentContents.colSetting" 
+                v-for="{label, width, prop} in contentsColSetting" 
                 :key="prop" 
                 :prop="prop" 
                 :label="label" 
@@ -51,7 +75,7 @@
 <script>
 // UI component
 import ContentList from '@/views/contents/ContentList'
-import ProcessInprogressStatusGraph from '@/components/home/ProcessInprogressStatusGraph.vue'
+// import ProcessInprogressStatusGraph from '@/components/home/ProcessInprogressStatusGraph.vue'
 import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import InlineTabsTable from '@/components/home/InlineTabsTable.vue'
@@ -61,6 +85,8 @@ import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
 import { currentReportedInformationTabs, tableColSettings } from '@/models/home'
+import { cols as processColSetting } from '@/models/process'
+import { cols as contentsColSetting } from '@/models/contents'
 
 /// data
 import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
@@ -80,7 +106,7 @@ export default {
     ProgressCard,
     InlineTable,
     InlineTabsTable,
-    ProcessInprogressStatusGraph,
+    // ProcessInprogressStatusGraph,
     ContentList,
     ContentControlDropdown,
     ProcessDashBanner,
@@ -92,30 +118,18 @@ export default {
       currentReportedDetailProcess,
       currentReportedInformationTabs,
       tableColSettings,
-      currentContents: {
-        tableOption: {
-          rowIdName: 'contentUUID',
-          subdomain: '/contents',
-        },
-        search: null,
-        colSetting: tableColSettings.contents,
-      },
+      processColSetting,
+      contentsColSetting,
       activeTab: currentReportedInformationTabs[0].name,
-      currentProcess: {
-        tableData: currentReportedDetailProcess,
-        tableOption: {
-          rowIdName: 'id',
-          subdomain: '/process',
-        },
-        search: null,
-        colSetting: tableColSettings[currentReportedInformationTabs[0].name],
-      },
       processData: this.$store.getters.currentReportedDetailProcess,
     }
   },
   computed: {
+    currentProcessData() {
+      return this.$store.getters.processList
+    },
     currentContentsData() {
-      return this.$store.getters.contentsList.slice(0, 5)
+      return this.$store.getters.contentsList
     },
   },
   methods: {
@@ -123,15 +137,19 @@ export default {
       currentUploadedContentTableOption.subdomain =
         currentReportedInformationTabs[e.index].link
     },
-    onClickCell(row, column) {
+    onClickProcess(row, column) {
       if (column.className === 'control-col') return false
-      const { rowIdName, subdomain } = this.currentContents.tableOption
-      if (!rowIdName) return false
-      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+      console.log(row)
+      this.$router.push(`process/${row.id}`)
+    },
+    onClickContent(row, column) {
+      if (column.className === 'control-col') return false
+      this.$router.push(`contents/${row.contentUUID}`)
     },
   },
   created() {
-    this.$store.dispatch('getContentsList')
+    this.$store.dispatch('getProcessList', { size: 10 })
+    this.$store.dispatch('getContentsList', { size: 5 })
   },
 }
 </script>

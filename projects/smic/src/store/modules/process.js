@@ -58,7 +58,7 @@ export default {
         params: {
           search: params.search || '',
           filter: params.filter || '',
-          sort: params.sort || '',
+          sort: params.sort || 'createdDate,desc',
           size: params.size || 20,
           page: params.page || 0,
         },

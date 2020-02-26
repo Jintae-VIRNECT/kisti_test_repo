@@ -77,7 +77,7 @@ import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
 // model
-import { tableColSettings } from '@/models/home'
+import { cols } from '@/models/contents'
 
 // mixin
 import contentList from '@/mixins/contentList'
@@ -100,7 +100,7 @@ export default {
         subdomain: '/contents',
       },
       search: null,
-      colSetting: tableColSettings.contents,
+      colSetting: cols,
     }
   },
   computed: {

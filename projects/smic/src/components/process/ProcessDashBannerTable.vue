@@ -31,7 +31,7 @@
               el-tag.custom.green 완료
               span.value 44
         .box
-          .sub-title 마감된 공정
+          .sub-title 마감된 공정 (누적)
           .item-container
             .item
               el-tag.custom.dark-gray 미완수
