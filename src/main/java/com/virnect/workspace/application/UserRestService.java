@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
 
 /**
  * Project: PF-Workspace
@@ -48,7 +46,7 @@ public interface UserRestService {
      * @param emailList - 조회 요청 유저 이메일 리스트
      * @return - 유저 정보
      */
-    @GetMapping
-    ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(List<String> emailList);
+    @GetMapping("/invite")
+    ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(@RequestParam("email[]") String[] emailList);
 }
 

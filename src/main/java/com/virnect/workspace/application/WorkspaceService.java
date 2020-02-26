@@ -4,11 +4,13 @@ import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.dto.redis.WorkspaceInviteRedisRequest;
 import com.virnect.workspace.dto.request.UsersCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteMailRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
@@ -135,7 +137,7 @@ public class WorkspaceService {
         PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-        pageMetadataResponse.setTotalElements(resultMemberListResponse.size());
+        pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
         pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
@@ -175,7 +177,7 @@ public class WorkspaceService {
 
 
     /**
-     * 워크스페이스 유저 초대(추후에 + User서버 api, +라이선스 검사)
+     * 워크스페이스 유저 초대(추후에 +라이선스 검사)
      *
      * @param workspaceId            - 초대 할 워크스페이스 uuid
      * @param workspaceInviteRequest - 초대 유저 정보
@@ -188,41 +190,63 @@ public class WorkspaceService {
         }
         //2. 라이선스검사(해야됨)
 
-
-
-
-        //3. 계정 중복 체크 & 이메일 발송
-        WorkspaceInviteMailRequest.InviteInfo inviteInfo = new WorkspaceInviteMailRequest.InviteInfo();
-        List<WorkspaceInviteMailRequest.InviteInfo> inviteInfos = new ArrayList<>();
-        WorkspaceInviteMailRequest workspaceInviteMailRequest = new WorkspaceInviteMailRequest();
+        //3. 계정 중복 체크(user 서비스)
         List<String> emailList = new ArrayList<>();
-        for (WorkspaceInviteRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInfoList()) {
-            emailList.add(userInviteInfo.getUserEmail());
-            inviteInfo.setInviteUserEmail(userInviteInfo.getUserEmail());
-            inviteInfo.setInviteUserName("초대받은사람");
-            inviteInfos.add(inviteInfo);
-        }
-        //걔정 중복 체크
-        this.userRestService.getUserInfoByEmailList(emailList).getData().getInviteUserInfoList().stream().map(inviteUserInfoResponse -> {
-            System.out.println(inviteUserInfoResponse.getEmail());
-           return inviteUserInfoResponse;
+        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> emailList.add(userInfo.getUserEmail()));
+
+        InviteUserInfoRestResponse inviteUserInfoRestResponse = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
+
+        WorkspaceInviteRedisRequest workspaceInviteRedisRequest = new WorkspaceInviteRedisRequest();
+        List<WorkspaceInviteRedisRequest.UserInfo> userListRedisRequest = new ArrayList<>();
+
+        WorkspaceInviteMailRequest.InviteInfo inviteInfo = new WorkspaceInviteMailRequest.InviteInfo();
+        List<WorkspaceInviteMailRequest.InviteInfo> inviteInfoList = new ArrayList<>();
+
+        List<WorkspaceInviteRequest.UserInfo> getUserInfo = workspaceInviteRequest.getUserInfoList();
+        getUserInfo.forEach(userInfo -> {
+            WorkspaceInviteRedisRequest.UserInfo userRedisRequest = new WorkspaceInviteRedisRequest.UserInfo();
+            for (InviteUserInfoRestResponse.InviteUserResponse inviteUserResponse : inviteUserInfoRestResponse.getInviteUserInfoList()) {
+                //Redis data set
+                userRedisRequest.setGroupName(userInfo.getGroupName());
+                userRedisRequest.setGroupRole(userInfo.getGroupRole());
+                userRedisRequest.setPermission(userInfo.getWorkspacePermission());
+                userRedisRequest.setExistUser(false);
+                userRedisRequest.setName(inviteUserResponse.getName());
+                userRedisRequest.setEmail(inviteUserResponse.getEmail());
+                //Message data set
+                inviteInfo.setInviteUserName(inviteUserResponse.getName());
+                inviteInfo.setInviteUserEmail(inviteUserResponse.getEmail());
+                if (emailList.contains(inviteUserResponse.getEmail())) {
+                    userRedisRequest.setExistUser(true);
+                }
+            }
+            inviteInfoList.add(inviteInfo);
+            userListRedisRequest.add(userRedisRequest);
+
         });
-        String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
+
         String inviteCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 6);
 
+        //4. Redis 에서 초대 정보 넣기
+        workspaceInviteRedisRequest.setUserInfoList(userListRedisRequest);
+        workspaceInviteRedisRequest.setInviteCode(inviteCode);
+        workspaceInviteRedisRequest.setUserId(userId);
+        workspaceInviteRedisRequest.setUserId(workspaceId);
+        this.redisService.setInviteInfo(workspaceInviteRedisRequest);
+
+        //5. 초대 메일 전송
+        String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
+        WorkspaceInviteMailRequest workspaceInviteMailRequest = new WorkspaceInviteMailRequest();
         workspaceInviteMailRequest.setAcceptUrl(acceptUrl);
         workspaceInviteMailRequest.setInviteCode(inviteCode);
-        workspaceInviteMailRequest.setInviteInfos(inviteInfos);
+        workspaceInviteMailRequest.setInviteInfos(inviteInfoList);
         workspaceInviteMailRequest.setRequestUserId(userId);
         workspaceInviteMailRequest.setRequestUserName("초대한사람");
 
-        //WorkspaceInviteRestResponse workspaceInvite = this.messageRestService.sendMail(workspaceInviteMailRequest).getData();
+        WorkspaceInviteRestResponse workspaceInvite = this.messageRestService.sendMail(workspaceInviteMailRequest).getData();
 
+        return new ApiResponse<>(workspaceInvite);
 
-        //5. redis에 초대 정보 넣기
-        //this.redisService.setInviteInfo(userId, workspaceId, inviteCode, workspaceInviteRequestList);
-        //return new ApiResponse<>(workspaceInvite);
-        return new ApiResponse<>();
     }
 
     /**
@@ -259,7 +283,7 @@ public class WorkspaceService {
         this.workspaceUserRepository.save(workspaceUser);
 
         //3. 워크스페이스 권한 부여하기 (workspace_user_permission)
-        if (userInvite.getPermission().size() > 0) {
+        if (!userInvite.getPermission().isEmpty()) {
             for (long permissionId : userInvite.getPermission()) {
 
                 WorkspaceRole workspaceRole = WorkspaceRole.builder().id(Role.MANAGER.getValue()).build();
@@ -275,16 +299,18 @@ public class WorkspaceService {
         }
 
         //3. 그룹 소속 넣기(group_user, group_user_permission)
-        if (userInvite.getGroups().size() > 0) {
-            this.groupService.setGroupUsers(userInvite.getGroups(), workspaceUser);
+        if (StringUtils.hasText(userInvite.getGroupName())) {//group 모듈 분리해야 함
+            //this.groupService.setGroupUsers(userInvite.getGroups(), workspaceUser);
         }
+
+        //4. 회원가입 요청
 
         return new ApiResponse<>(new WorkspaceInviteAcceptResponse(true));
     }
 
     public ApiResponse<WorkspaceInviteAcceptResponse> createUsers(String workspaceId, String userId, UsersCreateRequest userCreateRequest) {
         //1. 생성 권한 확인
-        if(getWorkspaceUserRole(workspaceId,userId).getRole().equals("MEMBER")){
+        if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         //2. 아이디 중복 확인 (해야됨)

@@ -2,7 +2,6 @@ package com.virnect.workspace.dto.rest;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -14,20 +13,18 @@ import java.util.List;
  * DESCRIPTION:
  */
 @Getter
-@RequiredArgsConstructor
 public class InviteUserInfoRestResponse {
-    private final List<InviteUserInfoResponse> inviteUserInfoList;
+    private  List<InviteUserResponse> inviteUserInfoList;
 
     @Getter
-    @RequiredArgsConstructor
-    public class InviteUserInfoResponse {
+    public static class InviteUserResponse {
         @ApiModelProperty(value = "사용자 식별자", position = 0, example = "498b1839dc29ed7bb2ee90ad6985c608")
-        private final String userUUID;
+        private  String userUUID;
 
         @ApiModelProperty(value = "사용자 이메일", position = 1, example = "test@test.com")
-        private final String email;
+        private  String email;
 
         @ApiModelProperty(value = "사용자 이름", position = 2, example = "홍길동")
-        private final String name;
+        private  String name;
     }
 }

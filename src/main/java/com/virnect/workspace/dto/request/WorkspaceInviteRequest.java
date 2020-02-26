@@ -30,14 +30,10 @@ public class WorkspaceInviteRequest {
 
         private List<Long> workspacePermission;//소속 할당할 워크스페이스 정보
 
-        private List<GroupInfo> groups; //소속 할당할 그룹 정보
+        private String groupName; //소속 할당할 그룹 이름
 
-    }
+        private String groupRole; //소속 할당할 그룹 내 직책
 
-    @Getter
-    private class GroupInfo {
-        private String groupName;
-        private String managerAssign;
     }
 }
 
