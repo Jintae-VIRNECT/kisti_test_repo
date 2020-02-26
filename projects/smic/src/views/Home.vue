@@ -26,7 +26,11 @@
                   table-column(:prop="prop" :data="currentProcessData[scope.$index]")
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
-                  content-control-dropdown(:status="currentProcessData[scope.$index].status")
+                  process-control-dropdown(
+                    :target="currentProcessData[scope.$index]"
+                    @onChangeData="onChangeData"
+                    @onCreateData="onCreateData"
+                    @onDeleteData="onDeleteData")
     el-row(:gutter="20")
       el-col(:span="24")
         inline-table(:setMainHeader="true")
@@ -80,6 +84,7 @@ import ProgressCard from '@/components/home/ProgressCard.vue'
 import InlineTable from '@/components/common/InlineTable.vue'
 import InlineTabsTable from '@/components/home/InlineTabsTable.vue'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
+import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
 import ProcessDashBanner from '@/components/process/ProcessDashBanner'
 import TableColumn from '@/components/common/TableColumn.vue'
 
@@ -89,8 +94,7 @@ import { cols as processColSetting } from '@/models/process'
 import { cols as contentsColSetting } from '@/models/contents'
 
 /// data
-import currentReportedDetailProcess from '@/data/currentReportedDetailProcess'
-import tabletabsData from '@/data/tabletabsData'
+import tempData from '@/data/tabletabsData'
 // mixin
 import contentList from '@/mixins/contentList'
 
@@ -109,13 +113,12 @@ export default {
     // ProcessInprogressStatusGraph,
     ContentList,
     ContentControlDropdown,
+    ProcessControlDropdown,
     ProcessDashBanner,
     TableColumn,
   },
   data() {
     return {
-      tabletabsData,
-      currentReportedDetailProcess,
       currentReportedInformationTabs,
       tableColSettings,
       processColSetting,
@@ -131,6 +134,9 @@ export default {
     currentContentsData() {
       return this.$store.getters.contentsList
     },
+    tabletabsData() {
+      return tempData
+    },
   },
   methods: {
     setInlineTableByTabs(e) {
@@ -145,6 +151,11 @@ export default {
     onClickContent(row, column) {
       if (column.className === 'control-col') return false
       this.$router.push(`contents/${row.contentUUID}`)
+    },
+    onChangeData(data) {},
+    onCreateData(data) {},
+    onDeleteData(data) {
+      this.$store.dispatch('deleteProcess', data.id)
     },
   },
   created() {

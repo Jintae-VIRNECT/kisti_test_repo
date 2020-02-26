@@ -2,7 +2,7 @@
   .card
     .card__header
       .card__header--left
-        span.title 공정 진행 상태
+        span.title 실시간 공정 진행 상태
           span.small 접속시간 기준의 공정 진행 상태
     .process-dash-banner
       .vn-label.toggle-topic-btn

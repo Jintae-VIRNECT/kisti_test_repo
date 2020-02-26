@@ -1,6 +1,3 @@
-/**
- * 상수 이름에 _RUD는 적지 않음 (REST 메소드로 구분)
- */
 export default {
   // auth
   USER_LOGIN: () => '/users/login',
@@ -10,6 +7,7 @@ export default {
   // contents
   CONTENTS_LIST: () => '@contents',
   CONTENT_DETAIL: contentId => `@contents/${contentId}`,
+  CONTENT_INFO: contentId => `@contents/${contentId}/info`,
   // scene group
   SCENE_GROUP_LIST: () => '@contents/metadata/sceneGroups',
   // process
@@ -26,5 +24,9 @@ export default {
   ISSUE_LIST: () => '@process/issues',
   ISSUE_DETAIL: issueId => `@process/issue/${issueId}`,
   // report
-  REPORT_DETAIL: reportId => `@process/report/${reportId}`,
+  REPORT_LIST: () => `@process/reports`,
+  REPORT_DETAIL: reportId => `@process/reports/${reportId}`,
+  // smart tool
+  SMART_TOOL_LIST: () => `@process/smartToolJobs`,
+  SMART_TOOL_DETAIL: smartToolId => `@process/smartToolJobs/${smartToolId}`,
 }

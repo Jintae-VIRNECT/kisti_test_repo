@@ -28,7 +28,6 @@ export default {
   },
   props: {
     target: Object,
-    targetId: String,
   },
   data() {
     return {

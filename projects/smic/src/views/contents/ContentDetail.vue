@@ -9,28 +9,28 @@
           | 선택 공정 콘텐츠 정보
       template(slot="body")
         el-table.inline-table(
-          :data='processContent.tableData' 
+          :data='[contentDetail.info]' 
           style='width: 100%')
           el-table-column(
-            v-for="{label, width, prop} in processContent.colSetting" 
+            v-for="{label, width, prop} in contentsColSetting" 
             :key="prop" 
             :prop="prop" 
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              table-column(type="contents" :prop="prop" :data="processContent.tableData[scope.$index]")
+              table-column(type="contents" :prop="prop" :data="contentDetail.info || {}")
           el-table-column(:width="50" class-name="control-col")
             template(slot-scope='scope')
               content-control-dropdown(
-                :data="processContent.tableData[scope.$index]"
-                @onChangeData="data => onChangeData(data,processContent.tableData[scope.$index].id)")
+                :data="contentDetail.info"
+                @onChangeData="data => onChangeData(contentDetail.info.id)")
 
     inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title 세부공정 콘텐츠 목록 
       template(slot="body")
         el-table.inline-table(
-          :data='sceneGroupData' 
+          :data='contentDetail.sceneGroupList' 
           style='width: 100%')
           el-table-column(
             v-for="{label, width, prop} in sceneGroupColSetting" 
@@ -42,7 +42,7 @@
               div(v-if="prop == 'index'") 
                 span {{scope.$index + 1}}.
               div(v-else)
-                span {{ sceneGroupData[scope.$index][prop] }}
+                span {{ contentDetail.sceneGroupList[scope.$index][prop] }}
 </template>
 <style lang="scss">
 .content-detail {
@@ -66,14 +66,15 @@
 }
 </style>
 <script>
+import { mapGetters } from 'vuex'
 import InlineTable from '@/components/common/InlineTable'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import PageBreadCrumb from '@/components/common/PageBreadCrumb.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
+// model
+import { cols as contentsColSetting } from '@/models/contents'
 import { cols as sceneGroupColSetting } from '@/models/sceneGroup'
-
-import { tableColSettings } from '@/models/home'
 
 // mixin
 import contentList from '@/mixins/contentList'
@@ -91,26 +92,12 @@ export default {
   mixins: [contentList, dayjs],
   data() {
     return {
-      processContent: {
-        tableData: [
-          this.$store.getters.contentsList.find(
-            c => c.contentUUID === this.$route.params.id,
-          ),
-        ],
-        tableOption: {
-          rowIdName: 'id',
-          subdomain: '/contents',
-        },
-        search: null,
-        colSetting: tableColSettings.contents,
-      },
+      contentsColSetting,
       sceneGroupColSetting,
     }
   },
   computed: {
-    sceneGroupData() {
-      return this.$store.getters.contentDetail.sceneGroupList
-    },
+    ...mapGetters(['contentDetail']),
   },
   methods: {
     onChangeData(data, id) {
@@ -127,6 +114,7 @@ export default {
   },
   created() {
     const contentUUID = this.$route.params.id
+    this.$store.dispatch('getContentsDetail', contentUUID)
     this.$store.dispatch('getSceneGroupList', contentUUID)
   },
 }

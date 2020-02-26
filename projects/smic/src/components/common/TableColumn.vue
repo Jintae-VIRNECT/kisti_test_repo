@@ -75,11 +75,13 @@
   //- 작업 이슈 버튼
   div(v-else-if="/^(issueId)$/.test(prop)")
     el-button(v-if="data[prop]" v-on:click="buttonClick") 작업 이슈 보기
-    span(v-else) ―
+    span(v-else)
+    
   //- 디버깅용
-  div(v-else-if="/^(name)$/.test(prop) && data['id']")
+  div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])")
     span {{ data[prop] }}
-    span.debug (id: {{ data['id'] }})
+    span.debug (id: {{ data['id'] || data['subProcessId'] }})
+
   //- 기타
   div(v-else)
     span {{ data[prop] }}
