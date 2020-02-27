@@ -49,8 +49,8 @@
     }
   }
   &.active .sidebar--item__button {
-    background-color: rgba(0, 0, 0, 0);
     background: url('~@/assets/image/ic-bg.svg') no-repeat;
+    background-color: rgba(0, 0, 0, 0);
     img {
       opacity: 1;
     }

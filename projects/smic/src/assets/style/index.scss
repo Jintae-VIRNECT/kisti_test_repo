@@ -23,6 +23,18 @@
       border-color: inherit;
     }
   }
+  .top-nav__center,
+  .top-nav__left {
+    height: auto;
+  }
+  .top-nav__left {
+    padding: 12px 22px;
+  }
+  .top-nav__center .logo-img,
+  .top-nav__left .logo-img {
+    height: auto;
+    margin-top: 6px;
+  }
   .sidebar,
   .sidebar--logo {
     width: 60px;

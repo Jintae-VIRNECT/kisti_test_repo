@@ -3,7 +3,7 @@
     .top-nav.border
       .top-nav__center
         router-link(to="/")
-          img.logo-img(src="~@/assets/image/logo-smart-factory.png") 
+          img.logo-img(src="~@/assets/image/top-bar-logo-smart-factory.png") 
         .divider
         label.workspace Workstation
     .login-form-wrapper
