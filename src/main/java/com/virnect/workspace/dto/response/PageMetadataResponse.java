@@ -21,5 +21,5 @@ public class PageMetadataResponse {
     @ApiModelProperty(value = "페이지별 데이터 수에 따른 전체 페이지 수", notes = "설정된 페이지당 데이터 표출 수에 의한 전체 페이지 수", example = "10")
     private int totalPage;
     @ApiModelProperty(value = "조회 된 전체 데이터의 수", notes = "조회 된 전체 데이터의 수", example = "20")
-    private int totalElements;
+    private long totalElements;
 }

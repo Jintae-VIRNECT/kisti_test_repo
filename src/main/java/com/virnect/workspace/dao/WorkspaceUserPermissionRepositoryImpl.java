@@ -41,6 +41,7 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
                     .from(qWorkspaceUserPermission)
                     .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
                             .and(qWorkspaceUserPermission.workspaceUser.userId.eq(memberInfo.getUuid()))).fetchOne();
+            System.out.println("role :::" + role);
             switch (role) {
                 case "MASTER":
                     if (filter.contains("MASTER") || filter.contains("ALL")) resultList.add(memberInfo);
@@ -53,6 +54,7 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
                     break;
                 default:
             }
+
         }
         return resultList;
     }

@@ -38,7 +38,7 @@ public interface UserRestService {
      * @return - 이름 또는 이메일이 검색어와 일치한 유저 정보들의 리스트 데이터
      */
     @GetMapping
-    ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, Pageable pageable);
+    ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, @RequestParam("paging") boolean paging, Pageable pageable);
 
     /**
      * 유저 중복 여부 조회

@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -116,29 +117,67 @@ public class WorkspaceService {
     }
 
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, Pageable pageable) {
-        //1. 검색어, 정렬 검증(UserService에서)
-        UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, pageable).getData();
 
-        List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-            MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
-            memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
-            return memberInfo;
-        }).collect(Collectors.toList());
+        //1. 검색 검증
+        if(filter.equals("MASTER,MEMBER")) filter = "ALL";
+        if(filter.equals("MEMBER,MASTER")) filter = "ALL";
+        PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
+        List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
+        if (StringUtils.hasText(filter) && !filter.equals("ALL")) {
+            //페이징처리하지 않은 값 리턴 받아 필터 및 페이징 처리하자.
+            System.out.println("검색 o, 필터 o 또는");
+            System.out.println("검색 x, 필터 o");
+            UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
+            List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
+                MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
+                return memberInfo;
+            }).collect(Collectors.toList());
 
-        List<MemberInfoDTO> resultMemberListResponse;
+            Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+            //List<MemberInfoDTO> totalMembrList = this.workspaceUserPermissionRepository.findUserInfoListFilterd(memberInfoList, workspaceId, filter);
 
-        //2. 필터 검증
-        if (StringUtils.hasText(filter)) {
-            resultMemberListResponse = this.workspaceUserPermissionRepository.findUserInfoListFilterd(memberInfoList, workspaceId, filter);
-        } else {
+            List<WorkspaceUser> workspaceUsers = new ArrayList<>();
+            for (MemberInfoDTO memberInfoDTO : memberInfoList) {
+                workspaceUsers.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfoDTO.getUuid(), workspace));
+            }
+
+            Page<WorkspaceUserPermission> pageRole =
+                    this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRole_Role(
+                            workspace, workspaceUsers, filter, pageable);
+            List<MemberInfoDTO> result = new ArrayList<>();
+
+            for (MemberInfoDTO memberInfoDTO : memberInfoList) {
+                pageRole.stream().forEach(workspaceUserPermission -> {
+                    if(workspaceUserPermission.getWorkspaceUser().getUserId().equals(memberInfoDTO.getUuid())){
+                        result.add(memberInfoDTO);
+                    }
+                });
+
+            }
+            resultMemberListResponse= result;
+
+            pageMetadataResponse.setTotalElements(pageRole.getTotalElements());//전체 데이터 수
+            pageMetadataResponse.setTotalPage(pageRole.getTotalPages());//전체 페이지 수
+
+        } else if(!StringUtils.hasText(filter) || filter.equals("ALL")) {
+            //페이징 처리한 값을 리턴 받아 그대로 리턴하자.
+            System.out.println("검색 o, 필터 x 또는");
+            System.out.println("검색 x, 필터 x");
+            UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, true, pageable).getData();
+            List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
+                MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
+                return memberInfo;
+            }).collect(Collectors.toList());
+
             resultMemberListResponse = memberInfoList;
+            pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
+            pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
         }
 
-        PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-        pageMetadataResponse.setTotalElements(resultMemberListResponse.size());
-        pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
 
@@ -183,7 +222,8 @@ public class WorkspaceService {
      * @param workspaceInviteRequest - 초대 유저 정보
      * @return
      */
-    public ApiResponse<WorkspaceInviteRestResponse> inviteWorkspace(String workspaceId, String userId, WorkspaceInviteRequest workspaceInviteRequest) {
+    public ApiResponse<WorkspaceInviteRestResponse> inviteWorkspace(String workspaceId, String
+            userId, WorkspaceInviteRequest workspaceInviteRequest) {
         //1. 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -268,7 +308,8 @@ public class WorkspaceService {
      * @param code        - 초대 시 받은 코드
      * @return
      */
-    public ApiResponse<WorkspaceInviteAcceptResponse> inviteWorkspaceAccept(String workspaceId, String userId, String code) {
+    public ApiResponse<WorkspaceInviteAcceptResponse> inviteWorkspaceAccept(String workspaceId, String
+            userId, String code) {
         //1. redis에서 초대 정보 확인
         UserInvite userInvite = this.redisService.getInviteInfo(userId, code);
         if (userInvite == null) {
@@ -308,7 +349,8 @@ public class WorkspaceService {
         return new ApiResponse<>(new WorkspaceInviteAcceptResponse(true));
     }
 
-    public ApiResponse<WorkspaceInviteAcceptResponse> createUsers(String workspaceId, String userId, UsersCreateRequest userCreateRequest) {
+    public ApiResponse<WorkspaceInviteAcceptResponse> createUsers(String workspaceId, String
+            userId, UsersCreateRequest userCreateRequest) {
         //1. 생성 권한 확인
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
