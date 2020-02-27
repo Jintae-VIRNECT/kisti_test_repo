@@ -104,15 +104,15 @@ export default {
             label: 'ㄱ-ㅎ역순',
           },
           {
-            value: 'createdDate,desc',
+            value: 'created_at,desc',
             label: '최신 등록순',
           },
           {
-            value: 'createdDate,asc',
+            value: 'created_at,asc',
             label: '오래된 등록순',
           },
         ],
-        value: 'createdDate,desc',
+        value: 'created_at,desc',
       },
       topic: 'table',
     }
