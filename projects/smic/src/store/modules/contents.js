@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import API from '@/models/api'
+import api from '@/api/gateway'
 
 export default {
   state: {
@@ -22,10 +21,10 @@ export default {
       state.contentsList = list
     },
     SET_CONTENT_INFO(state, obj) {
-      state.contentDetail.info = obj
+      state.contentDetail = { ...state.contentDetail, info: obj }
     },
     SET_SCENE_GROUP_LIST(state, list) {
-      state.contentDetail.sceneGroupList = list
+      state.contentDetail = { ...state.contentDetail, sceneGroupList: list }
     },
     DELETE_CONTENT(state, contentUUID) {
       state.contentsList = state.contentsList.filter(
@@ -35,51 +34,48 @@ export default {
   },
   actions: {
     // 컨텐츠 리스트
-    async getContentsList(context, params = {}) {
-      const response = await Vue.axios.get(API.CONTENTS_LIST(), {
+    async getContentsList(context, param) {
+      const data = await api('CONTENTS_LIST', {
         params: {
-          search: params.search || '',
-          filter: params.filter || 'All',
-          sort: params.sort || 'createdDate,desc',
-          size: params.size || 20,
-          page: params.page || 0,
+          sort: 'createdDate,desc',
+          size: 20,
+          ...param,
         },
       })
-      const { code, data, message } = response.data
-      if (code === 200) {
-        context.commit('SET_CONTENTS_LIST', data.contentInfo)
-        return data
-      } else throw new Error(message)
+      context.commit('SET_CONTENTS_LIST', data.contentInfo)
+      return data
     },
     // 세부공정 컨텐츠 리스트
     async getSceneGroupList(context, contentUUID) {
-      const response = await Vue.axios.get(API.SCENE_GROUP_LIST(), {
+      const data = await api('SCENE_GROUP_LIST', {
         params: { contentUUID },
       })
-      const { code, data, message } = response.data
-      if (code === 200) {
-        context.commit(
-          'SET_CONTENT_INFO',
-          context.state.contentsList.find(
-            content => content.contentUUID === contentUUID,
-          ),
-        )
-        context.commit('SET_SCENE_GROUP_LIST', data.sceneGroupInfoList)
-        return data
-      } else throw new Error(message)
+      context.commit('SET_SCENE_GROUP_LIST', data.sceneGroupInfoList)
+      context.commit(
+        'SET_CONTENT_INFO',
+        context.state.contentsList.find(
+          content => content.contentUUID === contentUUID,
+        ),
+      )
+      return data
+    },
+    // 컨텐츠 상세조회
+    async getContentsDetail(context, contentUUID) {
+      const data = await api('CONTENT_INFO', {
+        query: { contentUUID },
+      })
+      context.commit('SET_CONTENT_INFO', data)
+      return data
     },
     // 컨텐츠 삭제
     async deleteContent(context, contentUUID) {
-      const response = await Vue.axios.delete(API.CONTENT_DETAIL(contentUUID), {
-        params: {
-          uuid: context.getters.getUser.uuid,
-        },
+      const data = await api('CONTENT_DELETE', {
+        query: { contentUUID },
+        params: { uuid: context.getters.getUser.uuid },
       })
-      const { code, data, message } = response.data
-      if (code === 200) {
-        context.commit('DELETE_CONTENT', contentUUID)
-        return data
-      } else throw new Error(message)
+      context.commit('SET_CONTENT_INFO', data)
+      context.commit('DELETE_CONTENT', contentUUID)
+      return data
     },
   },
 }

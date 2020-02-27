@@ -1,12 +1,12 @@
 export default [
   {
     prop: 'type',
-    label: '공정 이름',
+    label: '이슈 유형',
     width: 120,
   },
   {
     prop: 'processName',
-    label: '세부공정 수',
+    label: '공정 이름',
   },
   {
     prop: 'detailProcessName',

@@ -31,35 +31,6 @@
       
 </template>
 
-<style lang="scss">
-.smart-tool-modal .el-dialog .section {
-  padding: 24px 30px;
-
-  .el-divider {
-    margin: 0 28px;
-  }
-  label {
-    min-width: 70px;
-  }
-  .value {
-    & > span {
-      vertical-align: middle;
-      &:first-child {
-        color: #0d2a58;
-        font-weight: 500;
-      }
-      &.blue {
-        margin: 0 4px 0 16px;
-        color: #186ae2;
-      }
-    }
-    .el-progress {
-      margin-top: 12px;
-    }
-  }
-}
-</style>
-
 <script>
 export default {
   props: {
@@ -92,3 +63,32 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.smart-tool-modal .el-dialog .section {
+  padding: 24px 30px;
+
+  .el-divider {
+    margin: 0 28px;
+  }
+  label {
+    min-width: 70px;
+  }
+  .value {
+    & > span {
+      vertical-align: middle;
+      &:first-child {
+        color: #0d2a58;
+        font-weight: 500;
+      }
+      &.blue {
+        margin: 0 4px 0 16px;
+        color: #186ae2;
+      }
+    }
+    .el-progress {
+      margin-top: 12px;
+    }
+  }
+}
+</style>

@@ -8,15 +8,13 @@ const customAxios = axios.create({
 })
 
 customAxios.interceptors.request.use(function(req) {
-  if (/^@workspace/.test(req.url)) {
+  if (/^\/workspace/.test(req.url)) {
     req.baseURL = process.env.WORKSPACE_API_URL
-    req.url = req.url.replace('@workspace', `/workspaces/${smicId}`)
-  } else if (/^@contents/.test(req.url)) {
+    req.url = req.url.replace('{workspaceId}', `${smicId}`)
+  } else if (/^\/contents/.test(req.url)) {
     req.baseURL = process.env.CONTENT_API_URL
-    req.url = req.url.replace('@contents', '/contents')
-  } else if (/^@process/.test(req.url)) {
+  } else if (/^\/processes/.test(req.url)) {
     req.baseURL = process.env.CONTENT_API_URL
-    req.url = req.url.replace('@process', '/processes')
   }
   return req
 })

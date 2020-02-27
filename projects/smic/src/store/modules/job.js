@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import API from '@/models/api'
+import api from '@/api/gateway'
 
 export default {
   state: {
@@ -56,6 +55,13 @@ export default {
     async getIssueDetail(context) {},
     async getIssueList(context) {},
     async getSmartToolDetail(context) {},
-    async getSmartToolList(context) {},
+    async getSmartToolList(context, params) {
+      const data = await api('SUB_PROCESS_LIST', {
+        query: { processId: params.processId },
+        params,
+      })
+      context.commit('SET_SMART_TOOL_LIST', data.subProcesses)
+      return data
+    },
   },
 }

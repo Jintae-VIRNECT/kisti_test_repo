@@ -9,15 +9,18 @@
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
+import Pagination from '@/components/common/Pagination.vue'
 
 export default {
   components: {
     PageTabNav,
     SearchTabNav,
+    Pagination,
   },
   data() {
     return {
       search: '',
+      params: {},
       filter: {
         options: [
           {
@@ -51,13 +54,17 @@ export default {
     }
   },
   methods: {
-    onChangeSearch: function({ searchInput, filterValue, sortValue }) {
-      this.$store.dispatch('getMemberList', {
+    onChangeSearch({ searchInput, filterValue, sortValue }) {
+      this.params = {
         search: searchInput,
         filter: filterValue.map(value => value.toUpperCase()).join(),
         sort: sortValue,
-      })
+      }
+      this.$store.dispatch('getMemberList', this.params)
     },
+  },
+  async created() {
+    await this.$store.dispatch('getMemberList')
   },
 }
 </script>

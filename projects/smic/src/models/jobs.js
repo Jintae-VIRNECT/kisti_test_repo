@@ -19,17 +19,17 @@ export const cols = [
     width: 80,
   },
   {
-    prop: 'reportId',
+    prop: 'report',
     label: '리포트',
     width: 100,
   },
   {
-    prop: 'issueId',
+    prop: 'issue',
     label: '작업 이슈',
     width: 140,
   },
   {
-    prop: 'smartToolJobId',
+    prop: 'smartTool',
     label: '스마트툴(Job ID / 체결정보)',
     width: 270,
   },

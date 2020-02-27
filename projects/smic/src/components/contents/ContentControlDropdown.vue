@@ -52,8 +52,8 @@ export default {
     }
   },
   methods: {
-    onDelete() {
-      this.$confirm(
+    async onDelete() {
+      await this.$confirm(
         '선택한 콘텐츠를 삭제하시겠습니까? 삭제된 콘텐츠는 복구할 수 없습니다',
         '콘텐츠 삭제',
         {
@@ -61,10 +61,8 @@ export default {
           cancelButtonText: '취소',
         },
       )
-        .then(() => {
-          this.$store.dispatch('deleteContent', this.data.contentUUID)
-        })
-        .catch(() => {})
+      await this.$store.dispatch('deleteContent', this.data.contentUUID)
+      this.$router.push('/contents')
     },
   },
 }

@@ -350,6 +350,7 @@
     }
   }
   .total-done {
+    font-weight: normal;
     .count {
       color: #186ae2;
     }
@@ -503,11 +504,10 @@
   .search-wrapper {
     margin-bottom: 20px;
     .search {
-      width: 196px;
+      min-width: 140px;
       margin-right: 24px;
       .el-input__inner {
         float: right;
-        width: 140px;
         margin-right: 0px;
       }
       .el-button--default {
@@ -540,7 +540,7 @@
       padding: 7px 8px;
       background-color: rgb(241, 243, 247);
       .tool i {
-        color: black;
+        color: #093161;
       }
     }
     .el-select:hover .el-input__inner {
@@ -553,7 +553,8 @@
     .tool {
       vertical-align: middle;
       i {
-        color: black;
+        color: #093161;
+        font-weight: bold;
       }
       &.order button,
       &.filter button {
@@ -572,6 +573,10 @@
     }
     .el-icon-arrow-up,
     .el-icon-arrow-down {
+      font-weight: bold;
+    }
+    .el-select .el-input .el-select__caret {
+      color: #093161;
       font-weight: bold;
     }
   }

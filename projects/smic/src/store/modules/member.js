@@ -1,35 +1,38 @@
-import Vue from 'vue'
-import API from '@/models/api'
+import api from '@/api/gateway'
 
 export default {
   state: {
     memberList: [],
+    memberTotal: 0,
   },
   getters: {
     memberList(state) {
       return state.memberList
+    },
+    memberTotal(state) {
+      return state.memberTotal
     },
   },
   mutations: {
     SET_MEMBER_LIST(state, list) {
       state.memberList = list
     },
+    SET_MEMBER_TOTAL(state, count) {
+      state.memberTotal = count
+    },
   },
   actions: {
-    async getMemberList(state, param = {}) {
-      const response = await Vue.axios.get(API.MEMBER_LIST(), {
+    async getMemberList(state, param) {
+      const data = await api('MEMBER_LIST', {
         params: {
           userId: this.getters.getUser.uuid,
-          search: param.search || '',
-          filter: param.filter || 'ALL',
-          sort: param.sort || 'name,asc',
+          size: 10,
+          ...param,
         },
       })
-      const { code, data, message } = response.data
-      if (code === 200) {
-        state.commit('SET_MEMBER_LIST', data.memberInfoList)
-        return data
-      } else throw new Error(message)
+      state.commit('SET_MEMBER_LIST', data.memberInfoList)
+      state.commit('SET_MEMBER_TOTAL', data.pageMeta.totalElements)
+      return data
     },
   },
 }

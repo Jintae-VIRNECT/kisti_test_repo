@@ -2,13 +2,8 @@
   div
     h1.admin-body__header 이슈관리
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="이름 또는 이메일 검색" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
-    inline-table(:setMainHeader="true")
-      template(slot="header-left")
-        span.title 최근 등록된 공정 콘텐츠
-      template(slot="header-right")
-        .text-right
-          router-link.more-link(type="text" to="/contents") 더보기
+      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부 공정, 작업, 멤버 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
+    inline-table
       template(slot="body")
         el-table.inline-table(
           :data='tableData' 
@@ -73,15 +68,15 @@ export default {
       sort: {
         options: [
           {
-            value: 'name,asc',
-            label: 'ㄱ-ㅎ순',
+            value: 'createdDate,desc',
+            label: '최신 순',
           },
           {
-            value: 'name,desc',
-            label: 'ㄱ-ㅎ역순',
+            value: 'createdDate,asc',
+            label: '오래된 순',
           },
         ],
-        value: 'name,asc',
+        value: 'createdDate,desc',
       },
       toggleIssueModal: false,
     }

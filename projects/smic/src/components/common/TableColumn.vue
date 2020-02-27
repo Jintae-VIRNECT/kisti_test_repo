@@ -14,7 +14,7 @@
     .auth-img(:style="{'background-image': `url(${ member.profile })`}")
     span {{ member.name }}
   //- 일시
-  div(v-else-if="/^(reportedAt|.*Date)$/.test(prop)")
+  .total-done(v-else-if="/^(reportedAt|.*Date)$/.test(prop)")
     span {{data[prop] | dayJs_FilterDateTimeFormat}}
   //- 컨텐츠이름
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
@@ -51,7 +51,7 @@
     span {{ ['작업자1', '작업자2', '작업자3', '작업자4'] | limitAuthsLength }}
     //- span {{ data[prop] | limitAuthsLength }}
   //- 이슈
-  div(v-else-if="/^(issue)$/.test(prop)")
+  div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'object'")
     .blub(:class="data[prop] ? 'on' : 'off'")
     span {{ data[prop] ? "있음" : "없음" }}
   //- 이슈 타입
@@ -61,21 +61,24 @@
   .total-done(v-else-if="/^(totalDone)$/.test(prop)")
     span.count {{ data['count'] }} 
     span &nbsp;/ {{ data['total'] }}
-  //- 스마트툴
-  .total-done(v-else-if="/^(smartToolJobId)$/.test(prop)")
-    span Job ID no.
-    el-divider(direction="vertical")
-    span.count {{ data['count'] }} 
-    span &nbsp;/ {{ data['total'] }} &nbsp;
-    el-button(v-if="data[prop]" v-on:click="buttonClick") 스마트툴 보기
+  
   //- 리포트 버튼
-  div(v-else-if="/^(reportId)$/.test(prop)")
+  div(v-else-if="/^(report)$/.test(prop)")
     el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트보기
     span(v-else) ―
   //- 작업 이슈 버튼
-  div(v-else-if="/^(issueId)$/.test(prop)")
+  div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'string'")
     el-button(v-if="data[prop]" v-on:click="buttonClick") 작업 이슈 보기
-    span(v-else)
+    span(v-else) ―
+  //- 스마트툴
+  .total-done(v-else-if="/^(smartTool)$/.test(prop)")
+    div(v-if="data[prop]")
+      span Job ID no. {{ data.smartTool['smartToolJobId'] }}
+      el-divider(direction="vertical")
+      span.count {{ data.smartTool['smartToolWorkedCount'] }} 
+      span &nbsp;/ {{ data.smartTool['smartToolBatchTotal'] }} &nbsp;
+      el-button(v-on:click="buttonClick") 스마트툴 보기
+    span(v-else) ―
     
   //- 디버깅용
   div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])")
