@@ -119,8 +119,8 @@ public class WorkspaceService {
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, Pageable pageable) {
 
         //1. 검색 검증
-        if(filter.equals("MASTER,MEMBER")) filter = "ALL";
-        if(filter.equals("MEMBER,MASTER")) filter = "ALL";
+        if(StringUtils.hasText(filter) && filter.equals("MASTER,MEMBER")) filter = "ALL";
+        if(StringUtils.hasText(filter) && filter.equals("MEMBER,MASTER")) filter = "ALL";
         PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
         List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
         if (StringUtils.hasText(filter) && !filter.equals("ALL")) {
