@@ -50,6 +50,9 @@
     font-weight: bold;
     font-size: 24px;
   }
+  .el-progress-bar__inner {
+    background-image: linear-gradient(#186ae2, #186ae2);
+  }
 }
 .el-time-spinner__list::after,
 .el-time-spinner__list::before {
