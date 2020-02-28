@@ -31,9 +31,6 @@ import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import IssueModal from '@/components/process/IssueModal.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
 
-/// data
-import issueData from '@/data/issue'
-
 // model
 import tableColSettings from '@/models/issue'
 
@@ -53,7 +50,7 @@ export default {
   mixins: [contentList, dayjs],
   data() {
     return {
-      tableData: issueData,
+      tableData: this.$store.getters.issueList,
       colSetting: tableColSettings,
       search: '',
       filter: {

@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 dist
+projects/workstation
 
 # # local env files
 # .env.local

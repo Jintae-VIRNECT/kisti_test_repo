@@ -53,8 +53,8 @@
                 table-column(:prop="prop" :data="subProcessDetail.jobsList[scope.$index]" @buttonClick="onRowButtonClick")
         div(v-else)
           process-detail-graph
-    issue-modal(:toggleIssueModal="toggleIssueModal" :jobId="jobId" @handleCancel="onHandleCancel")
-    report-modal(:toggleReportModal="toggleReportModal" :jobId="jobId" @handleCancel="onHandleCancel")
+    issue-modal(:toggleIssueModal="toggleIssueModal" :issueId="issueId" @handleCancel="onHandleCancel")
+    report-modal(:toggleReportModal="toggleReportModal" :reportId="reportId" @handleCancel="onHandleCancel")
     smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" :jobId="jobId" @handleCancel="onHandleCancel")
 </template>
 <script>
@@ -108,6 +108,8 @@ export default {
       subProcessColSetting,
       jobsColSetting,
       jobId: null,
+      reportId: null,
+      issueId: null,
     }
   },
   computed: {
@@ -121,8 +123,16 @@ export default {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
     onRowButtonClick({ prop, data }) {
-      this.jobId = data.id
-      this.toggleSmartToolModal = true
+      if (prop === 'issue') {
+        this.issueId = data.id
+        this.toggleIssueModal = true
+      } else if (prop === 'report') {
+        this.reportId = data.id
+        this.toggleReportModal = true
+      } else if (prop === 'smartTool') {
+        this.jobId = data.id
+        this.toggleSmartToolModal = true
+      }
     },
     onHandleCancel() {
       this.toggleIssueModal = false

@@ -61,8 +61,8 @@
     .blub(:class="data[prop] ? 'on' : 'off'")
     span {{ data[prop] ? "있음" : "없음" }}
   //- 이슈 타입
-  div(v-else-if="/^(type)$/.test(prop)")
-    span.issue-type {{ data[prop] }}
+  div(v-else-if="/^(issueType)$/.test(prop)")
+    span.issue-type {{ data['processId'] ? '작업 이슈' : '이슈' }}
   //- 체결 수
   .total-done(v-else-if="/^(totalDone)$/.test(prop)")
     span.count {{ data['count'] }} 
@@ -89,7 +89,8 @@
     
   //- 디버깅용
   div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])")
-    span {{ data[prop] }}
+    span(v-if="data[prop]") {{ data[prop] }}
+    span(v-else) ―
     span.debug (id: {{ data['id'] || data['subProcessId'] }})
 
   //- 기타

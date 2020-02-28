@@ -49,6 +49,39 @@
                 span 작업 바로가기
 </template>
 
+<script>
+export default {
+  props: {
+    toggleIssueModal: Boolean,
+    issueId: Number,
+  },
+  data() {
+    return {
+      issueModal: false,
+      imgSrc: require('@/assets/image/issue-sample.jpg'),
+    }
+  },
+  methods: {
+    handleCancel() {
+      this.issueModal = false
+      this.$emit('handleCancel')
+    },
+    handleOpen() {
+      console.log(this.issueId)
+    },
+    handleConfirm() {},
+  },
+  watch: {
+    $props: {
+      handler() {
+        this.issueModal = this.$props.toggleIssueModal
+      },
+      deep: true,
+    },
+  },
+}
+</script>
+
 <style lang="scss">
 .issue-modal .el-dialog {
   .section {
@@ -119,36 +152,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  props: {
-    toggleIssueModal: Boolean,
-    target: {
-      type: Object,
-    },
-  },
-  data() {
-    return {
-      issueModal: false,
-      imgSrc: require('@/assets/image/issue-sample.jpg'),
-    }
-  },
-  methods: {
-    handleCancel() {
-      this.issueModal = false
-      this.$emit('handleCancel')
-    },
-    handleOpen() {},
-    handleConfirm() {},
-  },
-  watch: {
-    $props: {
-      handler() {
-        this.issueModal = this.$props.toggleIssueModal
-      },
-      deep: true,
-    },
-  },
-}
-</script>

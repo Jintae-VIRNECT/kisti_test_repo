@@ -130,7 +130,7 @@ export const tableColSettings = {
   ],
   issue: [
     {
-      prop: 'type',
+      prop: 'issueType',
       label: '이슈 유형',
       width: 130,
     },
