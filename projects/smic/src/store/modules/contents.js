@@ -62,7 +62,7 @@ export default {
     // 컨텐츠 상세조회
     async getContentsDetail(context, contentUUID) {
       const data = await api('CONTENT_INFO', {
-        query: { contentUUID },
+        route: { contentUUID },
       })
       context.commit('SET_CONTENT_INFO', data)
       return data
@@ -70,7 +70,7 @@ export default {
     // 컨텐츠 삭제
     async deleteContent(context, contentUUID) {
       const data = await api('CONTENT_DELETE', {
-        query: { contentUUID },
+        route: { contentUUID },
         params: { uuid: context.getters.getUser.uuid },
       })
       context.commit('SET_CONTENT_INFO', data)

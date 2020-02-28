@@ -61,7 +61,7 @@ export default {
     // 공정 상세조회
     async getProcessInfo(context, processId) {
       const data = await api('PROCESS_DETAIL', {
-        query: { processId },
+        route: { processId },
       })
       context.commit('SET_PROCESS_INFO', data)
       return data
@@ -74,7 +74,7 @@ export default {
     // 공정 편집
     async updateProcess(context, params) {
       const data = await api('PROCESS_UPDATE', {
-        query: { processId: params.processId },
+        route: { processId: params.processId },
         params,
       })
       return data
@@ -82,7 +82,7 @@ export default {
     // 공정 삭제
     async deleteProcess(context, processId) {
       const data = await api('PROCESS_DELETE', {
-        query: { processId },
+        route: { processId },
       })
       context.commit('DELETE_PROCESS', processId)
       return data
@@ -90,16 +90,24 @@ export default {
     // 공정의 세부공정 리스트
     async getSubProcessList(context, params) {
       const data = await api('SUB_PROCESS_LIST', {
-        query: { processId: params.processId },
+        route: { processId: params.processId },
         params,
       })
       context.commit('SET_SUB_PROCESS_LIST', data.subProcesses)
       return data
     },
+    // 세부공정 상세조회
+    async getSubProcessDetail(context, params) {
+      const data = await api('SUB_PROCESS_DETAIL', {
+        route: { subProcessId: params.subProcessId },
+        params,
+      })
+      return data
+    },
     // 세부공정 편집
     async updateSubProcess(context, params) {
-      const data = await api('SUB_PROCESS_DETAIL', {
-        query: { subProcessId: params.subProcessId },
+      const data = await api('SUB_PROCESS_UPDATE', {
+        route: { subProcessId: params.subProcessId },
         params,
       })
       return data
@@ -107,7 +115,7 @@ export default {
     // 작업 리스트
     async getJobsList(context, params) {
       const data = await api('JOBS_LIST', {
-        query: { subProcessId: params.subProcessId },
+        route: { subProcessId: params.subProcessId },
         params,
       })
       context.commit('SET_JOBS_LIST', data.jobs)

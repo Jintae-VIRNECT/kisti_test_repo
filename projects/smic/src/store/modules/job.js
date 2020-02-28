@@ -56,8 +56,8 @@ export default {
     async getIssueList(context) {},
     async getSmartToolDetail(context) {},
     async getSmartToolList(context, params) {
-      const data = await api('SUB_PROCESS_LIST', {
-        query: { processId: params.processId },
+      const data = await api('SMART_TOOL_LIST', {
+        route: { processId: params.processId },
         params,
       })
       context.commit('SET_SMART_TOOL_LIST', data.subProcesses)

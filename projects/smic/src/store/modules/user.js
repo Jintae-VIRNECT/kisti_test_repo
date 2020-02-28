@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import API from '@/models/api'
+import api from '@/api/gateway'
 
 export default {
   state: {
@@ -75,34 +74,22 @@ export default {
   },
   actions: {
     async USER_LOGIN(context, { email, password }) {
-      try {
-        const response = await Vue.axios.post(API.USER_LOGIN(), {
-          email,
-          password,
-        })
-        const { data } = response.data
+      const data = await api('USER_LOGIN', {
+        params: { email, password },
+      })
 
-        if (Object.keys(data).length === 0) return { isLogin: false }
+      if (Object.keys(data).length === 0) return { isLogin: false }
 
-        console.log('-----------')
-        context.commit('USER_LOGIN', {
-          user: data.userInfo,
-          workspaceInfoList: data.workspaceInfoList,
-        })
-        return response.data
-      } catch (e) {
-        console.log('e : ', e)
-        return e
-      }
+      context.commit('USER_LOGIN', {
+        user: data.userInfo,
+        workspaceInfoList: data.workspaceInfoList,
+      })
+      return data
     },
     async USER_LOGOUT(context) {
-      try {
-        const response = await Vue.axios.get(API.USER_LOGOUT())
-        context.commit('USER_LOGOUT')
-        return response.data
-      } catch (e) {
-        console.log('e : ', e)
-      }
+      const data = await api('USER_LOGOUT')
+      context.commit('USER_LOGOUT')
+      return data
     },
   },
 }

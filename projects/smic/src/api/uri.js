@@ -1,5 +1,11 @@
 module.exports = {
   /**
+   * User
+   */
+  // 로그인 API
+  USER_LOGIN: ['POST', '/users/login'],
+  USER_LOGOUT: ['GET', '/users/logout'],
+  /**
    * Workspace
    */
   // 워크스페이스 멤버 검색
@@ -27,21 +33,11 @@ module.exports = {
   // 공정삭제
   PROCESS_DELETE: ['DELETE', '/processes/{processId}'],
   // 공정마감
-  4: ['PUT', '/processes/{processId}/closed'],
+  PROCESS_CLOSE: ['PUT', '/processes/{processId}/closed'],
   // 세부공정목록조회
   SUB_PROCESS_LIST: ['GET', '/processes/{processId}/subProcesses'],
-  // ARUCO 발급
-  6: ['GET', '/processes/aruco'],
-  // ARUCO 회수
-  7: ['POST', '/processes/aruco'],
-  // 컨텐츠 파일의 공정 조회
-  8: ['GET', '/processes/content/{contentUUID}'],
   // 이슈 목록을 조회
   ISSUE_LIST: ['GET', '/processes/issues'],
-  // 내 작업(나에게 할당된 세부공정) 목록 조회
-  10: ['GET', '/processes/myWorks/{workerUUID}'],
-  // 신규 할당된 세부공정 유무 조회
-  11: ['GET', '/processes/newWork'],
   // 공정생성
   PROCESS_CREATE: ['POST', '/processes/process'],
   // 리포트 목록 조회
@@ -53,7 +49,7 @@ module.exports = {
   // 세부공정 상세조회
   SUB_PROCESS_DETAIL: ['GET', '/processes/subProcesses/{subProcessId}'],
   // 세부공정편집
-  17: ['POST', '/processes/subProcesses/{subProcessId}'],
+  SUB_PROCESS_UPDATE: ['POST', '/processes/subProcesses/{subProcessId}'],
   // 작업목록조회
   JOBS_LIST: ['GET', '/processes/subProcesses/{subProcessId}/jobs'],
 }

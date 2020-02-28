@@ -6,16 +6,16 @@ import Vue from 'vue'
  * @param {String} name
  * @param {Object} option
  */
-export default async function api(name, option) {
+export default async function api(name, option = {}) {
   let [method, uri] = URI[name]
-  let { query, params } = option
+  let { route, params } = option
 
   method = method.toLowerCase()
   params = method === 'post' ? params : { params }
-  // replace query
-  uri = !query
+  // replace route
+  uri = !route
     ? uri
-    : Object.entries(query).reduce((u, q) => {
+    : Object.entries(route).reduce((u, q) => {
         return u.replace(`{${q[0]}}`, q[1])
       }, uri)
 
