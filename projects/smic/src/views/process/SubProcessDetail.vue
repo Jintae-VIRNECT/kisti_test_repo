@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ processDetail.info.name }})
+      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ subProcessDetail.info.processName }})
       el-breadcrumb-item 세부공정({{subProcessDetail.info.name}})
       el-breadcrumb-item 작업
     inline-table(:setSubHeader="true")
@@ -53,9 +53,9 @@
                 table-column(:prop="prop" :data="subProcessDetail.jobsList[scope.$index]" @buttonClick="onRowButtonClick")
         div(v-else)
           process-detail-graph
-    issue-modal(:toggleIssueModal="toggleIssueModal" :issueId="issueId" @handleCancel="onHandleCancel")
-    report-modal(:toggleReportModal="toggleReportModal" :reportId="reportId" @handleCancel="onHandleCancel")
-    smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" :smartToolId="smartToolId" @handleCancel="onHandleCancel")
+    issue-modal(:toggleIssueModal="toggleIssueModal" :jobId="jobId" @handleCancel="onHandleCancel")
+    report-modal(:toggleReportModal="toggleReportModal" :jobId="jobId" @handleCancel="onHandleCancel")
+    smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" :jobId="jobId" @handleCancel="onHandleCancel")
 </template>
 <script>
 import { mapGetters } from 'vuex'
@@ -107,9 +107,7 @@ export default {
       topic: 'table',
       subProcessColSetting,
       jobsColSetting,
-      reportId: null,
-      issueId: null,
-      smartToolId: null,
+      jobId: null,
     }
   },
   computed: {
@@ -123,16 +121,8 @@ export default {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
     onRowButtonClick({ prop, data }) {
-      if (prop === 'issue') {
-        this.issueId = data.id
-        this.toggleIssueModal = true
-      } else if (prop === 'report') {
-        this.reportId = data.id
-        this.toggleReportModal = true
-      } else if (prop === 'smartTool') {
-        this.smartToolId = data.id
-        this.toggleSmartToolModal = true
-      }
+      this.jobId = data.id
+      this.toggleSmartToolModal = true
     },
     onHandleCancel() {
       this.toggleIssueModal = false
@@ -142,9 +132,18 @@ export default {
   },
   async created() {
     const { subProcessId } = this.$route.params
-    const { jobs } = await this.$store.dispatch('getJobsList', { subProcessId })
-    if (jobs.find(job => job.smartTool)) {
+    this.$store.dispatch('getSubProcessDetail', subProcessId)
+    const { jobs } = await this.$store.dispatch('getJobsList', subProcessId)
+    if (jobs.some(job => job.smartTool)) {
       await this.$store.dispatch('getSmartToolList', { subProcessId })
+    }
+    // modal open
+    const { modal, jobId } = this.$router.currentRoute.query
+    this.jobId = jobId * 1
+    if (modal) {
+      setTimeout(() => {
+        this[`toggle${modal}Modal`] = true
+      }, 100)
     }
   },
 }

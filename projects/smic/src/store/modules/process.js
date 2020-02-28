@@ -3,6 +3,7 @@ import api from '@/api/gateway'
 export default {
   state: {
     processList: [],
+    subProcessListAll: [],
     processDetail: {
       info: {},
       subProcessList: [],
@@ -22,6 +23,9 @@ export default {
     subProcessDetail(state) {
       return state.subProcessDetail
     },
+    subProcessListAll(state) {
+      return state.subProcessListAll
+    },
   },
   mutations: {
     SET_PROCESS_LIST(state, list) {
@@ -37,6 +41,9 @@ export default {
     },
     SET_SUB_PROCESS_LIST(state, list) {
       state.processDetail = { ...state.processDetail, subProcessList: list }
+    },
+    SET_SUB_PROCESS_LIST_ALL(state, list) {
+      state.subProcessListAll = list
     },
     SET_SUB_PROCESS_INFO(state, obj) {
       state.subProcessDetail = { ...state.subProcessDetail, info: obj }
@@ -87,6 +94,14 @@ export default {
       context.commit('DELETE_PROCESS', processId)
       return data
     },
+    // 전체 세부공정 리스트
+    async getSubProcessListAll(context, params) {
+      const data = await api('SUB_PROCESS_ALL', {
+        params,
+      })
+      context.commit('SET_SUB_PROCESS_LIST_ALL', data.subProcesses)
+      return data
+    },
     // 공정의 세부공정 리스트
     async getSubProcessList(context, params) {
       const data = await api('SUB_PROCESS_LIST', {
@@ -97,11 +112,11 @@ export default {
       return data
     },
     // 세부공정 상세조회
-    async getSubProcessDetail(context, params) {
+    async getSubProcessDetail(context, subProcessId) {
       const data = await api('SUB_PROCESS_DETAIL', {
-        route: { subProcessId: params.subProcessId },
-        params,
+        route: { subProcessId },
       })
+      context.commit('SET_SUB_PROCESS_INFO', data)
       return data
     },
     // 세부공정 편집
@@ -113,10 +128,9 @@ export default {
       return data
     },
     // 작업 리스트
-    async getJobsList(context, params) {
+    async getJobsList(context, subProcessId) {
       const data = await api('JOBS_LIST', {
-        route: { subProcessId: params.subProcessId },
-        params,
+        route: { subProcessId },
       })
       context.commit('SET_JOBS_LIST', data.jobs)
       return data

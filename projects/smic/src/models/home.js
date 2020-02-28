@@ -1,8 +1,24 @@
 export const currentReportedInformationTabs = [
-  { label: '세부공정', name: 'detailProcess', link: '/process' },
-  { label: '리포트', name: 'report', link: '/reports' },
-  { label: '이슈', name: 'issue', link: '/issue' },
-  { label: '스마트툴', name: 'smartTool', link: '/' },
+  {
+    label: '세부공정',
+    name: 'subProcess',
+    link: '/process/{processId}/{subProcessId}',
+  },
+  {
+    label: '리포트',
+    name: 'report',
+    link: '/process/{processId}/{subProcessId}?jobId={jobId}&modal=Report',
+  },
+  {
+    label: '이슈',
+    name: 'issue',
+    link: '/process/{processId}/{subProcessId}?jobId={jobId}&modal=Issue',
+  },
+  {
+    label: '스마트툴',
+    name: 'smartTool',
+    link: '/process/{processId}/{subProcessId}?jobId={jobId}&modal=SmartTool',
+  },
 ]
 
 export const tableColSettings = {
@@ -60,14 +76,14 @@ export const tableColSettings = {
   // 		label: '작업자',
   // 	},
   // ],
-  detailProcess: [
+  subProcess: [
     {
       prop: 'processName',
       label: '공정 이름',
-      width: 300,
+      width: 200,
     },
     {
-      prop: 'detailProcessName',
+      prop: 'name',
       label: '세부 공정 이름',
     },
     {
@@ -76,12 +92,12 @@ export const tableColSettings = {
       width: 100,
     },
     {
-      prop: 'auth',
+      prop: 'workerUUID',
       label: '작업 담당자',
-      width: 130,
+      width: 160,
     },
     {
-      prop: 'reportedAt',
+      prop: 'reportedDate',
       label: '보고일시',
       width: 150,
     },
@@ -90,22 +106,24 @@ export const tableColSettings = {
     {
       prop: 'processName',
       label: '공정 이름',
+      width: 200,
     },
     {
-      prop: 'detailProcessName',
+      prop: 'subProcessName',
       label: '세부 공정 이름',
+      width: 200,
     },
     {
-      prop: 'workName',
+      prop: 'jobName',
       label: '작업 이름',
     },
     {
-      prop: 'auth',
+      prop: 'workerUUID',
       label: '작업 담당자',
-      width: 130,
+      width: 160,
     },
     {
-      prop: 'reportedAt',
+      prop: 'reportedDate',
       label: '보고일시',
       width: 150,
     },
@@ -119,22 +137,24 @@ export const tableColSettings = {
     {
       prop: 'processName',
       label: '공정 이름',
+      width: 200,
     },
     {
-      prop: 'detailProcessName',
+      prop: 'subProcessName',
       label: '세부 공정 이름',
+      width: 200,
     },
     {
-      prop: 'workName',
+      prop: 'jobName',
       label: '작업 이름',
     },
     {
-      prop: 'auth',
+      prop: 'workerUUID',
       label: '작업 담당자',
-      width: 130,
+      width: 160,
     },
     {
-      prop: 'reportedAt',
+      prop: 'reportedDate',
       label: '보고일시',
       width: 150,
     },
@@ -143,32 +163,34 @@ export const tableColSettings = {
     {
       prop: 'processName',
       label: '공정 이름',
+      width: 200,
     },
     {
-      prop: 'detailProcessName',
+      prop: 'subProcessName',
       label: '세부 공정 이름',
+      width: 200,
     },
     {
-      prop: 'workName',
+      prop: 'jobName',
       label: '작업 이름',
     },
     {
       prop: 'jobId',
       label: 'Job ID',
-      width: 120,
+      width: 100,
     },
     {
-      prop: 'totalDone',
-      label: '채결정보',
-      width: 80,
+      prop: 'smartToolItems',
+      label: '체결정보',
+      width: 100,
     },
     {
-      prop: 'auth',
+      prop: 'workerUUID',
       label: '작업 담당자',
-      width: 130,
+      width: 160,
     },
     {
-      prop: 'reportedAt',
+      prop: 'reportedDate',
       label: '보고일시',
       width: 150,
     },

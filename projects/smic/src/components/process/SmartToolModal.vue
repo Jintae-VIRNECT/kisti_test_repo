@@ -13,44 +13,64 @@
         .section
           label Job ID
           .value
-            span Job ID no.
+            span Job ID no. {{ smartToolDetail.smartToolJobId }}
             el-divider(direction="vertical")
             span 체결 완료 수
-            span.blue 4
-            span /10
-        .section
-          label 체결 1.
+            span.blue {{ done }}
+            span /{{ smartTools.length }}
+        .section(v-for="{ batchCount, workingToque } in smartTools")
+          label 체결 {{ batchCount }}.
           .value
-            span 100%
-            el-progress(:percentage="100" :show-text="false")
-        .section
-          label 체결 2.
-          .value
-            span 0%
-            el-progress(:percentage="0" :show-text="false")
+            span {{ workingToque | toPercentStr(smartToolDetail.normalToque) }}%
+            el-progress(:percentage="workingToque | toPercentNumber(smartToolDetail.normalToque)" :show-text="false")
       
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     toggleSmartToolModal: Boolean,
-    target: {
-      type: Object,
-    },
+    jobId: Number,
   },
   data() {
     return {
       smartToolModal: false,
-      imgSrc: require('@/assets/image/issue-sample.jpg'),
+      smartTools: [
+        {
+          batchCount: 0,
+          workingToque: 1,
+        },
+      ],
     }
+  },
+  computed: {
+    ...mapGetters(['smartToolDetail']),
+    done() {
+      return this.smartTools.filter(
+        ({ workingToque }) => workingToque == this.smartToolDetail.normalToque,
+      ).length
+    },
+  },
+  filters: {
+    toPercentNumber(val, max) {
+      return ((val * 1) / (max * 1)) * 100
+    },
+    toPercentStr(val, max) {
+      const percent = ((val * 1) / (max * 1)) * 100
+      return Number(percent).toFixed(0)
+    },
   },
   methods: {
     handleCancel() {
       this.smartToolModal = false
       this.$emit('handleCancel')
     },
-    handleOpen() {},
+    handleOpen() {
+      this.$store.commit('SET_SMART_TOOL_DETAIL', this.jobId)
+      this.smartTools = this.smartToolDetail.smartToolItems
+    },
     handleConfirm() {},
   },
   watch: {
@@ -87,6 +107,7 @@ export default {
       }
     }
     .el-progress {
+      width: 400px;
       margin-top: 12px;
     }
   }

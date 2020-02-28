@@ -13,7 +13,7 @@
               router-link.more-link(type="text" to="/process") 더보기
           template(slot="body")
             el-table.inline-table(
-              :data='currentProcessData' 
+              :data='processList' 
               style='width: 100%'
               @cell-click="onClickProcess")
               el-table-column(
@@ -23,11 +23,11 @@
                 :label="label" 
                 :width="width || ''") 
                 template(slot-scope='scope')
-                  table-column(:prop="prop" :data="currentProcessData[scope.$index]")
+                  table-column(:prop="prop" :data="processList[scope.$index]")
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
                   process-control-dropdown(
-                    :target="currentProcessData[scope.$index]"
+                    :target="processList[scope.$index]"
                     @onChangeData="onChangeData"
                     @onCreateData="onCreateData"
                     @onDeleteData="onDeleteData")
@@ -41,7 +41,7 @@
               router-link.more-link(type="text" to="/contents") 더보기
           template(slot="body")
             el-table.inline-table(
-              :data='currentContentsData' 
+              :data='contentsList' 
               style='width: 100%'
               @cell-click="onClickContent")
               el-table-column(
@@ -51,17 +51,20 @@
                 :label="label" 
                 :width="width || ''") 
                 template(slot-scope='scope')
-                  table-column(type="contents" :prop="prop" :data="currentContentsData[scope.$index]")
+                  table-column(type="contents" :prop="prop" :data="contentsList[scope.$index]")
               el-table-column(:width="50" class-name="control-col")
                 template(slot-scope='scope')
-                  content-control-dropdown(:status="currentContentsData[scope.$index].status")
+                  content-control-dropdown(:status="contentsList[scope.$index].status")
     el-row(:gutter="0")
       el-col(:span="24")
         //- inline-tabs-table(
         //-   :tableData="currentReportedDetailProcess" 
         inline-tabs-table(
+          :activeTab="activeTab"
+          :tabInfo="currentReportedInformationTabs"
           :tableData="tabletabsData[activeTab]" 
-          :colSetting="tableColSettings[activeTab]")
+          :colSetting="tableColSettings[activeTab]"
+        )
           template(slot="header-left")
             span.title 최근 보고 정보
           template(slot="header-right")
@@ -77,6 +80,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 // UI component
 import ContentList from '@/views/contents/ContentList'
 // import ProcessInprogressStatusGraph from '@/components/home/ProcessInprogressStatusGraph.vue'
@@ -128,14 +132,21 @@ export default {
     }
   },
   computed: {
-    currentProcessData() {
-      return this.$store.getters.processList
-    },
-    currentContentsData() {
-      return this.$store.getters.contentsList
-    },
+    ...mapGetters([
+      'processList',
+      'contentsList',
+      'subProcessListAll',
+      'reportList',
+      'issueList',
+      'smartToolList',
+    ]),
     tabletabsData() {
-      return tempData
+      return {
+        subProcess: this.subProcessListAll,
+        report: this.reportList,
+        issue: this.issueList,
+        smartTool: this.smartToolList,
+      }
     },
   },
   methods: {
@@ -145,7 +156,6 @@ export default {
     },
     onClickProcess(row, column) {
       if (column.className === 'control-col') return false
-      console.log(row)
       this.$router.push(`process/${row.id}`)
     },
     onClickContent(row, column) {
@@ -161,6 +171,10 @@ export default {
   created() {
     this.$store.dispatch('getProcessList', { size: 10 })
     this.$store.dispatch('getContentsList', { size: 5 })
+    this.$store.dispatch('getSubProcessListAll', { size: 5 })
+    this.$store.dispatch('getReportList')
+    this.$store.dispatch('getIssueList')
+    this.$store.dispatch('getSmartToolList')
   },
 }
 </script>

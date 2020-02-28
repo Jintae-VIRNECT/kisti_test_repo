@@ -26,7 +26,7 @@ export default {
       const data = await api('MEMBER_LIST', {
         params: {
           userId: this.getters.getUser.uuid,
-          size: 10,
+          size: 20,
           ...param,
         },
       })

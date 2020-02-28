@@ -22,17 +22,6 @@
         el-table-column(v-if="controlCol" :width="50" class-name="tool-col")
           template(slot-scope='scope')
             process-control-dropdown(:processId="tableData[scope.$index].processId")
-    el-pagination.inline-table-pagination(
-      v-if='setPagination'
-      :hide-on-single-page='false' 
-      :page-size="pageSize" 
-      :pager-count="tableOption ? tableOption.pagerCount : 5"
-      :total='tableData.length' 
-      layout='prev, jumper, next'
-      :current-page='currentPage'
-      @prev-click='currentPage -= 1'
-      @next-click='currentPage += 1'
-    )
 </template>
 <script>
 import ProcessControlDropdown from '@/components/process/ProcessControlDropdown'
@@ -47,57 +36,20 @@ export default {
   },
   mixins: [dayjs, filters],
   props: {
+    activeTab: String,
+    tabInfo: Array,
     tableData: Array,
-    setPagination: Boolean,
-    dataType: String,
     colSetting: Array,
     controlCol: Boolean,
-    cellClick: Function,
-    tableOption: {
-      title: String,
-      // colSetting: Array,
-      pagerCount: 5,
-    },
-  },
-  data() {
-    return {
-      dataKeys: null,
-      currentPage: 1,
-      pageSize: this.$props.tableOption ? this.$props.tableOption.pageSize : 5,
-    }
   },
   methods: {
-    statusFilterName(value) {
-      if (value == 'complete') return '완료'
-      else if (value == 'progress') return '진행'
-      else if (value == 'idle') return '미진행'
-      else if (value == 'imcomplete') return '미흡'
-    },
-    publishFilterClass(type, value) {
-      let suffix = ''
-      if (value === false) suffix = 'plain'
-      return `${type}-btn ${suffix}`
-    },
-    publishBoolean(value) {
-      if (value === true) return 'ON'
-      else return 'OFF'
-    },
-    publishFilterName(type, value) {
-      let className, suffix
-      if (type === 'contentPublish') className = '배포'
-      else if (type === 'processRegister') className = '등록'
-      if (value === true) suffix = '중'
-      else if (value === false) suffix = '대기'
-      return className + suffix
-    },
-    onClickCell(row, column, cell, event) {
-      console.log('row : ', row)
-      console.log('column : ', column)
-      console.log('cell : ', cell)
-      console.log('event : ', event)
-      const { rowIdName, subdomain } = this.$props.tableOption
-      if (!rowIdName) return false
-      this.$router.push(`${subdomain}/${row[rowIdName]}`)
+    onClickCell(row) {
+      const tab = this.tabInfo.find(({ name }) => name === this.activeTab)
+      const url = tab.link
+        .replace('{processId}', row.processId)
+        .replace('{subProcessId}', row.subProcessId)
+        .replace('{jobId}', row.jobId)
+      this.$router.push(url)
     },
   },
 }

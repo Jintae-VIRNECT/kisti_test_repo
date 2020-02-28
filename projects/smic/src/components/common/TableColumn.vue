@@ -2,6 +2,12 @@
   div(v-if="false")
     span Error
   
+  //- 홈 화면
+  //- 홈 화면 스마트 툴
+  .total-done(v-else-if="/^(smartToolItems)$/.test(prop)")
+    span.count {{ data['smartToolWorkedCount'] }} 
+    span &nbsp;/ {{ data['smartToolBatchTotal'] }}
+
   //- 진행 상태 (컨텐츠)
   div(v-else-if="/^(status)$/.test(prop) && type === 'contents'")
     span.publish-boolean(:class="data[prop]") {{ data[prop] | publishBoolean }}
@@ -62,6 +68,7 @@
     span.count {{ data['count'] }} 
     span &nbsp;/ {{ data['total'] }}
   
+  //- 작업
   //- 리포트 버튼
   div(v-else-if="/^(report)$/.test(prop)")
     el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트보기
