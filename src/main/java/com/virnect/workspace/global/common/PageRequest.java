@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 
 public final class PageRequest {
     private int page = 1;
-    private int size;
+    private int size = 20;
     private String sort;
 
     public void setPage(int page) {
