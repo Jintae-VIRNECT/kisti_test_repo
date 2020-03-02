@@ -3,6 +3,7 @@ package com.virnect.workspace.application;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
+import com.virnect.workspace.dto.GroupInfoDTO;
 import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.redis.WorkspaceInviteRedisRequest;
 import com.virnect.workspace.dto.request.UsersCreateRequest;
@@ -204,30 +205,30 @@ public class WorkspaceService {
                 resultMemberListResponse = filterdMemberList;
 
             } else {*/
-                //정렬을 하지 않아도 될때는 필터처리만 해서 넘긴다.
+            //정렬을 하지 않아도 될때는 필터처리만 해서 넘긴다.
                 /*
                 pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
                         workspace, workspaceUserList, workspaceRoleList, pageable);
 */
-                //임시로 정렬 자체 생략해서 넘김
-                PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
+            //임시로 정렬 자체 생략해서 넘김
+            PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+            pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
                     workspace, workspaceUserList, workspaceRoleList, newPageable);
 
-                List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
+            List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
 
-                List<String> filterdWorkspaceUserIdList =
-                        pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
+            List<String> filterdWorkspaceUserIdList =
+                    pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
 
-                //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
-                memberInfoList.stream().forEach(memberInfoDTO -> {
-                            if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
-                                filterdMemberList.add(memberInfoDTO);
-                            }
+            //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
+            memberInfoList.stream().forEach(memberInfoDTO -> {
+                        if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
+                            filterdMemberList.add(memberInfoDTO);
                         }
-                );
-                resultMemberListResponse = filterdMemberList;
-           // }
+                    }
+            );
+            resultMemberListResponse = filterdMemberList;
+            // }
 
             pageMetadataResponse.setTotalElements(pageMember.getTotalElements());//전체 데이터 수
             pageMetadataResponse.setTotalPage(pageMember.getTotalPages());//전체 페이지 수
@@ -319,8 +320,7 @@ public class WorkspaceService {
             WorkspaceInviteRedisRequest.UserInfo userRedisRequest = new WorkspaceInviteRedisRequest.UserInfo();
             for (InviteUserInfoRestResponse.InviteUserResponse inviteUserResponse : inviteUserInfoRestResponse.getInviteUserInfoList()) {
                 //Redis data set
-                userRedisRequest.setGroupName(userInfo.getGroupName());
-                userRedisRequest.setGroupRole(userInfo.getGroupRole());
+                userRedisRequest.setGroups(userInfo.getGroups());
                 userRedisRequest.setPermission(userInfo.getWorkspacePermission());
                 userRedisRequest.setExistUser(false);
                 userRedisRequest.setName(inviteUserResponse.getName());
@@ -397,8 +397,9 @@ public class WorkspaceService {
         }
 
         //4. 그룹 소속 넣기(group_user, group_user_permission)
-        if (StringUtils.hasText(userInvite.getGroupName())) {//group 모듈 분리해야 함
-            //this.groupService.setGroupUsers(userInvite.getGroups(), workspaceUser);
+        if (!userInvite.getGroups().isEmpty()) {
+            List<GroupInfoDTO> groupInfoDTOList = userInvite.getGroups().stream().map(groupInfo -> modelMapper.map(groupInfo, GroupInfoDTO.class)).collect(Collectors.toList());
+            this.groupService.setGroupUser(groupInfoDTOList, workspaceUser);
         }
 
         //5. 회원가입 요청
@@ -437,11 +438,13 @@ public class WorkspaceService {
             if (!userInfo.getWorkspacePermission().isEmpty()) {
                 setWorkspaceUserPermissionInfo(userInfo.getWorkspacePermission(), workspaceUser);
             }
+
+            //4. group_users, group_user_permission insert
+            if (userInfo.getGroups()!=null) {
+                this.groupService.setGroupUser(userInfo.getGroups(), workspaceUser);
+            }
         }
-
-        //5. group_users, group_user_permission insert
-
-        //6. user insert (해야됨) : user server의 회원가입 url로 넣기
+        //5. user insert (해야됨) : user server의 회원가입 url로 넣기
 
         return new ApiResponse<>(new UsersCreateResponse(true));
     }

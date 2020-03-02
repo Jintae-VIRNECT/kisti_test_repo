@@ -4,7 +4,11 @@ import com.virnect.workspace.dao.GroupRepository;
 import com.virnect.workspace.dao.group.GroupRoleRepository;
 import com.virnect.workspace.dao.group.GroupUserPermissionRepository;
 import com.virnect.workspace.dao.group.GroupUserRepository;
-import com.virnect.workspace.domain.*;
+import com.virnect.workspace.domain.Group;
+import com.virnect.workspace.domain.GroupUser;
+import com.virnect.workspace.domain.GroupUserPermission;
+import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.dto.GroupInfoDTO;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Project: PF-Workspace
@@ -30,30 +33,32 @@ public class GroupService {
     private final ModelMapper modelMapper;
     private final GroupUserPermissionRepository groupUserPermissionRepository;
     private final GroupRoleRepository groupRoleRepository;
-    public void setGroupUsers(List<Map<String, String>> groups, WorkspaceUser workspaceUser) {
-        for(Map<String, String> groupMap : groups){
-            //1. group_user insert
-            for(Map.Entry<String, String> groupKeyValue : groupMap.entrySet()){
-                Group group = this.groupRepository.findByName(groupKeyValue.getKey());
-                GroupUser groupUser = GroupUser.builder().group(group).workspaceUser(workspaceUser).build();
-                this.groupUserRepository.save(groupUser);
 
-                //2. group_user_permission insert
-                if(groupKeyValue.getValue().equals("y")){
-                    GroupUserPermission groupUserPermission = GroupUserPermission.builder()
-                            .groupRole(this.groupRoleRepository.findByRole("MANAGER"))
-                            .groupUser(groupUser)
-                            .build();
-                    this.groupUserPermissionRepository.save(groupUserPermission);
-                }else{
-                    GroupUserPermission groupUserPermission = GroupUserPermission.builder()
-                            .groupRole(this.groupRoleRepository.findByRole("MEMBER"))
-                            .groupUser(groupUser)
-                            .build();
-                    this.groupUserPermissionRepository.save(groupUserPermission);
-                }
+    public void setGroupUser(List<GroupInfoDTO> groups, WorkspaceUser workspaceUser) {
+        for (GroupInfoDTO groupInfo : groups) {
+            //1. group_user insert
+            Group group = this.groupRepository.findByName(groupInfo.getGroupName());
+            GroupUser groupUser = GroupUser.builder().group(group).workspaceUser(workspaceUser).build();
+            this.groupUserRepository.save(groupUser);
+
+            //2. group_user_permission insert
+            if(groupInfo.getManagerAssign()) {
+                GroupUserPermission groupUserPermission = GroupUserPermission.builder()
+                        .groupRole(this.groupRoleRepository.findByRole("MANAGER"))
+                        .groupUser(groupUser)
+                        .build();
+                this.groupUserPermissionRepository.save(groupUserPermission);
+            }else {
+                GroupUserPermission groupUserPermission = GroupUserPermission.builder()
+                        .groupRole(this.groupRoleRepository.findByRole("MEMBER"))
+                        .groupUser(groupUser)
+                        .build();
+                this.groupUserPermissionRepository.save(groupUserPermission);
             }
 
         }
+
+
     }
+
 }

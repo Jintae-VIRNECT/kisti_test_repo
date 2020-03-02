@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.dto.GroupInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,9 +31,7 @@ public class WorkspaceInviteRequest {
 
         private List<Long> workspacePermission;//소속 할당할 워크스페이스 정보
 
-        private String groupName; //소속 할당할 그룹 이름
-
-        private String groupRole; //소속 할당할 그룹 내 직책
+        private List<GroupInfoDTO> groups; //소속 할당할 그룹 이름
 
     }
 }

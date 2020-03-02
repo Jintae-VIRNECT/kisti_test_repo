@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.dto.GroupInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,15 +33,8 @@ public class UsersCreateRequest {
 
         private String description;
         private List<Long> workspacePermission;
-        private List<GroupInfo> groups;
+        private List<GroupInfoDTO> groups;
         private String profile;
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class GroupInfo {
-        private String groupName;
-        private String managerAssign;
     }
 
 }

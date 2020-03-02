@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-02-03
@@ -23,9 +26,11 @@ public class RedisService {
 
     private final UserInviteRepository userInviteRepository;
     private final ModelMapper modelMapper;
+
     public void setInviteInfo(WorkspaceInviteRedisRequest workspaceInviteRequest) {
         for (WorkspaceInviteRedisRequest.UserInfo userInviteInfo : workspaceInviteRequest.getUserInfoList()) {
-            System.out.println("존재??:"+userInviteInfo.getExistUser());
+            List<UserInvite.GroupInfo> groupInfoList = userInviteInfo.getGroups().stream().map(groupInfo -> modelMapper.map(groupInfo, UserInvite.GroupInfo.class)).collect(Collectors.toList());
+
             UserInvite userInvite = UserInvite.builder()
                     .inviteUser(workspaceInviteRequest.getUserId())
                     .workspace(workspaceInviteRequest.getWorkspaceId())
@@ -33,8 +38,7 @@ public class RedisService {
                     .email(userInviteInfo.getEmail())
                     .code(workspaceInviteRequest.getInviteCode())
                     .permission(userInviteInfo.getPermission())
-                    .groupName(userInviteInfo.getGroupName())
-                    .groupRole(userInviteInfo.getGroupRole())
+                    .groups(groupInfoList)
                     .existUser(userInviteInfo.getExistUser())
                     .expireTime(3L)
                     .build();

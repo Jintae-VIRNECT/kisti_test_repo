@@ -30,25 +30,30 @@ public class UserInvite implements Serializable {
     private String workspace;
     private String code;
     private List<Long> permission;
-    private String groupName;
-    private String groupRole;
+    private List<GroupInfo> groups;
     private Boolean existUser;
 
     @TimeToLive(unit = TimeUnit.MINUTES)
     private Long expireTime;
 
+    @Getter
+    @Setter
+    public static class GroupInfo {
+        private String groupName;
+        private Boolean managerAssign;
+    }
+
     @Builder
-    public UserInvite(String joinUser, String inviteUser, String email, String workspace, String code, List<Long> permission, String groupName, String groupRole, Long expireTime, Boolean existUser) {
+    public UserInvite(String joinUser, String inviteUser, String email, String workspace, String code, List<Long> permission, Long expireTime, Boolean existUser, List<GroupInfo> groups) {
         this.joinUser = joinUser;
         this.inviteUser = inviteUser;
         this.email = email;
         this.workspace = workspace;
         this.code = code;
         this.permission = permission;
-        this.groupName = groupName;
-        this.groupRole = groupRole;
         this.expireTime = expireTime;
         this.existUser = existUser;
+        this.groups = groups;
     }
 
 }
