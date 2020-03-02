@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
  */
 
 public final class PageRequest {
-    private int page;
+    private int page = 1;
     private int size;
     private String sort;
 
