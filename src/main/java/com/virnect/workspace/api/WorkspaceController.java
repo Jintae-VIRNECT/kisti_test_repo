@@ -174,11 +174,11 @@ public class WorkspaceController {
      * @return - 멤버 생성 성공 여부
      */
     @PostMapping("/{workspaceId}/create")
-    public ResponseEntity<ApiResponse> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<UsersCreateResponse>> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<WorkspaceInviteAcceptResponse> apiResponse = this.workspaceService.createUsers(workspaceId, userId, userCreateRequest);
+        ApiResponse<UsersCreateResponse> apiResponse = this.workspaceService.createUsers(workspaceId, userId, userCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
 

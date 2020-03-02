@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto.response;
+package com.virnect.workspace.dto.rest;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PageMetadataResponse {
+public class PageMetadataRestResponse {
     @ApiModelProperty(value = "현재 조회한 페이지 번호", notes = "현재 페이지 번호", example = "0")
     private int currentPage;
     @ApiModelProperty(value = "현재 페이지별 데이터 수", notes = "현재 설정된 페이지별 나타날 데이터의 수", example = "2")

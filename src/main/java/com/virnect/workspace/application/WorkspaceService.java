@@ -10,10 +10,7 @@ import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteMailRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
+import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.constant.Permission;
@@ -32,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,55 +114,121 @@ public class WorkspaceService {
         return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList));
     }
 
+    /**
+     * 멤버 조회
+     *
+     * @param workspaceId - 조회 대상 workspace uuid
+     * @param userId      - 조회 중인 유저 uuid
+     * @param search      - (옵션) 검색값
+     * @param filter      - (옵션) 필터값 ex.MEMBER, MASTER
+     * @param pageable    - 페이징 처리 값
+     * @return - 멤버 정보 리스트
+     */
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, Pageable pageable) {
+        /*
+            필터가 있을 시 -> workspace 단에서 페이징하고 정렬한다.
+            필터가 없거나 전체선택 시 -> user 단에서 페이징하고 정렬한다.
+        */
 
-        //1. 검색 검증
-        if(StringUtils.hasText(filter) && filter.equals("MASTER,MEMBER")) filter = "ALL";
-        if(StringUtils.hasText(filter) && filter.equals("MEMBER,MASTER")) filter = "ALL";
-        PageMetadataResponse pageMetadataResponse = new PageMetadataResponse();
+        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
-        if (StringUtils.hasText(filter) && !filter.equals("ALL")) {
-            //페이징처리하지 않은 값 리턴 받아 필터 및 페이징 처리하자.
-            System.out.println("검색 o, 필터 o 또는");
-            System.out.println("검색 x, 필터 o");
+
+        if (StringUtils.hasText(filter)) {
+            //필터 쿼리에 쓰일 woskspace
+            Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+
+            //필터 퀴리에 쓰일 workspaceUserList
+            List<WorkspaceUser> workspaceUserList = new ArrayList<>();
+
+            //필터 쿼리에 쓰일 workspaceRoleList
+            List<WorkspaceRole> workspaceRoleList = new ArrayList<>();
+            if (filter.contains("MASTER")) workspaceRoleList.add(WorkspaceRole.builder().id(1L).build());
+            if (filter.contains("MANAGER")) workspaceRoleList.add(WorkspaceRole.builder().id(2L).build());
+            if (filter.contains("MEMBER")) workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
+            if (filter.contains("ALL")) workspaceRoleList = this.workspaceRoleRepository.findAll();
+
+            //user 서비스에서 페이징 안된 membList 받아온다.
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
                 MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
                 memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
+                workspaceUserList.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfo.getUuid(), workspace));
                 return memberInfo;
             }).collect(Collectors.toList());
 
-            Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
-            //List<MemberInfoDTO> totalMembrList = this.workspaceUserPermissionRepository.findUserInfoListFilterd(memberInfoList, workspaceId, filter);
 
-            List<WorkspaceUser> workspaceUsers = new ArrayList<>();
-            for (MemberInfoDTO memberInfoDTO : memberInfoList) {
-                workspaceUsers.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfoDTO.getUuid(), workspace));
-            }
+            Page<WorkspaceUserPermission> pageMember;
 
-            Page<WorkspaceUserPermission> pageRole =
-                    this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRole_Role(
-                            workspace, workspaceUsers, filter, pageable);
-            List<MemberInfoDTO> result = new ArrayList<>();
 
-            for (MemberInfoDTO memberInfoDTO : memberInfoList) {
-                pageRole.stream().forEach(workspaceUserPermission -> {
-                    if(workspaceUserPermission.getWorkspaceUser().getUserId().equals(memberInfoDTO.getUuid())){
-                        result.add(memberInfoDTO);
-                    }
-                });
+            // 정렬 검증 - 정렬을 해야 할 때 -> 임시 생략
+            /*if (pageable.getSort().isSorted()) {
+                PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
+                        workspace, workspaceUserList, workspaceRoleList, newPageable);
 
-            }
-            resultMemberListResponse= result;
+                List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
 
-            pageMetadataResponse.setTotalElements(pageRole.getTotalElements());//전체 데이터 수
-            pageMetadataResponse.setTotalPage(pageRole.getTotalPages());//전체 페이지 수
+                List<String> filterdWorkspaceUserIdList =
+                        pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
 
-        } else if(!StringUtils.hasText(filter) || filter.equals("ALL")) {
-            //페이징 처리한 값을 리턴 받아 그대로 리턴하자.
-            System.out.println("검색 o, 필터 x 또는");
-            System.out.println("검색 x, 필터 x");
+                //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
+                memberInfoList.stream().forEach(memberInfoDTO -> {
+                            if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
+                                filterdMemberList.add(memberInfoDTO);
+                            }
+                        }
+                );
+
+                //필터된 memberList 를 가지고 정렬한다.
+                String sortName = pageable.getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
+                String sortDirection = pageable.getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
+
+                //이메일을 기준으로 asc 정렬
+                if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("asc")) {
+                    resultMemberListResponse = Sort.EMAIL_ASC.sorting(filterdMemberList);
+                }
+                //이메일을 기준으로 desc 정렬
+                if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("desc")) {
+                    resultMemberListResponse = Sort.EMAIL_DESC.sorting(filterdMemberList);
+                }
+                //이름을 기준으로 asc 정렬
+                if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("asc")) {
+                    resultMemberListResponse = Sort.NAME_ASC.sorting(filterdMemberList);
+                }
+                //이름을 기준으로 desc 정렬
+                if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("desc")) {
+                    resultMemberListResponse = Sort.NAME_DESC.sorting(filterdMemberList);
+                }
+
+                resultMemberListResponse = filterdMemberList;
+
+            } else {*/
+                //정렬을 하지 않아도 될때는 필터처리만 해서 넘긴다.
+                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
+                        workspace, workspaceUserList, workspaceRoleList, pageable);
+
+                List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
+
+                List<String> filterdWorkspaceUserIdList =
+                        pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
+
+                //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
+                memberInfoList.stream().forEach(memberInfoDTO -> {
+                            if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
+                                filterdMemberList.add(memberInfoDTO);
+                            }
+                        }
+                );
+                resultMemberListResponse = filterdMemberList;
+           // }
+
+            pageMetadataResponse.setTotalElements(pageMember.getTotalElements());//전체 데이터 수
+            pageMetadataResponse.setTotalPage(pageMember.getTotalPages());//전체 페이지 수
+
+        } else {
+            //필터값이 없으면 페이징 처리한 값을 리턴 받아 그대로 리턴한다.
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, true, pageable).getData();
+
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
                 MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
                 memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
@@ -180,6 +244,7 @@ public class WorkspaceService {
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
+
 
     /**
      * 워크스페이스 정보 조회(현재는 멤버수만 return 추후에.. +라이선스, +워크스페이스 Strorage 정보)
@@ -317,52 +382,128 @@ public class WorkspaceService {
         }
 
         //2. 워크스페이스 소속 넣기 (workspace_user)
-        WorkspaceUser workspaceUser = WorkspaceUser.builder()
-                .userId(userId)
-                .workspace(this.workspaceRepository.findByUuid(workspaceId))
-                .build();
-        this.workspaceUserRepository.save(workspaceUser);
+        WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
 
-        //3. 워크스페이스 권한 부여하기 (workspace_user_permission)
+        //3. 워크스페이스 직책 및 권한 부여하기 (workspace_user_permission)
         if (!userInvite.getPermission().isEmpty()) {
-            for (long permissionId : userInvite.getPermission()) {
-
-                WorkspaceRole workspaceRole = WorkspaceRole.builder().id(Role.MANAGER.getValue()).build();
-                WorkspacePermission workspacePermission = WorkspacePermission.builder().id(permissionId).build();
-
-                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                        .workspaceRole(workspaceRole)
-                        .workspacePermission(workspacePermission)
-                        .workspaceUser(workspaceUser)
-                        .build();
-                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-            }
+            setWorkspaceUserPermissionInfo(userInvite.getPermission(), workspaceUser);
         }
 
-        //3. 그룹 소속 넣기(group_user, group_user_permission)
+        //4. 그룹 소속 넣기(group_user, group_user_permission)
         if (StringUtils.hasText(userInvite.getGroupName())) {//group 모듈 분리해야 함
             //this.groupService.setGroupUsers(userInvite.getGroups(), workspaceUser);
         }
 
-        //4. 회원가입 요청
+        //5. 회원가입 요청
 
         return new ApiResponse<>(new WorkspaceInviteAcceptResponse(true));
     }
 
-    public ApiResponse<WorkspaceInviteAcceptResponse> createUsers(String workspaceId, String
+    /**
+     * 워크스페이스에서 유저 생성
+     *
+     * @param workspaceId       - 유저 소속 workspace uuid
+     * @param userId            - 유저를 생성할 마스터 또는 매니저의 uuid
+     * @param userCreateRequest - 생성할 유저 정보
+     * @return - 유저 생성 결과값
+     */
+    public ApiResponse<UsersCreateResponse> createUsers(String workspaceId, String
             userId, UsersCreateRequest userCreateRequest) {
         //1. 생성 권한 확인
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        //2. 아이디 중복 확인 (해야됨)
+        //2. 아이디 중복 확인
+        String[] emailList = userCreateRequest.getUserInfoList().stream().map(userInfo -> userInfo.getEmail()).toArray(String[]::new);
+        InviteUserInfoRestResponse inviteUserInfoRestResponse = this.userRestService.getUserInfoByEmailList(emailList).getData();
+        for (InviteUserInfoRestResponse.InviteUserResponse inviteUserResponse : inviteUserInfoRestResponse.getInviteUserInfoList()) {
+            if (Arrays.asList(emailList).contains(inviteUserResponse.getEmail())) {
+                //이메일이 중복되는 사용자가 있어서 계정을 생성할 수 없는 경우에 에러 리턴
+                throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            }
+        }
 
-        //3. user insert (해야됨)
-
-        //4. workspace_users, workspace_user_permission insert
+        //3. 워크스페이스 소속 부여 / 권한 및 직책 부여
+        for (UsersCreateRequest.UserInfo userInfo : userCreateRequest.getUserInfoList()) {
+            //임시 유저 uuid
+            WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0));
+            if (!userInfo.getWorkspacePermission().isEmpty()) {
+                setWorkspaceUserPermissionInfo(userInfo.getWorkspacePermission(), workspaceUser);
+            }
+        }
 
         //5. group_users, group_user_permission insert
 
-        return new ApiResponse<>();
+        //6. user insert (해야됨) : user server의 회원가입 url로 넣기
+
+        return new ApiResponse<>(new UsersCreateResponse(true));
+    }
+
+    /**
+     * 워크스페이스 소속 부여 : insert workspace_user table
+     *
+     * @param workspaceId - 소속 부여 대상 워크스페이스 uuid
+     * @param userId      - 소속 시킬 유저 uuid
+     * @return - 소속 된 워크스페이스 유저 객체
+     */
+    public WorkspaceUser setWorkspaceUserInfo(String workspaceId, String userId) {
+        WorkspaceUser workspaceUser = WorkspaceUser.builder()
+                .userId(userId)
+                .workspace(this.workspaceRepository.findByUuid(workspaceId))
+                .build();
+        this.workspaceUserRepository.save(workspaceUser);
+        return workspaceUser;
+    }
+
+    /**
+     * 워크스페이스 권한/직책 부여 : insert workspace_user_permission table
+     *
+     * @param permissionIdList - 권한 리스트
+     * @param workspaceUser    - 권한 및 직책이 부여될 사용자 정보
+     */
+    public void setWorkspaceUserPermissionInfo(List<Long> permissionIdList, WorkspaceUser workspaceUser) {
+        /*
+        role이 1이면 -> permission은 1(all)만 가능하다.
+        role이 2이면 -> permission은 2~5 사이만 가능하다.
+        role이 3이면 -> permission은 6(none)만 가능하다.
+        */
+
+        WorkspaceRole workspaceRole;
+        for (Long permissionId : permissionIdList) {
+            System.out.println(Integer.parseInt(permissionId.toString()));
+            switch (Integer.parseInt(permissionId.toString())) {
+                case 1:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MASTER");
+                    break;
+                case 2:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
+                    break;
+                case 3:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
+                    break;
+                case 4:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
+                    break;
+                case 5:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
+                    break;
+                case 6:
+                    workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
+                    break;
+                default:
+                    workspaceRole = null;
+            }
+
+            WorkspacePermission workspacePermission = WorkspacePermission.builder().id(permissionId).build();
+
+            WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                    .workspaceRole(workspaceRole)
+                    .workspacePermission(workspacePermission)
+                    .workspaceUser(workspaceUser)
+                    .build();
+            this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+
+            log.info("[사용자 - " + workspaceUser.getUserId() + " ] [직책 - " + workspaceRole.getRole() + " ] [권한 - " + workspacePermission.getId() + " ]");
+        }
     }
 }
