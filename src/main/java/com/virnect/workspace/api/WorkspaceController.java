@@ -8,6 +8,7 @@ import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
 import com.virnect.workspace.exception.BusinessException;
 import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.PageRequest;
 import com.virnect.workspace.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -103,11 +104,11 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "email,desc"),
     })
     @GetMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter,  @ApiIgnore Pageable pageable) {
+    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter,  @ApiIgnore PageRequest pageable) {
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable.of());
         return ResponseEntity.ok(apiResponse);
     }
 
