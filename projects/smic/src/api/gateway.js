@@ -7,6 +7,9 @@ import Vue from 'vue'
  * @param {Object} option
  */
 export default async function api(name, option = {}) {
+  if (!URI[name]) {
+    throw new Error(`API not found '${name}'`)
+  }
   let [method, uri] = URI[name]
   let { route, params } = option
 

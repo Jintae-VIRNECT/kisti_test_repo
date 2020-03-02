@@ -22,7 +22,6 @@ export default {
       search: '',
       params: {
         size: 8,
-        page: 0,
       },
       filter: {
         options: [

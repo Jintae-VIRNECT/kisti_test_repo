@@ -52,13 +52,25 @@ export default {
     },
   },
   actions: {
-    async getReportDetail(context) {},
+    async getReportDetail(context, reportId) {
+      const data = await api('REPORT_DETAIL', {
+        route: { reportId },
+      })
+      context.commit('SET_REPORT_DETAIL', data)
+      return data
+    },
     async getReportList(context, params = {}) {
       const data = await api('REPORT_LIST', { params })
       context.commit('SET_REPORT_LIST', data.reports)
       return data
     },
-    async getIssueDetail(context) {},
+    async getIssueDetail(context, issueId) {
+      const data = await api('ISSUE_DETAIL', {
+        route: { issueId },
+      })
+      context.commit('SET_ISSUE_DETAIL', data)
+      return data
+    },
     async getIssueList(context, params = {}) {
       const data = await api('ISSUE_LIST', { params })
       context.commit('SET_ISSUE_LIST', data.issues)

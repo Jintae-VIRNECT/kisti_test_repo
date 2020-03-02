@@ -11,45 +11,50 @@
         span.process-new-modal__header-title 이슈 관리
       .process-new-modal__body
         .section.border-divider
-          el-image(:src="imgSrc" :preview-src-list="[imgSrc]")
+          el-image(:src="issueDetail.photoFilePath" :preview-src-list="[issueDetail.photoFilePath]")
           i.el-icon-full-screen
         .section.issue
           label 이슈 유형
           .value
-            span.issue-type 작업 이슈
+            span.issue-type {{ issueType }}
         .section
           label 보고자
           .value
-            span 버넥트
+            span {{ worker }}
         .section
           label 보고일시
           .value
-            span 2020.3.18  19:00
+            span {{ reportedDate }}
         .section
           label 이슈내용
           .value
-            span 0000(년)_00(월)_00(일)_00(시)_00(분)_id.jpg
-              el-button 
+            span {{ issueDetail.photoFilePath }}
+            a(:href="issueDetail.photoFilePath" download)
+              el-button
                 img(src="~@/assets/image/ic-download.svg")
                 span 다운로드
         .section
           label 공정 이름
           .value
-            span Content’s name
+            span {{ issueDetail.processName }}
         .section
           label 세부공정 이름
           .value
-            span Scene Group's name
+            span {{ issueDetail.subProcessName }}
         .section
           label 작업 이름
           .value
-            span Content’s name
-              el-button 
+            span {{ issueDetail.jobName }}
+            a(v-if="true" :href="jobUrl")
+              el-button
                 img(src="~@/assets/image/ic-shortcut.svg")
                 span 작업 바로가기
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import filters from '@/plugins/dayjs'
+
 export default {
   props: {
     toggleIssueModal: Boolean,
@@ -61,13 +66,41 @@ export default {
       imgSrc: require('@/assets/image/issue-sample.jpg'),
     }
   },
+  computed: {
+    ...mapGetters(['memberList', 'issueList', 'issueDetail']),
+    issueType() {
+      return this.issueDetail.processId ? '작업 이슈' : '이슈'
+    },
+    worker() {
+      const worker = this.memberList.find(
+        member => member.uuid === this.issueDetail.workerUUID,
+      )
+      return worker && worker.name
+    },
+    reportedDate() {
+      return (
+        this.issueDetail.reportedDate &&
+        filters.dayJs_FilterDateTimeFormat(this.issueDetail.reportedDate)
+      )
+    },
+    jobUrl() {
+      const { processId, subProcessId } = this.issueDetail
+      return `/process/${processId}/${subProcessId}`
+    },
+  },
   methods: {
     handleCancel() {
       this.issueModal = false
       this.$emit('handleCancel')
     },
     handleOpen() {
-      console.log(this.issueId)
+      let issueId = this.issueId
+      if (!issueId) {
+        issueId = this.issueList.find(report => {
+          return report.jobId == this.$route.query.jobId
+        }).issueId
+      }
+      this.$store.dispatch('getIssueDetail', issueId)
     },
     handleConfirm() {},
   },
@@ -149,6 +182,9 @@ export default {
       display: inline-block;
       vertical-align: middle;
     }
+  }
+  .value a {
+    display: block;
   }
 }
 </style>

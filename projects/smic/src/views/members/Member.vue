@@ -22,8 +22,7 @@ export default {
     return {
       search: '',
       params: {
-        size: 8,
-        page: 0,
+        size: 10,
       },
       filter: {
         options: [
@@ -75,3 +74,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.test {
+  width: 100px;
+}
+</style>

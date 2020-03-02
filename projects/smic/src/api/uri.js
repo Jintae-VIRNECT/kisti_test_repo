@@ -38,10 +38,14 @@ module.exports = {
   SUB_PROCESS_LIST: ['GET', '/processes/{processId}/subProcesses'],
   // 이슈 목록을 조회
   ISSUE_LIST: ['GET', '/processes/issues'],
+  // 이슈상세조회
+  ISSUE_DETAIL: ['GET', '/processes/issue/{issueId}'],
   // 공정생성
   PROCESS_CREATE: ['POST', '/processes/process'],
   // 리포트 목록 조회
   REPORT_LIST: ['GET', '/processes/reports'],
+  // 리포트상세조회
+  REPORT_DETAIL: ['GET', '/processes/report/{reportId}'],
   // 스마트툴 작업 목록 조회
   SMART_TOOL_LIST: ['GET', '/processes/smartToolJobs'],
   // 워크스페이스의 전체 세부공정목록조회

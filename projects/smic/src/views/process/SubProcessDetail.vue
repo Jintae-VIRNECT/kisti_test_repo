@@ -124,10 +124,10 @@ export default {
     },
     onRowButtonClick({ prop, data }) {
       if (prop === 'issue') {
-        this.issueId = data.id
+        this.issueId = data.issue.id
         this.toggleIssueModal = true
       } else if (prop === 'report') {
-        this.reportId = data.id
+        this.reportId = data.report.id
         this.toggleReportModal = true
       } else if (prop === 'smartTool') {
         this.jobId = data.id

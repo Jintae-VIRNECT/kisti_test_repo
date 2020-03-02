@@ -24,7 +24,7 @@ export default {
       const upperStart = this.target[0].toUpperCase() + this.target.slice(1)
       await this.$store.dispatch(`get${upperStart}List`, {
         ...this.params,
-        page: val - 1,
+        page: val,
       })
     },
   },

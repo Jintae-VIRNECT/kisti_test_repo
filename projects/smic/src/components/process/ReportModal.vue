@@ -10,32 +10,63 @@
       template(slot="title")
         span.process-new-modal__header-title 리포트
       .process-new-modal__body
-        .section.border-divider
-          label 항목 1.
-          .value
-            span 질문 내용입니까?
-            span.bool 아니요
-        .section.border-divider
-          label 항목 2.
-          .value
-            span 질문 내용입니까?
-            span.bool 네
-        .section.border-divider
-          label 항목 3.
-          .value
-            span 질문 내용입니까?
-            p 결함 정보 확인 필요로 합니다.
-        .section
-          label 항목 4.
-          .value
-            span 질문내용입니까?질문내용입니까?질문내용입니까?질문내용입니까?질문내용입니까?
-              el-button 
-                img(src="~@/assets/image/ic-download.svg")
-                span 다운로드
-        .section
-          el-image(:src="imgSrc" :preview-src-list="[imgSrc]")
-          i.el-icon-full-screen
+        div(v-for="item in reportDetail.reportItems")
+          .section(:class="item.type === 'REPORT' ? '' : 'border-divider'")
+            label 항목 {{ item.priority }}.
+            .value
+              span {{ item.title }}
+              span(:class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}
+              a(v-if="item.photoFilePath" :href="item.photoFilePath" download)
+                el-button
+                  img(src="~@/assets/image/ic-download.svg")
+                  span 다운로드
+          .section(v-if="item.photoFilePath")
+            el-image(:src="imgSrc" :preview-src-list="[imgSrc]")
+            i.el-icon-full-screen
 </template>
+
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  props: {
+    toggleReportModal: Boolean,
+    reportId: Number,
+  },
+  data() {
+    return {
+      reportModal: false,
+      // imgSrc: require('@/assets/image/issue-sample.jpg'),
+    }
+  },
+  computed: {
+    ...mapGetters(['reportList', 'reportDetail']),
+  },
+  methods: {
+    handleCancel() {
+      this.reportModal = false
+      this.$emit('handleCancel')
+    },
+    handleOpen() {
+      let reportId = this.reportId
+      if (!reportId) {
+        reportId = this.reportList.find(report => {
+          return report.jobId == this.$route.query.jobId
+        }).reportId
+      }
+      this.$store.dispatch('getReportDetail', reportId)
+    },
+    handleConfirm() {},
+  },
+  watch: {
+    $props: {
+      handler() {
+        this.reportModal = this.$props.toggleReportModal
+      },
+      deep: true,
+    },
+  },
+}
+</script>
 
 <style lang="scss">
 .report-modal .el-dialog .section {
@@ -71,36 +102,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  props: {
-    toggleReportModal: Boolean,
-    target: {
-      type: Object,
-    },
-  },
-  data() {
-    return {
-      reportModal: false,
-      imgSrc: require('@/assets/image/issue-sample.jpg'),
-    }
-  },
-  methods: {
-    handleCancel() {
-      this.reportModal = false
-      this.$emit('handleCancel')
-    },
-    handleOpen() {},
-    handleConfirm() {},
-  },
-  watch: {
-    $props: {
-      handler() {
-        this.reportModal = this.$props.toggleReportModal
-      },
-      deep: true,
-    },
-  },
-}
-</script>

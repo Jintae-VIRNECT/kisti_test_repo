@@ -6,7 +6,7 @@
     inline-table
       template(slot="body")
         el-table.inline-table(
-          :data='tableData' 
+          :data='issueList' 
           style='width: 100%'
           @cell-click="onClickCell")
           el-table-column(
@@ -16,13 +16,16 @@
             :label="label" 
             :width="width || ''") 
             template(slot-scope='scope')
-              table-column(:prop="prop" :data="tableData[scope.$index]")
+              table-column(:prop="prop" :data="issueList[scope.$index]")
     issue-modal(
+      :issueId="issueId"
       :toggleIssueModal="toggleIssueModal"
       @handleCancel="onHandleCancel")
       
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 import InlineTable from '@/components/common/InlineTable'
 import ContentControlDropdown from '@/components/contents/ContentControlDropdown'
 import PageTabNav from '@/components/common/PageTabNav.vue'
@@ -50,9 +53,12 @@ export default {
   mixins: [contentList, dayjs],
   data() {
     return {
-      tableData: this.$store.getters.issueList,
+      issueId: 0,
       colSetting: tableColSettings,
       search: '',
+      params: {
+        size: 8,
+      },
       filter: {
         options: [
           {
@@ -65,24 +71,34 @@ export default {
       sort: {
         options: [
           {
-            value: 'createdDate,desc',
+            value: 'reportedDate,desc',
             label: '최신 순',
           },
           {
-            value: 'createdDate,asc',
+            value: 'reportedDate,asc',
             label: '오래된 순',
           },
         ],
-        value: 'createdDate,desc',
+        value: 'reportedDate,desc',
       },
       toggleIssueModal: false,
     }
   },
+  computed: {
+    ...mapGetters(['issueList']),
+  },
   methods: {
-    onClickCell() {
+    onClickCell(data) {
+      this.issueId = data.issueId
       this.toggleIssueModal = true
     },
-    onChangeSearch() {},
+    onChangeSearch(params) {
+      this.params = {
+        ...this.params,
+        ...params,
+      }
+      this.$store.dispatch('getIssueList', this.params)
+    },
     onToggleIssueModal(boolean, type) {
       this.toggleIssueModal = boolean
       this.modalType = type
@@ -90,6 +106,9 @@ export default {
     onHandleCancel() {
       this.toggleIssueModal = false
     },
+  },
+  created() {
+    this.$store.dispatch('getIssueList', this.params)
   },
 }
 </script>
