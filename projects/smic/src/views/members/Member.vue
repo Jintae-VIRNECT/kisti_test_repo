@@ -5,6 +5,7 @@
       template(slot="page-nav--right")
         search-tab-nav.search-wrapper(placeholder="멤버 이름, ID" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
     router-view
+    pagination(target="member" :params="params")
 </template>
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
@@ -20,7 +21,10 @@ export default {
   data() {
     return {
       search: '',
-      params: {},
+      params: {
+        size: 8,
+        page: 0,
+      },
       filter: {
         options: [
           {
@@ -54,17 +58,20 @@ export default {
     }
   },
   methods: {
-    onChangeSearch({ searchInput, filterValue, sortValue }) {
+    onChangeSearch(params) {
       this.params = {
-        search: searchInput,
-        filter: filterValue.map(value => value.toUpperCase()).join(),
-        sort: sortValue,
+        ...this.params,
+        ...params,
+      }
+      // sort 있으면 에러나는 문제
+      if (this.params.filter !== 'ALL') {
+        delete this.params.sort
       }
       this.$store.dispatch('getMemberList', this.params)
     },
   },
   async created() {
-    await this.$store.dispatch('getMemberList')
+    await this.$store.dispatch('getMemberList', this.params)
   },
 }
 </script>

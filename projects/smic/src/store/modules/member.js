@@ -22,16 +22,15 @@ export default {
     },
   },
   actions: {
-    async getMemberList(state, param) {
+    async getMemberList(context, param) {
       const data = await api('MEMBER_LIST', {
         params: {
           userId: this.getters.getUser.uuid,
-          size: 20,
           ...param,
         },
       })
-      state.commit('SET_MEMBER_LIST', data.memberInfoList)
-      state.commit('SET_MEMBER_TOTAL', data.pageMeta.totalElements)
+      context.commit('SET_MEMBER_LIST', data.memberInfoList)
+      context.commit('SET_MEMBER_TOTAL', data.pageMeta.totalElements)
       return data
     },
   },

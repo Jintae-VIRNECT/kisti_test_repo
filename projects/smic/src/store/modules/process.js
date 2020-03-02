@@ -3,6 +3,7 @@ import api from '@/api/gateway'
 export default {
   state: {
     processList: [],
+    processTotal: 0,
     subProcessListAll: [],
     processDetail: {
       info: {},
@@ -17,6 +18,9 @@ export default {
     processList(state) {
       return state.processList
     },
+    processTotal(state) {
+      return state.processTotal
+    },
     processDetail(state) {
       return state.processDetail
     },
@@ -30,6 +34,9 @@ export default {
   mutations: {
     SET_PROCESS_LIST(state, list) {
       state.processList = list
+    },
+    SET_PROCESS_TOTAL(state, num) {
+      state.processTotal = num
     },
     SET_PROCESS_INFO(state, obj) {
       state.processDetail = { ...state.processDetail, info: obj }
@@ -57,12 +64,11 @@ export default {
     async getProcessList(context, params) {
       const data = await api('PROCESS_LIST', {
         params: {
-          sort: 'created_at,desc',
-          size: 20,
           ...params,
         },
       })
       context.commit('SET_PROCESS_LIST', data.processes)
+      context.commit('SET_PROCESS_TOTAL', data.pageMeta.totalElements)
       return data
     },
     // 공정 상세조회

@@ -3,6 +3,7 @@ import api from '@/api/gateway'
 export default {
   state: {
     contentsList: [],
+    contentsTotal: 0,
     contentDetail: {
       info: {},
       sceneGroupList: [],
@@ -12,6 +13,9 @@ export default {
     contentsList(state) {
       return state.contentsList
     },
+    contentsTotal(state) {
+      return state.contentsTotal
+    },
     contentDetail(state) {
       return state.contentDetail
     },
@@ -19,6 +23,9 @@ export default {
   mutations: {
     SET_CONTENTS_LIST(state, list) {
       state.contentsList = list
+    },
+    SET_CONTENTS_TOTAL(state, num) {
+      state.contentsTotal = num
     },
     SET_CONTENT_INFO(state, obj) {
       state.contentDetail = { ...state.contentDetail, info: obj }
@@ -38,11 +45,11 @@ export default {
       const data = await api('CONTENTS_LIST', {
         params: {
           sort: 'createdDate,desc',
-          size: 20,
           ...param,
         },
       })
       context.commit('SET_CONTENTS_LIST', data.contentInfo)
+      context.commit('SET_CONTENTS_TOTAL', data.pageMeta.totalElements)
       return data
     },
     // 세부공정 컨텐츠 리스트

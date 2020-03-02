@@ -48,9 +48,9 @@ export default {
   methods: {
     onChangeSearch() {
       this.$emit('change', {
-        searchInput: this.searchInput,
-        filterValue: this.filterValue,
-        sortValue: this.sortValue,
+        search: this.searchInput,
+        filter: this.filterValue.map(value => value.toUpperCase()).join(),
+        sort: this.sortValue,
       })
     },
     onFilterChange() {

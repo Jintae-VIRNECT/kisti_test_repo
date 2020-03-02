@@ -22,7 +22,7 @@
       template(slot="header-right")
         .inline-table__header.text-right
           span.sub-title 등록된 공정 수 
-          span.value {{processList.length}}
+          span.value {{processTotal}}
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
@@ -46,6 +46,7 @@
                   @onDeleteData="onDeleteData")
         div(v-else)
           process-list-graph
+    pagination(target="process" :params="params")
 </template>
 <script>
 import { mapGetters } from 'vuex'
@@ -60,6 +61,7 @@ import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import ProcessListGraph from '@/components/process/ProcessListGraph.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
+import Pagination from '@/components/common/Pagination.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -79,10 +81,14 @@ export default {
     SearchTabNav,
     ProcessListGraph,
     TableColumn,
+    Pagination,
   },
   data() {
     return {
       searchInput: null,
+      params: {
+        size: 10,
+      },
       filter: {
         options: [
           {
@@ -121,7 +127,7 @@ export default {
     colSetting() {
       return colSetting
     },
-    ...mapGetters(['processList']),
+    ...mapGetters(['processList', 'processTotal']),
   },
   methods: {
     onClickCell(row, column) {
@@ -129,12 +135,12 @@ export default {
       this.$store.commit('SET_PROCESS_INFO', row)
       this.$router.push(`/process/${row.id}`)
     },
-    onChangeSearch({ searchInput, filterValue, sortValue }) {
-      this.$store.dispatch('getProcessList', {
-        search: searchInput,
-        filter: filterValue.map(value => value.toUpperCase()).join(),
-        sort: sortValue,
-      })
+    onChangeSearch(params) {
+      this.params = {
+        ...this.params,
+        ...params,
+      }
+      this.$store.dispatch('getProcessList', this.params)
     },
     onChangeData(data) {},
     onCreateData(data) {},
@@ -153,11 +159,7 @@ export default {
         this.filter.options.find(option => option.label === filterQuery).value,
       ]
     }
-    this.$store.dispatch('getProcessList', {
-      search: this.searchInput,
-      filter: this.filter.value.map(value => value.toUpperCase()).join(),
-      sort: this.sort.value,
-    })
+    this.$store.dispatch('getProcessList', this.params)
   },
 }
 </script>

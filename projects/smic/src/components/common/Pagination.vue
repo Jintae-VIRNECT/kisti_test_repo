@@ -3,7 +3,7 @@
     el-pagination(
       layout="prev, pager, next"
       :total="totalElements"
-      :page-size="size"
+      :page-size="params.size"
       @current-change="onPageChange"
     )
 </template>
@@ -11,7 +11,6 @@
 <script>
 export default {
   props: {
-    size: Number,
     target: String,
     params: Object,
   },

@@ -5,18 +5,25 @@
       template(slot="page-nav--right")
         searchTabNav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
     router-view
+    pagination(v-if="isListPage" target="contents" :params="params")
 </template>
 <script>
 import PageTabNav from '@/components/common/PageTabNav.vue'
 import searchTabNav from '@/components/common/SearchTabNav.vue'
+import Pagination from '@/components/common/Pagination.vue'
 export default {
   components: {
     PageTabNav,
     searchTabNav,
+    Pagination,
   },
   data() {
     return {
       search: '',
+      params: {
+        size: 8,
+        page: 0,
+      },
       filter: {
         options: [
           {
@@ -45,14 +52,23 @@ export default {
       },
     }
   },
-  methods: {
-    onChangeSearch: function({ searchInput, filterValue, sortValue }) {
-      this.$store.dispatch('getContentsList', {
-        search: searchInput,
-        filter: filterValue.map(value => value.toUpperCase()).join(),
-        sort: sortValue,
-      })
+  computed: {
+    isListPage() {
+      return this.$route.path === '/contents'
     },
+  },
+  methods: {
+    onChangeSearch: function(params) {
+      this.params = {
+        ...this.params,
+        ...params,
+      }
+      this.$store.dispatch('getContentsList', this.params)
+      this.$router.push('/contents')
+    },
+  },
+  created() {
+    this.$store.dispatch('getContentsList', this.params)
   },
 }
 </script>

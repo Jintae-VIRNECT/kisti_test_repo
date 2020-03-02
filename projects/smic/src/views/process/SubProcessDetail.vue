@@ -1,8 +1,8 @@
 <template lang="pug">
   div
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 공정({{ subProcessDetail.info.processName }})
-      el-breadcrumb-item 세부공정({{subProcessDetail.info.name}})
+      el-breadcrumb-item(:to='{path: `/process`}') 공정({{ subProcessDetail.info.processName }})
+      el-breadcrumb-item(:to='{path: `/process/${processId}`}') 세부공정({{subProcessDetail.info.name}})
       el-breadcrumb-item 작업
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")

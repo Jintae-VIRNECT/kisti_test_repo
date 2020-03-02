@@ -10,14 +10,19 @@ export default async function api(name, option = {}) {
   let [method, uri] = URI[name]
   let { route, params } = option
 
-  method = method.toLowerCase()
-  params = method === 'post' ? params : { params }
   // replace route
+  method = method.toLowerCase()
   uri = !route
     ? uri
     : Object.entries(route).reduce((u, q) => {
         return u.replace(`{${q[0]}}`, q[1])
       }, uri)
+
+  // filter ALL -> null
+  if (params && params.filter && params.filter === 'ALL') {
+    delete params.filter
+  }
+  params = method === 'post' ? params : { params }
 
   const response = await Vue.axios[method](uri, params)
   const { code, data, message } = response.data
