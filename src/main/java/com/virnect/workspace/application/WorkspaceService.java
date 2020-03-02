@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -204,8 +205,14 @@ public class WorkspaceService {
 
             } else {*/
                 //정렬을 하지 않아도 될때는 필터처리만 해서 넘긴다.
+                /*
                 pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
                         workspace, workspaceUserList, workspaceRoleList, pageable);
+*/
+                //임시로 정렬 자체 생략해서 넘김
+                PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
+                    workspace, workspaceUserList, workspaceRoleList, newPageable);
 
                 List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
 
