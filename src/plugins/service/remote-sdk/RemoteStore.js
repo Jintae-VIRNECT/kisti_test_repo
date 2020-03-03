@@ -23,47 +23,47 @@ const getDefaultState = () => {
     deviceReady: {
       readyState: true,
       reason: null,
-    }, // 디바이스 연결 상태 
-    callBitrate: "1.7"
+    }, // 디바이스 연결 상태
+    callBitrate: '1.7',
   }
 }
 const state = getDefaultState()
 
 const mutations = {
   remoteClear(state) {
-    const DefaultState = getDefaultState();
+    const DefaultState = getDefaultState()
 
-    DefaultState.currentGroup = state.currentGroup;
-    DefaultState.users = state.users.slice(0);
-    DefaultState.initialized = true;
+    DefaultState.currentGroup = state.currentGroup
+    DefaultState.users = state.users.slice(0)
+    DefaultState.initialized = true
 
-    Object.assign(state, DefaultState);
+    Object.assign(state, DefaultState)
   },
   remoteReady(state, value) {
-    state.initialized = value;
+    state.initialized = value
   },
   remoteUpdate(state, object) {
     for (let key in object) {
-      state[key] = object[key];
+      state[key] = object[key]
     }
   },
   messageData(state, object) {
     state.messageData += object
   },
   remoteConnected(state, value) {
-    state.currentGroup.groupNickname = value;
-    state.currentGroup.connected = true;
+    state.currentGroup.groupNickname = value
+    state.currentGroup.connected = true
   },
   remoteDisconnected(state, value) {
-    state.currentGroup.groupNickname = value;
-    state.currentGroup.connected = false;
+    state.currentGroup.groupNickname = value
+    state.currentGroup.connected = false
   },
   remoteConnectTimeout(state, value) {
-    state.connectTryTimeOut = value;
+    state.connectTryTimeOut = value
   },
   remoteConnectError(state, value) {
     state.currentGroup.connected = false
-    state.connectTry = value;
+    state.connectTry = value
   },
   remoteDeviceReady(state, value) {
     state.deviceReady = value
@@ -71,24 +71,24 @@ const mutations = {
 }
 
 const getters = {
-  'remote': state => state,
-  'canUseChannel': state => !state.channelOnUse,
-  'messageData': state => state.messageData,
-  'remoteNotify': state => state.notify,
-  'remoteOpponent': state => {
+  remote: state => state,
+  canUseChannel: state => !state.channelOnUse,
+  messageData: state => state.messageData,
+  remoteNotify: state => state.notify,
+  remoteOpponent: state => {
     return {
       sId: state.opponentId,
       stream: state.opponentStream,
       screenWidth: state.opponentScreenWidth,
       screenHeight: state.opponentScreenHeight,
-      screenVPad: state.opponentScreenVerticalPad
+      screenVPad: state.opponentScreenVerticalPad,
     }
   },
-  'callBitrate': state => state.callBitrate
+  callBitrate: state => state.callBitrate,
 }
 
 export default {
   state,
   mutations,
-  getters
+  getters,
 }

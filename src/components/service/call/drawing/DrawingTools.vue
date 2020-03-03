@@ -1,21 +1,19 @@
 <template>
-<div class="drawing-tools">
-</div>
+  <div class="drawing-tools"></div>
 </template>
 
 <script>
 export default {
-	name: "DrawingTools",
-	components: {
+  name: 'DrawingTools',
+  components: {},
+  data() {
+    return {}
   },
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

@@ -8,13 +8,13 @@ export default new VueRouter({
   mode: 'history',
   routes: [
     {
-        path: '/test/:tab?',
-        name: 'test',
-        component: () => import('components/test/Test')
+      path: '/test/:tab?',
+      name: 'test',
+      component: () => import('components/test/Test'),
     },
     {
-        path: '*',
-        redirect: 'test'
-    }
-  ]
+      path: '*',
+      redirect: 'test',
+    },
+  ],
 })

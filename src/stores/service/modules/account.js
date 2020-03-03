@@ -11,32 +11,31 @@ function getDefaultState() {
     uuid: null,
   }
 }
-const state = getDefaultState();
+const state = getDefaultState()
 
 const mutations = {
   [ACCOUNT_SET](state, payload) {
-    if(typeof payload === 'object') {
-      for(let key in payload) {
-          
-        if( key in state && payload[key] != null) {
-          state[key] = payload[key];
+    if (typeof payload === 'object') {
+      for (let key in payload) {
+        if (key in state && payload[key] != null) {
+          state[key] = payload[key]
         }
       }
-      
-      return state;
+
+      return state
     } else {
-      return false;
+      return false
     }
   },
 
   [ACCOUNT_CLEAR](state) {
-    Object.assign(state, getDefaultState());
+    Object.assign(state, getDefaultState())
 
     return true
-  }
+  },
 }
 
 export default {
   state,
-  mutations
+  mutations,
 }

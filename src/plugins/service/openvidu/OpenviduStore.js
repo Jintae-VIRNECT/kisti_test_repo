@@ -14,17 +14,19 @@ const getDefaultState = () => {
         //   stream: '',
         //   nodeId: ''
         // }
-      ]
+      ],
     },
     chat: {
-      chatList: [{
-        text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
-        name: 'alarm',
-        date: new Date,
-        nodeId: null,
-        type: 'system'
-      }]
-    }
+      chatList: [
+        {
+          text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
+          name: 'alarm',
+          date: new Date(),
+          nodeId: null,
+          type: 'system',
+        },
+      ],
+    },
   }
 }
 
@@ -43,25 +45,33 @@ const mutations = {
     state.chat.chatList.push({
       text: payload.nickName + '님이 대화에 참여하셨습니다.',
       name: 'people',
-      date: new Date,
+      date: new Date(),
       nodeId: null,
-      type: 'system'
+      type: 'system',
     })
   },
   UPDATE_SESSION_STREAM(state, payload) {
-    const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload.nodeId)
+    const idx = state.call.sessions.findIndex(
+      obj => obj.nodeId === payload.nodeId,
+    )
     if (idx < 0) return
     state.call.sessions[idx].stream = payload.stream
   },
   UPDATE_SESSION_INFO(state, payload) {
-    const idx = state.call.sessions.findIndex(obj => obj.nodeId === payload.nodeId)
+    const idx = state.call.sessions.findIndex(
+      obj => obj.nodeId === payload.nodeId,
+    )
     if (idx < 0) return
-    
+
     let updateSession = state.call.sessions[idx]
-    
+
     for (let key in payload) {
-      if( key in updateSession && payload[key] !== null && payload[key] !== 'nodeId') {
-        updateSession[key] = payload[key];
+      if (
+        key in updateSession &&
+        payload[key] !== null &&
+        payload[key] !== 'nodeId'
+      ) {
+        updateSession[key] = payload[key]
       }
     }
     state.call.sessions.splice(idx, 1, updateSession)
@@ -74,9 +84,9 @@ const mutations = {
     state.chat.chatList.push({
       text: nickName + '님이 대화에서 나가셨습니다.',
       name: 'people',
-      date: new Date,
+      date: new Date(),
       nodeId: null,
-      type: 'system'
+      type: 'system',
     })
   },
   CLEAR_SESSION(state, payload) {
@@ -91,98 +101,95 @@ const mutations = {
   },
   REMOVE_CHAT(state, payload) {
     const idx = state.chat.chatList.findIndex(obj => obj.nodeId === payload)
-    if(idx < 0) return
+    if (idx < 0) return
     state.chat.chatList.splice(idx, 1)
   },
   CLEAR_CHAT(state) {
     state.chat.chatList = []
-  }
-
-  
+  },
 }
 
 const getters = {
-  'mainSession': state => state.call.mainSession,
-  'sessions': state => state.call.sessions,
-  'chatList': state => state.chat.chatList
+  mainSession: state => state.call.mainSession,
+  sessions: state => state.call.sessions,
+  chatList: state => state.chat.chatList,
 }
 
 const actions = {
   /**
    * Set Main View Session
-   * @param {Object} session 
+   * @param {Object} session
    */
   setMainSession({ commit }, session) {
-    commit('SET_MAIN_SESSION', session);
+    commit('SET_MAIN_SESSION', session)
   },
   /**
    * Add Participants Session Object
    * @param {Object} session
    */
   addSession({ commit }, session) {
-    commit('ADD_SESSION', session);
+    commit('ADD_SESSION', session)
   },
   /**
    * Update Session Stream
-   * @param {Object} session : { nodeId: String, stream: MediaStream } 
+   * @param {Object} session : { nodeId: String, stream: MediaStream }
    */
   updateSessionStream({ commit }, session) {
-    commit('UPDATE_SESSION_STREAM', session);
+    commit('UPDATE_SESSION_STREAM', session)
   },
   /**
    * Update Session Info
-   * @param {Object} session : { nodeId: String, audio: true, video: false } 
+   * @param {Object} session : { nodeId: String, audio: true, video: false }
    */
   updateSessionInfo({ commit }, session) {
     commit('UPDATE_SESSION_INFO', session)
   },
   /**
    * Remove Participants Session Object
-   * @param {String} nodeId 
+   * @param {String} nodeId
    */
   removeSession({ commit }, nodeId) {
-    commit('REMOVE_SESSION', nodeId);
+    commit('REMOVE_SESSION', nodeId)
   },
   /**
    * Clear Sessions
    */
   clearSession({ commit }) {
-    commit('CLEAR_SESSION');
+    commit('CLEAR_SESSION')
   },
-  
+
   /**
    * Add Chat Object
-   * @param {Object} chat 
+   * @param {Object} chat
    */
   addChat({ commit }, chat) {
-    commit('ADD_CHAT', chat);
+    commit('ADD_CHAT', chat)
   },
   /**
    * Remove Chat Object
-   * @param {String} nodeId 
+   * @param {String} nodeId
    */
   removeChat({ commit }, nodeId) {
-    commit('REMOVE_CHAT', nodeId);
+    commit('REMOVE_CHAT', nodeId)
   },
   /**
    * Clear Chat Object
    */
   clearChat({ commit }) {
-    commit('CLEAR_CHAT');
+    commit('CLEAR_CHAT')
   },
 
-  
   /**
    * toggle speaker
    */
   toggleSpeaker({ commit }) {
-    commit('CALL_SPEAKER');
+    commit('CALL_SPEAKER')
   },
   /**
    * toggle MIC
    */
   toggleMic({ commit }) {
-    commit('CALL_MIC');
+    commit('CALL_MIC')
   },
 }
 
@@ -190,5 +197,5 @@ export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 }

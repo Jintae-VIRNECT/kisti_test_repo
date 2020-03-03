@@ -1,22 +1,21 @@
 <template>
-<div class="drawing-canvas">
-  drawin canvas
-</div>
+  <div class="drawing-canvas">
+    drawin canvas
+  </div>
 </template>
 
 <script>
 export default {
-	name: "DrawingCanvas",
-	components: {
+  name: 'DrawingCanvas',
+  components: {},
+  data() {
+    return {}
   },
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

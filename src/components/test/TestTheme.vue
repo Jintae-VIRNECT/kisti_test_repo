@@ -19,10 +19,10 @@
 export default {
   methods: {
     setTheme(theme) {
-      document.querySelector("html").setAttribute("theme", theme);
-    }
-  }
-};
+      document.querySelector('html').setAttribute('theme', theme)
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -33,22 +33,22 @@ $bright-button-text: #000;
 $button-color: $dark-button;
 $button-text-color: $dark-button-text;
 @mixin theme-dark() {
-  @at-root [theme=dark] & {
+  @at-root [theme='dark'] & {
     @content;
   }
 }
 @mixin theme-bright() {
-  @at-root [theme=bright] & {
+  @at-root [theme='bright'] & {
     @content;
   }
 }
 
-:root [theme=dark] {
+:root [theme='dark'] {
   $button-color: #{$dark-button} !global;
   $button-text-color: #{$dark-button-text} !global;
 }
 
-:root [theme=bright] {
+:root [theme='bright'] {
   $button-color: #{$bright-button} !global;
   $button-text-color: #{$bright-button-text} !global;
 }
@@ -76,9 +76,9 @@ $button-text-color: $dark-button-text;
 
   &-button {
     padding: 10px;
-    border-radius: 4px;
-    background-color: $button-color;
     color: $button-text-color;
+    background-color: $button-color;
+    border-radius: 4px;
     // @include theme-dark {
     //   background-color: #000;
     //   color: #fff;

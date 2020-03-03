@@ -4,32 +4,31 @@
 .vue-scrollbar {
   &__scrollbar-vertical,
   &__scrollbar-horizontal {
-    opacity: 0;
     height: 7px;
+    opacity: 0;
 
     .scrollbar {
-      background: rgba($color_dark, .5);
       height: 7px;
+      background: rgba($color_dark, 0.5);
       border-radius: 4px;
     }
   }
 
   &__scrollbar-vertical {
-      
     width: 8px;
     margin: 1px;
 
     .scrollbar {
-      overflow: hidden;
       width: 8px;
+      overflow: hidden;
       border-radius: 4px;
     }
   }
   &__wrapper {
     margin-right: -10px;
-    padding-right: 10px;
-    background: none !important;
     margin-bottom: -10px;
+    padding-right: 10px;
     padding-bottom: 10px;
+    background: none !important;
   }
 }

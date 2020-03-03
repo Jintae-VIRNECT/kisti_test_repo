@@ -1,67 +1,67 @@
 <template>
   <button
-    class="toggle-button" 
-    :class="[{ 'active': !active }, customClass]"
+    class="toggle-button"
+    :class="[{ active: !active }, customClass]"
     :style="{
-      'background': 'url('+src+') center no-repeat',
-      'width': size+'px',
-      'height': size+'px'
+      background: 'url(' + src + ') center no-repeat',
+      width: size + 'px',
+      height: size + 'px',
     }"
     @click="$emit('action', $event)"
-  >{{ description }}</button>
+  >
+    {{ description }}
+  </button>
 </template>
 
 <script>
 export default {
-	name: "ToggleButton",
-	components: {},
-	data() {
-		return {}
-	},
-	props: {
+  name: 'ToggleButton',
+  components: {},
+  data() {
+    return {}
+  },
+  props: {
     customClass: {
       type: String,
-      default: ''
+      default: '',
     },
     description: String,
     toggle: {
       type: Boolean,
-      default: true
+      default: true,
     },
     activeSrc: String,
     inactiveSrc: {
       type: String,
-      default: null
+      default: null,
     },
     active: {
       type: Boolean,
-      default: true
+      default: true,
     },
     size: {
       type: Number,
-      default: 12
-    }
+      default: 12,
+    },
   },
-	computed: {
+  computed: {
     src() {
-      if(this.toggle) {
-        if(this.active)
-          return this.activeSrc
-        else
-          return this.inactiveSrc
+      if (this.toggle) {
+        if (this.active) return this.activeSrc
+        else return this.inactiveSrc
       } else {
         return this.activeSrc
       }
-    }
+    },
   },
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>
 
 <style scoped lang="scss">
-@import "~assets/style/mixin";
+@import '~assets/style/mixin';
 .toggle-button {
   @include ir();
 }

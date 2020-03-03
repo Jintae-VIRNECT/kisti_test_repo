@@ -2,27 +2,27 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
-  >.vue-scrollbar__wrapper {
+  height: 100%;
+  > .vue-scrollbar__wrapper {
+    width: 100%;
     // height: calc(100% - 120px);
     height: 100%;
     margin-right: auto;
-    width: 100%;
   }
 }
 
 .chat-header {
-  flex-shrink: 0;
   position: relative;
+  flex-shrink: 0;
   height: 60px;
-  background-color: $color_chat_header;
   padding: 10px 22px;
+  background-color: $color_chat_header;
   &__title {
     position: relative;
-    font-weight: 500;
-    color: rgba(#fff, .87);
     width: fit-content;
+    color: rgba(#fff, 0.87);
+    font-weight: 500;
     // &::after {
     //   content: '';
     //   position: absolute;
@@ -33,23 +33,25 @@
     // }
     .show-list {
       margin-left: 5px;
-      background: url(~assets/image/call/chat_icn_moreinfor.svg) center/20px no-repeat;
+      background: url(~assets/image/call/chat_icn_moreinfor.svg) center/20px
+        no-repeat;
 
       @include ir();
     }
   }
   &__description {
-    font-size: 12px;
+    color: rgba($color_text_default, 0.87);
     font-weight: 500;
-    color: rgba($color_text_default, .87);
+    font-size: 12px;
   }
   &__fold {
     position: absolute;
-    width: 20px;
-    right: 22px;
     top: 50%;
+    right: 22px;
+    width: 20px;
+    background: url(~assets/image/call/chat_ic_fullscre.svg) center/22px
+      no-repeat;
     transform: translateY(-50%);
-    background: url(~assets/image/call/chat_ic_fullscre.svg) center/22px no-repeat;
 
     @include ir();
   }
@@ -57,14 +59,13 @@
 
 .chat-list {
   position: relative;
-  // height: calc(100% - 60px);
-  height: 100%;
-  width: 100%;
-  padding: 15px;
-
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  width: 100%;
+  // height: calc(100% - 60px);
+  height: 100%;
+  padding: 15px;
 }
 
 .chat-item {
@@ -74,13 +75,12 @@
 
   &.date {
     position: relative;
-    color: rgba($color_text_default, .7);
-    font-size: 12px;
-    margin-bottom: 20px;
     align-self: center;
-    >p {
+    margin-bottom: 20px;
+    color: rgba($color_text_default, 0.7);
+    font-size: 12px;
+    > p {
       &::before {
-        content: '';
         position: absolute;
         top: 50%;
         right: 100%;
@@ -88,9 +88,9 @@
         height: 1px;
         margin-right: 10px;
         background-color: rgba($color_white, 0.15);
+        content: "";
       }
       &::after {
-        content: '';
         position: absolute;
         top: 50%;
         left: 100%;
@@ -98,27 +98,30 @@
         height: 1px;
         margin-left: 10px;
         background-color: rgba($color_white, 0.15);
+        content: "";
       }
     }
   }
 
   &.me {
-    .profile, .name {
+    .profile,
+    .name {
       display: none;
       height: 0;
     }
     .chat-item__body {
+      width: 100%;
       .chatbox {
+        // white-space: pre-wrap;
+        // width: fit-content;
+        margin-left: auto;
         padding: 11px 13px;
-        border-radius: 7px 7px 0 7px;
-        background-color: $color_chat_bg_me;
         line-height: 1.57;
         word-break: break-word;
-        // white-space: pre-wrap;
-        width: fit-content;
-        margin-left: auto;
+        background-color: $color_chat_bg_me;
+        border-radius: 7px 7px 0 7px;
         .text {
-          color: rgba($color_black, .78);
+          color: rgba($color_black, 0.78);
           white-space: pre-wrap;
         }
       }
@@ -127,49 +130,50 @@
       display: block;
       margin: 6px 0 8px;
       color: $color_text_main;
-      font-size: .8em;
-      opacity: 0.5;
+      font-size: 0.8em;
       text-align: right;
+      opacity: 0.5;
     }
   }
-      
+
   &.opponent {
     display: flex;
     align-self: flex-start;
 
     .profile {
+      flex-shrink: 0;
       width: 30px;
       height: 30px;
-      border-radius: 50%;
       background-color: transparent;
-      flex-shrink: 0;
+      border-radius: 50%;
     }
     .chat-item__body {
+      width: 100%;
       margin-left: 10px;
       .chatbox {
         padding: 7px 13px;
-        border-radius: 0 7px 7px 7px;
-        background-color: $color_chat_bg_opponent;
         line-height: 1.57;
-        word-break: break-word;
         white-space: pre-wrap;
-        width: fit-content;
+        word-break: break-word;
+        background-color: $color_chat_bg_opponent;
+        border-radius: 0 7px 7px 7px;
+        // width: fit-content;
         .name {
-          color: rgba($color_black, .9);
-          font-size: 12px;
+          color: rgba($color_black, 0.9);
           font-weight: 500;
+          font-size: 12px;
         }
         .text {
-          color: rgba($color_black, .78);
+          color: rgba($color_black, 0.78);
         }
       }
       .time {
         display: block;
         margin: 6px 0 8px;
         color: $color_text_main;
-        font-size: .8em;
-        opacity: 0.5;
+        font-size: 0.8em;
         text-align: left;
+        opacity: 0.5;
       }
 
       &.hidden {
@@ -183,78 +187,85 @@
     max-width: 100%;
     margin: 7px;
     border-radius: 4px;
-    
-    .profile, .name {
+
+    .profile,
+    .name {
       display: none;
     }
     .chat-item__body {
       .text {
-        color: rgba($color_text_default, .9);
+        color: rgba($color_text_default, 0.9);
         line-height: 1.57;
         &.alarm {
           transform: translateX(14px);
           &::after {
-            content: '';
             position: absolute;
             top: 3px;
             left: -20px;
             width: 14px;
             height: 14px;
-            background: url(~assets/image/call/chat_ic_remote.svg) center no-repeat;
+            background: url(~assets/image/call/chat_ic_remote.svg) center
+              no-repeat;
+            content: "";
           }
         }
         &.people {
           transform: translateX(14px);
           &::after {
-            content: '';
             position: absolute;
             top: 3px;
             left: -20px;
             width: 14px;
             height: 14px;
             background: url(~assets/image/call/chat_ic_ppl.svg) center no-repeat;
+            content: "";
           }
         }
       }
       .time {
         display: block;
         margin: 4px 0;
-        font-size: .8em;
-        opacity: 0.5;
         color: $color_text_main;
+        font-size: 0.8em;
         text-align: center;
+        opacity: 0.5;
       }
     }
   }
 
+  &.file-share {
+    width: 80%;
+  }
+
   .file {
+    white-space: pre-line;
     &__name {
-      background: url() no-repeat;
-      color: rgba(#000, .78);
-      font-size: 15px;
+      color: rgba(#000, 0.78);
       font-weight: 500;
+      font-size: 15px;
+      background: url() no-repeat;
     }
 
     &__size {
-      color: rgba(#000, .78);
+      color: rgba(#000, 0.78);
       font-size: 12px;
     }
 
     &__button {
-      color: rgba(0, 0, 0, 0.78);
-      font-weight: 500;
       width: calc(100% + 26px);
       height: 44px;
-      border-top: solid 1px #d8d8d8;
-      background-color: transparent;
       margin: 0 -13px -7px -13px;
+      color: rgba(0, 0, 0, 0.78);
+      font-weight: 500;
+      background-color: transparent;
+      border-top: solid 1px #d8d8d8;
     }
   }
 }
 
 .chat-input {
-  flex-shrink: 0;
   bottom: 0;
+  flex-shrink: 0;
   width: 100%;
   background-color: $color_chat_bg_input;
 
@@ -262,12 +273,12 @@
     height: 120px;
     padding: 16px 20px;
 
-    >.vue-scrollbar__wrapper {
+    > .vue-scrollbar__wrapper {
       height: 100%;
       margin-right: auto;
-      >.vue-scrollbar__area {
-        height: 100%;
+      > .vue-scrollbar__area {
         display: flex;
+        height: 100%;
       }
     }
 
@@ -277,8 +288,8 @@
 
     &-file {
       position: relative;
-      height: 100%;
       width: fit-content;
+      height: 100%;
       margin-right: 20px;
       &:last-child {
         margin-right: 0;
@@ -295,8 +306,9 @@
       right: 3px;
       width: 20px;
       height: 20px;
+      background: url(~assets/image/call/ic-close-w.svg) center/15px 15px
+        no-repeat rgba(#4c5259, 0.7);
       border-radius: 50%;
-      background: url(~assets/image/call/ic-close-w.svg) center/15px 15px no-repeat rgba(#4c5259, .7);
 
       @include ir();
     }
@@ -311,32 +323,35 @@
     &-upload {
       width: 30px;
       height: 100%;
-      background: url(~assets/image/call/chat_ic_attachfile.svg) center no-repeat;
+      background: url(~assets/image/call/chat_ic_attachfile.svg) center
+        no-repeat;
 
       @include ir();
     }
 
     &-write {
-      border-radius: 4px;
       width: 67%;
       height: 30px;
       margin-left: 10px;
-      border: none;
-      outline: none;
       color: $color_text_main;
       background-color: transparent;
+      border: none;
+      border-radius: 4px;
+      outline: none;
 
-      &::placeholder { color: rgba($color_text_default, 0.42); }
+      &::placeholder {
+        color: rgba($color_text_default, 0.42);
+      }
     }
 
     &-button {
       position: absolute;
       right: 18px;
       padding: 5px 12px;
-      font-size: 15px;
-      border-radius: 2px;
       color: $color_text_default;
+      font-size: 15px;
       background-color: $color_remote2;
+      border-radius: 2px;
     }
   }
 }

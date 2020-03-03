@@ -1,15 +1,15 @@
-// http://eslint.org/docs/user-guide/configuring
 module.exports = {
   root: true,
   env: {
+    node: true,
     browser: true,
     es6: true
   },
   extends: [
     "eslint:recommended",
     "plugin:vue/essential",
-    // "prettier",
-    // "plugin:prettier/recommended"
+    "prettier",
+    "plugin:prettier/recommended"
   ],
   globals: {
     Atomics: "readonly",
@@ -18,26 +18,27 @@ module.exports = {
     require: "readonly"
   },
   parserOptions: {
+    parser: "babel-eslint",
     ecmaVersion: 2018,
     sourceType: "module"
   },
-  // plugins: ["prettier"],
+  plugins: ["prettier"],
   rules: {
-    // "prettier/prettier": [
-    //   "error",
-    //   // 아래 규칙들은 개인 선호에 따라 prettier 문법 적용
-    //   // https://prettier.io/docs/en/options.html
-    //   {
-    //     endOfLine: "auto",
-    //     semi: false,
-    //     tabWidth: 2,
-    //     useTabs: false,
-    //     trailingComma: "all",
-    //     printWidth: 80,
-    //     bracketSpacing: true,
-    //     arrowParens: "avoid"
-    //   }
-    // ],
+    "prettier/prettier": [
+      "error",
+      // 아래 규칙들은 개인 선호에 따라 prettier 문법 적용
+      // https://prettier.io/docs/en/options.html
+      {
+        singleQuote: true,
+        semi: false,
+        useTabs: false,
+        tabWidth: 2,
+        trailingComma: "all",
+        bracketSpacing: true,
+        arrowParens: "avoid",
+        vueIndentScriptAndStyle: false
+      }
+    ],
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off"
   },
   overrides: [

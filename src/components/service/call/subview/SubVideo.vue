@@ -1,21 +1,21 @@
 <template>
-	<div class="subvideo">
+  <div class="subvideo">
     Sub Video
   </div>
 </template>
 
 <script>
 export default {
-	name: "SubVideo",
-	components: {},
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  name: 'SubVideo',
+  components: {},
+  data() {
+    return {}
+  },
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

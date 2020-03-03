@@ -2,11 +2,11 @@ import Vue2Scrollbar from './components/vue-scrollbar.vue'
 import './style/vue2-scrollbar.scss'
 
 export default {
-install(Vue) {
+  install(Vue) {
     Vue.mixin({
-        components: {
-            Vue2Scrollbar
-        }
+      components: {
+        Vue2Scrollbar,
+      },
     })
-}
+  },
 }

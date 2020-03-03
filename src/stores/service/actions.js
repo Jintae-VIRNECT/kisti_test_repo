@@ -3,10 +3,10 @@ import * as types from './mutation-types'
 export default {
   // account
   updateAccount({ commit }, account) {
-    commit(types.ACCOUNT_SET, account);
+    commit(types.ACCOUNT_SET, account)
   },
   clearAccount({ commit }) {
-    commit(types.ACCOUNT_CLEAR);
+    commit(types.ACCOUNT_CLEAR)
   },
 
   /**
@@ -14,14 +14,14 @@ export default {
    * @param {String} state : stream, sharing, ar
    */
   changeCallMode({ commit }, state) {
-    commit(types.CALL_MODE_SET, state);
+    commit(types.CALL_MODE_SET, state)
   },
   /**
    * Change Call Action
    * @param {String} state : pointing, drawing
    */
   changeAction({ commit }, state) {
-    commit(types.CALL_ACTION_SET, state);
+    commit(types.CALL_ACTION_SET, state)
   },
 
   callStream({ commit }, state) {
@@ -35,5 +35,5 @@ export default {
   },
   muteOnOff({ commit }) {
     commit(types.MUTE_ON_OFF)
-  }
+  },
 }

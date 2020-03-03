@@ -1,30 +1,30 @@
 <template>
-<header class="header">
-  <img class="header-logo" src="~assets/image/logo_symtext.svg"/>
+  <header class="header">
+    <img class="header-logo" src="~assets/image/logo_symtext.svg" />
 
-  <header-nav></header-nav>
+    <header-nav></header-nav>
 
-  <header-tools></header-tools>
-</header>
+    <header-tools></header-tools>
+  </header>
 </template>
 
 <script>
 import HeaderNav from './partials/HeaderSnb'
 import HeaderTools from './partials/HeaderTools'
 export default {
-	name: "Header",
-	components: {
+  name: 'Header',
+  components: {
     HeaderNav,
-    HeaderTools
+    HeaderTools,
   },
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  data() {
+    return {}
+  },
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

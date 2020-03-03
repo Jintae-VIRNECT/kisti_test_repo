@@ -6,10 +6,7 @@
       <h2 class="subtitle">Popover</h2>
       <div class="action-box">
         <div class="component">
-          <popover
-            :placement="popover.position"
-            :trigger="popover.trigger"
-          >
+          <popover :placement="popover.position" :trigger="popover.trigger">
             <toggle-button
               slot="reference"
               description="마이크 on/off"
@@ -24,20 +21,26 @@
         <div class="props">
           <div class="props-option">
             <p class="props-title">placement</p>
-            
+
             <select class="props-options" v-model="popover.position">
-              <option v-for="(option, idx) in popover.positionOptions"
-                      :key="idx"
-                      :value="option">{{ option }}</option>
+              <option
+                v-for="(option, idx) in popover.positionOptions"
+                :key="idx"
+                :value="option"
+                >{{ option }}</option
+              >
             </select>
           </div>
           <div class="props-option">
             <p class="props-title">trigger</p>
-            
+
             <select class="props-options" v-model="popover.trigger">
-              <option v-for="(option, idx) in popover.triggerOptions"
-                      :key="idx"
-                      :value="option">{{ option }}</option>
+              <option
+                v-for="(option, idx) in popover.triggerOptions"
+                :key="idx"
+                :value="option"
+                >{{ option }}</option
+              >
             </select>
           </div>
         </div>
@@ -47,10 +50,7 @@
       <h2 class="subtitle">Tooltip</h2>
       <div class="action-box">
         <div class="component">
-          <tooltip
-            :content="tooltip.content"
-            :placement="tooltip.placement"
-          >
+          <tooltip :content="tooltip.content" :placement="tooltip.placement">
             <toggle-button
               slot="body"
               description="마이크 on/off"
@@ -65,15 +65,18 @@
         <div class="props">
           <div class="props-option">
             <p class="props-title">content</p>
-            <input class="props-options" v-model="tooltip.content"/>
+            <input class="props-options" v-model="tooltip.content" />
           </div>
           <div class="props-option">
             <p class="props-title">placement</p>
-            
+
             <select class="props-options" v-model="tooltip.placement">
-              <option v-for="(option, idx) in tooltip.placementOptions"
-                      :key="idx"
-                      :value="option">{{ option }}</option>
+              <option
+                v-for="(option, idx) in tooltip.placementOptions"
+                :key="idx"
+                :value="option"
+                >{{ option }}</option
+              >
             </select>
           </div>
         </div>
@@ -83,13 +86,8 @@
       <h2 class="subtitle">Modal</h2>
       <div class="action-box">
         <div class="component">
-          <modal
-            :visible="modal.visible"
-          ></modal>
-          <tooltip
-            :content="tooltip.content"
-            :placement="tooltip.placement"
-          >
+          <modal :visible="modal.visible"></modal>
+          <tooltip :content="tooltip.content" :placement="tooltip.placement">
             <toggle-button
               slot="body"
               description="마이크 on/off"
@@ -104,15 +102,18 @@
         <div class="props">
           <div class="props-option">
             <p class="props-title">content</p>
-            <input class="props-options" v-model="tooltip.content"/>
+            <input class="props-options" v-model="tooltip.content" />
           </div>
           <div class="props-option">
             <p class="props-title">placement</p>
-            
+
             <select class="props-options" v-model="tooltip.placement">
-              <option v-for="(option, idx) in tooltip.placementOptions"
-                      :key="idx"
-                      :value="option">{{ option }}</option>
+              <option
+                v-for="(option, idx) in tooltip.placementOptions"
+                :key="idx"
+                :value="option"
+                >{{ option }}</option
+              >
             </select>
           </div>
         </div>
@@ -130,7 +131,7 @@ export default {
     Popover,
     Tooltip,
     Modal,
-    ToggleButton
+    ToggleButton,
   },
   data() {
     return {
@@ -138,56 +139,49 @@ export default {
       popover: {
         position: 'bottom',
         positionOptions: [
-          "top",
-          "top-start",
-          "top-end",
-          "right",
-          "right-start",
-          "right-end",
-          "bottom",
-          "bottom-start",
-          "bottom-end",
-          "left",
-          "left-start",
-          "left-end"
+          'top',
+          'top-start',
+          'top-end',
+          'right',
+          'right-start',
+          'right-end',
+          'bottom',
+          'bottom-start',
+          'bottom-end',
+          'left',
+          'left-start',
+          'left-end',
         ],
-        trigger: "click",
-        triggerOptions: [
-          "click",
-          "hover",
-          "focus",
-          "manual"
-        ]
+        trigger: 'click',
+        triggerOptions: ['click', 'hover', 'focus', 'manual'],
       },
       tooltip: {
         content: '마이크 on / off',
         placement: 'bottom',
         placementOptions: [
-          "top",
-          "top-start",
-          "top-end",
-          "right",
-          "right-start",
-          "right-end",
-          "bottom",
-          "bottom-start",
-          "bottom-end",
-          "left",
-          "left-start",
-          "left-end"
+          'top',
+          'top-start',
+          'top-end',
+          'right',
+          'right-start',
+          'right-end',
+          'bottom',
+          'bottom-start',
+          'bottom-end',
+          'left',
+          'left-start',
+          'left-end',
         ],
       },
       modal: {
-        visible: false
-      }
+        visible: false,
+      },
     }
   },
   methods: {
-    toogleOnOff() {
-      
-    }
-  }
-};
+    toogleOnOff() {},
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -196,14 +190,14 @@ export default {
   padding: 30px;
 
   &-title {
-    font-weight: 500;
     margin-bottom: 30px;
+    font-weight: 500;
   }
 
   &-section {
-    border-radius: 10px;
     margin-bottom: 30px;
     background-color: #bebebe;
+    border-radius: 10px;
     .subtitle {
       color: #000;
       font-weight: 500;
@@ -215,17 +209,17 @@ export default {
       }
 
       .props {
-        width: 250px;
         flex-shrink: 0;
+        width: 250px;
         &-option {
           display: flex;
           margin-bottom: 10px;
         }
         &-title {
+          flex-shrink: 0;
           width: 100px;
           padding-right: 10px;
           text-align: right;
-          flex-shrink: 0;
         }
         &-options {
           width: 100%;

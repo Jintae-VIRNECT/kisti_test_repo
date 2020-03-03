@@ -1,5 +1,5 @@
 <template>
-	<div class="subview-wrapper">
+  <div class="subview-wrapper">
     <!-- <sub-video></sub-video> -->
     <chat-section></chat-section>
   </div>
@@ -9,19 +9,19 @@
 import SubVideo from './SubVideo'
 import ChatSection from './ChatView'
 export default {
-	name: "SubViewLayout",
-	components: {
+  name: 'SubViewLayout',
+  components: {
     SubVideo,
-    ChatSection
+    ChatSection,
   },
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  data() {
+    return {}
+  },
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

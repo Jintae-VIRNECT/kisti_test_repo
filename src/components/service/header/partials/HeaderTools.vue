@@ -1,18 +1,17 @@
 <template>
-<div class="header-tools">
-  
-  <stream></stream>
-  
-  <mic></mic>
-  
-  <speaker></speaker>
-  
-  <notice></notice>
+  <div class="header-tools">
+    <stream></stream>
 
-  <counter></counter>
+    <mic></mic>
 
-  <button class="header-tools__leave" @click="leave">나가기</button>
-</div>
+    <speaker></speaker>
+
+    <notice></notice>
+
+    <counter></counter>
+
+    <button class="header-tools__leave" @click="leave">나가기</button>
+  </div>
 </template>
 
 <script>
@@ -25,41 +24,41 @@ import Notice from '../tools/Notice'
 import Counter from '../tools/Counter'
 
 export default {
-	name: "HeaderTools",
-	components: {
+  name: 'HeaderTools',
+  components: {
     Stream,
     Mic,
     Speaker,
     Notice,
-    Counter
+    Counter,
   },
-	data() {
-		return {}
-	},
-	computed: {
-    ...mapGetters(['mainSession', 'mute'])
+  data() {
+    return {}
   },
-	watch: {
+  computed: {
+    ...mapGetters(['mainSession', 'mute']),
+  },
+  watch: {
     mainSession: {
       deep: true,
       handler: function(val) {
-        if(val.stream) {
+        if (val.stream) {
           let state = this.$openvidu.getState()
 
           this.callMic(state.audio)
           this.callStream(state.video)
         }
-      }
-    }
+      },
+    },
   },
-	methods: {
+  methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
       this.$openvidu.leave()
-    }
+    },
   },
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

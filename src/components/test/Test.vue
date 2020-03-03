@@ -23,33 +23,32 @@
   </div>
 </template>
 <script>
-const Components = require("./");
+const Components = require('./')
 
 export default {
   components: {
-    ...Components
+    ...Components,
   },
   computed: {
     components() {
-      return Object.keys(Components);
+      return Object.keys(Components)
     },
     tab() {
-      return this.$route.params.tab;
-    }
+      return this.$route.params.tab
+    },
   },
 
   /* Lifecycles */
   created() {
     if (this.components.indexOf(this.$route.params.tab) < 0) {
-      this.$router.replace("/test/TestElementAdmin");
+      this.$router.replace('/test/TestElementAdmin')
     }
-  }
-};
+  },
+}
 </script>
 <style lang="scss">
-@import "~assets/style/common";
-@import "./theme";
-
+@import '~assets/style/common';
+@import './theme';
 
 :root .dark {
   // background-color: #5a5a5a;
@@ -67,11 +66,11 @@ code {
 }
 .test-wrapper {
   $header_height: 80px;
+  position: relative;
+  height: 100vh;
+  padding-top: $header_height;
 
   overflow: hidden;
-  position: relative;
-  padding-top: $header_height;
-  height: 100vh;
   @include clearfix;
 
   section {
@@ -82,11 +81,11 @@ code {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 10;
     width: 100%;
     height: $header_height;
     padding: 0 30px;
     background-color: #3a3a3a;
-    z-index: 10;
 
     .logo {
       margin: 0;
@@ -113,16 +112,16 @@ code {
         display: block;
         width: 100%;
         padding: 12px 15px;
-        border: none;
-        background: none;
-        font-size: 14px;
         color: #fff;
+        font-size: 14px;
         text-align: left;
+        background: none;
+        border: none;
 
         &.active {
           font-weight: bold;
-          background-color: #0064ff;
           text-decoration: underline;
+          background-color: #0064ff;
         }
         &:hover {
           background-color: #0064ff;
@@ -133,8 +132,8 @@ code {
 
   .test-content {
     position: relative;
-    overflow-y: auto;
     height: 100%;
+    overflow-y: auto;
   }
 }
 </style>

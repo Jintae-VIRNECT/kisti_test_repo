@@ -4,7 +4,7 @@ import {
   CALL_STREAM,
   CALL_SPEAKER,
   CALL_MIC,
-  MUTE_ON_OFF
+  MUTE_ON_OFF,
 } from '../mutation-types'
 
 const state = {
@@ -13,15 +13,15 @@ const state = {
   stream: true,
   mic: true,
   speaker: true,
-  unmute: true
+  unmute: true,
 }
 
 const mutations = {
   [CALL_MODE_SET](state, mode) {
-    state.view = mode;
+    state.view = mode
   },
   [CALL_ACTION_SET](state, mode) {
-    state.action = mode;
+    state.action = mode
   },
   [CALL_STREAM](state, payload) {
     state.stream = payload
@@ -34,10 +34,10 @@ const mutations = {
   },
   [MUTE_ON_OFF](state) {
     state.unmute = !state.unmute
-  }
+  },
 }
 
 export default {
-    state,
-    mutations
+  state,
+  mutations,
 }

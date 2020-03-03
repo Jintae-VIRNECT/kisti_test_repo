@@ -1,33 +1,32 @@
 <template>
-<button 
-  class="header-snb__button" 
-  :class="{ 'active': view === keyvalue }"
-  @click="changeCallMode(keyvalue)"
->
-  <img class="header-snb__image" :src="image"/>
-  <span class="header-snb__text">{{ text }}</span>
-</button>
+  <button
+    class="header-snb__button"
+    :class="{ active: view === keyvalue }"
+    @click="changeCallMode(keyvalue)"
+  >
+    <img class="header-snb__image" :src="image" />
+    <span class="header-snb__text">{{ text }}</span>
+  </button>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 export default {
-	name: "SnbButton",
-	props: {
+  name: 'SnbButton',
+  props: {
     text: String,
     keyvalue: String,
-    image: String
+    image: String,
   },
-	computed: {
-    ...mapGetters(['view'])
+  computed: {
+    ...mapGetters(['view']),
   },
-	watch: {},
-	methods: {
-    ...mapActions(['changeCallMode'])
+  watch: {},
+  methods: {
+    ...mapActions(['changeCallMode']),
   },
 
-	/* Lifecycles */
-	mounted() {
-  }
+  /* Lifecycles */
+  mounted() {},
 }
 </script>

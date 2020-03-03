@@ -1,23 +1,23 @@
 <template>
-	<div class="workspace-wrapper">Work Space</div>
+  <div class="workspace-wrapper">Work Space</div>
 </template>
 
 <script>
 export default {
-	name: "WorkspaceLayout",
-	components: {},
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  name: 'WorkspaceLayout',
+  components: {},
+  data() {
+    return {}
+  },
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>
 
 <style lang="scss">
-@import "~assets/style/service";
+@import '~assets/style/service';
 </style>

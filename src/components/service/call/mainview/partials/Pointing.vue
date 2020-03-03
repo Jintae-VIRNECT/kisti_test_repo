@@ -1,9 +1,12 @@
 <template>
-<div @click="doPointing($event)">
-    <div v-for="(point,index) in pointList" :key="index"
-         class="pointing--item"
-         :style="{'left':point.coords[0]+'px','top':point.coords[1]+'px'}" />
-</div>
+  <div @click="doPointing($event)">
+    <div
+      v-for="(point, index) in pointList"
+      :key="index"
+      class="pointing--item"
+      :style="{ left: point.coords[0] + 'px', top: point.coords[1] + 'px' }"
+    />
+  </div>
 </template>
 
 <script>
@@ -11,7 +14,7 @@
 import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/pointer.lottie.json'
 
-function hexToLottie (hex, alpha) {
+function hexToLottie(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16) / 255,
     g = parseInt(hex.slice(3, 5), 16) / 255,
     b = parseInt(hex.slice(5, 7), 16) / 255
@@ -31,18 +34,18 @@ export default {
   name: 'Pointing',
   props: {
     scale: Number,
-    videoSize: Object
+    videoSize: Object,
   },
-  data () {
+  data() {
     return {
       radius: '60',
       lottieOption: {
-        animationData
+        animationData,
       },
       pointList: [],
       idle: true,
       idleID: 0,
-      fullMessage: ''
+      fullMessage: '',
     }
   },
   computed: {
@@ -50,12 +53,12 @@ export default {
     //   'tools',
     //   'remote'
     // ]),
-    pointingColor () {
+    pointingColor() {
       return '#0c73f2'
     },
-    pointingOpacity () {
+    pointingOpacity() {
       return 1
-    }
+    },
     // resolution() {
     //     const width = this.remote.opponentScreenWidth || this.$el.offsetWidth;
     //     return width / this.$el.offsetWidth;
@@ -76,14 +79,14 @@ export default {
     // }
   },
   methods: {
-    stateControl () {
+    stateControl() {
       this.idle = false
       clearTimeout(this.idleID)
       this.idleID = setTimeout(() => {
         this.idle = true
       }, 1050)
     },
-    doPointing (event) {
+    doPointing(event) {
       // console.log(event);
 
       this.stateControl()
@@ -92,7 +95,7 @@ export default {
         coords: [event.offsetX, event.offsetY],
         color: this.pointingColor,
         opacity: this.pointingOpacity,
-        label: 'me!'
+        label: 'me!',
       })
 
       // this.$remoteSDK.message('pointing', {
@@ -108,7 +111,7 @@ export default {
         const container = this.$el.lastChild
         const lottie = Lottie.loadAnimation({
           ...this.lottieOption,
-          container
+          container,
         })
 
         lottie.addEventListener('complete', () => {
@@ -120,11 +123,11 @@ export default {
         })
       })
     },
-    receivePointing (receive) {
-      if (receive.indexOf("{") > -1) {
+    receivePointing(receive) {
+      if (receive.indexOf('{') > -1) {
         this.fullMessage = ''
       }
-      if (receive.indexOf("}") < 0) {
+      if (receive.indexOf('}') < 0) {
         this.fullMessage += receive
         return
       }
@@ -135,17 +138,17 @@ export default {
       if ('type' in message && message.type === 'pointing') {
         this.pointList.push({
           // coords: [(message.posX * this.videoScale), (message.posY * this.videoScale)],
-          coords: [(message.posX), (message.posY)],
+          coords: [message.posX, message.posY],
           color: message.color,
           opacity: message.opacity,
-          label: 'opponent'
+          label: 'opponent',
         })
 
         this.$nextTick(() => {
           const container = this.$el.lastChild
           const lottie = Lottie.loadAnimation({
             ...this.lottieOption,
-            container
+            container,
           })
 
           lottie.addEventListener('complete', () => {
@@ -157,34 +160,37 @@ export default {
           })
         })
       }
-    }
+    },
   },
 
   /* Lifecycling */
-  created () {
+  created() {
     // this.$remoteSDK && this.$remoteSDK.addMessageListener(this.receivePointing)
   },
-  mounted () {
-    this.lottieOption.animationData.layers.forEach((layer) => {
-      layer.shapes[0].it[1].c.k = hexToLottie(this.pointingColor, this.pointingOpacity)
+  mounted() {
+    this.lottieOption.animationData.layers.forEach(layer => {
+      layer.shapes[0].it[1].c.k = hexToLottie(
+        this.pointingColor,
+        this.pointingOpacity,
+      )
       layer.shapes[0].it[1].o.k = this.pointingOpacity * 100
     })
   },
-  beforeDestroy () {
+  beforeDestroy() {
     // this.$remoteSDK && this.$remoteSDK.removeMessageListener(this.receivePointing)
-  }
+  },
 }
 </script>
 <style lang="scss">
 .pointing {
   position: relative;
-  
+
   &--item {
     position: absolute;
     width: 80px;
     height: 80px;
-    margin-left: -40px;
     margin-top: -40px;
+    margin-left: -40px;
     pointer-events: none;
   }
 }

@@ -3,33 +3,33 @@
 </template>
 
 <script>
-import Axios from 'axios'
+// import Axios from 'axios'
 
-const axios = Axios.create({
-	timeout: 10000,
-	withCredentials: true,
-    headers: {
-        'Access-Control-Allow-Origin': 'https://virnectremote.com',
-        'Content-Type': 'application/json',
-        'client': 'web'
-    }
-});
+// const axios = Axios.create({
+// 	timeout: 10000,
+// 	withCredentials: true,
+//     headers: {
+//       'Access-Control-Allow-Origin': 'https://virnectremote.com',
+//       'Content-Type': 'application/json',
+//       'client': 'web'
+//     }
+// });
 
 export default {
-  name: "container",
+  name: 'container',
 
   /* Lifecycles */
   created() {
-    const html = document.querySelector("html");
-    const windowWidth = window.innerWidth;
-    let type = "desktop";
+    const html = document.querySelector('html')
+    const windowWidth = window.innerWidth
+    let type = 'desktop'
 
     if (windowWidth <= 1024) {
-      type = "tablet";
+      type = 'tablet'
     } else if (windowWidth < 768) {
-      type = "mobile";
+      type = 'mobile'
     }
-    html.setAttribute("data-screen", type);
+    html.setAttribute('data-screen', type)
 
     // window.onerror = (errorMsg, url, lineNumber) => {
     //   let message = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
@@ -40,6 +40,6 @@ export default {
     //       // console.log(res.data)
     //     })
     // }
-  }
-};
+  },
+}
 </script>

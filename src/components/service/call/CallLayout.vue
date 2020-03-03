@@ -1,5 +1,5 @@
 <template>
-	<div class="service-wrapper">
+  <div class="service-wrapper">
     <sub-view></sub-view>
 
     <transition>
@@ -22,28 +22,27 @@
 import SubView from './subview/SubView'
 import { mapGetters } from 'vuex'
 export default {
-	name: "CallLayout",
-	components: {
+  name: 'CallLayout',
+  components: {
     SubView,
     MainView: () => import('./mainview/MainView'),
     DrawingView: () => import('./drawing/Drawing'),
-    ArView: () => import('./ar/Ar')
+    ArView: () => import('./ar/Ar'),
   },
-	data() {
-		return {}
-	},
-	computed: {
-    ...mapGetters(['view'])
+  data() {
+    return {}
   },
-	watch: {},
-	methods: {},
+  computed: {
+    ...mapGetters(['view']),
+  },
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {
-    this.$openvidu.getDevices()
-    .then(res => {
+  /* Lifecycles */
+  mounted() {
+    this.$openvidu.getDevices().then(res => {
       console.log(res)
     })
-  }
+  },
 }
 </script>

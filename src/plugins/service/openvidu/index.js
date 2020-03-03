@@ -1,3 +1,3 @@
 import Openvidu from './Openvidu'
 
-export default Openvidu;
+export default Openvidu

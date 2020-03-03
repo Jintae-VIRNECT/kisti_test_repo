@@ -1,21 +1,19 @@
 <template>
-	<main class="ar-wrapper">
-  </main>
+  <main class="ar-wrapper"></main>
 </template>
 
 <script>
 export default {
-	name: "AR",
-	components: {
+  name: 'AR',
+  components: {},
+  data() {
+    return {}
   },
-	data() {
-		return {}
-	},
-	computed: {},
-	watch: {},
-	methods: {},
+  computed: {},
+  watch: {},
+  methods: {},
 
-	/* Lifecycles */
-	mounted() {}
+  /* Lifecycles */
+  mounted() {},
 }
 </script>
