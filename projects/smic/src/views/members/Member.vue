@@ -23,6 +23,7 @@ export default {
       search: '',
       params: {
         size: 10,
+        sort: 'name,asc',
       },
       filter: {
         options: [
@@ -63,9 +64,9 @@ export default {
         ...params,
       }
       // sort 있으면 에러나는 문제
-      if (this.params.filter !== 'ALL') {
-        delete this.params.sort
-      }
+      // if (this.params.filter !== 'ALL') {
+      //   delete this.params.sort
+      // }
       this.$store.dispatch('getMemberList', this.params)
     },
   },
@@ -74,9 +75,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.test {
-  width: 100px;
-}
-</style>

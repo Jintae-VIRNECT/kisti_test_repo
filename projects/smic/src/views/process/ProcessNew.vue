@@ -2,7 +2,7 @@
   .process-new
     page-tab-nav
       template(slot='page-nav--right')
-        search-tab-nav.search-wrapper.text-right(placeholder="콘텐츠 이름, 등록 멤버 이름" :search="search" :filter="filter" :sort="sort")           
+        search-tab-nav.search-wrapper.text-right(placeholder="콘텐츠 이름, 등록 멤버 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")           
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")
         router-link.title(to="/contents")
@@ -21,6 +21,7 @@
             :width="width || ''") 
             template(slot-scope='scope')
               table-column(type="contents" :prop="prop" :data="tableData[scope.$index]")
+    pagination(target="contents" :params="params")
     process-new-modal(
       :target="target"
       :toggleProcessModal="toggleNewModal"
@@ -44,11 +45,10 @@ import ProcessNewModal from '@/components/process/ProcessNewModal.vue'
 import ProcessControlDropdownModal from '@/components/process/ProcessControlDropdownModal.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
+import Pagination from '@/components/common/Pagination.vue'
 
 // model
 import { tableColSettings } from '@/models/home'
-import { processStatus } from '@/models/process'
-import { sortOptions } from '@/models/index'
 
 // mixin
 import contentList from '@/mixins/contentList'
@@ -65,24 +65,40 @@ export default {
     ProcessControlDropdownModal,
     SearchTabNav,
     TableColumn,
+    Pagination,
   },
   data() {
     return {
-      search: 'smic',
+      search: '',
       colSetting: tableColSettings.contents,
+      params: {
+        size: 9,
+      },
       filter: {
         options: [
           {
             value: 'All',
             label: '전체',
           },
-          ...processStatus,
+          {
+            value: '?',
+            label: '공정 진행 상태 별',
+          },
         ],
         value: ['All'],
       },
       sort: {
-        options: sortOptions,
-        value: null,
+        options: [
+          {
+            value: 'createdDate,desc',
+            label: '최신 보고순',
+          },
+          {
+            value: 'createdDate,asc',
+            label: '오래된 보고순',
+          },
+        ],
+        value: 'createdDate,desc',
       },
       toggleNewModal: false,
       toggleProcessModal: false,
@@ -114,9 +130,16 @@ export default {
         this.toggleNewModal = false
       }
     },
+    onChangeSearch: function(params) {
+      this.params = {
+        ...this.params,
+        ...params,
+      }
+      this.$store.dispatch('getContentsList', this.params)
+    },
   },
   created() {
-    this.$store.dispatch('getContentsList')
+    this.$store.dispatch('getContentsList', this.params)
   },
 }
 </script>

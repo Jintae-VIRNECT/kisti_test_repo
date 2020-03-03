@@ -95,7 +95,8 @@
 
   //- 기타
   div(v-else)
-    span {{ data[prop] }}
+    span(v-if="data[prop]") {{ data[prop] }}
+    span(v-else) ―
 </template>
 
 <style lang="scss">
