@@ -1,11 +1,12 @@
-<template lang="pug">
-  el-row(type="flex" justify="center")
-    el-pagination(
+<template>
+  <el-row type="flex" justify="center">
+    <el-pagination
       layout="prev, pager, next"
       :total="totalElements"
       :page-size="params.size"
       @current-change="onPageChange"
-    )
+    ></el-pagination>
+  </el-row>
 </template>
 
 <script>

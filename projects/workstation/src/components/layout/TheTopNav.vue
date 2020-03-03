@@ -1,14 +1,21 @@
-<template lang="pug">
-	.top-nav
-		.top-nav__left
-			router-link(to="/")
-				img.logo-img(src="~assets/image/top-bar-logo-smart-factory.png") 
-			.divider
-			label.workspace {{getWorkspaceName}}
-		.top-nav__right(v-if="$store.getters.getIsLoggedIn === true")
-			img.profile-img(:src="getUser.profile") 
-			span.username {{getUser.name}}
-			button.logout-btn(@click="userLogout") 로그아웃
+<template>
+  <div class="top-nav">
+    <div class="top-nav__left">
+      <router-link to="/"
+        ><img
+          class="logo-img"
+          src="~assets/image/top-bar-logo-smart-factory.png"
+      /></router-link>
+      <div class="divider"></div>
+      <label class="workspace">{{ getWorkspaceName }}</label>
+    </div>
+    <div class="top-nav__right" v-if="$store.getters.getIsLoggedIn === true">
+      <img class="profile-img" :src="getUser.profile" /><span
+        class="username"
+        >{{ getUser.name }}</span
+      ><button class="logout-btn" @click="userLogout">로그아웃</button>
+    </div>
+  </div>
 </template>
 
 <script>

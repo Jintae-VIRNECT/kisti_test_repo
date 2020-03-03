@@ -10,13 +10,14 @@
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "styleguide": "vue-styleguidist server",
+    "styleguide:build": "vue-styleguidist build"
   },
   "dependencies": {
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",
-    "scaffold-modules-user": "^1.0.1",
-    "user-form-validate": "^1.0.1"
+    "scaffold-modules-user": "^1.0.1"
   },
   "devDependencies": {
     "@vue/component-compiler-utils": "^3.1.0",
@@ -41,6 +42,9 @@
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-order": "^4.0.0",
     "stylelint-prettier": "^1.1.2",
-    "stylelint-scss": "^3.14.2"
+    "stylelint-scss": "^3.14.2",
+    "vue-loader": "^15.8.3",
+    "vue-style-loader": "^4.1.2",
+    "vue-styleguidist": "^4.13.1"
   }
 }

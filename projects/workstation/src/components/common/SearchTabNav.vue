@@ -1,31 +1,52 @@
-<template lang="pug">
-  div
-    el-input.tool.search(
-      ref="search" 
-      :placeholder="placeholder" 
-      v-model="searchInput" 
+<template>
+  <div>
+    <el-input
+      class="tool search"
+      ref="search"
+      :placeholder="placeholder"
+      v-model="searchInput"
       @change="onChangeSearch()"
-    )
-      el-button(slot="append" icon="el-icon-search")
-    span 필터 : 
-    el-select.filter(
-      v-model="filterValue" 
-      multiple placeholder="Select" 
-      @change="onFilterChange(filterValue)" 
-      v-bind:class="filterSelected" 
+    >
+      <el-button slot="append" icon="el-icon-search"></el-button>
+    </el-input>
+    <span>필터 :</span>
+    <el-select
+      class="filter"
+      v-model="filterValue"
+      multiple
+      placeholder="Select"
+      @change="onFilterChange(filterValue)"
+      v-bind:class="filterSelected"
       collapse-tags
-    )
-      el-option(v-for="item in filter.options" :key="item.value" :label="item.label" :value="item.value")
-    span 정렬 : 
-    el-select.sorter(
-      v-model="sortValue" 
-      placeholder="Select" 
+    >
+      <el-option
+        v-for="item in filter.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      ></el-option>
+    </el-select>
+    <span>정렬 :</span>
+    <el-select
+      class="sorter"
+      v-model="sortValue"
+      placeholder="Select"
       @change="onChangeSearch()"
-    )
-      el-option(v-for="item in sort.options" :key="item.value" :label="item.label" :value="item.value")
+    >
+      <el-option
+        v-for="item in sort.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      ></el-option>
+    </el-select>
+  </div>
 </template>
 
 <script>
+/**
+ * 검색어 input, 필터 dropdown, 정렬 dropdown 으로 이루어진 컴포넌트
+ */
 export default {
   props: {
     search: String,
@@ -47,6 +68,10 @@ export default {
   },
   methods: {
     onChangeSearch() {
+      /**
+       * 변경이 일어나면 부모에게 검색 파라미터를 보낸다
+       * @property {object} { search, filter, sort }
+       */
       this.$emit('change', {
         search: this.searchInput,
         filter: this.filterValue.map(value => value.toUpperCase()).join(),

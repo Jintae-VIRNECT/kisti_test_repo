@@ -1,15 +1,20 @@
-<template lang="pug">
-  .page-nav
-    .page-nav--left
-      el-tabs.page-tab-nav(v-model='activeTab' @tab-click="pathToTab") 
-        el-tab-pane(
-          v-for="(m, index) in model" 
-          :key="m.to" 
-          :label="m.title" 
+<template>
+  <div class="page-nav">
+    <div class="page-nav--left">
+      <el-tabs class="page-tab-nav" v-model="activeTab" @tab-click="pathToTab">
+        <el-tab-pane
+          v-for="m in model"
+          :key="m.to"
+          :label="m.title"
           :name="m.to"
-      )
-    .page-nav--right
-      slot(name="page-nav--right")
+        >
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+    <div class="page-nav--right">
+      <slot name="page-nav--right"></slot>
+    </div>
+  </div>
 </template>
 <script>
 const model = [
