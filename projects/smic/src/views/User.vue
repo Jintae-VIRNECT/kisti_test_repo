@@ -64,15 +64,15 @@ export default {
     async onSubmit(form) {
       try {
         const { email, password } = form
-        const response = await this.$store.dispatch('USER_LOGIN', {
+        await this.$store.dispatch('USER_LOGIN', {
           email,
           password,
         })
-        if (response.isLogin === false) return (this.onError = true)
         this.$store.dispatch('getMemberList')
         this.$router.push({ path: '/' })
       } catch (e) {
-        console.log(e)
+        console.error(e)
+        this.onError = true
       }
     },
   },
