@@ -1,6 +1,7 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.WorkspaceService;
+import com.virnect.workspace.dto.request.UserPermissionReviseRequest;
 import com.virnect.workspace.dto.request.UsersCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
@@ -17,7 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -98,7 +98,7 @@ public class WorkspaceController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "검색어", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "filter", value = "사용자 필터(ALL, MASTER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "email,desc"),
@@ -183,5 +183,20 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
-
+    /**
+     * 워크스페이스 멤버 권한 수정
+     * @param workspaceId - 권한 수정이 일어나는 워크스페이스 uuid
+     * @param userId - 권한 수정하는 마스터/매니저 uuid
+     * @param userPermissionReviseRequest - 권한이 수정될 멤버 정보
+     * @param bindingResult
+     * @return - 권한 수정 성공 여부
+     */
+    @PostMapping("/{workspaceId}/permission")
+    public ResponseEntity<ApiResponse> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody UserPermissionReviseRequest userPermissionReviseRequest, BindingResult bindingResult) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || bindingResult.hasErrors()) {
+            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse apiResponse = this.workspaceService.reviseUserPermission(workspaceId,userId,userPermissionReviseRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
 }

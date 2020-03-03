@@ -6,10 +6,7 @@ import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.dto.GroupInfoDTO;
 import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.redis.WorkspaceInviteRedisRequest;
-import com.virnect.workspace.dto.request.UsersCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteMailRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.BusinessException;
@@ -133,7 +130,7 @@ public class WorkspaceService {
         */
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
+        List<MemberInfoDTO> resultMemberListResponse;
 
         if (StringUtils.hasText(filter)) {
             //필터 쿼리에 쓰일 woskspace
@@ -147,7 +144,6 @@ public class WorkspaceService {
             if (filter.contains("MASTER")) workspaceRoleList.add(WorkspaceRole.builder().id(1L).build());
             if (filter.contains("MANAGER")) workspaceRoleList.add(WorkspaceRole.builder().id(2L).build());
             if (filter.contains("MEMBER")) workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
-            if (filter.contains("ALL")) workspaceRoleList = this.workspaceRoleRepository.findAll();
 
             //user 서비스에서 페이징 안된 membList 받아온다.
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
@@ -440,7 +436,7 @@ public class WorkspaceService {
             }
 
             //4. group_users, group_user_permission insert
-            if (userInfo.getGroups()!=null) {
+            if (userInfo.getGroups() != null) {
                 this.groupService.setGroupUser(userInfo.getGroups(), workspaceUser);
             }
         }
@@ -480,7 +476,6 @@ public class WorkspaceService {
 
         WorkspaceRole workspaceRole;
         for (Long permissionId : permissionIdList) {
-            System.out.println(Integer.parseInt(permissionId.toString()));
             switch (Integer.parseInt(permissionId.toString())) {
                 case 1:
                     workspaceRole = this.workspaceRoleRepository.findByRole("MASTER");
@@ -503,7 +498,6 @@ public class WorkspaceService {
                 default:
                     workspaceRole = null;
             }
-
             WorkspacePermission workspacePermission = WorkspacePermission.builder().id(permissionId).build();
 
             WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
@@ -511,9 +505,41 @@ public class WorkspaceService {
                     .workspacePermission(workspacePermission)
                     .workspaceUser(workspaceUser)
                     .build();
+
             this.workspaceUserPermissionRepository.save(workspaceUserPermission);
 
             log.info("[사용자 - " + workspaceUser.getUserId() + " ] [직책 - " + workspaceRole.getRole() + " ] [권한 - " + workspacePermission.getId() + " ]");
         }
+    }
+
+    /**
+     * 사용자 워크스페이스,그룹 내 권한 변경
+     * @param workspaceId - 권한 변경이 이루어지는 워크스페이스 uuid
+     * @param userId - 권한 변경을 하는 워크스페이스 마스터 또는 매니저 유저 uuid
+     * @param userPermissionReviseRequest - 변경 될 권한 정보
+     * @return - 사용자 권한 정보
+     */
+    public ApiResponse reviseUserPermission(String workspaceId, String userId, UserPermissionReviseRequest userPermissionReviseRequest) {
+       /* //1. 권한 확인
+        if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
+            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId,workspaceRepository.findByUuid(workspaceId));
+
+        //2. workspace permission 변경
+        if (!userPermissionReviseRequest.getWorkspacePermissions().isEmpty()) {
+
+            this.workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
+            this.setWorkspaceUserPermissionInfo(userPermissionReviseRequest.getWorkspacePermissions(),workspaceUser);
+        }
+        //3. group permission 변경
+        if (!userPermissionReviseRequest.getGroups().isEmpty()){
+            this.groupService.reviseGroupUserPermission(userPermissionReviseRequest.getGroups(),workspaceUser);
+            //this.groupService.setGroupUser(userPermissionReviseRequest.getGroups(),workspaceUser);
+        }
+
+*/
+
+        return new ApiResponse<>();
     }
 }
