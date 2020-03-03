@@ -68,8 +68,8 @@
 </template>
 <script>
 import { page } from '../enum'
-import validateDirective from 'user-form-validate/src/directive'
-import validateMixin from 'user-form-validate/src/mixin'
+import validateDirective from '../../../user-form-validate/src/directive'
+import validateMixin from '../../../user-form-validate/src/mixin'
 
 export default {
 	directives: {
