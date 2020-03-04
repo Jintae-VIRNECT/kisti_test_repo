@@ -159,7 +159,7 @@ export default {
     padding: 2px 10px;
     color: #0d2a58;
     font-weight: 500;
-    background-color: #f2f5f9;
+    background-color: #eaedf3;
     border: none;
     border-radius: 4px;
     box-shadow: none;

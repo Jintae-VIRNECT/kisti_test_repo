@@ -54,6 +54,7 @@ export default {
       state.me.userType = user.userType
       state.me.profile = user.profile
       state.me.loginLock = user.loginLock
+      state.me.qrCode = user.qrCode
       state.isLoggedIn = true
       state.workspaceInfoList = workspaceInfoList
     },
@@ -68,6 +69,7 @@ export default {
       state.me.userType = null
       state.me.profile = null
       state.me.loginLock = null
+      state.me.qrCode = null
       state.isLoggedIn = false
       state.workspaceInfoList = []
     },
