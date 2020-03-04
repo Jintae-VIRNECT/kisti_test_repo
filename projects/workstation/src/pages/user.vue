@@ -49,7 +49,7 @@ export default {
         this.$store.dispatch('user/getMemberList')
         this.$router.push({ path: '/' })
       } catch (e) {
-        console.log(e)
+        throw new Error(e)
       }
     },
   },

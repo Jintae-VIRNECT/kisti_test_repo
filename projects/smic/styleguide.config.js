@@ -1,14 +1,20 @@
 const { resolve } = require('path')
 const { VueLoaderPlugin } = require('vue-loader')
+const fs = require('fs')
 
-const docSiteUrl =
-  process.env.DEPLOY_PRIME_URL || 'https://vue-styleguidist.github.io'
+const REPOSITORY_URL = 'https://github.com/virnect-corp/PF-WebWorkStation'
+const COMPONENTS_DIR = './src/components'
+
+const sections = fs.readdirSync(COMPONENTS_DIR).map(dir => ({
+  name: dir,
+  components: `${COMPONENTS_DIR}/${dir}/**/[A-Z]*.vue`,
+}))
 
 module.exports = {
-  components: './src/components/**/[A-Z]*.vue',
+  sections,
   ribbon: {
-    text: 'Back to examples',
-    url: `${docSiteUrl}/Examples.html`,
+    text: 'Repository',
+    url: REPOSITORY_URL,
   },
   webpackConfig: {
     resolve: {
