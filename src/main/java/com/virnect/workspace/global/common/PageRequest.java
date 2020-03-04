@@ -2,6 +2,8 @@ package com.virnect.workspace.global.common;
 
 import org.springframework.data.domain.Sort;
 
+import java.util.Objects;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @email practice1356@gmail.com
@@ -28,7 +30,9 @@ public final class PageRequest {
     }
 
     public org.springframework.data.domain.PageRequest of() {
-        String[] sortQuery = this.sort.split(",");
+        // sort nullable
+        String sortStr = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate,DESC" : this.sort;
+        String[] sortQuery = sortStr.split(",");
         String properties = sortQuery[0];
         String sort = sortQuery[1].toUpperCase();
 
