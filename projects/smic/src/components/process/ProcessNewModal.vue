@@ -28,6 +28,40 @@
         el-button(type='primary' @click='handleConfirm') 다음
 </template>
 
+<script>
+import filters from '@/mixins/filters'
+export default {
+  mixins: [filters],
+  props: {
+    toggleProcessModal: Boolean,
+    target: Object,
+  },
+  data() {
+    return {
+      processModal: false,
+    }
+  },
+  methods: {
+    handleCancel() {
+      this.processModal = false
+      this.$emit('onToggleNewModal', false)
+    },
+    handleOpen() {},
+    handleConfirm() {
+      this.$emit('handleConfirm')
+    },
+  },
+  watch: {
+    $props: {
+      handler() {
+        this.processModal = this.$props.toggleProcessModal
+      },
+      deep: true,
+    },
+  },
+}
+</script>
+
 <style lang="scss">
 $label-width: 97px;
 $sub-label-width: 80px;
@@ -230,37 +264,3 @@ $value-width: 374px;
   }
 }
 </style>
-
-<script>
-import filters from '@/mixins/filters'
-export default {
-  mixins: [filters],
-  props: {
-    toggleProcessModal: Boolean,
-    target: Object,
-  },
-  data() {
-    return {
-      processModal: false,
-    }
-  },
-  methods: {
-    handleCancel() {
-      this.processModal = false
-      this.$emit('onToggleNewModal', false)
-    },
-    handleOpen() {},
-    handleConfirm() {
-      this.$emit('handleConfirm')
-    },
-  },
-  watch: {
-    $props: {
-      handler() {
-        this.processModal = this.$props.toggleProcessModal
-      },
-      deep: true,
-    },
-  },
-}
-</script>

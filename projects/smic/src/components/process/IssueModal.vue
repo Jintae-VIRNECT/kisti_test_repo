@@ -47,7 +47,7 @@
           label 작업 이름
           .value
             span {{ issueDetail.jobName }}
-            a(v-if="true" :href="jobUrl")
+            a(v-if="/issue/.test($route.path)" :href="jobUrl")
               el-button
                 img(src="~@/assets/image/ic-shortcut.svg")
                 span 작업 바로가기

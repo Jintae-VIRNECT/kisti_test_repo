@@ -65,6 +65,14 @@ export default {
             value: 'All',
             label: '전체',
           },
+          {
+            value: 'GLOBAL',
+            label: '이슈',
+          },
+          {
+            value: 'WORK',
+            label: '작업 이슈',
+          },
         ],
         value: ['All'],
       },

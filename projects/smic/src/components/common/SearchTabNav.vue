@@ -26,6 +26,12 @@
 </template>
 
 <script>
+/**
+ * 검색어 input, 필터 dropdown, 정렬 dropdown 으로 이루어진 컴포넌트
+ *
+ * __require__ element-ui
+ * <br>__used__ smic
+ */
 export default {
   props: {
     search: String,

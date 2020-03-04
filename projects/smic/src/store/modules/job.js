@@ -72,7 +72,18 @@ export default {
       return data
     },
     async getIssueList(context, params = {}) {
-      const data = await api('ISSUE_LIST', { params })
+      // url 분기
+      if (/,/.test(params.filter)) {
+        params.filter = 'ALL'
+      }
+      const url =
+        {
+          GLOBAL: 'ISSUE_LIST_GLOBAL',
+          WORK: 'ISSUE_LIST_WORK',
+        }[params.filter] || 'ISSUE_LIST'
+      delete params.filter
+
+      const data = await api(url, { params })
       context.commit('SET_ISSUE_LIST', data.issues)
       return data
     },
