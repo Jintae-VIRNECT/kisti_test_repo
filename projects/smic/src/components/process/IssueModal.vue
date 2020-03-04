@@ -10,13 +10,13 @@
       template(slot="title")
         span.process-new-modal__header-title 이슈 관리
       .process-new-modal__body
-        .section.border-divider
+        .section.border-divider(v-if="issueDetail.photoFilePath")
           el-image(:src="issueDetail.photoFilePath" :preview-src-list="[issueDetail.photoFilePath]")
           i.el-icon-full-screen
         .section.issue
           label 이슈 유형
           .value
-            span.issue-type {{ issueType }}
+            span.issue-type {{ isWorkIssue ? '작업 이슈' : '이슈' }}
         .section
           label 보고자
           .value
@@ -27,21 +27,23 @@
             span {{ reportedDate }}
         .section
           label 이슈내용
-          .value
+          .value(v-if="issueDetail.photoFilePath")
             span {{ issueDetail.photoFilePath }}
             a(:href="issueDetail.photoFilePath" download)
               el-button
                 img(src="~@/assets/image/ic-download.svg")
                 span 다운로드
-        .section
+          .value(v-else)
+            span {{ issueDetail.caption }}
+        .section(v-if="isWorkIssue")
           label 공정 이름
           .value
             span {{ issueDetail.processName }}
-        .section
+        .section(v-if="isWorkIssue")
           label 세부공정 이름
           .value
             span {{ issueDetail.subProcessName }}
-        .section
+        .section(v-if="isWorkIssue")
           label 작업 이름
           .value
             span {{ issueDetail.jobName }}
@@ -53,7 +55,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import filters from '@/plugins/dayjs'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   props: {
@@ -68,8 +70,8 @@ export default {
   },
   computed: {
     ...mapGetters(['memberList', 'issueList', 'issueDetail']),
-    issueType() {
-      return this.issueDetail.processId ? '작업 이슈' : '이슈'
+    isWorkIssue() {
+      return this.issueDetail.processId
     },
     worker() {
       const worker = this.memberList.find(
@@ -80,7 +82,7 @@ export default {
     reportedDate() {
       return (
         this.issueDetail.reportedDate &&
-        filters.dayJs_FilterDateTimeFormat(this.issueDetail.reportedDate)
+        dayjs.filters.dayJs_FilterDateTimeFormat(this.issueDetail.reportedDate)
       )
     },
     jobUrl() {

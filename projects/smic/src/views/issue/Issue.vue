@@ -2,7 +2,7 @@
   div
     h1.admin-body__header 이슈관리
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부 공정, 작업, 멤버 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
+      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부 공정, 작업, 멤버 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     inline-table
       template(slot="body")
         el-table.inline-table(
@@ -55,8 +55,8 @@ export default {
     return {
       issueId: 0,
       colSetting: tableColSettings,
-      search: '',
       params: {
+        search: '',
         size: 8,
       },
       filter: {
@@ -108,6 +108,11 @@ export default {
     },
   },
   created() {
+    // route query check
+    const query = this.$router.currentRoute.query
+    if (query && query.search) {
+      this.params.search = query.search
+    }
     this.$store.dispatch('getIssueList', this.params)
   },
 }

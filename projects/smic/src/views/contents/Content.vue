@@ -3,7 +3,7 @@
     page-header
     page-tab-nav
       template(slot="page-nav--right")
-        searchTabNav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")
+        searchTabNav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     router-view
     pagination(v-if="isListPage" target="contents" :params="params")
 </template>
@@ -19,8 +19,8 @@ export default {
   },
   data() {
     return {
-      search: '',
       params: {
+        search: '',
         size: 8,
       },
       filter: {
@@ -67,6 +67,11 @@ export default {
     },
   },
   created() {
+    // route query check
+    const query = this.$router.currentRoute.query
+    if (query && query.search) {
+      this.params.search = query.search
+    }
     this.$store.dispatch('getContentsList', this.params)
   },
 }

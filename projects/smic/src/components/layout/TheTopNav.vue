@@ -64,7 +64,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-dropdown {
+.el-dropdown > span {
   cursor: pointer;
 }
 </style>

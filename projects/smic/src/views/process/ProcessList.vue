@@ -8,7 +8,7 @@
       el-breadcrumb-item(:to='{path: "/process"}') 공정
     process-dash-banner(:data="processList" initTopic="table")
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="searchInput" :filter="filter" :sort="sort" @change="onChangeSearch")
+      search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     inline-table(:setMainHeader="true")
       template(slot="header-left")
         span.title 공정 목록
@@ -85,8 +85,8 @@ export default {
   },
   data() {
     return {
-      searchInput: null,
       params: {
+        search: '',
         size: 10,
       },
       filter: {
@@ -153,10 +153,13 @@ export default {
   },
   created() {
     // route query check
-    const filterQuery = this.$router.currentRoute.query.filter
-    if (filterQuery) {
+    const query = this.$router.currentRoute.query
+    if (query && query.search) {
+      this.params.search = query.search
+    }
+    if (query && query.filter) {
       this.filter.value = [
-        this.filter.options.find(option => option.label === filterQuery).value,
+        this.filter.options.find(option => option.label === query.filter).value,
       ]
     }
     this.$store.dispatch('getProcessList', this.params)
