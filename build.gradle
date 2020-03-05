@@ -72,7 +72,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     //Eureka Client
-    implementation 'org.springframework.cloud:spring-cloud-starter-netfilx-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
 test {
