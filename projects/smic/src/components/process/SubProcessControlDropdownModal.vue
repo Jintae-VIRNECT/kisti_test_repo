@@ -80,7 +80,7 @@ export default {
       }
     },
     async handleEditConfirm() {
-      if (this.validate(this.form)) {
+      if (!this.validate(this.form)) {
         return false
       }
       this.form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(
@@ -118,14 +118,14 @@ export default {
         dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
       ]
     },
-    async validate(form) {
+    validate(form) {
       if (!form.date.length) {
-        await this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
+        this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
           confirmButtonText: '확인',
         })
         return false
       } else if (!form.workerUUID) {
-        await this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
+        this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
           confirmButtonText: '확인',
         })
         return false

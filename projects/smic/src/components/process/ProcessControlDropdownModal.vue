@@ -87,11 +87,13 @@ export default {
         subProcessList: [],
       },
       rules: {
-        date: {
-          required: true,
-          trigger: 'blur',
-          message: '공정 일정을 지정하여야 합니다.',
-        },
+        date: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '공정 일정을 지정하여야 합니다.',
+          },
+        ],
       },
       subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
       // 날짜
@@ -155,7 +157,7 @@ export default {
     },
     async handleCreateConfirm() {
       const form = cloneDeep(this.form)
-      if (this.validate(form)) {
+      if (!this.validate(form)) {
         return false
       }
       // post form
@@ -195,7 +197,7 @@ export default {
     },
     async handleEditConfirm() {
       const form = cloneDeep(this.form)
-      if (this.validate(form)) {
+      if (!this.validate(form)) {
         return false
       }
 
@@ -274,21 +276,21 @@ export default {
         )
       }
     },
-    async validate(form) {
+    validate(form) {
       if (!form.date.length) {
-        await this.$alert(`공정 일정을 지정하여야 합니다.`, {
+        this.$alert(`공정 일정을 지정하여야 합니다.`, {
           confirmButtonText: '확인',
         })
         return false
       }
       for (const sub of form.subProcessList) {
         if (!sub.date) {
-          await this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
+          this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
             confirmButtonText: '확인',
           })
           return false
         } else if (!sub.workerUUID) {
-          await this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
+          this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
             confirmButtonText: '확인',
           })
           return false
