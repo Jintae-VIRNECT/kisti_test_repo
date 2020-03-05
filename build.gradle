@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
-    id "io.franzbecker.gradle-lombok" version "1.14"
+    id "io.franzbecker.gradle-lombok" version "3.3.0"
     id 'java'
 }
 
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
     implementation 'com.amazonaws:aws-java-sdk-ses:1.11.415' // AWS Simple Email Service
 
-    //Swagger Libraries
+    // Swagger Libraries
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
@@ -60,6 +60,8 @@ dependencies {
     // Netflix Feign Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+    // Netflix Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
 test {

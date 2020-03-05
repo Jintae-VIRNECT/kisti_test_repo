@@ -82,7 +82,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message:develop'
+            sh 'docker run -p 8084:8084 -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-message pf-message:develop'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -92,7 +92,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message:staging'
+            sh 'docker run -p 8084:8084 -e "SPRING_PROFILES_ACTIVE=staging" -d --name=pf-message pf-message:staging'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -102,7 +102,7 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8084:8084 -d --name=pf-message pf-message'
+            sh 'docker run -p 8084:8084 -e "SPRING_PROFILES_ACTIVE=master" -d --name=pf-message pf-message'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }

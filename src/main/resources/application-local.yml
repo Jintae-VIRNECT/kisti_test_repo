@@ -39,3 +39,11 @@ file:
 # Workspace Server Configuration
 workspace:
   serverUrl: "http://localhost:8082/workspaces"
+
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

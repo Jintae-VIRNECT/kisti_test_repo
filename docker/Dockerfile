@@ -8,4 +8,4 @@ COPY ./build/libs/PF-Message-1.0.jar ./PF-Message-1.0.jar
 EXPOSE 8084
 
 ## Command executed when container is start up.
-CMD ["java","-Dspring.profiles.active=develop", "-jar","PF-Message-1.0.jar"]
+CMD ["java", "-jar", "PF-Message-1.0.jar"]
