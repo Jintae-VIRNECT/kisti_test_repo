@@ -132,6 +132,9 @@ $value-width: 374px;
         margin: 12px auto 12px 30px;
         background-color: #eaedf3;
       }
+      .el-form-item {
+        margin-bottom: 0;
+      }
       &:last-child > .el-divider {
         display: none;
       }
@@ -174,14 +177,18 @@ $value-width: 374px;
       letter-spacing: normal;
     }
   }
-  .value {
+  .value,
+  .el-form-item__content {
     display: inline-block;
-    margin-left: 10px;
+    // margin-left: 10px;
     & .el-select,
     & .el-input {
       display: block;
       width: $value-width;
     }
+  }
+  .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
+    content: none;
   }
   input,
   .auth-select {

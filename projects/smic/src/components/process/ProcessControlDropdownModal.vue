@@ -10,14 +10,13 @@
       template(slot="title")
         span.process-new-modal__header-title {{modalType === "create" ? '신규 공정 등록' : '공정 편집'}}
       .process-new-modal__body
-        .section.border-divider
-          label 공정 이름
-          .value
-            span {{form.name}}
-        .section-body
-          .section
-            label.label-vertical-center.necessary 공정 일정
-            .value.flex-container
+        el-form(ref="form" :model="form" :rules="rules" label-position="left" lable-width="120px")
+          .section.border-divider
+            label 공정 이름
+            .value
+              span {{form.name}}
+          .section.border-divider
+            el-form-item(label="공정 일정" prop="date")
               el-date-picker(
                 v-model="form.date"
                 type="datetimerange"
@@ -27,30 +26,24 @@
                 :picker-options="pickerOptions"
                 @focus="onProcessDateClick"
               )
-          .section(v-if="modalType === 'create'")
-            label.label-vertical-center 공정 담당자
-            .value
-              el-select.auth-select( v-model='form.ownerUUID' placeholder='Select')
+            el-form-item(label="공정 담당자")
+              el-select.auth-select(v-model='form.ownerUUID' placeholder='Select')
                 el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
               span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다
-          .section
-            label.label-vertical-center 공정 위치
-            .value
-              el-input(placeholder='공정 위치를 입력해주세요' v-model='form.position' )
+            el-form-item(label="공정 위치")
+              el-input(placeholder='공정 위치를 입력해주세요' v-model='form.position')
               span.description 담당자에게 공정 진행 위치를 안내합니다.
-        .section.border-divider
-          label 세부공정 목록
-          .value
-            .number-label {{ form.subProcessList.length }}
-        .detail-process-list
-          .detail-process-item(v-for="(sub, index) in form.subProcessList")
-            .section.title
-              label {{ sub.priority | leftZeroPad }}.
-              .value
-                span {{ sub.name }}
-            .section
-              label.necessary 세부공정 일정
-              .value.flex-container
+          .section.border-divider
+            label 세부공정 목록
+            .value
+              .number-label {{ form.subProcessList.length }}
+          .detail-process-list
+            .detail-process-item(v-for="(sub, index) in form.subProcessList")
+              .section.title
+                label {{ sub.priority | leftZeroPad }}.
+                .value
+                  span {{ sub.name }}
+              el-form-item.section(label="세부공정 일정")
                 el-date-picker(
                   v-model="sub.date"
                   type="datetimerange"
@@ -59,12 +52,10 @@
                   format="yyyy. MM. dd.  HH:mm"
                   :picker-options="pickerOptions"
                 )
-            .section
-              label.necessary 담당자
-              .value
+              el-form-item.section(label="담당자" prop="workerUUID")
                 el-select.auth-select(v-model='sub.workerUUID' placeholder='Select')
                   el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
-            el-divider
+              el-divider
               
       span.dialog-footer.section(slot='footer')
         el-button(type='primary' @click='handleConfirm') 완료
@@ -93,6 +84,18 @@ export default {
         position: null,
         date: [],
         subProcessList: [],
+      },
+      rules: {
+        date: {
+          required: true,
+          trigger: 'blur',
+          message: '공정 일정을 지정하여야 합니다.',
+        },
+        workerUUID: {
+          required: true,
+          trigger: 'blur',
+          message: '공정 담당자를 지정하여야 합니다.',
+        },
       },
       subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
       // 날짜
@@ -172,9 +175,10 @@ export default {
       try {
         await this.$store.dispatch('createProcess', form)
         await this.$alert(
-          `입력하신 정보로 공정을 추가 생성되었습니다. \n
-            추가된 공정으로 새로운 보고를 받습니다.`,
-          '공정 추가 생성 완료',
+          `입력하신 정보로 새로운 공정이 등록되었습니다. \n
+            담당자의 공정 진행상태가 보고됩니다.\n
+            보고된 정보는 공정 목록에서 확인할 수 있습니다.`,
+          '공정 등록 완료',
           {
             confirmButtonText: '확인',
           },
