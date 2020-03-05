@@ -49,6 +49,7 @@ export default {
         .replace('{processId}', row.processId)
         .replace('{subProcessId}', row.subProcessId)
         .replace('{jobId}', row.jobId)
+        .replace('{issueId}', row.issueId)
       this.$router.push(url)
     },
   },

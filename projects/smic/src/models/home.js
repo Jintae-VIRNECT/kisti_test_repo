@@ -12,7 +12,7 @@ export const currentReportedInformationTabs = [
   {
     label: '이슈',
     name: 'issue',
-    link: '/process/{processId}/{subProcessId}?jobId={jobId}&modal=Issue',
+    link: '/issue?issueId={issueId}',
   },
   {
     label: '스마트툴',

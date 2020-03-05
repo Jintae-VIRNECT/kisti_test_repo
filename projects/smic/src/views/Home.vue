@@ -67,9 +67,6 @@
         )
           template(slot="header-left")
             span.title 최근 보고 정보
-          template(slot="header-right")
-            .text-right
-              router-link.more-link(type="text" :to="currentReportedInformationTabs.find(c => c.prop === activeTab || 'process' ).link") 더보기
           template(slot="tabs")
             el-tabs(v-model='activeTab' @tab-click="setInlineTableByTabs")
               el-tab-pane(

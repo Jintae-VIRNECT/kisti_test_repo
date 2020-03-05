@@ -121,6 +121,13 @@ export default {
     if (query && query.search) {
       this.params.search = query.search
     }
+    // issue modal
+    if (query && query.issueId) {
+      this.issueId = query.issueId * 1
+      setTimeout(() => {
+        this.toggleIssueModal = true
+      }, 200)
+    }
     this.$store.dispatch('getIssueList', this.params)
   },
 }
