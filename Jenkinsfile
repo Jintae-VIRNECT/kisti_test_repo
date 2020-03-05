@@ -82,7 +82,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:develop'
+            sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-workspace pf-workspace:develop'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -92,7 +92,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:staging'
+            sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=staging" -d --name=pf-workspace pf-workspace:staging'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -102,7 +102,7 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace'
+            sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=master" -d --name=pf-workspace pf-workspace'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
