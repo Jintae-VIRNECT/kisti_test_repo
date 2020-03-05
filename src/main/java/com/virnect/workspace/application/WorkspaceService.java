@@ -520,25 +520,23 @@ public class WorkspaceService {
      * @return - 사용자 권한 정보
      */
     public ApiResponse reviseUserPermission(String workspaceId, String userId, UserPermissionReviseRequest userPermissionReviseRequest) {
-       /* //1. 권한 확인
-        if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
+        //1. 요청자 권한 확인
+        if (!getWorkspaceUserRole(workspaceId, userId).getRole().equals("MASTER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId,workspaceRepository.findByUuid(workspaceId));
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userPermissionReviseRequest.getUserId(),workspaceRepository.findByUuid(workspaceId));
 
         //2. workspace permission 변경
         if (!userPermissionReviseRequest.getWorkspacePermissions().isEmpty()) {
-
+            WorkspaceUserPermission workspaceUserPermission =this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+            WorkspaceRole userRole = workspaceUserPermission.getWorkspaceRole();
             this.workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
             this.setWorkspaceUserPermissionInfo(userPermissionReviseRequest.getWorkspacePermissions(),workspaceUser);
         }
         //3. group permission 변경
         if (!userPermissionReviseRequest.getGroups().isEmpty()){
             this.groupService.reviseGroupUserPermission(userPermissionReviseRequest.getGroups(),workspaceUser);
-            //this.groupService.setGroupUser(userPermissionReviseRequest.getGroups(),workspaceUser);
         }
-
-*/
 
         return new ApiResponse<>();
     }

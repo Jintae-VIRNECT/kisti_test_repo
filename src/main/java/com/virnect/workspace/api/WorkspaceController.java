@@ -104,7 +104,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "email,desc"),
     })
     @GetMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter,  @ApiIgnore PageRequest pageable) {
+    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -184,9 +184,10 @@ public class WorkspaceController {
     }
 
     /**
-     * 워크스페이스 멤버 권한 수정
-     * @param workspaceId - 권한 수정이 일어나는 워크스페이스 uuid
-     * @param userId - 권한 수정하는 마스터/매니저 uuid
+     * 워크스페이스 매니저 권한 수정
+     *
+     * @param workspaceId                 - 권한 수정이 일어나는 워크스페이스 uuid
+     * @param userId                      - 권한 수정하는 마스터/매니저 uuid
      * @param userPermissionReviseRequest - 권한이 수정될 멤버 정보
      * @param bindingResult
      * @return - 권한 수정 성공 여부
@@ -196,7 +197,7 @@ public class WorkspaceController {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || bindingResult.hasErrors()) {
             throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse apiResponse = this.workspaceService.reviseUserPermission(workspaceId,userId,userPermissionReviseRequest);
+        ApiResponse apiResponse = this.workspaceService.reviseUserPermission(workspaceId, userId, userPermissionReviseRequest);
         return ResponseEntity.ok(apiResponse);
     }
 }

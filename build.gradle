@@ -70,6 +70,9 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netfilx-eureka-client'
 }
 
 test {
