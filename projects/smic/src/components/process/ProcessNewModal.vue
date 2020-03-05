@@ -68,6 +68,9 @@ $sub-label-width: 80px;
 $value-width: 374px;
 
 .process-new-modal {
+  .el-dialog {
+    cursor: default;
+  }
   .el-dialog__header {
     box-shadow: 0 1px 0 0 #eaedf3;
   }
@@ -92,7 +95,7 @@ $value-width: 374px;
     padding: 12px 12px 12px 30px;
     cursor: initial;
     & > * {
-      vertical-align: top;
+      vertical-align: middle;
     }
   }
   .detail-process-list {
@@ -131,9 +134,6 @@ $value-width: 374px;
         width: calc(100% - 42px);
         margin: 12px auto 12px 30px;
         background-color: #eaedf3;
-      }
-      .el-form-item {
-        margin-bottom: 0;
       }
       &:last-child > .el-divider {
         display: none;
@@ -180,12 +180,15 @@ $value-width: 374px;
   .value,
   .el-form-item__content {
     display: inline-block;
-    // margin-left: 10px;
     & .el-select,
     & .el-input {
       display: block;
       width: $value-width;
+      margin-bottom: -8px;
     }
+  }
+  .value {
+    margin-left: 10px;
   }
   .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
     content: none;

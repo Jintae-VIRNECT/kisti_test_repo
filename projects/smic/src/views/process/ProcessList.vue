@@ -21,7 +21,7 @@
             span 리스트
       template(slot="header-right")
         .inline-table__header.text-right
-          span.sub-title 등록된 공정 수 
+          span.sub-title 등록된 공정 수 &nbsp;&nbsp;
           span.value {{processTotal}}
       template(slot="body")
         div(v-if="topic === 'table'")

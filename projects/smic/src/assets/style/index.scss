@@ -243,7 +243,7 @@
     }
     &--right {
       display: inline-block;
-      // float: right;
+      float: right;
       width: 59%;
     }
     .more-link {
@@ -587,14 +587,16 @@
 }
 
 .page-nav .search-wrapper .search,
-.el-input {
+.page-nav .search-wrapper .el-select,
+div:not(.login-form) > .el-form .el-form-item__content {
   .el-input__inner {
     border: solid 2px rgba(0, 0, 0, 0);
     box-shadow: none;
   }
 
   &:hover {
-    .el-input__inner,
+    .el-input__inner:not(.el-date-editor),
+    .el-date-editor .el-range-input,
     .el-button--default {
       background: #e6e9ee;
       border-color: transparent;
@@ -603,6 +605,7 @@
   }
   &:focus-within {
     .el-input__inner,
+    .el-input__inner:not(.el-date-editor),
     .el-button--default {
       background: #fff;
       border-color: #5696f0;
@@ -661,10 +664,10 @@
 
 .tag {
   &.silver {
-    fill: #8d939c;
+    fill: #aebbcc;
   }
   &.gray {
-    fill: #aebbcc;
+    fill: #8d939c;
   }
   &.dark-gray {
     fill: #6e7277;
@@ -693,10 +696,10 @@
   border: none;
   border-radius: 3px;
   &.silver {
-    background-color: #8d939c;
+    background-color: #aebbcc;
   }
   &.gray {
-    background-color: #aebbcc;
+    background-color: #8d939c;
   }
   &.dark-gray {
     background-color: #6e7277;

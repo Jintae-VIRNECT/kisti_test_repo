@@ -43,18 +43,19 @@
                 label {{ sub.priority | leftZeroPad }}.
                 .value
                   span {{ sub.name }}
-              el-form-item.section(label="세부공정 일정")
-                el-date-picker(
-                  v-model="sub.date"
-                  type="datetimerange"
-                  start-placeholder="시작일"
-                  end-placeholder="마감일"
-                  format="yyyy. MM. dd.  HH:mm"
-                  :picker-options="pickerOptions"
-                )
-              el-form-item.section(label="담당자" prop="workerUUID")
-                el-select.auth-select(v-model='sub.workerUUID' placeholder='Select')
-                  el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
+              .section
+                el-form-item.is-required(label="세부공정 일정")
+                  el-date-picker(
+                    v-model="sub.date"
+                    type="datetimerange"
+                    start-placeholder="시작일"
+                    end-placeholder="마감일"
+                    format="yyyy. MM. dd.  HH:mm"
+                    :picker-options="pickerOptions"
+                  )
+                el-form-item.is-required(label="담당자")
+                  el-select.auth-select(v-model='sub.workerUUID' placeholder='Select')
+                    el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
               el-divider
               
       span.dialog-footer.section(slot='footer')
@@ -90,11 +91,6 @@ export default {
           required: true,
           trigger: 'blur',
           message: '공정 일정을 지정하여야 합니다.',
-        },
-        workerUUID: {
-          required: true,
-          trigger: 'blur',
-          message: '공정 담당자를 지정하여야 합니다.',
         },
       },
       subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
@@ -159,6 +155,10 @@ export default {
     },
     async handleCreateConfirm() {
       const form = cloneDeep(this.form)
+      if (this.validate(form)) {
+        return false
+      }
+      // post form
       form.contentUUID = form.id
       delete form.id
       form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(form.date[0])
@@ -174,6 +174,7 @@ export default {
       }
       try {
         await this.$store.dispatch('createProcess', form)
+        // done
         await this.$alert(
           `입력하신 정보로 새로운 공정이 등록되었습니다. \n
             담당자의 공정 진행상태가 보고됩니다.\n
@@ -186,7 +187,7 @@ export default {
         this.handleCancel()
         this.$router.push('/process')
       } catch (e) {
-        console.log(e)
+        console.error(e)
         this.$alert(`서버에러`, {
           confirmButtonText: '확인',
         })
@@ -194,6 +195,10 @@ export default {
     },
     async handleEditConfirm() {
       const form = cloneDeep(this.form)
+      if (this.validate(form)) {
+        return false
+      }
+
       form.ownerUUID = null
       form.processId = form.id
       delete form.id
@@ -268,6 +273,28 @@ export default {
           },
         )
       }
+    },
+    async validate(form) {
+      if (!form.date.length) {
+        await this.$alert(`공정 일정을 지정하여야 합니다.`, {
+          confirmButtonText: '확인',
+        })
+        return false
+      }
+      for (const sub of form.subProcessList) {
+        if (!sub.date) {
+          await this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
+            confirmButtonText: '확인',
+          })
+          return false
+        } else if (!sub.workerUUID) {
+          await this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
+            confirmButtonText: '확인',
+          })
+          return false
+        }
+      }
+      return true
     },
   },
 }

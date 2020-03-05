@@ -10,27 +10,27 @@
       template(slot="title")
         span.process-new-modal__header-title 세부공정 편집
       .process-new-modal__body
-        .section.border-divider
-          label 세부공정 이름
-          .value
-            span {{form.name}}
-        .section-body
-          .section
-            label.label-vertical-center.necessary 세부공정 일정
-            .value.flex-container
-              el-date-picker(
-                v-model="date"
-                type="datetimerange"
-                start-placeholder="시작일"
-                end-placeholder="마감일"
-                format="yyyy. MM. dd.  HH:mm"
-                :picker-options="pickerOptions"
-              )
-          .section
-            label.label-vertical-center 담당자
+        el-form(ref="form" :model="form" :rules="rules" label-position="left" lable-width="120px")
+          .section.border-divider
+            label 세부공정 이름
             .value
-              el-select.auth-select( v-model='form.workerUUID' placeholder='Select')
-                el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
+              span {{form.name}}
+          .detail-process-list
+            .detail-process-item
+              .section
+                el-form-item.is-required(label="세부공정 일정")
+                  el-date-picker(
+                    v-model="date"
+                    type="datetimerange"
+                    start-placeholder="시작일"
+                    end-placeholder="마감일"
+                    format="yyyy. MM. dd.  HH:mm"
+                    :picker-options="pickerOptions"
+                  )
+              .section
+                el-form-item.is-required(label="담당자")
+                  el-select.auth-select( v-model='form.workerUUID' placeholder='Select')
+                    el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
       span.dialog-footer.section(slot='footer')
         el-button(type='primary' @click='handleConfirm') 완료
 
@@ -80,6 +80,9 @@ export default {
       }
     },
     async handleEditConfirm() {
+      if (this.validate(this.form)) {
+        return false
+      }
       this.form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(
         this.date[0],
       )
@@ -114,6 +117,20 @@ export default {
         dayjs.filters.dayJS_ConvertLocalTime(this.target.startDate),
         dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
       ]
+    },
+    async validate(form) {
+      if (!form.date.length) {
+        await this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
+          confirmButtonText: '확인',
+        })
+        return false
+      } else if (!form.workerUUID) {
+        await this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
+          confirmButtonText: '확인',
+        })
+        return false
+      }
+      return true
     },
   },
 }
