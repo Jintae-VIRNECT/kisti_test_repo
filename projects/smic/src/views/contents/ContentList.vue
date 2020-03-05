@@ -7,13 +7,11 @@
         span.title 공정 콘텐츠 목록
       template(slot="header-right")
         .inline-table__header--right
-          span.prefix 업로드된 컨텐츠 
+          span.prefix 등록된 콘텐츠 수 &nbsp; &nbsp;
           span.value {{contentsTotal}}
-          span.suffix &nbsp;projects
           .divider
-          span.prefix 배포중인 컨텐츠 수 컨텐츠 
+          span.prefix 공정 등록중인 콘텐츠 수 &nbsp; &nbsp;
           span.value {{contentsList | countStopOfContentPublish}}
-          span.suffix &nbsp;projects
       template(slot="body")
         el-table.inline-table(
           :data='contentsList' 

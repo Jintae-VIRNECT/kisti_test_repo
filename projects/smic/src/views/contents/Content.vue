@@ -30,8 +30,12 @@ export default {
             label: '전체',
           },
           {
-            value: '?',
-            label: '공정 진행 상태 별',
+            value: 'PUBLISH',
+            label: '공정 등록',
+          },
+          {
+            value: 'WAIT',
+            label: '공정 미등록',
           },
         ],
         value: ['All'],
@@ -40,11 +44,11 @@ export default {
         options: [
           {
             value: 'createdDate,desc',
-            label: '최신 보고순',
+            label: '최신 등록순',
           },
           {
             value: 'createdDate,asc',
-            label: '오래된 보고순',
+            label: '오래된 등록순',
           },
         ],
         value: 'createdDate,desc',

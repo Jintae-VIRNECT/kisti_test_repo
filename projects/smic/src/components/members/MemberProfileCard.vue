@@ -14,7 +14,7 @@
             img(:src='profileData.profile' )
       .profile-card--bottom
         .label 공정관리
-        .percent-label 진행 중인 업무 / 할당된 업무
+        .percent-label 참여중인 세부공정 / 할당된 세부공정
         el-progress(:percentage='setWorkPercent(profileData)' :show-text="false")
         .stats.text-right
           span.done 4&nbsp;

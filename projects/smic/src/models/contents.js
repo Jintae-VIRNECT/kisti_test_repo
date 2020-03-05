@@ -1,7 +1,7 @@
 export const cols = [
   {
     prop: 'contentName',
-    label: '콘텐츠 이름',
+    label: '공정 콘텐츠 이름',
   },
   {
     prop: 'sceneGroupTotal',
@@ -20,7 +20,7 @@ export const cols = [
   },
   {
     prop: 'status',
-    label: '배포상태',
+    label: '공정등록 상태',
     width: 100,
   },
 ]
