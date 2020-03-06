@@ -1,3 +1,5 @@
+const { resolve } = require('path')
+
 module.exports = {
   /*
    ** Headers of the page
@@ -33,5 +35,16 @@ module.exports = {
     USER_API_URL: 'http://192.168.6.3:8081',
     WORKSPACE_API_URL: 'http://192.168.6.3:8082',
     CONTENT_API_URL: 'http://192.168.6.3:8083',
+  },
+  /**
+   * build
+   */
+  build: {
+    extend(config, { isDev, isClient }) {
+      config.resolve.alias['WC-Modules'] = resolve(
+        __dirname,
+        '../../WC-Modules',
+      )
+    },
   },
 }

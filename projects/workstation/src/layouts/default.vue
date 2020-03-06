@@ -18,7 +18,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TheSidebar from '@/components/layout/TheSidebar.vue'
+import TheSidebar from 'WC-Modules/vue/components/layout/TheSidebar.vue'
 import TheTopNav from '@/components/layout/TheTopNav.vue'
 
 export default {
