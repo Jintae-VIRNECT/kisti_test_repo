@@ -84,6 +84,7 @@ $value-width: 374px;
     margin-top: 7px;
   }
   &__body {
+    margin-bottom: 20px;
     overflow-y: auto;
   }
   &__header-title {

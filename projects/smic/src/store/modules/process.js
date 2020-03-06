@@ -92,6 +92,13 @@ export default {
       })
       return data
     },
+    // 공정 종료
+    async closeProcess(context, processId) {
+      const data = await api('PROCESS_CLOSE', {
+        route: { processId },
+      })
+      return data
+    },
     // 공정 삭제
     async deleteProcess(context, processId) {
       const data = await api('PROCESS_DELETE', {

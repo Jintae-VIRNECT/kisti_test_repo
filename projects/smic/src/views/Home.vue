@@ -94,8 +94,6 @@ import { currentReportedInformationTabs, tableColSettings } from '@/models/home'
 import { cols as processColSetting } from '@/models/process'
 import { cols as contentsColSetting } from '@/models/contents'
 
-/// data
-import tempData from '@/data/tabletabsData'
 // mixin
 import contentList from '@/mixins/contentList'
 
@@ -139,7 +137,7 @@ export default {
     ]),
     tabletabsData() {
       return {
-        subProcess: this.subProcessListAll,
+        subProcessAll: this.subProcessListAll,
         report: this.reportList,
         issue: this.issueList,
         smartTool: this.smartToolList,
@@ -148,8 +146,11 @@ export default {
   },
   methods: {
     setInlineTableByTabs(e) {
-      currentUploadedContentTableOption.subdomain =
-        currentReportedInformationTabs[e.index].link
+      const tab = currentReportedInformationTabs[e.index]
+      currentUploadedContentTableOption.subdomain = tab.link
+
+      const upperStart = tab.name[0].toUpperCase() + tab.name.slice(1)
+      this.$store.dispatch(`get${upperStart}List`, { size: 5 })
     },
     onClickProcess(row, column) {
       if (column.className === 'control-col') return false
@@ -169,9 +170,6 @@ export default {
     this.$store.dispatch('getProcessList', { size: 10 })
     this.$store.dispatch('getContentsList', { size: 5 })
     this.$store.dispatch('getSubProcessListAll', { size: 5 })
-    this.$store.dispatch('getReportList')
-    this.$store.dispatch('getIssueList')
-    this.$store.dispatch('getSmartToolList')
   },
 }
 </script>

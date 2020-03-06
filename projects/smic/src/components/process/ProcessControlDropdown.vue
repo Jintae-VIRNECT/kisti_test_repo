@@ -4,7 +4,7 @@
       i.el-icon-more.el-icon--right
     el-dropdown-menu(slot='dropdown')
       el-dropdown-item 
-        div(@click="endProcess") 공정 마감
+        div(@click="endProcess") 공정 종료
       el-dropdown-item 
         div(@click="addProcess") 공정 추가 생성
       el-dropdown-item 
@@ -36,24 +36,18 @@ export default {
     }
   },
   methods: {
-    endProcess() {
-      this.$confirm(
-        '선택한 공정을 마감 하시겠습니까? 공정 마감 시 관련 데이터를 더이상 수집하지 않습니다.',
-        '공정 마감',
+    async endProcess() {
+      const confirm = await this.$confirm(
+        '선택한 공정을 종료 하시겠습니까? 공정 종료 시 관련 데이터를 더이상 수집하지 않습니다.',
+        '공정 종료',
         {
           confirmButtonText: '확인',
           cancelButtonText: '취소',
         },
       )
-        .then(() => {
-          this.emitEndProcessData()
-        })
-        .catch(() => {})
-    },
-    emitEndProcessData() {
-      let updatedTarget = this.$props.target
-      updatedTarget = false
-      this.$emit('onChangeData', updatedTarget)
+      if (confirm) {
+        this.$store.dispatch('closeProcess', this.target.id)
+      }
     },
     addProcess() {
       this.$confirm(

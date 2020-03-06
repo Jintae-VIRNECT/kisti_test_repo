@@ -77,7 +77,6 @@ import TableColumn from '@/components/common/TableColumn.vue'
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
 import { cols as subColSetting } from '@/models/subProcess'
-import { sortOptions } from '@/models/index'
 
 // lib
 import dayjs from '@/plugins/dayjs'
@@ -100,23 +99,7 @@ export default {
   },
   data() {
     return {
-      tableData: [],
       processId: this.$route.params.id,
-      searchInput: null,
-      filter: {
-        options: [
-          {
-            value: null,
-            label: '전체',
-          },
-          ...processStatus,
-        ],
-        value: null,
-      },
-      sort: {
-        options: sortOptions,
-        value: null,
-      },
       topic: 'table',
       colSetting,
       subColSetting,

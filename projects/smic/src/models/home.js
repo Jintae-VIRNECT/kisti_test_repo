@@ -1,7 +1,7 @@
 export const currentReportedInformationTabs = [
   {
     label: '세부공정',
-    name: 'subProcess',
+    name: 'subProcessAll',
     link: '/process/{processId}/{subProcessId}',
   },
   {
@@ -76,7 +76,7 @@ export const tableColSettings = {
   // 		label: '작업자',
   // 	},
   // ],
-  subProcess: [
+  subProcessAll: [
     {
       prop: 'processName',
       label: '공정 이름',

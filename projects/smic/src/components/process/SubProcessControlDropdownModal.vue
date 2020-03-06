@@ -53,6 +53,15 @@ export default {
       processModal: this.toggleProcessModal,
       form: this.target,
       date: [],
+      rules: {
+        date: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '세부공정 일정을 지정하여야 합니다.',
+          },
+        ],
+      },
       // 날짜
       pickerOptions: {
         disabledDate(time) {

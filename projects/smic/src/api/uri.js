@@ -32,7 +32,7 @@ module.exports = {
   PROCESS_UPDATE: ['POST', '/processes/{processId}'],
   // 공정삭제
   PROCESS_DELETE: ['DELETE', '/processes/{processId}'],
-  // 공정마감
+  // 공정종료
   PROCESS_CLOSE: ['PUT', '/processes/{processId}/closed'],
   // 세부공정목록조회
   SUB_PROCESS_LIST: ['GET', '/processes/{processId}/subProcesses'],

@@ -124,6 +124,9 @@ export default {
     margin: 20px 30px;
     padding: 0;
 
+    & > * {
+      vertical-align: top;
+    }
     &.border-divider {
       margin: 0;
       padding: 30px;
