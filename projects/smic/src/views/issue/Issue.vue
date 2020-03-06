@@ -79,15 +79,15 @@ export default {
       sort: {
         options: [
           {
-            value: 'reportedDate,desc',
+            value: 'updated_at,desc',
             label: '최신 순',
           },
           {
-            value: 'reportedDate,asc',
+            value: 'updated_at,asc',
             label: '오래된 순',
           },
         ],
-        value: 'reportedDate,desc',
+        value: 'updated_at,desc',
       },
       toggleIssueModal: false,
     }

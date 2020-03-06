@@ -6,6 +6,6 @@ export const cols = [
   },
   {
     prop: 'name',
-    label: '세부공정 이름',
+    label: '세부공정 콘텐츠 이름',
   },
 ]

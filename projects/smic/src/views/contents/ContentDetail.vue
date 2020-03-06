@@ -1,7 +1,8 @@
 <template lang="pug">
   .content-detail
     el-breadcrumb.header__bread-crumb(separator="/")
-      el-breadcrumb-item(:to='{path: "/contents"}') 공정 콘텐츠
+      el-breadcrumb-item(:to='{path: "/contents"}') 공정 콘텐츠({{ contentDetail.info.contentName }})
+      el-breadcrumb-item 선택 공정 콘텐츠 정보
     inline-table(:setMainHeader="true")
       .header--before(slot="header-left")
         router-link.title(to="/contents")
@@ -44,27 +45,7 @@
               div(v-else)
                 span {{ contentDetail.sceneGroupList[scope.$index][prop] }}
 </template>
-<style lang="scss">
-.content-detail {
-  .card__header {
-    padding: 9px 16px !important;
-    .header--before {
-      .title {
-        color: #0d2a58;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 2;
-        vertical-align: middle;
-      }
-      i {
-        margin-right: 12px;
-        font-size: 16px;
-        vertical-align: middle;
-      }
-    }
-  }
-}
-</style>
+
 <script>
 import { mapGetters } from 'vuex'
 import InlineTable from '@/components/common/InlineTable'
@@ -119,3 +100,40 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.content-detail {
+  .card__header--left .title {
+    font-size: 16px;
+  }
+  & > .card:nth-child(2) {
+    .el-table th.is-leaf {
+      border-bottom: none;
+    }
+    .card__header {
+      padding: 9px 16px !important;
+
+      .header--before {
+        .title {
+          color: #0d2a58;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 2;
+          vertical-align: middle;
+          .position {
+            margin-left: 30px;
+            color: #566173;
+            font-weight: 500;
+            font-size: 12px;
+          }
+        }
+        i {
+          margin-right: 12px;
+          font-size: 16px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+</style>

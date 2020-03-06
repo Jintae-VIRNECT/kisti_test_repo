@@ -17,8 +17,8 @@ export default {
       else if (value === '결함') return 'dark-red'
     },
     processStatusColorFilter(value) {
-      if (value === '대기') return '#aebbcc'
-      else if (value === '미진행') return '#8d939c'
+      if (value === '대기') return '#8d939c'
+      else if (value === '미진행') return '#aebbcc'
       else if (value === '진행') return '#186ae2'
       else if (value === '미흡') return '#f89637'
       else if (value === '완료') return '#2cbc65'

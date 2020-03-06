@@ -8,7 +8,7 @@
       @close="handleCancel"
       :destroy-on-close="true")
       template(slot="title")
-        span.process-new-modal__header-title {{modalType === "create" ? '신규 공정 등록' : '공정 편집'}}
+        span.process-new-modal__header-title {{modalType !== "edit" ? '신규 공정 등록' : '공정 편집'}}
       .process-new-modal__body
         el-form(ref="form" :model="form" :rules="rules" label-position="left" lable-width="120px")
           .section.border-divider
@@ -177,15 +177,28 @@ export default {
       try {
         await this.$store.dispatch('createProcess', form)
         // done
-        await this.$alert(
-          `입력하신 정보로 새로운 공정이 등록되었습니다. \n
-            담당자의 공정 진행상태가 보고됩니다.\n
+        if (this.modalType === 'replace') {
+          this.$alert(
+            `입력하신 정보로 공정을 추가 생성되었습니다.<br>
+          추가된 공정으로 새로운 보고를 받습니다.`,
+            '공정 추가 생성 완료',
+            {
+              dangerouslyUseHTMLString: true,
+            },
+          )
+        } else {
+          await this.$alert(
+            `입력하신 정보로 새로운 공정이 등록되었습니다.<br>
+            담당자의 공정 진행상태가 보고됩니다.<br>
             보고된 정보는 공정 목록에서 확인할 수 있습니다.`,
-          '공정 등록 완료',
-          {
-            confirmButtonText: '확인',
-          },
-        )
+            '공정 등록 완료',
+            {
+              dangerouslyUseHTMLString: true,
+              confirmButtonText: '확인',
+            },
+          )
+        }
+
         this.handleCancel()
         this.$router.push('/process')
       } catch (e) {
@@ -214,7 +227,7 @@ export default {
       })
 
       await this.$alert(
-        `공정 정보를 편집하시겠습니까? 변경된 정보로 공정 보고를 받습니다.`,
+        `공정 정보 편집이 완료되었습니다. 변경된 정보로 공정 보고를 받습니다.`,
         '공정 편집 완료',
         {
           confirmButtonText: '확인',
@@ -241,8 +254,8 @@ export default {
       this.form.date = []
       this.form.ownerUUID = null
 
-      // create
-      if (this.modalType === 'create') {
+      // create and replace
+      if (this.modalType !== 'edit') {
         this.form.id = this.target.info.contentUUID
         this.form.name = this.target.info.contentName
         this.form.subProcessList = this.target.sceneGroupList.map(scene => ({

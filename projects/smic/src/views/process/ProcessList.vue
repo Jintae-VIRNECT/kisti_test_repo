@@ -110,15 +110,15 @@ export default {
             label: 'ㄱ-ㅎ역순',
           },
           {
-            value: 'created_at,desc',
-            label: '최신 등록순',
+            value: 'updated_at,desc',
+            label: '최신 보고순',
           },
           {
-            value: 'created_at,asc',
-            label: '오래된 등록순',
+            value: 'updated_at,asc',
+            label: '오래된 보고순',
           },
         ],
-        value: 'created_at,desc',
+        value: 'updated_at,desc',
       },
       topic: 'table',
     }

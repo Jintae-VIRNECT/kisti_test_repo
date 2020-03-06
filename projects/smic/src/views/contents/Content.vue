@@ -3,7 +3,7 @@
     page-header
     page-tab-nav
       template(slot="page-nav--right")
-        searchTabNav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
+        searchTabNav.search-wrapper.text-right(placeholder="콘텐츠 이름, 업로드 멤버 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     router-view
     pagination(v-if="isListPage" target="contents" :params="params")
 </template>

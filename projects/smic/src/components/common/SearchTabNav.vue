@@ -71,7 +71,7 @@ export default {
   },
   mounted() {
     const search = this.$refs.search.$el
-    search.style.width = this.placeholder.length * 7 + 65 + 'px'
+    search.style.width = this.placeholder.length * 8 + 60 + 'px'
   },
 }
 </script>

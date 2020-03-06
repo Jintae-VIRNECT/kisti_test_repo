@@ -1,11 +1,14 @@
 <template lang="pug">
-  div
+  .content-detail
     el-breadcrumb.header__bread-crumb(separator="/")
       el-breadcrumb-item(:to='{path: `/process`}') 공정({{processDetail.info.name}})
       el-breadcrumb-item 세부공정
-    inline-table(:setSubHeader="true")
-      template(slot="header--secondary")
-        span.title 공정 목록
+    inline-table(:setMainHeader="true")
+      .header--before(slot="header-left")
+        router-link.title(to="/process")
+          i.el-icon-back
+          | 선택 공정 정보
+          span.position(v-if="processDetail.info.position") 공정 위치 : {{ processDetail.info.position }}
       template(slot="body")
         el-table.inline-table(
           :data='[processDetail.info]' 

@@ -172,3 +172,72 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+$el-date-height: 36px;
+$el-date-width: 80px;
+#bar-chart {
+  height: 210px;
+}
+.vn-time-range-select--dropdown {
+  width: $el-date-width !important;
+}
+.vn-date-time-select-wrapper {
+  padding: 20px 30px 0px 15px;
+  &--left,
+  &--right {
+    display: inline-block;
+    width: 49.5%;
+    & > i {
+      padding: 3px;
+      font-weight: 600;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    & > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+  &--left {
+    .date-label {
+      margin: 0px 15px;
+      color: #0d2a58;
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+  &--right {
+    text-align: right;
+    .vn-date-range-select {
+      display: inline-block !important;
+      margin-right: 10px;
+    }
+    .time-divider {
+      display: inline-block;
+      margin: 0px 5px;
+    }
+    .vn-time-range-select {
+      display: inline-block !important;
+    }
+    input {
+      display: inline-block !important;
+      height: $el-date-height !important;
+      padding-right: 0px !important;
+      background-color: #f5f7fa;
+    }
+    .el-date-editor {
+      width: $el-date-width !important;
+      i {
+        line-height: $el-date-height !important;
+      }
+    }
+    .el-date-editor--date {
+      width: 110px !important;
+    }
+    .vn-time-range-select {
+      display: inline-block;
+    }
+  }
+}
+</style>

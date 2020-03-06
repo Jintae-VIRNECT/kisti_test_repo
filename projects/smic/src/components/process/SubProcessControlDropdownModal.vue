@@ -10,7 +10,7 @@
       template(slot="title")
         span.process-new-modal__header-title 세부공정 편집
       .process-new-modal__body
-        el-form(ref="form" :model="form" :rules="rules" label-position="left" lable-width="120px")
+        el-form(ref="form" :model="form" label-position="left" lable-width="120px")
           .section.border-divider
             label 세부공정 이름
             .value
@@ -53,15 +53,6 @@ export default {
       processModal: this.toggleProcessModal,
       form: this.target,
       date: [],
-      rules: {
-        date: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: '세부공정 일정을 지정하여야 합니다.',
-          },
-        ],
-      },
       // 날짜
       pickerOptions: {
         disabledDate(time) {
@@ -89,7 +80,7 @@ export default {
       }
     },
     async handleEditConfirm() {
-      if (!this.validate(this.form)) {
+      if (!this.validate()) {
         return false
       }
       this.form.startDate = dayjs.filters.dayJS_ConvertUTCTimeFormat(
@@ -127,13 +118,13 @@ export default {
         dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
       ]
     },
-    validate(form) {
-      if (!form.date.length) {
+    validate() {
+      if (!this.date) {
         this.$alert(`세부공정 일정을 지정하여야 합니다.`, {
           confirmButtonText: '확인',
         })
         return false
-      } else if (!form.workerUUID) {
+      } else if (!this.form.workerUUID) {
         this.$alert(`세부공정 담당자를 지정하여야 합니다.`, {
           confirmButtonText: '확인',
         })
