@@ -1,6 +1,7 @@
 const { resolve } = require('path')
 
 module.exports = {
+  mode: 'spa',
   /*
    ** Headers of the page
    */
@@ -14,9 +15,10 @@ module.exports = {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
   /*
-   ** Customize the progress bar color
+   ** Customize style
    */
-  loading: { color: '#3B8070' },
+  css: ['@/assets/style/_reset.scss', '@/assets/style/common.scss'],
+  loading: { color: '#1b293e' },
   /**
    * Plugins
    */

@@ -1,33 +1,44 @@
 <template>
   <div>
-    <div v-if="getIsLoggedIn">
-      <the-sidebar></the-sidebar>
-      <div class="admin-container">
-        <the-top-nav></the-top-nav>
-        <main class="admin-body">
-          <nuxt />
-        </main>
-      </div>
-    </div>
-
-    <div v-else>
-      <nuxt />
+    <the-sidebar :logo="sideLogo" :menus="sideMenus" :bottomMenus="sideMenus" />
+    <div>
+      <the-top-nav :logo="topLogo" :title="topTitle" :user="user" />
+      <main>
+        <nuxt />
+      </main>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import TheSidebar from 'WC-Modules/vue/components/layout/TheSidebar.vue'
+
+import TheSidebar from '@/components/layout/TheSidebar.vue'
 import TheTopNav from '@/components/layout/TheTopNav.vue'
+
+import { sideLogo, sideMenus, topLogo, topTitle } from '@/models/layout'
 
 export default {
   components: {
     TheSidebar,
     TheTopNav,
   },
+  data() {
+    return {
+      sideLogo,
+      sideMenus,
+      topLogo,
+      topTitle,
+    }
+  },
   computed: {
-    ...mapGetters({ getIsLoggedIn: 'user/getIsLoggedIn' }),
+    ...mapGetters({ getUser: 'user/getUser' }),
+    user() {
+      return {
+        name: this.getUser.name,
+        image: this.getUser.profile,
+      }
+    },
   },
 }
 </script>

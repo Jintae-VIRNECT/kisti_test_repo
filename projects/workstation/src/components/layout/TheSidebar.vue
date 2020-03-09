@@ -1,117 +1,65 @@
 <template>
-  <nav class="sidebar">
-    <div class="sidebar-inner" @click.stop="">
-      <h1 class="sidebar--logo">
-        <a class="popover--button" href="/"
-          ><img src="~assets/image/lnb-logo-smart-factory.png" alt="Remote"
-        /></a>
+  <nav class="the-sidebar">
+    <div class="the-sidebar__inner">
+      <h1 class="the-sidebar__logo">
+        <nuxt-link :to="logo.path">
+          <img :src="logo.image" />
+        </nuxt-link>
       </h1>
-      <div class="sidebar--tools">
-        <ul class="sidebar--mode">
-          <li
-            class="sidebar--item"
-            v-for="menu of menus"
-            :key="menu.path"
-            :class="{
-              current: isCurrentMenu(menu.path),
-              active: isActiveMenu(menu),
-            }"
-          >
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="menu.label"
-              placement="right"
-            >
-              <router-link :to="menu.path"
-                ><button
-                  class="sidebar--item__button"
-                  @mouseover="currentMenuPath = menu.path"
-                  @mouseout="currentMenuPath = null"
-                >
-                  <img :src="menu.image" :alt="menu.label" /></button
-              ></router-link>
-            </el-tooltip>
-          </li>
-        </ul>
+      <div class="the-sidebar__upper">
+        <the-sidebar-menu-list :menus="menus" />
+      </div>
+      <div class="the-sidebar__lower">
+        <the-sidebar-menu-list :menus="bottomMenus" />
       </div>
     </div>
   </nav>
 </template>
 
 <script>
+import TheSidebarMenuList from './TheSidebarMenuList.vue'
+
 export default {
+  components: {
+    TheSidebarMenuList,
+  },
   props: {
+    logo: Object,
     menus: Array,
-  },
-  data() {
-    return {
-      currentMenuPath: '',
-      currentSubMenuPath: '',
-      activeMenuPath: '',
-      activeSubMenuPath: '',
-    }
-  },
-  watch: {
-    $route(to) {
-      const paths = to.path.split('/')
-      this.activeMenuPath = '/' + paths[1]
-      this.currentSubMenuPath = to.path
-    },
-  },
-  methods: {
-    showSubMenu(menu) {
-      if (this.openedMenu === menu) {
-        this.openedMenu = false
-      } else {
-        this.openedMenu = menu
-      }
-    },
-    isCurrentMenu(path) {
-      return path == this.currentMenuPath
-    },
-    isActiveMenu(menu) {
-      if (menu.pathAlias) return menu.pathAlias.includes(this.activeMenuPath)
-      return menu.path == this.activeMenuPath
-    },
-    isActiveSubMenu(path) {
-      return path == this.currentSubMenuPath
-    },
-    resetSubmenu() {
-      this.currentMenuPath = ''
-    },
-  },
-  created() {
-    const paths = this.$route.path.split('/')
-    this.activeMenuPath = '/' + paths[1]
+    bottomMenus: Array,
   },
 }
 </script>
 
 <style lang="scss">
-.sidebar__logo {
-  width: 44px;
-  height: 44px;
-  background-image: linear-gradient(332deg, #225bac 90%, #276ac7 6%);
+$sidebar-width: 60px;
+
+.the-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: $sidebar-width;
+  height: 100vh;
+
+  & + div {
+    padding-left: $sidebar-width;
+  }
 }
-.sidebar--mode .sidebar--item {
-  .sidebar--item__button {
-    width: 40px;
-    height: 40px;
-    opacity: 0.75;
+.the-sidebar__inner {
+  height: 100%;
+  background-color: #1b293e;
+}
+.the-sidebar__logo {
+  img {
+    width: 100%;
+    padding: 8px 6px;
   }
-  &.current .sidebar--item__button {
-    background: none;
-    img {
-      opacity: 1;
-    }
-  }
-  &.active .sidebar--item__button {
-    background: url('~assets/image/ic-bg.svg') no-repeat;
-    background-color: rgba(0, 0, 0, 0);
-    img {
-      opacity: 1;
-    }
-  }
+}
+.the-sidebar__lower {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 </style>

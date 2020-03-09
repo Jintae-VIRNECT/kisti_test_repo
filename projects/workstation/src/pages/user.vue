@@ -1,11 +1,5 @@
 <template lang="pug">
   div
-    .top-nav.border
-      .top-nav__center
-        router-link(to="/")
-          img.logo-img(src="~@/assets/image/top-bar-logo-smart-factory.png") 
-        .divider
-        label.workspace Workstation
     .login-form-wrapper
       h1.title 로그인
       user-scaffold(

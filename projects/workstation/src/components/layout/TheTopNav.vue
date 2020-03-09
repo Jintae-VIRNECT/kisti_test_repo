@@ -1,55 +1,88 @@
 <template>
-  <div class="top-nav">
-    <div class="top-nav__left">
-      <router-link to="/"
-        ><img
-          class="logo-img"
-          src="~assets/image/top-bar-logo-smart-factory.png"
-      /></router-link>
-      <div class="divider"></div>
-      <label class="workspace">{{ getWorkspaceName }}</label>
+  <nav class="the-top-nav">
+    <div class="the-top-nav__left">
+      <nuxt-link :to="logo.path"
+        ><img :src="logo.image" :alt="title"
+      /></nuxt-link>
+      <el-divider direction="vertical" />
+      <h1>{{ title }}</h1>
     </div>
-    <div class="top-nav__right" v-if="$store.getters.getIsLoggedIn === true">
-      <img class="profile-img" :src="getUser.profile" /><span
-        class="username"
-        >{{ getUser.name }}</span
-      ><button class="logout-btn" @click="userLogout">로그아웃</button>
+    <div class="the-top-nav__right">
+      <div class="the-top-nav__profile">
+        <span v-if="user" class="the-top-nav__profile__image">
+          <img :src="user.image" />
+        </span>
+        <span v-if="user">{{ user.name }}</span>
+        <button class="the-top-nav__profile__button" @click="loginBtnClick">
+          {{ user ? '로그아웃' : '로그인' }}
+        </button>
+      </div>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
-  data() {
-    return {
-      activeLink: null,
-    }
-  },
-  computed: {
-    ...mapGetters(['user/*']),
-  },
-  mounted() {
-    this.activeLink = this.$route.path
+  props: {
+    logo: Object,
+    title: String,
+    user: Object,
   },
   methods: {
-    async userLogout() {
-      try {
-        await this.$store.dispatch('USER_LOGOUT', {
-          user: this.$store.uid,
-        })
-        this.$router.go('/')
-      } catch (e) {
-        console.log('e : ', e)
-      }
-    },
-  },
-  watch: {
-    $route(to) {
-      const paths = to.path.split('/')
-      this.activeLink = '/' + paths[1]
+    loginBtnClick() {
+      this.$emit('loginBtnClick')
     },
   },
 }
 </script>
+
+<style lang="scss">
+$profile-image-size: 36px;
+
+.the-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 30px;
+
+  & > div > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & h1 {
+    color: #0d2a58;
+    font-size: 1.2rem;
+  }
+}
+.the-top-nav__profile {
+  & > * {
+    display: inline-block;
+    margin: 0 2px;
+    vertical-align: middle;
+  }
+  &__image {
+    width: $profile-image-size;
+    height: $profile-image-size;
+    overflow: hidden;
+    background: #eaedf3;
+    border-radius: 50%;
+    & > img {
+      width: 100%;
+    }
+  }
+  &__button {
+    margin-left: 20px;
+    padding: 10px 20px;
+    background-color: #eaedf3;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: #e6e9ee;
+    }
+    &:active {
+      color: #fff;
+      background-color: #1665d8;
+    }
+  }
+}
+</style>
