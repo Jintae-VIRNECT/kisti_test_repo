@@ -2,7 +2,7 @@
   div
     h1.admin-body__header 이슈관리
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부 공정, 작업, 멤버 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
+      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부공정, 작업, 멤버 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     inline-table
       template(slot="body")
         el-table.inline-table(

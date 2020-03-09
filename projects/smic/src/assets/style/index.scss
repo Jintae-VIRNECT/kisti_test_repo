@@ -17,10 +17,12 @@
     background-color: #4d5d74;
     border-radius: 2px;
     &:hover,
-    &:active,
     &:focus {
       background-color: #56657b;
       border-color: inherit;
+    }
+    &:active {
+      background-color: #47556b;
     }
   }
   .top-nav__center,
@@ -131,6 +133,7 @@
   letter-spacing: normal;
   text-align: center;
   border-radius: 3px;
+  cursor: default;
   &.complete {
     background-color: #2cbc65;
   }
@@ -457,6 +460,9 @@
     border-right: none !important;
     border-left: none !important;
     border-radius: 0 !important;
+    &:valid {
+      border-color: #0a51b7;
+    }
   }
   label.el-input--label {
     color: #0d2a58;

@@ -84,7 +84,7 @@ export const tableColSettings = {
     },
     {
       prop: 'name',
-      label: '세부 공정 이름',
+      label: '세부공정 이름',
     },
     {
       prop: 'status',
@@ -110,7 +110,7 @@ export const tableColSettings = {
     },
     {
       prop: 'subProcessName',
-      label: '세부 공정 이름',
+      label: '세부공정 이름',
       width: 200,
     },
     {
@@ -141,7 +141,7 @@ export const tableColSettings = {
     },
     {
       prop: 'subProcessName',
-      label: '세부 공정 이름',
+      label: '세부공정 이름',
       width: 200,
     },
     {
@@ -167,7 +167,7 @@ export const tableColSettings = {
     },
     {
       prop: 'subProcessName',
-      label: '세부 공정 이름',
+      label: '세부공정 이름',
       width: 200,
     },
     {

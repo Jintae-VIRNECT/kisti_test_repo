@@ -131,7 +131,7 @@ export default {
           if (this.form.date[1] < sub.date[1]) {
             this.form.date = [this.form.date[0], sub.date[1]]
           }
-          // 세부 공정 담당자 지정시 공정담당자 비활성화
+          // 세부공정 담당자 지정시 공정담당자 비활성화
           if (sub.workerUUID !== this.form.ownerUUID) {
             this.form.ownerUUID = this.subWorkerSelectedText
           }

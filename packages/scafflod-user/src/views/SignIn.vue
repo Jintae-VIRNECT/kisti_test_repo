@@ -10,6 +10,7 @@
               .el-input
                 slot(name="email")
                   input.el-input__inner(
+                    required
                     name="email"
                     v-model="form.email" 
                     :placeholder="options.placeholder.email" 
@@ -26,6 +27,7 @@
                   //- input.el-input__inner(v-model="form.password" :placeholder="options.placeholder.password" type="password" name="password" v-validate="'password|2,20'")
                   div
                     input.el-input__inner(
+                      required
                       v-model="form.password" 
                       autocomplete="off" 
                       :placeholder="options.placeholder.password" 
