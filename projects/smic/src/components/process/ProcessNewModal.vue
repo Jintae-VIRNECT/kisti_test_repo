@@ -69,6 +69,7 @@ $value-width: 374px;
 
 .process-new-modal {
   .el-dialog {
+    max-width: 100vw;
     cursor: default;
   }
   .el-dialog__header {
@@ -84,7 +85,6 @@ $value-width: 374px;
     margin-top: 7px;
   }
   &__body {
-    margin-bottom: 20px;
     overflow-y: auto;
   }
   &__header-title {

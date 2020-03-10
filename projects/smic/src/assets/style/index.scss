@@ -25,13 +25,6 @@
       background-color: #47556b;
     }
   }
-  .top-nav__center,
-  .top-nav__left {
-    height: auto;
-  }
-  .top-nav__left {
-    padding: 12px 22px;
-  }
   .top-nav__center .logo-img,
   .top-nav__left .logo-img {
     height: auto;
@@ -755,6 +748,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
   float: right;
 }
 .el-dropdown-menu__item {
+  min-width: 120px;
   padding: 0px !important;
   & > * {
     padding: 0px 16px;

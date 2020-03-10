@@ -63,8 +63,30 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.el-dropdown > span {
-  cursor: pointer;
+<style lang="scss">
+#app {
+  .top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 600px;
+    padding: 12px 22px;
+    .el-dropdown > span {
+      cursor: pointer;
+    }
+  }
+  .top-nav__center,
+  .top-nav__left,
+  .top-nav__right {
+    position: static;
+    height: auto;
+    padding: 0;
+  }
+  .top-nav__center {
+    margin: 0 auto;
+  }
+  .top-nav__right {
+    padding-right: 8px;
+  }
 }
 </style>
