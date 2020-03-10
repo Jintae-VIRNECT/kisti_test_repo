@@ -41,6 +41,13 @@ export default {
     SET_PROCESS_INFO(state, obj) {
       state.processDetail = { ...state.processDetail, info: obj }
     },
+    CLOSE_PROCESS(state, { processId, conditions }) {
+      const process = state.processList.find(
+        process => process.id === processId,
+      )
+      process.conditions = conditions
+      state.processList = [...state.processList]
+    },
     DELETE_PROCESS(state, processId) {
       state.processList = state.processList.filter(
         process => process.id !== processId,
@@ -96,6 +103,10 @@ export default {
     async closeProcess(context, processId) {
       const data = await api('PROCESS_CLOSE', {
         route: { processId },
+      })
+      context.commit('CLOSE_PROCESS', {
+        processId,
+        conditions: data.conditions,
       })
       return data
     },

@@ -233,6 +233,7 @@ $value-width: 374px;
     width: 100%;
     & input {
       width: 100%;
+      padding: 8px 20px;
       transition: 0s;
     }
     .el-input:hover:not(.is-focus):not(.is-disabled) {

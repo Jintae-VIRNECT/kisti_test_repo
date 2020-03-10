@@ -4,11 +4,11 @@
       i.el-icon-more.el-icon--right
     el-dropdown-menu(slot='dropdown')
       el-dropdown-item 
-        div(@click="endProcess") 공정 종료
+        div(v-if="!isClosed" @click="endProcess") 공정 종료
       el-dropdown-item 
         div(@click="addProcess") 공정 추가 생성
       el-dropdown-item 
-        div(@click="editProcess") 공정 편집
+        div(v-if="!isClosed" @click="editProcess") 공정 편집
       el-dropdown-item
         .color-red(@click.prevent="deleteProcess") 삭제
     process-control-dropdown-modal(
@@ -35,6 +35,11 @@ export default {
       modalType: null,
       toggleProcessModal: false,
     }
+  },
+  computed: {
+    isClosed() {
+      return /^(FAILED|SUCCESS|FAULT)$/.test(this.target.conditions)
+    },
   },
   methods: {
     async endProcess() {
