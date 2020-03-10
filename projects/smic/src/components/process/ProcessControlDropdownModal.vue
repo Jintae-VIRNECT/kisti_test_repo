@@ -27,9 +27,9 @@
                 @focus="onProcessDateClick"
               )
             el-form-item(label="공정 담당자")
-              el-select.auth-select(v-model='form.ownerUUID' placeholder='Select')
+              el-select.auth-select(v-model='form.ownerUUID' placeholder='담당자를 선택해주세요')
                 el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
-              span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다
+              span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다.
             el-form-item(label="공정 위치")
               el-input(placeholder='공정 위치를 입력해주세요' v-model='form.position')
               span.description 담당자에게 공정 진행 위치를 안내합니다.
@@ -54,7 +54,7 @@
                     :picker-options="pickerOptions"
                   )
                 el-form-item.is-required(label="담당자")
-                  el-select.auth-select(v-model='sub.workerUUID' placeholder='Select')
+                  el-select.auth-select(v-model='sub.workerUUID' placeholder='담당자를 선택해주세요')
                     el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
               el-divider
               
@@ -95,7 +95,7 @@ export default {
           },
         ],
       },
-      subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다.',
+      subWorkerSelectedText: '세부공정 별 담당자가 지정되었습니다',
       // 날짜
       pickerOptions: {
         disabledDate(time) {

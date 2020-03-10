@@ -4,7 +4,7 @@
       router-link(to="/")
         img.logo-img(src="~@/assets/image/top-bar-logo-smart-factory.png") 
       .divider
-      label.workspace {{getWorkspaceName}}
+      label.workspace Workstation
     .top-nav__right(v-if="$store.getters.getIsLoggedIn === true")
       img.profile-img(:src="getUser.profile") 
       el-dropdown(trigger="click")
