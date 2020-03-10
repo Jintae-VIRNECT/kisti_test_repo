@@ -26,40 +26,30 @@
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
     img.prefix-img(src="~@/assets/image/ic-content.svg")
     span {{ data[prop] }}
+  //- 이슈
+  div(v-else-if="/^(issueTotal)$/.test(prop) && typeof data[prop] !== 'object'")
+    .blub(:class="data[prop] ? 'on' : 'off'")
+    span {{ data[prop] ? "있음" : "없음" }}
   //- 개수
-  div(v-else-if="/^.+(Total)$/.test(prop)")
+  div(v-else-if="/^.+(Total|Count)$/.test(prop)")
     span.nums {{ data[prop] }}
   //- 진행률
   .process-percent(v-else-if="/^(.+Percent|.+Rate)$/.test(prop)")
-    //- dummy data !!
-    el-progress(:percentage="randomProgress()" :show-text="true")
-    //- el-progress(:percentage="data[prop]" :show-text="true")
+    el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
   .total-done(v-else-if="/^(schedule)$/.test(prop)")
     span {{ data['startDate'] | dayJs_FilterDateTimeFormat }} 
-    span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
-  //- 진행 상태
-  div(v-else-if="/^(status)$/.test(prop)")
-    //- dummy data !!
+    span &nbsp;- {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
+  //- 프로세스 진행 상태
+  div(v-else-if="/^(conditions|status)$/.test(prop)")
     button.btn.btn--status(
       size="mini" 
-      :class="randomStatus()"
+      :class="data[prop] | processStatusFilterName | processStatusNameColor"
       plain
-    ) {{ randomStatus() | statusFilterName }}
-    //- button.btn.btn--status(
-    //-   size="mini" 
-    //-   :class="data[prop]"
-    //-   plain
-    //- ) {{ data[prop] | statusFilterName }}
+    ) {{ data[prop] | processStatusFilterName }}
   //- 멤버들
-  div(v-else-if="/^(auths)$/.test(prop)")
-    //- dummy data !!
-    span {{ ['작업자1', '작업자2', '작업자3', '작업자4'] | limitAuthsLength }}
-    //- span {{ data[prop] | limitAuthsLength }}
-  //- 이슈
-  div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'object'")
-    .blub(:class="data[prop] ? 'on' : 'off'")
-    span {{ data[prop] ? "있음" : "없음" }}
+  div(v-else-if="/^(subProcessAssign)$/.test(prop)")
+    span {{ members | limitAuthsLength }}
   //- 이슈 타입
   div(v-else-if="/^(issueType)$/.test(prop)")
     span.issue-type {{ data['processId'] ? '작업 이슈' : '이슈' }}
@@ -99,15 +89,6 @@
     span(v-else) ―
 </template>
 
-<style lang="scss">
-span.debug {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 0.5em;
-  opacity: 0.5;
-}
-</style>
-
 <script>
 import filters from '@/mixins/filters'
 import contentList from '@/mixins/contentList'
@@ -124,18 +105,6 @@ export default {
     buttonClick() {
       this.$emit('buttonClick', { prop: this.prop, data: this.data })
     },
-    // dummy data !!
-    random(min, max) {
-      min = Math.ceil(min)
-      max = Math.floor(max)
-      return Math.floor(Math.random() * (max - min + 1)) + min
-    },
-    randomStatus() {
-      return ['complete', 'progress', 'idle', 'imcomplete'][this.random(0, 2)]
-    },
-    randomProgress() {
-      return this.random(0, 100)
-    },
   },
   computed: {
     member() {
@@ -143,6 +112,23 @@ export default {
       const memberList = this.$store.getters.memberList
       return memberList.find(member => member.uuid === uuid) || {}
     },
+    members() {
+      const subProcessAssign = this.data[this.prop]
+      return subProcessAssign.map(worker => {
+        return this.$store.getters.memberList.find(
+          member => member.uuid === worker.workerUUID,
+        ).name
+      })
+    },
   },
 }
 </script>
+
+<style lang="scss">
+span.debug {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.5em;
+  opacity: 0.5;
+}
+</style>

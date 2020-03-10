@@ -87,14 +87,14 @@ export const tableColSettings = {
       label: '세부공정 이름',
     },
     {
-      prop: 'status',
+      prop: 'conditions',
       label: '진행 상태',
       width: 100,
     },
     {
       prop: 'workerUUID',
       label: '작업 담당자',
-      width: 160,
+      width: 170,
     },
     {
       prop: 'reportedDate',
@@ -120,7 +120,7 @@ export const tableColSettings = {
     {
       prop: 'workerUUID',
       label: '작업 담당자',
-      width: 160,
+      width: 170,
     },
     {
       prop: 'reportedDate',
@@ -151,7 +151,7 @@ export const tableColSettings = {
     {
       prop: 'workerUUID',
       label: '작업 담당자',
-      width: 160,
+      width: 170,
     },
     {
       prop: 'reportedDate',
@@ -187,7 +187,7 @@ export const tableColSettings = {
     {
       prop: 'workerUUID',
       label: '작업 담당자',
-      width: 160,
+      width: 170,
     },
     {
       prop: 'reportedDate',

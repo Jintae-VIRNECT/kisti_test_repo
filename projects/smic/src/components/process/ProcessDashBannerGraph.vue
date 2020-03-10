@@ -190,7 +190,7 @@ export default {
         rect.setAttribute('ry', 5)
         rect.setAttribute(
           'class',
-          `tag ${this.$options.filters.processStatusNameFilter(xlabel)}`,
+          `tag ${this.$options.filters.processStatusNameColor(xlabel)}`,
         )
 
         var text = document.createElementNS(

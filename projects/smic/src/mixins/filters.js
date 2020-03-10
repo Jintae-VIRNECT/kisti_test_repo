@@ -1,32 +1,33 @@
+import { processStatus } from '@/models/process'
+
+function colorNameToHash(name) {
+  return {
+    gray: '#8d939c',
+    silver: '#aebbcc',
+    blue: '#186ae2',
+    orange: '#f89637',
+    green: '#2cbc65',
+    'dark-gray': '#6e7277',
+    'dark-blue': '#1d5cb7',
+    'dark-red': '#de3636',
+  }[name]
+}
+
 export default {
   filters: {
-    statusFilterName(value) {
-      if (value == 'complete') return '완료'
-      else if (value == 'progress') return '진행'
-      else if (value == 'idle') return '미진행'
-      else if (value == 'imcomplete') return '미흡'
+    processStatusFilterName(value) {
+      return processStatus.find(status => status.value === value).label
     },
-    processStatusNameFilter(value) {
-      if (value === '대기') return 'gray'
-      else if (value === '미진행') return 'silver'
-      else if (value === '진행') return 'blue'
-      else if (value === '미흡') return 'orange'
-      else if (value === '완료') return 'green'
-      else if (value === '미완수') return 'dark-gray'
-      else if (value === '완수') return 'dark-blue'
-      else if (value === '결함') return 'dark-red'
+    processStatusNameColor(name) {
+      return processStatus.find(status => status.label === name).color
     },
-    processStatusColorFilter(value) {
-      if (value === '대기') return '#8d939c'
-      else if (value === '미진행') return '#aebbcc'
-      else if (value === '진행') return '#186ae2'
-      else if (value === '미흡') return '#f89637'
-      else if (value === '완료') return '#2cbc65'
-      else if (value === '미완수') return '#6e7277'
-      else if (value === '완수') return '#1d5cb7'
-      else if (value === '결함') return '#de3636'
+    processStatusColorFilter(name) {
+      return colorNameToHash(
+        processStatus.find(status => status.label === name).color,
+      )
     },
     limitAuthsLength(array) {
+      const SLICE_COUNT = 17
       let answer = ''
       let sumOfStrings = 0
 
@@ -34,11 +35,11 @@ export default {
       for (let i = 0; i < array.length; i++) {
         answer += array[i]
         sumOfStrings += array[i].length + divider.length
-        if (sumOfStrings > 13) {
+        if (sumOfStrings > SLICE_COUNT) {
           const midfix = sumOfStrings - divider.length <= 13 ? '' : '...'
           const suffix =
             array.length - 1 > i ? ` +${array.length - (i + 1)}` : ''
-          return answer.slice(0, 13) + midfix + suffix
+          return answer.slice(0, SLICE_COUNT) + midfix + suffix
         } else if (array.length - 1 === i) break
         answer += divider
       }

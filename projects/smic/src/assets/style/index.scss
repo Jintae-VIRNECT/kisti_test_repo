@@ -11,6 +11,7 @@
   .admin-body {
     width: 1300px;
     padding: inherit;
+    padding: 0;
   }
   .login-form--submit {
     height: 48px;
@@ -127,18 +128,6 @@
   text-align: center;
   border-radius: 3px;
   cursor: default;
-  &.complete {
-    background-color: #2cbc65;
-  }
-  &.imcomplete {
-    background-color: #f55050;
-  }
-  &.idle {
-    background-color: #aebbcc;
-  }
-  &.progress {
-    background-color: #186ae2;
-  }
 }
 
 .inline-table-pagination .el-pagination__jump {
@@ -694,6 +683,9 @@ div:not(.login-form) > .el-form .el-form-item__content {
   line-height: normal;
   border: none;
   border-radius: 3px;
+}
+.el-tag.custom,
+.btn.btn--status {
   &.silver {
     background-color: #aebbcc;
   }
@@ -719,6 +711,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     background-color: #2cbc65;
   }
 }
+
 .color-red {
   color: #dd1717;
 }

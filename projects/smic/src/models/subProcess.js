@@ -6,11 +6,12 @@ export const cols = [
   {
     prop: 'jobTotal',
     label: '작업 수',
-    width: 100,
+    width: 80,
   },
   {
     prop: 'schedule',
     label: '공정 일정',
+    width: 270,
   },
   {
     prop: 'progressRate',
@@ -18,17 +19,22 @@ export const cols = [
     width: 150,
   },
   {
-    prop: 'status',
+    prop: 'doneCount',
+    label: '완료된 작업 수',
+    width: 90,
+  },
+  {
+    prop: 'conditions',
     label: '진행 상태',
     width: 100,
   },
   {
     prop: 'workerUUID',
     label: '세부공정 담당자',
-    width: 200,
+    width: 180,
   },
   {
-    prop: 'issue',
+    prop: 'issueTotal',
     label: '작업 이슈',
     width: 80,
   },

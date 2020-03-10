@@ -21,7 +21,7 @@ export default [
   {
     prop: 'workerUUID',
     label: '작업 담당자',
-    width: 160,
+    width: 170,
   },
   {
     prop: 'reportedDate',

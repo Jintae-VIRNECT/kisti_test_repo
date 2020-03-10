@@ -202,8 +202,8 @@ export default {
         this.handleCancel()
         this.$router.push('/process')
       } catch (e) {
-        console.error(e)
-        this.$alert(`서버에러`, {
+        this.$alert(`공정 등록에 실패하엿습니다.<br>(${e})`, {
+          dangerouslyUseHTMLString: true,
           confirmButtonText: '확인',
         })
       }
@@ -238,8 +238,8 @@ export default {
         this.handleCancel()
         this.$router.push(`/process/${form.processId}`)
       } catch (e) {
-        console.log(e)
-        this.$alert(`서버에러`, {
+        this.$alert(`공정 편집에 실패하엿습니다.<br>(${e})`, {
+          dangerouslyUseHTMLString: true,
           confirmButtonText: '확인',
         })
       }
