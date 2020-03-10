@@ -61,7 +61,7 @@
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
         div(v-else)
-          process-detail-graph
+          process-detail-graph(:tableData="processDetail.subProcessList")
 </template>
 <script>
 import { mapGetters } from 'vuex'

@@ -21,7 +21,8 @@
     span {{ member.name }}
   //- 일시
   .total-done(v-else-if="/^(reportedAt|.*Date)$/.test(prop)")
-    span {{data[prop] | dayJs_FilterDateTimeFormat}}
+    span(v-if="data[prop]") {{ data[prop] | dayJs_FilterDateTimeFormat }}
+    span(v-else) ―
   //- 컨텐츠이름
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
     img.prefix-img(src="~@/assets/image/ic-content.svg")
@@ -61,7 +62,7 @@
   //- 작업
   //- 리포트 버튼
   div(v-else-if="/^(report)$/.test(prop)")
-    el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트보기
+    el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트 보기
     span(v-else) ―
   //- 작업 이슈 버튼
   div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'string'")
@@ -93,9 +94,10 @@
 import filters from '@/mixins/filters'
 import contentList from '@/mixins/contentList'
 import dayjs from '@/plugins/dayjs'
+import members from '@/mixins/members'
 
 export default {
-  mixins: [filters, contentList, dayjs],
+  mixins: [filters, contentList, dayjs, members],
   props: {
     type: String,
     prop: String,
@@ -108,17 +110,10 @@ export default {
   },
   computed: {
     member() {
-      const uuid = this.data[this.prop]
-      const memberList = this.$store.getters.memberList
-      return memberList.find(member => member.uuid === uuid) || {}
+      return this.uuidToMember(this.data[this.prop])
     },
     members() {
-      const subProcessAssign = this.data[this.prop]
-      return subProcessAssign.map(worker => {
-        return this.$store.getters.memberList.find(
-          member => member.uuid === worker.workerUUID,
-        ).name
-      })
+      return this.uuidsToMembers(this.data[this.prop])
     },
   },
 }
