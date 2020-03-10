@@ -17,7 +17,7 @@ const config = mode => {
       publicPath: '/',
     },
     resolve: {
-      extensions: ['.js', '.vue'],
+      extensions: ['.js', '.vue', '.json'],
       modules: ['node_modules', 'modules'],
       alias: {
         vue$: 'vue/dist/vue.esm.js',
@@ -32,6 +32,7 @@ const config = mode => {
         plugins: join(__dirname, '../src/plugins'),
         api: join(__dirname, '../src/api'),
         utils: join(__dirname, '../src/utils'),
+        static: join(__dirname, '../static'),
       },
     },
     module: {
@@ -82,7 +83,7 @@ const config = mode => {
               loader: 'html-loader',
               options: {
                 root: resolve(__dirname, '../src/assets'),
-                attrs: ['img:src', 'img:srcset', 'link:href'],
+                attrs: ['img:src', 'img:srcset'],
               },
             },
           ],
@@ -124,6 +125,17 @@ const config = mode => {
             },
           ],
         },
+        // {
+        //   test: /static\/js\/|\.(js)$/,
+        //   use: [
+        //     {
+        //       loader: 'file-loader',
+        //       options: {
+        //         name: 'static/js/[name].[hash:5].[ext]',
+        //       },
+        //     },
+        //   ],
+        // },
       ],
     },
     performance: {
