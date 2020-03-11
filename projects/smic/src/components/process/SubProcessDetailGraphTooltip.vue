@@ -1,5 +1,5 @@
 <template lang="pug">
-  .card.process-detail-graph-tooltip
+  .card.process-detail-graph-tooltip.sub-process-detail-graph-tooltip
     .card__header--secondary
       .card__header--left
         span.sub-title 작업 정보
@@ -22,12 +22,12 @@
         .box
           label 리포트
           p(v-if="data.report")
-            el-button 리포트 보기
+            el-button(data-type="report" :data-index="index") 리포트 보기
           p(v-else) ―
         .box
           label 작업 이슈
           p(v-if="data.issue")
-            el-button 작업 이슈 보기
+            el-button(data-type="issue" :data-index="index") 작업 이슈 보기
           p(v-else) ―
       .item
         label 스마트툴 (Job ID / 체결정보)
@@ -36,7 +36,7 @@
           el-divider(direction="vertical")
           span.count {{ data.smartTool.smartToolWorkedCount }} 
           span &nbsp;/ {{ data.smartTool.smartToolBatchTotal }} &nbsp;
-          el-button 스마트툴 보기
+          el-button(data-type="smartTool" :data-index="index") 스마트툴 보기
         p(v-else) ―
 
 </template>
@@ -49,12 +49,13 @@ export default {
   mixins: [filters, dayjs],
   props: {
     data: Object,
+    index: Number,
   },
 }
 </script>
 
 <style lang="scss">
-.process-detail-graph-tooltip {
+.sub-process-detail-graph-tooltip {
   bottom: 0;
   height: 460px;
 

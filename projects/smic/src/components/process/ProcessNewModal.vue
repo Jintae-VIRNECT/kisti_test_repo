@@ -76,8 +76,7 @@ $value-width: 374px;
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .el-dialog__body {
-    min-height: 30vh;
-    max-height: 60vh;
+    height: 55vh;
     padding: 0px !important;
     overflow-y: auto;
   }

@@ -4,19 +4,7 @@
       .box
         #process-detail-graph
 </template>
-<style lang="scss">
-#process-detail-graph .bb-axis.bb-axis-x g.tick text {
-  tspan:nth-child(1) {
-    font-weight: 600;
-    font-size: 14px;
-    fill: #0d2a58;
-  }
-  tspan:nth-child(3) {
-    font-size: 13px;
-    fill: #566173;
-  }
-}
-</style>
+
 <script>
 import ProcessDetailGraphTooltip from '@/components/process/ProcessDetailGraphTooltip.vue'
 import SubProcessDetailGraphTooltip from '@/components/process/SubProcessDetailGraphTooltip.vue'
@@ -123,7 +111,7 @@ export default {
             const renderedTooltip = new Vue({
               ...tooltip,
               parent: self,
-              propsData: { data },
+              propsData: { data, index },
             }).$mount().$el.outerHTML
 
             return renderedTooltip
@@ -164,14 +152,28 @@ export default {
       lastGridLine.setAttribute('x1', XpositionOfLastGridLine - 2)
       lastGridLine.setAttribute('x2', XpositionOfLastGridLine - 2)
     },
+    initTooltip() {
+      this.$el.addEventListener('mouseleave', () => {
+        this.$el.querySelector('.bb-tooltip-container').innerHTML = ''
+      })
+      this.$el.addEventListener('click', ({ target }) => {
+        if (target.nodeName === 'SPAN') {
+          target = target.parentElement
+        }
+        const btnType = target.getAttribute('data-type')
+        if (/^(report|issue|smartTool)$/.test(btnType)) {
+          const index = target.getAttribute('data-index')
+          this.$emit('buttonClick', {
+            prop: btnType,
+            data: this.tableData[index],
+          })
+        }
+      })
+    },
   },
   mounted() {
     this.initProcessGraph()
-    // tooltip hide
-    this.$el.addEventListener('mouseleave', () => {
-      this.$el.querySelector('.process-detail-graph-tooltip').style.display =
-        'none'
-    })
+    this.initTooltip()
   },
 }
 </script>
@@ -181,7 +183,17 @@ $el-date-height: 36px;
 $el-date-width: 80px;
 
 #process-detail-graph {
-  min-height: 430px;
+  .bb-axis.bb-axis-x g.tick text {
+    tspan:nth-child(1) {
+      font-weight: 600;
+      font-size: 14px;
+      fill: #0d2a58;
+    }
+    tspan:nth-child(3) {
+      font-size: 13px;
+      fill: #566173;
+    }
+  }
 }
 #bar-chart {
   height: 210px;
