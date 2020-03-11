@@ -8,7 +8,7 @@
         //- el-progress(:percentage="88" :show-text="false")
         .text-item
           span.key 전체 공정
-          span.value {{ processStatistics.totalRate }}
+          span.value {{ processStatistics.categoryWait + processStatistics.categoryStarted + processStatistics.categoryEnded }}
         .text-item
           span.key 시작 대기 공정
           span.value {{ processStatistics.categoryWait }}
