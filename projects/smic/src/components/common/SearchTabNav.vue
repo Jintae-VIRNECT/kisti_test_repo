@@ -1,5 +1,11 @@
 <template lang="pug">
-  div
+  div.searchTabNav
+    el-select.subject(
+      v-if="subject"
+      v-model="subjectValue" 
+      @change="onSubjectChange(subjectValue)" 
+    )
+      el-option(v-for="item in subject.options" :key="item.value" :label="item.label" :value="item.value")
     el-input.tool.search(
       ref="search" 
       :placeholder="placeholder" 
@@ -34,6 +40,7 @@
  */
 export default {
   props: {
+    subject: Object,
     search: String,
     placeholder: String,
     filter: Object,
@@ -41,6 +48,7 @@ export default {
   },
   data() {
     return {
+      subjectValue: this.subject && this.subject.value,
       searchInput: this.search,
       filterValue: this.filter.value,
       sortValue: this.sort.value,
@@ -77,38 +85,47 @@ export default {
 </script>
 
 <style lang="scss">
-.filter.el-select .el-input__inner {
-  width: 90px;
-}
-.sorter.el-select .el-input__inner {
-  width: 110px;
-}
-.filter.el-select .el-select__tags > span {
-  display: block;
-  overflow: hidden;
-  color: #fff;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  span {
-    display: inline;
+.searchTabNav {
+  .subject.el-select {
+    position: relative;
+    right: -6px;
   }
-}
-.page-nav .search-wrapper .el-select .el-tag {
-  margin: 0;
-  padding: 0;
-  color: #3f465a;
-  font-size: 13px;
-  background: none;
+  .subject.el-select .el-input__inner {
+    width: 90px;
+  }
+  .filter.el-select .el-input__inner {
+    width: 90px;
+  }
+  .sorter.el-select .el-input__inner {
+    width: 110px;
+  }
+  .filter.el-select .el-select__tags > span {
+    display: block;
+    overflow: hidden;
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    span {
+      display: inline;
+    }
+  }
+  .el-select .el-tag {
+    margin: 0;
+    padding: 0;
+    color: #3f465a;
+    font-size: 13px;
+    background: none;
 
-  &:first-child {
-    margin-left: 8px;
-  }
-  &:last-child:not(:only-child) {
-    margin-left: 2px;
-    word-spacing: -0.2em;
-  }
-  .el-icon-close {
-    display: none;
+    &:first-child {
+      margin-left: 8px;
+    }
+    &:last-child:not(:only-child) {
+      margin-left: 2px;
+      word-spacing: -0.2em;
+    }
+    .el-icon-close {
+      display: none;
+    }
   }
 }
 </style>

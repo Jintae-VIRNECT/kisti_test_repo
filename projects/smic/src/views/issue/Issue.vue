@@ -2,7 +2,14 @@
   div
     h1.admin-body__header 이슈관리
     .page-nav
-      search-tab-nav.search-wrapper.text-right(placeholder="공정, 세부공정, 작업, 멤버 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
+      search-tab-nav.search-wrapper.text-right(
+        placeholder="공정, 세부공정, 작업, 멤버 이름" 
+        :subject="subject" 
+        :search="params.search" 
+        :filter="filter" 
+        :sort="sort" 
+        @change="onChangeSearch"
+      )
     inline-table
       template(slot="body")
         el-table.inline-table(
@@ -58,6 +65,19 @@ export default {
       params: {
         search: '',
         size: 8,
+      },
+      subject: {
+        options: [
+          {
+            value: 'process',
+            label: '공정',
+          },
+          {
+            value: 'name',
+            label: '멤버 이름',
+          },
+        ],
+        value: 'process',
       },
       filter: {
         options: [

@@ -202,10 +202,20 @@ export default {
         this.handleCancel()
         this.$router.push('/process')
       } catch (e) {
-        this.$alert(`공정 등록에 실패하엿습니다.<br>(${e})`, {
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: '확인',
-        })
+        if (/^Error: 5008/.test(e)) {
+          this.$alert(
+            `해당 콘텐츠로 생성된 공정이 이미 존재합니다.<br>기존에 생성된 공정을 종료하고 시도해주세요.`,
+            {
+              dangerouslyUseHTMLString: true,
+              confirmButtonText: '확인',
+            },
+          )
+        } else {
+          this.$alert(`공정 등록에 실패하엿습니다.<br>(${e})`, {
+            dangerouslyUseHTMLString: true,
+            confirmButtonText: '확인',
+          })
+        }
       }
     },
     async handleEditConfirm() {
@@ -275,6 +285,7 @@ export default {
           dayjs.filters.dayJS_ConvertLocalTime(this.target.startDate),
           dayjs.filters.dayJS_ConvertLocalTime(this.target.endDate),
         ]
+        this.pickerOptions = {}
         await this.$store.dispatch('getSubProcessList', {
           processId: this.target.id,
         })
@@ -290,6 +301,7 @@ export default {
       }
     },
     validate(form) {
+      // null check
       if (!form.date.length) {
         this.$alert(`공정 일정을 지정하여야 합니다.`, {
           confirmButtonText: '확인',
@@ -308,6 +320,13 @@ export default {
           })
           return false
         }
+      }
+      // before current time check
+      if (form.date[1] < dayjs._()) {
+        this.$alert(`현재보다 이전의 마감일 설정은 불가능합니다.`, {
+          confirmButtonText: '확인',
+        })
+        return false
       }
       return true
     },
