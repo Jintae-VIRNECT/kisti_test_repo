@@ -42,7 +42,6 @@ export default {
   },
   props: {
     initTopic: String,
-    data: Array,
   },
   data() {
     return {
@@ -53,6 +52,9 @@ export default {
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
+  },
+  created() {
+    this.$store.dispatch('getProcessStatistics')
   },
 }
 </script>

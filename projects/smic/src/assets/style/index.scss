@@ -11,24 +11,20 @@
   .admin-body {
     width: 1300px;
     padding: inherit;
+    padding: 0;
   }
   .login-form--submit {
     height: 48px;
     background-color: #4d5d74;
     border-radius: 2px;
     &:hover,
-    &:active,
     &:focus {
       background-color: #56657b;
       border-color: inherit;
     }
-  }
-  .top-nav__center,
-  .top-nav__left {
-    height: auto;
-  }
-  .top-nav__left {
-    padding: 12px 22px;
+    &:active {
+      background-color: #47556b;
+    }
   }
   .top-nav__center .logo-img,
   .top-nav__left .logo-img {
@@ -131,18 +127,7 @@
   letter-spacing: normal;
   text-align: center;
   border-radius: 3px;
-  &.complete {
-    background-color: #2cbc65;
-  }
-  &.imcomplete {
-    background-color: #f55050;
-  }
-  &.idle {
-    background-color: #aebbcc;
-  }
-  &.progress {
-    background-color: #186ae2;
-  }
+  cursor: default;
 }
 
 .inline-table-pagination .el-pagination__jump {
@@ -457,6 +442,9 @@
     border-right: none !important;
     border-left: none !important;
     border-radius: 0 !important;
+    &:valid {
+      border-color: #0a51b7;
+    }
   }
   label.el-input--label {
     color: #0d2a58;
@@ -695,6 +683,9 @@ div:not(.login-form) > .el-form .el-form-item__content {
   line-height: normal;
   border: none;
   border-radius: 3px;
+}
+.el-tag.custom,
+.btn.btn--status {
   &.silver {
     background-color: #aebbcc;
   }
@@ -720,6 +711,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     background-color: #2cbc65;
   }
 }
+
 .color-red {
   color: #dd1717;
 }
@@ -749,6 +741,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
   float: right;
 }
 .el-dropdown-menu__item {
+  min-width: 120px;
   padding: 0px !important;
   & > * {
     padding: 0px 16px;
@@ -820,7 +813,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     display: flex;
     .box-wrapper {
       .box:first-child {
-        min-width: inherit;
+        min-width: 120px;
       }
     }
     .box {
@@ -828,8 +821,8 @@ div:not(.login-form) > .el-form .el-form-item__content {
       padding: 0px 30px;
       border-right: 1px solid rgba(205, 209, 214, 0.5);
       &:first-child {
-        flex: 1 1 150px;
-        min-width: 150px;
+        flex: 1 1 170px;
+        min-width: 170px;
         padding-left: 0px;
       }
       &:last-child {
@@ -888,6 +881,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     display: flex;
     .item {
       width: max-content;
+      min-width: 82px;
       margin-left: 30px;
       &:first-child {
         margin-left: 0px;

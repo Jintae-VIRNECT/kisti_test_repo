@@ -33,6 +33,6 @@ export default async function api(name, option = {}) {
   if (code === 200) {
     return data
   } else {
-    throw new Error(message)
+    throw new Error(`${code}: ${message}`)
   }
 }

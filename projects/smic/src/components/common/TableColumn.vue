@@ -21,45 +21,36 @@
     span {{ member.name }}
   //- 일시
   .total-done(v-else-if="/^(reportedAt|.*Date)$/.test(prop)")
-    span {{data[prop] | dayJs_FilterDateTimeFormat}}
+    span(v-if="data[prop]") {{ data[prop] | dayJs_FilterDateTimeFormat }}
+    span(v-else) ―
   //- 컨텐츠이름
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
     img.prefix-img(src="~@/assets/image/ic-content.svg")
     span {{ data[prop] }}
+  //- 이슈
+  div(v-else-if="/^(issueTotal)$/.test(prop) && typeof data[prop] !== 'object'")
+    .blub(:class="data[prop] ? 'on' : 'off'")
+    span {{ data[prop] ? "있음" : "없음" }}
   //- 개수
-  div(v-else-if="/^.+(Total)$/.test(prop)")
+  div(v-else-if="/^.+(Total|Count)$/.test(prop)")
     span.nums {{ data[prop] }}
   //- 진행률
   .process-percent(v-else-if="/^(.+Percent|.+Rate)$/.test(prop)")
-    //- dummy data !!
-    el-progress(:percentage="randomProgress()" :show-text="true")
-    //- el-progress(:percentage="data[prop]" :show-text="true")
+    el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
   .total-done(v-else-if="/^(schedule)$/.test(prop)")
     span {{ data['startDate'] | dayJs_FilterDateTimeFormat }} 
-    span &nbsp;~ {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
-  //- 진행 상태
-  div(v-else-if="/^(status)$/.test(prop)")
-    //- dummy data !!
+    span &nbsp;- {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
+  //- 프로세스 진행 상태
+  div(v-else-if="/^(conditions|status)$/.test(prop)")
     button.btn.btn--status(
       size="mini" 
-      :class="randomStatus()"
+      :class="data[prop] | processStatusFilterName | processStatusNameColor"
       plain
-    ) {{ randomStatus() | statusFilterName }}
-    //- button.btn.btn--status(
-    //-   size="mini" 
-    //-   :class="data[prop]"
-    //-   plain
-    //- ) {{ data[prop] | statusFilterName }}
+    ) {{ data[prop] | processStatusFilterName }}
   //- 멤버들
-  div(v-else-if="/^(auths)$/.test(prop)")
-    //- dummy data !!
-    span {{ ['작업자1', '작업자2', '작업자3', '작업자4'] | limitAuthsLength }}
-    //- span {{ data[prop] | limitAuthsLength }}
-  //- 이슈
-  div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'object'")
-    .blub(:class="data[prop] ? 'on' : 'off'")
-    span {{ data[prop] ? "있음" : "없음" }}
+  div(v-else-if="/^(subProcessAssign)$/.test(prop)")
+    span {{ members | limitAuthsLength }}
   //- 이슈 타입
   div(v-else-if="/^(issueType)$/.test(prop)")
     span.issue-type {{ data['processId'] ? '작업 이슈' : '이슈' }}
@@ -71,7 +62,7 @@
   //- 작업
   //- 리포트 버튼
   div(v-else-if="/^(report)$/.test(prop)")
-    el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트보기
+    el-button(v-if="data[prop]" v-on:click="buttonClick") 리포트 보기
     span(v-else) ―
   //- 작업 이슈 버튼
   div(v-else-if="/^(issue)$/.test(prop) && typeof data[prop] !== 'string'")
@@ -99,22 +90,14 @@
     span(v-else) ―
 </template>
 
-<style lang="scss">
-span.debug {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 0.5em;
-  opacity: 0.5;
-}
-</style>
-
 <script>
 import filters from '@/mixins/filters'
 import contentList from '@/mixins/contentList'
 import dayjs from '@/plugins/dayjs'
+import members from '@/mixins/members'
 
 export default {
-  mixins: [filters, contentList, dayjs],
+  mixins: [filters, contentList, dayjs, members],
   props: {
     type: String,
     prop: String,
@@ -124,25 +107,23 @@ export default {
     buttonClick() {
       this.$emit('buttonClick', { prop: this.prop, data: this.data })
     },
-    // dummy data !!
-    random(min, max) {
-      min = Math.ceil(min)
-      max = Math.floor(max)
-      return Math.floor(Math.random() * (max - min + 1)) + min
-    },
-    randomStatus() {
-      return ['complete', 'progress', 'idle', 'imcomplete'][this.random(0, 2)]
-    },
-    randomProgress() {
-      return this.random(0, 100)
-    },
   },
   computed: {
     member() {
-      const uuid = this.data[this.prop]
-      const memberList = this.$store.getters.memberList
-      return memberList.find(member => member.uuid === uuid) || {}
+      return this.uuidToMember(this.data[this.prop])
+    },
+    members() {
+      return this.uuidsToMembers(this.data[this.prop])
     },
   },
 }
 </script>
+
+<style lang="scss">
+span.debug {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.5em;
+  opacity: 0.5;
+}
+</style>

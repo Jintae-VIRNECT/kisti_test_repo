@@ -69,14 +69,14 @@ $value-width: 374px;
 
 .process-new-modal {
   .el-dialog {
+    max-width: 100vw;
     cursor: default;
   }
   .el-dialog__header {
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .el-dialog__body {
-    min-height: 30vh;
-    max-height: 60vh;
+    height: 55vh;
     padding: 0px !important;
     overflow-y: auto;
   }
@@ -84,7 +84,6 @@ $value-width: 374px;
     margin-top: 7px;
   }
   &__body {
-    margin-bottom: 20px;
     overflow-y: auto;
   }
   &__header-title {
@@ -233,6 +232,7 @@ $value-width: 374px;
     width: 100%;
     & input {
       width: 100%;
+      padding: 8px 20px;
       transition: 0s;
     }
     .el-input:hover:not(.is-focus):not(.is-disabled) {

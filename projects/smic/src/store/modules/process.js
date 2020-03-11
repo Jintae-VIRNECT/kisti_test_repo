@@ -13,6 +13,7 @@ export default {
       info: {},
       jobsList: [],
     },
+    processStatistics: {},
   },
   getters: {
     processList(state) {
@@ -30,6 +31,9 @@ export default {
     subProcessListAll(state) {
       return state.subProcessListAll
     },
+    processStatistics(state) {
+      return state.processStatistics
+    },
   },
   mutations: {
     SET_PROCESS_LIST(state, list) {
@@ -40,6 +44,13 @@ export default {
     },
     SET_PROCESS_INFO(state, obj) {
       state.processDetail = { ...state.processDetail, info: obj }
+    },
+    CLOSE_PROCESS(state, { processId, conditions }) {
+      const process = state.processList.find(
+        process => process.id === processId,
+      )
+      process.conditions = conditions
+      state.processList = [...state.processList]
     },
     DELETE_PROCESS(state, processId) {
       state.processList = state.processList.filter(
@@ -57,6 +68,9 @@ export default {
     },
     SET_JOBS_LIST(state, list) {
       state.subProcessDetail = { ...state.subProcessDetail, jobsList: list }
+    },
+    SET_PROCESS_STATISTICS(state, obj) {
+      state.processStatistics = obj
     },
   },
   actions: {
@@ -96,6 +110,10 @@ export default {
     async closeProcess(context, processId) {
       const data = await api('PROCESS_CLOSE', {
         route: { processId },
+      })
+      context.commit('CLOSE_PROCESS', {
+        processId,
+        conditions: data.conditions,
       })
       return data
     },
@@ -147,6 +165,11 @@ export default {
       })
       context.commit('SET_JOBS_LIST', data.jobs)
       return data
+    },
+    // 공정 통계
+    async getProcessStatistics(context) {
+      const data = await api('PROCESS_STATISTICS')
+      context.commit('SET_PROCESS_STATISTICS', data)
     },
   },
 }

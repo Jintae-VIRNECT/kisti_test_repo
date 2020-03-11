@@ -1,5 +1,5 @@
 <template lang="pug">
-  .content-detail
+  .content-detail.process-detail
     el-breadcrumb.header__bread-crumb(separator="/")
       el-breadcrumb-item(:to='{path: `/process`}') 공정({{processDetail.info.name}})
       el-breadcrumb-item 세부공정
@@ -28,7 +28,7 @@
                 @onChangeData="onChangeData"
                 @onCreateData="onCreateData"
                 @onDeleteData="onDeleteData")
-    inline-table(:setMainHeader="true")
+    inline-table.detail-table(:setMainHeader="true")
       template(slot="header-left")
         span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
         .vn-label.toggle-topic-btn
@@ -61,7 +61,7 @@
                   @onCreateData="onCreateData"
                   @onDeleteData="onDeleteData")
         div(v-else)
-          process-detail-graph
+          process-detail-graph(:tableData="processDetail.subProcessList")
 </template>
 <script>
 import { mapGetters } from 'vuex'

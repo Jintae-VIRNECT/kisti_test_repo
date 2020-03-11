@@ -135,5 +135,17 @@ export default {
       }
     }
   }
+  // cursor style off
+  &:not(.process-detail),
+  &.process-detail .card:not(.detail-table) {
+    .el-table--enable-row-hover .el-table__body tr:hover > td {
+      background-color: inherit;
+      cursor: default;
+
+      &.control-col .el-dropdown {
+        cursor: pointer;
+      }
+    }
+  }
 }
 </style>

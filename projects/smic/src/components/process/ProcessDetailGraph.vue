@@ -2,33 +2,23 @@
   div
     .box-wrapper
       .box
-        #process-detail-banner-graph
+        #process-detail-graph
 </template>
-<style lang="scss">
-#process-detail-banner-graph .bb-axis.bb-axis-x g.tick text {
-  tspan:nth-child(1) {
-    font-weight: 600;
-    font-size: 14px;
-    fill: #0d2a58;
-  }
-  tspan:nth-child(3) {
-    font-size: 13px;
-    fill: #566173;
-  }
-}
-</style>
+
 <script>
 import ProcessDetailGraphTooltip from '@/components/process/ProcessDetailGraphTooltip.vue'
+import SubProcessDetailGraphTooltip from '@/components/process/SubProcessDetailGraphTooltip.vue'
 import Vue from 'vue'
 
 import bb from 'billboard.js'
 
 import customColors from '@/models/colors.js'
+import members from '@/mixins/members'
 
-import taskGroup from '@/data/taskGroup'
-const jsonData = taskGroup.tableData
 export default {
+  mixins: [members],
   props: {
+    type: String,
     tableData: Array,
   },
   data() {
@@ -37,20 +27,21 @@ export default {
     }
   },
   methods: {
-    initProcessGraph(json) {
-      const xAxisTicks = json.map(row => row.name)
-      const maxLeftPadding = xAxisTicks.reduce((a, b) =>
-        a.length > b.length ? a : b,
+    initProcessGraph() {
+      const json = this.tableData
+      const maxLeftPadding = json.reduce(
+        (s, o) => (o.name.length > s.length ? o.name : s),
+        '',
       ).length
       const heightSize = 200 + json.length * 60
 
       const self = this
-      const graphData = json.map(j => j.progress)
+      const graphData = json.map(j => j.progressRate)
       this.barChart = bb.generate({
         data: {
           x: 'x',
           columns: [
-            ['x', ...xAxisTicks],
+            ['x', ...json.map(item => item.id || item.subProcessId)],
             ['value', ...graphData],
           ],
           color(color, d) {
@@ -73,8 +64,12 @@ export default {
               format(index) {
                 const data = json[index]
                 if (!data) return
-                const tmp = `${data.name}\n \n${data.user}`
-                return tmp
+                const str = data.workerUUID
+                  ? `${data.name}\n \n${
+                      self.uuidToMember(data.workerUUID).name
+                    }`
+                  : data.name
+                return str
               },
             },
           },
@@ -109,18 +104,14 @@ export default {
             const { index } = rows[0]
 
             const data = json[index]
-            const dataSet = {
-              sceneGroupName: data.sceneGroupName,
-              startAt: data.startAt,
-              endAt: data.endAt,
-              issue: data.issue,
-              progress: data.progress,
-              status: data.status,
-            }
+            const tooltip =
+              self.type === 'jobs'
+                ? SubProcessDetailGraphTooltip
+                : ProcessDetailGraphTooltip
             const renderedTooltip = new Vue({
-              ...ProcessDetailGraphTooltip,
+              ...tooltip,
               parent: self,
-              propsData: dataSet,
+              propsData: { data, index },
             }).$mount().$el.outerHTML
 
             return renderedTooltip
@@ -140,7 +131,7 @@ export default {
           right: 70,
           bottom: 20,
         },
-        bindto: '#process-detail-banner-graph',
+        bindto: '#process-detail-graph',
       })
       const domains = document.querySelectorAll('path.domain')
       for (let i = 0; i < domains.length; i++) {
@@ -161,14 +152,28 @@ export default {
       lastGridLine.setAttribute('x1', XpositionOfLastGridLine - 2)
       lastGridLine.setAttribute('x2', XpositionOfLastGridLine - 2)
     },
+    initTooltip() {
+      this.$el.addEventListener('mouseleave', () => {
+        this.$el.querySelector('.bb-tooltip-container').innerHTML = ''
+      })
+      this.$el.addEventListener('click', ({ target }) => {
+        if (target.nodeName === 'SPAN') {
+          target = target.parentElement
+        }
+        const btnType = target.getAttribute('data-type')
+        if (/^(report|issue|smartTool)$/.test(btnType)) {
+          const index = target.getAttribute('data-index')
+          this.$emit('buttonClick', {
+            prop: btnType,
+            data: this.tableData[index],
+          })
+        }
+      })
+    },
   },
   mounted() {
-    this.initProcessGraph(jsonData)
-    // tooltip hide
-    this.$el.addEventListener('mouseleave', () => {
-      this.$el.querySelector('.process-detail-graph-tooltip').style.display =
-        'none'
-    })
+    this.initProcessGraph()
+    this.initTooltip()
   },
 }
 </script>
@@ -176,6 +181,20 @@ export default {
 <style lang="scss">
 $el-date-height: 36px;
 $el-date-width: 80px;
+
+#process-detail-graph {
+  .bb-axis.bb-axis-x g.tick text {
+    tspan:nth-child(1) {
+      font-weight: 600;
+      font-size: 14px;
+      fill: #0d2a58;
+    }
+    tspan:nth-child(3) {
+      font-size: 13px;
+      fill: #566173;
+    }
+  }
+}
 #bar-chart {
   height: 210px;
 }

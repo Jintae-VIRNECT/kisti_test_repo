@@ -5,7 +5,7 @@
         search-tab-nav.search-wrapper.text-right(placeholder="콘텐츠 이름, 등록 멤버 이름" :search="search" :filter="filter" :sort="sort" @change="onChangeSearch")           
     inline-table(:setSubHeader="true")
       template(slot="header--secondary")
-        router-link.title(to="/contents")
+        router-link.title(to="/process")
           i.el-icon-back
           | 공정으로 등록할 콘텐츠 선택
       template(slot="body")

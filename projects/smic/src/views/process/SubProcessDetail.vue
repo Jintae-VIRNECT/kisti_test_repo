@@ -55,7 +55,7 @@
               template(slot-scope='scope')
                 table-column(:prop="prop" :data="subProcessDetail.jobsList[scope.$index]" @buttonClick="onRowButtonClick")
         div(v-else)
-          process-detail-graph
+          process-detail-graph(type="jobs" :tableData="subProcessDetail.jobsList" @buttonClick="onRowButtonClick")
     issue-modal(:toggleIssueModal="toggleIssueModal" :issueId="issueId" @handleCancel="onHandleCancel")
     report-modal(:toggleReportModal="toggleReportModal" :reportId="reportId" @handleCancel="onHandleCancel")
     smart-tool-modal(:toggleSmartToolModal="toggleSmartToolModal" :jobId="jobId" @handleCancel="onHandleCancel")

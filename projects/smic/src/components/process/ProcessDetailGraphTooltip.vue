@@ -5,32 +5,46 @@
         span.sub-title 세부공정 정보
       .card__header--right
         .text-right
-          router-link.more-link(type="text" to="/process") 더보기
+          router-link.more-link(type="text" :to="`${ $router.currentRoute.path }/${ data.subProcessId }`") 더보기
     .card__body.tooltip__body
       .item
         label 세부공정 이름
-        p.value {{sceneGroupName}}
+        p.value {{data.name}}
       .item.box-wrapper
         .box
-          label 진행상태
+          label 진행 상태
           br
-          button.btn.btn--status(:class='status') {{status | statusFilterName}}
+          button.btn.btn--status(:class='data.conditions | processStatusFilterName | processStatusNameColor') {{data.conditions | processStatusFilterName}}
         .box
           label 진행률
-          p.progress-percent {{progress}}%
+          p.progress-percent {{data.progressRate}}%
       .item
         label 세부공정 일정
-        p.value {{startAt}} - {{endAt}}
+        p.value {{data.startDate | dayJs_FilterDateTimeFormat}} - {{data.endDate | dayJs_FilterDateTimeFormat}}
       .item
         label 작업 이슈
         div
-          .blub(:class="issue ? 'on' : 'off'")
-          span {{issue ? "있음" : "없음"}}
+          .blub(:class="data.issuesTotal ? 'on' : 'off'")
+          span {{data.issuesTotal ? "있음" : "없음"}}
 </template>
+
+<script>
+import filters from '@/mixins/filters'
+import dayjs from '@/plugins/dayjs'
+
+export default {
+  mixins: [filters, dayjs],
+  props: {
+    data: Object,
+  },
+}
+</script>
+
 <style lang="scss">
-#process-detail-banner-graph .bb-tooltip-container {
-  top: 15px !important;
+#process-detail-graph .bb-tooltip-container {
+  top: 0 !important;
   right: 40px;
+  bottom: 0 !important;
   left: auto !important;
   display: block !important;
   visibility: visible !important;
@@ -44,7 +58,14 @@
   }
 }
 .process-detail-graph-tooltip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 30px;
   width: 300px;
+  height: 340px;
+  margin: auto 0;
+
   .tooltip__body {
     padding: 16px;
   }
@@ -96,17 +117,3 @@
   }
 }
 </style>
-<script>
-import filters from '@/mixins/filters'
-export default {
-  mixins: [filters],
-  props: {
-    sceneGroupName: String,
-    startAt: String,
-    endAt: String,
-    issue: Boolean,
-    progress: Number,
-    status: String,
-  },
-}
-</script>

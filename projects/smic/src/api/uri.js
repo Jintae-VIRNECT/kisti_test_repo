@@ -60,4 +60,6 @@ module.exports = {
   SUB_PROCESS_UPDATE: ['POST', '/processes/subProcesses/{subProcessId}'],
   // 작업목록조회
   JOBS_LIST: ['GET', '/processes/subProcesses/{subProcessId}/jobs'],
+  // 전체 공정 진행률 및 공정진행상태별 현황 조회
+  PROCESS_STATISTICS: ['GET', '/processes/statistics'],
 }

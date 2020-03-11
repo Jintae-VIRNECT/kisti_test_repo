@@ -11,7 +11,7 @@ export default [
   },
   {
     prop: 'subProcessName',
-    label: '세부 공정 이름',
+    label: '세부공정 이름',
     width: 200,
   },
   {
@@ -21,7 +21,7 @@ export default [
   {
     prop: 'workerUUID',
     label: '작업 담당자',
-    width: 160,
+    width: 170,
   },
   {
     prop: 'reportedDate',
