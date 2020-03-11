@@ -13,6 +13,7 @@ export default {
       info: {},
       jobsList: [],
     },
+    processStatistics: {},
   },
   getters: {
     processList(state) {
@@ -29,6 +30,9 @@ export default {
     },
     subProcessListAll(state) {
       return state.subProcessListAll
+    },
+    processStatistics(state) {
+      return state.processStatistics
     },
   },
   mutations: {
@@ -64,6 +68,9 @@ export default {
     },
     SET_JOBS_LIST(state, list) {
       state.subProcessDetail = { ...state.subProcessDetail, jobsList: list }
+    },
+    SET_PROCESS_STATISTICS(state, obj) {
+      state.processStatistics = obj
     },
   },
   actions: {
@@ -158,6 +165,11 @@ export default {
       })
       context.commit('SET_JOBS_LIST', data.jobs)
       return data
+    },
+    // 공정 통계
+    async getProcessStatistics(context) {
+      const data = await api('PROCESS_STATISTICS')
+      context.commit('SET_PROCESS_STATISTICS', data)
     },
   },
 }

@@ -8,66 +8,57 @@
         //- el-progress(:percentage="88" :show-text="false")
         .text-item
           span.key 전체 공정
-          span.value 14
+          span.value {{ processStatistics.totalRate }}
         .text-item
           span.key 시작 대기 공정
-          span.value 14
+          span.value {{ processStatistics.categoryWait }}
         .text-item
           span.key 시작된 공정
-          span.value 14
+          span.value {{ processStatistics.categoryStarted }}
         .text-item
           span.key 마감된 공정
-          span.value 14
+          span.value {{ processStatistics.categoryEnded }}
           
     .box
       #process-dash-banner-graph
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bb from 'billboard.js'
 import { processStatus } from '@/models/process'
-import dayjs from 'dayjs'
 
 import filters from '@/mixins/filters'
 
-function getRandomArbitrary() {
-  return Math.floor(Math.random() * (40 - 0) + 0)
-}
-function jsonData() {
-  return [
-    { processStatus: 'idle', status: 'yet', value: getRandomArbitrary() },
-    { processStatus: 'start', status: 'yet', value: getRandomArbitrary() },
-    { processStatus: 'start', status: 'start', value: getRandomArbitrary() },
-    { processStatus: 'start', status: 'default', value: getRandomArbitrary() },
-    { processStatus: 'start', status: 'end', value: getRandomArbitrary() },
-    { processStatus: 'end', status: 'yet', value: getRandomArbitrary() },
-    { processStatus: 'end', status: 'end', value: getRandomArbitrary() },
-    { processStatus: 'end', status: 'default', value: getRandomArbitrary() },
-  ]
-}
 export default {
-  props: {
-    tableData: Array,
-  },
   mixins: [filters],
   data() {
     return {
-      tabs: {
-        processStatus,
-      },
-      graphData: [],
-      activeTab: processStatus[0].name,
-      form: {
-        date: dayjs().toString(),
-        startTime: '01:00',
-        endTime: '24:00',
-      },
       barChart: null,
       cursorData: null,
     }
   },
+  computed: {
+    ...mapGetters(['processStatistics']),
+    graphData() {
+      if (!Object.keys(this.processStatistics).length)
+        return [0, 0, 0, 0, 0, 0, 0, 0]
+      else {
+        return processStatus.map(status => {
+          return Object.entries(this.processStatistics).find(
+            ([key]) => status.name === key.toUpperCase(),
+          )[1]
+        })
+      }
+    },
+  },
+  watch: {
+    processStatistics() {
+      this.initProcessGraph()
+    },
+  },
   mounted() {
-    this.initProcessGraph(jsonData())
+    this.initProcessGraph()
     document
       .querySelector('#process-dash-banner-graph')
       .addEventListener('click', () => {
@@ -75,19 +66,9 @@ export default {
       })
   },
   methods: {
-    initProcessGraph(json) {
-      const xAxisTicks = [
-        '대기',
-        '미진행',
-        '진행',
-        '미흡',
-        '완료',
-        '미완수',
-        '완수',
-        '결함',
-      ]
+    initProcessGraph() {
+      const xAxisTicks = processStatus.map(status => status.label)
       const self = this
-      this.graphData = json.map(j => j.value)
       this.barChart = bb.generate({
         data: {
           x: 'x',
@@ -146,11 +127,11 @@ export default {
         },
         bar: {
           width: {
-            max: 12,
+            max: 18,
           },
         },
         size: {
-          height: 400,
+          height: 300,
         },
         padding: {
           bottom: 50,
@@ -158,6 +139,12 @@ export default {
         resize: {
           auto: false,
         },
+        regions: [
+          {
+            start: 0.5,
+            end: 4.5,
+          },
+        ],
         bindto: '#process-dash-banner-graph',
       })
       const domains = document.querySelectorAll('path.domain')
@@ -221,6 +208,26 @@ export default {
         group.appendChild(valueText)
         item.appendChild(group)
       })
+
+      // yGrid style
+      const yGrid = document.querySelectorAll(
+        '#process-dash-banner-graph .bb-ygrids .bb-ygrid',
+      )
+      yGrid.forEach((item, index) => {
+        if (index % 2) {
+          item.remove()
+          return false
+        }
+        item.style.stroke = '#eaedf3'
+        item.style['stroke-dasharray'] = 0
+      })
+
+      // region style
+      const region = document.querySelector(
+        '#process-dash-banner-graph .bb-regions .bb-region',
+      )
+      region.style.stroke = 'none'
+      region.style.fill = 'none'
     },
   },
 }

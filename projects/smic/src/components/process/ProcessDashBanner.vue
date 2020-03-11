@@ -12,8 +12,8 @@
         a(v-show="topic === 'graph' " href="#" @click.prevent="toggleGraphTable") 
           img(src="~@/assets/image/ic-table.svg")
           span 그래프 접기
-      process-dash-banner-table
-      process-dash-banner-graph(v-if="topic !== 'table'" :key="topic")
+      process-dash-banner-table(:data="processStatistics")
+      process-dash-banner-graph(v-if="topic !== 'table'" :key="topic" :data="processStatistics")
 </template>
 <style lang="scss">
 .process-dash-banner {
@@ -42,7 +42,6 @@ export default {
   },
   props: {
     initTopic: String,
-    data: Array,
   },
   data() {
     return {
@@ -53,6 +52,9 @@ export default {
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },
+  },
+  created() {
+    this.$store.dispatch('getProcessStatistics')
   },
 }
 </script>

@@ -813,7 +813,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     display: flex;
     .box-wrapper {
       .box:first-child {
-        min-width: inherit;
+        min-width: 120px;
       }
     }
     .box {
@@ -821,8 +821,8 @@ div:not(.login-form) > .el-form .el-form-item__content {
       padding: 0px 30px;
       border-right: 1px solid rgba(205, 209, 214, 0.5);
       &:first-child {
-        flex: 1 1 150px;
-        min-width: 150px;
+        flex: 1 1 170px;
+        min-width: 170px;
         padding-left: 0px;
       }
       &:last-child {
@@ -881,6 +881,7 @@ div:not(.login-form) > .el-form .el-form-item__content {
     display: flex;
     .item {
       width: max-content;
+      min-width: 82px;
       margin-left: 30px;
       &:first-child {
         margin-left: 0px;
