@@ -11,7 +11,7 @@ export const cols = [
   {
     prop: 'uploaderName',
     label: '등록 멤버',
-    width: 130,
+    width: 170,
   },
   {
     prop: 'createdDate',

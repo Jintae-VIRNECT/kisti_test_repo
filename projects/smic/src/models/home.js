@@ -31,12 +31,12 @@ export const tableColSettings = {
     {
       prop: 'sceneGroupTotal',
       label: '세부공정 콘텐츠 수',
-      width: 130,
+      width: 120,
     },
     {
       prop: 'uploaderName',
       label: '등록 멤버',
-      width: 130,
+      width: 170,
     },
     {
       prop: 'createdDate',
@@ -46,7 +46,7 @@ export const tableColSettings = {
     {
       prop: 'status',
       label: '배포상태',
-      width: 100,
+      width: 150,
     },
   ],
   // process: [

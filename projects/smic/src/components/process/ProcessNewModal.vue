@@ -3,7 +3,7 @@
     el-dialog(
       :visible.sync="processModal"
       width="540px"
-      height="50vh"
+      margin-top="10vh"
       @open="handleOpen"
       @close="handleCancel"
       :destroy-on-close="true")
@@ -21,7 +21,7 @@
         .detail-process-list.border-divider
           .detail-process-item
             .section.title(v-for="(scene, index) in target.sceneGroupList")
-              label {{ scene.priority | leftZeroPad }}.
+              label {{ index + 1 | leftZeroPad }}.
               .value
                 span {{ scene.name }}
       span.dialog-footer.section(slot='footer')
@@ -48,6 +48,7 @@ export default {
     },
     handleOpen() {},
     handleConfirm() {
+      this.handleCancel()
       this.$emit('handleConfirm')
     },
   },
@@ -63,20 +64,21 @@ export default {
 </script>
 
 <style lang="scss">
-$label-width: 97px;
+$label-width: 95px;
 $sub-label-width: 80px;
 $value-width: 374px;
 
 .process-new-modal {
   .el-dialog {
     max-width: 100vw;
+    margin-top: 12vh !important;
     cursor: default;
   }
   .el-dialog__header {
     box-shadow: 0 1px 0 0 #eaedf3;
   }
   .el-dialog__body {
-    height: 55vh;
+    height: 60vh;
     padding: 0px !important;
     overflow-y: auto;
   }
@@ -186,6 +188,12 @@ $value-width: 374px;
       width: $value-width;
       margin-bottom: -8px;
     }
+    & .el-select {
+      padding: 0;
+      & .el-input__inner {
+        padding: 7px 16px;
+      }
+    }
   }
   .value {
     margin-left: 10px;
@@ -232,7 +240,6 @@ $value-width: 374px;
     width: 100%;
     & input {
       width: 100%;
-      padding: 8px 20px;
       transition: 0s;
     }
     .el-input:hover:not(.is-focus):not(.is-disabled) {
@@ -261,6 +268,7 @@ $value-width: 374px;
     }
   }
   .el-date-editor--datetimerange.el-input__inner {
+    box-sizing: content-box;
     width: $value-width;
     height: 38px;
     padding: 0;

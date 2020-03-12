@@ -66,11 +66,17 @@ export default {
 <style lang="scss">
 #app {
   .top-nav {
+    position: fixed;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: calc(100% - 76px);
     min-width: 600px;
     padding: 12px 22px;
+    background: #fafbfc;
+    // box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+
     .el-dropdown > span {
       cursor: pointer;
     }
@@ -81,12 +87,31 @@ export default {
     position: static;
     height: auto;
     padding: 0;
+    .username {
+      font-size: 14px;
+    }
   }
   .top-nav__center {
     margin: 0 auto;
   }
   .top-nav__right {
     padding-right: 8px;
+  }
+}
+
+// static modal 버그
+.v-modal {
+  display: none;
+}
+.el-dialog__wrapper {
+  height: 110%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+// 임시 모바일 스타일
+@media screen and (max-width: 767px) {
+  .top-nav__left {
+    display: none;
   }
 }
 </style>

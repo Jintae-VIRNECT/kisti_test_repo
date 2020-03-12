@@ -11,7 +11,7 @@
         .box
           label 진행 상태
           br
-          button.btn.btn--status(:class='data.status | processStatusFilterName | processStatusNameColor') {{data.status | processStatusFilterName}}
+          button.btn.btn--status(:class='data.conditions | processStatusFilterName | processStatusNameColor') {{data.conditions | processStatusFilterName}}
         .box
           label 진행률
           p.progress-percent {{data.progressRate}}%

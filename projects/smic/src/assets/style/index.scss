@@ -1,17 +1,22 @@
 /* admin style override */
+html {
+  overflow: hidden;
+}
 #app {
+  height: 100%;
+  overflow-y: scroll;
   th,
   td {
     padding: inherit;
   }
   .admin-container {
     height: inherit;
+    padding-left: 60px;
     overflow: inherit;
   }
   .admin-body {
     width: 1300px;
-    padding: inherit;
-    padding: 0;
+    padding: 80px 0;
   }
   .login-form--submit {
     height: 48px;
@@ -40,6 +45,10 @@
       width: 44px;
       height: 44px;
       margin: 11px 8px 24px 8px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
     &-inner {
       background-color: #1b293e;
@@ -61,15 +70,38 @@
   .el-progress-bar__inner {
     background-image: linear-gradient(#186ae2, #186ae2);
   }
+  .el-tabs__item:hover,
+  .el-tabs__item.is-active {
+    color: #186ae2;
+  }
+  .el-tabs__active-bar {
+    background-color: #186ae2;
+  }
+  .el-input__clear {
+    font-size: 24px;
+  }
+  .el-range-editor .el-range-input,
+  .el-input__inner {
+    color: #0d2a58;
+  }
+  .el-date-editor--datetimerange {
+    box-sizing: content-box;
+  }
 }
 .el-time-spinner__list::after,
 .el-time-spinner__list::before {
   height: 72px;
 }
+.el-select-dropdown__item.selected {
+  color: #0d2a58 !important;
+}
+.el-message-box__wrapper {
+  height: 101%;
+  background: rgba(0, 0, 0, 0.5);
+}
 /* admin style override end */
 
 .admin-body__header {
-  margin-bottom: 24px;
   padding: 8px 0px;
   color: #0d2a58;
   font-weight: 500;
@@ -78,6 +110,11 @@
   font-stretch: normal;
   line-height: normal;
   letter-spacing: normal;
+
+  &--margin {
+    @extend .admin-body__header;
+    margin-bottom: 24px;
+  }
 }
 
 .text-center {
@@ -369,8 +406,11 @@
   }
   &.el-table th > .cell,
   &.el-table .cell {
-    padding: 8px 0 !important;
+    padding: 8px 0;
     overflow: initial;
+  }
+  .el-table__row {
+    cursor: pointer;
   }
   .el-table__row td:first-child .cell {
     margin-left: 30px !important;
@@ -407,7 +447,7 @@
   }
 }
 .issue-type {
-  padding: 4px 8px;
+  padding: 6px 8px;
   color: #ff514a;
   font-weight: 500;
   font-size: 12px;
@@ -420,7 +460,7 @@
   border-radius: 4px;
 }
 .el-tabs .tabs__item {
-  color: #6d798b !important;
+  color: #838fa2 !important;
   font-weight: 500 !important;
   font-size: 14px !important;
   font-style: normal !important;
@@ -464,6 +504,7 @@
   }
   .el-tabs__item {
     padding: 0px 8px;
+    color: #838fa2;
   }
   .el-tabs__nav {
     margin-left: 0px !important;
@@ -486,6 +527,9 @@
 }
 
 .page-nav {
+  .card + & {
+    padding-top: 10px;
+  }
   &--left {
     display: inline-block;
   }
@@ -578,6 +622,7 @@
 .page-nav .search-wrapper .el-select,
 div:not(.login-form) > .el-form .el-form-item__content {
   .el-input__inner {
+    box-sizing: border-box;
     border: solid 2px rgba(0, 0, 0, 0);
     box-shadow: none;
   }

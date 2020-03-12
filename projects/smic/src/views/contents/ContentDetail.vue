@@ -107,6 +107,10 @@ export default {
     font-size: 16px;
   }
   & > .card:nth-child(2) {
+    .el-table th .cell {
+      padding-top: 16px;
+      padding-bottom: 0;
+    }
     .el-table th.is-leaf {
       border-bottom: none;
     }
@@ -128,7 +132,7 @@ export default {
           }
         }
         i {
-          margin-right: 12px;
+          margin: 0 14px 2px 6px;
           font-size: 16px;
           vertical-align: middle;
         }

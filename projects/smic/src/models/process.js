@@ -47,7 +47,7 @@ export const cols = [
   {
     prop: 'subProcessAssign',
     label: '세부공정 담당자',
-    width: 190,
+    width: 170,
   },
   {
     prop: 'issueTotal',

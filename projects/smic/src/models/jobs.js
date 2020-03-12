@@ -14,7 +14,7 @@ export const cols = [
     width: 150,
   },
   {
-    prop: 'status',
+    prop: 'conditions',
     label: '진행 상태',
     width: 80,
   },

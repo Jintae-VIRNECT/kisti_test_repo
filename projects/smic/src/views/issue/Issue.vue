@@ -64,7 +64,7 @@ export default {
       colSetting: tableColSettings,
       params: {
         search: '',
-        size: 8,
+        size: 10,
       },
       subject: {
         options: [

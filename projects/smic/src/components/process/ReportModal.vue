@@ -10,9 +10,9 @@
       template(slot="title")
         span.process-new-modal__header-title 리포트
       .process-new-modal__body
-        div(v-for="item in reportDetail.reportItems")
+        div(v-for="(item, index) in reportDetail.reportItems")
           .section(:class="item.type === 'REPORT' ? '' : 'border-divider'")
-            label 항목 {{ item.priority }}.
+            label 항목 {{ index + 1 }}.
             .value
               span {{ item.title }}
               span(:class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}

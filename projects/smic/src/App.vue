@@ -1,13 +1,11 @@
 <template lang="pug">
 	#app
-		div(v-if="getIsLoggedIn")
+		div(:class="$router.currentRoute.path === '/users' ? 'login-layout' : ''")
 			the-sidebar(:menus="menus")
 			.admin-container
 				the-top-nav
 				main.admin-body
 					router-view
-		div(v-else)
-			router-view
 </template>
 
 <script>
@@ -47,3 +45,19 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#app .login-layout {
+  .sidebar,
+  .admin-container > .top-nav {
+    display: none;
+  }
+  .admin-body {
+    padding: 0;
+    .top-nav {
+      position: static;
+      width: 100%;
+    }
+  }
+}
+</style>

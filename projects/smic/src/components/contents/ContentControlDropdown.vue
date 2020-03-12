@@ -19,7 +19,7 @@
 			//- 		span 공정관리중
 			//- 		span.check(v-if="data.status == 'MANAGED'")
 			//- 			i.el-icon-check 
-			.group 콘텐츠 설정
+			//- .group 콘텐츠 설정
 			el-dropdown-item
 				.color-red(@click="onDelete") 삭제
 </template>

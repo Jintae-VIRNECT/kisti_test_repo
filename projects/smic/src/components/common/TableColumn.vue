@@ -42,7 +42,7 @@
     span {{ data['startDate'] | dayJs_FilterDateTimeFormat }} 
     span &nbsp;- {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
   //- 프로세스 진행 상태
-  div(v-else-if="/^(conditions|status)$/.test(prop)")
+  div(v-else-if="/^(conditions)$/.test(prop)")
     button.btn.btn--status(
       size="mini" 
       :class="data[prop] | processStatusFilterName | processStatusNameColor"

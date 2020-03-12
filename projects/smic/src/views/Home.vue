@@ -1,7 +1,7 @@
 <template lang="pug">
   div
-    h1.admin-body__header 홈
-    process-dash-banner(:data="processData" initTopic="graph")
+    h1.admin-body__header--margin 홈
+    process-dash-banner(initTopic="graph")
     //- process-inprogress-status-graph
     el-row(:gutter="20")
       el-col(:span="24")

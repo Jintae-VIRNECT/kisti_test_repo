@@ -119,6 +119,9 @@ export default {
 
 <style lang="scss">
 .issue-modal .el-dialog {
+  .el-dialog__body {
+    height: 68vh;
+  }
   .section {
     position: relative;
     margin: 20px 30px;
@@ -147,9 +150,6 @@ export default {
       background: rgba(0, 0, 0, 0.5);
       border-radius: 50%;
       pointer-events: none;
-    }
-    .issue-type {
-      padding: 7px 8px;
     }
   }
   .el-image img {

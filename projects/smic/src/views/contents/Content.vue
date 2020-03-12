@@ -21,7 +21,7 @@ export default {
     return {
       params: {
         search: '',
-        size: 8,
+        size: 10,
       },
       filter: {
         options: [
