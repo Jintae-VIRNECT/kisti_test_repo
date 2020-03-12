@@ -5,10 +5,6 @@ Virnect Platform
 ## Build Setup
 
 ``` bash
-# nodejs 초기 세팅일 경우
-$ npm install yarn -g
-$ yarn global add vue-cli
-
 # install dependencies
 $ yarn # Or npm install
 
@@ -30,7 +26,8 @@ $ yarn generate
 ## nuxtjs 기본 디렉터리에 포함되지 않은 추가 디렉터리
 ```
 api - API서버와 데이터 송수신
-└ models - API서버와 프론트간의 칼럼명 매칭
 lang - 언어
+models - API서버와 프론트간의 칼럼명 매칭
+services - 비즈니스 로직
 ```
 
