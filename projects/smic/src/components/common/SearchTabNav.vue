@@ -87,8 +87,7 @@ export default {
 <style lang="scss">
 .searchTabNav {
   .subject.el-select {
-    position: relative;
-    right: -6px;
+    margin-right: 4px;
   }
   .subject.el-select .el-input__inner {
     width: 90px;
@@ -97,7 +96,7 @@ export default {
     width: 90px;
   }
   .sorter.el-select .el-input__inner {
-    width: 110px;
+    width: 120px;
   }
   .filter.el-select .el-select__tags > span {
     display: block;

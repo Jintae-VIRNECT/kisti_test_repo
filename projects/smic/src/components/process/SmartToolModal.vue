@@ -17,7 +17,7 @@
             el-divider(direction="vertical")
             span 체결 완료 수
             span.blue {{ done }}
-            span /{{ smartTools.length }}
+            span / {{ smartTools.length }}
         .section(v-for="{ batchCount, workingToque } in smartTools")
           label 체결 {{ batchCount }}.
           .value
@@ -84,7 +84,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .smart-tool-modal .el-dialog .section {
   padding: 24px 30px;
 
@@ -92,11 +92,10 @@ export default {
     margin: 0 28px;
   }
   label {
-    min-width: 70px;
+    width: 60px;
   }
   .value {
     & > span {
-      vertical-align: middle;
       &:first-child {
         color: #0d2a58;
         font-weight: 500;

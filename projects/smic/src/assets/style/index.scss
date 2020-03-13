@@ -87,6 +87,13 @@ html {
   .el-date-editor--datetimerange {
     box-sizing: content-box;
   }
+  .el-pagination button {
+    margin-right: 0;
+    margin-left: 0;
+  }
+}
+.el-input {
+  font-size: 14px !important;
 }
 .el-time-spinner__list::after,
 .el-time-spinner__list::before {
@@ -98,6 +105,9 @@ html {
 .el-message-box__wrapper {
   height: 101%;
   background: rgba(0, 0, 0, 0.5);
+}
+.el-message-box__btns {
+  padding-top: 20px;
 }
 /* admin style override end */
 
@@ -541,7 +551,7 @@ html {
     margin-bottom: 20px;
     .search {
       min-width: 140px;
-      margin-right: 24px;
+      margin-right: 20px;
       .el-input__inner {
         float: right;
         margin-right: 0px;
@@ -572,7 +582,6 @@ html {
       }
     }
     .el-input__inner {
-      margin-right: 12px;
       padding: 7px 8px;
       background-color: rgb(241, 243, 247);
       .tool i {
@@ -603,9 +612,6 @@ html {
     & .el-input__inner,
     & button {
       height: 34px;
-    }
-    .el-input__suffix {
-      right: 15px;
     }
     .el-icon-arrow-up,
     .el-icon-arrow-down {

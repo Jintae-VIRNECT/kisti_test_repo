@@ -78,7 +78,7 @@ export default {
     }
   }
   label {
-    min-width: 60px;
+    width: 60px;
   }
   .value {
     width: 390px;

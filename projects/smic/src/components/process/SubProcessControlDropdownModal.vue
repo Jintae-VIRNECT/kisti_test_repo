@@ -1,5 +1,5 @@
 <template lang="pug">
-  .process-new-modal.process-edit-modal(@click="e => e.stopPropagation()")
+  .process-new-modal.process-sub-modal(@click="e => e.stopPropagation()")
     el-dialog(
       :visible.sync="processModal"
       width="540px"
@@ -137,7 +137,7 @@ export default {
 </script>
 
 <style lang="scss">
-.process-new-modal.process-edit-modal {
+.process-new-modal.process-sub-modal {
   .detail-process-list .detail-process-item {
     margin-top: 24px;
     .section {

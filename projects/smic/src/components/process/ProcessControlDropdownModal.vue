@@ -1,5 +1,5 @@
 <template lang="pug">
-  .process-new-modal(@click="e => e.stopPropagation()")
+  .process-new-modal.process-edit-modal(@click="e => e.stopPropagation()")
     el-dialog(
       :visible.sync="processModal"
       width="540px"

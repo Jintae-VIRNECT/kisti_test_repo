@@ -18,9 +18,9 @@
           label 세부공정 목록
           .value
             .number-label {{target.info.sceneGroupTotal}}
-        .detail-process-list.border-divider
-          .detail-process-item
-            .section.title(v-for="(scene, index) in target.sceneGroupList")
+        .detail-process-list
+          .detail-process-item(v-for="(scene, index) in target.sceneGroupList")
+            .section.title
               label {{ index + 1 | leftZeroPad }}.
               .value
                 span {{ scene.name }}
@@ -64,9 +64,9 @@ export default {
 </script>
 
 <style lang="scss">
-$label-width: 95px;
-$sub-label-width: 80px;
-$value-width: 374px;
+$label-width: 109px;
+$sub-label-width: 50px;
+$value-width: 360px;
 
 .process-new-modal {
   .el-dialog {
@@ -99,10 +99,17 @@ $value-width: 374px;
     & > * {
       vertical-align: middle;
     }
+    .value {
+      color: #0d2a58;
+      font-weight: 500;
+    }
   }
   .detail-process-list {
     .detail-process-item {
-      margin: 12px 0;
+      margin: 15px 0;
+      .value {
+        margin-left: -4px;
+      }
       .section {
         padding-top: 8px;
         padding-bottom: 8px;
@@ -111,11 +118,15 @@ $value-width: 374px;
         width: $sub-label-width;
         color: #0d2a58;
         font-weight: 500;
-        font-size: 12px;
         font-style: normal;
         font-stretch: normal;
         line-height: 3;
         letter-spacing: normal;
+      }
+      .section:not(.title) label {
+        width: $label-width;
+        margin-top: 2px;
+        font-size: 12px;
       }
       .title {
         color: #0d2a58;
@@ -127,9 +138,6 @@ $value-width: 374px;
         letter-spacing: normal;
         & label {
           line-height: inherit;
-        }
-        & .value span {
-          margin-left: -70px;
         }
       }
       .el-divider {
@@ -157,7 +165,8 @@ $value-width: 374px;
   }
   label {
     display: inline-block;
-    min-width: $label-width;
+    width: $label-width;
+    font-weight: 500;
   }
   label.necessary {
     color: #0d2a58;
@@ -191,12 +200,19 @@ $value-width: 374px;
     & .el-select {
       padding: 0;
       & .el-input__inner {
-        padding: 7px 16px;
+        padding: 7px 14px;
       }
     }
   }
   .value {
-    margin-left: 10px;
+    margin-left: 20px;
+  }
+  .border-divider > label {
+    font-weight: normal;
+  }
+  .el-form-item__label {
+    font-weight: 500;
+    font-size: inherit;
   }
   .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
     content: none;

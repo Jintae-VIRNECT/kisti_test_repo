@@ -11,7 +11,7 @@ export const cols = [
   {
     prop: 'schedule',
     label: '공정 일정',
-    width: 270,
+    width: 260,
   },
   {
     prop: 'progressRate',
@@ -21,17 +21,17 @@ export const cols = [
   {
     prop: 'doneCount',
     label: '완료된 작업 수',
-    width: 90,
+    width: 100,
   },
   {
     prop: 'conditions',
     label: '진행 상태',
-    width: 100,
+    width: 80,
   },
   {
     prop: 'workerUUID',
     label: '세부공정 담당자',
-    width: 180,
+    width: 170,
   },
   {
     prop: 'issueTotal',
