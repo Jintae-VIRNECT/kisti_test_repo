@@ -28,7 +28,7 @@
     img.prefix-img(src="~@/assets/image/ic-content.svg")
     span {{ data[prop] }}
   //- 이슈
-  div(v-else-if="/^(issueTotal)$/.test(prop) && typeof data[prop] !== 'object'")
+  div(v-else-if="/^(issuesTotal)$/.test(prop) && typeof data[prop] !== 'object'")
     .blub(:class="data[prop] ? 'on' : 'off'")
     span {{ data[prop] ? "있음" : "없음" }}
   //- 개수

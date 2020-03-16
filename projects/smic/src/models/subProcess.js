@@ -34,7 +34,7 @@ export const cols = [
     width: 170,
   },
   {
-    prop: 'issueTotal',
+    prop: 'issuesTotal',
     label: '작업 이슈',
     width: 80,
   },
