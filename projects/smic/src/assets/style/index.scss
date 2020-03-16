@@ -9,6 +9,10 @@ html {
   td {
     padding: inherit;
   }
+  .bb-tooltip th,
+  .bb-tooltip td {
+    padding: 2px 5px;
+  }
   .admin-container {
     height: inherit;
     padding-left: 60px;

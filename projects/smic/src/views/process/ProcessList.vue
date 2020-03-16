@@ -46,7 +46,7 @@
                   @onDeleteData="onDeleteData")
         div(v-else)
           process-list-graph
-    pagination(target="process" :params="params")
+    pagination(v-if="topic === 'table'" target="process" :params="params")
 </template>
 <script>
 import { mapGetters } from 'vuex'

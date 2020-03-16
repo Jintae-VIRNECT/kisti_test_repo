@@ -14,6 +14,7 @@ export default {
       jobsList: [],
     },
     processStatistics: {},
+    processDailyTotal: [],
   },
   getters: {
     processList(state) {
@@ -33,6 +34,9 @@ export default {
     },
     processStatistics(state) {
       return state.processStatistics
+    },
+    processDailyTotal(state) {
+      return state.processDailyTotal
     },
   },
   mutations: {
@@ -71,6 +75,9 @@ export default {
     },
     SET_PROCESS_STATISTICS(state, obj) {
       state.processStatistics = obj
+    },
+    SET_PROCESS_DAILY_TOTAL(state, list) {
+      state.processDailyTotal = list
     },
   },
   actions: {
@@ -170,6 +177,13 @@ export default {
     async getProcessStatistics(context) {
       const data = await api('PROCESS_STATISTICS')
       context.commit('SET_PROCESS_STATISTICS', data)
+    },
+    // 일자별 공정 진행률
+    async getProcessDailyTotal(context, month) {
+      const data = await api('PROCESS_DAILY_TOTAL', {
+        params: { month },
+      })
+      context.commit('SET_PROCESS_DAILY_TOTAL', data.dailyTotal)
     },
   },
 }

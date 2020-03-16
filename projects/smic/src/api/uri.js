@@ -62,4 +62,6 @@ module.exports = {
   JOBS_LIST: ['GET', '/processes/subProcesses/{subProcessId}/jobs'],
   // 전체 공정 진행률 및 공정진행상태별 현황 조회
   PROCESS_STATISTICS: ['GET', '/processes/statistics'],
+  // 해당월의 일별 통계 조회
+  PROCESS_DAILY_TOTAL: ['GET', '/processes/dailyTotalRateAtMonth'],
 }

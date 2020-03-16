@@ -13,6 +13,7 @@
 }
 </style>
 <script>
+import { mapGetters } from 'vuex'
 import bb from 'billboard.js'
 import dayjs from 'dayjs'
 
@@ -20,40 +21,39 @@ export default {
   data() {
     return {
       lineChart: null,
-      graphData: [19, 21, 24, 36, 39, 41],
       date: dayjs().set('day', 1),
     }
   },
-  mounted() {
-    this.initProcessGraph(this.graphData)
+  computed: {
+    ...mapGetters(['processDailyTotal']),
+  },
+  filters: {
+    dateFilter(val) {
+      return dayjs(val).format('YYYY-MM')
+    },
   },
   methods: {
-    onChangeDateArrow(val) {
-      if (val === 1) this.date = dayjs(this.date).add(1, 'month')
-      else this.date = dayjs(this.date).subtract(1, 'month')
-      this.onChangeDate()
-    },
-    onChangeDate() {
-      this.initProcessGraph(this.graphData)
-    },
     initProcessGraph(arrayData) {
       const daysInMonth = dayjs(this.date).daysInMonth()
 
-      let xAxisTicks = []
+      const xAxisTicks = []
+      const rateData = []
       for (let i = 1; i <= daysInMonth; i++) {
         xAxisTicks.push(i)
+        rateData.push(null)
       }
 
-      const tmpData = xAxisTicks.map(x =>
-        arrayData[x] === undefined ? null : arrayData[x],
-      )
+      arrayData.forEach(data => {
+        const day = data.onDay.replace(/.*-/, '') * 1 - 1
+        rateData[day] = data.totalRate
+      })
 
       this.lineChart = bb.generate({
         data: {
           x: 'x',
           columns: [
             ['x', ...xAxisTicks],
-            ['value', ...tmpData],
+            ['value', ...rateData],
           ],
           type: 'area-spline',
           color() {
@@ -61,9 +61,6 @@ export default {
           },
         },
         axis: {
-          min: {
-            y: 0,
-          },
           x: {
             type: 'category',
             tick: {
@@ -83,6 +80,13 @@ export default {
                 show: true,
               },
             },
+            min: 0,
+            max: 100,
+            default: [0, 100],
+            padding: {
+              top: 0,
+              bottom: 0,
+            },
           },
         },
         legend: {
@@ -90,7 +94,9 @@ export default {
         },
         tooltip: {
           format: {
-            name: () => '건수',
+            title: val => `${this.date.month() + 1} / ${val}`,
+            name: () => '진행률',
+            value: val => `${val}%`,
           },
         },
         grid: {
@@ -119,11 +125,19 @@ export default {
         domains[i].style.stroke = 'none'
       }
     },
-  },
-  filters: {
-    dateFilter(val) {
-      return dayjs(val).format('YYYY-MM')
+    onChangeDateArrow(val) {
+      if (val === 1) this.date = dayjs(this.date).add(1, 'month')
+      else this.date = dayjs(this.date).subtract(1, 'month')
+      this.onChangeDate()
     },
+    async onChangeDate() {
+      const month = this.date.format('YYYY-MM')
+      await this.$store.dispatch('getProcessDailyTotal', month)
+      this.initProcessGraph(this.processDailyTotal)
+    },
+  },
+  mounted() {
+    this.onChangeDate()
   },
 }
 </script>
