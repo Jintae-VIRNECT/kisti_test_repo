@@ -6,7 +6,7 @@ module.exports = {
   },
   sideMenus: [
     {
-      path: '/',
+      path: '/members',
       image: require('assets/image/ic-home.svg'),
       label: 'test',
     },

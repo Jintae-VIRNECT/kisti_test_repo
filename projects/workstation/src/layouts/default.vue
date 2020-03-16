@@ -16,7 +16,7 @@ import { mapGetters } from 'vuex'
 import TheSidebar from '@/components/layout/TheSidebar.vue'
 import TheTopNav from '@/components/layout/TheTopNav.vue'
 
-import { sideLogo, sideMenus, topLogo, topTitle } from '@/models/layout'
+import { sideLogo, sideMenus, topLogo, topTitle } from '@/data/layout'
 
 export default {
   components: {
