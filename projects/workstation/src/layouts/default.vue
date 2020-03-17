@@ -1,6 +1,6 @@
 <template>
   <div>
-    <the-sidebar :logo="sideLogo" :menus="sideMenus" :bottomMenus="sideMenus" />
+    <the-sidebar :logo="sideLogo" :menus="sideMenus" />
     <div>
       <the-top-nav :logo="topLogo" :title="topTitle" :user="user" />
       <main>
@@ -16,7 +16,7 @@ import { mapGetters } from 'vuex'
 import TheSidebar from '@/components/layout/TheSidebar.vue'
 import TheTopNav from '@/components/layout/TheTopNav.vue'
 
-import { sideLogo, sideMenus, topLogo, topTitle } from '@/data/layout'
+import { sideLogo, sideMenus, topLogo, topTitle } from '@/models/layout'
 
 export default {
   components: {

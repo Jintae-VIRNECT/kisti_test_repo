@@ -6,14 +6,24 @@ module.exports = {
   },
   sideMenus: [
     {
-      path: '/members',
-      image: require('assets/image/ic-home.svg'),
-      label: 'test',
-    },
-    {
       path: '/user',
       image: require('assets/image/ic-issue.svg'),
-      label: 'test',
+      label: 'user',
+    },
+    {
+      path: '/members',
+      image: require('assets/image/ic-home.svg'),
+      label: 'members',
+    },
+    {
+      path: '/contents',
+      image: require('assets/image/ic-home.svg'),
+      label: 'contents',
+    },
+    {
+      path: '/processes',
+      image: require('assets/image/ic-home.svg'),
+      label: 'processes',
     },
   ],
   // topnav

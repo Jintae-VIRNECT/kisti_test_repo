@@ -1,5 +1,5 @@
 <template>
-  <div class="page-members">
+  <div id="members">
     <div v-for="member in members" :key="member.id">
       <p>{{ member }}</p>
     </div>
@@ -16,8 +16,10 @@ export default {
       members: [],
     }
   },
-  async beforeMount() {
-    this.members = await memberService.getDefaultMemberList()
+  async asyncData() {
+    return {
+      members: await memberService.getDefaultMembersList(),
+    }
   },
 }
 </script>
