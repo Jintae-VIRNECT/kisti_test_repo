@@ -41,10 +41,10 @@ message:
 serverUrl: "http://192.168.6.3:8082"
 
 ## Eureka Server Configuration
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    service-url:
+#      defaultZone: http://192.168.6.3:8761/eureka
 
