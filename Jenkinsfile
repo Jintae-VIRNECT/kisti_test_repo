@@ -91,7 +91,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always --name=pf-gateway pf-gateway:develop'
+              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=develop --name=pf-gateway pf-gateway:develop'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
 
@@ -106,7 +106,7 @@ pipeline {
 
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always --name=pf-gateway $registry_server/pf-gateway:staging'
+              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=staging --name=pf-gateway $registry_server/pf-gateway:staging'
               sh 'docker push $registry_server/pf-gateway:staging'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
               sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-gateway:staging", failOnError: true)
@@ -123,7 +123,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always --name=pf-gateway $registry_server/pf-gateway'
+              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=production --name=pf-gateway $registry_server/pf-gateway'
               sh 'docker push $registry_server/pf-gateway'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
