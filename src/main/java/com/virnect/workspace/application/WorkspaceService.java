@@ -123,7 +123,7 @@ public class WorkspaceService {
      * @param pageable    - 페이징 처리 값
      * @return - 멤버 정보 리스트
      */
-    public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, Pageable pageable) {
+    public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest) {
         /*
             필터가 있을 시 -> workspace 단에서 페이징하고 정렬한다.
             필터가 없거나 전체선택 시 -> user 단에서 페이징하고 정렬한다.
@@ -131,8 +131,9 @@ public class WorkspaceService {
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         List<MemberInfoDTO> resultMemberListResponse;
-
         if (StringUtils.hasText(filter)) {
+
+            Pageable pageable = pageRequest.of(true);
             //필터 쿼리에 쓰일 woskspace
             Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
 
@@ -228,9 +229,14 @@ public class WorkspaceService {
 
             pageMetadataResponse.setTotalElements(pageMember.getTotalElements());//전체 데이터 수
             pageMetadataResponse.setTotalPage(pageMember.getTotalPages());//전체 페이지 수
+            pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
+            pageMetadataResponse.setCurrentSize(pageable.getPageSize());
 
         } else {
+            Pageable pageable = pageRequest.of(false);
+
             //필터값이 없으면 페이징 처리한 값을 리턴 받아 그대로 리턴한다.
+
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, true, pageable).getData();
 
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
@@ -242,10 +248,11 @@ public class WorkspaceService {
             resultMemberListResponse = memberInfoList;
             pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
             pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
+            pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
+            pageMetadataResponse.setCurrentSize(pageable.getPageSize());
         }
 
-        pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
+
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
 
@@ -514,8 +521,9 @@ public class WorkspaceService {
 
     /**
      * 사용자 워크스페이스,그룹 내 권한 변경
-     * @param workspaceId - 권한 변경이 이루어지는 워크스페이스 uuid
-     * @param userId - 권한 변경을 하는 워크스페이스 마스터 또는 매니저 유저 uuid
+     *
+     * @param workspaceId                 - 권한 변경이 이루어지는 워크스페이스 uuid
+     * @param userId                      - 권한 변경을 하는 워크스페이스 마스터 또는 매니저 유저 uuid
      * @param userPermissionReviseRequest - 변경 될 권한 정보
      * @return - 사용자 권한 정보
      */
@@ -524,18 +532,18 @@ public class WorkspaceService {
         if (!getWorkspaceUserRole(workspaceId, userId).getRole().equals("MASTER")) {
             throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userPermissionReviseRequest.getUserId(),workspaceRepository.findByUuid(workspaceId));
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userPermissionReviseRequest.getUserId(), workspaceRepository.findByUuid(workspaceId));
 
         //2. workspace permission 변경
         if (!userPermissionReviseRequest.getWorkspacePermissions().isEmpty()) {
-            WorkspaceUserPermission workspaceUserPermission =this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+            WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
             WorkspaceRole userRole = workspaceUserPermission.getWorkspaceRole();
             this.workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
-            this.setWorkspaceUserPermissionInfo(userPermissionReviseRequest.getWorkspacePermissions(),workspaceUser);
+            this.setWorkspaceUserPermissionInfo(userPermissionReviseRequest.getWorkspacePermissions(), workspaceUser);
         }
         //3. group permission 변경
-        if (!userPermissionReviseRequest.getGroups().isEmpty()){
-            this.groupService.reviseGroupUserPermission(userPermissionReviseRequest.getGroups(),workspaceUser);
+        if (!userPermissionReviseRequest.getGroups().isEmpty()) {
+            this.groupService.reviseGroupUserPermission(userPermissionReviseRequest.getGroups(), workspaceUser);
         }
 
         return new ApiResponse<>();

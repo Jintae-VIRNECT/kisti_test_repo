@@ -108,7 +108,7 @@ public class WorkspaceController {
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
             throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable.of());
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
     }
 
