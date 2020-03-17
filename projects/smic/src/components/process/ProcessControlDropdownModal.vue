@@ -28,7 +28,7 @@
               )
             el-form-item(label="공정 담당자")
               el-select.auth-select(v-model='form.ownerUUID' placeholder='담당자를 선택해주세요')
-                el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
+                el-option(v-for='item in allMembersList' :key='item.uuid' :label='item.name' :value='item.uuid')
               span.description 공정 담당자 설정 시 공정 내 전체 세부공정의 담당자로 지정됩니다.
             el-form-item(label="공정 위치")
               el-input(placeholder='공정 위치를 입력해주세요' v-model='form.position')
@@ -55,7 +55,7 @@
                   )
                 el-form-item.is-required(label="담당자")
                   el-select.auth-select(v-model='sub.workerUUID' placeholder='담당자를 선택해주세요')
-                    el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
+                    el-option(v-for='item in allMembersList' :key='item.uuid' :label='item.name' :value='item.uuid')
               el-divider
               
       span.dialog-footer.section(slot='footer')
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import filters from '@/mixins/filters'
 import dayjs from '@/plugins/dayjs'
 import cloneDeep from 'lodash.clonedeep'
@@ -104,6 +105,9 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters(['allMembersList']),
+  },
   watch: {
     toggleProcessModal() {
       this.processModal = this.$props.toggleProcessModal
@@ -137,11 +141,6 @@ export default {
           }
         })
       },
-    },
-  },
-  computed: {
-    memberList() {
-      return this.$store.getters.memberList
     },
   },
   methods: {

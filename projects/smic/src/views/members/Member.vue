@@ -22,7 +22,7 @@ export default {
     return {
       search: '',
       params: {
-        size: 10,
+        size: 8,
         sort: 'name,asc',
       },
       filter: {
@@ -63,10 +63,6 @@ export default {
         ...this.params,
         ...params,
       }
-      // sort 있으면 에러나는 문제
-      // if (this.params.filter !== 'ALL') {
-      //   delete this.params.sort
-      // }
       this.$store.dispatch('getMemberList', this.params)
     },
   },

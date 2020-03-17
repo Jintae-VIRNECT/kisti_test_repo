@@ -22,6 +22,7 @@ export default {
     ],
     locale: null,
     lastAccessPath: null,
+    allMembersList: [],
   },
   getters: {
     getLocale(state) {
@@ -40,6 +41,9 @@ export default {
       // 레거시 코드 - 워크스페이스가 여러개가 되면 가져오는 방식을 바꿔야함.
       if (!state.workspaceInfoList[0]) return null
       return state.workspaceInfoList[0].description
+    },
+    allMembersList(state) {
+      return state.allMembersList
     },
   },
   mutations: {
@@ -73,6 +77,9 @@ export default {
       state.isLoggedIn = false
       state.workspaceInfoList = []
     },
+    SET_ALL_MEMBERS_LIST(state, list) {
+      state.allMembersList = list
+    },
   },
   actions: {
     async USER_LOGIN(context, { email, password }) {
@@ -91,6 +98,17 @@ export default {
     async USER_LOGOUT(context) {
       const data = await api('USER_LOGOUT')
       context.commit('USER_LOGOUT')
+      return data
+    },
+    async getAllMembersList(context) {
+      const data = await api('MEMBER_LIST', {
+        params: {
+          userId: this.getters.getUser.uuid,
+          size: 100,
+          sort: 'name,asc',
+        },
+      })
+      context.commit('SET_ALL_MEMBERS_LIST', data.memberInfoList)
       return data
     },
   },

@@ -43,6 +43,9 @@ export default {
   computed: {
     ...mapGetters(['getIsLoggedIn']),
   },
+  mounted() {
+    this.$store.dispatch('getAllMembersList')
+  },
 }
 </script>
 

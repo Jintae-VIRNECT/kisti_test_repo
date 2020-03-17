@@ -30,13 +30,14 @@
               .section
                 el-form-item.is-required(label="담당자")
                   el-select.auth-select( v-model='form.workerUUID' placeholder='Select')
-                    el-option(v-for='item in memberList' :key='item.uuid' :label='item.name' :value='item.uuid')
+                    el-option(v-for='item in allMembersList' :key='item.uuid' :label='item.name' :value='item.uuid')
       span.dialog-footer.section(slot='footer')
         el-button(type='primary' @click='handleConfirm') 완료
 
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import filters from '@/mixins/filters'
 import dayjs from '@/plugins/dayjs'
 
@@ -67,9 +68,7 @@ export default {
     },
   },
   computed: {
-    memberList() {
-      return this.$store.getters.memberList
-    },
+    ...mapGetters(['allMembersList']),
   },
   methods: {
     handleConfirm() {
