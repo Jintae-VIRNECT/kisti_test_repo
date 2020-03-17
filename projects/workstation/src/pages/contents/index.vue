@@ -1,7 +1,9 @@
 <template>
   <div id="contents">
     <div v-for="content in contents" :key="content.id">
-      <p>{{ content }}</p>
+      <p>
+        <nuxt-link :to="`/contents/${content.id}`">{{ content }}</nuxt-link>
+      </p>
     </div>
   </div>
 </template>
@@ -10,7 +12,6 @@
 import contentService from '@/services/content'
 
 export default {
-  components: {},
   data() {
     return {
       contents: [],

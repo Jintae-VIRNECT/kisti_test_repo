@@ -32,14 +32,21 @@ export default async function api(name, option = {}) {
   params = method === 'post' ? params : { params }
 
   nuxtLoading('start')
-  const response = await axios[method](uri, params)
-  const { code, data, message } = response.data
+  try {
+    const response = await axios[method](uri, params)
+    const { code, data, message } = response.data
 
-  if (code === 200) {
-    nuxtLoading('finish')
-    return data
-  } else {
+    if (code === 200) {
+      nuxtLoading('finish')
+      return data
+    } else {
+      nuxtLoading('fail')
+      nuxtLoading('finish')
+      throw new Error(`${code}: ${message}`)
+    }
+  } catch (e) {
     nuxtLoading('fail')
-    throw new Error(`${code}: ${message}`)
+    nuxtLoading('finish')
+    throw e
   }
 }

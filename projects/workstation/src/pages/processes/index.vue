@@ -10,7 +10,6 @@
 import processService from '@/services/process'
 
 export default {
-  components: {},
   data() {
     return {
       processes: [],

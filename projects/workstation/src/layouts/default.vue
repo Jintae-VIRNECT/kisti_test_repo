@@ -3,7 +3,7 @@
     <the-sidebar :logo="sideLogo" :menus="sideMenus" />
     <div>
       <the-top-nav :logo="topLogo" :title="topTitle" :user="user" />
-      <main>
+      <main class="main-container">
         <nuxt />
       </main>
     </div>
@@ -42,3 +42,13 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.main-container {
+  padding: 40px;
+
+  a:hover {
+    color: blue;
+  }
+}
+</style>

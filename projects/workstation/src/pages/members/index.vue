@@ -10,7 +10,6 @@
 import memberService from '@/services/member'
 
 export default {
-  components: {},
   data() {
     return {
       members: [],
