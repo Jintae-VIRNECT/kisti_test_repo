@@ -68,6 +68,7 @@ export default {
       params: {
         search: '',
         size: 10,
+        searchType: 'USER_NAME',
       },
       searchType: {
         options: [
