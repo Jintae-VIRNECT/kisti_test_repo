@@ -248,7 +248,7 @@ public class WorkspaceService {
             resultMemberListResponse = memberInfoList;
             pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
             pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
-            pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
+            pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
             pageMetadataResponse.setCurrentSize(pageable.getPageSize());
         }
 
