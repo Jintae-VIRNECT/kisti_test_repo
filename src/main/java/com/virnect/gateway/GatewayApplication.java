@@ -1,5 +1,6 @@
 package com.virnect.gateway;
 
+import com.virnect.gateway.filter.PostFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -16,7 +17,7 @@ public class GatewayApplication {
     }
 
     @Bean
-    public PostLogFilter postFilter() {
-        return new PostLogFilter();
+    public PostFilter postFilter(){
+        return new PostFilter();
     }
 }

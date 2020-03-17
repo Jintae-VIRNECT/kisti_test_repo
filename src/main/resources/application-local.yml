@@ -1,5 +1,5 @@
 server:
-    port: 8073
+  port: 8073
 
 spring:
   application:
@@ -18,11 +18,24 @@ zuul:
       path: /auth/**
       serviceId: auth-service
       stripPrefix: false
-    account:
+    users:
       path: /users/**
       serviceid: user-service
+      stripPrefix: false
+    workspace:
+      path: /workspaces/**
+      serviceid: workspace-service
+      stripPrefix: false
+    content:
+      path: /contents/**
+      serviceid: content-service
+      stripPrefix: false
+    process:
+      path: /processes/**
+      serviceid: process-service
       stripPrefix: false
   ribbon-isolation-strategy: thread
   thread-pool:
     use-separate-thread-pools: true
     thread-pool-key-prefix: zuul-
+  sensitive-headers:  Cookie,Set-Cookie
