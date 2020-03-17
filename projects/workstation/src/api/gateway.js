@@ -2,7 +2,7 @@ import URI from './uri'
 import axios from '@/plugins/axios'
 
 function nuxtLoading(method) {
-  if ($nuxt) $nuxt.$loading[method]()
+  if ($nuxt.$loading[method]) $nuxt.$loading[method]()
 }
 
 /**

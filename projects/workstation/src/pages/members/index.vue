@@ -1,13 +1,13 @@
 <template>
   <div class="page-members">
     <div v-for="member in members" :key="member.id">
-      {{ member }}
+      <p>{{ member }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import memberData from '@/data/member'
+import memberService from '@/services/member'
 
 export default {
   components: {},
@@ -17,7 +17,7 @@ export default {
     }
   },
   async beforeMount() {
-    this.members = await memberData.getMemberList()
+    this.members = await memberService.getDefaultMemberList()
   },
 }
 </script>
