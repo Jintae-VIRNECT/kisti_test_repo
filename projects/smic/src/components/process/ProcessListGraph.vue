@@ -94,7 +94,7 @@ export default {
         },
         tooltip: {
           format: {
-            title: val => `${this.date.month() + 1} / ${val}`,
+            title: val => `${this.date.month() + 1} / ${val + 1}`,
             name: () => '진행률',
             value: val => `${val}%`,
           },

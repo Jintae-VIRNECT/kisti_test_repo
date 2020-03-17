@@ -36,12 +36,8 @@ module.exports = {
   PROCESS_CLOSE: ['PUT', '/processes/{processId}/closed'],
   // 세부공정목록조회
   SUB_PROCESS_LIST: ['GET', '/processes/{processId}/subProcesses'],
-  // 모든 이슈 목록을 조회
-  ISSUE_LIST: ['GET', '/processes/issues/all'],
-  // 공정 외 모든 이슈 목록을 조회
-  ISSUE_LIST_GLOBAL: ['GET', '/processes/issues/global'],
-  // 공정 내 모든 이슈 목록을 조회
-  ISSUE_LIST_WORK: ['GET', '/processes/issues/work'],
+  // 이슈 목록을 조회
+  ISSUE_LIST: ['GET', '/processes/issues'],
   // 이슈상세조회
   ISSUE_DETAIL: ['GET', '/processes/issue/{issueId}'],
   // 공정생성

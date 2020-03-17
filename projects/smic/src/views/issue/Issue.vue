@@ -3,8 +3,8 @@
     h1.admin-body__header 이슈관리
     .page-nav
       search-tab-nav.search-wrapper.text-right(
-        placeholder="공정, 세부공정, 작업, 멤버 이름" 
-        :subject="subject" 
+        placeholder="이름" 
+        :searchType="searchType" 
         :search="params.search" 
         :filter="filter" 
         :sort="sort" 
@@ -24,6 +24,7 @@
             :width="width || ''") 
             template(slot-scope='scope')
               table-column(:prop="prop" :data="issueList[scope.$index]")
+    pagination(target="issue" :params="params")
     issue-modal(
       :issueId="issueId"
       :toggleIssueModal="toggleIssueModal"
@@ -40,6 +41,7 @@ import PageHeader from '@/components/common/PageHeader.vue'
 import SearchTabNav from '@/components/common/SearchTabNav.vue'
 import IssueModal from '@/components/process/IssueModal.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
+import Pagination from '@/components/common/Pagination.vue'
 
 // model
 import tableColSettings from '@/models/issue'
@@ -56,6 +58,7 @@ export default {
     SearchTabNav,
     IssueModal,
     TableColumn,
+    Pagination,
   },
   mixins: [contentList, dayjs],
   data() {
@@ -66,18 +69,26 @@ export default {
         search: '',
         size: 10,
       },
-      subject: {
+      searchType: {
         options: [
           {
-            value: 'process',
+            value: 'USER_NAME',
+            label: '멤버',
+          },
+          {
+            value: 'PROCESS_NAME',
             label: '공정',
           },
           {
-            value: 'name',
-            label: '멤버 이름',
+            value: 'SUBPROCESS_NAME',
+            label: '세부공정',
+          },
+          {
+            value: 'JOB_NAME',
+            label: '작업',
           },
         ],
-        value: 'process',
+        value: 'USER_NAME',
       },
       filter: {
         options: [
@@ -86,11 +97,11 @@ export default {
             label: '전체',
           },
           {
-            value: 'GLOBAL',
+            value: 'OUT',
             label: '이슈',
           },
           {
-            value: 'WORK',
+            value: 'IN',
             label: '작업 이슈',
           },
         ],
@@ -121,6 +132,21 @@ export default {
       this.toggleIssueModal = true
     },
     onChangeSearch(params) {
+      // 워크스페이스 이슈 검색시 담당자를 제외한 searchType 비활성화
+      if (params.filter === 'OUT') {
+        this.searchType.options = this.searchType.options.map(option => {
+          option.disabled = option.value === 'USER_NAME' ? false : true
+          return option
+        })
+        this.searchType.value = 'USER_NAME'
+        this.searchType = { ...this.searchType }
+      } else {
+        this.searchType.options = this.searchType.options.map(option => {
+          option.disabled = false
+          return option
+        })
+      }
+
       this.params = {
         ...this.params,
         ...params,

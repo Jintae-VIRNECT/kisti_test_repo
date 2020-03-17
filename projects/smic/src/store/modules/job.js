@@ -6,6 +6,7 @@ export default {
     reportList: [],
     issueDetail: {},
     issueList: [],
+    issueTotal: 0,
     smartToolDetail: {},
     smartToolList: [],
   },
@@ -27,6 +28,9 @@ export default {
     },
     smartToolList(state) {
       return state.smartToolList
+    },
+    issueTotal(state) {
+      return state.issueTotal
     },
   },
   mutations: {
@@ -50,6 +54,9 @@ export default {
     SET_SMART_TOOL_LIST(state, list) {
       state.smartToolList = list
     },
+    SET_ISSUE_TOTAL(state, num) {
+      state.issueTotal = num
+    },
   },
   actions: {
     async getReportDetail(context, reportId) {
@@ -72,19 +79,18 @@ export default {
       return data
     },
     async getIssueList(context, params = {}) {
-      // url 분기
+      // 2filters = ALL
       if (/,/.test(params.filter)) {
         params.filter = 'ALL'
       }
-      const url =
-        {
-          GLOBAL: 'ISSUE_LIST_GLOBAL',
-          WORK: 'ISSUE_LIST_WORK',
-        }[params.filter] || 'ISSUE_LIST'
+      // default
+      params.inout = params.filter || 'ALL'
+      params.searchType = params.searchType || 'NONE'
       delete params.filter
 
-      const data = await api(url, { params })
+      const data = await api('ISSUE_LIST', { params })
       context.commit('SET_ISSUE_LIST', data.issues)
+      context.commit('SET_ISSUE_TOTAL', data.pageMeta.totalElements)
       return data
     },
     async getSmartToolList(context, params = {}) {

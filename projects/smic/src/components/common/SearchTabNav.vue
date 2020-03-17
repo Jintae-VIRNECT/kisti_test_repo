@@ -1,11 +1,11 @@
 <template lang="pug">
   div.searchTabNav
-    el-select.subject(
-      v-if="subject"
-      v-model="subjectValue" 
-      @change="onSubjectChange(subjectValue)" 
+    el-select.searchType(
+      v-if="searchType"
+      v-model="searchTypeValue" 
+      @change="onChangeSearch()" 
     )
-      el-option(v-for="item in subject.options" :key="item.value" :label="item.label" :value="item.value")
+      el-option(v-for="item in searchType.options" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled")
     el-input.tool.search(
       ref="search" 
       :placeholder="placeholder" 
@@ -21,14 +21,14 @@
       v-bind:class="filterSelected" 
       collapse-tags
     )
-      el-option(v-for="item in filter.options" :key="item.value" :label="item.label" :value="item.value")
+      el-option(v-for="item in filter.options" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled")
     span 정렬 : 
     el-select.sorter(
       v-model="sortValue" 
       placeholder="Select" 
       @change="onChangeSearch()"
     )
-      el-option(v-for="item in sort.options" :key="item.value" :label="item.label" :value="item.value")
+      el-option(v-for="item in sort.options" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled")
 </template>
 
 <script>
@@ -40,7 +40,7 @@
  */
 export default {
   props: {
-    subject: Object,
+    searchType: Object,
     search: String,
     placeholder: String,
     filter: Object,
@@ -48,7 +48,7 @@ export default {
   },
   data() {
     return {
-      subjectValue: this.subject && this.subject.value,
+      searchTypeValue: this.searchType && this.searchType.value,
       searchInput: this.search,
       filterValue: this.filter.value,
       sortValue: this.sort.value,
@@ -59,9 +59,15 @@ export default {
       return this.filterValue[0] !== 'All' ? 'selected' : 'empty'
     },
   },
+  watch: {
+    searchType() {
+      this.searchTypeValue = this.searchType.value
+    },
+  },
   methods: {
     onChangeSearch() {
       this.$emit('change', {
+        searchType: this.searchTypeValue,
         search: this.searchInput,
         filter: this.filterValue.map(value => value.toUpperCase()).join(),
         sort: this.sortValue,
@@ -86,11 +92,11 @@ export default {
 
 <style lang="scss">
 .searchTabNav {
-  .subject.el-select {
+  .searchType.el-select {
     margin-right: 4px;
   }
-  .subject.el-select .el-input__inner {
-    width: 90px;
+  .searchType.el-select .el-input__inner {
+    width: 92px;
   }
   .filter.el-select .el-input__inner {
     width: 90px;
