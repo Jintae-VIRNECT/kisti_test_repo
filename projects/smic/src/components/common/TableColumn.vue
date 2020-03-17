@@ -27,6 +27,7 @@
   .content-name(v-else-if="/^(contentName)$/.test(prop)")
     img.prefix-img(src="~@/assets/image/ic-content.svg")
     span {{ data[prop] }}
+    span.debug(v-if="data['processId']") (processId: {{ data['processId'] }})
   //- 이슈
   div(v-else-if="/^(issuesTotal)$/.test(prop) && typeof data[prop] !== 'object'")
     .blub(:class="data[prop] ? 'on' : 'off'")

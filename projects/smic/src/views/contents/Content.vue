@@ -30,7 +30,7 @@ export default {
             label: '전체',
           },
           {
-            value: 'PUBLISH',
+            value: 'MANAGED',
             label: '공정 등록',
           },
           {
