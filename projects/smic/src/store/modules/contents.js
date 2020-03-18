@@ -8,6 +8,10 @@ export default {
       info: {},
       sceneGroupList: [],
     },
+    contentsStatistics: {
+      totalContents: 0,
+      totalManagedContents: 0,
+    },
   },
   getters: {
     contentsList(state) {
@@ -18,6 +22,9 @@ export default {
     },
     contentDetail(state) {
       return state.contentDetail
+    },
+    contentsStatistics(state) {
+      return state.contentsStatistics
     },
   },
   mutations: {
@@ -37,6 +44,9 @@ export default {
       state.contentsList = state.contentsList.filter(
         content => content.contentUUID !== contentUUID,
       )
+    },
+    SET_CONTENTS_STATISTICS(state, obj) {
+      state.contentsStatistics = obj
     },
   },
   actions: {
@@ -82,6 +92,12 @@ export default {
       })
       context.commit('SET_CONTENT_INFO', data)
       context.commit('DELETE_CONTENT', contentUUID)
+      return data
+    },
+    // 컨텐츠 통계
+    async getContentsStatistics(context) {
+      const data = await api('CONTENTS_STATISTICS')
+      context.commit('SET_CONTENTS_STATISTICS', data)
       return data
     },
   },

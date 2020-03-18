@@ -8,10 +8,10 @@
       template(slot="header-right")
         .inline-table__header--right
           span.prefix 등록된 콘텐츠 수 &nbsp; &nbsp;
-          span.value {{contentsTotal}}
+          span.value {{ contentsStatistics.totalContents }}
           .divider
           span.prefix 공정 등록중인 콘텐츠 수 &nbsp; &nbsp;
-          span.value {{contentsList | countStopOfContentPublish}}
+          span.value {{ contentsStatistics.totalManagedContents }}
       template(slot="body")
         el-table.inline-table(
           :data='contentsList' 
@@ -68,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['contentsList', 'contentsTotal']),
+    ...mapGetters(['contentsList', 'contentsTotal', 'contentsStatistics']),
   },
   methods: {
     onClickCell(row, column) {
@@ -86,6 +86,9 @@ export default {
       })
       this.$store.commit('set_currentUploadedContent', this.contentsList)
     },
+  },
+  mounted() {
+    this.$store.dispatch('getContentsStatistics')
   },
 }
 </script>

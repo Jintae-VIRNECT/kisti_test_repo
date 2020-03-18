@@ -21,6 +21,8 @@ module.exports = {
   CONTENT_INFO: ['GET', '/contents/{contentUUID}/info'],
   // 씬그룹 목록 조회
   SCENE_GROUP_LIST: ['GET', '/contents/metadata/sceneGroups'],
+  // 전체 컨텐츠 현황 정보 조회
+  CONTENTS_STATISTICS: ['GET', '/contents/statistics'],
   /**
    * Process
    */

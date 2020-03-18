@@ -22,7 +22,7 @@
       template(slot="header-right")
         .inline-table__header.text-right
           span.sub-title 등록된 공정 수 &nbsp;&nbsp;
-          span.value {{processTotal}}
+          span.value {{ processStatistics.totalProcesses }}
       template(slot="body")
         div(v-if="topic === 'table'")
           el-table.inline-table(
@@ -127,7 +127,7 @@ export default {
     colSetting() {
       return colSetting
     },
-    ...mapGetters(['processList', 'processTotal']),
+    ...mapGetters(['processList', 'processTotal', 'processStatistics']),
   },
   methods: {
     onClickCell(row, column) {
