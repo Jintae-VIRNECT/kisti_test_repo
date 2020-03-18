@@ -12,12 +12,6 @@
 import contentService from '@/services/content'
 
 export default {
-  data() {
-    return {
-      content: {},
-      sceneGroups: [],
-    }
-  },
   async asyncData({ params }) {
     return {
       content: await contentService.getContentInfo(params.contentId),
@@ -28,10 +22,18 @@ export default {
     async deleteContent(contentId) {
       try {
         await contentService.deleteContent(contentId)
-        alert('성공')
+        // 성공
+        this.$notify.success({
+          title: 'Success',
+          message: '삭제 성공',
+        })
         this.$router.push('/contents')
       } catch (e) {
-        alert(e)
+        // 실패
+        this.$notify.error({
+          title: 'Error',
+          message: e,
+        })
       }
     },
   },

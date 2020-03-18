@@ -5,7 +5,7 @@ export default {
   async getDefaultProcessList() {
     const data = await api('PROCESS_LIST', {
       params: {
-        size: 20,
+        size: 10,
       },
     })
     return data.processes.map(process => Process(process))

@@ -1,7 +1,6 @@
 const { resolve } = require('path')
 
 module.exports = {
-  mode: 'spa',
   /*
    ** Headers of the page
    */

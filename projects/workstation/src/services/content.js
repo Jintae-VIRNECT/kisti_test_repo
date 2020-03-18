@@ -1,4 +1,7 @@
 import api from '@/api/gateway'
+import authService from '@/services/auth'
+
+// model
 import { Content } from '@/models/content'
 import { SceneGroup } from '@/models/sceneGroup'
 
@@ -9,7 +12,7 @@ export default {
   async getDefaultContentsList() {
     const data = await api('CONTENTS_LIST', {
       params: {
-        size: 20,
+        size: 10,
       },
     })
     return data.contentInfo.map(content => Content(content))
@@ -43,10 +46,9 @@ export default {
    * @param {String} contentId
    */
   async deleteContent(contentId) {
-    const uuid = $nuxt.$store.getters['user/getUser'].uuid
-    if (!uuid) {
-      throw '로그인 필요'
-    }
+    const uuid = authService.myId
+    if (!uuid) throw 'Not logged in'
+
     return await api('CONTENT_DELETE', {
       route: {
         contentUUID: contentId,

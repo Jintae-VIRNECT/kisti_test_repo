@@ -1,10 +1,6 @@
 import URI from './uri'
 import axios from '@/plugins/axios'
 
-function nuxtLoading(method) {
-  if ($nuxt.$loading[method]) $nuxt.$loading[method]()
-}
-
 /**
  * Api gateway
  * @param {String} name
@@ -31,22 +27,12 @@ export default async function api(name, option = {}) {
   }
   params = method === 'post' ? params : { params }
 
-  nuxtLoading('start')
-  try {
-    const response = await axios[method](uri, params)
-    const { code, data, message } = response.data
+  const response = await axios[method](uri, params)
+  const { code, data, message } = response.data
 
-    if (code === 200) {
-      nuxtLoading('finish')
-      return data
-    } else {
-      nuxtLoading('fail')
-      nuxtLoading('finish')
-      throw new Error(`${code}: ${message}`)
-    }
-  } catch (e) {
-    nuxtLoading('fail')
-    nuxtLoading('finish')
-    throw e
+  if (code === 200) {
+    return data
+  } else {
+    throw new Error(`${code}: ${message}`)
   }
 }
