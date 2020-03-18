@@ -1,4 +1,5 @@
 const { resolve } = require('path')
+const lang = require('./src/lang')
 
 module.exports = {
   /*
@@ -22,6 +23,7 @@ module.exports = {
    * Plugins
    */
   plugins: ['@/plugins/element-ui'],
+  modules: [['nuxt-i18n', lang]],
   /**
    * dir
    */

@@ -17,6 +17,7 @@
   "dependencies": {
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",
+    "nuxt-i18n": "^6.6.1",
     "scaffold-modules-user": "^1.0.1"
   },
   "devDependencies": {

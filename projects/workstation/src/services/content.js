@@ -47,7 +47,7 @@ export default {
    */
   async deleteContent(contentId) {
     const uuid = authService.myId
-    if (!uuid) throw 'Not logged in'
+    if (!uuid) throw $nuxt.$t('MESSAGE.ERROR_NOT_LOGIN')
 
     return await api('CONTENT_DELETE', {
       route: {

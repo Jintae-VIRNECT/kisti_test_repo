@@ -1,7 +1,9 @@
 <template>
   <div id="_contentId">
     <h3>{{ content }}</h3>
-    <el-button @click="deleteContent(content.id)">삭제</el-button>
+    <el-button @click="deleteContent(content.id)">
+      {{ $t('BUTTON.DELETE') }}
+    </el-button>
     <p v-for="sceneGroup in sceneGroups" :key="sceneGroup.id">
       {{ sceneGroup }}
     </p>
@@ -25,7 +27,7 @@ export default {
         // 성공
         this.$notify.success({
           title: 'Success',
-          message: '삭제 성공',
+          message: this.$t('MESSAGE.SUCCESS_DELETED'),
         })
         this.$router.push('/contents')
       } catch (e) {
