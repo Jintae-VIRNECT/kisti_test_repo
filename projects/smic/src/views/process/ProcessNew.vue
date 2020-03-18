@@ -114,6 +114,15 @@ export default {
   },
   methods: {
     async onClickCell(row) {
+      if (row.status === 'MANAGED') {
+        this.$alert(
+          `해당 콘텐츠로 생성된 공정이 이미 존재합니다.<br>기존에 생성된 공정을 종료하고 시도해주세요.`,
+          {
+            dangerouslyUseHTMLString: true,
+          },
+        )
+        return false
+      }
       this.$store.commit('SET_CONTENT_INFO', row)
       await this.$store.dispatch('getSceneGroupList', row.contentUUID)
       this.toggleNewModal = true

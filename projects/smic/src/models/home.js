@@ -45,7 +45,7 @@ export const tableColSettings = {
     },
     {
       prop: 'status',
-      label: '배포상태',
+      label: '공정등록 상태',
       width: 150,
     },
   ],
