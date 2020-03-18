@@ -2,7 +2,7 @@
   <div id="_contentId">
     <h3>{{ content }}</h3>
     <el-button @click="deleteContent(content.id)">
-      {{ $t('BUTTON.DELETE') }}
+      {{ $t('buttons.delete') }}
     </el-button>
     <p v-for="sceneGroup in sceneGroups" :key="sceneGroup.id">
       {{ sceneGroup }}
@@ -23,11 +23,17 @@ export default {
   methods: {
     async deleteContent(contentId) {
       try {
+        await this.$confirm(this.$t('questions.deleteConfirm'))
+      } catch (e) {
+        return false
+      }
+
+      try {
         await contentService.deleteContent(contentId)
         // 성공
         this.$notify.success({
           title: 'Success',
-          message: this.$t('MESSAGE.SUCCESS_DELETED'),
+          message: this.$t('messages.deleteSuccess'),
         })
         this.$router.push('/contents')
       } catch (e) {

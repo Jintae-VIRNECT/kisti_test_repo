@@ -17,7 +17,7 @@
       <el-option
         v-for="item in filter.options"
         :key="item.value"
-        :label="$t('SearchTabNav.' + item.label)"
+        :label="$t(item.label)"
         :value="item.value"
       />
     </el-select>
@@ -25,7 +25,7 @@
       <el-option
         v-for="item in sort.options"
         :key="item.value"
-        :label="$t('SearchTabNav.' + item.label)"
+        :label="$t(item.label)"
         :value="item.value"
       />
     </el-select>

@@ -13,15 +13,15 @@ export const filter = {
   options: [
     {
       value: 'ALL',
-      label: 'ALL',
+      label: 'SearchTabNav.all',
     },
     {
       value: 'MANAGED',
-      label: 'PROCESS_PUBLISHED',
+      label: 'SearchTabNav.processPublished',
     },
     {
       value: 'WAIT',
-      label: 'PROCESS_NON_PUBLISHED',
+      label: 'SearchTabNav.processUnpublished',
     },
   ],
 }
@@ -31,11 +31,11 @@ export const sort = {
   options: [
     {
       value: 'createdDate,desc',
-      label: 'SORT_CREATED',
+      label: 'SearchTabNav.sortCreatedDesc',
     },
     {
       value: 'createdDate,asc',
-      label: 'SORT_CREATED_DESC',
+      label: 'SearchTabNav.sortCreatedAsc',
     },
   ],
 }
