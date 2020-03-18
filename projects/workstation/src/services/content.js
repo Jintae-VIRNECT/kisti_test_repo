@@ -5,17 +5,35 @@ import authService from '@/services/auth'
 import { Content } from '@/models/content'
 import { SceneGroup } from '@/models/sceneGroup'
 
+async function getContentsList(params) {
+  const data = await api('CONTENTS_LIST', {
+    params: {
+      ...params,
+      size: 10,
+    },
+  })
+  return data.contentInfo.map(content => Content(content))
+}
+
 export default {
+  /**
+   * 컨텐츠 통계
+   */
+  async getContentsStatistics() {
+    const data = await api('CONTENTS_STATISTICS')
+    return data
+  },
   /**
    * 컨텐츠 페이지 초기 리스트
    */
   async getDefaultContentsList() {
-    const data = await api('CONTENTS_LIST', {
-      params: {
-        size: 10,
-      },
-    })
-    return data.contentInfo.map(content => Content(content))
+    return await getContentsList()
+  },
+  /**
+   * 컨텐츠 검색
+   */
+  async searchContents(params) {
+    return await getContentsList(params)
   },
   /**
    * 컨텐츠 상세 정보
@@ -33,8 +51,8 @@ export default {
    * 컨텐츠 씬그룹 정보
    * @param {String} contentId
    */
-  async getSceneGroupList(contentId) {
-    const data = await api('SCENE_GROUP_LIST', {
+  async getSceneGroupsList(contentId) {
+    const data = await api('SCENE_GROUPS_LIST', {
       params: {
         contentUUID: contentId,
       },

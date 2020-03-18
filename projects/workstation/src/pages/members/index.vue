@@ -10,11 +10,6 @@
 import memberService from '@/services/member'
 
 export default {
-  data() {
-    return {
-      members: [],
-    }
-  },
   async asyncData() {
     return {
       members: await memberService.getDefaultMembersList(),

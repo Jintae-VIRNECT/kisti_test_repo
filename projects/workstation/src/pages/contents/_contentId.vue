@@ -17,7 +17,7 @@ export default {
   async asyncData({ params }) {
     return {
       content: await contentService.getContentInfo(params.contentId),
-      sceneGroups: await contentService.getSceneGroupList(params.contentId),
+      sceneGroups: await contentService.getSceneGroupsList(params.contentId),
     }
   },
   methods: {

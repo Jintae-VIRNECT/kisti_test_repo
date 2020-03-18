@@ -10,11 +10,6 @@
 import processService from '@/services/process'
 
 export default {
-  data() {
-    return {
-      processes: [],
-    }
-  },
   async asyncData() {
     return {
       processes: await processService.getDefaultProcessList(),

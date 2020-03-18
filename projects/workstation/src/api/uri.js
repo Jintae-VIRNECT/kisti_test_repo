@@ -13,6 +13,8 @@ module.exports = {
   /**
    * Contents
    */
+  // 콘텐츠 통계 조회
+  CONTENTS_STATISTICS: ['GET', '/contents/statistics'],
   // 콘텐츠 목록 조회
   CONTENTS_LIST: ['GET', '/contents'],
   // 콘텐츠 삭제 요청
@@ -20,7 +22,7 @@ module.exports = {
   // 컨텐츠 상세 정보 조회
   CONTENT_INFO: ['GET', '/contents/{contentUUID}/info'],
   // 씬그룹 목록 조회
-  SCENE_GROUP_LIST: ['GET', '/contents/metadata/sceneGroups'],
+  SCENE_GROUPS_LIST: ['GET', '/contents/metadata/sceneGroups'],
   /**
    * Process
    */
