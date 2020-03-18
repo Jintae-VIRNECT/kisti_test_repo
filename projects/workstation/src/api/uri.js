@@ -26,6 +26,8 @@ module.exports = {
   /**
    * Process
    */
+  // 공정 통계 조회
+  PROCESSES_STATISTICS: ['GET', '/processes/statistics'],
   // 전체 공정 목록 조회
   PROCESS_LIST: ['GET', '/processes'],
   // 공정상세조회

@@ -25,17 +25,12 @@ export default {
       try {
         await this.$confirm(this.$t('questions.deleteConfirm'))
       } catch (e) {
+        // 취소
         return false
       }
 
       try {
         await contentService.deleteContent(contentId)
-        // 성공
-        this.$notify.success({
-          title: 'Success',
-          message: this.$t('messages.deleteSuccess'),
-        })
-        this.$router.push('/contents')
       } catch (e) {
         // 실패
         this.$notify.error({
@@ -43,6 +38,13 @@ export default {
           message: e,
         })
       }
+
+      // 성공
+      this.$notify.success({
+        title: 'Success',
+        message: this.$t('messages.deleteSuccess'),
+      })
+      this.$router.push('/contents')
     },
   },
 }

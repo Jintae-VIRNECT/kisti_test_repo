@@ -1,3 +1,7 @@
+/**
+ * 프로세스 구조
+ * @param {Object} json
+ */
 export function Process(json) {
   return {
     id: json.id,
@@ -8,4 +12,55 @@ export function Process(json) {
     doneCount: json.doneCount,
     issuesTotal: json.issuesTotal,
   }
+}
+
+/**
+ * 프로세스 상태
+ */
+export const conditions = [
+  { value: 'WAIT', label: 'conditions.wait', color: 'gray' },
+  {
+    value: 'UNPROGRESSING',
+    label: 'conditions.unprogressing',
+    color: 'silver',
+  },
+  { value: 'PROGRESSING', label: 'conditions.progressing', color: 'blue' },
+  { value: 'INCOMPLETED', label: 'conditions.incompleted', color: 'orange' },
+  { value: 'COMPLETED', label: 'conditions.complted', color: 'green' },
+  { value: 'FAILED', label: 'conditions.failed', color: 'dark-gray' },
+  { value: 'SUCCESS', label: 'conditions.success', color: 'dark-blue' },
+  { value: 'FAULT', label: 'conditions.fault', color: 'dark-red' },
+]
+
+/**
+ * 프로세스 검색 필터설정
+ */
+export const filter = {
+  value: ['ALL'],
+  options: [{ value: 'ALL', label: 'SearchTabNav.filter.all' }, ...conditions],
+}
+
+/**
+ * 프로세스 검색 정렬설정
+ */
+export const sort = {
+  value: 'updated_at,desc',
+  options: [
+    {
+      value: 'name,asc',
+      label: 'SearchTabNav.sort.alphabetAsc',
+    },
+    {
+      value: 'name,desc',
+      label: 'SearchTabNav.sort.alphabetDesc',
+    },
+    {
+      value: 'updated_at,desc',
+      label: 'SearchTabNav.sort.updatedDesc',
+    },
+    {
+      value: 'updated_at,asc',
+      label: 'SearchTabNav.sort.updatedAsc',
+    },
+  ],
 }
