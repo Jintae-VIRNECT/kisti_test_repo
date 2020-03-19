@@ -161,6 +161,7 @@ export default {
       this.filter.value = [
         this.filter.options.find(option => option.label === query.filter).value,
       ]
+      this.params.filter = this.filter.value.join(',')
     }
     this.$store.dispatch('getProcessList', this.params)
   },
