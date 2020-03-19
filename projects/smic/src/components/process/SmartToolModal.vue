@@ -21,7 +21,7 @@
         .section(v-for="{ batchCount, workingToque } in smartTools")
           label 체결 {{ batchCount }}.
           .value
-            span {{ workingToque | toPercentStr(smartToolDetail.normalToque) }}%
+            span {{ workingToque }}
             el-progress(:percentage="workingToque | toPercentNumber(smartToolDetail.normalToque)" :show-text="false")
       
 </template>
