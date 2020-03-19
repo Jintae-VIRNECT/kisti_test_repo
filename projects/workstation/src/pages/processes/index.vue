@@ -1,13 +1,14 @@
 <template>
   <div id="processes">
-    <h3>total: {{ processesStatistics.totalProcesses }}</h3>
+    <h2>Process</h2>
+    <h3>total: {{ processStatistics.totalProcesses }}</h3>
     <search-tab-nav
       :filter="searchFilter"
       :sort="searchSort"
       @submit="searchProcesses"
     />
     <p v-for="process in processes" :key="process.id">
-      {{ process }}
+      <nuxt-link :to="`/processes/${process.id}`">{{ process }}</nuxt-link>
     </p>
   </div>
 </template>
@@ -32,8 +33,8 @@ export default {
   },
   async asyncData() {
     return {
-      processes: await processService.getDefaultProcessesList(),
-      processesStatistics: await processService.getProcessesStatistics(),
+      processes: await processService.searchProcesses(),
+      processStatistics: await processService.getProcessStatistics(),
     }
   },
   methods: {

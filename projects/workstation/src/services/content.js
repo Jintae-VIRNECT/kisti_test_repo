@@ -2,38 +2,29 @@ import api from '@/api/gateway'
 import authService from '@/services/auth'
 
 // model
-import { Content } from '@/models/content'
+import { Content, ContentStatistics } from '@/models/content'
 import { SceneGroup } from '@/models/sceneGroup'
-
-async function getContentsList(params) {
-  const data = await api('CONTENTS_LIST', {
-    params: {
-      ...params,
-      size: 10,
-    },
-  })
-  return data.contentInfo.map(content => Content(content))
-}
 
 export default {
   /**
    * 컨텐츠 통계
    */
-  async getContentsStatistics() {
+  async getContentStatistics() {
     const data = await api('CONTENTS_STATISTICS')
-    return data
-  },
-  /**
-   * 컨텐츠 페이지 초기 리스트
-   */
-  async getDefaultContentsList() {
-    return await getContentsList()
+    return ContentStatistics(data)
   },
   /**
    * 컨텐츠 검색
+   * @param {Object} params
    */
   async searchContents(params) {
-    return await getContentsList(params)
+    const data = await api('CONTENTS_LIST', {
+      params: {
+        size: 10,
+        ...params,
+      },
+    })
+    return data.contentInfo.map(content => Content(content))
   },
   /**
    * 컨텐츠 상세 정보

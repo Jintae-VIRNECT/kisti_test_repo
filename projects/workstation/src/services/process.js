@@ -1,34 +1,35 @@
 import api from '@/api/gateway'
-import { Process } from '@/models/process'
-
-async function getProcessesList(params) {
-  const data = await api('PROCESS_LIST', {
-    params: {
-      ...params,
-      size: 10,
-    },
-  })
-  return data.processes.map(process => Process(process))
-}
+import { Process, ProcessStatistics } from '@/models/process'
 
 export default {
   /**
-   * 프로세스 통계
+   * 공정 통계
    */
-  async getProcessesStatistics() {
-    const data = await api('PROCESSES_STATISTICS')
-    return data
+  async getProcessStatistics() {
+    const data = await api('PROCESS_STATISTICS')
+    return ProcessStatistics(data)
   },
   /**
-   * 프로세스 페이지 초기 리스트
-   */
-  async getDefaultProcessesList() {
-    return await getProcessesList()
-  },
-  /**
-   * 컨텐츠 검색
+   * 공정 검색
+   * @param {Object} params
    */
   async searchProcesses(params) {
-    return await getProcessesList(params)
+    const data = await api('PROCESS_LIST', {
+      params: {
+        size: 10,
+        ...params,
+      },
+    })
+    return data.processes.map(process => Process(process))
+  },
+  /**
+   * 공정 상세 정보
+   * @param {String} processId
+   */
+  async getProcessInfo(processId) {
+    const data = await api('PROCESS_INFO', {
+      route: { processId },
+    })
+    return Process(data)
   },
 }

@@ -1,17 +1,16 @@
 <template>
   <div id="contents">
-    <h3>total: {{ contentsStatistics.totalContents }}</h3>
-    <h3>managedTotal: {{ contentsStatistics.totalManagedContents }}</h3>
+    <h2>Contents</h2>
+    <h3>total: {{ contentStatistics.totalContents }}</h3>
+    <h3>managed: {{ contentStatistics.totalManagedContents }}</h3>
     <search-tab-nav
       :filter="searchFilter"
       :sort="searchSort"
       @submit="searchContents"
     />
-    <div v-for="content in contents" :key="content.id">
-      <p>
-        <nuxt-link :to="`/contents/${content.id}`">{{ content }}</nuxt-link>
-      </p>
-    </div>
+    <p v-for="content in contents" :key="content.id">
+      <nuxt-link :to="`/contents/${content.id}`">{{ content }}</nuxt-link>
+    </p>
   </div>
 </template>
 
@@ -35,8 +34,8 @@ export default {
   },
   async asyncData() {
     return {
-      contents: await contentService.getDefaultContentsList(),
-      contentsStatistics: await contentService.getContentsStatistics(),
+      contents: await contentService.searchContents(),
+      contentStatistics: await contentService.getContentStatistics(),
     }
   },
   methods: {

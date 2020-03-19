@@ -1,5 +1,5 @@
 /**
- * 프로세스 구조
+ * 공정 구조
  * @param {Object} json
  */
 export function Process(json) {
@@ -15,7 +15,17 @@ export function Process(json) {
 }
 
 /**
- * 프로세스 상태
+ * 공정 통계
+ * @param {Object} json
+ */
+export function ProcessStatistics(json) {
+  return {
+    totalProcesses: json.totalProcesses,
+  }
+}
+
+/**
+ * 공정 상태
  */
 export const conditions = [
   { value: 'WAIT', label: 'conditions.wait', color: 'gray' },
@@ -33,7 +43,7 @@ export const conditions = [
 ]
 
 /**
- * 프로세스 검색 필터설정
+ * 공정 검색 필터설정
  */
 export const filter = {
   value: ['ALL'],
@@ -41,7 +51,7 @@ export const filter = {
 }
 
 /**
- * 프로세스 검색 정렬설정
+ * 공정 검색 정렬설정
  */
 export const sort = {
   value: 'updated_at,desc',

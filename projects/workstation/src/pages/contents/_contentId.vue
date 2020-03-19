@@ -1,5 +1,5 @@
 <template>
-  <div id="_contentId">
+  <div id="content">
     <h3>{{ content }}</h3>
     <el-button @click="deleteContent(content.id)">
       {{ $t('buttons.delete') }}
@@ -31,6 +31,12 @@ export default {
 
       try {
         await contentService.deleteContent(contentId)
+        // 성공
+        this.$notify.success({
+          title: 'Success',
+          message: this.$t('messages.deleteSuccess'),
+        })
+        this.$router.push('/contents')
       } catch (e) {
         // 실패
         this.$notify.error({
@@ -38,13 +44,6 @@ export default {
           message: e,
         })
       }
-
-      // 성공
-      this.$notify.success({
-        title: 'Success',
-        message: this.$t('messages.deleteSuccess'),
-      })
-      this.$router.push('/contents')
     },
   },
 }

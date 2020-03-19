@@ -27,11 +27,11 @@ module.exports = {
    * Process
    */
   // 공정 통계 조회
-  PROCESSES_STATISTICS: ['GET', '/processes/statistics'],
+  PROCESS_STATISTICS: ['GET', '/processes/statistics'],
   // 전체 공정 목록 조회
   PROCESS_LIST: ['GET', '/processes'],
   // 공정상세조회
-  PROCESS_DETAIL: ['GET', '/processes/{processId}'],
+  PROCESS_INFO: ['GET', '/processes/{processId}'],
   // 공정편집
   PROCESS_UPDATE: ['POST', '/processes/{processId}'],
   // 공정삭제
@@ -55,7 +55,7 @@ module.exports = {
   // 워크스페이스의 전체 세부공정목록조회
   SUB_PROCESS_ALL: ['GET', '/processes/subProcesses'],
   // 세부공정 상세조회
-  SUB_PROCESS_DETAIL: ['GET', '/processes/subProcesses/{subProcessId}'],
+  SUB_PROCESS_INFO: ['GET', '/processes/subProcesses/{subProcessId}'],
   // 세부공정편집
   SUB_PROCESS_UPDATE: ['POST', '/processes/subProcesses/{subProcessId}'],
   // 작업목록조회

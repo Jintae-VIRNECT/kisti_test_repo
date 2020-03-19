@@ -13,6 +13,17 @@ export function Content(json) {
 }
 
 /**
+ * 콘텐츠 통계
+ * @param {Object} json
+ */
+export function ContentStatistics(json) {
+  return {
+    totalContents: json.totalContents,
+    totalManagedContents: json.totalManagedContents,
+  }
+}
+
+/**
  * 콘텐츠 검색 필터설정
  */
 export const filter = {

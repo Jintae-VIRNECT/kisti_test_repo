@@ -1,5 +1,6 @@
 <template>
   <div id="members">
+    <h2>Members</h2>
     <div v-for="member in members" :key="member.id">
       <p>{{ member }}</p>
     </div>
