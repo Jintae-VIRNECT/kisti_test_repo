@@ -29,7 +29,8 @@
                 @onChangeData="onChangeData"
                 @onCreateData="onCreateData"
                 @onDeleteData="onDeleteData")
-
+    .page-nav
+      search-tab-nav.search-wrapper.text-right(placeholder="작업 이름" :search="params.search" :filter="filter" @change="onChangeSearch")
     // 작업 목록
     inline-table(:setMainHeader="true")
       template(slot="header-left")
@@ -75,8 +76,10 @@ import TableColumn from '@/components/common/TableColumn.vue'
 import IssueModal from '@/components/process/IssueModal.vue'
 import ReportModal from '@/components/process/ReportModal.vue'
 import SmartToolModal from '@/components/process/SmartToolModal.vue'
+import SearchTabNav from '@/components/common/SearchTabNav.vue'
 
 // model
+import { processStatus } from '@/models/process'
 import { cols as subProcessColSetting } from '@/models/subProcess'
 import { cols as jobsColSetting } from '@/models/jobs'
 
@@ -100,6 +103,7 @@ export default {
     IssueModal,
     ReportModal,
     SmartToolModal,
+    SearchTabNav,
   },
   data() {
     return {
@@ -113,12 +117,35 @@ export default {
       jobId: null,
       reportId: null,
       issueId: null,
+      params: {
+        search: '',
+      },
+      filter: {
+        options: [
+          {
+            value: 'All',
+            label: '전체',
+          },
+          ...processStatus,
+        ],
+        value: ['All'],
+      },
     }
   },
   computed: {
     ...mapGetters(['processDetail', 'subProcessDetail']),
   },
   methods: {
+    onChangeSearch(params) {
+      const { subProcessId } = this.$route.params
+      this.params = {
+        ...this.params,
+        ...params,
+        sort: 'priority,asc',
+        subProcessId,
+      }
+      this.$store.dispatch('getJobsList', this.params)
+    },
     onChangeData(data) {},
     onCreateData(data) {},
     onDeleteData(data) {},
@@ -146,7 +173,7 @@ export default {
   async created() {
     const { subProcessId } = this.$route.params
     this.$store.dispatch('getSubProcessDetail', subProcessId)
-    const { jobs } = await this.$store.dispatch('getJobsList', subProcessId)
+    const { jobs } = await this.$store.dispatch('getJobsList', { subProcessId })
     if (jobs.some(job => job.smartTool)) {
       await this.$store.dispatch('getSmartToolList', { subProcessId })
     }

@@ -144,7 +144,11 @@ export default {
     async getSubProcessList(context, params) {
       const data = await api('SUB_PROCESS_LIST', {
         route: { processId: params.processId },
-        params,
+        params: {
+          size: 50,
+          sort: 'priority,asc',
+          ...params,
+        },
       })
       context.commit('SET_SUB_PROCESS_LIST', data.subProcesses)
       return data
@@ -166,9 +170,14 @@ export default {
       return data
     },
     // 작업 리스트
-    async getJobsList(context, subProcessId) {
+    async getJobsList(context, params) {
       const data = await api('JOBS_LIST', {
-        route: { subProcessId },
+        route: { subProcessId: params.subProcessId },
+        params: {
+          size: 50,
+          sort: 'priority,asc',
+          ...params,
+        },
       })
       context.commit('SET_JOBS_LIST', data.jobs)
       return data

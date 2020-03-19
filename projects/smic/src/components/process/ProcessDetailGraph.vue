@@ -29,10 +29,9 @@ export default {
   methods: {
     initProcessGraph() {
       const json = this.tableData
-      const maxLeftPadding = json.reduce(
-        (s, o) => (o.name.length > s.length ? o.name : s),
-        '',
-      ).length
+      const maxLeftPadding =
+        json.reduce((s, o) => (o.name.length > s.length ? o.name : s), '')
+          .length + 3
       const heightSize = 200 + json.length * 60
 
       const self = this

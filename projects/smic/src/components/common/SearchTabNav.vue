@@ -13,8 +13,9 @@
       @change="onChangeSearch()"
     )
       el-button(slot="append" icon="el-icon-search")
-    span 필터 : 
+    span(v-if="filter") 필터 : 
     el-select.filter(
+      v-if="filter"
       v-model="filterValue" 
       multiple placeholder="Select" 
       @change="onFilterChange(filterValue)" 
@@ -22,8 +23,9 @@
       collapse-tags
     )
       el-option(v-for="item in filter.options" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled")
-    span 정렬 : 
+    span(v-if="sort") 정렬 : 
     el-select.sorter(
+      v-if="sort"
       v-model="sortValue" 
       placeholder="Select" 
       @change="onChangeSearch()"
@@ -50,8 +52,8 @@ export default {
     return {
       searchTypeValue: this.searchType && this.searchType.value,
       searchInput: this.search,
-      filterValue: this.filter.value,
-      sortValue: this.sort.value,
+      filterValue: this.filter && this.filter.value,
+      sortValue: this.sort && this.sort.value,
     }
   },
   computed: {
@@ -69,7 +71,9 @@ export default {
       this.$emit('change', {
         searchType: this.searchTypeValue,
         search: this.searchInput,
-        filter: this.filterValue.map(value => value.toUpperCase()).join(),
+        filter:
+          this.filter &&
+          this.filterValue.map(value => value.toUpperCase()).join(),
         sort: this.sortValue,
       })
     },
@@ -85,7 +89,7 @@ export default {
   },
   mounted() {
     const search = this.$refs.search.$el
-    search.style.width = this.placeholder.length * 8 + 60 + 'px'
+    search.style.width = this.placeholder.length * 9 + 60 + 'px'
   },
 }
 </script>

@@ -1,5 +1,10 @@
 export const cols = [
   {
+    prop: 'priority',
+    label: '순번',
+    width: 70,
+  },
+  {
     prop: 'name',
     label: '세부공정 이름',
   },

@@ -59,6 +59,8 @@
   .total-done(v-else-if="/^(totalDone)$/.test(prop)")
     span.count {{ data['count'] }} 
     span &nbsp;/ {{ data['total'] }}
+  div(v-else-if="/^(priority)$/.test(prop)")
+    span {{ data['priority'] }}.
   
   //- 작업
   //- 리포트 버튼

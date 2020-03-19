@@ -20,11 +20,11 @@
         .section
           label 보고자
           .value
-            span {{ worker }}
+            span {{ uuidToMember(issueDetail.workerUUID).name }}
         .section
           label 보고일시
           .value
-            span {{ reportedDate }}
+            span {{ issueDetail.reportedDate }}
         .section
           label 이슈내용
           .value(v-if="issueDetail.photoFilePath")
@@ -56,8 +56,10 @@
 <script>
 import { mapGetters } from 'vuex'
 import dayjs from '@/plugins/dayjs'
+import members from '@/mixins/members'
 
 export default {
+  mixins: [members],
   props: {
     toggleIssueModal: Boolean,
     issueId: Number,

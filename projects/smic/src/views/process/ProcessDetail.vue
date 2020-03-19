@@ -25,9 +25,9 @@
             template(slot-scope='scope')
               process-control-dropdown(
                 :target="processDetail.info"
-                @onChangeData="onChangeData"
-                @onCreateData="onCreateData"
-                @onDeleteData="onDeleteData")
+              )
+    .page-nav
+      search-tab-nav.search-wrapper.text-right(placeholder="세부공정 이름, 담당자 이름" :search="params.search" :filter="filter" @change="onChangeSearch")
     inline-table.detail-table(:setMainHeader="true")
       template(slot="header-left")
         span.title {{topic === 'table' ? '세부공정 목록' : '세부공정 진행률 그래프'}}
@@ -57,9 +57,7 @@
                 sub-process-control-dropdown(
                   :target="processDetail.subProcessList[scope.$index]"
                   :processId="processId"
-                  @onChangeData="onChangeData"
-                  @onCreateData="onCreateData"
-                  @onDeleteData="onDeleteData")
+                )
         div(v-else)
           process-detail-graph(:tableData="processDetail.subProcessList")
 </template>
@@ -76,6 +74,7 @@ import ProcessControlDropdown from '@/components/process/ProcessControlDropdown.
 import SubProcessControlDropdown from '@/components/process/SubProcessControlDropdown.vue'
 import ProcessDetailGraph from '@/components/process/ProcessDetailGraph.vue'
 import TableColumn from '@/components/common/TableColumn.vue'
+import SearchTabNav from '@/components/common/SearchTabNav.vue'
 
 // model
 import { cols as colSetting, processStatus } from '@/models/process'
@@ -99,6 +98,7 @@ export default {
     SubProcessControlDropdown,
     ProcessDetailGraph,
     TableColumn,
+    SearchTabNav,
   },
   data() {
     return {
@@ -106,6 +106,20 @@ export default {
       topic: 'table',
       colSetting,
       subColSetting,
+      params: {
+        search: '',
+        sort: 'priority,asc',
+      },
+      filter: {
+        options: [
+          {
+            value: 'All',
+            label: '전체',
+          },
+          ...processStatus,
+        ],
+        value: ['All'],
+      },
     }
   },
   computed: {
@@ -117,9 +131,17 @@ export default {
       this.$store.commit('SET_SUB_PROCESS_INFO', row)
       this.$router.push(`/process/${this.processId}/${row.subProcessId}`)
     },
-    onChangeData(data) {},
-    onCreateData(data) {},
-    onDeleteData(data) {},
+    onChangeSearch(params) {
+      this.params = {
+        ...this.params,
+        ...params,
+        sort: 'priority,asc',
+      }
+      this.$store.dispatch('getSubProcessList', {
+        processId: this.processId,
+        ...this.params,
+      })
+    },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
     },

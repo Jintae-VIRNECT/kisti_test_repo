@@ -41,7 +41,7 @@
             :width="width || ''") 
             template(slot-scope='scope')
               div(v-if="prop == 'index'") 
-                span {{scope.$index + 1}}.
+                span {{ contentDetail.sceneGroupList[scope.$index].priority }}.
               div(v-else)
                 span {{ contentDetail.sceneGroupList[scope.$index][prop] }}
 </template>
