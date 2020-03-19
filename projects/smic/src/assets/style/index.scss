@@ -568,7 +568,7 @@ html {
         transition: 0.3s, background 0s;
       }
     }
-    .sort {
+    .filter + span {
       margin-left: 8px;
     }
     .el-input-group__append {
