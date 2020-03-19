@@ -8,7 +8,7 @@ const config = mode => {
 
   return {
     entry: {
-      service: './src/apps/service/app.js',
+      remote: './src/apps/remote/app.js',
       test: './src/apps/test/app.js',
     },
     output: {

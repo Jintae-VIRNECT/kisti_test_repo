@@ -1,33 +1,50 @@
 <template>
-  <section>
-    <!-- <div class="service-wrapper">Hello World</div> -->
-    <header-section></header-section>
-    <router-view></router-view>
-  </section>
+  <div class="service-wrapper">
+    <sub-view></sub-view>
+
+    <transition>
+      <main-view v-show="view === 'stream'"></main-view>
+    </transition>
+
+    <transition>
+      <drawing-view v-show="view === 'drawing'"></drawing-view>
+    </transition>
+
+    <transition>
+      <ar-view v-show="view === 'ar'"></ar-view>
+    </transition>
+
+    <!-- <component :is="viewComponent"></component> -->
+  </div>
 </template>
 
 <script>
-import HeaderSection from './header/Header'
-
+import SubView from './subview/SubView'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
   components: {
-    HeaderSection,
+    SubView,
+    MainView: () => import('./mainview/MainView'),
+    DrawingView: () => import('./drawing/Drawing'),
+    ArView: () => import('./ar/Ar'),
   },
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['view']),
+  },
   watch: {},
   methods: {},
 
   /* Lifecycles */
   mounted() {
-    this.$moment.locale('ko')
+    this.$openvidu.getDevices().then(res => {
+      console.log(res)
+    })
   },
 }
 </script>
 
-<style lang="scss">
-@import '~assets/style/service';
-</style>
+<style lang="scss" src="assets/style/service.scss"></style>

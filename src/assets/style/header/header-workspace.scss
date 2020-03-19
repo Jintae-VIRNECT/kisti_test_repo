@@ -1,0 +1,66 @@
+.header-workspace {
+  display: flex;
+  height: 100%;
+}
+
+.header-divider {
+  width: 1px;
+  height: 22px;
+  margin: auto 20px auto 0;
+  background-color: rgba(#d8d8d8, 0.2);
+}
+
+.header-workspace-lnb {
+  height: 100%;
+  .popover--wrapper {
+    height: 100%;
+  }
+  .header-workspace-selector {
+    height: 100%;
+    background: transparent;
+  }
+}
+
+.header-workspace-tools {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  padding: 11px 17px;
+  > .tooltip,
+  > .popover--wrapper {
+    margin-left: 8px;
+  }
+  &__time {
+    display: inline-flex;
+    min-width: 80px;
+    height: 100%;
+    margin-left: 16px;
+    padding: 5px 20px;
+    font-size: 15px;
+    vertical-align: middle;
+    background-color: #3a3b3f;
+    border-radius: 17px;
+  }
+  &__leave {
+    height: 100%;
+    margin-left: 16px;
+    padding: 6px 14px;
+    color: transparent;
+    background: url(~assets/image/call/gnb_ic_callout.svg) center no-repeat
+      $color_red;
+    border-radius: 17px;
+  }
+  .notice {
+    position: relative;
+    &::after {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      background-color: $color_red;
+      border-radius: 50%;
+      content: "";
+    }
+  }
+}

@@ -15,9 +15,10 @@
   "scripts": {
     "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
     "build": "export NODE_ENV=production || set NODE_ENV=production && webpack --progress --config build/webpack.production.conf.js",
-    "start:develop": "export NODE_ENV=develop || set NODE_ENV=develop && node server.js",
+    "start:develop": "set GOOGLE_APPLICATION_CREDENTIALS=C:\\Users\\virnect\\source\\repos\\nodejs-speech\\mystt-9154412e5e93.json && export NODE_ENV=develop || set NODE_ENV=develop && node server.js",
     "start": "node server.js",
-    "start:local": "export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
+    "start:local": "set GOOGLE_APPLICATION_CREDENTIALS=C:\\Users\\virnect\\source\\repos\\nodejs-speech\\mystt-9154412e5e93.json&& export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
+    "start:test": "set GOOGLE_APPLICATION_CREDENTIALS=C:\\Users\\virnect\\source\\repos\\01.ARRemote\\RM-WEB\\mystt-9154412e5e93.json&& node translate",
     "start:pkg": "pkg ."
   },
   "dependencies": {
@@ -27,7 +28,6 @@
     "copy-webpack-plugin": "^4.6.0",
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
-    "eslint-plugin-vue": "^5.2.3",
     "log4js": "^6.1.0",
     "express": "^4.17.1",
     "vue": "^2.6.11",
@@ -87,6 +87,14 @@
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "@google-cloud/speech": "^3.6.0",
+    "@google-cloud/text-to-speech": "^2.3.0",
+    "node-record-lpcm16": "^1.0.1",
+    "@google-cloud/translate": "^5.3.0",
+    "socket.io": "^2.3.0",
+    "recordrtc": "^5.5.9",
+    "multer": "^1.4.2",
+    "recorder-js": "^1.0.7"
   }
 }

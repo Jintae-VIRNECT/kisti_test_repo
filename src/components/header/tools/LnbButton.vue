@@ -1,0 +1,34 @@
+<template>
+  <li>
+    <button
+      class="header-lnb__button"
+      :class="{ active: view === keyvalue }"
+      @click="changeCallMode(keyvalue)"
+    >
+      <img class="header-lnb__image" :src="image" />
+      <span class="header-lnb__text">{{ text }}</span>
+    </button>
+  </li>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex'
+export default {
+  name: 'LnbButton',
+  props: {
+    text: String,
+    keyvalue: String,
+    image: String,
+  },
+  computed: {
+    ...mapGetters(['view']),
+  },
+  watch: {},
+  methods: {
+    ...mapActions(['changeCallMode']),
+  },
+
+  /* Lifecycles */
+  mounted() {},
+}
+</script>

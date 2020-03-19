@@ -8,11 +8,8 @@ import VueMoment from 'vue-moment'
 import Router from 'routers/test'
 
 import App from './app.vue'
-import i18n from 'plugins/service/i18n'
 
-Vue.use(ElementUI, {
-  i18n: (key, value) => i18n.t(key, value),
-})
+Vue.use(ElementUI)
 
 Vue.use(VueMoment, {
   moment,
@@ -24,6 +21,5 @@ Vue.prototype.$eventBus = EventBus
 export default new Vue({
   el: '#container',
   router: Router,
-  i18n,
   render: h => h(App),
 })

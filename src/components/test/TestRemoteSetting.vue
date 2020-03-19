@@ -82,7 +82,7 @@
   </div>
 </template>
 <script>
-import SoundMeter from 'plugins/service/soundmeter'
+import SoundMeter from 'plugins/remote/soundmeter'
 
 export default {
   data() {

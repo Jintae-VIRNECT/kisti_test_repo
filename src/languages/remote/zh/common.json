@@ -1,0 +1,15 @@
+{
+  "today": "今天",
+  "yesterday": "昨天",
+  "new_window": "开新窗口",
+  "select": "选择",
+  "confirm": "确认",
+  "cancel": "取消",
+  "save": "商店",
+  "cookie_policy": "VIRNECT 使用 Cookie 来支持 VIRNECT 服务的运行并改善你的 VIRNECT 使用体验。如需了解详情，<br>请查看我们的 <a href='/policy/cookie' target='_blank'>Cookie 政策</a>。单击“确认”或继续使用我们的网站，即表明你同意我们可以使用 Cookie。",
+  "not_found": {
+    "not_found_page": "<span style=\"font-size:28px;font-weight:bold;\">啊！</span>找不到您要求的页面。",
+    "require_url": "请再次确认一下您要访问的地址。",
+    "go_to_virnect": "前往VIRNECT Remote"
+  }
+}

@@ -7,6 +7,11 @@ const fs = require('fs')
 const host = '0.0.0.0'
 const port = process.env.port
 const logger = require('../server/logger')
+const translate = require('../translate')
+const stt = require('../stt')
+const tts = require('../tts')
+const multer = require('multer') // express에 multer모듈 적용 (for 파일업로드)
+const upload = multer({ dest: 'uploads/' })
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'
@@ -25,11 +30,11 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       rewrites: [
         {
           from: /account(\/.*)?/,
-          to: '/service/index.html',
+          to: '/remote/index.html',
         },
         {
           from: /service(\/.*)?/,
-          to: '/service/index.html',
+          to: '/remote/index.html',
         },
         {
           from: /test(\/.*)?/,
@@ -37,7 +42,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         },
         {
           from: /.*/,
-          to: '/service/index.html',
+          to: '/remote/index.html',
         },
       ],
     },
@@ -63,11 +68,45 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     open: false,
     before: function(app, server) {
       var bodyParser = require('body-parser')
-      app.use(bodyParser.json())
+      app.use(
+        bodyParser.json({
+          limit: '50mb',
+        }),
+      )
 
       app.post('/logs', bodyParser.json(), function(req, res) {
         logger.log(req.body.data, 'CONSOLE')
         res.send(true)
+      })
+
+      app.post('/translate', bodyParser.json(), function(req, res) {
+        const text = req.body.text
+        const target = req.body.target
+        translate.getTranslate(text, target).then(value => {
+          res.send(value)
+        })
+      })
+
+      app.post('/stt', bodyParser.json(), function(req, res) {
+        // console.log(req.body.file)
+        // const text = req.body.text
+        // const target = req.body.target
+        stt
+          .getStt(req.body.file, req.body.lang, req.body.rateHertz)
+          .then(value => {
+            console.log(req.body.lang, '::', value)
+            res.send(value)
+          })
+      })
+
+      app.post('/tts', bodyParser.json(), function(req, res) {
+        // console.log(req.body.file)
+        // const text = req.body.text
+        // const target = req.body.target
+        tts.getTts(req.body.text, req.body.lang).then(value => {
+          console.log(req.body.text, '::', value)
+          res.send(value)
+        })
       })
     },
   },
@@ -77,9 +116,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       inject: 'body',
       hash: true,
       favicon: './src/assets/favicon.ico',
-      template: './src/apps/service/app.html',
-      filename: 'service/index.html',
-      chunks: ['service'],
+      template: './src/apps/remote/app.html',
+      filename: 'remote/index.html',
+      chunks: ['remote'],
     }),
     new HtmlWebpackPlugin({
       inject: 'body',
