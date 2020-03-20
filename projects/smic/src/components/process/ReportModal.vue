@@ -6,7 +6,7 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title 리포트
       .process-new-modal__body
@@ -15,13 +15,13 @@
             label 항목 {{ index + 1 }}.
             .value
               span {{ item.title }}
-              span(:class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}
+              p(:class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}
               a(v-if="item.photoFilePath" :href="item.photoFilePath" download)
                 el-button
                   img(src="~@/assets/image/ic-download.svg")
                   span 다운로드
-          .section(v-if="item.photoFilePath")
-            el-image(:src="imgSrc" :preview-src-list="[imgSrc]")
+          .section.section--image(v-if="item.photoFilePath")
+            el-image(:src="item.photoFilePath" :preview-src-list="[item.photoFilePath]")
             i.el-icon-full-screen
 </template>
 

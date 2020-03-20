@@ -6,7 +6,7 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title 세부공정 편집
       .process-new-modal__body

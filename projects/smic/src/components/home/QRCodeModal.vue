@@ -6,7 +6,7 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title QR 코드
       .process-new-modal__body

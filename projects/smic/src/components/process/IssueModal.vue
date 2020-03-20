@@ -6,11 +6,11 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+    )
       template(slot="title")
         span.process-new-modal__header-title 이슈 관리
       .process-new-modal__body
-        .section.border-divider(v-if="issueDetail.photoFilePath")
+        .section.border-divider.section--image(v-if="issueDetail.photoFilePath")
           el-image(:src="issueDetail.photoFilePath" :preview-src-list="[issueDetail.photoFilePath]")
           i.el-icon-full-screen
         .section.issue
@@ -153,6 +153,10 @@ export default {
       border-radius: 50%;
       pointer-events: none;
     }
+
+    &--image {
+      display: inline-block;
+    }
   }
   .el-image img {
     pointer-events: inherit;
@@ -189,6 +193,9 @@ export default {
       display: inline-block;
       vertical-align: middle;
     }
+  }
+  .value {
+    margin-left: 0;
   }
   .value a {
     display: block;

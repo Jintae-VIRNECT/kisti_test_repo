@@ -55,7 +55,8 @@ export default {
       } catch (e) {
         return false
       }
-      this.$store.dispatch('closeProcess', this.target.id)
+      await this.$store.dispatch('closeProcess', this.target.id)
+      await this.$store.dispatch('getProcessStatistics')
     },
     async addProcess() {
       try {

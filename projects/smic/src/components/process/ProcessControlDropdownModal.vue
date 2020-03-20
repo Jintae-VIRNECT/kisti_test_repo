@@ -6,7 +6,7 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title {{modalType !== "edit" ? '신규 공정 등록' : '공정 편집'}}
       .process-new-modal__body
@@ -175,6 +175,7 @@ export default {
       }
       try {
         const result = await this.$store.dispatch('createProcess', form)
+        this.$store.dispatch('getProcessStatistics')
         // done
         if (this.modalType === 'replace') {
           this.$alert(
@@ -244,6 +245,7 @@ export default {
       )
       try {
         await this.$store.dispatch('updateProcess', form)
+        this.$store.dispatch('getProcessStatistics')
         this.handleCancel()
         this.$router.push(`/process/${form.processId}`)
       } catch (e) {

@@ -6,7 +6,7 @@
       height="50vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title 스마트툴
       .process-new-modal__body
@@ -19,13 +19,13 @@
             span.blue {{ smartToolDetail.normalToque }}
             el-divider(direction="vertical")
             span 체결 완료 수
-            span.blue {{ done }}
-            span / {{ smartTools.length }}
-        .section(v-for="{ batchCount, workingToque } in smartTools")
+            span.blue {{ smartToolDetail.smartToolWorkedCount }}
+            span / {{ smartToolDetail.smartToolBatchTotal }}
+        .section(v-for="{ batchCount, workingToque, result } in smartTools")
           label 체결 {{ batchCount }}.
           .value
             span(v-if="workingToque") 토크 값: {{ workingToque }}
-            el-progress(:percentage="workingToque == smartToolDetail.normalToque ? 100 : 0" :show-text="false")
+            el-progress(:percentage="result == 'OK' ? 100 : 0" :show-text="false")
       
 </template>
 

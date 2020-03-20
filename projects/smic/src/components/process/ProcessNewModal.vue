@@ -6,7 +6,7 @@
       margin-top="10vh"
       @open="handleOpen"
       @close="handleCancel"
-      :destroy-on-close="true")
+      )
       template(slot="title")
         span.process-new-modal__header-title 신규 공정 등록
       .process-new-modal__body(v-if="target")
