@@ -1,6 +1,5 @@
 import Axios from 'axios';
 import API from './url';
-import {resolveLocale} from "bootstrap-vue/esm/utils/date";
 
 const GATEWAY_API_URL = 'http://localhost:8073';
 

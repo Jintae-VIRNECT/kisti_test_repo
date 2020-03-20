@@ -8,6 +8,8 @@ const url = {
     login: '/users/login',
     register: '/users/register',
     emailAuth: '/users/email',
+    userInfo: "/users/info"
+
   },
 };
 
