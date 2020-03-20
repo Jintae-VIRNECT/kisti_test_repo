@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { SubProcess } from '@/models/subProcess'
+import { SubProcess } from '@/models/process/subProcess'
 
 export default {
   /**

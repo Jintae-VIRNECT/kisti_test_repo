@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { Process, ProcessStatistics } from '@/models/process'
+import { Process, ProcessStatistics } from '@/models/process/process'
 
 export default {
   /**
@@ -48,6 +48,15 @@ export default {
   async closeProcess(processId) {
     return await api('PROCESS_CLOSE', {
       route: { processId },
+    })
+  },
+  /**
+   * 공정 종료
+   * @param {String} contentId
+   */
+  async createProcess(form) {
+    return await api('PROCESS_CREATE', {
+      params: form,
     })
   },
 }

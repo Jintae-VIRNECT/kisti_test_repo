@@ -2,13 +2,15 @@
  * 콘텐츠 구조
  * @param {Object} json
  */
-export function Content(json) {
+export function Content(json = {}) {
   return {
     id: json.contentUUID,
     name: json.contentName,
-    sceneTotal: json.sceneGroupTotal,
-    uploaderName: json.uploaderName,
+    sceneGroupTotal: json.sceneGroupTotal,
+    uploaderUUID: json.uploaderUUID,
     status: json.status,
+    processId: json.processId,
+    createdDate: json.createdDate,
   }
 }
 
@@ -16,7 +18,7 @@ export function Content(json) {
  * 콘텐츠 통계
  * @param {Object} json
  */
-export function ContentStatistics(json) {
+export function ContentStatistics(json = {}) {
   return {
     totalContents: json.totalContents,
     totalManagedContents: json.totalManagedContents,

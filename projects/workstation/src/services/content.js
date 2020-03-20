@@ -2,8 +2,8 @@ import api from '@/api/gateway'
 import authService from '@/services/auth'
 
 // model
-import { Content, ContentStatistics } from '@/models/content'
-import { SceneGroup } from '@/models/sceneGroup'
+import { Content, ContentStatistics } from '@/models/content/content'
+import { SceneGroup } from '@/models/content/sceneGroup'
 
 export default {
   /**

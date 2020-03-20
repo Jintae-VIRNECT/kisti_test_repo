@@ -1,5 +1,6 @@
 
 {
   "delete": "삭제",
-  "close": "종료"
+  "close": "종료",
+  "processCreate": "공정 생성"
 }

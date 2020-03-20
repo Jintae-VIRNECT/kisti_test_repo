@@ -6,7 +6,7 @@ export function Issue(json) {
   return {
     id: json.issueId,
     caption: json.caption,
-    worker: json.workerUUID,
+    workerUUID: json.workerUUID,
     reportedDate: json.reportedDate,
   }
 }

@@ -4,6 +4,9 @@
     <el-button @click="deleteContent(content.id)">
       {{ $t('buttons.delete') }}
     </el-button>
+    <el-button @click="createProcess(content.id)">
+      {{ $t('buttons.processCreate') }}
+    </el-button>
     <p v-for="sceneGroup in sceneGroups" :key="sceneGroup.id">
       {{ sceneGroup }}
     </p>
@@ -21,6 +24,14 @@ export default {
     }
   },
   methods: {
+    createProcess(contentId) {
+      this.$router.push({
+        path: '/processes/new',
+        query: {
+          contentId,
+        },
+      })
+    },
     async deleteContent(contentId) {
       try {
         await this.$confirm(this.$t('questions.deleteConfirm'))

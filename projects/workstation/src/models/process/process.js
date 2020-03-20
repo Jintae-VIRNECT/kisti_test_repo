@@ -2,15 +2,23 @@
  * 공정 구조
  * @param {Object} json
  */
-export function Process(json) {
+export function Process(json = {}) {
   return {
     id: json.id,
     name: json.name,
+    contentUUID: json.contentUUID,
     position: json.position,
     conditions: json.conditions,
+    state: json.state,
+    progressRate: json.progressRate,
     subProcessTotal: json.subProcessTotal,
     doneCount: json.doneCount,
     issuesTotal: json.issuesTotal,
+    startDate: json.startDate,
+    endDate: json.endDate,
+    createdDate: json.createdDate,
+    updatedDate: json.updatedDate,
+    subProcessAssign: json.subProcessAssign,
   }
 }
 
@@ -18,7 +26,7 @@ export function Process(json) {
  * 공정 통계
  * @param {Object} json
  */
-export function ProcessStatistics(json) {
+export function ProcessStatistics(json = {}) {
   return {
     totalProcesses: json.totalProcesses,
   }

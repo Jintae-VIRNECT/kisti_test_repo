@@ -15,7 +15,10 @@
 
 <script>
 // models
-import { filter as searchFilter, sort as searchSort } from '@/models/process'
+import {
+  filter as searchFilter,
+  sort as searchSort,
+} from '@/models/process/process'
 // services
 import processService from '@/services/process'
 // components
