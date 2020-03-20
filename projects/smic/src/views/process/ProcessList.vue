@@ -144,8 +144,9 @@ export default {
     },
     onChangeData(data) {},
     onCreateData(data) {},
-    onDeleteData(data) {
-      this.$store.dispatch('deleteProcess', data.id)
+    async onDeleteData(data) {
+      await this.$store.dispatch('deleteProcess', data.id)
+      this.$store.dispatch('getProcessStatistics')
     },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
