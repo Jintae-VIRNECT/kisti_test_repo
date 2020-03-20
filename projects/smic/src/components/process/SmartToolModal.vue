@@ -15,14 +15,17 @@
           .value
             span Job ID no. {{ smartToolDetail.smartToolJobId }}
             el-divider(direction="vertical")
+            span 목표 토크 값
+            span.blue {{ smartToolDetail.normalToque }}
+            el-divider(direction="vertical")
             span 체결 완료 수
             span.blue {{ done }}
             span / {{ smartTools.length }}
         .section(v-for="{ batchCount, workingToque } in smartTools")
           label 체결 {{ batchCount }}.
           .value
-            span {{ workingToque }}
-            el-progress(:percentage="workingToque | toPercentNumber(smartToolDetail.normalToque)" :show-text="false")
+            span(v-if="workingToque") 토크 값: {{ workingToque }}
+            el-progress(:percentage="workingToque == smartToolDetail.normalToque ? 100 : 0" :show-text="false")
       
 </template>
 
@@ -89,7 +92,7 @@ export default {
   padding: 24px 30px;
 
   .el-divider {
-    margin: 0 28px;
+    margin: 0 18px;
   }
   label {
     width: 60px;
