@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     isClosed() {
-      return /^(FAILED|SUCCESS|FAULT)$/.test(this.target.conditions)
+      return /^(CLOSED|DELETED)$/.test(this.target.state)
     },
   },
   methods: {
@@ -78,6 +78,7 @@ export default {
       )
       if (state !== 'CLOSED') return false
       await this.$store.dispatch('getContentsDetail', this.target.contentUUID)
+      await this.$store.dispatch('getSceneGroupList', this.target.contentUUID)
       this.modalTarget = this.$store.getters.contentDetail
       this.onToggleProcessModal(true, 'replace')
     },

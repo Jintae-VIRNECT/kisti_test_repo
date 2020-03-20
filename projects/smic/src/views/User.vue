@@ -68,7 +68,7 @@ export default {
           email,
           password,
         })
-        this.$store.dispatch('getMemberList')
+        this.$store.dispatch('getAllMembersList')
         this.$router.push({ path: '/' })
       } catch (e) {
         console.error(e)

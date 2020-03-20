@@ -68,12 +68,6 @@ export default {
         params: { contentUUID },
       })
       context.commit('SET_SCENE_GROUP_LIST', data.sceneGroupInfoList)
-      context.commit(
-        'SET_CONTENT_INFO',
-        context.state.contentsList.find(
-          content => content.contentUUID === contentUUID,
-        ),
-      )
       return data
     },
     // 컨텐츠 상세조회
