@@ -32,4 +32,22 @@ export default {
     })
     return Process(data)
   },
+  /**
+   * 공정 삭제
+   * @param {String} contentId
+   */
+  async deleteProcess(processId) {
+    return await api('PROCESS_DELETE', {
+      route: { processId },
+    })
+  },
+  /**
+   * 공정 종료
+   * @param {String} contentId
+   */
+  async closeProcess(processId) {
+    return await api('PROCESS_CLOSE', {
+      route: { processId },
+    })
+  },
 }
