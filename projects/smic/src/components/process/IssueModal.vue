@@ -24,7 +24,7 @@
         .section
           label 보고일시
           .value
-            span {{ issueDetail.reportedDate }}
+            span {{ reportedDate }}
         .section
           label 이슈내용
           .value(v-if="issueDetail.photoFilePath")
@@ -195,6 +195,7 @@ export default {
     }
   }
   .value {
+    max-width: 370px;
     margin-left: 0;
   }
   .value a {

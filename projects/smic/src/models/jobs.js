@@ -9,7 +9,7 @@ export const cols = [
     label: '작업 이름',
   },
   {
-    prop: 'startDate',
+    prop: 'reportedDate',
     label: '보고 일시',
     width: 150,
   },

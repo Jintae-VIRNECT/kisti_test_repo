@@ -87,7 +87,7 @@ export default {
     display: block;
     width: 63px;
     margin-top: 8px;
-    padding: 2px;
+    padding: 2px 4px 1px;
     text-align: center;
     border: solid 1.2px #566173;
     border-radius: 16px;
