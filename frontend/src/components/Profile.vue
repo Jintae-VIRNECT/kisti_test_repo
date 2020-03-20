@@ -19,12 +19,14 @@
     </div>
     <div>
       <button @click="main">메인으로</button>
+      <button @click="logout">로그아웃</button>
     </div>
   </div>
 </template>
 
 <script>
   import UserService from '../service/user-service';
+  import AuthService from '../service/auth-service';
 
   export default {
     name: 'profile',
@@ -32,11 +34,17 @@
       return {
         content: '',
         userInfo: '',
+        userUUID: '',
+        accessToken: '',
       }
     },
     mounted() {
       UserService.getUserContent().then(
         response => {
+          if(response.data.code === 200){
+            const userInfo = JSON.parse(JSON.stringify(response.data.data));
+            this.userUUID = userInfo.userInfo.uuid;
+          }
           this.userInfo = JSON.stringify(response.data, null, 2);
         },
         error => {
@@ -44,6 +52,7 @@
         }
       );
       this.content = JSON.parse(localStorage.getItem('user'));
+      this.accessToken = this.content.accessToken;
     },
     methods: {
       pretty(value) {
@@ -52,6 +61,20 @@
       main() {
         localStorage.clear();
         location.href = '/';
+      },
+      logout() {
+        alert("hi!");
+        alert(`uuid: ${this.userUUID} , accessToken: ${this.accessToken}`);
+        AuthService.logout({uuid: this.userUUID, accessToken: this.accessToken}).then(
+          response => {
+            alert(response);
+            // this.main();
+          },
+          error =>{
+            this.userInfo = error.response.data.message;
+            alert(this.userInfo);
+          }
+        )
       }
     }
   };

@@ -1,6 +1,7 @@
 const url = {
   auth: {
     login: '/auth/signin',
+    logout: '/auth/signout',
     register: '/auth/signup',
     emailAuth: '/auth/email',
   },
