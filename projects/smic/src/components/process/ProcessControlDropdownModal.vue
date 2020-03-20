@@ -174,7 +174,7 @@ export default {
         form.ownerUUID = null
       }
       try {
-        await this.$store.dispatch('createProcess', form)
+        const result = await this.$store.dispatch('createProcess', form)
         // done
         if (this.modalType === 'replace') {
           this.$alert(
@@ -199,7 +199,7 @@ export default {
         }
 
         this.handleCancel()
-        this.$router.push('/process')
+        this.$router.push(`/process/${result.processId}`)
       } catch (e) {
         if (/^Error: 5008/.test(e)) {
           this.$alert(

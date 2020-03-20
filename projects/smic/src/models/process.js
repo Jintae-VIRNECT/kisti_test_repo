@@ -30,7 +30,7 @@ export const cols = [
     width: 260,
   },
   {
-    prop: 'processPercent',
+    prop: 'progressRate',
     label: '진행률',
     width: 150,
   },
