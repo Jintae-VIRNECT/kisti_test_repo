@@ -1,5 +1,9 @@
 const { resolve } = require('path')
 const lang = require('./src/lang')
+const dotenv = require('dotenv')
+const fs = require('fs')
+const filePath = `.env.${process.env.NODE_ENV.trim()}`
+const env = dotenv.parse(fs.readFileSync(filePath))
 
 module.exports = {
   /*
@@ -35,9 +39,10 @@ module.exports = {
   env: {
     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     SSL_ENV: JSON.stringify(process.env.SSL_ENV),
-    USER_API_URL: 'http://192.168.6.3:8081',
-    WORKSPACE_API_URL: 'http://192.168.6.3:8082',
-    CONTENT_API_URL: 'http://192.168.6.3:8083',
+    USER_API_URL: env.USER_API_URL,
+    WORKSPACE_API_URL: env.WORKSPACE_API_URL,
+    CONTENT_API_URL: env.CONTENT_API_URL,
+    PROCESS_API_URL: env.PROCESS_API_URL,
   },
   /**
    * build

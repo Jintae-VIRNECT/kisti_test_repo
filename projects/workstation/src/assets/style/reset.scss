@@ -1,0 +1,261 @@
+@charset "utf-8";
+@import "mixin.scss";
+
+// ::selection {
+//   background: $point;
+//   color: #fff;
+//   text-shadow: none;
+// }
+
+// ::-moz-selection {
+//   background: $point;
+//   color: #fff;
+//   text-shadow: none;
+// }
+
+// ::-webkit-selection {
+//   background: $point;
+//   color: #fff;
+//   text-shadow: none;
+// }
+
+.inline {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/*reset css*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+em,
+img,
+small,
+strong,
+sub,
+b,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video,
+a,
+button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    word-break: keep-all;
+    border: 0;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+    &:active,
+    &:hover,
+    &:focus {
+        background-color: transparent;
+        outline: none;
+    }
+}
+
+textarea,
+input.text,
+input[type="text"],
+input[type="password"],
+input[type="button"],
+input[type="submit"],
+input[type="email"],
+.input-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    // border-radius: 0;
+}
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    height: 100%;
+    color: $baseColor;
+    font-weight: normal;
+    font-size: 14px;
+    font-family: $noto, sans-serif;
+    line-height: 1.6;
+    &:lang(en) {
+        font-family: $roboto, $noto, sans-serif;
+    }
+}
+
+.dark {
+    color: #fff;
+    a,
+    button {
+        color: #fff;
+    }
+}
+
+.light {
+    color: $baseColor;
+    a,
+    button {
+        color: $baseColor;
+    }
+}
+
+a {
+    color: $baseColor;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+label,
+select,
+input,
+textarea {
+    @include inline;
+    font-family: $roboto, $noto, sans-serif;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+button,
+input[type="submit"] {
+    font-family: $roboto, $noto, sans-serif;
+    background: transparent;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+caption {
+    display: none;
+    margin: 0;
+    padding: 0;
+}
+
+i,
+em {
+    font-style: normal;
+}
+
+img {
+    max-width: 100%;
+}
+
+
+// default class
+.h-heading {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+// clearfix
+.clearfix {
+    @include clearfix();
+}
+
+// mobile
+.mobile-show {
+    display: none;
+    @media (max-width: $mobile) {
+        display: block;
+    }
+}
+
+.mobile-hidden {
+    display: block;
+    @media (max-width: $mobile) {
+        display: none;
+    }
+}
+
+i.mobile-hidden {
+    @include mobile-hidden;
+    @include inline;
+}

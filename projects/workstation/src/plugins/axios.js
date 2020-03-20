@@ -12,7 +12,7 @@ customAxios.interceptors.request.use(function(req) {
   } else if (/^\/contents/.test(req.url)) {
     req.baseURL = process.env.CONTENT_API_URL
   } else if (/^\/processes/.test(req.url)) {
-    req.baseURL = process.env.CONTENT_API_URL
+    req.baseURL = process.env.PROCESS_API_URL
   }
   return req
 })
