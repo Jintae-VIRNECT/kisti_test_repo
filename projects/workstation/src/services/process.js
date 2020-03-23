@@ -60,4 +60,16 @@ export default {
       params: form,
     })
   },
+  /**
+   * 공정 편집
+   * @param {EditProcessRequest} form
+   */
+  async editProcess(form) {
+    return await api('PROCESS_UPDATE', {
+      route: {
+        processId: form.processId,
+      },
+      params: form,
+    })
+  },
 }

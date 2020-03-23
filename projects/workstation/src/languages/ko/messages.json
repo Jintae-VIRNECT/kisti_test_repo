@@ -2,5 +2,6 @@
 {
   "loginRequired": "로그인 필요",
   "deleteSuccess": "삭제 성공",
-  "closedSuccess": "종료 성공"
+  "closedSuccess": "종료 성공",
+  "editSuccess": "편집 성공"
 }

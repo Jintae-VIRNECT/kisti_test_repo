@@ -7,6 +7,9 @@
     <el-button @click="deleteProcess(process.id)">
       {{ $t('buttons.delete') }}
     </el-button>
+    <el-button @click="editProcess(process.id)">
+      {{ $t('buttons.edit') }}
+    </el-button>
     <p v-for="subProcess in subProcesses" :key="subProcess.id">
       <nuxt-link :to="`/processes/${process.id}/${subProcess.id}`">
         {{ subProcess }}
@@ -29,6 +32,9 @@ export default {
     }
   },
   methods: {
+    editProcess(processId) {
+      this.$router.push(`/processes/${processId}/edit`)
+    },
     async deleteProcess(processId) {
       try {
         await this.$confirm(this.$t('questions.deleteConfirm'))

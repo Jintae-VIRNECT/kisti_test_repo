@@ -1,56 +1,11 @@
 <template>
   <div id="process-new">
     <h3>new process</h3>
-    <el-form ref="form" :model="form" label-width="70px" style="width: 550px">
-      <el-form-item label="name">
-        <span>{{ form.name }}</span>
-      </el-form-item>
-      <el-form-item label="date">
-        <el-col :span="11">
-          <el-date-picker
-            placeholder="startDate"
-            v-model="form.startDate"
-          ></el-date-picker>
-        </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-date-picker
-            placeholder="endDate"
-            v-model="form.endDate"
-          ></el-date-picker>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="position">
-        <el-input v-model="form.position"></el-input>
-      </el-form-item>
-      <el-divider />
-      <div v-for="subProcess in form.subProcessList" :key="subProcess.id">
-        <el-form-item label="name">
-          <span>{{ subProcess.name }}</span>
-        </el-form-item>
-        <el-form-item label="date">
-          <el-col :span="11">
-            <el-date-picker
-              placeholder="startDate"
-              v-model="subProcess.startDate"
-            ></el-date-picker>
-          </el-col>
-          <el-col class="line" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-date-picker
-              placeholder="endDate"
-              v-model="subProcess.endDate"
-            ></el-date-picker>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="worker">
-          <el-input v-model="subProcess.workerUUID"></el-input>
-        </el-form-item>
-      </div>
-      <el-button @click="createProcess(form)">
-        {{ $t('buttons.processCreate') }}
-      </el-button>
-    </el-form>
+    <process-form
+      :form="form"
+      :buttonName="$t('buttons.processCreate')"
+      @submit="createProcess"
+    />
   </div>
 </template>
 
@@ -63,7 +18,13 @@ import Process from '@/models/process/Process'
 import SubProcess from '@/models/process/SubProcess'
 import RegisterNewProcess from '@/models/process/RegisterNewProcess'
 
+// components
+import ProcessForm from '@/components/process/ProcessForm'
+
 export default {
+  components: {
+    ProcessForm,
+  },
   async asyncData({ query }) {
     const content = await contentService.getContentInfo(query.contentId)
     const sceneGroups = await contentService.getSceneGroupsList(query.contentId)

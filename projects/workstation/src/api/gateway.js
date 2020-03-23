@@ -27,16 +27,12 @@ export default async function api(name, option = {}) {
   }
   params = method === 'post' ? params : { params }
 
-  try {
-    const response = await axios[method](uri, params)
-    const { code, data, message } = response.data
+  const response = await axios[method](uri, params)
+  const { code, data, message } = response.data
 
-    if (code === 200) {
-      return data
-    } else {
-      throw new Error(`${code}: ${message}`)
-    }
-  } catch (e) {
-    throw new Error(e)
+  if (code === 200) {
+    return data
+  } else {
+    throw new Error(`${code}: ${message}`)
   }
 }

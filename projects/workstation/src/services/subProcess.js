@@ -24,4 +24,16 @@ export default {
     })
     return new SubProcess(data)
   },
+  /**
+   * 세부공정 편집
+   * @param {EditSubProcessRequest} form
+   */
+  async editSubProcess(form) {
+    return await api('SUB_PROCESS_UPDATE', {
+      route: {
+        subProcessId: form.subProcessId,
+      },
+      params: form,
+    })
+  },
 }

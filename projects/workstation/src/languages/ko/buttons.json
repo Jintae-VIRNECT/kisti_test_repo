@@ -1,6 +1,10 @@
 
 {
-  "delete": "삭제",
   "close": "종료",
-  "processCreate": "공정 생성"
+  "delete": "삭제",
+  "edit": "편집",
+  "processCreate": "공정 생성",
+  "reportInfo": "리포트 보기",
+  "issueInfo": "이슈 보기",
+  "smartToolInfo": "스마트툴 보기"
 }

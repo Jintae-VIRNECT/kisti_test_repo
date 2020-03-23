@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import Issue from '@/models/Issue'
+import Issue from '@/models/job/Issue'
 
 export default {
   /**
@@ -8,7 +8,10 @@ export default {
    */
   async searchIssues(params) {
     const data = await api('ISSUE_LIST', {
-      params: { ...params },
+      params: {
+        size: 10,
+        ...params,
+      },
     })
     return data.issues.map(issue => new Issue(issue))
   },
