@@ -1,9 +1,12 @@
-export default class SubProcess {
+import Model from '@/models/Model'
+
+export default class SubProcess extends Model {
   /**
    * 세부공정 구조
    * @param {Object} json
    */
   constructor(json) {
+    super()
     this.id = json.subProcessId
     this.name = json.name
     this.priority = json.priority

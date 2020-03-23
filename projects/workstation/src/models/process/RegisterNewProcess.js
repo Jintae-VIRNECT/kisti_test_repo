@@ -1,9 +1,12 @@
-export default class RegisterNewProcess {
+import Model from '@/models/Model'
+
+export default class RegisterNewProcess extends Model {
   /**
    * 공정 생성 폼
    * @param {Content, SceneGroups, Process, SubProcesses}
    */
   constructor({ content, sceneGroups, process, subProcesses }) {
+    super()
     this.contentUUID = content.id
     this.name = content.name
     this.ownerUUID = content.uploaderUUID

@@ -1,9 +1,12 @@
-export default class Process {
+import Model from '@/models/Model'
+
+export default class Process extends Model {
   /**
    * 공정 구조
    * @param {Object} json
    */
   constructor(json = {}) {
+    super()
     this.id = json.id
     this.name = json.name
     this.contentUUID = json.contentUUID

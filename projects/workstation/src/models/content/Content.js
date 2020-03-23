@@ -1,9 +1,12 @@
-export default class Content {
+import Model from '@/models/Model'
+
+export default class Content extends Model {
   /**
    * 콘텐츠 구조
    * @param {Object} json
    */
   constructor(json) {
+    super()
     this.id = json.contentUUID
     this.name = json.contentName
     this.sceneGroupTotal = json.sceneGroupTotal
