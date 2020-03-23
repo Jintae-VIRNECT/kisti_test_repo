@@ -73,15 +73,16 @@ export default {
       } catch (e) {
         return false
       }
-      const { state } = await this.$store.dispatch(
-        'closeProcess',
-        this.target.id,
-      )
-      if (state !== 'CLOSED') return false
-      await this.$store.dispatch('getContentsDetail', this.target.contentUUID)
-      await this.$store.dispatch('getSceneGroupList', this.target.contentUUID)
-      this.modalTarget = this.$store.getters.contentDetail
-      this.onToggleProcessModal(true, 'replace')
+
+      try {
+        await this.$store.dispatch('getContentsDetail', this.target.contentUUID)
+        await this.$store.dispatch('getSceneGroupList', this.target.contentUUID)
+        await this.$store.dispatch('closeProcess', this.target.id)
+        this.modalTarget = this.$store.getters.contentDetail
+        this.onToggleProcessModal(true, 'replace')
+      } catch (e) {
+        this.$alert(e)
+      }
     },
     onCreateData(data) {
       this.$emit('onCreateData', data)

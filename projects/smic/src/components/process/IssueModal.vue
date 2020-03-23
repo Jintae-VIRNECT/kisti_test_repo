@@ -11,8 +11,9 @@
         span.process-new-modal__header-title 이슈 관리
       .process-new-modal__body
         .section.border-divider.section--image(v-if="issueDetail.photoFilePath")
-          el-image(:src="issueDetail.photoFilePath" :preview-src-list="[issueDetail.photoFilePath]")
-          i.el-icon-full-screen
+          span.image-container
+            el-image(:src="issueDetail.photoFilePath" :preview-src-list="[issueDetail.photoFilePath]")
+            i.el-icon-full-screen
         .section.issue
           label 이슈 유형
           .value
@@ -27,14 +28,13 @@
             span {{ reportedDate }}
         .section
           label 이슈내용
-          .value(v-if="issueDetail.photoFilePath")
-            span {{ issueDetail.photoFilePath }}
-            a(:href="issueDetail.photoFilePath" download)
+          .value
+            span(v-if="issueDetail.caption") {{ issueDetail.caption }}
+            span(v-if="issueDetail.photoFilePath") {{ issueDetail.photoFilePath }}
+            a(v-if="issueDetail.photoFilePath" :href="issueDetail.photoFilePath" download)
               el-button
                 img(src="~@/assets/image/ic-download.svg")
                 span 다운로드
-          .value(v-else)
-            span {{ issueDetail.caption }}
         .section(v-if="isWorkIssue")
           label 공정 이름
           .value
@@ -138,13 +138,24 @@ export default {
     }
     &.issue {
       margin: 30px;
+      .value {
+        margin-top: -7px;
+      }
     }
     &:last-child {
       margin-bottom: 36px;
     }
-    & > .el-icon-full-screen {
+    &--image {
+      text-align: center;
+    }
+  }
+  .image-container {
+    position: relative;
+    display: inline-block;
+
+    .el-icon-full-screen {
       position: absolute;
-      right: 30px;
+      right: 0;
       margin: 12px;
       padding: 6px;
       color: #fff;
@@ -152,10 +163,6 @@ export default {
       background: rgba(0, 0, 0, 0.5);
       border-radius: 50%;
       pointer-events: none;
-    }
-
-    &--image {
-      display: inline-block;
     }
   }
   .el-image img {
@@ -195,11 +202,15 @@ export default {
     }
   }
   .value {
-    max-width: 370px;
+    max-width: 350px;
     margin-left: 0;
-  }
-  .value a {
-    display: block;
+    a,
+    span {
+      display: block;
+    }
+    span + span {
+      margin-top: 10px;
+    }
   }
 }
 </style>

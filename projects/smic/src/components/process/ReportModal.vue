@@ -21,8 +21,9 @@
                   img(src="~@/assets/image/ic-download.svg")
                   span 다운로드
           .section.section--image(v-if="item.photoFilePath")
-            el-image(:src="item.photoFilePath" :preview-src-list="[item.photoFilePath]")
-            i.el-icon-full-screen
+            span.image-container
+              el-image(:src="item.photoFilePath" :preview-src-list="[item.photoFilePath]")
+              i.el-icon-full-screen
 </template>
 
 <script>
@@ -35,7 +36,6 @@ export default {
   data() {
     return {
       reportModal: false,
-      // imgSrc: require('@/assets/image/issue-sample.jpg'),
     }
   },
   computed: {
@@ -84,10 +84,9 @@ export default {
     width: 390px;
   }
   .bool {
-    display: block;
-    width: 63px;
+    display: inline-block;
     margin-top: 8px;
-    padding: 2px 4px 1px;
+    padding: 3px 14px 1px;
     text-align: center;
     border: solid 1.2px #566173;
     border-radius: 16px;

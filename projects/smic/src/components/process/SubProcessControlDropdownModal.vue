@@ -100,8 +100,7 @@ export default {
         this.$store.commit('SET_SUB_PROCESS_LIST', [])
         this.$store.dispatch('getSubProcessList', { processId: this.processId })
       } catch (e) {
-        console.log(e)
-        this.$alert(`서버에러`, {
+        this.$alert(e, {
           confirmButtonText: '확인',
         })
       }
