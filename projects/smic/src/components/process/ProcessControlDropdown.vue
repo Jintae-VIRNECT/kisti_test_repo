@@ -81,7 +81,11 @@ export default {
         this.modalTarget = this.$store.getters.contentDetail
         this.onToggleProcessModal(true, 'replace')
       } catch (e) {
-        this.$alert(e)
+        if (/^Error: 4003/.test(e)) {
+          this.$alert('원본 콘텐츠가 삭제되어 추가 공정을 생성할 수 없습니다.')
+        } else {
+          this.$alert(e)
+        }
       }
     },
     onCreateData(data) {
