@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { Job } from '@/models/Job'
+import Job from '@/models/Job'
 
 export default {
   /**
@@ -12,6 +12,6 @@ export default {
       route: { subProcessId },
       params: { ...params },
     })
-    return data.jobs.map(job => Job(job))
+    return data.jobs.map(job => new Job(job))
   },
 }

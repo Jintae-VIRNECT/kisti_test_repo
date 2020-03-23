@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { SubProcess } from '@/models/process/subProcess'
+import SubProcess from '@/models/process/SubProcess'
 
 export default {
   /**
@@ -12,7 +12,7 @@ export default {
       route: { processId },
       params: { ...params },
     })
-    return data.subProcesses.map(subProcess => SubProcess(subProcess))
+    return data.subProcesses.map(subProcess => new SubProcess(subProcess))
   },
   /**
    * 세부공정 상세 정보
@@ -22,6 +22,6 @@ export default {
     const data = await api('SUB_PROCESS_INFO', {
       route: { subProcessId },
     })
-    return SubProcess(data)
+    return new SubProcess(data)
   },
 }

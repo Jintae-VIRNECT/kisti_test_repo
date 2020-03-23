@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { Issue } from '@/models/issue'
+import Issue from '@/models/Issue'
 
 export default {
   /**
@@ -10,7 +10,7 @@ export default {
     const data = await api('ISSUE_LIST', {
       params: { ...params },
     })
-    return data.issues.map(issue => Issue(issue))
+    return data.issues.map(issue => new Issue(issue))
   },
   /**
    *  이슈 상세 정보
@@ -20,6 +20,6 @@ export default {
     const data = await api('ISSUE_INFO', {
       route: { issueId },
     })
-    return Issue(data)
+    return new Issue(data)
   },
 }

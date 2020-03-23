@@ -1,27 +1,16 @@
-/**
- * 콘텐츠 구조
- * @param {Object} json
- */
-export function Content(json = {}) {
-  return {
-    id: json.contentUUID,
-    name: json.contentName,
-    sceneGroupTotal: json.sceneGroupTotal,
-    uploaderUUID: json.uploaderUUID,
-    status: json.status,
-    processId: json.processId,
-    createdDate: json.createdDate,
-  }
-}
-
-/**
- * 콘텐츠 통계
- * @param {Object} json
- */
-export function ContentStatistics(json = {}) {
-  return {
-    totalContents: json.totalContents,
-    totalManagedContents: json.totalManagedContents,
+export default class Content {
+  /**
+   * 콘텐츠 구조
+   * @param {Object} json
+   */
+  constructor(json) {
+    this.id = json.contentUUID
+    this.name = json.contentName
+    this.sceneGroupTotal = json.sceneGroupTotal
+    this.uploaderUUID = json.uploaderUUID
+    this.status = json.status
+    this.processId = json.processId
+    this.createdDate = json.createdDate
   }
 }
 

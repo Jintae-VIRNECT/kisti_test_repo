@@ -1,5 +1,5 @@
 const { resolve } = require('path')
-const lang = require('./src/lang')
+const lang = require('./src/languages')
 const dotenv = require('dotenv')
 const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`

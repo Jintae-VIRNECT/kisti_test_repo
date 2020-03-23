@@ -59,18 +59,25 @@ import contentService from '@/services/content'
 import processService from '@/services/process'
 
 // models
-import { Process } from '@/models/process/process'
-import { SubProcess } from '@/models/process/subProcess'
-import { RegisterNewProcess } from '@/models/process/registerNewProcess'
+import Process from '@/models/process/Process'
+import SubProcess from '@/models/process/SubProcess'
+import RegisterNewProcess from '@/models/process/RegisterNewProcess'
 
 export default {
   async asyncData({ query }) {
     const content = await contentService.getContentInfo(query.contentId)
     const sceneGroups = await contentService.getSceneGroupsList(query.contentId)
-    const process = Process()
-    const subProcesses = sceneGroups.map(sceneGroup => SubProcess(sceneGroup))
+    const process = new Process()
+    const subProcesses = sceneGroups.map(
+      sceneGroup => new SubProcess(sceneGroup),
+    )
     return {
-      form: RegisterNewProcess({ content, sceneGroups, process, subProcesses }),
+      form: new RegisterNewProcess({
+        content,
+        sceneGroups,
+        process,
+        subProcesses,
+      }),
     }
   },
   methods: {

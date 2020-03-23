@@ -18,7 +18,7 @@
 import {
   filter as searchFilter,
   sort as searchSort,
-} from '@/models/process/process'
+} from '@/models/process/Process'
 // services
 import processService from '@/services/process'
 // components

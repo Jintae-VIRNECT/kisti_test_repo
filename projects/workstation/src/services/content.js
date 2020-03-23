@@ -2,8 +2,9 @@ import api from '@/api/gateway'
 import authService from '@/services/auth'
 
 // model
-import { Content, ContentStatistics } from '@/models/content/content'
-import { SceneGroup } from '@/models/content/sceneGroup'
+import Content from '@/models/content/Content'
+import ContentStatistics from '@/models/content/ContentStatistics'
+import SceneGroup from '@/models/content/SceneGroup'
 
 export default {
   /**
@@ -11,7 +12,7 @@ export default {
    */
   async getContentStatistics() {
     const data = await api('CONTENTS_STATISTICS')
-    return ContentStatistics(data)
+    return new ContentStatistics(data)
   },
   /**
    * 컨텐츠 검색
@@ -24,7 +25,7 @@ export default {
         ...params,
       },
     })
-    return data.contentInfo.map(content => Content(content))
+    return data.contentInfo.map(content => new Content(content))
   },
   /**
    * 컨텐츠 상세 정보
@@ -36,7 +37,7 @@ export default {
         contentUUID: contentId,
       },
     })
-    return Content(data)
+    return new Content(data)
   },
   /**
    * 컨텐츠 씬그룹 정보
@@ -48,7 +49,7 @@ export default {
         contentUUID: contentId,
       },
     })
-    return data.sceneGroupInfoList.map(sceneGroup => SceneGroup(sceneGroup))
+    return data.sceneGroupInfoList.map(sceneGroup => new SceneGroup(sceneGroup))
   },
   /**
    * 컨텐츠 삭제

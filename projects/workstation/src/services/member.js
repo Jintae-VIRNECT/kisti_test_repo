@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import { Member } from '@/models/member'
+import Member from '@/models/Member'
 
 export default {
   async getDefaultMembersList() {
@@ -13,6 +13,6 @@ export default {
         sort: 'name,asc',
       },
     })
-    return data.memberInfoList.map(member => Member(member))
+    return data.memberInfoList.map(member => new Member(member))
   },
 }

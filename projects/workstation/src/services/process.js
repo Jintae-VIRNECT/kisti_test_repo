@@ -1,5 +1,6 @@
 import api from '@/api/gateway'
-import { Process, ProcessStatistics } from '@/models/process/process'
+import Process from '@/models/process/Process'
+import ProcessStatistics from '@/models/process/ProcessStatistics'
 
 export default {
   /**
@@ -7,7 +8,7 @@ export default {
    */
   async getProcessStatistics() {
     const data = await api('PROCESS_STATISTICS')
-    return ProcessStatistics(data)
+    return new ProcessStatistics(data)
   },
   /**
    * 공정 검색
@@ -20,7 +21,7 @@ export default {
         ...params,
       },
     })
-    return data.processes.map(process => Process(process))
+    return data.processes.map(process => new Process(process))
   },
   /**
    * 공정 상세 정보
@@ -30,11 +31,11 @@ export default {
     const data = await api('PROCESS_INFO', {
       route: { processId },
     })
-    return Process(data)
+    return new Process(data)
   },
   /**
    * 공정 삭제
-   * @param {String} contentId
+   * @param {String} processId
    */
   async deleteProcess(processId) {
     return await api('PROCESS_DELETE', {
@@ -43,7 +44,7 @@ export default {
   },
   /**
    * 공정 종료
-   * @param {String} contentId
+   * @param {String} processId
    */
   async closeProcess(processId) {
     return await api('PROCESS_CLOSE', {
@@ -51,8 +52,8 @@ export default {
     })
   },
   /**
-   * 공정 종료
-   * @param {String} contentId
+   * 공정 생성
+   * @param {RegisterNewProcess} form
    */
   async createProcess(form) {
     return await api('PROCESS_CREATE', {

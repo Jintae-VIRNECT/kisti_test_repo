@@ -16,7 +16,10 @@
 
 <script>
 // models
-import { filter as searchFilter, sort as searchSort } from '@/models/content/content'
+import {
+  filter as searchFilter,
+  sort as searchSort,
+} from '@/models/content/Content'
 // services
 import contentService from '@/services/content'
 // components
