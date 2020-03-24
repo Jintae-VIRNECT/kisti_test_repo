@@ -5,8 +5,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --progress --config build/webpack.config.build.js",
     "local": "cross-env NODE_ENV=local webpack-dev-server --open --progress --config build/webpack.config.dev.js",
-    "start:production": "cross-env NODE_ENV=production pm2 start server.js",
-    "stop": "pm2 stop server.js",
+    "start:production": "cross-env NODE_ENV=production node server.js",
     "deploy": "yarn build && yarn start:production",
     "styleguide": "vue-styleguidist server",
     "styleguide:build": "vue-styleguidist build"
