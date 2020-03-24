@@ -18,16 +18,22 @@ module.exports = {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-  /*
-   ** Customize style
-   */
-  css: ['@/assets/style/_reset.scss', '@/assets/style/common.scss'],
-  loading: { color: '#1b293e' },
   /**
    * Plugins
    */
   plugins: ['@/plugins/element-ui'],
-  modules: [['nuxt-i18n', lang]],
+  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources'],
+  /*
+   ** Customize style
+   */
+  styleResources: {
+    scss: [
+      '@/assets/style/_vars.scss',
+      '@/assets/style/_reset.scss',
+      '@/assets/style/common.scss',
+    ],
+  },
+  loading: { color: '#1b293e' },
   /**
    * dir
    */

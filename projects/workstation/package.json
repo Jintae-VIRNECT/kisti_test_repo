@@ -15,12 +15,14 @@
     "styleguide:build": "vue-styleguidist build"
   },
   "dependencies": {
+    "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",
     "nuxt-i18n": "^6.6.1",
     "scaffold-modules-user": "^1.0.1"
   },
   "devDependencies": {
+    "@nuxtjs/style-resources": "^1.0.0",
     "@vue/component-compiler-utils": "^3.1.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-core": "^6.26.3",

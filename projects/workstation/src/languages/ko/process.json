@@ -1,0 +1,14 @@
+
+{
+  "column": {
+    "name": "공정 이름",
+    "subProcessTotal": "세부공정 수",
+    "schedule": "공정 일정",
+    "progressRate": "진행률",
+    "doneCount": "완료된 세부공정",
+    "conditions": "진행 상태",
+    "issuesTotal": "작업 이슈"
+  },
+  "hasIssue": "있음",
+  "hasNotIssue": "없음"
+}
