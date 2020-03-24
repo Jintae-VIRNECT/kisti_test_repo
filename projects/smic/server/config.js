@@ -3,6 +3,8 @@ const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const envConfig = dotenv.parse(fs.readFileSync(filePath))
 
+console.log(envConfig)
+
 module.exports = {
   getAsNumber(key) {
     return Number(envConfig[key])
@@ -20,6 +22,6 @@ module.exports = {
     return String(envConfig['PORT'])
   },
   getSSLEnv() {
-    return Boolean(envConfig['SSL_ENV'])
+    return String(envConfig['SSL_ENV'])
   },
 }
