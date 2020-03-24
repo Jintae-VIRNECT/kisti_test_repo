@@ -77,7 +77,6 @@ export default {
       try {
         await this.$store.dispatch('getContentsDetail', this.target.contentUUID)
         await this.$store.dispatch('getSceneGroupList', this.target.contentUUID)
-        await this.$store.dispatch('closeProcess', this.target.id)
         this.modalTarget = this.$store.getters.contentDetail
         this.onToggleProcessModal(true, 'replace')
       } catch (e) {

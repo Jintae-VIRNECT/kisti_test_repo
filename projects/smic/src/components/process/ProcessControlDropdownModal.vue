@@ -174,12 +174,13 @@ export default {
         form.ownerUUID = null
       }
       try {
+        await this.$store.dispatch('closeProcess', this.target.info.processId)
         const result = await this.$store.dispatch('createProcess', form)
         this.$store.dispatch('getProcessStatistics')
         // done
         if (this.modalType === 'replace') {
           this.$alert(
-            `입력하신 정보로 공정을 추가 생성되었습니다.<br>
+            `입력하신 정보로 추가 공정이 생성되었습니다.<br>
           추가된 공정으로 새로운 보고를 받습니다.`,
             '공정 추가 생성 완료',
             {
