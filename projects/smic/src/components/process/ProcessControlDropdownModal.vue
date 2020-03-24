@@ -174,7 +174,8 @@ export default {
         form.ownerUUID = null
       }
       try {
-        await this.$store.dispatch('closeProcess', this.target.info.processId)
+        if (this.modalType === 'replace')
+          await this.$store.dispatch('closeProcess', this.target.info.processId)
         const result = await this.$store.dispatch('createProcess', form)
         this.$store.dispatch('getProcessStatistics')
         // done
