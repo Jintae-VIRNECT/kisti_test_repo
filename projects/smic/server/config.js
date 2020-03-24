@@ -20,6 +20,6 @@ module.exports = {
     return String(envConfig['PORT'])
   },
   getSSLEnv() {
-    return process.env.SSL_ENV
+    return Boolean(envConfig['SSL_ENV'])
   },
 }

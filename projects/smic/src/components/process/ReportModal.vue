@@ -15,7 +15,7 @@
             label 항목 {{ index + 1 }}.
             .value
               span {{ item.title }}
-              p(:class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}
+              p(v-if="item.answer" :class="item.type === 'TOGGLE' ? 'bool' : ''") {{ item.answer }}
               a(v-if="item.photoFilePath" :href="item.photoFilePath" download)
                 el-button
                   img(src="~@/assets/image/ic-download.svg")
