@@ -50,4 +50,4 @@ eureka:
 
 # Process Server Configuration
 process:
-  serverUrl: "http:///192.168.6.3:8083/processes"
+  serverUrl: "http://192.168.6.3:8083/processes"
