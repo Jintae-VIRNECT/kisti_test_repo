@@ -110,15 +110,15 @@ export default {
             label: 'ㄱ-ㅎ역순',
           },
           {
-            value: 'updated_at,desc',
+            value: 'reported_date,desc',
             label: '최신 보고순',
           },
           {
-            value: 'updated_at,asc',
+            value: 'reported_date,asc',
             label: '오래된 보고순',
           },
         ],
-        value: 'updated_at,desc',
+        value: 'reported_date,desc',
       },
       topic: 'table',
     }
