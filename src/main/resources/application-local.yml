@@ -51,3 +51,6 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+# Process Server Configuration
+process:
+  serverUrl: "http://localhost:8083/processes"

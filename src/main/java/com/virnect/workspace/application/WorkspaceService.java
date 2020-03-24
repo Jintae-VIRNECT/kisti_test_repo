@@ -46,6 +46,7 @@ public class WorkspaceService {
     private final GroupService groupService;
     private final RedisService redisService;
     private final MessageRestService messageRestService;
+    private final ProcessRestService processRestService;
 
     @Value("${serverUrl}")
     private String serverUrl;
@@ -152,6 +153,10 @@ public class WorkspaceService {
                 MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
                 memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
                 workspaceUserList.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfo.getUuid(), workspace));
+                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+
                 return memberInfo;
             }).collect(Collectors.toList());
 
@@ -242,6 +247,9 @@ public class WorkspaceService {
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
                 MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
                 memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
+                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
                 return memberInfo;
             }).collect(Collectors.toList());
 
