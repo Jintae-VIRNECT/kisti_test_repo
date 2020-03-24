@@ -1,7 +1,7 @@
 <template>
   <div id="sub-process">
     <h3>{{ subProcess }}</h3>
-    <el-button @click="editSubProcess(subProcess.id)">
+    <el-button @click="editSubProcess()">
       {{ $t('buttons.edit') }}
     </el-button>
     <div v-for="job in jobs" :key="job.id">
@@ -37,7 +37,7 @@ export default {
     }
   },
   methods: {
-    editSubProcess(subProcessId) {
+    editSubProcess() {
       this.$router.push(`${this.$route.path}/edit`)
     },
     async reportInfo(reportId) {

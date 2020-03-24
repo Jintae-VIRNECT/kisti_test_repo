@@ -8,6 +8,7 @@ export default class EditProcessRequest extends Model {
   constructor({ process, subProcesses }) {
     super()
     this.processId = process.id
+    this.name = process.name
     this.ownerUUID = process.ownerUUID
     this.startDate = process.startDate
     this.endDate = process.endDate
@@ -15,6 +16,7 @@ export default class EditProcessRequest extends Model {
     this.subProcessList = subProcesses.map(subProcess => {
       return {
         subProcessId: subProcess.id,
+        name: subProcess.name,
         startDate: subProcess.startDate,
         endDate: subProcess.endDate,
         workerUUID: subProcess.workerUUID,

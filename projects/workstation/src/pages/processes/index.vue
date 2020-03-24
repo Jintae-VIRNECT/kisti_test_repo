@@ -2,6 +2,7 @@
   <div id="processes">
     <h2>Process</h2>
     <h3>total: {{ processStatistics.totalProcesses }}</h3>
+    <h3>rate: {{ processTotalRate }}%</h3>
     <search-tab-nav
       :filter="searchFilter"
       :sort="searchSort"
@@ -38,6 +39,7 @@ export default {
     return {
       processes: await processService.searchProcesses(),
       processStatistics: await processService.getProcessStatistics(),
+      processTotalRate: await processService.getTotalRate(),
     }
   },
   methods: {

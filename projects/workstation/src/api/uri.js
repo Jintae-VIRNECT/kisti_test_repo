@@ -28,6 +28,8 @@ module.exports = {
    */
   // 공정 통계 조회
   PROCESS_STATISTICS: ['GET', '/processes/statistics'],
+  // 전체 공정 진행률 조회
+  PROCESS_TOTAL_RATE: ['GET', '/processes/totalRate'],
   // 전체 공정 목록 조회
   PROCESS_LIST: ['GET', '/processes'],
   // 공정상세조회

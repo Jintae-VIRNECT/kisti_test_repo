@@ -11,6 +11,13 @@ export default {
     return new ProcessStatistics(data)
   },
   /**
+   * 공정 진행률
+   */
+  async getTotalRate() {
+    const data = await api('PROCESS_TOTAL_RATE')
+    return data.totalRate
+  },
+  /**
    * 공정 검색
    * @param {Object} params
    */
