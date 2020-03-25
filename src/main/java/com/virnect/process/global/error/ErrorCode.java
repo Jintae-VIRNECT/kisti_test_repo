@@ -22,7 +22,7 @@ public enum ErrorCode {
 
     // 공정 관련
     ERR_NOT_FOUND_ARUCO(5002, "Could not found ARUCO for the content."),                // make에서 로직처리 되어 있음. 컨텐츠 업데이트 관련.
-    ERR_NOT_BEEN_CREATED_PROCESS(5003, "The content has not been created process."),    // make에서 로직처리 되어 있음. 컨텐츠 업데이트 관련.
+    ERR_CAN_CREATE_PROCESS(5003, "The content can create process."),    // make에서 로직처리 되어 있음. 컨텐츠 업데이트가 가능한 메시지
     ERR_NOT_FOUND_PROCESS(5004, "Could not found process."),
     ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA(5005, "The requested process id could not be found."),
     ERR_NOT_FOUND_SUBPROCESS_FOR_PROCESS_METADATA(5006, "The requested sub-process id could not be found."),

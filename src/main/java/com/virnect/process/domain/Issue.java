@@ -32,11 +32,6 @@ public class Issue extends BaseTimeEntity {
     @Column(name = "worker_uuid")
     private String workerUUID;
 
-    @Builder
-    public Issue(String content) {
-        this.content = content;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     private Job job;
@@ -47,6 +42,13 @@ public class Issue extends BaseTimeEntity {
         this.path = path;
         this.workerUUID = workerUUID;
         this.job = job;
+    }
+
+    @Builder(builderMethodName = "globalIssueBuilder")
+    public Issue(String content, String path, String workerUUID) {
+        this.content = content;
+        this.path = path;
+        this.workerUUID = workerUUID;
     }
 
     @Override

@@ -374,8 +374,18 @@ public class ProcessService {
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_ARUCO));
         // aruco id 로부터 process id 가져오기
         List<Long> processeIds = this.processRepository.getProcessIdList(aruco.getId());
-        if (processeIds.isEmpty())
-            throw new ProcessServiceException(ErrorCode.ERR_NOT_BEEN_CREATED_PROCESS);
+        // 생성된 공정이 없거나, 공정의 상태들을 모두 조회 후 모든 공정이 closed이면 공정생성이 가능
+        boolean canCreate = true;
+        for (Long processId : processeIds) {
+            Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+            // 컨텐츠로 등록된 공정들을 모두 조회하여 state가 CREATED, UPDATED인지 확인하여 하나라도 존재하면 업데이트 할 수 없음.
+            if (process.getState() == State.CREATED || process.getState() == State.UPDATED) {
+                canCreate = false;
+            }
+        }
+        if (processeIds.isEmpty() || canCreate) {
+            throw new ProcessServiceException(ErrorCode.ERR_CAN_CREATE_PROCESS);
+        }
         return new ApiResponse<>(new ProcessIdRetrieveResponse(processeIds));
     }
 
@@ -924,6 +934,7 @@ public class ProcessService {
 
     // 작업 내용 동기화
     private void syncJobWork(List<WorkResultSyncRequest.JobWorkResult> jobWorkResults, String syncUserUUID) {
+        log.info("WORKER:[{}] Job Result Synchronized Begin", syncUserUUID);
         jobWorkResults.forEach(jobWorkResult -> {
             Job job = this.jobRepository.findById(jobWorkResult.getId()).
                     orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
@@ -938,7 +949,7 @@ public class ProcessService {
                 syncSmartToolWork(jobWorkResult.getSmartTools());
             }
             if (jobWorkResult.getIssues() != null) {
-                syncIssueWork(jobWorkResult.getIssues(), syncUserUUID);
+                syncIssueWork(jobWorkResult.getIssues(), syncUserUUID, job);
             }
         });
     }
@@ -961,6 +972,7 @@ public class ProcessService {
                 item.setPath(getFileUploadUrl(reportItemWorkResult.getPhotoFile()));
             }
             item.setAnswer(reportItemWorkResult.getAnswer());
+            item.setResult(reportItemWorkResult.getResult());
             itemRepository.save(item);
         });
     }
@@ -987,7 +999,7 @@ public class ProcessService {
     }
 
     // 작업 이슈 동기화
-    private void syncIssueWork(List<WorkResultSyncRequest.WorkIssueResult> workIssueResults, String syncUserUUID) {
+    private void syncIssueWork(List<WorkResultSyncRequest.WorkIssueResult> workIssueResults, String syncUserUUID, Job job) {
         // insert
         workIssueResults.forEach(workIssueResult -> {
             Issue issue = Issue.builder()
@@ -997,6 +1009,7 @@ public class ProcessService {
             if (workIssueResult.getPhotoFile() != null) {
                 issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile()));
             }
+            issue.setJob(job);
             this.issueRepository.save(issue);
         });
     }
@@ -1005,13 +1018,16 @@ public class ProcessService {
     private void syncIssue(List<WorkResultSyncRequest.IssueResult> issueResults) {
         // insert
         issueResults.forEach(issueResult -> {
-            Issue issue = Issue.builder()
+            Issue issue = Issue.globalIssueBuilder()
                     .content(issueResult.getCaption())
                     .workerUUID(issueResult.getWorkerUUID())
                     .build();
             if (issueResult.getPhotoFile() != null) {
                 issue.setPath(getFileUploadUrl(issueResult.getPhotoFile()));
             }
+            log.info("IssueResult: {}", issueResult);
+            log.info("WorkerUUID: [{}]", issueResult.getWorkerUUID());
+            log.info("Global Issue: [{}]", issue);
             this.issueRepository.save(issue);
         });
     }

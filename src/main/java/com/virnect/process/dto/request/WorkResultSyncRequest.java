@@ -184,7 +184,7 @@ public class WorkResultSyncRequest {
         @Override
         public String toString() {
             return "WorkIssueResult{" +
-                    ", photoFile=" + photoFile +
+                    "photoFile=" + photoFile +
                     ", caption='" + caption + '\'' +
                     '}';
         }
@@ -203,7 +203,7 @@ public class WorkResultSyncRequest {
         @Override
         public String toString() {
             return "IssueResult{" +
-                    ", workerUUID='" + workerUUID + '\'' +
+                    "workerUUID='" + workerUUID + '\'' +
                     ", photoFile=" + photoFile +
                     ", caption='" + caption + '\'' +
                     '}';
