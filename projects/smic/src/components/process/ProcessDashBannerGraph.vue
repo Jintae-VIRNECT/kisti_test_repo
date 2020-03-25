@@ -61,11 +61,12 @@ export default {
     this.initProcessGraph()
     document
       .querySelector('#process-dash-banner-graph')
-      .addEventListener('click', () => {
-        this.$router.push(`/process?filter=${this.cursorData}`)
-      })
+      .addEventListener('click', this.changeFilter)
   },
   methods: {
+    changeFilter() {
+      this.$emit('changeFilter', this.cursorData)
+    },
     initProcessGraph() {
       const xAxisTicks = processStatus.map(status => status.label)
       const self = this

@@ -64,6 +64,11 @@ export default {
   watch: {
     searchType() {
       this.searchTypeValue = this.searchType.value
+      this.onChangeSearch()
+    },
+    filter() {
+      this.filterValue = this.filter.value
+      this.onFilterChange()
     },
   },
   methods: {

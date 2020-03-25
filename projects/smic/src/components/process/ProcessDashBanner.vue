@@ -13,7 +13,7 @@
           img(src="~@/assets/image/ic-table.svg")
           span 그래프 접기
       process-dash-banner-table
-      process-dash-banner-graph(v-if="topic !== 'table'" :key="topic")
+      process-dash-banner-graph(v-if="topic !== 'table'" :key="topic" @changeFilter="changeFilter")
 </template>
 <style lang="scss">
 .process-dash-banner {
@@ -51,6 +51,9 @@ export default {
   methods: {
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+    changeFilter(data) {
+      this.$emit('changeFilter', data)
     },
   },
   created() {

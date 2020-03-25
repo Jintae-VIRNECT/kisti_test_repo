@@ -29,28 +29,28 @@
     span {{ data[prop] }}
     span.debug(v-if="data['processId']") (processId: {{ data['processId'] }})
   //- 이슈
-  div(v-else-if="/^(issuesTotal)$/.test(prop) && typeof data[prop] !== 'object'")
+  div(v-else-if="/^(issuesTotal)$/.test(prop) && typeof data[prop] !== 'object'" :class="isClosedClass")
     .blub(:class="data[prop] ? 'on' : 'off'")
     span {{ data[prop] ? "있음" : "없음" }}
   //- 개수
-  div(v-else-if="/^.+(Total|Count)$/.test(prop)")
+  div(v-else-if="/^.+(Total|Count)$/.test(prop)" :class="isClosedClass")
     span.nums {{ data[prop] }}
   //- 진행률
-  .process-percent(v-else-if="/^(.+Percent|.+Rate)$/.test(prop)")
+  .process-percent(v-else-if="/^(.+Percent|.+Rate)$/.test(prop)" :class="isClosedClass")
     el-progress(:percentage="data[prop]" :show-text="true")
   //- 일정
-  .total-done(v-else-if="/^(schedule)$/.test(prop)")
+  .total-done(v-else-if="/^(schedule)$/.test(prop)" :class="isClosedClass")
     span {{ data['startDate'] | dayJs_FilterDateTimeFormat }} 
     span &nbsp;- {{ data['endDate'] | dayJs_FilterDateTimeFormat }}
   //- 프로세스 진행 상태
-  div(v-else-if="/^(conditions)$/.test(prop)")
+  div(v-else-if="/^(conditions)$/.test(prop)" :class="isClosedClass")
     button.btn.btn--status(
       size="mini" 
       :class="data[prop] | processStatusFilterName | processStatusNameColor"
       plain
     ) {{ data[prop] | processStatusFilterName }}
   //- 멤버들
-  div(v-else-if="/^(subProcessAssign)$/.test(prop)")
+  div(v-else-if="/^(subProcessAssign)$/.test(prop)" :class="isClosedClass")
     span {{ members | limitAuthsLength }}
   //- 이슈 타입
   div(v-else-if="/^(issueType)$/.test(prop)")
@@ -82,7 +82,7 @@
     span(v-else) ―
     
   //- 디버깅용
-  div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])")
+  div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])" :class="isClosedClass")
     span(v-if="data[prop]") {{ data[prop] }}
     span(v-else) ―
     span.debug (id: {{ data['id'] || data['subProcessId'] }})
@@ -118,6 +118,11 @@ export default {
     members() {
       return this.uuidsToMembers(this.data[this.prop])
     },
+    isClosedClass() {
+      return /^(CLOSED|DELETED)$/.test(this.data['state'])
+        ? 'closed-process'
+        : ''
+    },
   },
 }
 </script>
@@ -128,5 +133,13 @@ span.debug {
   margin-left: 8px;
   font-size: 0.5em;
   opacity: 0.5;
+}
+.closed-process {
+  span,
+  button,
+  .el-progress__text,
+  .el-progress-bar__inner {
+    opacity: 0.4;
+  }
 }
 </style>

@@ -6,7 +6,7 @@
           button.enroll-new-process 신규 공정 등록
     el-breadcrumb.header__bread-crumb(separator="/")
       el-breadcrumb-item(:to='{path: "/process"}') 공정
-    process-dash-banner(initTopic="table")
+    process-dash-banner(initTopic="table" @changeFilter="changeFilter")
     .page-nav
       search-tab-nav.search-wrapper.text-right(placeholder="공정 이름, 담당자 이름" :search="params.search" :filter="filter" :sort="sort" @change="onChangeSearch")
     inline-table(:setMainHeader="true")
@@ -110,6 +110,14 @@ export default {
             label: 'ㄱ-ㅎ역순',
           },
           {
+            value: 'created_at,desc',
+            label: '최신 등록순',
+          },
+          {
+            value: 'created_at,asc',
+            label: '오래된 등록순',
+          },
+          {
             value: 'reported_date,desc',
             label: '최신 보고순',
           },
@@ -118,7 +126,7 @@ export default {
             label: '오래된 보고순',
           },
         ],
-        value: 'reported_date,desc',
+        value: 'created_at,desc',
       },
       topic: 'table',
     }
@@ -150,6 +158,15 @@ export default {
     },
     toggleGraphTable() {
       this.topic = this.topic === 'table' ? 'graph' : 'table'
+    },
+    changeFilter(data) {
+      const filterValue = this.filter.options.find(
+        option => option.label === data,
+      ).value
+      this.filter = {
+        ...this.filter,
+        value: [filterValue],
+      }
     },
   },
   created() {

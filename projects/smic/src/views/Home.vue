@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     h1.admin-body__header--margin 홈
-    process-dash-banner(initTopic="graph")
+    process-dash-banner(initTopic="graph" @changeFilter="moveProcessList")
     //- process-inprogress-status-graph
     el-row(:gutter="20")
       el-col(:span="24")
@@ -164,6 +164,12 @@ export default {
     onCreateData(data) {},
     onDeleteData(data) {
       this.$store.dispatch('deleteProcess', data.id)
+    },
+    moveProcessList(data) {
+      this.$router.push({
+        path: '/process',
+        query: { filter: data },
+      })
     },
   },
   created() {

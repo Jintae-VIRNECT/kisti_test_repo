@@ -79,14 +79,18 @@ export default {
               show: false,
               count: 6,
             },
+            padding: {
+              top: 0,
+            },
           },
           y2: {
+            max: 100,
             show: true,
             tick: {
               show: false,
-              format(val) {
-                return val * 100
-              },
+            },
+            padding: {
+              top: 0,
             },
           },
         },

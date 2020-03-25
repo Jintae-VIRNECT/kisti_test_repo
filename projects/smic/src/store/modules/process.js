@@ -85,7 +85,7 @@ export default {
     async getProcessList(context, params) {
       const data = await api('PROCESS_LIST', {
         params: {
-          sort: 'reported_date,desc',
+          sort: 'created_at,desc',
           ...params,
         },
       })
