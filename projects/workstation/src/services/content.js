@@ -25,7 +25,10 @@ export default {
         ...params,
       },
     })
-    return data.contentInfo.map(content => new Content(content))
+    return {
+      list: data.contentInfo.map(content => new Content(content)),
+      total: data.pageMeta.totalElements,
+    }
   },
   /**
    * 컨텐츠 상세 정보
@@ -40,7 +43,7 @@ export default {
     return new Content(data)
   },
   /**
-   * 컨텐츠 씬그룹 정보
+   * 컨텐츠 씬그룹 목록
    * @param {String} contentId
    */
   async getSceneGroupsList(contentId) {

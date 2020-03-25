@@ -65,11 +65,18 @@ export default {
        * 변경이 일어나면 부모에게 검색 파라미터를 보낸다
        * @property {object} { search, filter, sort }
        */
-      this.$emit('submit', {
+      const params = {
         search: this.searchValue,
         filter: this.filterValue.join(','),
         sort: this.sortValue,
-      })
+      }
+      const withoutAllOptions = this.filter.options.filter(
+        option => option.value !== 'ALL',
+      )
+      if (this.filterValue.length === withoutAllOptions.length) {
+        params.filter = 'ALL'
+      }
+      this.$emit('submit', params)
     },
   },
 }

@@ -24,11 +24,13 @@ import subProcessService from '@/services/subProcess'
 
 export default {
   async asyncData({ params }) {
+    const promise = {
+      process: processService.getProcessInfo(params.processId),
+      subProcesses: subProcessService.searchChildSubProcesses(params.processId),
+    }
     return {
-      process: await processService.getProcessInfo(params.processId),
-      subProcesses: await subProcessService.searchChildSubProcesses(
-        params.processId,
-      ),
+      process: await promise.process,
+      subProcesses: await promise.subProcesses,
     }
   },
   methods: {

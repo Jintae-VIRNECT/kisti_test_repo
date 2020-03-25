@@ -29,11 +29,13 @@ import issueService from '@/services/issue'
 
 export default {
   async asyncData({ params }) {
+    const promise = {
+      subProcess: subProcessService.getSubProcessInfo(params.subProcessId),
+      jobs: jobService.searchChildJobs(params.subProcessId),
+    }
     return {
-      subProcess: await subProcessService.getSubProcessInfo(
-        params.subProcessId,
-      ),
-      jobs: await jobService.searchChildJobs(params.subProcessId),
+      subProcess: await promise.subProcess,
+      jobs: await promise.jobs,
     }
   },
   methods: {

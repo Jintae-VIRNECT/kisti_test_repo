@@ -14,7 +14,10 @@ export default {
       route: { subProcessId },
       params: { ...params },
     })
-    return data.jobs.map(job => new Job(job))
+    return {
+      list: data.jobs.map(job => new Job(job)),
+      total: data.pageMeta.totalElements,
+    }
   },
   /**
    *  리포트 상세 정보

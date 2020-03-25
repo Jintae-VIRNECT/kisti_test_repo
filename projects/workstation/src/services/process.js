@@ -28,7 +28,10 @@ export default {
         ...params,
       },
     })
-    return data.processes.map(process => new Process(process))
+    return {
+      list: data.processes.map(process => new Process(process)),
+      total: data.pageMeta.totalElements,
+    }
   },
   /**
    * 공정 상세 정보

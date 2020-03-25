@@ -8,9 +8,17 @@
       :sort="searchSort"
       @submit="searchContents"
     />
-    <p v-for="content in contents" :key="content.id">
+    <p v-for="content in contentsList" :key="content.id">
       <nuxt-link :to="`/contents/${content.id}`">{{ content }}</nuxt-link>
     </p>
+    <el-row type="flex" justify="center">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="contentsTotal"
+        @current-change="contentsPageChange"
+      />
+    </el-row>
   </div>
 </template>
 
@@ -33,17 +41,31 @@ export default {
     return {
       searchFilter,
       searchSort,
+      contentsSearchParams: {},
     }
   },
   async asyncData() {
+    const promise = {
+      contents: contentService.searchContents(),
+      contentStatistics: contentService.getContentStatistics(),
+    }
     return {
-      contents: await contentService.searchContents(),
-      contentStatistics: await contentService.getContentStatistics(),
+      contentsList: (await promise.contents).list,
+      contentsTotal: (await promise.contents).total,
+      contentStatistics: await promise.contentStatistics,
     }
   },
   methods: {
     async searchContents(params) {
-      this.contents = await contentService.searchContents(params)
+      const contents = await contentService.searchContents(params)
+      this.contentsList = contents.list
+      this.contentsTotal = contents.total
+      this.contentsSearchParams = params
+    },
+    async contentsPageChange(page) {
+      const params = { page, ...this.contentsSearchParams }
+      const contents = await contentService.searchContents(params)
+      this.contentsList = contents.list
     },
   },
 }

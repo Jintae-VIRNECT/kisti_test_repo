@@ -26,18 +26,18 @@ export default {
     ProcessForm,
   },
   async asyncData({ query }) {
-    const content = await contentService.getContentInfo(query.contentId)
-    const sceneGroups = await contentService.getSceneGroupsList(query.contentId)
-    const process = new Process()
-    const subProcesses = sceneGroups.map(
-      sceneGroup => new SubProcess(sceneGroup),
-    )
+    const promise = {
+      content: contentService.getContentInfo(query.contentId),
+      sceneGroups: contentService.getSceneGroupsList(query.contentId),
+    }
     return {
       form: new RegisterNewProcess({
-        content,
-        sceneGroups,
-        process,
-        subProcesses,
+        content: await promise.content,
+        sceneGroups: await promise.sceneGroups,
+        process: new Process(),
+        subProcesses: (await promise.sceneGroups).map(
+          sceneGroup => new SubProcess(sceneGroup),
+        ),
       }),
     }
   },

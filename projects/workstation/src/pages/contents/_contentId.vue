@@ -18,9 +18,13 @@ import contentService from '@/services/content'
 
 export default {
   async asyncData({ params }) {
+    const promise = {
+      content: contentService.getContentInfo(params.contentId),
+      sceneGroups: contentService.getSceneGroupsList(params.contentId),
+    }
     return {
-      content: await contentService.getContentInfo(params.contentId),
-      sceneGroups: await contentService.getSceneGroupsList(params.contentId),
+      content: await promise.content,
+      sceneGroups: await promise.sceneGroups,
     }
   },
   methods: {

@@ -24,13 +24,16 @@ export default {
     ProcessForm,
   },
   async asyncData({ params }) {
-    const process = await processService.getProcessInfo(params.processId)
-    const subProcesses = await subProcessService.searchChildSubProcesses(
-      params.processId,
-    )
+    const promise = {
+      process: processService.getProcessInfo(params.processId),
+      subProcesses: subProcessService.searchChildSubProcesses(params.processId),
+    }
     return {
       processId: params.processId,
-      form: new EditProcessRequest({ process, subProcesses }),
+      form: new EditProcessRequest({
+        process: await promise.process,
+        subProcesses: await promise.subProcesses,
+      }),
     }
   },
   methods: {

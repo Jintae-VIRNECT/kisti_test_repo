@@ -4,11 +4,11 @@
     <h3>total: {{ processStatistics.totalProcesses }}</h3>
     <h3>rate: {{ processTotalRate }}%</h3>
     <search-tab-nav
-      :filter="searchFilter"
-      :sort="searchSort"
+      :filter="processFilter"
+      :sort="processSort"
       @submit="searchProcesses"
     />
-    <el-table :data="processes" @row-click="rowClick">
+    <el-table :data="processList" @row-click="processClick">
       <column-default :label="$t('process.column.name')" prop="name" />
       <column-count
         :label="$t('process.column.subProcessTotal')"
@@ -45,6 +45,14 @@
         :width="100"
       />
     </el-table>
+    <el-row type="flex" justify="center">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="processTotal"
+        @current-change="processPageChange"
+      />
+    </el-row>
   </div>
 </template>
 
@@ -52,19 +60,19 @@
 // models
 import {
   conditions as processStatusList,
-  filter as searchFilter,
-  sort as searchSort,
+  filter as processFilter,
+  sort as processSort,
 } from '@/models/process/Process'
 // services
 import processService from '@/services/process'
 // components
 import SearchTabNav from '@/components/common/SearchTabNav'
-import ColumnDefault from '@/components/common/column/ColumnDefault'
-import ColumnCount from '@/components/common/column/ColumnCount'
-import ColumnProgress from '@/components/common/column/ColumnProgress'
-import ColumnStatus from '@/components/common/column/ColumnStatus'
-import ColumnSchedule from '@/components/common/column/ColumnSchedule'
-import ColumnBoolean from '@/components/common/column/ColumnBoolean'
+import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
+import ColumnCount from '@/components/common/tableColumn/ColumnCount'
+import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
+import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
+import ColumnSchedule from '@/components/common/tableColumn/ColumnSchedule'
+import ColumnBoolean from '@/components/common/tableColumn/ColumnBoolean'
 
 export default {
   components: {
@@ -78,23 +86,38 @@ export default {
   },
   data() {
     return {
-      searchFilter,
-      searchSort,
       processStatusList,
+      processFilter,
+      processSort,
+      processSearchParams: {},
     }
   },
   async asyncData() {
+    const promise = {
+      processes: processService.searchProcesses(),
+      processStatistics: processService.getProcessStatistics(),
+      processTotalRate: processService.getTotalRate(),
+    }
     return {
-      processes: await processService.searchProcesses(),
-      processStatistics: await processService.getProcessStatistics(),
-      processTotalRate: await processService.getTotalRate(),
+      processList: (await promise.processes).list,
+      processTotal: (await promise.processes).total,
+      processStatistics: await promise.processStatistics,
+      processTotalRate: await promise.processTotalRate,
     }
   },
   methods: {
     async searchProcesses(params) {
-      this.processes = await processService.searchProcesses(params)
+      const processes = await processService.searchProcesses(params)
+      this.processList = processes.list
+      this.processTotal = processes.total
+      this.processSearchParams = params
     },
-    rowClick(row) {
+    async processPageChange(page) {
+      const params = { page, ...this.processSearchParams }
+      const processes = await processService.searchProcesses(params)
+      this.processList = processes.list
+    },
+    processClick(row) {
       this.$router.push(`/processes/${row.id}`)
     },
   },

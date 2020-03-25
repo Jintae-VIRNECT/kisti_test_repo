@@ -22,3 +22,41 @@ export default class Issue extends Model {
     this.workerUUID = json.workerUUID
   }
 }
+
+/**
+ * 이슈 검색 필터설정
+ */
+export const filter = {
+  value: ['ALL'],
+  options: [
+    {
+      value: 'ALL',
+      label: 'SearchTabNav.filter.all',
+    },
+    {
+      value: 'OUT',
+      label: 'SearchTabNav.filter.globalIssue',
+    },
+    {
+      value: 'IN',
+      label: 'SearchTabNav.filter.workIssue',
+    },
+  ],
+}
+
+/**
+ * 이슈 검색 정렬설정
+ */
+export const sort = {
+  value: 'updated_at,desc',
+  options: [
+    {
+      value: 'updated_at,desc',
+      label: 'SearchTabNav.sort.createdDesc',
+    },
+    {
+      value: 'updated_at,asc',
+      label: 'SearchTabNav.sort.createdAsc',
+    },
+  ],
+}
