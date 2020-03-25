@@ -1,6 +1,7 @@
 <template>
   <div class="search-tab-nav">
     <el-input
+      ref="search"
       class="search"
       :placeholder="placeholder"
       v-model="searchValue"
@@ -8,7 +9,9 @@
     >
     </el-input>
     <el-select
+      ref="filter"
       class="filter"
+      v-bind:class="filterSelected"
       v-model="filterValue"
       @change="filterChange()"
       multiple
@@ -21,7 +24,7 @@
         :value="item.value"
       />
     </el-select>
-    <el-select class="sort" v-model="sortValue" @change="submit()">
+    <el-select ref="sort" class="sort" v-model="sortValue" @change="submit()">
       <el-option
         v-for="item in sort.options"
         :key="item.value"
@@ -42,6 +45,10 @@ export default {
     search: String,
     filter: Object,
     sort: Object,
+    autoResize: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -49,6 +56,11 @@ export default {
       filterValue: this.filter.value,
       sortValue: this.sort.value,
     }
+  },
+  computed: {
+    filterSelected() {
+      return this.filterValue[0].toLowerCase() !== 'all' ? 'selected' : 'empty'
+    },
   },
   methods: {
     filterChange() {
@@ -61,10 +73,6 @@ export default {
       this.submit()
     },
     submit() {
-      /**
-       * 변경이 일어나면 부모에게 검색 파라미터를 보낸다
-       * @property {object} { search, filter, sort }
-       */
       const params = {
         search: this.searchValue,
         filter: this.filterValue.join(','),
@@ -76,8 +84,63 @@ export default {
       if (this.filterValue.length === withoutAllOptions.length) {
         params.filter = 'ALL'
       }
+      /**
+       * 변경이 일어나면 부모에게 검색 파라미터를 보낸다
+       * @property {object} { search, filter, sort }
+       */
       this.$emit('submit', params)
     },
+    /**
+     * 인풋 컨텐츠 크기에 맞춰 리사이징
+     */
+    resize() {
+      const { search, filter, sort } = this.$refs
+      if (this.placeholder) {
+        search.$el.style['width'] = this.placeholder.length * 14 + 10 + 'px'
+      }
+      // filter auto width
+      const filterWidth = this.filter.options.reduce((max, option) => {
+        const translated = this.$t(option.label)
+        return translated.length > max ? translated.length : max
+      }, 0)
+      filter.$el.style['width'] = filterWidth * 14 + 70 + 'px'
+      // filter auto width
+      const sortWidth = this.sort.options.reduce((max, option) => {
+        const translated = this.$t(option.label)
+        return translated.length > max ? translated.length : max
+      }, 0)
+      sort.$el.style['width'] = sortWidth * 14 + 40 + 'px'
+    },
+  },
+  mounted() {
+    if (this.autoResize) this.resize()
   },
 }
 </script>
+
+<style lang="scss">
+.search-tab-nav {
+  .el-select .el-tag {
+    font-size: 1em;
+    background: none;
+    border: none;
+    .el-icon-close {
+      display: none;
+    }
+  }
+  .filter.selected {
+    .el-input__inner {
+      background: #455163;
+    }
+    .el-tag {
+      padding-right: 4px;
+      color: #fff;
+    }
+    .el-tag:nth-child(2) {
+      margin: 0;
+      padding: 0;
+      letter-spacing: -0.1em;
+    }
+  }
+}
+</style>

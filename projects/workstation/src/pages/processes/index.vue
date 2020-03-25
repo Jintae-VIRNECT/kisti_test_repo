@@ -4,6 +4,7 @@
     <h3>total: {{ processStatistics.totalProcesses }}</h3>
     <h3>rate: {{ processTotalRate }}%</h3>
     <search-tab-nav
+      :placeholder="$t('process.placeholder')"
       :filter="processFilter"
       :sort="processSort"
       @submit="searchProcesses"

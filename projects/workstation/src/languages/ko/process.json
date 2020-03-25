@@ -9,6 +9,7 @@
     "conditions": "진행 상태",
     "issuesTotal": "작업 이슈"
   },
+  "placeholder": "공정 이름, 담당자 이름",
   "hasIssue": "있음",
   "hasNotIssue": "없음"
 }
