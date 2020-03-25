@@ -4,14 +4,8 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -38,19 +32,11 @@ public class PostFilter extends ZuulFilter {
     }
 
     @Override
-    public Object run() throws ZuulException {
+    public Object run() {
         RequestContext requestContext = RequestContext.getCurrentContext();
         HttpServletRequest request = requestContext.getRequest();
         log.info("[REQUEST IP] => [{}] , [REQUEST URL] => [{}] , [AUTHORIZATION] => [{}]", request.getRemoteHost(), request.getRequestURL(), request.getHeader("authorization"));
-        InputStream inputStream = requestContext.getResponseDataStream();
-        try {
-            InputStream responseDataStream = new BufferedInputStream(inputStream);
-            String responseAsString = StreamUtils.copyToString(responseDataStream, StandardCharsets.UTF_8);
-            log.info("[RESPONSE] => [{}]", responseAsString);
-            requestContext.setResponseBody(responseAsString);
-        } catch (IOException e) {
-            log.warn("Error Reading Body", e);
-        }
+        log.info("[RESPONSE Status] => [{}]", requestContext.getResponse().getStatus());
         return null;
     }
 }
