@@ -1,6 +1,5 @@
 import Axios from 'axios';
 import API from './url';
-import {resolveLocale} from "bootstrap-vue/esm/utils/date";
 
 const GATEWAY_API_URL = 'http://localhost:8073';
 
@@ -29,8 +28,22 @@ class AuthService {
       })
   }
 
-  logout() {
-    localStorage.removeItem('user')
+  logout(logout) {
+    return axios
+      .post(GATEWAY_API_URL + API.auth.logout, {
+        uuid: logout.uuid,
+        accessToken: logout.accessToken,
+      })
+      .then(this.handleResponse)
+      .then(response => {
+        const {data} = response;
+        alert(data);
+        if (data !== undefined) {
+          localStorage.removeItem('user');
+          return data;
+        }
+        return data;
+      })
   }
 
   register(user) {
@@ -43,7 +56,7 @@ class AuthService {
 
   emailAuth(email) {
     return axios
-      .post(GATEWAY_API_URL+API.auth.emailAuth, {
+      .post(GATEWAY_API_URL + API.auth.emailAuth, {
         email
       })
       .then(this.handleResponse)

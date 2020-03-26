@@ -1,6 +1,7 @@
 const url = {
   auth: {
     login: '/auth/signin',
+    logout: '/auth/signout',
     register: '/auth/signup',
     emailAuth: '/auth/email',
   },
@@ -8,6 +9,8 @@ const url = {
     login: '/users/login',
     register: '/users/register',
     emailAuth: '/users/email',
+    userInfo: "/users/info"
+
   },
 };
 

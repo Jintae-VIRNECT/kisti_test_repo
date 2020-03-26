@@ -49,6 +49,7 @@ module.exports = {
 			'../../src/main/resources/templates/index.html',
 		),
 
+<<<<<<< HEAD
 		// Paths
 		assetsRoot: path.resolve(__dirname, '../../src/main/resources/static'),
 		assetsSubDirectory: 'static',
@@ -57,6 +58,16 @@ module.exports = {
 		/**
 		 * Source Maps
 		 */
+=======
+  build: {
+    // Template for index.html
+    index: path.resolve(__dirname, '../dist/index.html'),
+
+    // Paths
+    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+>>>>>>> a71a5f3265d63399ff1e61e7329b37ddce52587b
 
 		productionSourceMap: true,
 		// https://webpack.js.org/configuration/devtool/#production
