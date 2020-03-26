@@ -49,12 +49,19 @@ export default {
     SET_PROCESS_INFO(state, obj) {
       state.processDetail = { ...state.processDetail, info: obj }
     },
-    CLOSE_PROCESS(state, { processId, conditions }) {
+    CLOSE_PROCESS(state, result) {
+      // 리스트 반영
       const process = state.processList.find(
-        process => process.id === processId,
+        process => process.id === result.id,
       )
-      process.conditions = conditions
+      process.conditions = result.conditions
+      process.state = result.state
       state.processList = [...state.processList]
+      // 상세보기 반영
+      if (state.processDetail.info.id === result.id) {
+        state.processDetail.info.state = result.state
+        state.processDetail = { ...state.processDetail }
+      }
     },
     DELETE_PROCESS(state, processId) {
       state.processList = state.processList.filter(
@@ -119,10 +126,7 @@ export default {
       const data = await api('PROCESS_CLOSE', {
         route: { processId },
       })
-      context.commit('CLOSE_PROCESS', {
-        processId,
-        conditions: data.conditions,
-      })
+      context.commit('CLOSE_PROCESS', data)
       return data
     },
     // 공정 삭제

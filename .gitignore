@@ -2,6 +2,7 @@
 node_modules
 dist
 workstation
+WC-Modules
 
 # # local env files
 # .env.local
