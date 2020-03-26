@@ -30,7 +30,6 @@
           label 이슈내용
           .value
             span(v-if="issueDetail.caption") {{ issueDetail.caption }}
-            span(v-if="issueDetail.photoFilePath") {{ issueDetail.photoFilePath }}
             a(v-if="issueDetail.photoFilePath" :href="issueDetail.photoFilePath" download)
               el-button
                 img(src="~@/assets/image/ic-download.svg")

@@ -50,7 +50,7 @@
       plain
     ) {{ data[prop] | processStatusFilterName }}
   //- 멤버들
-  div(v-else-if="/^(subProcessAssign)$/.test(prop)" :class="isClosedClass")
+  .text(v-else-if="/^(subProcessAssign)$/.test(prop)" :class="isClosedClass")
     span {{ members | limitAuthsLength }}
   //- 이슈 타입
   div(v-else-if="/^(issueType)$/.test(prop)")
@@ -82,13 +82,13 @@
     span(v-else) ―
     
   //- 디버깅용
-  div(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])" :class="isClosedClass")
+  .text(v-else-if="/^(name)$/.test(prop) && (data['id'] || data['subProcessId'])" :class="isClosedClass")
     span(v-if="data[prop]") {{ data[prop] }}
     span(v-else) ―
     span.debug (id: {{ data['id'] || data['subProcessId'] }})
 
   //- 기타
-  div(v-else)
+  .text(v-else)
     span(v-if="data[prop]") {{ data[prop] }}
     span(v-else) ―
 </template>
@@ -128,18 +128,26 @@ export default {
 </script>
 
 <style lang="scss">
-span.debug {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 0.5em;
-  opacity: 0.5;
-}
-.closed-process {
-  span,
-  button,
-  .el-progress__text,
-  .el-progress-bar__inner {
-    opacity: 0.4;
+.el-table .cell {
+  margin: 0 4px;
+  .text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  span.debug {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.5em;
+    opacity: 0.5;
+  }
+  .closed-process {
+    span,
+    button,
+    .el-progress__text,
+    .el-progress-bar__inner {
+      opacity: 0.4;
+    }
   }
 }
 </style>
