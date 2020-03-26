@@ -2,7 +2,7 @@
   <div>
     <the-sidebar :logo="sideLogo" :menus="sideMenus" />
     <div>
-      <the-top-nav :logo="topLogo" :title="topTitle" :user="user" />
+      <the-header />
       <main class="main-container">
         <nuxt />
       </main>
@@ -13,15 +13,15 @@
 <script>
 import { mapGetters } from 'vuex'
 
-import TheSidebar from '@/components/layout/TheSidebar.vue'
-import TheTopNav from '@/components/layout/TheTopNav.vue'
+import TheSidebar from '@/components/layout/TheSidebar'
+import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 
 import { sideLogo, sideMenus, topLogo, topTitle } from '@/models/layout'
 
 export default {
   components: {
     TheSidebar,
-    TheTopNav,
+    TheHeader,
   },
   data() {
     return {

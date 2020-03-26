@@ -57,7 +57,7 @@ module.exports = {
     extend(config, { isDev, isClient }) {
       config.resolve.alias['WC-Modules'] = resolve(
         __dirname,
-        '../../WC-Modules',
+        '../../WC-Modules/src',
       )
     },
   },

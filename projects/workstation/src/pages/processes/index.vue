@@ -4,7 +4,7 @@
     <h3>total: {{ processStatistics.totalProcesses }}</h3>
     <h3>rate: {{ processTotalRate }}%</h3>
     <search-tab-nav
-      :placeholder="$t('process.placeholder')"
+      placeholder="process.placeholder"
       :filter="processFilter"
       :sort="processSort"
       @submit="searchProcesses"
@@ -67,7 +67,7 @@ import {
 // services
 import processService from '@/services/process'
 // components
-import SearchTabNav from '@/components/common/SearchTabNav'
+import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
 import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
 import ColumnCount from '@/components/common/tableColumn/ColumnCount'
 import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
