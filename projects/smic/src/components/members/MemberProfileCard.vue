@@ -17,8 +17,8 @@
         .percent-label 참여중인 세부공정 / 할당된 세부공정
         el-progress(:percentage='setWorkPercent(profileData)' :show-text="false")
         .stats.text-right
-          span.done 4&nbsp;
-          span / 5
+          span.done {{ profileData.countProgressing }}&nbsp;
+          span / {{ profileData.countAssigned }}
         router-link.direct-link(to="/process") 바로가기
         .tools
           .vn-label
@@ -35,6 +35,32 @@
               span 콘텐츠
 
 </template>
+
+<script>
+export default {
+  props: ['profileData'],
+  methods: {
+    getImgUrl(src) {
+      var images = require.context('@/', false, /\.png$/)
+      return images(src + '.png')
+    },
+    setWorkPercent(profileData) {
+      if (!profileData.countAssigned) return 0
+      else
+        return (profileData.countProgressing / profileData.countAssigned) * 100
+    },
+  },
+  filters: {
+    upperCases(str) {
+      return str.toUpperCase()
+    },
+    lowserCase(str) {
+      return str.toLowerCase()
+    },
+  },
+}
+</script>
+
 <style lang="scss">
 .profile-card {
   padding: 22px 24px;
@@ -145,26 +171,3 @@
   }
 }
 </style>
-<script>
-export default {
-  props: ['profileData'],
-  methods: {
-    getImgUrl(src) {
-      var images = require.context('@/', false, /\.png$/)
-      return images(src + '.png')
-    },
-    setWorkPercent() {
-      // return (done / all) * 100
-      return 80
-    },
-  },
-  filters: {
-    upperCases(str) {
-      return str.toUpperCase()
-    },
-    lowserCase(str) {
-      return str.toLowerCase()
-    },
-  },
-}
-</script>
