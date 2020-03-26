@@ -28,7 +28,7 @@ eureka:
 
 ## Server Configuration
 server:
-  port: 8083
+  port: 8079
 
 # File Upload Configuration
 upload:
