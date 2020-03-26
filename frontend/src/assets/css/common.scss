@@ -2,6 +2,9 @@
 @import "./mixin.scss";
 @import "./reset.scss";
 
+.container {
+	padding-top: 144px;
+}
 h2 {
   font-weight: 500;
   font-size: 28px;
@@ -15,6 +18,22 @@ h2 {
   font-weight: 500;
 }
 
+.danger-color {
+  color: $danger;
+}
+
+.warning-msg {
+  text-align: left;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.el-input.input-danger{
+  .el-input__inner {
+    border-bottom-color: $danger;
+  }
+}
+
 .el-input__inner {
   color: $baseColor;
   border: 0;
@@ -23,6 +42,10 @@ h2 {
   font-size: 16px;
   padding: 0;
   font-weight: 500;
+}
+
+.el-checkbox {
+  margin-right: 12px;
 }
 
 .el-checkbox__input.is-checked .el-checkbox__inner {
@@ -34,13 +57,13 @@ h2 {
 }
 
 .checkbox-wrap {
-  margin-top: 15px;
+  margin-top: 20px;
   margin-bottom: 20px;
   text-align: left;
 }
 
 .find-wrap {
-  margin-top: 25px;
+  margin-top: 20px;
   a {
     position: relative;
     display: inline-block;
@@ -60,4 +83,13 @@ h2 {
       display: none;
     }
   }
+}
+
+.el-button--primary.is-disabled, 
+.el-button--primary.is-disabled:hover, 
+.el-button--primary.is-disabled:focus, 
+.el-button--primary.is-disabled:active {
+  color: #8d939c;
+  background-color: #e2e6eb;
+  border-color: #e2e6eb;
 }

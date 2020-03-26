@@ -1,9 +1,7 @@
 <template>
 	<div id="app">
 		<!-- <header-section></header-section> -->
-		<div class="container">
-			<router-view />
-		</div>
+		<router-view />
 	</div>
 </template>
 
@@ -28,7 +26,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-	padding-top: 144px;
-}
 </style>
