@@ -28,7 +28,7 @@ spring:
 
 ## Server Configuration
 server:
-  port: 8083
+  port: 8078
 
 # File Upload Configuration
 upload:
