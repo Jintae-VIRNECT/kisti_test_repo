@@ -21,14 +21,38 @@
 				<p class="input-title must-check">비밀번호</p>
 				<el-input
 					placeholder="비밀번호 입력해 주세요"
+          v-model="register.password"
 					show-password
 				>
 				</el-input>
 				<el-input
 					placeholder="비밀번호 재입력해 주세요"
+          v-model="register.password"
 					show-password
 				>
 				</el-input>
+        <p>8~20자의 영문 대, 소문자, 숫자, 특수문자 중 3가지 이상을 조합하여 입력해 주세요.</p>
+
+        <p class="input-title must-check">이름</p>
+				<el-input
+					placeholder="성"
+					clearable
+				></el-input>
+				<el-input
+					placeholder="이름"
+					clearable
+				></el-input>
+
+        
+        <p class="input-title must-check">가입 경로</p>
+				<el-input
+					placeholder="가입 경로 선택"
+					clearable
+				></el-input>
+
+        <el-button type="primary" @click="handleRegister()"
+					>다음</el-button
+				>
 
 			</el-col>
 		</el-row>
@@ -224,7 +248,16 @@
     },
     data() {
       return {
-        register: new Register('', '', '', '', '', '', '', '', '', ''),
+        register: {
+          email: '',
+          password: '',
+          passwordConfirm: '',
+          familyName: '',
+          lastName: '',
+          registerInfo: '',
+          serviceInfo: '',
+          session: ''
+        },
         submitted: false,
         successful: false,
         isSendEmail: false,
@@ -246,6 +279,7 @@
       handleRegister() {
         this.message = '';
         this.submitted = true;
+        new Register( this.register.email, this.register.password, this.register.passwordConfirm, this.register.familyName, this.register.lastName, this.register.registerInfo, this.register.serviceInfo, this.register.session )
         console.log(this.register);
         this.$validator.validate().then(valid => {
           if (valid) {
@@ -259,7 +293,7 @@
                 this.successful = false;
               }
             ).then(
-              this.$router.push('/')
+              // this.$router.push('/')
             )
           }
         })
