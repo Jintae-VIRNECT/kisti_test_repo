@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class EmailAuthenticationResopnse {
+public class EmailVerificationResponse {
     private boolean result;
     private String sessionCode;
 }

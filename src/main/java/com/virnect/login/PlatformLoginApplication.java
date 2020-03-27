@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LoginModuleApplication {
+public class PlatformLoginApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(LoginModuleApplication.class, args);
+        SpringApplication.run(PlatformLoginApplication.class, args);
     }
 
 }
