@@ -25,6 +25,7 @@ import 'element/input.css'
 import 'element/checkbox.css'
 import 'element/col.css'
 import 'element/button.css'
+import 'element/icon.css'
 
 
 import 'assets/css/common.scss'

@@ -5,10 +5,28 @@
 .container {
 	padding-top: 144px;
 }
+.row-bg {
+	height: 100%;
+	text-align: center;
+	> div {
+		width: 380px;
+	}
+}
+
 h2 {
   font-weight: 500;
   font-size: 28px;
   font-family: $noto;
+  + p {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+}
+.el-button {
+	margin-top: 30px;
+	width: 100%;
+	height: 50px;
 }
 
 .input-title {
@@ -28,9 +46,15 @@ h2 {
   font-size: 14px;
 }
 
-.el-input.input-danger{
-  .el-input__inner {
-    border-bottom-color: $danger;
+.el-input {
+  &.input-danger {
+    .el-input__inner {
+      border-bottom-color: $danger;
+    }
+  }
+  .el-input__clear {
+    font-size: 22px;
+    color: #d8dde5;
   }
 }
 

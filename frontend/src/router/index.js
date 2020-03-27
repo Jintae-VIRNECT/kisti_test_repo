@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from 'components/Login.vue'
+import Login from 'components/layout/pages/Login'
+import Terms from 'components/layout/pages/Terms'
 import Register from '../components/Register.vue'
 import Profile from '../components/Profile.vue'
 
@@ -11,10 +12,17 @@ export default new Router({
 	routes: [
 		{
 			path: '/',
+			name: 'login',
 			component: Login,
 		},
 		{
+			path: '/terms',
+			name: 'terms',
+			component: Terms,
+		},
+		{
 			path: '/register',
+			name: 'register',
 			component: Register,
 		},
 		{

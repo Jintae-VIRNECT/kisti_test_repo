@@ -16,7 +16,7 @@
 				<el-input
 					placeholder="비밀번호를 입력해 주세요"
 					v-model="login.password"
-					clearable
+					show-password
 					:class="{'input-danger' : message}"
 				></el-input>
 				
@@ -33,7 +33,7 @@
 				<div class="find-wrap">
 					<router-link to="/find">이메일 찾기</router-link>
 					<router-link to="/find">비밀번호 재설정</router-link>
-					<router-link to="/register">회원가입</router-link>
+					<router-link to="/terms">회원가입</router-link>
 				</div>
 			</el-col>
 		</el-row>
@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import Login from '../model/login'
+import Login from 'model/login'
 
-import footerSection from './layout/common/Footer'
+import footerSection from '../common/Footer'
 
 export default {
 	name: 'login',
@@ -58,6 +58,7 @@ export default {
 	},
 	data() {
 		return {
+			hovering: true,
 			login: {
 				email: '',
 				password: ''
@@ -68,7 +69,7 @@ export default {
 	},
 	mounted() {
 		if (this.loggedIn) {
-			this.$route.path = '/profile'
+			this.$router.push({ name: 'profile' })
 		}
 	},
 	methods: {
@@ -83,7 +84,7 @@ export default {
 				 new Login(this.login.email, this.login.password)
 				this.$store.dispatch('auth/login', this.login).then(
 					() => {
-						this.$route.path = '/profile'
+						this.$router.push({ name: 'profile' })
 					},
 					error => {
 						this.loading = false
@@ -97,32 +98,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.row-bg {
-	height: 100%;
-	text-align: center;
-	> div {
-		width: 380px;
-	}
-}
 
 h1 {
 	margin-left: -2px;
 	margin-right: -2px;
 	margin-bottom: 39px;
 }
-.el-button {
-	margin-top: 30px;
-	width: 100%;
-	height: 50px;
-}
-.login-alert-msg {
-	text-align: left;
-	margin-top: 15px;
-	font-size: 13px;
-	color: #ff3d3d;
-	img {
-		vertical-align: middle;
-		margin-right: 6px;
-	}
-}
+
+
 </style>
