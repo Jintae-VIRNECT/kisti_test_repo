@@ -28,7 +28,10 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t pf-processmanagement:develop .'
+            catchError() {
+              sh 'docker build -t pf-processmanagement:develop .'
+            }
+
           }
         }
 
@@ -37,7 +40,10 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker build -t pf-processmanagement:staging .'
+            catchError() {
+              sh 'docker build -t $registry_server/pf-processmanagement:staging .'
+            }
+
           }
         }
 
@@ -46,7 +52,10 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker build -t pf-processmanagement .'
+            catchError() {
+              sh 'docker build -t $registry_server/pf-processmanagement .'
+            }
+
           }
         }
 
@@ -82,18 +91,30 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement -v /data/content:/usr/app/upload pf-processmanagement:develop'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8079:8079 -d --restart=always --name=pf-processmanagement pf-processmanagement:develop'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            }
+
           }
         }
 
         stage('Staging Branch') {
           when {
             branch 'staging'
-          }
+          }          
+          
+
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement pf-processmanagement:staging'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8079:8079 -d --restart=always --name=pf-processmanagement $registry_server/pf-processmanagement:staging'
+              sh 'docker push $registry_server/pf-processmanagement:staging'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-processmanagement:staging", failOnError: true)
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker stop pf-processmanagement && docker rm pf-processmanagement || true", failOnError: true)
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker run -p 8079:8079 -d --restart=always --name=pf-processmanagement \\${registry_server}/pf-processmanagement:staging", failOnError: true)
+            }
+
           }
         }
 
@@ -102,8 +123,12 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement pf-processmanagement'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8079:8079 -d --restart=always --name=pf-processmanagement $registry_server/pf-processmanagement'
+              sh 'docker push $registry_server/pf-processmanagement'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            }
+
           }
         }
 
