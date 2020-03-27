@@ -4,11 +4,13 @@ const modules = {}
 const exceptName = [
   './Test.vue',
   './before',
+  './TestTranslate.vue',
+  './TestTranslate2.vue',
 ]
 
-files.keys().forEach((key) => {
+files.keys().forEach(key => {
   for (var i = 0; i < exceptName.length; i++) {
-    if(key === exceptName[i]) return
+    if (key === exceptName[i]) return
   }
   modules[key.replace(/(\.\/|\.vue)/g, '')] = files(key).default
 })

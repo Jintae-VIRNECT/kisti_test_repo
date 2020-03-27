@@ -211,6 +211,7 @@ export default {
     },
   },
   mounted() {
+    return
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.init()
     // const speech = require('@google-cloud/speech')

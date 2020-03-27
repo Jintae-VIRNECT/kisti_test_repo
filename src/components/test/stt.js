@@ -1,6 +1,6 @@
 import openSocket from 'socket.io-client'
 const socket = openSocket('http://localhost:8080', { secure: true })
-let lastEndTime = 0
+// let lastEndTime = 0
 
 function getJSON(cb) {
   socket.on('getJSON', response => cb(null, response))

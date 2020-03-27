@@ -1,5 +1,5 @@
 <template>
-  <div class="service-wrapper">
+  <div class="remote-wrapper service-wrapper">
     <sub-view></sub-view>
 
     <transition>

@@ -4,12 +4,12 @@
  * 테마 적용
  */
 @mixin theme-dark() {
-  @at-root [theme=dark] & {
+  @at-root [theme="dark"] & {
     @content;
   }
 }
 @mixin theme-bright() {
-  @at-root [theme=bright] & {
+  @at-root [theme="bright"] & {
     @content;
   }
 }
@@ -21,11 +21,11 @@
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: rgba($color_bg_border, .79);
+    background-color: rgba($color_bg_border, 0.79);
     @include theme-bright() {
       background-color: #fff;
     }
-    content: '';
+    content: "";
     @if $direction == "right" {
       // border-right: $color_bg_shadow_border;
       bottom: 0;
@@ -58,55 +58,55 @@
 @mixin status-color($dot: false) {
   &.good {
     color: $color_state_good;
-    border-color: $color_state_good;
     background-color: $color_state_good_bg;
+    border-color: $color_state_good;
     @if $dot {
       &::after {
-        content: '';
         position: absolute;
+        top: 50%;
+        left: 8px;
         width: 5px;
         height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
         background-color: $color_state_good;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        content: "";
       }
     }
   }
   &.normal {
     color: $color_state_normal;
-    border-color: $color_state_normal;
     background-color: $color_state_normal_bg;
+    border-color: $color_state_normal;
     @if $dot {
       &::after {
-        content: '';
         position: absolute;
+        top: 50%;
+        left: 8px;
         width: 5px;
         height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
         background-color: $color_state_normal;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        content: "";
       }
     }
   }
   &.bad {
     color: $color_state_bad;
-    border-color: $color_state_bad;
     background-color: $color_state_bad_bg;
+    border-color: $color_state_bad;
     @if $dot {
       &::after {
-        content: '';
         position: absolute;
+        top: 50%;
+        left: 8px;
         width: 5px;
         height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
         background-color: $color_state_bad;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        content: "";
       }
     }
   }
@@ -116,12 +116,21 @@
   @return linear-gradient(to right, $start_color, $end_color);
 }
 
-@mixin background-gradient($start_color: $color_remote, $end_color: $color_virnect) {
-  color: #FFF;
-  background-image: gradient($start_color: $color_remote, $end_color: $color_virnect);
+@mixin background-gradient(
+  $start_color: $color_remote,
+  $end_color: $color_virnect
+) {
+  color: #fff;
+  background-image: gradient(
+    $start_color: $color_remote,
+    $end_color: $color_virnect
+  );
 
   &:hover {
-    background-image: gradient(darken($start_color,5%), darken($end_color,5%));
+    background-image: gradient(
+      darken($start_color, 5%),
+      darken($end_color, 5%)
+    );
   }
 }
 
@@ -130,7 +139,6 @@
 }
 
 @mixin button($type: default) {
-
   &:hover {
   }
 
@@ -145,9 +153,9 @@
 
 @mixin clearfix {
   &::after {
-    clear: both;
     display: block;
-    content: '';
+    clear: both;
+    content: "";
   }
 }
 
@@ -172,7 +180,7 @@ $colors: (
 
 /* Motion */
 .shake {
-  animation: shake .6s linear alternate;
+  animation: shake 0.6s linear alternate;
 }
 @keyframes shake {
   0%,
@@ -184,40 +192,43 @@ $colors: (
   30%,
   50%,
   70%,
-  90% { transform: translateX(1%); }
+  90% {
+    transform: translateX(1%);
+  }
 
   20%,
   40%,
   60%,
-  80% { transform: translateX(-1%); }
+  80% {
+    transform: translateX(-1%);
+  }
 }
 
 /* MediaQuery */
 // PC
 @mixin desktop {
-	@media screen and (min-width: $size_tab_max + 1) {
-		@content;
-	}
+  @media screen and (min-width: $size_tab_max + 1) {
+    @content;
+  }
 }
 
 // 태블릿
 @mixin tablet {
-	@media screen and (max-width: $size_tab_max) {
-		@content;
-	}
+  @media screen and (max-width: $size_tab_max) {
+    @content;
+  }
 }
 
 // 모바일
 @mixin mobile {
-	@media screen and (max-width: $size_m_max) {
-		@content;
-	}
+  @media screen and (max-width: $size_m_max) {
+    @content;
+  }
 }
 
 // 프린트
 @mixin print {
   @media print {
-
   }
 }
 

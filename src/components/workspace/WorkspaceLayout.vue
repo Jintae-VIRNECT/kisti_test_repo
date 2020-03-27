@@ -1,11 +1,19 @@
 <template>
-  <div class="workspace-wrapper">Work Space</div>
+  <div class="remote-wrapper workspace-wrapper">
+    <workspace-welcome></workspace-welcome>
+    <workspace-tab></workspace-tab>
+  </div>
 </template>
 
 <script>
+import WorkspaceWelcome from './partials/WorkspaceWelcome'
+import WorkspaceTab from './partials/WorkspaceTab'
 export default {
   name: 'WorkspaceLayout',
-  components: {},
+  components: {
+    WorkspaceWelcome,
+    WorkspaceTab,
+  },
   data() {
     return {}
   },
@@ -18,6 +26,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import '~assets/style/service';
-</style>
+<style lang="scss" src="assets/style/workspace.scss"></style>

@@ -1,6 +1,6 @@
 <template>
-  <nav class="header-lnb">
-    <ul>
+  <nav class="header-lnb service">
+    <ul class="flex">
       <lnb-button
         text="실시간 공유"
         keyvalue="stream"

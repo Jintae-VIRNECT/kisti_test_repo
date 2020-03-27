@@ -12,7 +12,7 @@ export default new VueRouter({
     {
       path: '/',
       name: 'main',
-      redirect: { name: 'service' },
+      redirect: { name: 'workspace' },
     },
     {
       path: '/service',

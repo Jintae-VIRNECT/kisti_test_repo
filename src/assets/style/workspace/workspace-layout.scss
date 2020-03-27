@@ -1,6 +1,5 @@
 .workspace-wrapper {
-  position: relative;
-  box-sizing: border-box;
   height: 100vh;
-  overflow: hidden;
+  margin: 0 222px;
+  padding-top: $header_height;
 }

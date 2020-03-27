@@ -1,23 +1,18 @@
 .service-wrapper {
-  position: relative;
-  box-sizing: border-box;
-  height: 100vh;
-  overflow: hidden;
+  padding-top: $header_height;
 }
 
 .main-wrapper {
   position: relative;
-  top: $header_height;
   width: calc(100% - #{$subview_width});
-  height: calc(100% - #{$header_height});
+  height: 100%;
   color: $color_text_main;
 }
 
 .drawing-wrapper {
   position: relative;
-  top: $header_height;
   display: flex;
   width: calc(100% - #{$subview_width});
-  height: calc(100% - #{$header_height});
+  height: 100%;
   color: $color_text_main;
 }

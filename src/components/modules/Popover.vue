@@ -7,8 +7,8 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        class="popover"
         :class="popperClass"
+        class="popover"
         @click.stop
       >
         <div class="popover--header" v-if="title || $slots['header']">
@@ -205,6 +205,10 @@ export default {
   mounted() {
     this.changeTrigger()
     this.$eventBus.$on('popover:close', this.hidePopover)
+    // 커스텀 클래스 나중에 반영
+    if (this.popperClass) {
+      this.$refs['popover'].classList.add(this.popperClass)
+    }
   },
   beforeDestroy() {
     window.removeEventListener('click', this.windowClickHandler)

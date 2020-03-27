@@ -97,7 +97,6 @@ import {
   setSTTLanguageCode,
   getTranscriptFromJSON,
 } from './stt'
-import RecordRTC from 'recordrtc'
 import Recorder from 'recorder-js'
 
 let bufferSize = 2048
@@ -427,6 +426,7 @@ export default {
     },
   },
   mounted() {
+    return
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.init()
     // const speech = require('@google-cloud/speech')
