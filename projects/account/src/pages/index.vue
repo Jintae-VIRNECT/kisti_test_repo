@@ -36,14 +36,12 @@
           </el-card>
         </el-col>
         <el-col class="home__container__right">
-          <el-card>
+          <el-card class="el-card--table">
             <div slot="header">
               <h3>사용 중인 플랜</h3>
               <router-link to="/plan">바로가기</router-link>
             </div>
-            <div>
-              asdf
-            </div>
+            <used-plan-list />
           </el-card>
           <el-card>
             <div slot="header">
@@ -72,7 +70,12 @@
 </template>
 
 <script>
-export default {}
+import UsedPlanList from '@/components/plan/UsedPlanList'
+export default {
+  components: {
+    UsedPlanList,
+  },
+}
 </script>
 
 <style lang="scss">
@@ -113,6 +116,7 @@ export default {}
   & > p {
     font-size: 15px;
     line-height: 1.6;
+    opacity: 0.9;
   }
 }
 </style>
