@@ -1,0 +1,10 @@
+{
+  "name": "virnect-web-account",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "projects/*"
+  ],
+  "scripts": {},
+  "license": "ISC"
+}
