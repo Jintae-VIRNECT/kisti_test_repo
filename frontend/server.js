@@ -4,7 +4,7 @@ const server = require('http').Server(app)
 const path = require('path')
 const route = require('./route')
 
-app.use(express.static(path.join(__dirname, './dist')))
+app.use(express.static(path.join(__dirname, '../src/main/resources/static')))
 app.use(route)
 
 app.get('/', function(req, res) {

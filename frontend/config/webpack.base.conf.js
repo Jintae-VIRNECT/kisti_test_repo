@@ -1,7 +1,6 @@
 'use strict'
 
-const { join, resolve } = require('path')
-const path = require('path')
+const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
 
@@ -38,9 +37,11 @@ glob.sync('./src/apps/**/app.js').forEach(path => {
 	entries[chunk] = path
 	chunks.push(chunk)
 
-	const filename = chunk + '.html'
 	const htmlConf = {
-		filename: filename,
+		filename: resolve(
+			__dirname,
+			'../../src/main/resources/templates/index.html',
+		),
 		template: path.replace(/.js/g, '.html'),
 		inject: 'body',
 		favicon: './src/assets/favicon.ico',
@@ -84,8 +85,8 @@ const sassOptions = [
 const config = {
 	entry: entries,
 	output: {
-		path: resolve(__dirname, '../../src/main/resources'),
-		filename: 'assets/js/[name].js',
+		path: resolve(__dirname, '../../src/main/resources/static'),
+		filename: posix.join('static', 'js/[name].js'),
 		publicPath: '/',
 	},
 	resolve: {

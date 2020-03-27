@@ -7,7 +7,7 @@ const path = require('path')
  * Main app route
  */
 router.get('/*', function(req, res) {
-	res.sendFile(path.join(__dirname, '/dist/main/main.html'))
+	res.sendFile(path.join(__dirname, '../src/main/resources/templates/index.html'))
 })
 
 module.exports = router
