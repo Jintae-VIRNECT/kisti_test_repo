@@ -84,7 +84,7 @@ const sassOptions = [
 const config = {
 	entry: entries,
 	output: {
-		path: resolve(__dirname, '../dist'),
+		path: resolve(__dirname, '../../src/main/resources'),
 		filename: 'assets/js/[name].js',
 		publicPath: '/',
 	},
