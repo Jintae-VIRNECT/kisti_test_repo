@@ -1,0 +1,3 @@
+[submodule "WC-Modules"]
+	path = WC-Modules
+	url = https://github.com/virnect-corp/WC-Modules.git
