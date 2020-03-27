@@ -82,7 +82,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement -v /data/content:/usr/app/upload pf-processmanagement:develop'
+            sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=develop --name=pf-processmanagement -v /data/content:/usr/app/upload pf-processmanagement:develop'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -92,7 +92,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement pf-processmanagement:staging'
+            sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=staging --name=pf-processmanagement pf-processmanagement:staging'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
@@ -102,7 +102,7 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8079:8079 -d --name=pf-processmanagement pf-processmanagement'
+            sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=production --name=pf-processmanagement pf-processmanagement'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
         }
