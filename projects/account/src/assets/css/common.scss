@@ -1,0 +1,49 @@
+/* 페이지 진입, 진출 중인 상태일 때 */
+.page-enter-active,
+.page-leave-active {
+  transition: 0.1s;
+}
+
+/* 페이지 진입 전, 진출 후 상태일 때 */
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+}
+
+#__nuxt {
+  // 공통
+  a {
+    color: $color-link;
+  }
+
+  .container {
+    position: relative;
+    width: 1240px;
+    margin: 0 auto;
+    padding: 80px 20px;
+  }
+
+  // 카드
+  .el-card {
+    margin-bottom: 30px;
+  }
+  .el-card__header {
+    height: 64px;
+    padding-right: 30px;
+    padding-left: 30px;
+    font-weight: 500;
+
+    & > div > h3 {
+      float: left;
+      font-size: 16px;
+    }
+    & > div > a {
+      float: right;
+      font-size: 14px;
+    }
+  }
+  .el-card__body {
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+}

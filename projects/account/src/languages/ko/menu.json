@@ -1,0 +1,10 @@
+{
+  "home": "홈",
+  "profile": "개인 정보",
+  "workspace": "워크스페이스 정보",
+  "security": "보안 설정",
+  "plan": "사용 중인 플랜",
+  "subscribe": "구독 관리",
+  "payment": "결제 관리",
+  "coupon": "쿠폰 관리"
+}
