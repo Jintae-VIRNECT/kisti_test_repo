@@ -1,5 +1,39 @@
 <template>
-  <div class="row">
+	<div class="container">
+		<el-row type="flex" justify="center" align="middle" class="row-bg">
+			<el-col>
+				<h2>회원 정보 등록</h2>
+				<p>하나의 계정으로 VIRNECT 정체 제품을 이용할 수 있습니다.</p>
+
+        
+				<p class="input-title must-check">계정 이메일</p>
+				<el-input
+					placeholder="이메일을 입력해 주세요"
+          v-model="register.email"
+					clearable
+				>
+				</el-input>
+        <el-button type="primary"
+        :disabled="!register.email"
+					>인증 메일 전송</el-button
+				>
+
+				<p class="input-title must-check">비밀번호</p>
+				<el-input
+					placeholder="비밀번호 입력해 주세요"
+					show-password
+				>
+				</el-input>
+				<el-input
+					placeholder="비밀번호 재입력해 주세요"
+					show-password
+				>
+				</el-input>
+
+			</el-col>
+		</el-row>
+	</div>
+  <!-- <div class="row">
     <div class="card card-container">
       <form id="form" name="form" @submit.prevent="handleRegister">
         <div v-if="!successful">
@@ -61,7 +95,6 @@
               :src="register.profile"
               class="profile-img-card"
             />
-            <!--            <img v-if="!!form.image" id="thumbnail" :src="register.profile">-->
             <div class="form-inline">
               <label for="profile" class="fom">프로필</label>
               <input
@@ -157,7 +190,7 @@
           <div class="mt-2">이메일로 전송된 인증코드 6자리를 입력하세요</div>
         </div>
       </b-modal>
-    </div>
+    </div> -->
     <!--    &lt;!&ndash; #2 : Modal Window &ndash;&gt;-->
     <!--    <div class="modal" v-if="isShow">-->
     <!--      <div class="modal-body">-->
@@ -175,12 +208,12 @@
     <!--        확인-->
     <!--      </button>-->
     <!--    </div>-->
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
-  import Register from '../model/register';
-  import AuthService from '../service/auth-service';
+  import Register from 'model/register';
+  import AuthService from 'service/auth-service';
 
   export default {
     name: 'register',

@@ -6,12 +6,8 @@
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
-    "unit": "jest --config test/unit/jest.conf.js --coverage",
-    "e2e": "node test/e2e/runner.js",
-    "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs",
-    "build": "node build/build.js"
+    "build": "webpack --mode production --progress --config build/webpack.prod.conf.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
@@ -21,6 +17,7 @@
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.6.0",
     "element-ui": "^2.13.0",
+    "express": "^4.16.3",
     "vee-validate": "2.2.15",
     "vue": "^2.5.16",
     "vue-i18n": "^8.15.3",

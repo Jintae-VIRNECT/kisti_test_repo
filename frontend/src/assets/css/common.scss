@@ -34,6 +34,13 @@ h2 {
   font-size: 14px;
   text-align: left;
   font-weight: 500;
+  &.must-check {
+    &:after {
+      content: "*";
+      color: $danger;
+      padding-left: 2px;
+    }
+  }
 }
 
 .danger-color {
@@ -44,6 +51,14 @@ h2 {
   text-align: left;
   margin-top: 8px;
   font-size: 14px;
+}
+
+.must-check .el-checkbox__label{
+  &:after {
+    content: "*";
+    color: $danger;
+    padding-left: 2px;
+  }
 }
 
 .el-input {
