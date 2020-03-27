@@ -5,7 +5,7 @@ WORKDIR $APP_HOME
 
 COPY ./build/libs/PF-ProcessManagement-1.0.0.jar ./PF-ProcessManagement-1.0.0.jar
 
-EXPOSE 8090
+EXPOSE 8079
 
 VOLUME ["/data/process", "/usr/app/upload"]
 
