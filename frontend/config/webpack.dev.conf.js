@@ -6,7 +6,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 	mode: 'development',
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
-		host: '127.0.0.1',
+		host: '192.168.0.30',
 		port: 8888,
 		historyApiFallback: { index: '/main/main.html' },
 		hot: true,
