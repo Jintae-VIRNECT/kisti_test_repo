@@ -2,7 +2,7 @@ spring:
   application:
     name: process-server
   datasource:
-    url: jdbc:mysql://${server.ip.db}:${server.port.db}/processes
+    url: jdbc:mysql://localhost:4336/processes
     username: virnect-process
     password: virnect1234
   jpa:
@@ -15,9 +15,11 @@ spring:
       max-file-size: 300MB
       max-request-size: 400MB
 
-#logging:
-#  level:
-#    org.hibernate.type.descriptor.sql: trace
+logging:
+  level:
+    com.virnect.smic.domain.content.application: DEBUG
+    com.virnect.smic.domain.process.application: DEBUG
+    org.hibernate.type.descriptor.sql: trace
 
 #eureka:
 #  instance:
@@ -28,33 +30,22 @@ spring:
 
 ## Server Configuration
 server:
-  ip:
-    process: localhost
-    content: 192.168.6.3
-    user: 192.168.6.3
-    db: localhost
-    eureka: 192.168.6.3
-  port:
-    process: 8079
-    content: 8078
-    user: 8081
-    db: 4336
-    eureka: 8761
+  port: 8079
 
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://${server.ip.process}:${server.port.process}/process/"
+  serverUrl: "http://localhost:${server.port}/process/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://${server.ip.process}:${server.port.process}/process"
+  serverUrl: "http://localhost:${server.port}/process"
 
 content:
-  serverUrl: "http://${server.ip.content}:${server.port.content}/contents"
+  serverUrl: "http://192.168.6.3:8078/contents"
 
 user:
-  serverUrl: "http://${server.ip.user}:${server.port.user}/users"
+  serverUrl: "http://192.168.6.3:8081/users"
 
 ## FEIGN Configuration
 feign:
