@@ -26,7 +26,7 @@ logging:
 #    prefer-ip-address: true
 #  client:
 #    service-url:
-#      defaultZone: http://${server.ip.eureka}:${server.port.eureka}/eureka
+#      defaultZone: http://192.168.6.3:8761/eureka
 
 ## Server Configuration
 server:
