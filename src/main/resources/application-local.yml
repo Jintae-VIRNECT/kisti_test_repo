@@ -44,7 +44,7 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://${server.ip.process}:8083/process/"
+  serverUrl: "http://${server.ip.process}:${server.port.process}/process/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
