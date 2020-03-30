@@ -56,3 +56,4 @@ launch4j {
 ```shell script
 ./gradlew launch4j:createExe
 ```
+
