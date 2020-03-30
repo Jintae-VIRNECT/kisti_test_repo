@@ -29,6 +29,10 @@ pipeline {
           }
           steps {
             sh 'docker build -t pf-contentmanagement:develop .'
+            catchError() {
+              sh 'docker build -t pf-contentmanagement:develop .'
+            }
+
           }
         }
 
@@ -38,6 +42,10 @@ pipeline {
           }
           steps {
             sh 'docker build -t pf-contentmanagement:staging .'
+            catchError() {
+              sh 'docker build -t $registry_server/pf-contentmanagement:staging .'
+            }
+
           }
         }
 
@@ -47,6 +55,10 @@ pipeline {
           }
           steps {
             sh 'docker build -t pf-contentmanagement .'
+            catchError() {
+              sh 'docker build -t $registry_server/pf-contentmanagement .'
+            }
+
           }
         }
 
@@ -82,8 +94,13 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8078:8078 -d --name=pf-contentmanagement -v /data/content:/usr/app/upload pf-contentmanagement:develop'
+            sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=develop --name=pf-contentmanagement -v /data/content:/usr/app/upload pf-contentmanagement:develop'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=develop --restart=always --name=pf-contentmanagement pf-contentmanagement:develop'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            }
+
           }
         }
 
@@ -91,9 +108,21 @@ pipeline {
           when {
             branch 'staging'
           }
+          }
+
+
           steps {
-            sh 'docker run -p 8078:8078 -d --name=pf-contentmanagement pf-contentmanagement:staging'
+            sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=staging --name=pf-contentmanagement pf-contentmanagement:staging'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=staging --restart=always --name=pf-contentmanagement $registry_server/pf-contentmanagement:staging'
+              sh 'docker push $registry_server/pf-contentmanagement:staging'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-contentmanagement:staging", failOnError: true)
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker stop pf-contentmanagement && docker rm pf-contentmanagement || true", failOnError: true)
+              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker run -p 8078:8078 -d --restart=always --name=pf-contentmanagement \\${registry_server}/pf-contentmanagement:staging", failOnError: true)
+            }
+
           }
         }
 
@@ -102,8 +131,14 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8078:8078 -d --name=pf-contentmanagement pf-contentmanagement'
+            sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production --name=pf-contentmanagement pf-contentmanagement'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production --restart=always --name=pf-contentmanagement $registry_server/pf-contentmanagement'
+              sh 'docker push $registry_server/pf-contentmanagement'
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            }
+
           }
         }
 
