@@ -2,13 +2,12 @@ spring:
   application:
     name: process-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/processes
+    url: jdbc:mysql://${server.ip.db}:${server.port.db}/processes
     username: virnect-process
     password: virnect1234
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   servlet:
     multipart:
@@ -24,26 +23,37 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://${server.ip.eureka}:${server.port.eureka}/eureka
 
 ## Server Configuration
 server:
-  port: 8079
+  ip:
+    process: 192.168.6.3
+    content: 192.168.6.3
+    user: 192.168.6.3
+    db: 192.168.6.3
+    eureka: 192.168.6.3
+  port:
+    process: 8079
+    content: 8078
+    user: 8081
+    db: 4336
+    eureka: 8761
 
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://121.162.252.234:18083/contents/"
+  serverUrl: "http://${server.ip.process}:8083/process/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://121.162.252.234:1${server.port}/process"
+  serverUrl: "http://${server.ip.process}:${server.port.process}/process"
 
 content:
-  serverUrl: "http://121.162.252.234:1${server.port}/contents"
+  serverUrl: "http://${server.ip.content}:${server.port.content}/contents"
 
 user:
-  serverUrl: "http://121.162.252.234:18081/users"
+  serverUrl: "http://${server.ip.user}:${server.port.user}/users"
 
 ## FEIGN Configuration
 feign:
