@@ -1,8 +1,13 @@
-import Plan from '@/models/plan'
+import UsedPlan from '@/models/plan/UsedPlan'
+import WorkspacePlan from '@/models/plan/WorkspacePlan'
 
 export default {
-  async getUsedPlanList() {
+  getUsedPlanList() {
     const data = [0, 1, 2, 3, 4]
-    return data.map(plan => new Plan(plan))
+    return data.map(plan => new UsedPlan(plan))
+  },
+  getWorkspacePlanList() {
+    const data = [0, 1, 2, 3, 4]
+    return data.map(plan => new WorkspacePlan(plan))
   },
 }

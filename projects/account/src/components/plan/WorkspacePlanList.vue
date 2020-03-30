@@ -1,13 +1,9 @@
 <template>
   <div>
-    <el-table :data="usedPlans">
-      <column-plan
-        label="플랜 이름"
-        nameProp="name"
-        gradeProp="grade"
-        :width="200"
-      />
-      <column-default label="사용 중인 워크스페이스" prop="workspace" />
+    <el-table :data="workspacePlans">
+      <column-plan label="플랜 이름" nameProp="name" gradeProp="grade" />
+      <column-default label="사용 멤버" prop="member" :width="200" />
+      <column-default label="플랜 구매일" prop="buyDate" :width="100" />
       <column-default label="플랜 만료일" prop="expireDate" :width="100" />
     </el-table>
   </div>
@@ -26,7 +22,7 @@ export default {
   },
   data() {
     return {
-      usedPlans: planService.getUsedPlanList(),
+      workspacePlans: planService.getWorkspacePlanList(),
     }
   },
 }

@@ -1,8 +1,8 @@
-export default class Plan {
+export default class UsedPlan {
   constructor() {
     this.name = 'Remote'
     this.grade = 'PRO'
     this.workspace = `VIRNECT's workspace`
-    this.expire = '20.20.30'
+    this.expireDate = '21.12.30'
   }
 }

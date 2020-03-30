@@ -1,0 +1,53 @@
+// 카드
+.el-card {
+  margin-bottom: 30px;
+  box-shadow: none;
+}
+.el-card__header {
+  height: 64px;
+  padding-right: 30px;
+  padding-left: 30px;
+
+  & > div > h3 {
+    float: left;
+    color: $font-color-content;
+    font-size: 16px;
+  }
+  & > div > span {
+    margin-left: 20px;
+    color: $font-color-desc;
+    font-size: 12.6px;
+    line-height: 16px;
+    vertical-align: bottom;
+  }
+  & > div > a {
+    float: right;
+    font-size: 14px;
+  }
+}
+.el-card__body {
+  padding-right: 30px;
+  padding-left: 30px;
+}
+// 카드 - 테이블
+.el-card--table .el-card__body {
+  padding: 0;
+
+  .el-table th {
+    padding: 8px 0;
+    color: $font-color-desc;
+    font-size: 12px;
+  }
+  .el-table td {
+    padding: 20px 0;
+    color: $font-color-content;
+  }
+  th:first-child,
+  td:first-child {
+    padding-left: 20px;
+  }
+  th:nth-last-child(2),
+  td:nth-last-child(2) {
+    padding-right: 20px;
+  }
+}

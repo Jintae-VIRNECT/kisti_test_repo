@@ -1,0 +1,15 @@
+$container-width: 1240px;
+
+a {
+  color: $color-link;
+}
+main {
+  min-width: $container-width;
+  margin-top: 64px;
+}
+.container {
+  position: relative;
+  width: $container-width;
+  margin: 0 auto;
+  padding: 80px 20px;
+}

@@ -27,7 +27,7 @@ module.exports = {
    ** Customize style
    */
   styleResources: {
-    scss: ['@/assets/css/_vars.scss', '@/assets/css/common.scss'],
+    scss: ['@/assets/css/_vars.scss'],
   },
   css: ['../../../WC-Modules/src/assets/css/reset.scss'],
   loading: { color: '#1b293e' },

@@ -16,13 +16,18 @@
       </el-row>
       <el-row>
         <el-col class="home__container__left">
-          <el-card>
+          <el-card class="home__workspace-info">
             <div slot="header">
               <h3>나의 워크스페이스 정보</h3>
               <router-link to="/workspace">바로가기</router-link>
             </div>
             <div>
-              asdf
+              <span>워크스페이스 이름</span>
+              <h4>VIRNECT’s workspace</h4>
+            </div>
+            <div>
+              <span>워크스페이스 설명</span>
+              <p>워크스페이스 설명이 없습니다.</p>
             </div>
           </el-card>
           <el-card>
@@ -39,18 +44,18 @@
           <el-card class="el-card--table">
             <div slot="header">
               <h3>사용 중인 플랜</h3>
+              <span>회원님이 사용 중인 플랜 정보입니다.</span>
               <router-link to="/plan">바로가기</router-link>
             </div>
             <used-plan-list />
           </el-card>
-          <el-card>
+          <el-card class="el-card--table">
             <div slot="header">
               <h3>나의 워크스페이스 플랜</h3>
+              <span>회원님이 구매한 플랜 정보입니다.</span>
               <router-link to="/plan">바로가기</router-link>
             </div>
-            <div>
-              asdf
-            </div>
+            <workspace-plan-list />
           </el-card>
         </el-col>
       </el-row>
@@ -58,6 +63,7 @@
         <el-card>
           <div slot="header">
             <h3>로그인 된 기기</h3>
+            <span>내 계정으로 로그인된 디바이스 정보입니다.</span>
             <router-link to="/security">바로가기</router-link>
           </div>
           <div>
@@ -71,16 +77,19 @@
 
 <script>
 import UsedPlanList from '@/components/plan/UsedPlanList'
+import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
+
 export default {
   components: {
     UsedPlanList,
+    WorkspacePlanList,
   },
 }
 </script>
 
 <style lang="scss">
 .home__bg {
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 420px;
   background: #0b2c63;
@@ -117,6 +126,23 @@ export default {
     font-size: 15px;
     line-height: 1.6;
     opacity: 0.9;
+  }
+}
+.home__workspace-info {
+  .el-card__body > div {
+    padding: 12px 0;
+
+    span {
+      color: $font-color-desc;
+      font-size: 12px;
+    }
+    h4 {
+      margin-top: 4px;
+      font-size: 20px;
+    }
+    p {
+      margin-top: 8px;
+    }
   }
 }
 </style>

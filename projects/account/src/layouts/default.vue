@@ -30,7 +30,5 @@ export default {
 </script>
 
 <style lang="scss">
-main {
-  margin-top: 64px;
-}
+@import '@/assets/css/global.scss';
 </style>
