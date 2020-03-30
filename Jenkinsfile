@@ -138,16 +138,17 @@ pipeline {
               sh 'docker push $registry_server/pf-contentmanagement'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
-
           }
         }
-
-      }
+    }
 
     stage('Notify') {
       steps {
         emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       }
     }
+
   }
 }
+
+
