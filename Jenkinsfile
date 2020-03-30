@@ -124,7 +124,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production -v /data/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement'
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production -v /data/content/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement'
               sh 'docker push $registry_server/pf-contentsmanagement'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
