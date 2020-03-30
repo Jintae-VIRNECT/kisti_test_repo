@@ -43,10 +43,10 @@ task buildFrontend(type: NpmTask, dependsOn: setUp){
     args = ['run', 'build']
 }
 
-processResources.dependsOn 'buildFrontend'
+//processResources.dependsOn 'buildFrontend'
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'

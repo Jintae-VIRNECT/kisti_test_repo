@@ -1,5 +1,7 @@
 package com.virnect.login.exception;
 
+import com.virnect.login.global.ErrorCode;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Login
@@ -7,5 +9,15 @@ package com.virnect.login.exception;
  * @description Account Service business exception cass
  * @since 2020.03.20
  */
-public class AccountServiceException {
+public class AccountServiceException extends RuntimeException {
+    private ErrorCode error;
+
+    public AccountServiceException(ErrorCode error) {
+        super(error.getMessage());
+        this.error = error;
+    }
+
+    public ErrorCode getError() {
+        return error;
+    }
 }

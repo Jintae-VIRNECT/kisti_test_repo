@@ -7,5 +7,5 @@ package com.virnect.login.dto.request;
  * @description Email Authentication Request
  * @since 2020.03.20
  */
-public class EmailAuthenticationRequest {
+public class EmailVerificationRequest {
 }
