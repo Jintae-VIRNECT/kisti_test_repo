@@ -92,7 +92,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=develop -v /data/content:/usr/app/upload --restart=always --name=pf-contentsmanagement pf-contentsmanagement:develop'
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=develop -v /data/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement pf-contentsmanagement:develop'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
 
@@ -107,7 +107,7 @@ pipeline {
 
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=staging -v /data/content:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement:staging'
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=staging -v /data/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement:staging'
               sh 'docker push $registry_server/pf-contentsmanagement:staging'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
               sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-contentsmanagement:staging", failOnError: true)
@@ -124,7 +124,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production -v /data/content:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement'
+              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production -v /data/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement'
               sh 'docker push $registry_server/pf-contentsmanagement'
               sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
             }
