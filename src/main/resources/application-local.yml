@@ -2,7 +2,7 @@ spring:
   application:
     name: content-server
   datasource:
-    url: jdbc:mysql://${server.ip.db}:${server.port.db}:3306/contents
+    url: jdbc:mysql://localhost:4336/contents
     username: virnect-content
     password: virnect1234
   jpa:
@@ -10,21 +10,26 @@ spring:
       ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+      properties:
+        hibernate:
+          format_sql: true
   servlet:
     multipart:
       max-file-size: 300MB
       max-request-size: 400MB
 
-#logging:
-#  level:
-#    org.hibernate.type.descriptor.sql: trace
+logging:
+  level:
+    com.virnect.smic.domain.content.application: DEBUG
+    com.virnect.smic.domain.process.application: DEBUG
+    org.hibernate.type.descriptor.sql: trace
 
 #eureka:
 #  instance:
 #    prefer-ip-address: true
 #  client:
 #    service-url:
-#      defaultZone: http://${server.ip.eureka}:${server.port.eureka}/eureka
+#        defaultZone: http://192.168.6.3:8761/eureka
 
 ## Server Configuration
 server:
@@ -33,17 +38,17 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://${server.ip.content}:${server.port.content}/contents/"
+  serverUrl: "http://localhost:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://${server.ip.process}:${server.port.process}/process"
+  serverUrl: "http://192.168.6.3:8079/process"
 
 content:
-  serverUrl: "http://${server.ip.content}:${server.port.content}/contents"
+  serverUrl: "http://localhost:${server.port}/contents"
 
 user:
-  serverUrl: "http://${server.ip.user}:${server.port.user}/users"
+  serverUrl: "http://192.168.6.3:8081/users"
 
 ## FEIGN Configuration
 feign:

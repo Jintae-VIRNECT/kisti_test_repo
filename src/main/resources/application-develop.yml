@@ -2,7 +2,7 @@ spring:
   application:
     name: content-server
   datasource:
-    url: jdbc:mysql://${server.ip.db}:${server.port.db}/contents
+    url: jdbc:mysql://192.168.6.3:4336/contents
     username: virnect-content
     password: virnect1234
   jpa:
@@ -23,37 +23,26 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://${server.ip.eureka}:${server.port.eureka}/eureka
+      defaultZone: http://192.168.6.3:8761/eureka
 
 ## Server Configuration
 server:
-  ip:
-    process: 192.168.6.3
-    content: 192.168.6.3
-    user: 192.168.6.3
-    db: 192.168.6.3
-    eureka: 192.168.6.3
-  port:
-    process: 8079
-    content: 8078
-    user: 8081
-    db: 4336
-    eureka: 8761
+  port: 8078
 
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://${server.ip.content}:${server.port.content}/contents/"
+  serverUrl: "http://192.168.6.3:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://${server.ip.process}:${server.port.process}/process"
+  serverUrl: "http://192.168.6.3:8079/process"
 
 content:
-  serverUrl: "http://${server.ip.content}:${server.port.content}/contents"
+  serverUrl: "http://192.168.6.3:${server.port}/contents"
 
 user:
-  serverUrl: "http://${server.ip.user}:${server.port.user}/users"
+  serverUrl: "http://192.168.6.3:8081/users"
 
 ## FEIGN Configuration
 feign:
