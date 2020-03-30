@@ -39,33 +39,12 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket processApi() {
-        ApiInfo apiInfo = new ApiInfoBuilder()
-                .contact(new Contact("장정현 / 민항기", "https://virnect.com", "sky456139@vinrect.com / hkmin@virnect.com"))
-                .description("공정 서버 API 정보 입니다.")
-                .version("v0.0.1")
-                .title("VIRNECT Process Service API Document.")
-                .license("VIRNECT INC All rights reserved.")
-                .build();
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.smic.domain.process.api"))
-                .paths(PathSelectors.any())
-                .build()
-                .groupName("Process Service")
-                .apiInfo(apiInfo);
-    }
-
-    @Bean
     public Docket contentApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .contact(new Contact("장정현", "https://virnect.com", "sky456139@vinrect.com"))
                 .description("콘텐츠 서버 API 정보 입니다.")
                 .version("v0.0.1")
-                .title("VIRNECT Content Service API Document.")
+                .title("VIRNECT PRODUCT - Content Service API Document.")
                 .license("VIRNECT INC All rights reserved.")
                 .build();
 
@@ -73,7 +52,7 @@ public class SwaggerConfiguration {
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.smic.domain.content.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.virnect.content.api"))
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("Content Service")
