@@ -33,17 +33,17 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://121.162.252.234:18083/contents/"
+  serverUrl: "http://192.168.6.3:18083/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://121.162.252.234:1${server.port}/process"
+  serverUrl: "http://192.168.6.3:1${server.port}/process"
 
 content:
-  serverUrl: "http://121.162.252.234:1${server.port}/contents"
+  serverUrl: "http://192.168.6.3:1${server.port}/contents"
 
 user:
-  serverUrl: "http://121.162.252.234:18081/users"
+  serverUrl: "http://192.168.6.3:18081/users"
 
 ## FEIGN Configuration
 feign:
