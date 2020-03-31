@@ -1,0 +1,89 @@
+@charset "utf-8";
+@import "./mixin.scss";
+
+.input-title {
+  margin-top: 40px;
+  font-size: 14px;
+  text-align: left;
+  font-weight: 500;
+  &.must-check {
+    &:after {
+      content: "*";
+      color: $danger;
+      padding-left: 2px;
+    }
+  }
+}
+
+.firstname-input {
+  width: 140px;
+  margin-right: 16px;
+}
+
+.lastname-input {
+  width: 220px;
+}
+
+.el-input {
+  &.input-danger {
+    .el-input__inner {
+      border-bottom-color: $danger;
+    }
+  }
+  .el-input__clear {
+    font-size: 22px;
+    color: #d8dde5;
+  }
+}
+
+.el-input__inner {
+  color: $baseColor;
+  border: 0;
+  border-bottom: 2px solid #e6e9ee;
+  border-radius: 0;
+  font-size: 16px;
+  padding: 0;
+  font-weight: 500;
+}
+
+.el-input--suffix {
+  + .el-input--suffix {
+    margin-top: 12px;
+  }
+}
+
+.checkbox-wrap {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.el-checkbox {
+  margin-right: 12px;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  &:after {
+    border-width: 2px;
+    height: 9px;
+    left: 5px;
+  }
+}
+
+.must-check {
+  .el-checkbox__label{
+    &:after {
+      content: "*";
+      color: $danger;
+      padding-left: 2px;
+    }
+  }
+}
+
+.el-select {
+  width: 100%;
+}
+
+.el-select-dropdown__item {
+  padding: 0 15px;
+}

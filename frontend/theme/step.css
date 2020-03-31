@@ -277,8 +277,8 @@
       color: #67C23A;
       border-color: #67C23A; }
     .el-step__head.is-error {
-      color: #F56C6C;
-      border-color: #F56C6C; }
+      color: #db1717;
+      border-color: #db1717; }
     .el-step__head.is-finish {
       color: #4d5d74;
       border-color: #4d5d74; }
@@ -353,7 +353,7 @@
     .el-step__title.is-success {
       color: #67C23A; }
     .el-step__title.is-error {
-      color: #F56C6C; }
+      color: #db1717; }
     .el-step__title.is-finish {
       color: #4d5d74; }
   .el-step__description {
@@ -369,7 +369,7 @@
     .el-step__description.is-success {
       color: #67C23A; }
     .el-step__description.is-error {
-      color: #F56C6C; }
+      color: #db1717; }
     .el-step__description.is-finish {
       color: #4d5d74; }
   .el-step.is-horizontal {

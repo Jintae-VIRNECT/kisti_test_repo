@@ -289,7 +289,7 @@ $--select-close-hover-color: $--color-text-secondary !default;
 $--select-input-color: $--color-text-placeholder !default;
 $--select-multiple-input-color: #666 !default;
 /// color||Color|0
-$--select-input-focus-border-color: $--color-primary !default;
+$--select-input-focus-border-color: $--color-point !default;
 /// fontSize||Font|1
 $--select-input-font-size: 14px !default;
 
@@ -297,7 +297,7 @@ $--select-option-color: $--color-text-regular !default;
 $--select-option-disabled-color: $--color-text-placeholder !default;
 $--select-option-disabled-background: $--color-white !default;
 /// height||Other|4
-$--select-option-height: 34px !default;
+$--select-option-height: 46px !default;
 $--select-option-hover-background: $--background-color-base !default;
 /// color||Color|0
 $--select-option-selected-font-color: $--color-primary !default;
@@ -312,7 +312,7 @@ $--select-dropdown-shadow: $--box-shadow-light !default;
 $--select-dropdown-empty-color: #999 !default;
 /// height||Other|4
 $--select-dropdown-max-height: 274px !default;
-$--select-dropdown-padding: 6px 0 !default;
+$--select-dropdown-padding: 4px 0 !default;
 $--select-dropdown-empty-padding: 10px 0 !default;
 $--select-dropdown-border: solid 1px $--border-color-light !default;
 
@@ -343,18 +343,18 @@ $--alert-icon-large-size: 28px !default;
 /* MessageBox
 -------------------------- */
 /// color||Color|0
-$--messagebox-title-color: $--color-text-primary !default;
-$--msgbox-width: 420px !default;
+$--messagebox-title-color: #0d2a58 !default;
+$--msgbox-width: 388px !default;
 $--msgbox-border-radius: 4px !default;
 /// fontSize||Font|1
-$--messagebox-font-size: $--font-size-large !default;
+$--messagebox-font-size: 16px !default;
 /// fontSize||Font|1
 $--messagebox-content-font-size: $--font-size-base !default;
 /// color||Color|0
-$--messagebox-content-color: $--color-text-regular !default;
+$--messagebox-content-color: #646d80 !default;
 /// fontSize||Font|1
 $--messagebox-error-font-size: 12px !default;
-$--msgbox-padding-primary: 15px !default;
+$--msgbox-padding-primary: 24px !default;
 /// color||Color|0
 $--messagebox-success-color: $--color-success !default;
 /// color||Color|0
@@ -534,9 +534,9 @@ $--button-medium-padding-horizontal: 20px !default;
 $--button-small-font-size: 12px !default;
 $--button-small-border-radius: #{$--border-radius-base - 1} !default;
 /// padding||Spacing|3
-$--button-small-padding-vertical: 9px !default;
+$--button-small-padding-vertical: 6px !default;
 /// padding||Spacing|3
-$--button-small-padding-horizontal: 15px !default;
+$--button-small-padding-horizontal: 20px !default;
 /// fontSize||Font|1
 $--button-mini-font-size: 12px !default;
 $--button-mini-border-radius: #{$--border-radius-base - 1} !default;

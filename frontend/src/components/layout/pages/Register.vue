@@ -10,229 +10,121 @@
 				<el-input
 					placeholder="이메일을 입력해 주세요"
           v-model="register.email"
+          type="email"
+          name="email"
 					clearable
+          v-validate="'required|email|max:50'"
+				>
+        </el-input>
+        <el-input
+					placeholder="인증 번호 6자리를 입력해 주세요"
+          v-model="verificationCode"
+          type="text"
+          name="verificationCode"
+					clearable
+          maxlength="6"
+          v-validate="'required|max:6'"
 				>
 				</el-input>
-        <el-button type="primary"
+        <el-button class="block-btn" type="primary"
         :disabled="!register.email"
-					>인증 메일 전송</el-button
-				>
+        @click="sendEmail()">
+          <span>인증 메일 전송</span>
+        </el-button>
+
+        <button class="resend-btn">인증 메일 재전송</button>
 
 				<p class="input-title must-check">비밀번호</p>
 				<el-input
 					placeholder="비밀번호 입력해 주세요"
           v-model="register.password"
 					show-password
+          name="password"
+          v-validate="'required|min:6|max:40'"
+          :class="{'input-danger' : errors.has('password')}"
 				>
 				</el-input>
 				<el-input
 					placeholder="비밀번호 재입력해 주세요"
-          v-model="register.password"
+          v-model="register.passwordConfirm"
 					show-password
+          name="passwordConfirm"
+          v-validate="'required|min:6|max:40'"
+          :class="{'input-danger' : register.password !== register.passwordConfirm}"
 				>
 				</el-input>
-        <p>8~20자의 영문 대, 소문자, 숫자, 특수문자 중 3가지 이상을 조합하여 입력해 주세요.</p>
+        <p class="restriction-text">8~20자의 영문 대, 소문자, 숫자, 특수문자 중 3가지 이상을 조합하여 입력해 주세요.</p>
 
         <p class="input-title must-check">이름</p>
 				<el-input
+          class="firstname-input"
 					placeholder="성"
 					clearable
+          name="firstname"
+          v-validate="'required'"
 				></el-input>
 				<el-input
+          class="lastname-input"
 					placeholder="이름"
 					clearable
+          name="lastname"
+          v-validate="'required'"
 				></el-input>
 
         
         <p class="input-title must-check">가입 경로</p>
-				<el-input
-					placeholder="가입 경로 선택"
-					clearable
-				></el-input>
+				<el-select v-model="register.registerInfo" placeholder="가입 경로 선택" 
+          v-validate="'required'"
+          name="registerInfo">
+          <el-option
+            v-for="item in subscriptionPathLists"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
 
-        <el-button type="primary" @click="handleRegister()"
+				<el-input
+					placeholder="가입 경로를 입력해 주세요"
+          v-if="register.registerInfo == 9"
+          v-model="register.registerInfoETC"
+          type="text"
+          name="email"
+					clearable
+          v-validate="'required'"
+				>
+				</el-input>
+
+        <p class="input-title must-check">서비스 분야</p>
+				<el-select v-model="register.serviceInfo" placeholder="서비스 분야 선택"
+          v-validate="'required'"
+          name="serviceInfo">
+          <el-option
+            v-for="item in serviceInfoLists"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+
+				<el-input
+					placeholder="서비스 분야 직접 입력"
+          v-if="register.serviceInfo == 12"
+          v-model="register.serviceInfoETC"
+          type="text"
+          name="email"
+					clearable
+          v-validate="'required'"
+				>
+				</el-input>
+
+        <el-button class="next-btn block-btn" type="primary" @click="handleRegister()"
 					>다음</el-button
 				>
 
 			</el-col>
 		</el-row>
 	</div>
-  <!-- <div class="row">
-    <div class="card card-container">
-      <form id="form" name="form" @submit.prevent="handleRegister">
-        <div v-if="!successful">
-          <div class="form-group">
-            <label for="username">이름</label>
-            <input
-              id="username"
-              type="text"
-              class="form-control"
-              name="name"
-              v-model="register.name"
-              v-validate="'required|min:3|max:20'"
-            />
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('username')"
-            >{{errors.first('username')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="email">이메일</label>
-            <div class="form-inline">
-              <input
-                id="email"
-                type="email"
-                class="form-control col-sm-8"
-                name="email"
-                v-model="register.email"
-                v-validate="'required|email|max:50'"
-              />
-              <b-button v-b-modal.email-verify class="form-control col-sm-4">인증</b-button>
-            </div>
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('email')"
-            >{{errors.first('email')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input
-              id="password"
-              type="password"
-              class="form-control"
-              name="password"
-              v-model="register.password"
-              v-validate="'required|min:6|max:40'"
-            />
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('password')"
-            >{{errors.first('password')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <img
-              id="thumbnail"
-              v-if="!!form.image"
-              :src="register.profile"
-              class="profile-img-card"
-            />
-            <div class="form-inline">
-              <label for="profile" class="fom">프로필</label>
-              <input
-                id="profile"
-                type="file"
-                class="form-control-file"
-                name="profile"
-                accept="image/gif,image/jpeg,image/png"
-                @change="uploadImage($event)"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneNumber">전화번호</label>
-            <input
-              id="phoneNumber"
-              type="tel"
-              class="form-control"
-              name="phoneNumber"
-              v-model="register.phoneNumber"
-            >
-          </div>
-          <div class="form-group">
-            <label for="recoveryEmail">복구 이메일</label>
-            <input
-              id="recoveryEmail"
-              type="email"
-              class="form-control"
-              name="recoveryEmail"
-              v-model="register.recoveryEmail"
-            >
-          </div>
-          <div class="form-group">
-            <label for="birth">생년월일</label>
-            <input
-              id="birth"
-              class="form-control"
-              type="text"
-              name="birth"
-              v-model="register.birth"
-            >
-          </div>
-          <div class="form-group">
-            <label for="registerInfo">가입 경로</label>
-            <input
-              id="registerInfo"
-              type="text"
-              class="form-control"
-              name="registerInfo"
-              v-model="register.registerInfo"
-              v-validate="'required'"
-            >
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('registerInfo')"
-            >{{errors.first('registerInfo')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="serviceInfo">서비스 분야</label>
-            <input
-              id="serviceInfo"
-              type="text"
-              class="form-control"
-              name="serviceInfo"
-              v-model="register.serviceInfo"
-              v-validate="'required'"
-            >
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('serviceInfo')"
-            >{{errors.first('serviceInfo')}}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">회원가입</button>
-            <div class="d-flex justify-content-center links">
-              <a href="/" class="ml-2">로그인</a>
-            </div>
-          </div>
-        </div>
-      </form>
-      <div
-        class="alert"
-        :class="successful ? 'alert-success' : 'alert-danger'"
-        v-if="message">{{message}}
-      </div>
-    </div>
-    <div>
-      <b-modal id="email-verify" centered title="이메일 인증">
-        <div>
-          <b-form-input v-model="verificationCode" placeholder="이메일로 전송된 인증코드 6자리를 입력하세요"></b-form-input>
-          <div class="mt-2">이메일로 전송된 인증코드 6자리를 입력하세요</div>
-        </div>
-      </b-modal>
-    </div> -->
-    <!--    &lt;!&ndash; #2 : Modal Window &ndash;&gt;-->
-    <!--    <div class="modal" v-if="isShow">-->
-    <!--      <div class="modal-body">-->
-    <!--        <div class="form-control">-->
-    <!--          <label for="verificationCode">인증코드</label>-->
-    <!--          <input-->
-    <!--            id="verificationCode"-->
-    <!--            name="verificationCode"-->
-    <!--            type="number"-->
-    <!--            maxlength="6"-->
-    <!--          >-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <button @click="checkVerificationCode()" type="button">-->
-    <!--        확인-->
-    <!--      </button>-->
-    <!--    </div>-->
-  <!-- </div> -->
 </template>
 
 <script>
@@ -258,16 +150,89 @@
           serviceInfo: '',
           session: ''
         },
+        subscriptionPathLists: [
+          {
+            value: 0,
+            label: "가입 경로 선택",
+            disabled: true
+          }, {
+            value: 1,
+            label: "검색 사이트"
+          }, {
+            value: 2,
+            label: "전시 및 세미나"
+          }, {
+            value: 3,
+            label: "버넥트 공식 블로그"
+          }, {
+            value: 4,
+            label: "온라인 광고"
+          }, {
+            value: 5,
+            label: "SNS, 커뮤니티"
+          }, {
+            value: 6,
+            label: "언론, 뉴스, 기사, 잡지"
+          }, {
+            value: 7,
+            label: "뉴스레터 및 이메일 홍보"
+          }, {
+            value: 8,
+            label: "지인 추천"
+          }, {
+            value: 9,
+            label: "직접 입력"
+          }
+        ],
+        serviceInfoLists: [
+          {
+            value: 0,
+            label: "서비스 분야 선택",
+            disabled: true
+          }, {
+            value: 1,
+            label: "에너지/자원"
+          }, {
+            value: 2,
+            label: "EPC"
+          }, {
+            value: 3,
+            label: "자동차/부품"
+          }, {
+            value: 4,
+            label: "항공/철도"
+          }, {
+            value: 5,
+            label: "정유/석유화학"
+          }, {
+            value: 6,
+            label: "물류"
+          }, {
+            value: 7,
+            label: "관공서, 공기업"
+          }, {
+            value: 8,
+            label: "서비스"
+          }, {
+            value: 9,
+            label: "교육/연구"
+          }, {
+            value: 10,
+            label: "소프트웨어 개발 및 공급"
+          }, {
+            value: 11,
+            label: "방위"
+          }, {
+            value: 12,
+            label: "기타"
+          }
+        ],
         submitted: false,
         successful: false,
         isSendEmail: false,
         isValidEmail: false,
-        isShow: false,
-        verificationCode: 0,
+        verificationCode: "",
         message: '',
-        form: {
-          image: "",
-        }
       };
     },
     mounted() {
@@ -281,6 +246,7 @@
         this.submitted = true;
         new Register( this.register.email, this.register.password, this.register.passwordConfirm, this.register.familyName, this.register.lastName, this.register.registerInfo, this.register.serviceInfo, this.register.session )
         console.log(this.register);
+        console.log(this.$validator.validate())
         this.$validator.validate().then(valid => {
           if (valid) {
             this.$store.dispatch('auth/register', this.register).then(
@@ -298,59 +264,12 @@
           }
         })
       },
-      validImage(event) {
-        const files = event.target.files;
-        console.log(files);
-        return new Promise((resolve, reject) => {
-          if (files.length > 0) {
-            if (['image/gif', 'image/jpeg', 'image/jpg', 'image/png'].indexOf(files[0].type) < 0) {
-              reject('This image is unavailable.');
-              return;
-            }
-            if (files[0].size > (2 * 1024 * 1024)) {
-              reject('This image size is unavailable.');
-              return;
-            }
-            this.form.image = null;
-
-            const oReader = new FileReader();
-            oReader.onload = (e) => {
-              const imageData = e.target.result;
-              const oImg = new Image();
-              oImg.onload = (_event) => {
-                resolve(imageData);
-                _event.target.remove();
-              };
-              oImg.onerror = (_event) => {
-                //이미지 아닐 시 처리.
-                reject('This image is unavailable.');
-              };
-              oImg.src = imageData;
-            };
-            oReader.readAsDataURL(files[0]);
-          }
-        })
-      },
-      uploadImage(event) {
-        const files = event.target.files;
-        this.validImage(event)
-          .then((imageData) => {
-            console.log(imageData);
-            this.register.profile = files[0];
-            this.register.profile = imageData;
-            this.form.image = imageData;
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      },
       sendEmail() {
         alert(this.register.email);
         const email = this.register.email;
         console.log(email);
         const result = AuthService.emailAuth(email);
         console.log(email);
-        this.isShow = true;
       },
       checkVerificationCode() {
 
@@ -359,38 +278,9 @@
   };
 </script>
 
-<style scoped>
-  label {
-    display: block;
-    margin-top: 10px;
-  }
+<style lang="scss" scoped>
 
-  .card-container.card {
-    max-width: 350px !important;
-    padding: 40px 40px;
-  }
-
-  .card {
-    background-color: #f7f7f7;
-    padding: 20px 25px 30px;
-    margin: 0 auto 25px;
-    margin-top: 50px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  }
-
-  .profile-img-card {
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 10px;
-    display: block;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-    background-image: url("//ssl.gstatic.com/accounts/ui/avatar_2x.png");
+  .el-button.next-btn {
+    margin-top: 60px;
   }
 </style>

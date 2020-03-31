@@ -7,8 +7,10 @@
 				<el-input
 					placeholder="이메일을 입력해 주세요"
 					v-model="login.email"
+                    name="email"
 					:class="{'input-danger' : message}"
 					clearable
+                    v-validate="'required'"
 				>
 				</el-input>
 
@@ -17,7 +19,9 @@
 					placeholder="비밀번호를 입력해 주세요"
 					v-model="login.password"
 					show-password
+                    name="password"
 					:class="{'input-danger' : message}"
+                    v-validate="'required'"
 				></el-input>
 				
 				<p class="warning-msg danger-color" v-if="message">{{message}}</p>
@@ -27,7 +31,7 @@
 					<el-checkbox v-model="login.autoLogin">자동 로그인</el-checkbox>
 				</div>
 
-				<el-button type="primary" @click="handleLogin" :disabled="loading || login.email == '' || login.password == ''"
+				<el-button class="next-btn block-btn" type="primary" @click="handleLogin" :disabled="loading || login.email == '' || login.password == ''"
 					>로그인</el-button
 				>
 				<div class="find-wrap">
@@ -73,9 +77,14 @@ export default {
 		}
 	},
 	methods: {
+        alertWindow() {
+            this.$alert('등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.', '계정 정보 입력 오류', {
+                confirmButtonText: '확인'
+            }); 
+        },
 		handleLogin() {
 			this.loading = true
-			this.$validator.validateAll()
+            this.$validator.validateAll()
 			if (this.errors.any()) {
 				this.loading = false
 				return
@@ -88,7 +97,8 @@ export default {
 					},
 					error => {
 						this.loading = false
-						this.message = error.message
+                        this.message = error.message
+                        this.alertWindow()
 					},
 				)
 			}
@@ -103,6 +113,10 @@ h1 {
 	margin-left: -2px;
 	margin-right: -2px;
 	margin-bottom: 39px;
+}
+
+.el-button {
+	margin-top: 30px;
 }
 
 

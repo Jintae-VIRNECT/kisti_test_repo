@@ -295,10 +295,10 @@
     .el-message--warning .el-message__content {
       color: #E6A23C; }
   .el-message--error {
-    background-color: #fef0f0;
-    border-color: #fde2e2; }
+    background-color: #fbe8e8;
+    border-color: #f8d1d1; }
     .el-message--error .el-message__content {
-      color: #F56C6C; }
+      color: #db1717; }
   .el-message__icon {
     margin-right: 10px; }
   .el-message__content {
@@ -323,7 +323,7 @@
   .el-message .el-icon-success {
     color: #67C23A; }
   .el-message .el-icon-error {
-    color: #F56C6C; }
+    color: #db1717; }
   .el-message .el-icon-info {
     color: #909399; }
   .el-message .el-icon-warning {

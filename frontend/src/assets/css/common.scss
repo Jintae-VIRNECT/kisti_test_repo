@@ -2,8 +2,26 @@
 @import "./mixin.scss";
 @import "./reset.scss";
 
+
+.resend-btn {
+  width: 100%;
+  text-align: right;
+  color: $baseColor;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.restriction-text {
+  text-align: left;
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
 .container {
-	padding-top: 144px;
+  padding-top: 144px;
+  padding-bottom: 240px;
 }
 .row-bg {
 	height: 100%;
@@ -11,94 +29,6 @@
 	> div {
 		width: 380px;
 	}
-}
-
-h2 {
-  font-weight: 500;
-  font-size: 28px;
-  font-family: $noto;
-  + p {
-    font-size: 15px;
-    font-weight: 500;
-    margin-top: 8px;
-  }
-}
-.el-button {
-	margin-top: 30px;
-	width: 100%;
-	height: 50px;
-}
-
-.input-title {
-  margin-top: 40px;
-  font-size: 14px;
-  text-align: left;
-  font-weight: 500;
-  &.must-check {
-    &:after {
-      content: "*";
-      color: $danger;
-      padding-left: 2px;
-    }
-  }
-}
-
-.danger-color {
-  color: $danger;
-}
-
-.warning-msg {
-  text-align: left;
-  margin-top: 8px;
-  font-size: 14px;
-}
-
-.must-check .el-checkbox__label{
-  &:after {
-    content: "*";
-    color: $danger;
-    padding-left: 2px;
-  }
-}
-
-.el-input {
-  &.input-danger {
-    .el-input__inner {
-      border-bottom-color: $danger;
-    }
-  }
-  .el-input__clear {
-    font-size: 22px;
-    color: #d8dde5;
-  }
-}
-
-.el-input__inner {
-  color: $baseColor;
-  border: 0;
-  border-bottom: 2px solid #e6e9ee;
-  border-radius: 0;
-  font-size: 16px;
-  padding: 0;
-  font-weight: 500;
-}
-
-.el-checkbox {
-  margin-right: 12px;
-}
-
-.el-checkbox__input.is-checked .el-checkbox__inner {
-  &:after {
-    border-width: 2px;
-    height: 9px;
-    left: 5px;
-  }
-}
-
-.checkbox-wrap {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  text-align: left;
 }
 
 .find-wrap {
@@ -121,6 +51,45 @@ h2 {
     &:last-child::after {
       display: none;
     }
+  }
+}
+
+h2 {
+  font-weight: 500;
+  font-size: 28px;
+  font-family: $noto;
+  + p {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+}
+
+.danger-color {
+  color: $danger;
+}
+
+.warning-msg {
+  text-align: left;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+// messageBox.scss
+@import "modules/messageBox.scss";
+
+// input.scss
+@import "modules/input.scss";
+
+
+.el-button {
+	height: 50px;
+  margin-top: 20px;
+  &.block-btn {
+    width: 100%
+  }
+  &.next-btn {
+    margin-top: 30px;
   }
 }
 

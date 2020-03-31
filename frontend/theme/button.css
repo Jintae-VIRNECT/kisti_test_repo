@@ -567,42 +567,42 @@
         border-color: #faecd8; }
   .el-button--danger {
     color: #FFFFFF;
-    background-color: #F56C6C;
-    border-color: #F56C6C; }
+    background-color: #db1717;
+    border-color: #db1717; }
     .el-button--danger:hover, .el-button--danger:focus {
-      background: #f78989;
-      border-color: #f78989;
+      background: #e24545;
+      border-color: #e24545;
       color: #FFFFFF; }
     .el-button--danger:active {
-      background: #dd6161;
-      border-color: #dd6161;
+      background: #c51515;
+      border-color: #c51515;
       color: #FFFFFF;
       outline: none; }
     .el-button--danger.is-active {
-      background: #dd6161;
-      border-color: #dd6161;
+      background: #c51515;
+      border-color: #c51515;
       color: #FFFFFF; }
     .el-button--danger.is-disabled, .el-button--danger.is-disabled:hover, .el-button--danger.is-disabled:focus, .el-button--danger.is-disabled:active {
       color: #FFFFFF;
-      background-color: #fab6b6;
-      border-color: #fab6b6; }
+      background-color: #ed8b8b;
+      border-color: #ed8b8b; }
     .el-button--danger.is-plain {
-      color: #F56C6C;
-      background: #fef0f0;
-      border-color: #fbc4c4; }
+      color: #db1717;
+      background: #fbe8e8;
+      border-color: #f1a2a2; }
       .el-button--danger.is-plain:hover, .el-button--danger.is-plain:focus {
-        background: #F56C6C;
-        border-color: #F56C6C;
+        background: #db1717;
+        border-color: #db1717;
         color: #FFFFFF; }
       .el-button--danger.is-plain:active {
-        background: #dd6161;
-        border-color: #dd6161;
+        background: #c51515;
+        border-color: #c51515;
         color: #FFFFFF;
         outline: none; }
       .el-button--danger.is-plain.is-disabled, .el-button--danger.is-plain.is-disabled:hover, .el-button--danger.is-plain.is-disabled:focus, .el-button--danger.is-plain.is-disabled:active {
-        color: #f9a7a7;
-        background-color: #fef0f0;
-        border-color: #fde2e2; }
+        color: #e97474;
+        background-color: #fbe8e8;
+        border-color: #f8d1d1; }
   .el-button--info {
     color: #FFFFFF;
     background-color: #909399;
@@ -650,13 +650,13 @@
     .el-button--medium.is-circle {
       padding: 10px; }
   .el-button--small {
-    padding: 9px 15px;
+    padding: 6px 20px;
     font-size: 12px;
     border-radius: 1px; }
     .el-button--small.is-round {
-      padding: 9px 15px; }
+      padding: 6px 20px; }
     .el-button--small.is-circle {
-      padding: 9px; }
+      padding: 6px; }
   .el-button--mini {
     padding: 7px 15px;
     font-size: 12px;

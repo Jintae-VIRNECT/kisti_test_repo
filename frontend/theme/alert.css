@@ -302,12 +302,12 @@
     background-color: #E6A23C;
     color: #FFFFFF; }
   .el-alert--error.is-light {
-    background-color: #fef0f0;
-    color: #F56C6C; }
+    background-color: #fbe8e8;
+    color: #db1717; }
     .el-alert--error.is-light .el-alert__description {
-      color: #F56C6C; }
+      color: #db1717; }
   .el-alert--error.is-dark {
-    background-color: #F56C6C;
+    background-color: #db1717;
     color: #FFFFFF; }
   .el-alert__content {
     display: table-cell;

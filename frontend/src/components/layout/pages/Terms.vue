@@ -35,7 +35,7 @@
         </div>
 
 
-        <el-button type="primary" @click="$router.push({ name: 'register' })"
+        <el-button class="next-btn block-btn" type="primary" @click="$router.push({ name: 'register' })"
         :disabled="!privacyAgree || !serviceAgree "
 					>다음</el-button
 				>
@@ -78,9 +78,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-p {
-  font-family: "NotoSansKR", "Noto Sans";
-}
+  p {
+    font-family: "NotoSansKR", "Noto Sans";
+  }
+
+  .el-button.next-btn {
+    margin-top: 60px;
+  }
+
+
   .all-terms {
     font-size: 16px;
     .el-checkbox__label {
