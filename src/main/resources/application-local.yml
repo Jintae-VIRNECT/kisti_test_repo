@@ -1,6 +1,6 @@
 spring:
   application:
-    name: MessageServer
+    name: message-server
   datasource:
     url: jdbc:mysql://localhost:3306/smic?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
