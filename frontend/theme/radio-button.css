@@ -441,11 +441,11 @@
     .el-radio-button--medium .el-radio-button__inner.is-round {
       padding: 10px 20px; }
   .el-radio-button--small .el-radio-button__inner {
-    padding: 9px 15px;
+    padding: 6px 20px;
     font-size: 12px;
     border-radius: 0; }
     .el-radio-button--small .el-radio-button__inner.is-round {
-      padding: 9px 15px; }
+      padding: 6px 20px; }
   .el-radio-button--mini .el-radio-button__inner {
     padding: 7px 15px;
     font-size: 12px;

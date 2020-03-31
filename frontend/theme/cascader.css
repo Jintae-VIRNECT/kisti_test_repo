@@ -555,9 +555,9 @@
     .el-textarea.is-disabled .el-textarea__inner::placeholder {
       color: #C0C4CC; }
   .el-textarea.is-exceed .el-textarea__inner {
-    border-color: #F56C6C; }
+    border-color: #db1717; }
   .el-textarea.is-exceed .el-input__count {
-    color: #F56C6C; }
+    color: #db1717; }
 
 .el-input {
   position: relative;
@@ -689,9 +689,9 @@
   .el-input.is-disabled .el-input__icon {
     cursor: not-allowed; }
   .el-input.is-exceed .el-input__inner {
-    border-color: #F56C6C; }
+    border-color: #db1717; }
   .el-input.is-exceed .el-input__suffix .el-input__count {
-    color: #F56C6C; }
+    color: #db1717; }
   .el-input--suffix .el-input__inner {
     padding-right: 30px; }
   .el-input--prefix .el-input__inner {
@@ -1420,16 +1420,16 @@
         color: #FFFFFF;
         background-color: #e6a23c; }
   .el-tag.el-tag--danger {
-    background-color: #fef0f0;
-    border-color: #fde2e2;
-    color: #f56c6c; }
+    background-color: #fbe8e8;
+    border-color: #f8d1d1;
+    color: #db1717; }
     .el-tag.el-tag--danger.is-hit {
-      border-color: #F56C6C; }
+      border-color: #db1717; }
     .el-tag.el-tag--danger .el-tag__close {
-      color: #f56c6c; }
+      color: #db1717; }
       .el-tag.el-tag--danger .el-tag__close:hover {
         color: #FFFFFF;
-        background-color: #f56c6c; }
+        background-color: #db1717; }
   .el-tag .el-icon-close {
     border-radius: 50%;
     text-align: center;
@@ -1489,16 +1489,16 @@
           color: #FFFFFF;
           background-color: #ebb563; }
     .el-tag--dark.el-tag--danger {
-      background-color: #f56c6c;
-      border-color: #f56c6c;
+      background-color: #db1717;
+      border-color: #db1717;
       color: white; }
       .el-tag--dark.el-tag--danger.is-hit {
-        border-color: #F56C6C; }
+        border-color: #db1717; }
       .el-tag--dark.el-tag--danger .el-tag__close {
         color: white; }
         .el-tag--dark.el-tag--danger .el-tag__close:hover {
           color: #FFFFFF;
-          background-color: #f78989; }
+          background-color: #e24545; }
   .el-tag--plain {
     background-color: white;
     border-color: #b8bec7;
@@ -1545,15 +1545,15 @@
           background-color: #e6a23c; }
     .el-tag--plain.el-tag--danger {
       background-color: white;
-      border-color: #fbc4c4;
-      color: #f56c6c; }
+      border-color: #f1a2a2;
+      color: #db1717; }
       .el-tag--plain.el-tag--danger.is-hit {
-        border-color: #F56C6C; }
+        border-color: #db1717; }
       .el-tag--plain.el-tag--danger .el-tag__close {
-        color: #f56c6c; }
+        color: #db1717; }
         .el-tag--plain.el-tag--danger .el-tag__close:hover {
           color: #FFFFFF;
-          background-color: #f56c6c; }
+          background-color: #db1717; }
   .el-tag--medium {
     height: 28px;
     line-height: 26px; }
@@ -2447,11 +2447,11 @@
     .el-checkbox-button--medium .el-checkbox-button__inner.is-round {
       padding: 10px 20px; }
   .el-checkbox-button--small .el-checkbox-button__inner {
-    padding: 9px 15px;
+    padding: 6px 20px;
     font-size: 12px;
     border-radius: 0; }
     .el-checkbox-button--small .el-checkbox-button__inner.is-round {
-      padding: 9px 15px; }
+      padding: 6px 20px; }
   .el-checkbox-button--mini .el-checkbox-button__inner {
     padding: 7px 15px;
     font-size: 12px;

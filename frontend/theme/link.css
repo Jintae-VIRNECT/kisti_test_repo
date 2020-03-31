@@ -301,15 +301,15 @@
     .el-link.el-link--primary.is-underline:hover:after {
       border-color: #4d5d74; }
   .el-link.el-link--danger {
-    color: #F56C6C; }
+    color: #db1717; }
     .el-link.el-link--danger:hover {
-      color: #f78989; }
+      color: #e24545; }
     .el-link.el-link--danger:after {
-      border-color: #F56C6C; }
+      border-color: #db1717; }
     .el-link.el-link--danger.is-disabled {
-      color: #fab6b6; }
+      color: #ed8b8b; }
     .el-link.el-link--danger.is-underline:hover:after {
-      border-color: #F56C6C; }
+      border-color: #db1717; }
   .el-link.el-link--success {
     color: #67C23A; }
     .el-link.el-link--success:hover {

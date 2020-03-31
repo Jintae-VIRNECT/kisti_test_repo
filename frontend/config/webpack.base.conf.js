@@ -36,7 +36,10 @@ glob.sync('./src/apps/**/app.js').forEach(path => {
 	const chunk = path.split('./src/apps/')[1].split('/app.js')[0]
 	entries[chunk] = path
 	chunks.push(chunk)
-
+	
+	// const filename = chunk + '.html'
+	// const htmlConf = {
+	// 	filename: filename,
 	const htmlConf = {
 		filename: resolve(
 			__dirname,

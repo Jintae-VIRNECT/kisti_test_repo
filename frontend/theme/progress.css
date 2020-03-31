@@ -293,9 +293,9 @@
   .el-progress.is-warning .el-progress__text {
     color: #E6A23C; }
   .el-progress.is-exception .el-progress-bar__inner {
-    background-color: #F56C6C; }
+    background-color: #db1717; }
   .el-progress.is-exception .el-progress__text {
-    color: #F56C6C; }
+    color: #db1717; }
 
 .el-progress-bar {
   padding-right: 50px;
