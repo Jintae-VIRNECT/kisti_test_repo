@@ -12,3 +12,10 @@ lsb@virnect.com
 ```
 Platform Worstation Web Service
 ```
+
+## Scripts
+```
+$ yarn workspace account dev
+$ yarn workspace account build
+$ yarn workspace account start:production
+```

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="home">
     <div class="home__bg"></div>
     <div class="container">
       <el-row>
