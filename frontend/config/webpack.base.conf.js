@@ -86,7 +86,7 @@ const config = {
 	entry: entries,
 	output: {
 		path: resolve(__dirname, '../../src/main/resources/static'),
-		filename: posix.join('static', 'js/[name].js'),
+		filename: posix.join('js/[name].js'),
 		publicPath: '/',
 	},
 	resolve: {
