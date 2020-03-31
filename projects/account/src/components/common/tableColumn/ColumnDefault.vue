@@ -1,5 +1,5 @@
 <template>
-  <el-table-column :label="label" :width="width">
+  <el-table-column :label="label" :width="width" :align="align">
     <template slot-scope="scope">
       <div class="column-default">
         <span>{{ scope.row[prop] }}</span>
@@ -14,6 +14,7 @@ export default {
     label: String,
     prop: String,
     width: Number,
+    align: String,
   },
 }
 </script>

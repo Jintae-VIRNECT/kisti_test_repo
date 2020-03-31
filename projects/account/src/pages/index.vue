@@ -30,14 +30,12 @@
               <p>워크스페이스 설명이 없습니다.</p>
             </div>
           </el-card>
-          <el-card>
+          <el-card class="el-card--table">
             <div slot="header">
               <h3>구독 결제 정보</h3>
               <router-link to="/payment">바로가기</router-link>
             </div>
-            <div>
-              asdf
-            </div>
+            <subscribe-payment-info />
           </el-card>
         </el-col>
         <el-col class="home__container__right">
@@ -60,15 +58,13 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-card>
+        <el-card class="el-card--table">
           <div slot="header">
             <h3>로그인 된 기기</h3>
             <span>내 계정으로 로그인된 디바이스 정보입니다.</span>
             <router-link to="/security">바로가기</router-link>
           </div>
-          <div>
-            asdf
-          </div>
+          <logged-in-device-list />
         </el-card>
       </el-row>
     </div>
@@ -76,13 +72,17 @@
 </template>
 
 <script>
+import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
 import UsedPlanList from '@/components/plan/UsedPlanList'
 import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
+import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
     UsedPlanList,
     WorkspacePlanList,
+    LoggedInDeviceList,
+    SubscribePaymentInfo,
   },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="used-plan-list">
     <el-table :data="usedPlans">
       <column-plan
         label="플랜 이름"

@@ -35,6 +35,10 @@ export default {
       color: #0b5bd8;
       border-color: #0b5bd8;
     }
+    &.BASIC {
+      color: #828a97;
+      border-color: #828a97;
+    }
   }
 }
 </style>

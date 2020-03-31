@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="workspace-plan-list">
     <el-table :data="workspacePlans">
       <column-plan label="플랜 이름" nameProp="name" gradeProp="grade" />
       <column-default label="사용 멤버" prop="member" :width="200" />
