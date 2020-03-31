@@ -1,6 +1,6 @@
 spring:
   application:
-    name: WorkspaceServer
+    name: workspace-server
   datasource:
     url: jdbc:mysql://192.168.6.3:4336/smic?serverTimezone=UTC
     username: virnect-smic
