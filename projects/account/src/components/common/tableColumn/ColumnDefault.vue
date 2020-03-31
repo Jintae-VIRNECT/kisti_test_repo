@@ -1,5 +1,10 @@
 <template>
-  <el-table-column :label="label" :width="width" :align="align">
+  <el-table-column
+    :label="label"
+    :width="width"
+    :align="align"
+    :sortable="sortable"
+  >
     <template slot-scope="scope">
       <div class="column-default">
         <span>{{ scope.row[prop] }}</span>
@@ -15,6 +20,7 @@ export default {
     prop: String,
     width: Number,
     align: String,
+    sortable: Boolean,
   },
 }
 </script>

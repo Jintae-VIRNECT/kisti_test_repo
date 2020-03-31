@@ -111,16 +111,7 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      login: {
-        email: 'test@test.com',
-      },
-      message: '테스트 메세지',
-    }
-  },
-}
+export default {}
 </script>
 
 <style lang="scss">
