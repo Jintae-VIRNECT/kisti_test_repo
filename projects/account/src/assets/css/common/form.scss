@@ -1,0 +1,141 @@
+// messagebox
+.el-message-box {
+  margin-top: 36px;
+  padding-bottom: 0;
+  vertical-align: top;
+}
+
+.el-message-box__title {
+  font-weight: 500;
+}
+.el-message-box__header {
+  padding-bottom: 6px;
+  &btn {
+    display: none;
+  }
+}
+.el-message-box__content {
+  padding-top: 6px;
+  font-weight: 500;
+}
+
+.el-message-box__btns {
+  padding: 20px 24px 24px;
+  .el-button--small {
+    height: 36px;
+    margin-top: 0;
+    font-size: 14px;
+    background-color: $point;
+    border-color: $point;
+    border-radius: 3px;
+  }
+}
+
+// input
+.input-title {
+  margin-top: 40px;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: left;
+  &.must-check {
+    &:after {
+      padding-left: 2px;
+      color: $danger;
+      content: "*";
+    }
+  }
+}
+
+.firstname-input {
+  width: 140px;
+  margin-right: 16px;
+}
+
+.lastname-input {
+  width: 220px;
+}
+
+.el-input {
+  &.input-danger {
+    .el-input__inner {
+      border-bottom-color: $danger;
+    }
+  }
+  .el-input__clear {
+    color: #d8dde5;
+    font-size: 22px;
+  }
+}
+
+.el-input__inner {
+  padding: 0;
+  color: $baseColor;
+  font-weight: 500;
+  font-size: 16px;
+  border: 0;
+  border-bottom: 2px solid #e6e9ee;
+  border-radius: 0;
+}
+
+.el-input--suffix {
+  + .el-input--suffix {
+    margin-top: 12px;
+  }
+}
+
+.checkbox-wrap {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.el-checkbox {
+  margin-right: 12px;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  &:after {
+    left: 5px;
+    height: 9px;
+    border-width: 2px;
+  }
+}
+
+.must-check {
+  .el-checkbox__label {
+    &:after {
+      padding-left: 2px;
+      color: $danger;
+      content: "*";
+    }
+  }
+}
+
+.el-select {
+  width: 100%;
+}
+
+.el-select-dropdown__item {
+  padding: 0 15px;
+}
+
+// button
+.el-button {
+  height: 50px;
+  margin-top: 20px;
+  &.block-btn {
+    width: 100%;
+  }
+  &.next-btn {
+    margin-top: 30px;
+  }
+}
+
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:active {
+  color: #8d939c;
+  background-color: #e2e6eb;
+  border-color: #e2e6eb;
+}
