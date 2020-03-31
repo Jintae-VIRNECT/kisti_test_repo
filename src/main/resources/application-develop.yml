@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: gateway-service
+    name: gateway-server
 
 eureka:
   instance:
@@ -15,21 +15,31 @@ eureka:
 zuul:
   routes:
     auth:
-      path: /api/auth/**
+      path: /auth/**
       serviceId: auth-server
-      stripPrefix: true
-    account:
-      path: /api/account/**
-      serviceid: account-server
-      stripPrefix: true
+      stripPrefix: false
+    users:
+      path: /users/**
+      serviceid: user-server
+      stripPrefix: false
+    workspace:
+      path: /workspaces/**
+      serviceid: workspace-server
+      stripPrefix: false
+    content:
+      path: /contents/**
+      serviceid: content-server
+      stripPrefix: false
+    process:
+      path: /processes/**
+      serviceid: process-server
+      stripPrefix: false
+    message:
+      path: /messages/**
+      serviceid: message-server
+      stripPrefix: false
   ribbon-isolation-strategy: thread
   thread-pool:
     use-separate-thread-pools: true
     thread-pool-key-prefix: zuul-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
+  sensitive-headers:  Cookie,Set-Cookie
