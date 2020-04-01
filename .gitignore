@@ -29,3 +29,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### build bundle ##
+src/main/resources/static/**/*
+src/main/resources/templates/index.html

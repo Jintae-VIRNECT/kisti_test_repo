@@ -35,8 +35,8 @@ public class ApiController {
     private final AuthRestService authRestService;
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<LoginResponse>> loginProxy(@RequestBody @Valid LoginRequest loginRequest, BindingResult result){
-        if(result.hasErrors()){
+    public ResponseEntity<ApiResponse<LoginResponse>> loginProxy(@RequestBody @Valid LoginRequest loginRequest, BindingResult result) {
+        if (result.hasErrors()) {
             throw new AccountServiceException(ErrorCode.ERR_INVALID_PARAMETER);
         }
 
@@ -49,8 +49,8 @@ public class ApiController {
 
 
     @PostMapping("/signout")
-    public ResponseEntity<ApiResponse<LogoutResponse>> logoutProxy(@RequestBody @Valid LogoutRequest logoutRequest, BindingResult result){
-        if(result.hasErrors()){
+    public ResponseEntity<ApiResponse<LogoutResponse>> logoutProxy(@RequestBody @Valid LogoutRequest logoutRequest, BindingResult result) {
+        if (result.hasErrors()) {
             throw new AccountServiceException(ErrorCode.ERR_INVALID_PARAMETER);
         }
         log.info("LOGOUT-REQUEST: {}", logoutRequest);
