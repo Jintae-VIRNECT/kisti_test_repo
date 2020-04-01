@@ -1,6 +1,6 @@
 <template>
   <div class="used-plan-list">
-    <el-table :data="usedPlans">
+    <el-table :data="usedPlans" @row-click="select">
       <column-plan
         label="플랜 이름"
         nameProp="name"
@@ -28,6 +28,11 @@ export default {
     return {
       usedPlans: planService.getUsedPlanList(),
     }
+  },
+  methods: {
+    select(row) {
+      this.$emit('select', row)
+    },
   },
 }
 </script>

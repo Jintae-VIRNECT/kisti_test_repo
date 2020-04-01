@@ -3,9 +3,9 @@
     <template slot-scope="scope">
       <div class="column-plan">
         <span>{{ scope.row[nameProp] }}</span>
-        <el-tag :class="scope.row[gradeProp]" effect="plain">{{
-          scope.row[gradeProp]
-        }}</el-tag>
+        <el-tag :class="scope.row[gradeProp]" effect="plain">
+          {{ scope.row[gradeProp] }}
+        </el-tag>
       </div>
     </template>
   </el-table-column>

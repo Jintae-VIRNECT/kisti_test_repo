@@ -15,20 +15,20 @@
         </section>
       </el-row>
       <el-row>
-        <el-col class="home__container__left">
+        <el-col class="container__left">
           <el-card class="home__workspace-info">
             <div slot="header">
               <h3>나의 워크스페이스 정보</h3>
               <router-link to="/workspace">바로가기</router-link>
             </div>
-            <div>
-              <span>워크스페이스 이름</span>
-              <h4>VIRNECT’s workspace</h4>
-            </div>
-            <div>
-              <span>워크스페이스 설명</span>
-              <p>워크스페이스 설명이 없습니다.</p>
-            </div>
+            <dl>
+              <dt>워크스페이스 이름</dt>
+              <dd>VIRNECT’s workspace</dd>
+            </dl>
+            <dl>
+              <dt>워크스페이스 설명</dt>
+              <dd class="desc">워크스페이스 설명이 없습니다.</dd>
+            </dl>
           </el-card>
           <el-card class="el-card--table">
             <div slot="header">
@@ -38,7 +38,7 @@
             <subscribe-payment-info />
           </el-card>
         </el-col>
-        <el-col class="home__container__right">
+        <el-col class="container__right">
           <el-card class="el-card--table">
             <div slot="header">
               <h3>사용 중인 플랜</h3>
@@ -94,13 +94,6 @@ export default {
   height: 420px;
   background: #0b2c63;
 }
-.home__container__left {
-  width: 340px;
-  margin-right: 30px;
-}
-.home__container__right {
-  width: 830px;
-}
 .page-description {
   margin-bottom: 60px;
   color: #fff;
@@ -129,19 +122,20 @@ export default {
   }
 }
 .home__workspace-info {
-  .el-card__body > div {
+  .el-card__body > dl {
     padding: 12px 0;
 
-    span {
+    dt {
       color: $font-color-desc;
       font-size: 12px;
     }
-    h4 {
+    dd {
       margin-top: 4px;
       font-size: 20px;
     }
-    p {
+    dd.desc {
       margin-top: 8px;
+      font-size: inherit;
     }
   }
 }

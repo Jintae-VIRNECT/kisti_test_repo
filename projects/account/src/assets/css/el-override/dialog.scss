@@ -1,0 +1,20 @@
+.el-dialog {
+  &__header {
+    padding: 20px 30px;
+    border-bottom: solid 1px #eaedf3;
+
+    .el-icon-close:before {
+      color: $font-color-content;
+      font-weight: bold;
+    }
+  }
+  &__title {
+    color: $font-color-content;
+  }
+  &__body {
+    padding: 24px 30px;
+  }
+  &__footer {
+    padding: 24px 30px;
+  }
+}

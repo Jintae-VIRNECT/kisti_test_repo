@@ -13,4 +13,12 @@ main {
   width: $container-width;
   margin: 0 auto;
   padding: 80px 20px;
+
+  &__left {
+    width: 340px;
+    margin-right: 30px;
+  }
+  &__right {
+    width: 830px;
+  }
 }

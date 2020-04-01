@@ -10,4 +10,7 @@ export default {
     const data = [0, 1, 2, 3, 4]
     return data.map(plan => new WorkspacePlan(plan))
   },
+  getPlanDetail(planId) {
+    return new UsedPlan()
+  },
 }

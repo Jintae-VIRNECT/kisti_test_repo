@@ -10,10 +10,17 @@
   opacity: 0;
 }
 
+body {
+  overflow-y: scroll;
+}
+
 #__nuxt {
   font-weight: 500;
 
-  @import "@/assets/css/common/common.scss";
-  @import "@/assets/css/common/card.scss";
-  @import "@/assets/css/common/title.scss";
+  @import "@/assets/css/modules/common.scss";
+  @import "@/assets/css/modules/title.scss";
+
+  @import "@/assets/css/el-override/button.scss";
+  @import "@/assets/css/el-override/card.scss";
+  @import "@/assets/css/el-override/dialog.scss";
 }

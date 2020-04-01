@@ -1,6 +1,6 @@
 <template>
   <div class="subscribe-payment-info">
-    <el-table :data="PaymentScheduledPlans">
+    <el-table class="el-table--list" :data="PaymentScheduledPlans">
       <column-plan
         label="결제 예정 플랜 수"
         nameProp="name"
@@ -56,15 +56,6 @@ export default {
 <style lang="scss">
 .subscribe-payment-info {
   margin: 22px 0;
-
-  // 테두리 삭제
-  .el-table td,
-  .el-table th.is-leaf {
-    border-bottom: none;
-  }
-  .el-table::before {
-    display: none;
-  }
 }
 .subscribe-payment-info__storage {
   margin: 30px 30px 50px;
@@ -87,17 +78,9 @@ export default {
     background-color: #237df5;
   }
 }
-#__nuxt .el-card--table .subscribe-payment-info {
-  .el-table td {
-    padding-top: 12px;
-    padding-bottom: 12px;
-  }
-  th:nth-last-child(2) {
-    color: $font-color-content;
-    font-size: 16px;
-  }
-  td:last-child {
-    color: $font-color-desc;
-  }
+#__nuxt .el-card--table .subscribe-payment-info th:nth-last-child(2) {
+  padding-bottom: 14px;
+  color: $font-color-content;
+  font-size: 16px;
 }
 </style>
