@@ -4,7 +4,7 @@ import Login from 'components/layout/pages/Login'
 import Terms from 'components/layout/pages/Terms'
 import Register from 'components/layout/pages/Register.vue'
 import User from 'components/layout/pages/User.vue'
-import Profile from '../components/Profile.vue'
+import Profile from 'components/layout/pages/Profile.vue'
 
 Vue.use(Router)
 

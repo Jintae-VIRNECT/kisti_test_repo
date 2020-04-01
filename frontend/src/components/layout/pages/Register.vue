@@ -152,10 +152,6 @@
         },
         subscriptionPathLists: [
           {
-            value: 0,
-            label: "가입 경로 선택",
-            disabled: true
-          }, {
             value: 1,
             label: "검색 사이트"
           }, {
@@ -186,10 +182,6 @@
         ],
         serviceInfoLists: [
           {
-            value: 0,
-            label: "서비스 분야 선택",
-            disabled: true
-          }, {
             value: 1,
             label: "에너지/자원"
           }, {

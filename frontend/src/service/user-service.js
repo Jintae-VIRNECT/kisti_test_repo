@@ -2,7 +2,7 @@ import Axios from 'axios'
 import authHeader from './auth-header'
 import API from './url';
 
-const GATEWAY_API_URL = 'http://localhost:8073';
+const GATEWAY_API_URL = 'http://192.168.6.3:8073';
 
 const axios = Axios.create({
   timeout: 10000,

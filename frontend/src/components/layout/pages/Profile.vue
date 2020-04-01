@@ -25,8 +25,8 @@
 </template>
 
 <script>
-  import UserService from '../service/user-service';
-  import AuthService from '../service/auth-service';
+  import UserService from 'service/user-service';
+  import AuthService from 'service/auth-service';
 
   export default {
     name: 'profile',
@@ -59,16 +59,17 @@
         return JSON.stringify(JSON.parse(value), null, 2);
       },
       main() {
-        localStorage.clear();
+        localStorage.removeItem('user')
         location.href = '/';
       },
       logout() {
-        alert("hi!");
-        alert(`uuid: ${this.userUUID} , accessToken: ${this.accessToken}`);
+        // alert("hi!");
+        // alert(`uuid: ${this.userUUID} , accessToken: ${this.accessToken}`);
         AuthService.logout({uuid: this.userUUID, accessToken: this.accessToken}).then(
           response => {
-            alert(response);
-            // this.main();
+            // alert(response);
+            console.log(response)
+            this.main();
           },
           error =>{
             this.userInfo = error.response.data.message;

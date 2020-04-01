@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import API from './url';
 
-const GATEWAY_API_URL = 'http://localhost:8073';
+const GATEWAY_API_URL = 'http://192.168.6.3:8073';
 
 const axios = Axios.create({
   timeout: 10000,
@@ -37,7 +37,7 @@ class AuthService {
       .then(this.handleResponse)
       .then(response => {
         const {data} = response;
-        alert(data);
+        // alert(data);
         if (data !== undefined) {
           localStorage.removeItem('user');
           return data;
@@ -70,9 +70,11 @@ class AuthService {
     const {data} = response;
     if (response.status !== 200 || data.code !== 200) {
       localStorage.removeItem('user');
-      location.reload(true);
+      // location.reload(true);
 
       const error = data.message;
+      // alert(error)
+      // console.log(Promise.reject(error))
       return Promise.reject(error)
     }
 

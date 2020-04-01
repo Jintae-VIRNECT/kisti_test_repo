@@ -7,10 +7,10 @@
 				<el-input
 					placeholder="이메일을 입력해 주세요"
 					v-model="login.email"
-                    name="email"
+					name="email"
 					:class="{'input-danger' : message}"
 					clearable
-                    v-validate="'required'"
+					v-validate="'required'"
 				>
 				</el-input>
 
@@ -19,19 +19,23 @@
 					placeholder="비밀번호를 입력해 주세요"
 					v-model="login.password"
 					show-password
-                    name="password"
+					name="password"
 					:class="{'input-danger' : message}"
-                    v-validate="'required'"
+					v-validate="'required'"
+					@keydown="handleLogin"
 				></el-input>
 				
-				<p class="warning-msg danger-color" v-if="message">{{message}}</p>
+				<p class="warning-msg danger-color" v-if="message">{{ message }}</p>
 
 				<div class="checkbox-wrap">
-					<el-checkbox v-model="login.rememberMe">이메일 저장</el-checkbox>
-					<el-checkbox v-model="login.autoLogin">자동 로그인</el-checkbox>
+					<el-checkbox v-model="login.rememberMe" 
+						@change="emailRemember(login.email, login.rememberMe)">이메일 저장</el-checkbox>
+					<el-checkbox 
+						@change="autoLogin(login.autoLogin)" v-model="login.autoLogin">자동 로그인</el-checkbox>
 				</div>
 
-				<el-button class="next-btn block-btn" type="primary" @click="handleLogin" :disabled="loading || login.email == '' || login.password == ''"
+				<el-button class="next-btn block-btn" type="primary" 
+				@click="handleLogin" :disabled="loading || login.email == '' || login.password == ''"
 					>로그인</el-button
 				>
 				<div class="find-wrap">
@@ -62,43 +66,67 @@ export default {
 	},
 	data() {
 		return {
-			hovering: true,
 			login: {
 				email: '',
-				password: ''
+				password: '',
+				rememberMe: null,
+				autoLogin: null
 			},
 			loading: false,
-			message: ''
+			message: '',
+			rememberEmail: localStorage.getItem('email'),
+			rememberLogin: localStorage.getItem('auto')
 		}
 	},
 	mounted() {
-		if (this.loggedIn) {
-			this.$router.push({ name: 'profile' })
+		if ( this.rememberLogin ) {
+			this.login.autoLogin = true
+			if(this.loggedIn) return this.$router.push({ name: 'profile' })
+		}
+		if ( this.rememberEmail ) {
+			this.login.rememberMe = true
+			this.login.email = this.rememberEmail
 		}
 	},
 	methods: {
-        alertWindow() {
-            this.$alert('등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.', '계정 정보 입력 오류', {
-                confirmButtonText: '확인'
-            }); 
-        },
+		emailRemember(email, check) {
+			if(check == true) {
+				this.rememberEmail = true
+				localStorage.setItem('email', email)
+			} else {
+				localStorage.removeItem('email');
+			}
+		},
+		autoLogin(check) {
+			if(check == true) {
+				this.rememberLogin = true
+				localStorage.setItem('auto', check)
+			} else {
+				localStorage.removeItem('auto');
+			}
+		},
+		alertWindow(msg) {
+			this.$alert(msg, '계정 정보 입력 오류', {
+					confirmButtonText: '확인'
+			}); 
+		},
 		handleLogin() {
 			this.loading = true
-            this.$validator.validateAll()
+			this.$validator.validateAll()
 			if (this.errors.any()) {
 				this.loading = false
 				return
 			}
 			if (this.login.email && this.login.password) {
-				 new Login(this.login.email, this.login.password)
+				new Login(this.login.email, this.login.password)
 				this.$store.dispatch('auth/login', this.login).then(
 					() => {
 						this.$router.push({ name: 'profile' })
 					},
 					error => {
 						this.loading = false
-                        this.message = error.message
-                        this.alertWindow()
+						this.message = error
+						this.alertWindow(error)
 					},
 				)
 			}

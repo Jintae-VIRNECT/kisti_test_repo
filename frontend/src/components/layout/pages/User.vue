@@ -4,7 +4,24 @@
 			<el-col>
 				<h2>추가 정보 입력</h2>
 				<p>추가 정보를 입력하시면 VIRNECT 제품을 <br>더 유용하게 사용하실 수 있습니다.</p>
-
+        
+				<p class="input-title">프로필 이미지</p>
+        <article class="profile-image">
+          <div class="image-holder">
+            <!-- <input type="file" id="profileImage" @change="uploadImage"> -->
+            <label for="profileImage">
+              <i>
+                <img v-if="user.profile" :src="user.profile" class="avatar" @click="profilePopup()">
+                <img v-else src="~assets/images/common/ic-user-profile@2x.png" @click="profilePopup()">
+              </i>
+            </label>
+            <i class="camera-ico"><img src="~assets/images/common/ic-camera-alt@2x.png"></i>
+          </div>
+          <div class="text-wrap">
+            <p>프로필 이미지를 등록해 주세요.</p>
+            <p>등록하신 프로필 이미지는 다른 사용자들에게 보여집니다.</p>
+          </div>
+        </article>
         
 				<p class="input-title">닉네임</p>
 				<el-input
@@ -13,17 +30,23 @@
           type="text"
           name="name"
 					clearable
+          v-validate="'required|min:3|max:20'"
 				>
         </el-input>        
         <p class="restriction-text">국문, 영문, 특수문자(&lt;),(&gt;) 제외, 띄어쓰기 포함 20자 이하로 입력해 주세요.</p>
 
+        <dl class="recover-info">
+          <dt>계정 복구 정보 입력</dt>
+          <dd>계정 분실 시 본인 확인을 위한 정보를 입력해 주세요. </dd>
+        </dl>
+
         <p class="input-title">연락처</p>
-				<el-select v-model="user.nation" placeholder="+82"
+				<el-select v-model="user.countryCode" placeholder="+82"
           v-validate="'required'"
-          class="firstname-input"
-          name="serviceInfo">
+          class="countrycode-input"
+          name="countryCode">
           <el-option
-            v-for="item in serviceInfoLists"
+            v-for="item in countryCodeLists"
             :key="item.value"
             :label="item.label"
             :value="item.value">
@@ -31,12 +54,51 @@
         </el-select>
 
 				<el-input
-          class="lastname-input"
+          class="phonenumber-input"
 					placeholder="전화번호를 입력해 주세요"
           v-model="user.phoneNumber"
 					clearable
           name="phoneNumber"
           v-validate="'required'"
+				></el-input>
+
+				<p class="input-title">복구 이메일 주소</p>
+				<el-input
+					placeholder="복구 이메일 주소를 입력해 주세요"
+          v-model="user.recoveryEmail"
+          type="email"
+          name="recoveryEmail"
+					clearable
+          v-validate="'required|email|max:50'"
+				>
+        </el-input>
+
+				<p class="input-title">생년월일</p>
+        <el-input
+          class="birth-input year-input"
+					placeholder="년"
+          v-model="birth.year"
+          name="birtnY"
+          maxlength="4"
+          v-validate="'required|max:4'"
+				></el-input>
+        
+				<el-input
+          class="birth-input"
+					placeholder="월"
+          v-model="birth.month"
+          name="birthM"
+          maxlength="2"
+          v-validate="'required|max:2'"
+				></el-input>
+
+				<el-input
+          class="birth-input"
+					placeholder="일"
+          v-model="birth.day"
+          name="birthD"
+          maxlength="2"
+          v-validate="'required|max:2'"
 				></el-input>
 
         <el-button class="next-btn block-btn" type="primary" 
@@ -51,57 +113,6 @@
     <div class="card card-container">
       <form id="form" name="form" @submit.prevent="handleRegister">
         <div v-if="!successful">
-          <div class="form-group">
-            <label for="username">이름</label>
-            <input
-              id="username"
-              type="text"
-              class="form-control"
-              name="name"
-              v-model="register.name"
-              v-validate="'required|min:3|max:20'"
-            />
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('username')"
-            >{{errors.first('username')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="email">이메일</label>
-            <div class="form-inline">
-              <input
-                id="email"
-                type="email"
-                class="form-control col-sm-8"
-                name="email"
-                v-model="register.email"
-                v-validate="'required|email|max:50'"
-              />
-              <b-button v-b-modal.email-verify class="form-control col-sm-4">인증</b-button>
-            </div>
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('email')"
-            >{{errors.first('email')}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input
-              id="password"
-              type="password"
-              class="form-control"
-              name="password"
-              v-model="register.password"
-              v-validate="'required|min:6|max:40'"
-            />
-            <div
-              class="alert-danger"
-              v-if="submitted && errors.has('password')"
-            >{{errors.first('password')}}
-            </div>
-          </div>
           <div class="form-group">
             <img
               id="thumbnail"
@@ -202,7 +213,8 @@
     computed: {
       loggedIn() {
         return this.$store.state.auth.status.loggedIn;
-      }
+      },
+      
     },
     data() {
       return {
@@ -213,6 +225,20 @@
           recoveryEmail: '',
           birth: '',
         },
+        birth: {
+          year: '',
+          month: '',
+          day: ''
+        },
+        countryCodeLists: [
+          {
+            value: 1,
+            label: '+82'
+          }, {
+            value: 2,
+            label: '+82'
+          }
+        ],
         submitted: false,
         successful: false,
         isSendEmail: false,
@@ -230,6 +256,12 @@
       }
     },
     methods: {
+      profilePopup() {
+        this.$alert('프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다. ', '프로필 이미지 설정', {
+          confirmButtonText: '확인',
+          cancelButtonText: 'Cancel'
+        }); 
+      },
       handleRegister() {
         this.message = '';
         this.submitted = true;
@@ -290,8 +322,8 @@
         this.validImage(event)
           .then((imageData) => {
             console.log(imageData);
-            this.register.profile = files[0];
-            this.register.profile = imageData;
+            this.user.profile = files[0];
+            this.user.profile = imageData;
             this.form.image = imageData;
           })
           .catch((error) => {
