@@ -1,0 +1,113 @@
+// @charset "utf-8";
+
+// @import "common";
+// //@import "./plugin/material-icons";
+// //@import "./account/element/index";
+
+// .support {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: center;
+// 	width: 100%;
+//     height: 100vh;
+//     background: #f8f8f8;
+// 	//background: #f8f8f8 url(~assets/image/bg-login@2x.png) 50%/cover no-repeat;
+
+// 	@include tablet {
+// 		background: #f8f8f8;
+// 		// display: block;
+// 	}
+
+// 	&--body {
+// 		margin: 0 auto;
+// 		text-align: center;
+
+// 		@include tablet {
+// 			padding: 0 20px;
+// 			margin-top: -50px;
+// 		}
+
+// 		.el-button {
+// 			width: 250px;
+// 			padding: 17px 25px;
+// 			color: #646d80;
+
+// 			@include tablet {
+// 				width: 200px;
+// 				padding: 15px 20px;
+// 				font-size: 12px;
+// 			}
+// 		}
+// 	}
+
+// 	&--logo {
+// 		margin: 0 auto;
+// 		padding: 10px 0;
+// 		line-height: 0;
+// 		text-align: center;
+
+// 		img {
+// 			min-width: 400px;
+// 		}
+
+// 		@include tablet {
+// 			position: fixed;
+// 			top: 0;
+// 			left: 0;
+// 			margin: 0;
+// 			width: 100%;
+// 			border-bottom: 1px solid #e1e1e1;
+
+// 			img {
+// 				min-width: auto;
+// 				width: 210px;
+// 			}
+// 		}
+// 	}
+
+// 	&--title {
+// 		margin: 28px 20px 0;
+// 		color: #222;
+// 		font-size: 30px;
+// 		font-weight: 700;
+// 		word-break: keep-all;
+
+// 		@include tablet {
+// 			margin: 17px 0 0;
+// 			font-size: 21px;
+// 			// text-align: left;
+// 		}
+// 	}
+
+// 	&--description {
+// 		margin: 14px 0 40px;
+// 		color: #646d80;
+// 		font-size: 16px;
+// 		line-height: 1.62;
+
+// 		@include tablet {
+// 			margin: 6px 0 24px;
+// 			color: #838996;
+// 			font-size: 13px;
+// 			// text-align: left;
+// 		}
+// 	}
+
+// 	.footer {
+// 		position: absolute;
+// 		bottom: 0;
+// 		left: 0;
+// 		right: 0;
+// 		padding-bottom: 40px;
+// 		text-align: center;
+
+//         &--inner {
+//             margin: 0 auto;
+//         }
+
+//         .copyright {
+//             margin-top: 6px;
+//             opacity: .5;
+//         }
+//     }
+// }

@@ -28,6 +28,14 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       filename: 'service/index.html',
       chunks: ['service'],
     }),
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
+      template: './src/apps/extra/app.html',
+      filename: 'extra/index.html',
+      chunks: ['extra']
+    }),
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',
     }),
