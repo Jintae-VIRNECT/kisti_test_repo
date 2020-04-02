@@ -1,14 +1,21 @@
 <template>
   <div class="used-plan-list">
-    <el-table :data="usedPlans" @row-click="select">
+    <el-table :data="usingPlans" @row-click="select">
       <column-plan
-        label="플랜 이름"
+        :label="$t('plan.column.planName')"
         nameProp="name"
         gradeProp="grade"
         :width="200"
       />
-      <column-default label="사용 중인 워크스페이스" prop="workspace" />
-      <column-default label="플랜 만료일" prop="expireDate" :width="100" />
+      <column-default
+        :label="$t('plan.column.usingWorkspace')"
+        prop="workspace"
+      />
+      <column-default
+        :label="$t('plan.column.expireDate')"
+        prop="expireDate"
+        :width="100"
+      />
     </el-table>
   </div>
 </template>
@@ -26,7 +33,7 @@ export default {
   },
   data() {
     return {
-      usedPlans: planService.getUsedPlanList(),
+      usingPlans: planService.getusingPlanList(),
     }
   },
   methods: {

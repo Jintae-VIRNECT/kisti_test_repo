@@ -128,7 +128,8 @@ export default {}
   .el-card__header {
     height: 240px;
     padding: 36px 40px;
-    background: #0b2c63;
+    background: url('~assets/images/bg@2x.jpg') center no-repeat;
+    background-size: 200%;
 
     & > div > h3 {
       display: block;
@@ -201,6 +202,7 @@ export default {}
   }
   .el-button {
     margin-top: 0;
+    color: $color-link;
   }
 }
 </style>

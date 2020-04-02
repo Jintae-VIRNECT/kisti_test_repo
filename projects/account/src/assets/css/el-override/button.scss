@@ -1,6 +1,6 @@
 .el-button {
   padding: 10px 20px;
-  font-weight: 300;
+  font-weight: 500;
   font-size: 14px;
   line-height: 1em;
 }
@@ -11,12 +11,12 @@
   border: none;
 
   & > span {
-    font-weight: 500;
     font-size: 12.6px;
     line-height: 1em;
   }
 }
 .el-button--confirm {
   color: #fff;
+  font-weight: 300;
   background: #1655bf;
 }

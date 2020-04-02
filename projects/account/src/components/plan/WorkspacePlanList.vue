@@ -1,10 +1,26 @@
 <template>
   <div class="workspace-plan-list">
     <el-table :data="workspacePlans">
-      <column-plan label="플랜 이름" nameProp="name" gradeProp="grade" />
-      <column-default label="사용 멤버" prop="member" :width="200" />
-      <column-default label="플랜 구매일" prop="buyDate" :width="100" />
-      <column-default label="플랜 만료일" prop="expireDate" :width="100" />
+      <column-plan
+        :label="$t('plan.column.planName')"
+        nameProp="name"
+        gradeProp="grade"
+      />
+      <column-default
+        :label="$t('plan.column.usingMember')"
+        prop="member"
+        :width="200"
+      />
+      <column-default
+        :label="$t('plan.column.purchasedDate')"
+        prop="buyDate"
+        :width="100"
+      />
+      <column-default
+        :label="$t('plan.column.expireDate')"
+        prop="expireDate"
+        :width="100"
+      />
     </el-table>
   </div>
 </template>

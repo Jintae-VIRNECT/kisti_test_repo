@@ -7,33 +7,32 @@
           <div class="avatar">
             <img src="~assets/images/ic-user-profile.svg" />
           </div>
-          <h2>사용자 닉네임님, 반갑습니다</h2>
-          <p>
-            개인 정보 보호 및 보안 설정을 관리하여 <br />
-            VIRNECT 제품과 서비스를 이용할 수 있습니다.
-          </p>
+          <h2>{{ $t('home.title.welcome', { username: me.name }) }}</h2>
+          <p v-html="$t('home.title.description')"></p>
         </section>
       </el-row>
       <el-row>
         <el-col class="container__left">
           <el-card class="home__workspace-info">
             <div slot="header">
-              <h3>나의 워크스페이스 정보</h3>
-              <router-link to="/workspace">바로가기</router-link>
+              <h3>{{ $t('home.workspace.title') }}</h3>
+              <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
             <dl>
-              <dt>워크스페이스 이름</dt>
-              <dd>VIRNECT’s workspace</dd>
+              <dt>{{ $t('home.workspace.name') }}</dt>
+              <dd>{{ workspace.name }}</dd>
             </dl>
             <dl>
-              <dt>워크스페이스 설명</dt>
-              <dd class="desc">워크스페이스 설명이 없습니다.</dd>
+              <dt>{{ $t('home.workspace.desc') }}</dt>
+              <dd class="desc">
+                {{ workspace.desc || $t('home.workspace.descEmpty') }}
+              </dd>
             </dl>
           </el-card>
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>구독 결제 정보</h3>
-              <router-link to="/payment">바로가기</router-link>
+              <h3>{{ $t('home.payment.title') }}</h3>
+              <router-link to="/payment">{{ $t('common.link') }}</router-link>
             </div>
             <subscribe-payment-info />
           </el-card>
@@ -41,17 +40,17 @@
         <el-col class="container__right">
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>사용 중인 플랜</h3>
-              <span>회원님이 사용 중인 플랜 정보입니다.</span>
-              <router-link to="/plan">바로가기</router-link>
+              <h3>{{ $t('home.usingPlan.title') }}</h3>
+              <span>{{ $t('home.usingPlan.desc') }}</span>
+              <router-link to="/plan">{{ $t('common.link') }}</router-link>
             </div>
-            <used-plan-list />
+            <using-plan-list />
           </el-card>
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>나의 워크스페이스 플랜</h3>
-              <span>회원님이 구매한 플랜 정보입니다.</span>
-              <router-link to="/plan">바로가기</router-link>
+              <h3>{{ $t('home.workspacePlan.title') }}</h3>
+              <span>{{ $t('home.workspacePlan.desc') }}</span>
+              <router-link to="/plan">{{ $t('common.link') }}</router-link>
             </div>
             <workspace-plan-list />
           </el-card>
@@ -60,9 +59,9 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>로그인 된 기기</h3>
-            <span>내 계정으로 로그인된 디바이스 정보입니다.</span>
-            <router-link to="/security">바로가기</router-link>
+            <h3>{{ $t('home.LoggedInDevice.title') }}</h3>
+            <span>{{ $t('home.LoggedInDevice.desc') }}</span>
+            <router-link to="/security">{{ $t('common.link') }}</router-link>
           </div>
           <logged-in-device-list />
         </el-card>
@@ -73,16 +72,27 @@
 
 <script>
 import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import UsedPlanList from '@/components/plan/UsedPlanList'
+import usingPlanList from '@/components/plan/usingPlanList'
 import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
-    UsedPlanList,
+    usingPlanList,
     WorkspacePlanList,
     LoggedInDeviceList,
     SubscribePaymentInfo,
+  },
+  data() {
+    return {
+      me: {
+        name: '사용자 닉네임',
+      },
+      workspace: {
+        name: 'VIRNECT’s workspace',
+        desc: '',
+      },
+    }
   },
 }
 </script>
@@ -92,7 +102,8 @@ export default {
   position: absolute;
   width: 100%;
   height: 420px;
-  background: #0b2c63;
+  background: url('~assets/images/bg@2x.jpg') center no-repeat;
+  background-size: 200%;
 }
 .page-description {
   margin-bottom: 60px;

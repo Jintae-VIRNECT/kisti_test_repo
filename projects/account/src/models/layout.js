@@ -22,12 +22,12 @@ export const sideMenus = [
   {
     path: '/plan',
     image: require('@/assets/images/ic-home.svg'),
-    label: 'menu.plan',
+    label: 'menu.usedPlan',
   },
   {
     path: '/subscribe',
     image: require('@/assets/images/ic-home.svg'),
-    label: 'menu.subscribe',
+    label: 'menu.plan',
   },
   {
     path: '/payment',

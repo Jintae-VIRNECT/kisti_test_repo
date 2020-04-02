@@ -2,7 +2,7 @@ import UsedPlan from '@/models/plan/UsedPlan'
 import WorkspacePlan from '@/models/plan/WorkspacePlan'
 
 export default {
-  getUsedPlanList() {
+  getusingPlanList() {
     const data = [0, 1, 2, 3, 4]
     return data.map(plan => new UsedPlan(plan))
   },

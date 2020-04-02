@@ -14,7 +14,7 @@
       <span>현재 사용 중인 기기를 제외한 모든 기기에서 로그아웃 됩니다.</span>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button type="confirm">
+      <el-button type="confirm" @click="changePassword">
         비밀번호 변경
       </el-button>
     </div>
@@ -28,6 +28,11 @@ export default {
   mixins: [dialogMixin],
   props: {
     data: Object,
+  },
+  methods: {
+    changePassword() {
+      this.$router.push('/profile')
+    },
   },
 }
 </script>

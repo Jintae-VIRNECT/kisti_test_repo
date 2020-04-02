@@ -1,0 +1,7 @@
+{
+  "column": {
+    "deviceName": "기기 이름",
+    "loginLocation": "최종 접속 위치",
+    "loginDate": "최종 접속일"
+  }
+}

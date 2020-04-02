@@ -13,7 +13,9 @@
         <div slot="header">
           <h3>로그인된 기기 정보</h3>
           <span>내 계정으로 로그인된 디바이스 정보입니다.</span>
-          <router-link to="/">내 기기가 아닌 경우</router-link>
+          <button @click="SecurityEnhanceVisible = true">
+            내 기기가 아닌 경우
+          </button>
         </div>
         <logged-in-device-list />
       </el-card>
@@ -34,7 +36,7 @@ export default {
   },
   data() {
     return {
-      SecurityEnhanceVisible: true,
+      SecurityEnhanceVisible: false,
     }
   },
 }

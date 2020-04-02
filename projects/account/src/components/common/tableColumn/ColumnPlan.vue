@@ -21,24 +21,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.column-plan {
-  & > .el-tag {
-    height: auto;
-    margin: 0 6px;
-    padding: 4px 6px;
-    font-size: 11px;
-    line-height: 11px;
-
-    &.PRO {
-      color: #0b5bd8;
-      border-color: #0b5bd8;
-    }
-    &.BASIC {
-      color: #828a97;
-      border-color: #828a97;
-    }
-  }
-}
-</style>

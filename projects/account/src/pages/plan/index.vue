@@ -23,7 +23,7 @@
             <div slot="header">
               <h3>사용 중인 플랜</h3>
             </div>
-            <used-plan-list @select="planSelect" />
+            <using-plan-list @select="planSelect" />
           </el-card>
         </el-col>
       </el-row>
@@ -37,13 +37,13 @@
 import planService from '@/services/plan'
 
 import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import UsedPlanList from '@/components/plan/UsedPlanList'
+import usingPlanList from '@/components/plan/usingPlanList'
 import PlanDetailModal from '@/components/plan/PlanDetailModal'
 
 export default {
   components: {
     SubscribePaymentInfo,
-    UsedPlanList,
+    usingPlanList,
     PlanDetailModal,
   },
   data: function() {

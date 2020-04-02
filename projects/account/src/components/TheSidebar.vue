@@ -28,9 +28,19 @@ export default {
       isCollapse: false,
     }
   },
+  watch: {
+    $route() {
+      this.detectActive()
+    },
+  },
+  methods: {
+    detectActive() {
+      const now = this.$router.currentRoute.path
+      this.now = this.menus.findIndex(menu => menu.path === now) + ''
+    },
+  },
   beforeMount() {
-    const now = this.$router.currentRoute.path
-    this.now = this.menus.findIndex(menu => menu.path === now) + ''
+    this.detectActive()
   },
 }
 </script>

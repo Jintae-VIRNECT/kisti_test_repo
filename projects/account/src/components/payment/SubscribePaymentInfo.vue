@@ -2,14 +2,14 @@
   <div class="subscribe-payment-info">
     <el-table class="el-table--list" :data="PaymentScheduledPlans">
       <column-plan
-        label="결제 예정 플랜 수"
+        :label="$t('home.payment.willPaymentPlans')"
         nameProp="name"
         gradeProp="grade"
       />
       <column-default :label="total" prop="count" :width="60" align="right" />
     </el-table>
     <div class="subscribe-payment-info__storage">
-      <span class="desc">스토리지 용량</span>
+      <span class="desc">{{ $t('home.payment.storageVolume') }}</span>
       <span class="display">
         <span class="current">{{ storage.current }}G</span>
         /{{ storage.max }}G
