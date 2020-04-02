@@ -120,17 +120,6 @@
 }
 
 // button
-.el-button {
-  height: 50px;
-  margin-top: 20px;
-  &.block-btn {
-    width: 100%;
-  }
-  &.next-btn {
-    margin-top: 30px;
-  }
-}
-
 .el-button--primary.is-disabled,
 .el-button--primary.is-disabled:hover,
 .el-button--primary.is-disabled:focus,

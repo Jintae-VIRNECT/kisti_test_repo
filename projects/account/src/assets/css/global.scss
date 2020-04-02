@@ -24,4 +24,8 @@ body {
   @import "@/assets/css/el-override/button.scss";
   @import "@/assets/css/el-override/card.scss";
   @import "@/assets/css/el-override/dialog.scss";
+
+  .virnect-login-form {
+    @import "@/assets/css/el-override/form.scss";
+  }
 }

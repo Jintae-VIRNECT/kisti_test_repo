@@ -3,9 +3,9 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item to="/">
-            {{ $t('menu.account') }}
-          </el-breadcrumb-item>
+          <el-breadcrumb-item to="/">{{
+            $t('menu.account')
+          }}</el-breadcrumb-item>
           <el-breadcrumb-item>{{ $t('menu.profile') }}</el-breadcrumb-item>
         </el-breadcrumb>
         <h2>{{ $t('menu.profile') }}</h2>
