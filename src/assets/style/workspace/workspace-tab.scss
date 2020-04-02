@@ -1,4 +1,5 @@
 .workspace-tab {
+  height: calc(100% - #{$welcome_height});
   border: solid 1px #4e4e4e;
 }
 
@@ -9,6 +10,7 @@
 .workspace-tab__button {
   margin-right: 20px;
   > button {
+    min-width: 70px;
     padding: 12px 3px;
     color: #ffffff;
     font-size: 15px;
@@ -25,4 +27,29 @@
       opacity: 1;
     }
   }
+}
+
+.tab-view {
+  width: 100%;
+  height: 100%;
+}
+.tab-view__header {
+  position: relative;
+  display: flex;
+  margin: 51px 0 23px;
+}
+.tab-view__title {
+  color: #d2d2d2;
+  font-weight: 500;
+  font-size: 22px;
+}
+.tab-view__description {
+  margin-top: 9px;
+  margin-left: 19px;
+  color: rgba(#fafafa, 0.3);
+}
+.tab-view__search {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

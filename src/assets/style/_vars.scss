@@ -1,10 +1,12 @@
 /* Layout */
 $header_height: 56px;
-$recent_call_width: 400px;
+
+/* Layout - Workspace */
+$welcome_height: 284px; //156px + 64px + 64px
+
+/* Layout - Service */
 $subview_width: 360px;
 $videos_height: 100px;
-
-$tools_height: 78px;
 
 /* Main Color */
 $color_remote: #145fc6;

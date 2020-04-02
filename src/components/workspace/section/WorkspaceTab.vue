@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import TabButton from './WorkspaceTabButton'
-import WorkspaceHistory from '../container/WorkspaceHistory'
-import WorkspaceRemote from '../container/WorkspaceRemote'
-import WorkspaceUser from '../container/WorkspaceUser'
-import WorkspaceSetting from '../container/WorkspaceSetting'
+import TabButton from '../partials/WorkspaceTabButton'
+import WorkspaceHistory from '../tab/WorkspaceHistory'
+import WorkspaceRemote from '../tab/WorkspaceRemote'
+import WorkspaceUser from '../tab/WorkspaceUser'
+import WorkspaceSetting from '../tab/WorkspaceSetting'
 export default {
   name: 'WorkspaceTab',
   components: {

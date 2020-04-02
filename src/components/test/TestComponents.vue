@@ -7,43 +7,37 @@
       <div class="action-box">
         <div class="component">
           <card></card>
-          <data-view :list="listviewSample">
-            <template slot="title">원격 협업 가능한 회원</template>
-            <template slot="description">
-              협업 가능한 회원을 선택하고 문자 보내기 또는 1:1통화를 해보세요.
-            </template>
-            <card width="full" :height="90" slot="listview">
-              <div class="listview-body">
-                <img
-                  class="listview-profile"
-                  src="~assets/image/img-default-user.svg"
-                />
-              </div>
-            </card>
-            <card slot="cardview">
-              <div class="cardview-body">
-                <img
-                  class="cardview-profile"
-                  src="~assets/image/img-default-user.svg"
-                />
-              </div>
-            </card>
-          </data-view>
         </div>
-        <!-- <div class="props">
-          <div class="props-option">
-            <p class="props-title">description</p>
-            <input
-              class="props-options"
-              type="text"
-              v-model="toogleButton.description"
-            />
-          </div>
-        </div> -->
       </div>
     </section>
 
-    <section class="test-section select">
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Search</h2>
+      <div class="action-box">
+        <div class="component">
+          <search
+            :placeholder="search.placeholder"
+            v-on:search="txt => (search.value = txt)"
+          ></search>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">placeholder</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="search.placeholder"
+            />
+          </div>
+          <div class="props-option">
+            <p class="props-title">Search Value</p>
+            <span style="color: #fff;">{{ search.value }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
       <h2 class="subtitle">Select</h2>
       <div class="action-box">
         <div class="component">
@@ -67,7 +61,7 @@
     </section>
 
     <section class="test-section">
-      <h2 class="subtitle">Toggle Button</h2>
+      <h2 class="subtitle">[개발 완]Toggle Button</h2>
       <div class="action-box">
         <div class="component">
           <toggle-button
@@ -164,7 +158,7 @@
       </div>
     </section>
     <section class="test-section">
-      <h2 class="subtitle">Tooltip</h2>
+      <h2 class="subtitle">[개발 완]Tooltip</h2>
       <div class="action-box">
         <div class="component">
           <tooltip :content="tooltip.content" :placement="tooltip.placement">
@@ -203,6 +197,7 @@ import Popover from 'Popover'
 import Tooltip from 'Tooltip'
 // import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
+import Search from 'Search'
 export default {
   components: {
     Card,
@@ -214,9 +209,14 @@ export default {
     Tooltip,
     // Modal,
     ToggleButton,
+    Search,
   },
   data() {
     return {
+      search: {
+        placeholder: '회원명 검색',
+        value: '',
+      },
       listviewSample: [
         {
           profile: require('assets/image/img-default-user.svg'),
@@ -304,6 +304,9 @@ export default {
   },
   methods: {
     toogleOnOff() {},
+    searchText(text) {
+      this.search.value = text
+    },
   },
 }
 </script>
