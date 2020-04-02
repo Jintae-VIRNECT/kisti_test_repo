@@ -3,106 +3,119 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>계정 관리</el-breadcrumb-item>
-          <el-breadcrumb-item>개인 정보</el-breadcrumb-item>
+          <el-breadcrumb-item to="/">
+            {{ $t('menu.account') }}
+          </el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('menu.profile') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>개인 정보</h2>
-        <p>VIRNECT 제품과 서비스에서 사용되는 기본 정보를 관리합니다.</p>
+        <h2>{{ $t('menu.profile') }}</h2>
+        <p>{{ $t('profile.desc') }}</p>
       </div>
+      <!-- 프로필, 이름, 닉네임 -->
       <el-card class="designed">
         <div slot="header">
-          <h3>프로필</h3>
-          <span>회원님의 프로필 정보를 관리합니다.</span>
+          <h3>{{ $t('profile.info.title') }}</h3>
+          <span>{{ $t('profile.info.desc') }}</span>
         </div>
         <div>
           <div class="profile__info">
-            <h4>프로필 이미지</h4>
+            <h4>{{ $t('profile.info.title') }}</h4>
             <div class="content">
               <span class="desc">
-                프로필 이미지를 등록하시면 다른 사용자가 나를 더 쉽게 찾을 수
-                있습니다.
+                {{ $t('profile.info.desc') }}
               </span>
             </div>
             <div class="thumbnail">
-              <img src="~assets/images/img-user-profile-08.png" />
+              <img :src="me.image" />
               <i>
                 <img src="~assets/images/ic-camera-alt.svg" />
               </i>
             </div>
           </div>
           <div class="profile__info">
-            <h4>이름</h4>
+            <h4>{{ $t('profile.info.name') }}</h4>
             <div class="content">
-              <span class="value">장 선영</span>
+              <span class="value">{{ me.name }}</span>
               <span class="desc">
-                회원님의 이름은 결재 및 구매 관리, 계정 정보 보안 관리에
-                사용됩니다.
+                {{ $t('profile.info.nameDesc') }}
               </span>
             </div>
-            <el-button type="text">이름 변경</el-button>
+            <el-button type="text">
+              {{ $t('profile.info.nameChange') }}
+            </el-button>
           </div>
           <div class="profile__info">
-            <h4>닉네임</h4>
+            <h4>{{ $t('profile.info.nickname') }}</h4>
             <div class="content">
-              <span class="value">버넥트 연구원</span>
+              <span class="value">{{ me.nickname }}</span>
               <span class="desc">
-                회원님의 닉네임은 VIRNECT 서비스를 사용하는 다른 사용자에게
-                보여집니다.
+                {{ $t('profile.info.nicknameDesc') }}
               </span>
             </div>
-            <el-button type="text">닉네임 변경</el-button>
+            <el-button type="text">
+              {{ $t('profile.info.nicknameChange') }}
+            </el-button>
           </div>
         </div>
       </el-card>
+      <!-- 계정 정보 -->
       <el-card>
         <div slot="header">
-          <h3>계정 정보</h3>
-          <span>회원님의 계정과 비밀번호 정보를 관리합니다.</span>
+          <h3>{{ $t('profile.account.title') }}</h3>
+          <span>{{ $t('profile.account.desc') }}</span>
         </div>
         <div>
           <div class="profile__info">
-            <h4>계정</h4>
+            <h4>{{ $t('profile.account.email') }}</h4>
             <div class="content">
-              <span class="value">example@example.com</span>
+              <span class="value">{{ me.email }}</span>
               <span class="desc">
-                가입 시 등록한 이메일 주소는 변경할 수 없습니다.
+                {{ $t('profile.account.emailDesc') }}
               </span>
             </div>
           </div>
           <div class="profile__info">
-            <h4>비밀번호</h4>
+            <h4>{{ $t('profile.account.password') }}</h4>
             <div class="content">
-              <span class="value password">·······</span>
+              <span class="value password">··········</span>
               <span class="desc">
-                주기적인 비밀번호 변경은 보안 강화에 도움이 됩니다.
+                {{ $t('profile.account.passwordDesc') }}
               </span>
             </div>
-            <el-button type="text">비밀번호 변경</el-button>
+            <el-button type="text">
+              {{ $t('profile.account.passwordChange') }}
+            </el-button>
           </div>
         </div>
       </el-card>
+      <!-- 사용자 추가 정보 -->
       <el-card>
         <div slot="header">
-          <h3>사용자 추가 정보</h3>
-          <span>
-            사용자 추가 정보는 계정 이메일 분실 시 사용자 본인 인증을 위해
-            활용됩니다.
-          </span>
+          <h3>{{ $t('profile.additional.title') }}</h3>
+          <span>{{ $t('profile.additional.desc') }}</span>
         </div>
         <div>
           <div class="profile__info">
-            <h4>생년월일</h4>
+            <h4>{{ $t('profile.additional.birth') }}</h4>
             <div class="content">
-              <span class="value">등록된 생년월일이 없습니다.</span>
+              <span class="value">
+                {{ me.birth || $t('profile.additional.birthEmpty') }}
+              </span>
             </div>
-            <el-button type="text">생년월일 변경</el-button>
+            <el-button type="text">
+              {{ $t('profile.additional.birthChange') }}
+            </el-button>
           </div>
           <div class="profile__info">
-            <h4>연락처</h4>
+            <h4>{{ $t('profile.additional.contact') }}</h4>
             <div class="content">
-              <span class="value">등록된 연락처가 없습니다.</span>
+              <span class="value">
+                {{ me.contact || $t('profile.additional.contactEmpty') }}
+              </span>
             </div>
-            <el-button type="text">연락처 변경</el-button>
+            <el-button type="text">
+              {{ $t('profile.additional.contactChange') }}
+            </el-button>
           </div>
         </div>
       </el-card>
@@ -111,7 +124,15 @@
 </template>
 
 <script>
-export default {}
+import profileService from '@/services/profile'
+
+export default {
+  data() {
+    return {
+      me: profileService.getMyProfile(),
+    }
+  },
+}
 </script>
 
 <style lang="scss">
