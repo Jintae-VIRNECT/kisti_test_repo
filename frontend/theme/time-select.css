@@ -727,15 +727,15 @@
   line-height: 20px; }
 
 .el-range-editor.is-disabled {
-  background-color: #F5F7FA;
+  background-color: #ffffff;
   border-color: #E4E7ED;
-  color: #C0C4CC;
+  color: #6e7f9b;
   cursor: not-allowed; }
   .el-range-editor.is-disabled:hover, .el-range-editor.is-disabled:focus {
     border-color: #E4E7ED; }
   .el-range-editor.is-disabled input {
-    background-color: #F5F7FA;
-    color: #C0C4CC;
+    background-color: #ffffff;
+    color: #6e7f9b;
     cursor: not-allowed; }
     .el-range-editor.is-disabled input::-webkit-input-placeholder {
       color: #C0C4CC; }
@@ -746,7 +746,7 @@
     .el-range-editor.is-disabled input::placeholder {
       color: #C0C4CC; }
   .el-range-editor.is-disabled .el-range-separator {
-    color: #C0C4CC; }
+    color: #6e7f9b; }
 
 /* Element Chalk Variables */
 /* Transition

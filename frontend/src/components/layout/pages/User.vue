@@ -73,34 +73,6 @@
 				>
         </el-input>
 
-				<p class="input-title">생년월일</p>
-        <el-input
-          class="birth-input year-input"
-					placeholder="년"
-          v-model="birth.year"
-          name="birtnY"
-          maxlength="4"
-          v-validate="'required|max:4'"
-				></el-input>
-        
-				<el-input
-          class="birth-input"
-					placeholder="월"
-          v-model="birth.month"
-          name="birthM"
-          maxlength="2"
-          v-validate="'required|max:2'"
-				></el-input>
-
-				<el-input
-          class="birth-input"
-					placeholder="일"
-          v-model="birth.day"
-          name="birthD"
-          maxlength="2"
-          v-validate="'required|max:2'"
-				></el-input>
-
         <el-button class="next-btn block-btn" type="primary" 
           @click="handleRegister()"
 					>확인</el-button>
@@ -223,12 +195,6 @@
           name: '',
           phoneNumber: '',
           recoveryEmail: '',
-          birth: '',
-        },
-        birth: {
-          year: '',
-          month: '',
-          day: ''
         },
         countryCodeLists: [
           {

@@ -96,6 +96,9 @@
 
 .el-select {
   width: 100%;
+  + .el-input--suffix {
+    margin-top: 12px;
+  }
 }
 .countrycode-input{
   width: 84px;

@@ -4,6 +4,7 @@ const url = {
     logout: '/auth/signout',
     register: '/auth/signup',
     emailAuth: '/auth/email',
+    verification: '/auth/verification',
   },
   user: {
     login: '/users/login',

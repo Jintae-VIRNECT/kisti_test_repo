@@ -452,9 +452,9 @@ $--input-clear-hover-color: $--color-text-secondary !default;
 $--input-focus-border: $--color-point !default;
 $--input-focus-fill: $--color-white !default;
 
-$--input-disabled-fill: $--disabled-fill-base !default;
+$--input-disabled-fill: #ffffff !default;
 $--input-disabled-border: $--disabled-border-base !default;
-$--input-disabled-color: $--disabled-color-base !default;
+$--input-disabled-color: #6e7f9b !default;
 $--input-disabled-placeholder-color: $--color-text-placeholder !default;
 
 /// fontSize||Font|1

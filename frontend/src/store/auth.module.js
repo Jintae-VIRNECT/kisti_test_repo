@@ -37,6 +37,18 @@ export const auth = {
 				},
 			)
 		},
+		verification({ commit }, code) {
+			return AuthService.verification(code).then(
+				response => {
+					commit('authSuccess', response)
+					return Promise.resolve(response)
+				},
+				error => {
+					commit('authFailure')
+					return Promise.reject(error)
+				},
+			)
+		}
 	},
 	mutations: {
 		loginSuccess(state, user) {
@@ -55,6 +67,12 @@ export const auth = {
 			state.status = {}
 		},
 		registerFailure(state) {
+			state.status = {}
+		},
+		authSuccess(state) {
+			state.status = {}
+		},
+		authFailure(state) {
 			state.status = {}
 		},
 	},
