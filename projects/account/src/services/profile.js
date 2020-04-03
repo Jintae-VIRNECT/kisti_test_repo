@@ -1,15 +1,16 @@
 import Profile from '@/models/profile/Profile'
 
-import randomPromise from '@/test/randomPromise'
+import switchPromise from '@/test/switchPromise'
 
 export default {
   getMyProfile() {
     return new Profile()
   },
   async certification(form) {
-    if (await randomPromise()) {
-      $nuxt.$store.commit('auth/SET_AUTH', true)
-      return true
-    }
+    await switchPromise()
+    $nuxt.$store.commit('auth/SET_AUTH', true)
+  },
+  async changeMyImage(form) {
+    await switchPromise()
   },
 }

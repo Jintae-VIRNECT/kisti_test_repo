@@ -41,11 +41,12 @@
 
 <script>
 import dialogMixin from '@/mixins/dialog'
+import profileService from '@/services/profile'
 
 export default {
   mixins: [dialogMixin],
   props: {
-    image: String,
+    me: Object,
   },
   data() {
     return {
@@ -54,7 +55,7 @@ export default {
   },
   watch: {
     visible() {
-      this.file = this.$props.image
+      this.file = this.$props.me.image
     },
   },
   methods: {
@@ -65,13 +66,29 @@ export default {
         this.file = reader.result
       }
     },
-    uploadImage() {},
+    uploadImage() {
+      document
+        .querySelector('.image-change-modal .el-upload')
+        .dispatchEvent(new Event('click'))
+    },
     deleteImage() {
       this.$refs.upload.clearFiles()
       this.file = null
     },
-    submit() {
-      this.$emit('changeImage', this.file)
+    async submit() {
+      try {
+        await profileService.changeMyImage({
+          me: this.me,
+          image: this.file,
+        })
+        this.$emit('changeImage', this.file)
+      } catch (e) {
+        this.error()
+        this.$notify.error({
+          message: e,
+          position: 'bottom-left',
+        })
+      }
     },
   },
 }

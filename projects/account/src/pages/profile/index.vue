@@ -40,7 +40,7 @@
                 {{ $t('profile.info.nameDesc') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.nameChangeModal = true">
               {{ $t('profile.info.nameChange') }}
             </el-button>
           </div>
@@ -122,9 +122,14 @@
     </div>
     <!-- 모달 -->
     <image-change-modal
-      :image="me.image"
+      :me="me"
       :visible.sync="visible.imageChangeModal"
       @changeImage="changeImage"
+    />
+    <name-change-modal
+      :me="me"
+      :visible.sync="visible.nameChangeModal"
+      @changeName="changeName"
     />
   </div>
 </template>
@@ -133,17 +138,20 @@
 import profileService from '@/services/profile'
 
 import ImageChangeModal from '@/components/profile/ImageChangeModal'
+import NameChangeModal from '@/components/profile/NameChangeModal'
 
 export default {
   middleware: 'auth',
   components: {
     ImageChangeModal,
+    NameChangeModal,
   },
   data() {
     return {
       me: profileService.getMyProfile(),
       visible: {
         imageChangeModal: false,
+        nameChangeModal: false,
       },
     }
   },
@@ -152,6 +160,7 @@ export default {
       this.me.image = image
       this.visible.imageChangeModal = false
     },
+    changeName(name) {},
   },
 }
 </script>

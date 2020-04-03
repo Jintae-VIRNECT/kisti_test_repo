@@ -21,7 +21,7 @@ module.exports = {
   /**
    * Plugins
    */
-  plugins: ['@/plugins/element-ui'],
+  plugins: ['@/plugins/element-ui', '@/plugins/alert'],
   modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources'],
   /*
    ** Customize style

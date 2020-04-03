@@ -13,7 +13,6 @@
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheSidebar from '@/components/TheSidebar'
-
 import { sideMenus } from '@/models/layout'
 
 export default {

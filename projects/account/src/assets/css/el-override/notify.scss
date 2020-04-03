@@ -1,0 +1,27 @@
+body .el-notification {
+  width: auto;
+  padding: 14px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px -2px rgba(9, 30, 66, 0.25),
+    0 0 1px 0 rgba(9, 30, 66, 0.31);
+
+  &[role="alert"] {
+    background-color: #b92500;
+    border-color: #b92500;
+    .el-notification__group {
+      margin-right: 20px;
+      margin-left: 0;
+    }
+    .el-notification__content {
+      margin: 0;
+      color: #fff;
+    }
+  }
+
+  .el-notification__icon {
+    display: none;
+  }
+  .el-icon-close:before {
+    color: #fff;
+  }
+}
