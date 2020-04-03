@@ -2,6 +2,40 @@
   <div class="test">
     <h1 class="test-title">Components</h1>
 
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">Select</h2>
+      <div class="action-box">
+        <div class="component">
+          <r-select
+            :options="selectOptions.options"
+            :value="selectOptions.value"
+            :text="selectOptions.text"
+          ></r-select>
+        </div>
+        <!-- <div class="props">
+          <div class="props-option">
+            <p class="props-title">description</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="toogleButton.description"
+            />
+          </div>
+        </div> -->
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Scrollbar</h2>
+      <div class="action-box">
+        <div class="component" style="position: relative;height: 100px;">
+          <scroller>
+            <div style="height: 1000px;border: solid 1px #d8d8d8;"></div>
+          </scroller>
+        </div>
+      </div>
+    </section>
+
     <section class="test-section" style="background-color: #1e1e20;">
       <h2 class="subtitle">Card</h2>
       <div class="action-box">
@@ -34,29 +68,6 @@
             <span style="color: #fff;">{{ search.value }}</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="test-section select" style="background-color: #1e1e20;">
-      <h2 class="subtitle">Select</h2>
-      <div class="action-box">
-        <div class="component">
-          <r-select
-            :options="selectOptions.options"
-            :value="selectOptions.value"
-            :text="selectOptions.text"
-          ></r-select>
-        </div>
-        <!-- <div class="props">
-          <div class="props-option">
-            <p class="props-title">description</p>
-            <input
-              class="props-options"
-              type="text"
-              v-model="toogleButton.description"
-            />
-          </div>
-        </div> -->
       </div>
     </section>
 
@@ -188,6 +199,7 @@
   </div>
 </template>
 <script>
+import Scroller from 'Scroller'
 import Card from 'Card'
 // import CardView from 'CardView'
 // import ListView from 'ListView'
@@ -200,6 +212,7 @@ import ToggleButton from 'ToggleButton'
 import Search from 'Search'
 export default {
   components: {
+    Scroller,
     Card,
     // CardView,
     // ListView,
@@ -339,6 +352,7 @@ export default {
   .action-box {
     display: flex;
     .component {
+      position: relative;
       width: 100%;
     }
 

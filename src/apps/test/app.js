@@ -6,6 +6,7 @@ import ElementUI from 'element-ui'
 import moment from 'moment'
 import VueMoment from 'vue-moment'
 import Router from 'routers/test'
+import Vue2Scrollbar from 'plugins/remote/scrollbar'
 
 import App from './app.vue'
 
@@ -14,6 +15,7 @@ Vue.use(ElementUI)
 Vue.use(VueMoment, {
   moment,
 })
+Vue.use(Vue2Scrollbar)
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
