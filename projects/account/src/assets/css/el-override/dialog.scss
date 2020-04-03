@@ -13,6 +13,10 @@
   }
   &__body {
     padding: 24px 30px;
+    p {
+      color: $font-color-content;
+      line-height: 24px;
+    }
   }
   &__footer {
     padding: 24px 30px;

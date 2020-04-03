@@ -17,7 +17,6 @@ body {
 #__nuxt {
   font-weight: 500;
 
-  @import "@/assets/css/modules/common.scss";
   @import "@/assets/css/modules/title.scss";
   @import "@/assets/css/modules/column.scss";
 
@@ -30,4 +29,5 @@ body {
   }
 }
 
+@import "@/assets/css/modules/common.scss";
 @import "@/assets/css/el-override/messagebox.scss";

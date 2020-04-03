@@ -4,9 +4,7 @@
     <div class="container">
       <el-row>
         <section class="page-description">
-          <div class="avatar">
-            <img src="~assets/images/ic-user-profile.svg" />
-          </div>
+          <div class="avatar"></div>
           <h2>{{ $t('home.title.welcome', { username: me.name }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
         </section>
@@ -110,18 +108,6 @@ export default {
   color: #fff;
   text-align: center;
 
-  .avatar {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    background: url('~assets/images/ic-bg.svg') no-repeat;
-    background-size: 100%;
-    & > img {
-      width: 80%;
-      height: 80%;
-      margin: 10%;
-    }
-  }
   & > h2 {
     margin: 12px;
     font-size: 28px;

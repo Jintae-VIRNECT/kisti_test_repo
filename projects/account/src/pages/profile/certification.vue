@@ -4,10 +4,10 @@
       <el-card class="virnect-login-form">
         <div>
           <p v-html="$t('certification.desc')"></p>
-          <el-image :src="me.image"></el-image>
+          <div class="avatar"></div>
           <span class="name">{{ me.name }}</span>
           <span class="email">{{ me.email }}</span>
-          <el-form ref="form" :model="form">
+          <el-form ref="form" :model="form" @submit.native.prevent="submit">
             <el-form-item :label="$t('certification.password')">
               <el-input
                 :placeholder="$t('certification.passwordPlaceholder')"
@@ -90,10 +90,8 @@ export default {
       color: $font-color-desc;
     }
   }
-  .el-image {
-    width: 100px;
-    height: 100px;
-    margin: 28px 0 20px;
+  .avatar {
+    margin: 28px auto 20px;
   }
   .el-form {
     margin-top: 40px;

@@ -25,7 +25,7 @@
                 {{ $t('profile.info.desc') }}
               </span>
             </div>
-            <div class="thumbnail">
+            <div class="avatar" @click="visible.imageChangeModal = true">
               <img :src="me.image" />
               <i>
                 <img src="~assets/images/ic-camera-alt.svg" />
@@ -120,18 +120,38 @@
         </div>
       </el-card>
     </div>
+    <!-- 모달 -->
+    <image-change-modal
+      :image="me.image"
+      :visible.sync="visible.imageChangeModal"
+      @changeImage="changeImage"
+    />
   </div>
 </template>
 
 <script>
 import profileService from '@/services/profile'
 
+import ImageChangeModal from '@/components/profile/ImageChangeModal'
+
 export default {
   middleware: 'auth',
+  components: {
+    ImageChangeModal,
+  },
   data() {
     return {
       me: profileService.getMyProfile(),
+      visible: {
+        imageChangeModal: false,
+      },
     }
+  },
+  methods: {
+    changeImage(image) {
+      this.me.image = image
+      this.visible.imageChangeModal = false
+    },
   },
 }
 </script>
@@ -164,9 +184,10 @@ export default {
       color: #fff;
     }
   }
-  .thumbnail {
-    position: relative;
-    top: -54px;
+  .avatar {
+    top: -56px;
+    width: 120px;
+    height: 120px;
     cursor: pointer;
     & > i {
       position: absolute;

@@ -32,7 +32,10 @@ module.exports = {
       '@/assets/css/_vars.scss',
     ],
   },
-  css: ['../../../WC-Modules/src/assets/css/reset.scss'],
+  css: [
+    '../../../WC-Modules/src/assets/css/reset.scss',
+    '@/assets/css/global.scss',
+  ],
   loading: { color: '#1b293e' },
   /**
    * dir

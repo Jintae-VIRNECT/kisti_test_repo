@@ -39,10 +39,6 @@ export default {
 
 <style lang="scss">
 .security-enhance-modal .el-dialog__body {
-  p {
-    color: $font-color-content;
-    line-height: 24px;
-  }
   span {
     display: inline-block;
     margin: 6px 0;
