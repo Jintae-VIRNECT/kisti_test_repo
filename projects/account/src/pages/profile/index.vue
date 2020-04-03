@@ -127,6 +127,7 @@
 import profileService from '@/services/profile'
 
 export default {
+  middleware: 'auth',
   data() {
     return {
       me: profileService.getMyProfile(),

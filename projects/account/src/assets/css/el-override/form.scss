@@ -1,34 +1,12 @@
-// messagebox
-.el-message-box {
-  margin-top: 36px;
-  padding-bottom: 0;
-  vertical-align: top;
-}
-
-.el-message-box__title {
-  font-weight: 500;
-}
-.el-message-box__header {
-  padding-bottom: 6px;
-  &btn {
-    display: none;
+// label
+.el-form-item {
+  margin-bottom: 16px;
+  &:last-child {
+    margin-bottom: 0;
   }
 }
-.el-message-box__content {
-  padding-top: 6px;
-  font-weight: 500;
-}
-
-.el-message-box__btns {
-  padding: 20px 24px 24px;
-  .el-button--small {
-    height: 36px;
-    margin-top: 0;
-    font-size: 14px;
-    background-color: $point;
-    border-color: $point;
-    border-radius: 3px;
-  }
+.el-form-item__label {
+  line-height: 1em;
 }
 
 // input
@@ -68,6 +46,7 @@
 }
 
 .el-input__inner {
+  height: 48px;
   padding: 0;
   color: $baseColor;
   font-weight: 500;
@@ -75,6 +54,10 @@
   border: 0;
   border-bottom: 2px solid #e6e9ee;
   border-radius: 0;
+
+  &:focus {
+    border-color: $color-primary;
+  }
 }
 
 .el-input--suffix {
@@ -120,11 +103,16 @@
 }
 
 // button
+.el-button {
+  padding: 12px 22px;
+  border-radius: 3px;
+}
 .el-button--primary.is-disabled,
 .el-button--primary.is-disabled:hover,
 .el-button--primary.is-disabled:focus,
 .el-button--primary.is-disabled:active {
   color: #8d939c;
-  background-color: #e2e6eb;
-  border-color: #e2e6eb;
+  background-color: #edf0f4;
+  border-color: #edf0f4;
+  opacity: 0.6;
 }

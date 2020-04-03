@@ -7,12 +7,20 @@
           <el-image :src="me.image"></el-image>
           <span class="name">{{ me.name }}</span>
           <span class="email">{{ me.email }}</span>
-          <el-form>
-            <el-form-item label="Activity name">
-              <el-input v-model="form.password"></el-input>
+          <el-form ref="form" :model="form">
+            <el-form-item :label="$t('certification.password')">
+              <el-input
+                :placeholder="$t('certification.passwordPlaceholder')"
+                v-model="form.password"
+                show-password
+              ></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">
+              <el-button
+                type="primary"
+                @click="submit"
+                :disabled="!form.password"
+              >
                 {{ $t('common.confirm') }}
               </el-button>
             </el-form-item>
@@ -32,13 +40,29 @@
 import profileService from '@/services/profile'
 
 export default {
+  layout: 'noSidebar',
   data() {
+    const profile = profileService.getMyProfile()
     return {
-      me: profileService.getMyProfile(),
+      me: profile,
       form: {
+        id: profile.id,
         password: null,
       },
     }
+  },
+  methods: {
+    async submit() {
+      try {
+        await profileService.certification(this.form)
+        this.$router.push(`/profile`)
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          showClose: true,
+        })
+      }
+    },
   },
 }
 </script>
@@ -52,9 +76,8 @@ export default {
     text-align: center;
   }
   .el-card__body {
-    padding: 40px;
+    padding: 44px 40px 48px;
     p {
-      padding: 4px 0 8px;
       font-size: 16px;
     }
     span {
@@ -70,7 +93,11 @@ export default {
   .el-image {
     width: 100px;
     height: 100px;
-    margin: 20px;
+    margin: 28px 0 20px;
+  }
+  .el-form {
+    margin-top: 40px;
+    text-align: right;
   }
   .bottom {
     margin: 24px;
