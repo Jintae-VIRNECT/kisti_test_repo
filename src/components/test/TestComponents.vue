@@ -3,7 +3,7 @@
     <h1 class="test-title">Components</h1>
 
     <section class="test-section select" style="background-color: #1e1e20;">
-      <h2 class="subtitle">Select</h2>
+      <h2 class="subtitle">[디자인 필요함]Select</h2>
       <div class="action-box">
         <div class="component">
           <r-select
