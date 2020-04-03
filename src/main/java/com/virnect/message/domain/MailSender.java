@@ -8,9 +8,7 @@ package com.virnect.message.domain;
  * DESCRIPTION:
  */
 public enum MailSender {
-    MASTER("발신전용 <no-reply@virnect.com>"),
-    MASTER_NAME("관리자"),
-    CONTACT("contact@virnect.com");
+    MASTER("no-reply@virnect.com");
 
     private String sender;
 

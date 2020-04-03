@@ -2,12 +2,12 @@ spring:
   application:
     name: message-server
   datasource:
-    url: jdbc:mysql://localhost:3306/smic?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/message?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: root
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -36,10 +36,6 @@ file:
   url: "http://localhost:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
 
-# Workspace Server Configuration
-workspace:
-  serverUrl: "http://localhost:8082/workspaces"
-
 ## Eureka Server Configuration
 eureka:
   instance:
@@ -47,3 +43,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+## Aws credentials
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
