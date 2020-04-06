@@ -1,27 +1,27 @@
 <template>
   <div>
-    <div>음성 설정</div>
+    <div class="sub-title">음성 설정</div>
     <div>
       <span>입력 장치</span>
-      <select v-model="selectAudio" @change="handleInputAudioStream">
-        <option
-          v-for="device in audioDevices"
-          :key="device.deviceId"
-          :value="device.deviceId"
-          >{{ device.label }}</option
-        >
-      </select>
+      <r-select
+        v-model="selectAudio"
+        @change="handleInputAudioStream"
+        :options="audioDevices"
+        :value="'deviceId'"
+        :text="'label'"
+      >
+      </r-select>
     </div>
     <div>
       <span>출력 장치</span>
-      <select v-model="selectOutput" @change="setAudioOutput">
-        <option
-          v-for="device in outputDevices"
-          :key="device.deviceId"
-          :value="device.deviceId"
-          >{{ device.label }}</option
-        >
-      </select>
+      <r-select
+        v-model="selectOutput"
+        @change="setAudioOutput"
+        :options="outputDevices"
+        :value="'deviceId'"
+        :text="'label'"
+      >
+      </r-select>
       <audio
         ref="audioComponent"
         :srcObject.prop="audioStream"
@@ -42,6 +42,7 @@
 </template>
 <script>
 import SoundMeter from 'plugins/remote/soundmeter'
+import RSelect from 'RemoteSelect'
 export default {
   data: function() {
     return {
@@ -71,6 +72,9 @@ export default {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
   },
   created() {},
+  components: {
+    RSelect,
+  },
   computed: {
     soundWidth() {
       if (this.micTestMode) {
@@ -149,4 +153,14 @@ export default {
   },
 }
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.sub-title {
+  width: 135px;
+  height: 22px;
+  color: rgb(250, 250, 250);
+  font-size: 15px;
+  font-family: NotoSansCJKkr-Bold;
+  font-weight: bold;
+  letter-spacing: 0px;
+}
+</style>
