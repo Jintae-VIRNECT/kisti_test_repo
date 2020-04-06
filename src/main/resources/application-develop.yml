@@ -42,4 +42,4 @@ zuul:
   thread-pool:
     use-separate-thread-pools: true
     thread-pool-key-prefix: zuul-
-  sensitive-headers:  Cookie,Set-Cookie
+  sensitive-headers:  Cookie,
