@@ -1,9 +1,5 @@
 <template>
   <ul class="header-workspace-tools">
-    <mic></mic>
-
-    <speaker></speaker>
-
     <notice></notice>
     <span>프로필</span>
   </ul>

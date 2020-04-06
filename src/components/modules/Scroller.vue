@@ -92,9 +92,11 @@ export default {
       } else {
         return totalHeight
       }
+      this.scrollH = element.parentElement.offsetHeight
+      return element.parentElement.offsetHeight
 
-      this.scrollH = totalHeight - calcOffset(element).top
-      return totalHeight - calcOffset(element).top
+      // this.scrollH = totalHeight - calcOffset(element).top
+      // return totalHeight - calcOffset(element).top
     },
     reset() {
       if (this.$refs['contentScrollbar']) {
