@@ -3,6 +3,41 @@
     <h1 class="test-title">Components</h1>
 
     <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Profile</h2>
+      <div class="action-box">
+        <div class="component">
+          <div>
+            <profile
+              :image="require('assets/image/img-default-user.svg')"
+              imageAlt="버넥트 리모트01"
+              mainText="버넥트 리모트01"
+              subText="example@example.com"
+              status="online"
+            ></profile>
+          </div>
+          <br />
+          <div>
+            <profile
+              color="#267bff"
+              mainText="버넥트"
+              subText="버넥트 솔루션 사업부/Remote"
+            ></profile>
+          </div>
+        </div>
+        <!-- <div class="props">
+          <div class="props-option">
+            <p class="props-title">description</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="toogleButton.description"
+            />
+          </div>
+        </div> -->
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
       <h2 class="subtitle">[디자인 필요함]Select</h2>
       <div class="action-box">
         <div class="component">
@@ -201,9 +236,10 @@
 <script>
 import Scroller from 'Scroller'
 import Card from 'Card'
+import Profile from 'Profile'
 // import CardView from 'CardView'
 // import ListView from 'ListView'
-import DataView from 'DataView'
+// import DataView from 'DataView'
 import RSelect from 'RemoteSelect'
 import Popover from 'Popover'
 import Tooltip from 'Tooltip'
@@ -214,9 +250,10 @@ export default {
   components: {
     Scroller,
     Card,
+    Profile,
     // CardView,
     // ListView,
-    DataView,
+    // DataView,
     RSelect,
     Popover,
     Tooltip,
