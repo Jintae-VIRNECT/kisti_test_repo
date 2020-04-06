@@ -271,17 +271,17 @@
       color: #303133;
       border-color: #303133; }
     .el-step__head.is-wait {
-      color: #C0C4CC;
-      border-color: #C0C4CC; }
+      color: #c0c4cc;
+      border-color: #c0c4cc; }
     .el-step__head.is-success {
-      color: #67C23A;
-      border-color: #67C23A; }
+      color: #67c23a;
+      border-color: #67c23a; }
     .el-step__head.is-error {
       color: #db1717;
       border-color: #db1717; }
     .el-step__head.is-finish {
-      color: #4d5d74;
-      border-color: #4d5d74; }
+      color: #0051be;
+      border-color: #0051be; }
   .el-step__icon {
     position: relative;
     z-index: 1;
@@ -299,7 +299,7 @@
     font-size: 14px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    background: #FFFFFF;
+    background: #ffffff;
     -webkit-transition: .15s ease-out;
     transition: .15s ease-out; }
     .el-step__icon.is-text {
@@ -327,7 +327,7 @@
   .el-step__line {
     position: absolute;
     border-color: inherit;
-    background-color: #C0C4CC; }
+    background-color: #c0c4cc; }
   .el-step__line-inner {
     display: block;
     border-width: 1px;
@@ -349,13 +349,13 @@
       font-weight: bold;
       color: #303133; }
     .el-step__title.is-wait {
-      color: #C0C4CC; }
+      color: #c0c4cc; }
     .el-step__title.is-success {
-      color: #67C23A; }
+      color: #67c23a; }
     .el-step__title.is-error {
       color: #db1717; }
     .el-step__title.is-finish {
-      color: #4d5d74; }
+      color: #0051be; }
   .el-step__description {
     padding-right: 10%;
     margin-top: -5px;
@@ -365,13 +365,13 @@
     .el-step__description.is-process {
       color: #303133; }
     .el-step__description.is-wait {
-      color: #C0C4CC; }
+      color: #c0c4cc; }
     .el-step__description.is-success {
-      color: #67C23A; }
+      color: #67c23a; }
     .el-step__description.is-error {
       color: #db1717; }
     .el-step__description.is-finish {
-      color: #4d5d74; }
+      color: #0051be; }
   .el-step.is-horizontal {
     display: inline-block; }
     .el-step.is-horizontal .el-step__line {
@@ -470,7 +470,7 @@
         position: absolute;
         height: 15px;
         width: 1px;
-        background: #C0C4CC; }
+        background: #c0c4cc; }
       .el-step.is-simple .el-step__arrow::before {
         -webkit-transform: rotate(-45deg) translateY(-4px);
         transform: rotate(-45deg) translateY(-4px);

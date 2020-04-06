@@ -257,9 +257,9 @@
   border-radius: 8px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   position: fixed;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   -webkit-transition: opacity .3s, left .3s, right .3s, top 0.4s, bottom .3s, -webkit-transform .3s;
@@ -301,13 +301,13 @@
     .el-notification__closeBtn:hover {
       color: #0d2a58; }
   .el-notification .el-icon-success {
-    color: #67C23A; }
+    color: #67c23a; }
   .el-notification .el-icon-error {
     color: #db1717; }
   .el-notification .el-icon-info {
-    color: #909399; }
+    color: #4d5d74; }
   .el-notification .el-icon-warning {
-    color: #E6A23C; }
+    color: #e6a23c; }
 
 .el-notification-fade-enter.right {
   right: 0;

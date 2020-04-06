@@ -262,12 +262,12 @@
   box-sizing: border-box;
   cursor: pointer; }
   .el-select-dropdown__item.is-disabled {
-    color: #C0C4CC;
+    color: #c0c4cc;
     cursor: not-allowed; }
     .el-select-dropdown__item.is-disabled:hover {
-      background-color: #FFFFFF; }
+      background-color: #ffffff; }
   .el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
-    background-color: #F5F7FA; }
+    background-color: #f5f7fa; }
   .el-select-dropdown__item.selected {
-    color: #4d5d74;
+    color: #0051be;
     font-weight: bold; }

@@ -255,7 +255,7 @@
   .el-badge__content {
     background-color: #db1717;
     border-radius: 10px;
-    color: #FFFFFF;
+    color: #ffffff;
     display: inline-block;
     font-size: 12px;
     height: 18px;
@@ -263,7 +263,7 @@
     padding: 0 6px;
     text-align: center;
     white-space: nowrap;
-    border: 1px solid #FFFFFF; }
+    border: 1px solid #ffffff; }
     .el-badge__content.is-fixed {
       position: absolute;
       top: 0;
@@ -279,12 +279,12 @@
       right: 0;
       border-radius: 50%; }
     .el-badge__content--primary {
-      background-color: #4d5d74; }
+      background-color: #0051be; }
     .el-badge__content--success {
-      background-color: #67C23A; }
+      background-color: #67c23a; }
     .el-badge__content--warning {
-      background-color: #E6A23C; }
+      background-color: #e6a23c; }
     .el-badge__content--info {
-      background-color: #909399; }
+      background-color: #4d5d74; }
     .el-badge__content--danger {
       background-color: #db1717; }

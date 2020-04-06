@@ -8,7 +8,7 @@
 					placeholder="이메일을 입력해 주세요"
 					v-model="login.email"
 					name="email"
-					:class="{'input-danger' : message}"
+					:class="{ 'input-danger': message }"
 					clearable
 					v-validate="'required'"
 				>
@@ -20,22 +20,31 @@
 					v-model="login.password"
 					show-password
 					name="password"
-					:class="{'input-danger' : message}"
+					:class="{ 'input-danger': message }"
 					v-validate="'required'"
 					@keydown="handleLogin"
 				></el-input>
-				
+
 				<p class="warning-msg danger-color" v-if="message">{{ message }}</p>
 
 				<div class="checkbox-wrap">
-					<el-checkbox v-model="login.rememberMe" 
-						@change="emailRemember(login.email, login.rememberMe)">이메일 저장</el-checkbox>
-					<el-checkbox 
-						@change="autoLogin(login.autoLogin)" v-model="login.autoLogin">자동 로그인</el-checkbox>
+					<el-checkbox
+						v-model="login.rememberMe"
+						@change="emailRemember(login.email, login.rememberMe)"
+						>이메일 저장</el-checkbox
+					>
+					<el-checkbox
+						@change="autoLogin(login.autoLogin)"
+						v-model="login.autoLogin"
+						>자동 로그인</el-checkbox
+					>
 				</div>
 
-				<el-button class="next-btn block-btn" type="primary" 
-				@click="handleLogin" :disabled="loading || login.email == '' || login.password == ''"
+				<el-button
+					class="next-btn block-btn"
+					type="info"
+					@click="handleLogin"
+					:disabled="loading || login.email == '' || login.password == ''"
 					>로그인</el-button
 				>
 				<div class="find-wrap">
@@ -57,7 +66,7 @@ import footerSection from '../common/Footer'
 export default {
 	name: 'login',
 	components: {
-		footerSection
+		footerSection,
 	},
 	computed: {
 		loggedIn() {
@@ -70,45 +79,45 @@ export default {
 				email: '',
 				password: '',
 				rememberMe: null,
-				autoLogin: null
+				autoLogin: null,
 			},
 			loading: false,
 			message: '',
 			rememberEmail: localStorage.getItem('email'),
-			rememberLogin: localStorage.getItem('auto')
+			rememberLogin: localStorage.getItem('auto'),
 		}
 	},
 	mounted() {
-		if ( this.rememberLogin ) {
+		if (this.rememberLogin) {
 			this.login.autoLogin = true
-			if(this.loggedIn) return this.$router.push({ name: 'profile' })
+			if (this.loggedIn) return this.$router.push({ name: 'profile' })
 		}
-		if ( this.rememberEmail ) {
+		if (this.rememberEmail) {
 			this.login.rememberMe = true
 			this.login.email = this.rememberEmail
 		}
 	},
 	methods: {
 		emailRemember(email, check) {
-			if(check == true) {
+			if (check == true) {
 				this.rememberEmail = true
 				localStorage.setItem('email', email)
 			} else {
-				localStorage.removeItem('email');
+				localStorage.removeItem('email')
 			}
 		},
 		autoLogin(check) {
-			if(check == true) {
+			if (check == true) {
 				this.rememberLogin = true
 				localStorage.setItem('auto', check)
 			} else {
-				localStorage.removeItem('auto');
+				localStorage.removeItem('auto')
 			}
 		},
 		alertWindow(msg) {
 			this.$alert(msg, '계정 정보 입력 오류', {
-					confirmButtonText: '확인'
-			}); 
+				confirmButtonText: '확인',
+			})
 		},
 		handleLogin() {
 			this.loading = true
@@ -136,16 +145,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 h1 {
-	margin-left: -2px;
 	margin-right: -2px;
 	margin-bottom: 39px;
+	margin-left: -2px;
 }
 
 .el-button {
 	margin-top: 30px;
 }
-
-
 </style>

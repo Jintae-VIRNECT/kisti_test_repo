@@ -4,6 +4,7 @@ import Login from 'components/layout/pages/Login'
 import Terms from 'components/layout/pages/Terms'
 import Register from 'components/layout/pages/Register.vue'
 import User from 'components/layout/pages/User.vue'
+import Find from 'components/layout/pages/Find.vue'
 import Profile from 'components/layout/pages/Profile.vue'
 
 Vue.use(Router)
@@ -31,6 +32,11 @@ export default new Router({
 			path: '/user',
 			name: 'user',
 			component: User,
+		},
+		{
+			path: '/find',
+			name: 'find',
+			component: Find,
 		},
 		{
 			path: '/profile',

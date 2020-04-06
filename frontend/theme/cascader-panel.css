@@ -635,15 +635,15 @@
   .el-checkbox.is-bordered {
     padding: 9px 20px 9px 10px;
     border-radius: 2px;
-    border: 2px solid #DCDFE6;
+    border: 2px solid #dcdfe6;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     line-height: normal;
     height: 40px; }
     .el-checkbox.is-bordered.is-checked {
-      border-color: #4d5d74; }
+      border-color: #0051be; }
     .el-checkbox.is-bordered.is-disabled {
-      border-color: #EBEEF5;
+      border-color: #ebeef5;
       cursor: not-allowed; }
     .el-checkbox.is-bordered + .el-checkbox.is-bordered {
       margin-left: 10px; }
@@ -693,26 +693,26 @@
     vertical-align: middle; }
     .el-checkbox__input.is-disabled .el-checkbox__inner {
       background-color: #edf2fc;
-      border-color: #DCDFE6;
+      border-color: #dcdfe6;
       cursor: not-allowed; }
       .el-checkbox__input.is-disabled .el-checkbox__inner::after {
         cursor: not-allowed;
-        border-color: #C0C4CC; }
+        border-color: #c0c4cc; }
       .el-checkbox__input.is-disabled .el-checkbox__inner + .el-checkbox__label {
         cursor: not-allowed; }
     .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
-      background-color: #F2F6FC;
-      border-color: #DCDFE6; }
+      background-color: #f2f6fc;
+      border-color: #dcdfe6; }
       .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner::after {
-        border-color: #C0C4CC; }
+        border-color: #c0c4cc; }
     .el-checkbox__input.is-disabled.is-indeterminate .el-checkbox__inner {
-      background-color: #F2F6FC;
-      border-color: #DCDFE6; }
+      background-color: #f2f6fc;
+      border-color: #dcdfe6; }
       .el-checkbox__input.is-disabled.is-indeterminate .el-checkbox__inner::before {
-        background-color: #C0C4CC;
-        border-color: #C0C4CC; }
+        background-color: #c0c4cc;
+        border-color: #c0c4cc; }
     .el-checkbox__input.is-disabled + span.el-checkbox__label {
-      color: #C0C4CC;
+      color: #c0c4cc;
       cursor: not-allowed; }
     .el-checkbox__input.is-checked .el-checkbox__inner {
       background-color: #1468e2;
@@ -721,7 +721,7 @@
         -webkit-transform: rotate(45deg) scaleY(1);
         transform: rotate(45deg) scaleY(1); }
     .el-checkbox__input.is-checked + .el-checkbox__label {
-      color: #4d5d74; }
+      color: #0d2a58; }
     .el-checkbox__input.is-focus {
       /*focus时 视觉上区分*/ }
       .el-checkbox__input.is-focus .el-checkbox__inner {
@@ -733,7 +733,7 @@
         content: '';
         position: absolute;
         display: block;
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         height: 2px;
         -webkit-transform: scale(0.5);
         transform: scale(0.5);
@@ -745,7 +745,7 @@
   .el-checkbox__inner {
     display: inline-block;
     position: relative;
-    border: 2px solid #DCDFE6;
+    border: 2px solid #dcdfe6;
     border-radius: 10px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -761,7 +761,7 @@
       -webkit-box-sizing: content-box;
       box-sizing: content-box;
       content: "";
-      border: 1px solid #FFFFFF;
+      border: 1px solid #ffffff;
       border-left: 0;
       border-top: 0;
       height: 7px;
@@ -803,8 +803,8 @@
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    background: #FFFFFF;
-    border: 2px solid #DCDFE6;
+    background: #ffffff;
+    border: 2px solid #dcdfe6;
     border-left: 0;
     color: #0d2a58;
     -webkit-appearance: none;
@@ -825,7 +825,7 @@
     .el-checkbox-button__inner.is-round {
       padding: 12px 20px; }
     .el-checkbox-button__inner:hover {
-      color: #4d5d74; }
+      color: #0051be; }
     .el-checkbox-button__inner [class*="el-icon-"] {
       line-height: 0.9; }
       .el-checkbox-button__inner [class*="el-icon-"] + span {
@@ -837,30 +837,30 @@
     margin: 0;
     z-index: -1; }
   .el-checkbox-button.is-checked .el-checkbox-button__inner {
-    color: #FFFFFF;
-    background-color: #4d5d74;
-    border-color: #4d5d74;
-    -webkit-box-shadow: -1px 0 0 0 #949eac;
-    box-shadow: -1px 0 0 0 #949eac; }
+    color: #ffffff;
+    background-color: #0051be;
+    border-color: #0051be;
+    -webkit-box-shadow: -1px 0 0 0 #6697d8;
+    box-shadow: -1px 0 0 0 #6697d8; }
   .el-checkbox-button.is-checked:first-child .el-checkbox-button__inner {
-    border-left-color: #4d5d74; }
+    border-left-color: #0051be; }
   .el-checkbox-button.is-disabled .el-checkbox-button__inner {
-    color: #C0C4CC;
+    color: #c0c4cc;
     cursor: not-allowed;
     background-image: none;
-    background-color: #FFFFFF;
-    border-color: #EBEEF5;
+    background-color: #ffffff;
+    border-color: #ebeef5;
     -webkit-box-shadow: none;
     box-shadow: none; }
   .el-checkbox-button.is-disabled:first-child .el-checkbox-button__inner {
-    border-left-color: #EBEEF5; }
+    border-left-color: #ebeef5; }
   .el-checkbox-button:first-child .el-checkbox-button__inner {
-    border-left: 2px solid #DCDFE6;
+    border-left: 2px solid #dcdfe6;
     border-radius: 2px 0 0 2px;
     -webkit-box-shadow: none !important;
     box-shadow: none !important; }
   .el-checkbox-button.is-focus .el-checkbox-button__inner {
-    border-color: #4d5d74; }
+    border-color: #0051be; }
   .el-checkbox-button:last-child .el-checkbox-button__inner {
     border-radius: 0 2px 2px 0; }
   .el-checkbox-button--medium .el-checkbox-button__inner {
@@ -1272,15 +1272,15 @@
   .el-radio.is-bordered {
     padding: 12px 20px 0 10px;
     border-radius: 2px;
-    border: 2px solid #DCDFE6;
+    border: 2px solid #dcdfe6;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     height: 40px; }
     .el-radio.is-bordered.is-checked {
-      border-color: #4d5d74; }
+      border-color: #0051be; }
     .el-radio.is-bordered.is-disabled {
       cursor: not-allowed;
-      border-color: #EBEEF5; }
+      border-color: #ebeef5; }
     .el-radio.is-bordered + .el-radio.is-bordered {
       margin-left: 10px; }
   .el-radio--medium.is-bordered {
@@ -1321,50 +1321,50 @@
     position: relative;
     vertical-align: middle; }
     .el-radio__input.is-disabled .el-radio__inner {
-      background-color: #F5F7FA;
-      border-color: #E4E7ED;
+      background-color: #f5f7fa;
+      border-color: #e4e7ed;
       cursor: not-allowed; }
       .el-radio__input.is-disabled .el-radio__inner::after {
         cursor: not-allowed;
-        background-color: #F5F7FA; }
+        background-color: #f5f7fa; }
       .el-radio__input.is-disabled .el-radio__inner + .el-radio__label {
         cursor: not-allowed; }
     .el-radio__input.is-disabled.is-checked .el-radio__inner {
-      background-color: #F5F7FA;
-      border-color: #E4E7ED; }
+      background-color: #f5f7fa;
+      border-color: #e4e7ed; }
       .el-radio__input.is-disabled.is-checked .el-radio__inner::after {
-        background-color: #C0C4CC; }
+        background-color: #c0c4cc; }
     .el-radio__input.is-disabled + span.el-radio__label {
-      color: #C0C4CC;
+      color: #c0c4cc;
       cursor: not-allowed; }
     .el-radio__input.is-checked .el-radio__inner {
-      border-color: #4d5d74;
-      background: #4d5d74; }
+      border-color: #1468e2;
+      background: #1468e2; }
       .el-radio__input.is-checked .el-radio__inner::after {
         -webkit-transform: translate(-50%, -50%) scale(1);
         transform: translate(-50%, -50%) scale(1); }
     .el-radio__input.is-checked + .el-radio__label {
-      color: #4d5d74; }
+      color: #0d2a58; }
     .el-radio__input.is-focus .el-radio__inner {
-      border-color: #4d5d74; }
+      border-color: #1468e2; }
   .el-radio__inner {
-    border: 2px solid #DCDFE6;
+    border: 2px solid #dcdfe6;
     border-radius: 100%;
-    width: 14px;
-    height: 14px;
-    background-color: #FFFFFF;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
     position: relative;
     cursor: pointer;
     display: inline-block;
     -webkit-box-sizing: border-box;
     box-sizing: border-box; }
     .el-radio__inner:hover {
-      border-color: #4d5d74; }
+      border-color: #1468e2; }
     .el-radio__inner::after {
       width: 4px;
       height: 4px;
       border-radius: 100%;
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       content: "";
       position: absolute;
       left: 50%;
@@ -1388,10 +1388,10 @@
   .el-radio:focus:not(.is-focus):not(:active):not(.is-disabled) {
     /*获得焦点时 样式提醒*/ }
     .el-radio:focus:not(.is-focus):not(:active):not(.is-disabled) .el-radio__inner {
-      -webkit-box-shadow: 0 0 2px 2px #4d5d74;
-      box-shadow: 0 0 2px 2px #4d5d74; }
+      -webkit-box-shadow: 0 0 2px 2px #1468e2;
+      box-shadow: 0 0 2px 2px #1468e2; }
   .el-radio__label {
-    font-size: 14px;
+    font-size: 16px;
     padding-left: 10px; }
 
 /* BEM support Func
@@ -1698,7 +1698,7 @@
   border-radius: 2px;
   font-size: 14px; }
   .el-cascader-panel.is-bordered {
-    border: solid 1px #E4E7ED;
+    border: solid 1px #e4e7ed;
     border-radius: 2px; }
 
 .el-cascader-menu {
@@ -1706,7 +1706,7 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   color: #0d2a58;
-  border-right: solid 1px #E4E7ED; }
+  border-right: solid 1px #e4e7ed; }
   .el-cascader-menu:last-child {
     border-right: none; }
     .el-cascader-menu:last-child .el-cascader-node {
@@ -1735,7 +1735,7 @@
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     text-align: center;
-    color: #C0C4CC; }
+    color: #c0c4cc; }
 
 .el-cascader-node {
   position: relative;
@@ -1752,14 +1752,14 @@
   .el-cascader-node.is-selectable.in-active-path {
     color: #0d2a58; }
   .el-cascader-node.in-active-path, .el-cascader-node.is-selectable.in-checked-path, .el-cascader-node.is-active {
-    color: #4d5d74;
+    color: #0051be;
     font-weight: bold; }
   .el-cascader-node:not(.is-disabled) {
     cursor: pointer; }
     .el-cascader-node:not(.is-disabled):hover, .el-cascader-node:not(.is-disabled):focus {
-      background: #F5F7FA; }
+      background: #f5f7fa; }
   .el-cascader-node.is-disabled {
-    color: #C0C4CC;
+    color: #c0c4cc;
     cursor: not-allowed; }
   .el-cascader-node__prefix {
     position: absolute;
