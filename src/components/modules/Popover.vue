@@ -100,6 +100,9 @@ export default {
     trigger() {
       this.changeTrigger()
     },
+    visible() {
+      this.$emit('visible', this.visible)
+    },
   },
   methods: {
     changeTrigger() {

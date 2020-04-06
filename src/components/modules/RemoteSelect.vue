@@ -5,8 +5,7 @@
     :width="300"
     popperClass="select-options"
     :style="style"
-    v-on:show="show = true"
-    v-on:hide="show = false"
+    @visible="visible => (show = visible)"
   >
     <button slot="reference" class="select-label" :class="{ active: show }">
       {{ selected[text] }}
@@ -88,7 +87,7 @@ export default {
   min-width: 300px;
   min-height: 36px;
   padding: 9px 20px;
-  color: #fff;
+  color: rgba(#fff, 0.76);
   line-height: 20px;
   text-align: left;
   // background: url(~assets/image/ic-select-collapse.svg) no-repeat 95% 50%;
@@ -101,7 +100,8 @@ export default {
     right: 15px;
     width: 24px;
     height: 24px;
-    background: url(~assets/image/ic-select-collapse.svg) no-repeat 50%;
+    margin-right: 2px;
+    background: url(~assets/image/ic-select-dropdown.svg) no-repeat 50%;
     transform: rotate(0deg);
     transition: transform 0.3s;
     content: '';
@@ -110,13 +110,14 @@ export default {
     outline: none;
     outline-offset: 0;
     &::after {
+      background: url(~assets/image/ic-select-dropdown.svg) no-repeat 50%;
       transform: rotate(-180deg);
       content: '';
     }
   }
 }
 .popover.select-options {
-  margin-top: -2px;
+  margin-top: -4px;
   background-color: #111012;
   border: solid 1px #363638;
   border-top: none;
@@ -130,18 +131,18 @@ export default {
 }
 .select-option {
   width: 100%;
-  padding: 10px 20px;
-  color: #fff;
+  padding: 8px 20px;
+  color: rgba(#fff, 0.5);
+  line-height: 20px;
   text-align: left;
-  opacity: 0.5;
-  // &:last-child {
-  //   border-bottom: none;
-  // }
+  &:last-child {
+    padding-bottom: 16px;
+  }
   &.active {
-    opacity: 0.76;
+    color: rgba(#fff, 0.76);
   }
   &:hover {
-    opacity: 0.76;
+    color: rgba(#fff, 0.76);
   }
 }
 </style>
