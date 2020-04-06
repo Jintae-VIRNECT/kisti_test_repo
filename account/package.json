@@ -8,6 +8,7 @@
     "dev": "cross-env NODE_ENV=local nuxt",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production nuxt start",
+    "deploy": "nuxt build && cross-env NODE_ENV=production nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
