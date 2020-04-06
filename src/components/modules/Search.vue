@@ -1,5 +1,5 @@
 <template>
-  <div class="search">
+  <div class="search" :class="appendClass">
     <input
       class="search__input"
       type="text"
@@ -14,6 +14,10 @@ export default {
   name: 'Search',
   props: {
     placeholder: {
+      type: String,
+      default: '',
+    },
+    appendClass: {
       type: String,
       default: '',
     },
@@ -39,9 +43,7 @@ export default {
 <style lang="scss">
 @import '~assets/style/mixin';
 .search {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
   width: fit-content;
   height: 36px;
   padding: 0 36px 0 16px;

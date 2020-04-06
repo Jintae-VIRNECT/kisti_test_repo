@@ -5,7 +5,11 @@
       <span class="tab-view__description" v-if="description.length > 0">{{
         description
       }}</span>
-      <search v-if="placeholder.length > 0" :placeholder="placeholder"></search>
+      <search
+        v-if="placeholder.length > 0"
+        :placeholder="placeholder"
+        appendClass="tab-view__search"
+      ></search>
     </div>
     <div class="tab-view__body">
       <slot></slot>
