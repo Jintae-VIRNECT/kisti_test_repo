@@ -28,12 +28,12 @@ module.exports = {
    */
   styleResources: {
     scss: [
-      '../../../WC-Modules/src/assets/css/mixin.scss',
+      '../../WC-Modules/src/assets/css/mixin.scss',
       '@/assets/css/_vars.scss',
     ],
   },
   css: [
-    '../../../WC-Modules/src/assets/css/reset.scss',
+    '../../WC-Modules/src/assets/css/reset.scss',
     '@/assets/css/global.scss',
   ],
   loading: { color: '#1b293e' },
@@ -60,7 +60,7 @@ module.exports = {
     extend(config, { isDev, isClient }) {
       config.resolve.alias['WC-Modules'] = resolve(
         __dirname,
-        '../../WC-Modules/src',
+        '../WC-Modules/src',
       )
     },
   },
