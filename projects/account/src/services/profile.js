@@ -13,4 +13,7 @@ export default {
   async changeMyImage(form) {
     await switchPromise()
   },
+  async changeMyName(form) {
+    await switchPromise()
+  },
 }

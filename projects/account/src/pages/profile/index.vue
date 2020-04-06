@@ -35,7 +35,7 @@
           <div class="profile__info">
             <h4>{{ $t('profile.info.name') }}</h4>
             <div class="content">
-              <span class="value">{{ me.name }}</span>
+              <span class="value">{{ me.lastName }} {{ me.firstName }}</span>
               <span class="desc">
                 {{ $t('profile.info.nameDesc') }}
               </span>
@@ -160,7 +160,11 @@ export default {
       this.me.image = image
       this.visible.imageChangeModal = false
     },
-    changeName(name) {},
+    changeName({ lastName, firstName }) {
+      this.me.lastName = lastName
+      this.me.firstName = firstName
+      this.visible.nameChangeModal = false
+    },
   },
 }
 </script>

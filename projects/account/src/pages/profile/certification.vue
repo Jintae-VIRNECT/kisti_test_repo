@@ -5,7 +5,7 @@
         <div>
           <p v-html="$t('certification.desc')"></p>
           <div class="avatar"></div>
-          <span class="name">{{ me.name }}</span>
+          <span class="name">{{ me.lastName }} {{ me.firstName }}</span>
           <span class="email">{{ me.email }}</span>
           <el-form ref="form" :model="form" @submit.native.prevent="submit">
             <el-form-item :label="$t('certification.password')">

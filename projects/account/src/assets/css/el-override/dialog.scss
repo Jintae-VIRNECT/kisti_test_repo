@@ -3,6 +3,9 @@
     padding: 20px 30px;
     border-bottom: solid 1px #eaedf3;
 
+    .el-dialog__headerbtn {
+      right: 28px;
+    }
     .el-icon-close:before {
       color: $font-color-content;
       font-weight: bold;

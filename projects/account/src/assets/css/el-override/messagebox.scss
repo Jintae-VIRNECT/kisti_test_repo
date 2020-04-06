@@ -1,5 +1,6 @@
 // message
 body .el-message {
+  max-width: 426px;
   padding: 14px 20px;
   border-radius: 4px;
   box-shadow: 0 4px 8px -2px rgba(9, 30, 66, 0.25),
@@ -13,6 +14,10 @@ body .el-message {
     }
   }
 
+  .el-message__content {
+    margin-right: 20px;
+    line-height: 1.5em;
+  }
   .el-message__icon {
     display: none;
   }
