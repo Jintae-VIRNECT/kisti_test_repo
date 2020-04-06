@@ -10,7 +10,7 @@ module.exports = {
     "stylelint-config-rational-order",
   ],
   rules: {
-    "prettier/prettier": [true, {"tabWidth": 4}],
+    "prettier/prettier": [true, { "endOfLine": 'auto'}],
     "order/properties-order": [],
     "plugin/rational-order": [true, {}]
   }

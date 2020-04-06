@@ -59,11 +59,11 @@
 				</el-input>
 				<el-input
 					placeholder="비밀번호 재입력해 주세요"
-          v-model="register.passwordConfirm"
+          v-model="passwordConfirm"
 					show-password
           name="passwordConfirm"
           v-validate="'required|min:6|max:40'"
-          :class="{'input-danger' : register.password !== register.passwordConfirm}"
+          :class="{'input-danger' : register.password !== passwordConfirm}"
 				>
 				</el-input>
         <p class="restriction-text">8~20자의 영문 대, 소문자, 숫자, 특수문자 중 3가지 이상을 조합하여 입력해 주세요.</p>
@@ -86,7 +86,7 @@
           v-model="fullName.lastName"
 				></el-input>
 
-        <p class="input-title">생년월일</p>
+        <p class="input-title must-check">생년월일</p>
         <el-input
           class="birth-input year-input"
 					placeholder="년"
@@ -116,9 +116,9 @@
 
         
         <p class="input-title must-check">가입 경로</p>
-				<el-select v-model="register.registerInfo" placeholder="가입 경로 선택" 
+				<el-select v-model="register.joinInfo" placeholder="가입 경로 선택" 
           v-validate="'required'"
-          name="registerInfo">
+          name="joinInfo">
           <el-option
             v-for="item in subscriptionPathLists"
             :key="item.value"
@@ -129,8 +129,8 @@
 
 				<el-input
 					placeholder="가입 경로를 입력해 주세요"
-          v-if="register.registerInfo == 9"
-          v-model="register.registerInfoETC"
+          v-if="register.joinInfo == 9"
+          v-model="joinInfoETC"
           type="text"
           name="email"
 					clearable
@@ -153,7 +153,7 @@
 				<el-input
 					placeholder="서비스 분야 직접 입력"
           v-if="register.serviceInfo == 12"
-          v-model="register.serviceInfoETC"
+          v-model="serviceInfoETC"
           type="text"
           name="email"
 					clearable
@@ -173,13 +173,18 @@
 <script>
   import Register from 'model/register';
   import AuthService from 'service/auth-service';
+  import mixin from 'mixins/mixin'
 
   export default {
     name: 'register',
+	  mixins: [mixin],
     computed: {
       loggedIn() {
         return this.$store.state.auth.status.loggedIn;
       },
+    },
+    props: {
+      marketInfoReceive: Boolean
     },
     data() {
       return {
@@ -189,13 +194,14 @@
         register: {
           email: '',
           password: '',
-          passwordConfirm: '',
           name: '',
           birth: '',
-          registerInfo: '',
+          marketInfoReceive: '',
+          joinInfo: '',
           serviceInfo: '',
           session: ''
         },
+        passwordConfirm: '',
         fullName: {
           firstName: '',
           lastName: ''
@@ -205,6 +211,7 @@
           month: '',
           day: ''
         },
+        joinInfoETC: '',
         subscriptionPathLists: [
           {
             value: 1,
@@ -235,6 +242,7 @@
             label: "직접 입력"
           }
         ],
+        serviceInfoETC: '',
         serviceInfoLists: [
           {
             value: 1,
@@ -300,6 +308,9 @@
       if (this.loggedIn) {
         this.$router.push('/')
       }
+      if (this.marketInfoReceive) return this.register.marketInfoReceive = 'active'
+      else return this.register.marketInfoReceive = 'inactive'
+      
     },
     methods: {
       handleRegister() {
@@ -328,8 +339,22 @@
       sendEmail() {
         const email = this.register.email
         const result = AuthService.emailAuth(email)
+        // this.$store.dispatch('auth/email', email).then(
+        //   data => {
+        //     console.log('됨?')
+        //   },
+        //   error => {
+        //     console.log('안됨?')
+        //   }
+        // )
         this.authLoading = true
         this.isVeritication = true
+        this.delayResend();
+        
+        this.alertMessage('이메일 인증 메일 전송 성공', '입력하신 이메일로 인증 메일을 전송했습니다. 인증 메일의 인증 번호를 확인하여 입력해 주세요.', 'success')
+        // this.alertMessage('이메일 인증 성공', '이메일 인증이 완료되었습니다.', 'success')
+      },
+      delayResend() {
         this.setCount = false
         setTimeout(() => {
           this.setCount = true
@@ -338,10 +363,7 @@
       resendEmail() {
         if ( this.setCount ) {
           console.log('재전송')
-          this.setCount = false
-          setTimeout(() => {
-            this.setCount = true
-          }, 10000)
+          this.delayResend()
         }
       },
       checkVerificationCode() {
@@ -352,10 +374,11 @@
         if ( this.verificationCode ) {
           this.$store.dispatch('auth/verification', code).then(
             data => {
-                console.log(data)
               if(data.code == 200) {
                 this.isVeritication = false
+                this.isValidEmail = false,
                 this.verificationText = '인증 완료'
+
               }
             },
             error => {
@@ -364,10 +387,7 @@
           )
         }
         // const result = AuthService.verification(code, email)
-        this.setCount = false
-        setTimeout(() => {
-          this.setCount = true
-        }, 10000)
+        this.delayResend()
       }
     }
   };

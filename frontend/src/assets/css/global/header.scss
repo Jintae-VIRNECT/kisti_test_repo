@@ -5,7 +5,6 @@
 $headerPaddingTop: 30px;
 $headerPaddingLeft: 30px;
 
-
 .header-section {
     position: fixed;
     top: 0;
@@ -26,12 +25,12 @@ $headerPaddingLeft: 30px;
     .login-modlue {
         // 로그인 랩
         position: absolute;
-        width: calc(100% - 60px);
-        $headerPaddingTop: 16px;
-        text-align: right;
         top: $headerPaddingTop;
         right: $headerPaddingLeft;
+        width: calc(100% - 60px);
+        text-align: right;
         transition: top 0.2s;
+        $headerPaddingTop: 16px;
     }
 
     &.sticky-pushup {
@@ -42,7 +41,7 @@ $headerPaddingLeft: 30px;
             height: 64px;
             padding: 14px 30px;
         }
-        
+
         .login-modlue {
             top: 14px;
         }
@@ -73,8 +72,8 @@ $headerPaddingLeft: 30px;
                 }
             }
             nav {
-                padding: $headerPaddingTop $headerPaddingLeft;
                 height: auto;
+                padding: $headerPaddingTop $headerPaddingLeft;
             }
             #GNB .depth {
                 top: auto;
@@ -110,13 +109,12 @@ $headerPaddingLeft: 30px;
 
 #dim {
     position: fixed;
-    left: 0;
     top: 0;
+    left: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
-    z-index: 1;
 }
-
 
 .login-modlue {
     // gnb 랩
@@ -129,11 +127,11 @@ $headerPaddingLeft: 30px;
 
 .logo {
     position: relative;
+    z-index: 2;
     float: left;
     width: 140px;
     margin-right: 28px;
     vertical-align: middle;
-    z-index: 2;
     img {
         vertical-align: middle;
     }
@@ -141,10 +139,11 @@ $headerPaddingLeft: 30px;
 .workstation .logo {
     // line-height: 1;
 }
-button, a {
+button,
+a {
+    display: inline-block;
     height: 38px;
     line-height: 38px;
-    display: inline-block;
     text-align: center;
 }
 

@@ -15,8 +15,6 @@ module.exports = {
     "SharedArrayBuffer": "readonly",
     "process": "readonly",
     "require": "readonly",
-    "__dirname": "readonly",
-    "module": "readonly",
   },
   "parserOptions": {
     "ecmaVersion": 2018,

@@ -2,33 +2,33 @@
 @import "./mixin.scss";
 
 .el-message-box {
-  margin-top: 36px;
-  padding-bottom: 0;
-  vertical-align: top;
+    margin-top: 36px;
+    padding-bottom: 0;
+    vertical-align: top;
 }
 
 .el-message-box__title {
-  font-weight: 500;
+    font-weight: 500;
 }
 .el-message-box__header {
-  padding-bottom: 6px;
-  &btn {
-    display: none;
-  }
+    padding-bottom: 6px;
+    &btn {
+        display: none;
+    }
 }
 .el-message-box__content {
-  padding-top: 6px;
-  font-weight: 500;
+    padding-top: 6px;
+    font-weight: 500;
 }
 
 .el-message-box__btns {
-  padding: 20px 24px 24px;
-  .el-button--small {
-    height: 36px;
-    border-radius: 3px;
-    margin-top: 0;
-    font-size: 14px;
-    background-color: $point;
-    border-color: $point;
-  }
+    padding: 20px 24px 24px;
+    .el-button--small {
+        height: 36px;
+        margin-top: 0;
+        font-size: 14px;
+        background-color: $point;
+        border-color: $point;
+        border-radius: 3px;
+    }
 }

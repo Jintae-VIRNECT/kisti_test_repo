@@ -1,5 +1,5 @@
 @charset 'utf-8';
-@import './font.scss';
+@import "./font.scss";
 $noto: "NotoSansKR", "Noto Sans";
 $poppins: "Poppins";
 $roboto: "Roboto";
@@ -209,8 +209,8 @@ $short: 568px;
     }
     @media (max-width: $mobile) {
         height: 44px;
-        padding-left: 16px;
         padding-right: 36px;
+        padding-left: 16px;
         &:after {
             right: 14px;
         }
@@ -240,8 +240,8 @@ $short: 568px;
         font-family: $noto;
         line-height: 1.78;
     }
-    
-	@media (max-width: $mobile) {
+
+    @media (max-width: $mobile) {
         .category {
             font-size: 14px;
         }

@@ -35,5 +35,17 @@ export default {
 			}
 			return check
 		},
+		alertMessage(title, message, type) {
+			const h = this.$createElement
+			this.$message({
+				showClose: true,
+				message: h('p', null, [
+					h('h3', null, title),
+					h('p', null, message)
+				]),
+				type: type,
+				duration: 0
+			})
+		},
 	},
 }

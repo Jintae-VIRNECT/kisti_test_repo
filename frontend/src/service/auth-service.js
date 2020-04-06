@@ -60,7 +60,7 @@ class AuthService {
       .post(AUTH_API_URL + API.auth.emailAuth, {
         email
       })
-      .then(this.handleResponse)
+      // .then(this.handleResponse)
       .then(response => {
         const {data} = response.data;
         return data
@@ -94,7 +94,6 @@ class AuthService {
       // console.log(Promise.reject(error))
       return Promise.reject(error)
     }
-
     return Promise.resolve(data);
   }
 }

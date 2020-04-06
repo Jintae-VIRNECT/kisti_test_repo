@@ -1,13 +1,12 @@
 export default class Register {
-  constructor(email, password, name, birth, registerInfo, registerInfoETC, serviceInfo, serviceInfoETC, session) {
+  constructor(email, password, name, birth, marketInfoReceive, joinInfo, serviceInfo, session) {
     this.email = email
     this.password = password
     this.name = name
     this.birth = birth
-    this.registerInfo = registerInfo
-    this.registerInfoETC = registerInfoETC
+    this.marketInfoReceive = marketInfoReceive
+    this.joinInfo = joinInfo
     this.serviceInfo = serviceInfo
-    this.serviceInfoETC = serviceInfoETC
     this.session = session
   }
 }

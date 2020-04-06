@@ -15,6 +15,7 @@ import 'element/col.css'
 import 'element/button.css'
 import 'element/icon.css'
 import 'element/select.css'
+import 'element/message.css'
 import 'element/message-box.css'
 
 import 'assets/css/common.scss'

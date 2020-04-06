@@ -29,13 +29,11 @@
             <p>서비스 이용약관</p>
             <p>서비스 이용약관</p>
           </div>
-
           <el-checkbox v-model="marketingAgree">[이벤트 마케팅 수신 동의 내용(선택)]</el-checkbox>
-          
         </div>
 
-
-        <el-button class="next-btn block-btn" type="primary" @click="$router.push({ name: 'register' })"
+        <el-button class="next-btn block-btn" type="primary" 
+        @click="$router.push({ name: 'register', params: { marketInfoReceive : marketingAgree } })"
         :disabled="!privacyAgree || !serviceAgree "
 					>다음</el-button
 				>
