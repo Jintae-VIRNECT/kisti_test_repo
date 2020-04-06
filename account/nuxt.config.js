@@ -10,6 +10,9 @@ module.exports = {
    ** Headers of the page
    */
   head: {
+    htmlAttrs: {
+      lang: 'ko',
+    },
     title: 'account',
     meta: [
       { charset: 'utf-8' },

@@ -9,7 +9,12 @@
     <div>
       <p v-html="$t('profile.nameChangeModal.desc')"></p>
       <p class="caution" v-html="$t('profile.nameChangeModal.caution')"></p>
-      <el-form class="virnect-login-form" ref="form" :model="form">
+      <el-form
+        class="virnect-login-form"
+        ref="form"
+        :model="form"
+        @submit.native.prevent="submit"
+      >
         <el-form-item :label="$t('profile.nameChangeModal.lastName')">
           <el-input v-model="form.lastName" />
         </el-form-item>
@@ -62,7 +67,7 @@ export default {
           message: this.$t('profile.nameChangeModal.message.success'),
           position: 'bottom-left',
         })
-        this.$emit('changeName', this.form)
+        this.$emit('changedName', this.form)
       } catch (e) {
         this.$notify.error({
           message: this.$t('profile.nameChangeModal.message.fail'),
@@ -75,20 +80,13 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .name-change-modal {
+.name-change-modal {
   p {
     margin-bottom: 6px;
   }
   .caution {
     color: $font-color-desc;
     font-size: 12.6px;
-    line-height: 1.6em;
-  }
-  .el-form {
-    margin: 30px 0 54px;
-    .el-form-item {
-      margin-bottom: 30px;
-    }
   }
 }
 </style>

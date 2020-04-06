@@ -16,4 +16,16 @@ export default {
   async changeMyName(form) {
     await switchPromise()
   },
+  async changeMyNickname(form) {
+    await switchPromise()
+  },
+  async changeMyPassword(form) {
+    await switchPromise()
+  },
+  async changeMyBirth(form) {
+    await switchPromise()
+  },
+  async changeMyContact(form) {
+    await switchPromise()
+  },
 }

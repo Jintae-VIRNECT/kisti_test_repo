@@ -52,7 +52,7 @@
                 {{ $t('profile.info.nicknameDesc') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.nicknameChangeModal = true">
               {{ $t('profile.info.nicknameChange') }}
             </el-button>
           </div>
@@ -82,7 +82,7 @@
                 {{ $t('profile.account.passwordDesc') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.passwordChangeModal = true">
               {{ $t('profile.account.passwordChange') }}
             </el-button>
           </div>
@@ -102,7 +102,7 @@
                 {{ me.birth || $t('profile.additional.birthEmpty') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.birthChangeModal = true">
               {{ $t('profile.additional.birthChange') }}
             </el-button>
           </div>
@@ -113,7 +113,7 @@
                 {{ me.contact || $t('profile.additional.contactEmpty') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.contactChangeModal = true">
               {{ $t('profile.additional.contactChange') }}
             </el-button>
           </div>
@@ -124,12 +124,32 @@
     <image-change-modal
       :me="me"
       :visible.sync="visible.imageChangeModal"
-      @changeImage="changeImage"
+      @changedImage="changedImage"
     />
     <name-change-modal
       :me="me"
       :visible.sync="visible.nameChangeModal"
-      @changeName="changeName"
+      @changedName="changedName"
+    />
+    <nickname-change-modal
+      :me="me"
+      :visible.sync="visible.nicknameChangeModal"
+      @changedNickname="changedNickname"
+    />
+    <password-change-modal
+      :me="me"
+      :visible.sync="visible.passwordChangeModal"
+      @changedPassword="changedPassword"
+    />
+    <birth-change-modal
+      :me="me"
+      :visible.sync="visible.birthChangeModal"
+      @changedBirth="changedBirth"
+    />
+    <contact-change-modal
+      :me="me"
+      :visible.sync="visible.contactChangeModal"
+      @changedContact="changedContact"
     />
   </div>
 </template>
@@ -139,12 +159,20 @@ import profileService from '@/services/profile'
 
 import ImageChangeModal from '@/components/profile/ImageChangeModal'
 import NameChangeModal from '@/components/profile/NameChangeModal'
+import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
+import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
+import BirthChangeModal from '@/components/profile/BirthChangeModal'
+import ContactChangeModal from '@/components/profile/ContactChangeModal'
 
 export default {
   middleware: 'auth',
   components: {
     ImageChangeModal,
     NameChangeModal,
+    NicknameChangeModal,
+    PasswordChangeModal,
+    BirthChangeModal,
+    ContactChangeModal,
   },
   data() {
     return {
@@ -152,18 +180,37 @@ export default {
       visible: {
         imageChangeModal: false,
         nameChangeModal: false,
+        nicknameChangeModal: false,
+        passwordChangeModal: false,
+        birthChangeModal: false,
+        contactChangeModal: false,
       },
     }
   },
   methods: {
-    changeImage(image) {
+    changedImage(image) {
       this.me.image = image
       this.visible.imageChangeModal = false
     },
-    changeName({ lastName, firstName }) {
+    changedName({ lastName, firstName }) {
       this.me.lastName = lastName
       this.me.firstName = firstName
       this.visible.nameChangeModal = false
+    },
+    changedNickname(nickname) {
+      this.me.nickname = nickname
+      this.visible.nicknameChangeModal = false
+    },
+    changedPassword() {
+      this.visible.passwordChangeModal = false
+    },
+    changedBirth(birth) {
+      this.me.birth = birth
+      this.visible.birthChangeModal = false
+    },
+    changedContact(contact) {
+      this.me.contact = contact
+      this.visible.contactChangeModal = false
     },
   },
 }
