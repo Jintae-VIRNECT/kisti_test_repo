@@ -45,18 +45,19 @@
             :options="selectOptions.options"
             :value="selectOptions.value"
             :text="selectOptions.text"
+            v-on:changeValue="selectOptionValue"
           ></r-select>
         </div>
-        <!-- <div class="props">
+        <div class="props">
           <div class="props-option">
-            <p class="props-title">description</p>
+            <p class="props-title">selection value</p>
             <input
               class="props-options"
               type="text"
-              v-model="toogleButton.description"
+              v-model="selectOptions.selection"
             />
           </div>
-        </div> -->
+        </div>
       </div>
     </section>
 
@@ -304,6 +305,7 @@ export default {
         ],
         value: 'value',
         text: 'text',
+        selection: '테스트',
       },
       toogleButton: {
         description: '마이크 on/off',
@@ -356,6 +358,9 @@ export default {
     toogleOnOff() {},
     searchText(text) {
       this.search.value = text
+    },
+    selectOptionValue(option) {
+      this.selectOptions.selection = option[this.selectOptions.text]
     },
   },
 }
