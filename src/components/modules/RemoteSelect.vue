@@ -5,8 +5,12 @@
     :width="300"
     popperClass="select-options"
     :style="style"
+    v-on:show="show = true"
+    v-on:hide="show = false"
   >
-    <button slot="reference" class="select-label">{{ selected[text] }}</button>
+    <button slot="reference" class="select-label" :class="{ active: show }">
+      {{ selected[text] }}
+    </button>
     <div class="select-optionbox">
       <button
         class="select-option"
@@ -34,6 +38,7 @@ export default {
       style: {
         // backgroundColor: '#111012',
       },
+      show: false,
     }
   },
   props: {
@@ -56,6 +61,7 @@ export default {
   methods: {
     select(option) {
       this.selected = option
+      this.$emit('changeValue', option)
       this.$eventBus.$emit('popover:close')
     },
   },
@@ -78,25 +84,42 @@ export default {
 <style lang="scss">
 @import '~assets/style/mixin';
 .select-label {
+  position: relative;
   min-width: 300px;
   min-height: 36px;
-  padding: 9px 16px;
+  padding: 9px 20px;
   color: #fff;
   line-height: 20px;
   text-align: left;
-  background: url(~assets/image/ic-select-collapse.svg) no-repeat 95% 50%;
+  // background: url(~assets/image/ic-select-collapse.svg) no-repeat 95% 50%;
   background-color: #111012;
   border: solid 1px #363638;
   border-radius: 3px;
-  &:focus {
+  &::after {
+    position: absolute;
+    top: 6px;
+    right: 15px;
+    width: 24px;
+    height: 24px;
+    background: url(~assets/image/ic-select-collapse.svg) no-repeat 50%;
+    transform: rotate(0deg);
+    transition: transform 0.3s;
+    content: '';
+  }
+  &.active {
     outline: none;
     outline-offset: 0;
+    &::after {
+      transform: rotate(-180deg);
+      content: '';
+    }
   }
 }
 .popover.select-options {
-  margin-top: 3px;
+  margin-top: -2px;
   background-color: #111012;
   border: solid 1px #363638;
+  border-top: none;
   border-radius: 3px;
   > .popover--body {
     padding: 0;
@@ -107,18 +130,18 @@ export default {
 }
 .select-option {
   width: 100%;
-  padding: 10px;
+  padding: 10px 20px;
   color: #fff;
   text-align: left;
-  border-bottom: solid 1px #363638;
-  &:last-child {
-    border-bottom: none;
-  }
+  opacity: 0.5;
+  // &:last-child {
+  //   border-bottom: none;
+  // }
   &.active {
-    background-color: #252527;
+    opacity: 0.76;
   }
   &:hover {
-    background-color: #363638;
+    opacity: 0.76;
   }
 }
 </style>
