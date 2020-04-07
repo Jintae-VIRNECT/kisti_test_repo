@@ -1,48 +1,62 @@
 <template>
-  <div>
-    <div class="sub-title">음성 설정</div>
-    <div>
-      <span>입력 장치</span>
-      <r-select
-        v-model="selectAudio"
-        @change="handleInputAudioStream"
-        :options="audioDevices"
-        :value="'deviceId'"
-        :text="'label'"
-      >
-      </r-select>
-    </div>
-    <div>
-      <span>출력 장치</span>
-      <r-select
-        v-model="selectOutput"
-        @change="setAudioOutput"
-        :options="outputDevices"
-        :value="'deviceId'"
-        :text="'label'"
-      >
-      </r-select>
-      <audio
-        ref="audioComponent"
-        :srcObject.prop="audioStream"
-        autoplay
-      ></audio>
-    </div>
+  <section>
+    <div class="workspace-setting-sub-title">음성 설정</div>
 
-    <div>
+    <div class="workspace-setting-horizon-wrapper">
       <div>
-        마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
-        들려드리겠습니다.
+        <span class="workspace-setting-label">입력 장치</span>
+        <r-select
+          class="workspace-setting-r-selecter"
+          v-on:changeValue="handleInputAudioStream"
+          :options="audioInputDevices"
+          :value="'deviceId'"
+          :text="'label'"
+        >
+        </r-select>
       </div>
+
+      <span>
+        <span class="workspace-setting-label">출력 장치</span>
+        <r-select
+          class="workspace-setting-r-selecter"
+          v-on:changeValue="setAudioOutput"
+          :options="audioOutputDevices"
+          :value="'deviceId'"
+          :text="'label'"
+        >
+        </r-select>
+        <audio
+          ref="audioComponent"
+          :srcObject.prop="audioStream"
+          autoplay
+        ></audio>
+      </span>
+    </div>
+    <div class="workspace-setting-sub-title">마이크 테스트</div>
+    <div class="workspace-setting-label">
+      마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
+      들려드리겠습니다.
+    </div>
+    <div class="workspace-setting-horizon-wrapper align-center">
       <el-button @click="toggleMicTestMode">{{ micTestWord }}</el-button>
-      <span>마이크 아이콘</span>
+      <span>
+        <toggle-button
+          :description="''"
+          :size="24"
+          :active="micTestMode"
+          :activeSrc="require('assets/image/setting/mdpi_icn_mic.svg')"
+          :inactiveSrc="require('assets/image/setting/icon_mic_mute.svg')"
+          @action="micTestMode = !micTestMode"
+        ></toggle-button>
+      </span>
       <meter ref="audioMeter" min="0" max="100" :value="soundWidth"></meter>
     </div>
-  </div>
+  </section>
 </template>
 <script>
 import SoundMeter from 'plugins/remote/soundmeter'
 import RSelect from 'RemoteSelect'
+import ToggleButton from 'ToggleButton'
 export default {
   data: function() {
     return {
@@ -54,26 +68,25 @@ export default {
       audioStream: null,
       audioSoundVolume: 0,
 
-      inputAudioVolume: 1,
-      outputAudioVolume: 1,
-
       selectOutput: null,
       selectVideo: null,
       selectAudio: null,
-
-      outputDevices: [],
 
       micTestMode: false,
       micTestWord: '마이크 테스트',
     }
   },
+  props: {
+    audioInputDevices: null,
+    audioOutputDevices: null,
+  },
   mounted() {
-    this.init()
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
   },
   created() {},
   components: {
     RSelect,
+    ToggleButton,
   },
   computed: {
     soundWidth() {
@@ -85,29 +98,9 @@ export default {
     },
   },
   methods: {
-    init() {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(devices => {
-          console.log(devices)
-          devices.forEach(device => {
-            if (device.kind === 'videoinput') {
-              this.videoDevices.push(device)
-            } else if (device.kind === 'audioinput') {
-              this.audioDevices.push(device)
-            } else if (device.kind === 'audiooutput') {
-              this.outputDevices.push(device)
-            }
-          })
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-
-    handleInputAudioStream() {
+    handleInputAudioStream(newValue) {
+      this.selectAudio = newValue.deviceId
       console.log(this.selectAudio)
-
       const constraints = {
         video: false,
         audio: {
@@ -133,27 +126,21 @@ export default {
         .getUserMedia(constraints)
         .then(stream => connectSoundMeter(stream))
     },
-    changeInputAudioVolume() {
-      //this.$refs['audioComponent'].volume = this.inputAudioVolume
-    },
-    changeOutputAudioVolume() {
-      this.$refs['audioComponent'].volume = this.outputAudioVolume
-    },
-    setAudioOutput() {
+    setAudioOutput(newValue) {
+      //local 스토리지에 저장필요함
+      this.selectOutput = newValue.deviceId
+      console.log(this.selectAudio)
       this.$nextTick(() => {
         this.$refs['audioComponent'].setSinkId(this.selectAudio).then(() => {})
       })
     },
     toggleMicTestMode() {
       this.micTestMode = !this.micTestMode
-      this.micTestWord = this.micTestMode
-        ? '마이크 테스트중...'
-        : '마이크 테스트'
     },
   },
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .sub-title {
   width: 135px;
   height: 22px;
@@ -162,5 +149,9 @@ export default {
   font-family: NotoSansCJKkr-Bold;
   font-weight: bold;
   letter-spacing: 0px;
+}
+
+.align-center {
+  align-items: center;
 }
 </style>

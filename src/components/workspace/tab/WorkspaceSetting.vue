@@ -3,11 +3,22 @@
     <div style="height: 300px;">
       <scrollbar>
         <div style="height: 1000px;border: solid 1px #d8d8d8;">
-          <div>비디오 및 오디오 설정</div>
-          <workspace-set-audio></workspace-set-audio>
-          <workspace-set-video></workspace-set-video>
-          <workspace-set-language></workspace-set-language>
-          <workspace-set-notification></workspace-set-notification>
+          <div class="workspace-setting-wrapper">
+            <div class="workspace-setting-title">비디오 및 오디오 설정</div>
+            <workspace-set-audio
+              :audioInputDevices="audioInputDevices"
+              :audioOutputDevices="audioOutputDevices"
+            ></workspace-set-audio>
+
+            <div class="workspace-setting-horizon-wrapper">
+              <workspace-set-video
+                :videoDevices="videoDevices"
+              ></workspace-set-video>
+
+              <workspace-set-language></workspace-set-language>
+            </div>
+            <workspace-set-notification></workspace-set-notification>
+          </div>
         </div>
       </scrollbar>
     </div>
@@ -31,13 +42,41 @@ export default {
     WorkspaceSetNotification,
   },
   data() {
-    return {}
+    return {
+      //device list
+      videoDevices: [],
+      audioInputDevices: [],
+      audioOutputDevices: [],
+    }
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    init() {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(devices => {
+          console.log(devices)
+          devices.forEach(device => {
+            if (device.kind === 'videoinput') {
+              this.videoDevices.push(device)
+            } else if (device.kind === 'audioinput') {
+              this.audioInputDevices.push(device)
+            } else if (device.kind === 'audiooutput') {
+              this.audioOutputDevices.push(device)
+            }
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+  },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.init()
+  },
 }
 </script>
+<style scoped></style>
