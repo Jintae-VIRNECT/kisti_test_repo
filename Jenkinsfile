@@ -130,13 +130,13 @@ pipeline {
                           execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                         ),
                         sshTransfer(
-                          execCommand: 'docker pull $aws_ecr_address/pf-workspace:$GIT_COMMIT'
+                          execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker stop pf-workspace* && docker rm pf-workspace*'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=master" -d --restart=always --name=pf-workspace pf-workspace:$GIT_COMMIT'
+                          execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=master' -d --restart=always --name=pf-workspace pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
