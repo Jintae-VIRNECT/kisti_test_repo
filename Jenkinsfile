@@ -123,7 +123,7 @@ pipeline {
                   continueOnError: false, failOnError: true,
                   publishers: [
                     sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
+                      configName: 'aws-bastion-deploy-qa',
                       verbose: true,
                       transfers: [
                         sshTransfer(
