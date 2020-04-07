@@ -3,7 +3,7 @@ import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.filter.ExcludeTransitiveDependenciesFilter
 
 plugins {
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id "edu.sc.seis.launch4j" version "2.4.6"
     id "io.franzbecker.gradle-lombok" version "3.3.0"
@@ -37,7 +37,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    }z
 }
 
 dependencyManagement {
