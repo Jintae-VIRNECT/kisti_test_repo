@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from 'components/layout/pages/Login'
 import Terms from 'components/layout/pages/Terms'
-import Register from 'components/layout/pages/Register.vue'
+import Signup from 'components/layout/pages/Signup.vue'
 import User from 'components/layout/pages/User.vue'
 import Find from 'components/layout/pages/Find.vue'
 import Profile from 'components/layout/pages/Profile.vue'
@@ -23,9 +23,9 @@ export default new Router({
 			component: Terms,
 		},
 		{
-			path: '/register',
-			name: 'register',
-			component: Register,
+			path: '/signup',
+			name: 'signup',
+			component: Signup,
 			props: true,
 		},
 		{

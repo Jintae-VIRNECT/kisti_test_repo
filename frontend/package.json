@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
     "express": "^4.16.3",
     "vee-validate": "2.2.15",

@@ -7,7 +7,7 @@ import store from '@/store'
 import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
 import messages from 'languages'
-import locale from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale/lang/ko'
 
 import 'element/row.css'
 import 'element/input.css'

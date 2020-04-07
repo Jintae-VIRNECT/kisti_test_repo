@@ -39,12 +39,9 @@ export default {
 			const h = this.$createElement
 			this.$message({
 				showClose: true,
-				message: h('p', null, [
-					h('h3', null, title),
-					h('p', null, message)
-				]),
+				message: h('p', null, [h('h3', null, title), h('p', null, message)]),
 				type: type,
-				duration: 0
+				// duration: 0
 			})
 		},
 	},

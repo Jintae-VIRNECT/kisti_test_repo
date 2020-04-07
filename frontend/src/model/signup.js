@@ -1,8 +1,9 @@
-export default class Register {
+export default class Signup {
 	constructor(
 		email,
 		password,
-		name,
+		firstName,
+		lastName,
 		birth,
 		marketInfoReceive,
 		joinInfo,
@@ -11,7 +12,8 @@ export default class Register {
 	) {
 		this.email = email
 		this.password = password
-		this.name = name
+		this.firstName = firstName
+		this.lastName = lastName
 		this.birth = birth
 		this.marketInfoReceive = marketInfoReceive
 		this.joinInfo = joinInfo

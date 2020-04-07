@@ -45,8 +45,11 @@
 					type="info"
 					@click="
 						$router.push({
-							name: 'register',
-							params: { marketInfoReceive: marketingAgree },
+							name: 'signup',
+							params: {
+								marketInfoReceive: marketingAgree,
+								policyAgree: privacyAgree,
+							},
 						})
 					"
 					:disabled="!privacyAgree || !serviceAgree"

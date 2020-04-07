@@ -1,4 +1,5 @@
 import AuthService from '../service/auth-service'
+import API from 'service/url'
 
 const login = JSON.parse(localStorage.getItem('user'))
 const initialState = login
@@ -7,7 +8,19 @@ const initialState = login
 
 export const auth = {
 	namespaced: true,
-	state: initialState,
+	state: {
+		initial: initialState,
+		signup: {},
+		verification: {},
+	},
+	getters: {
+		signup(state) {
+			return state.signup
+		},
+		verification(state) {
+			return state.verification
+		},
+	},
 	actions: {
 		login({ commit }, login) {
 			return AuthService.login(login).then(
@@ -25,55 +38,61 @@ export const auth = {
 			AuthService.logout()
 			commit('logout')
 		},
-		register({ commit }, user) {
-			return AuthService.register(user).then(
-				response => {
-					commit('registerSuccess')
-					return Promise.resolve(response.data)
-				},
-				error => {
-					commit('registerFailure')
-					return Promise.reject(error.response.data)
-				},
-			)
+		// signup({ commit }, user) {
+		// 	return AuthService.signup(user).then(
+		// 		response => {
+		// 			commit('registerSuccess')
+		// 			return Promise.resolve(response.data)
+		// 		},
+		// 		error => {
+		// 			commit('registerFailure')
+		// 			return Promise.reject(error.response.data)
+		// 		},
+		// 	)
+		// },
+		async signup(context, param) {
+			const res = await AuthService.signup(param)
+			context.commit('signupResponse', res.data)
+			if (res.code === 200) {
+				return res.data
+			} else {
+				throw new Error(`${res.code}: ${res.message}`)
+			}
 		},
-		verification({ commit }, code) {
-			return AuthService.verification(code).then(
-				response => {
-					commit('authSuccess', response)
-					return Promise.resolve(response)
-				},
-				error => {
-					commit('authFailure')
-					return Promise.reject(error)
-				},
-			)
-		}
+		async verification(context, param) {
+			const res = await AuthService.verification(param)
+			context.commit('verificationResponse', res.data)
+			if (res.code === 200) {
+				return res.data
+			} else {
+				throw new Error(`${res.code}: ${res.message}`)
+			}
+		},
 	},
 	mutations: {
 		loginSuccess(state, user) {
-			state.status = { loggedIn: true }
-			state.user = user
+			state.initial.status = { loggedIn: true }
+			state.initial.user = user
 		},
 		loginFailure(state) {
-			state.status = {}
-			state.user = null
+			state.initial.status = {}
+			state.initial.user = null
 		},
 		logout(state) {
-			state.status = {}
-			state.user = null
+			state.initial.status = {}
+			state.initial.user = null
 		},
 		registerSuccess(state) {
-			state.status = {}
+			state.initial.status = {}
 		},
 		registerFailure(state) {
-			state.status = {}
+			state.initial.status = {}
 		},
-		authSuccess(state) {
-			state.status = {}
+		signupResponse(state, result) {
+			state.verification = result
 		},
-		authFailure(state) {
-			state.status = {}
+		verificationResponse(state, result) {
+			state.verification = result
 		},
 	},
 }

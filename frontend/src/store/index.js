@@ -9,4 +9,7 @@ export default new Vuex.Store({
 	modules: {
 		auth,
 	},
+	mutations: {},
+	actions: {},
+	strict: true,
 })

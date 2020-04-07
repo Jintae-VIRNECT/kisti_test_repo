@@ -259,11 +259,13 @@ h2 {
     }
 
     .el-message__icon {
-        width: 19px;
+        display: inline-block;
+        width: 16px;
+        min-width: 16px;
         height: 16px;
         margin-top: 4px;
         overflow: hidden;
-        border-radius: 50%;
+        border-radius: 8px;
 
         &:before {
             display: inline-block;

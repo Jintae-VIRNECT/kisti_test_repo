@@ -2,7 +2,7 @@ const url = {
 	auth: {
 		login: '/auth/signin',
 		logout: '/auth/signout',
-		register: '/auth/signup',
+		signup: '/auth/signup',
 		emailAuth: '/auth/email',
 		verification: '/auth/verification',
 	},
