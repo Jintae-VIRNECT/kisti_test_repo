@@ -112,7 +112,7 @@
       <h2 class="subtitle">[개발 완]Select</h2>
       <div class="action-box">
         <div class="component">
-          <r-select
+          <r-selectr-select
             :options="selectOptions.options"
             :value="selectOptions.value"
             :text="selectOptions.text"

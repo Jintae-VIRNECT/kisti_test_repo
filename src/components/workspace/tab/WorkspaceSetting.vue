@@ -17,6 +17,7 @@
 
               <workspace-set-language></workspace-set-language>
             </div>
+            <workspace-set-record></workspace-set-record>
             <workspace-set-notification></workspace-set-notification>
           </div>
         </div>
@@ -31,6 +32,7 @@ import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
 import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetNotification from '../section/WorkspaceSetNotification'
+import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 export default {
   name: 'WorkspaceSetting',
   components: {
@@ -40,6 +42,7 @@ export default {
     WorkspaceSetVideo,
     WorkspaceSetLanguage,
     WorkspaceSetNotification,
+    WorkspaceSetRecord,
   },
   data() {
     return {

@@ -3,13 +3,22 @@
     <div class="workspace-setting-title">영상 설정</div>
 
     <div class="workspace-setting-horizon-wrapper">
-      <span class="workspace-setting-label">카메라</span>
+      <div class="workspace-setting-wrapper">
+        <div class="workspace-setting-label">카메라</div>
+        <div class="workspace-setting-label">품질</div>
+      </div>
       <div class="workspace-setting-wrapper">
         <r-select
           v-on:changeValue="setVideoDevice"
           :options="videoDevices"
           :value="'deviceId'"
           :text="'label'"
+        ></r-select>
+        <r-select
+          v-on:changeValue="handleVideoQuality"
+          :options="videoQualityOpts"
+          :value="'value'"
+          :text="'text'"
         ></r-select>
         <div class="video-wrapper">
           <div class="preivew-text">미리보기</div>
@@ -30,6 +39,21 @@ export default {
     return {
       videoStream: null,
       selectVideo: null,
+      videoQuality: '',
+      videoQualityOpts: [
+        {
+          value: 720,
+          text: '720p',
+        },
+        {
+          value: 1080,
+          text: '1080p',
+        },
+        {
+          value: 2080,
+          text: '2K',
+        },
+      ],
     }
   },
   props: {
@@ -39,6 +63,9 @@ export default {
     RSelect,
   },
   methods: {
+    handleVideoQuality: function(newQuality) {
+      this.videoQuality = newQuality
+    },
     setVideoDevice: function(newDevice) {
       console.log(newDevice)
       this.selectVideo = newDevice.deviceId

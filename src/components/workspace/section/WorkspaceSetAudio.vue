@@ -1,7 +1,5 @@
 <template>
   <section>
-    <div class="workspace-setting-sub-title">음성 설정</div>
-
     <div class="workspace-setting-horizon-wrapper">
       <div>
         <span class="workspace-setting-label">입력 장치</span>
@@ -32,7 +30,7 @@
         ></audio>
       </span>
     </div>
-    <div class="workspace-setting-sub-title">마이크 테스트</div>
+    <div class="workspace-setting-title">마이크 테스트</div>
     <div class="workspace-setting-label">
       마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
       들려드리겠습니다.
@@ -49,7 +47,10 @@
           @action="micTestMode = !micTestMode"
         ></toggle-button>
       </span>
-      <meter ref="audioMeter" min="0" max="100" :value="soundWidth"></meter>
+
+      <div style="width:300px">
+        <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
+      </div>
     </div>
   </section>
 </template>
@@ -57,6 +58,7 @@
 import SoundMeter from 'plugins/remote/soundmeter'
 import RSelect from 'RemoteSelect'
 import ToggleButton from 'ToggleButton'
+import ProgressBar from 'ProgressBar'
 export default {
   data: function() {
     return {
@@ -74,6 +76,10 @@ export default {
 
       micTestMode: false,
       micTestWord: '마이크 테스트',
+      progress: {
+        max: 100,
+        value: 0,
+      },
     }
   },
   props: {
@@ -87,6 +93,7 @@ export default {
   components: {
     RSelect,
     ToggleButton,
+    ProgressBar,
   },
   computed: {
     soundWidth() {
