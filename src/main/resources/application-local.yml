@@ -11,35 +11,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-
-zuul:
-  routes:
-    auth:
-      path: /auth/**
-      serviceId: auth-server
-      stripPrefix: false
-    users:
-      path: /users/**
-      serviceid: user-server
-      stripPrefix: false
-    workspace:
-      path: /workspaces/**
-      serviceid: workspace-server
-      stripPrefix: false
-    content:
-      path: /contents/**
-      serviceid: content-server
-      stripPrefix: false
-    process:
-      path: /processes/**
-      serviceid: process-server
-      stripPrefix: false
-    message:
-      path: /messages/**
-      serviceid: message-server
-      stripPrefix: false
-  ribbon-isolation-strategy: thread
-  thread-pool:
-    use-separate-thread-pools: true
-    thread-pool-key-prefix: zuul-
-  sensitive-headers:  Cookie,Set-Cookie
