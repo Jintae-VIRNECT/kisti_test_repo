@@ -421,7 +421,7 @@
       -webkit-box-shadow: -1px 0 0 0 #0051be;
       box-shadow: -1px 0 0 0 #0051be; }
     .el-radio-button__orig-radio:disabled + .el-radio-button__inner {
-      color: #c0c4cc;
+      color: #8d939c;
       cursor: not-allowed;
       background-image: none;
       background-color: #ffffff;

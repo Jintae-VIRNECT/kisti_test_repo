@@ -725,7 +725,7 @@
   .el-checkbox-button.is-checked:first-child .el-checkbox-button__inner {
     border-left-color: #0051be; }
   .el-checkbox-button.is-disabled .el-checkbox-button__inner {
-    color: #c0c4cc;
+    color: #8d939c;
     cursor: not-allowed;
     background-image: none;
     background-color: #ffffff;

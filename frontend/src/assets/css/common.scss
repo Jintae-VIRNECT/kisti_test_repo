@@ -187,7 +187,11 @@ h2 {
 .el-button--primary.is-disabled,
 .el-button--primary.is-disabled:hover,
 .el-button--primary.is-disabled:focus,
-.el-button--primary.is-disabled:active {
+.el-button--primary.is-disabled:active,
+.el-button--info.is-disabled,
+.el-button--info.is-disabled:hover,
+.el-button--info.is-disabled:focus,
+.el-button--info.is-disabled:active {
     color: #8d939c;
     background-color: #e2e6eb;
     border-color: #e2e6eb;

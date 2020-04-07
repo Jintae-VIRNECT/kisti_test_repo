@@ -80,59 +80,66 @@
 
 				<p class="input-title must-check">이름</p>
 				<el-input
-					class="firstname-input"
-					placeholder="성"
-					clearable
-					name="firstname"
-					v-validate="'required'"
-					v-model="fullName.firstName"
-				></el-input>
-				<el-input
 					class="lastname-input"
-					placeholder="이름"
+					placeholder="성"
 					clearable
 					name="lastname"
 					v-validate="'required'"
 					v-model="fullName.lastName"
 				></el-input>
+				<el-input
+					class="firstname-input"
+					placeholder="이름"
+					clearable
+					name="firstname"
+					v-validate="'required'"
+					v-model="fullName.firstName"
+				></el-input>
 
 				<p class="input-title must-check">생년월일</p>
-				<el-input
+				<el-date-picker
 					class="birth-input year-input"
 					placeholder="년"
 					v-model="birth.year"
+					type="year"
 					name="birtnY"
 					maxlength="4"
-					v-validate="'required|max:4'"
-				></el-input>
+					v-validate="'required'"
+					:clearable="false"
+				></el-date-picker>
 
-				<el-input
+				<el-date-picker
 					class="birth-input"
 					placeholder="월"
 					v-model="birth.month"
+					type="month"
 					name="birthM"
+					format="MM"
 					maxlength="2"
-					v-validate="'required|max:2'"
-				></el-input>
+					v-validate="'required'"
+					:clearable="false"
+				></el-date-picker>
 
-				<el-input
+				<el-date-picker
 					class="birth-input"
 					placeholder="일"
 					v-model="birth.day"
+					type="date"
 					name="birthD"
+					format="dd"
 					maxlength="2"
-					v-validate="'required|max:2'"
-				></el-input>
+					v-validate="'required'"
+					:clearable="false"
+				></el-date-picker>
 
 				<p class="input-title must-check">가입 경로</p>
 				<el-select
 					v-model="register.joinInfo"
 					placeholder="가입 경로 선택"
-					v-validate="'required'"
 					name="joinInfo"
 				>
 					<el-option
-						v-for="item in subscriptionPathLists"
+						v-for="item in $t('register.subscriptionPathLists')"
 						:key="item.value"
 						:label="item.label"
 						:value="item.value"
@@ -147,7 +154,6 @@
 					type="text"
 					name="email"
 					clearable
-					v-validate="'required'"
 				>
 				</el-input>
 
@@ -155,11 +161,10 @@
 				<el-select
 					v-model="register.serviceInfo"
 					placeholder="서비스 분야 선택"
-					v-validate="'required'"
 					name="serviceInfo"
 				>
 					<el-option
-						v-for="item in serviceInfoLists"
+						v-for="item in $t('register.serviceInfoLists')"
 						:key="item.value"
 						:label="item.label"
 						:value="item.value"
@@ -174,7 +179,6 @@
 					type="text"
 					name="email"
 					clearable
-					v-validate="'required'"
 				>
 				</el-input>
 
@@ -222,8 +226,8 @@ export default {
 			},
 			passwordConfirm: '',
 			fullName: {
-				firstName: '',
 				lastName: '',
+				firstName: '',
 			},
 			birth: {
 				year: '',
@@ -231,95 +235,7 @@ export default {
 				day: '',
 			},
 			joinInfoETC: '',
-			subscriptionPathLists: [
-				{
-					value: 1,
-					label: '검색 사이트',
-				},
-				{
-					value: 2,
-					label: '전시 및 세미나',
-				},
-				{
-					value: 3,
-					label: '버넥트 공식 블로그',
-				},
-				{
-					value: 4,
-					label: '온라인 광고',
-				},
-				{
-					value: 5,
-					label: 'SNS, 커뮤니티',
-				},
-				{
-					value: 6,
-					label: '언론, 뉴스, 기사, 잡지',
-				},
-				{
-					value: 7,
-					label: '뉴스레터 및 이메일 홍보',
-				},
-				{
-					value: 8,
-					label: '지인 추천',
-				},
-				{
-					value: 9,
-					label: '직접 입력',
-				},
-			],
 			serviceInfoETC: '',
-			serviceInfoLists: [
-				{
-					value: 1,
-					label: '에너지/자원',
-				},
-				{
-					value: 2,
-					label: 'EPC',
-				},
-				{
-					value: 3,
-					label: '자동차/부품',
-				},
-				{
-					value: 4,
-					label: '항공/철도',
-				},
-				{
-					value: 5,
-					label: '정유/석유화학',
-				},
-				{
-					value: 6,
-					label: '물류',
-				},
-				{
-					value: 7,
-					label: '관공서, 공기업',
-				},
-				{
-					value: 8,
-					label: '서비스',
-				},
-				{
-					value: 9,
-					label: '교육/연구',
-				},
-				{
-					value: 10,
-					label: '소프트웨어 개발 및 공급',
-				},
-				{
-					value: 11,
-					label: '방위',
-				},
-				{
-					value: 12,
-					label: '기타',
-				},
-			],
 			submitted: false,
 			successful: false,
 			setCount: false,

@@ -255,40 +255,6 @@ export default {
 				},
 			)
 		},
-		handleRegister() {
-			this.message = ''
-			this.submitted = true
-			new Register(
-				this.register.email,
-				this.register.password,
-				this.register.passwordConfirm,
-				this.register.familyName,
-				this.register.lastName,
-				this.register.registerInfo,
-				this.register.serviceInfo,
-				this.register.session,
-			)
-			console.log(this.register)
-			this.$validator.validate().then(valid => {
-				if (valid) {
-					this.$store
-						.dispatch('auth/register', this.register)
-						.then(
-							data => {
-								this.message = data.message
-								this.successful = true
-							},
-							error => {
-								this.message = error.message
-								this.successful = false
-							},
-						)
-						.then
-						// this.$router.push('/')
-						()
-				}
-			})
-		},
 		validImage(event) {
 			const files = event.target.files
 			console.log(files)
@@ -339,15 +305,6 @@ export default {
 					console.log(error)
 				})
 		},
-		sendEmail() {
-			alert(this.register.email)
-			const email = this.register.email
-			console.log(email)
-			const result = AuthService.emailAuth(email)
-			console.log(email)
-			this.isShow = true
-		},
-		checkVerificationCode() {},
 	},
 }
 </script>

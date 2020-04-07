@@ -15,16 +15,22 @@
     }
 }
 
-.firstname-input {
+.lastname-input {
     width: calc(42% - 20px);
     margin-right: 16px;
 }
 
-.lastname-input {
+.firstname-input {
     width: 58%;
 }
-
-.birth-input {
+.el-date-editor {
+    .el-input__icon.el-icon-date {
+        display: none;
+    }
+}
+.birth-input,
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner {
     width: 104px;
     margin-left: 12px;
     .el-input__inner {

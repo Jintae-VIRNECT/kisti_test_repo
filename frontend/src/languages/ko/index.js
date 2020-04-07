@@ -6,4 +6,7 @@ files.keys().forEach(key => {
 	Object.assign(modules, files(key))
 })
 
-export default modules
+module.exports = {
+	languageAbbr: 'KOR',
+	...modules,
+}

@@ -11,6 +11,7 @@ const url = {
 		register: '/users/register',
 		emailAuth: '/users/email',
 		userInfo: '/users/info',
+		invite: '/users/invite',
 	},
 }
 

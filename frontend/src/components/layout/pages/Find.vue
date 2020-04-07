@@ -97,6 +97,7 @@
 									params: { marketInfoReceive: marketingAgree },
 								})
 							"
+							:disabled="emailFindActive"
 							>이메일 찾기</el-button
 						>
 					</div>
@@ -154,6 +155,29 @@ export default {
 				email: '',
 			},
 		}
+	},
+	computed: {
+		emailFindActive() {
+			let val
+			if (this.tabCategory == 1) {
+				if (
+					this.fullName.firstName == '' ||
+					this.fullName.lastName == '' ||
+					this.findEmail.phoneNumber == ''
+				)
+					return (val = true)
+				else return (val = false)
+			} else {
+				if (
+					this.fullName.firstName == '' ||
+					this.fullName.lastName == '' ||
+					this.findEmail.recoveryEmail == ''
+				)
+					return (val = true)
+				else return (val = false)
+			}
+			return val
+		},
 	},
 	methods: {},
 }
