@@ -139,6 +139,9 @@
 
 <script>
 export default {
+	props: {
+		findCategory: String,
+	},
 	data() {
 		return {
 			tab: 'email',
@@ -155,6 +158,10 @@ export default {
 				email: '',
 			},
 		}
+	},
+	mounted() {
+		if (this.findCategory === 'email') return (this.tab = 'email')
+		else return (this.tab = 'resetPassword')
 	},
 	computed: {
 		emailFindActive() {
@@ -179,7 +186,6 @@ export default {
 			return val
 		},
 	},
-	methods: {},
 }
 </script>
 

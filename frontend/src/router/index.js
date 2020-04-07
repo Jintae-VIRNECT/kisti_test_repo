@@ -37,6 +37,7 @@ export default new Router({
 			path: '/find',
 			name: 'find',
 			component: Find,
+			props: true,
 		},
 		{
 			path: '/profile',

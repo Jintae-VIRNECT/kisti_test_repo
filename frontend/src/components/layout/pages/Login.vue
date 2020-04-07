@@ -48,8 +48,13 @@
 					>로그인</el-button
 				>
 				<div class="find-wrap">
-					<router-link to="/find">이메일 찾기</router-link>
-					<router-link to="/find">비밀번호 재설정</router-link>
+					<router-link :to="{ name: 'find', params: { findCategory: 'email' } }"
+						>이메일 찾기</router-link
+					>
+					<router-link
+						:to="{ name: 'find', params: { findCategory: 'resetPassword' } }"
+						>비밀번호 재설정</router-link
+					>
 					<router-link to="/terms">회원가입</router-link>
 				</div>
 			</el-col>
@@ -80,6 +85,7 @@ export default {
 				password: '',
 				rememberMe: null,
 				autoLogin: null,
+				findCategory: 'email',
 			},
 			loading: false,
 			message: '',
