@@ -1,14 +1,14 @@
 import Model from '@/models/Model'
 
 export default class Profile extends Model {
-  constructor() {
+  constructor(json) {
     super()
-    this.lastName = '장'
-    this.firstName = '선영'
-    this.image = require('@/assets/images/img-user-profile-08.png')
-    this.nickname = '버넥트 연구원'
-    this.email = 'example@example.com'
-    this.birth = null
-    this.contact = null
+    this.lastName = json.name
+    this.firstName = json.name
+    this.image = json.profile
+    this.nickname = json.nickname
+    this.email = json.email
+    this.birth = json.birth
+    this.contact = json.mobile
   }
 }

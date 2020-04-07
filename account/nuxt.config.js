@@ -31,20 +31,20 @@ module.exports = {
    */
   styleResources: {
     scss: [
-      '../../WC-Modules/src/assets/css/mixin.scss',
+      resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
       '@/assets/css/_vars.scss',
     ],
   },
   css: [
-    '../../WC-Modules/src/assets/css/reset.scss',
+    resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
     '@/assets/css/global.scss',
   ],
   loading: { color: '#1b293e' },
   /**
    * dir
    */
-  srcDir: 'src/',
-  modulesDir: ['../../node_modules'],
+  srcDir: resolve(__dirname, 'src'),
+  modulesDir: [resolve(__dirname, '../WC-Modules/src')],
   /**
    * env
    */
