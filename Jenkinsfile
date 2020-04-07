@@ -133,7 +133,7 @@ pipeline {
                           execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-workspace`; if (  $(count ) -lt 1 ); then; docker stop pf-workspace && docker rm pf-workspace; else echo "Pass"; fi'
+                          execCommand: 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then docker stop pf-workspace && docker rm pf-workspace; fi;'
                         ),
                         sshTransfer(
                           execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=master' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
