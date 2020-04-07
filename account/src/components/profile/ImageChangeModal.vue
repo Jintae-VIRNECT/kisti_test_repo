@@ -26,13 +26,13 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="uploadImage">
+      <el-button type="info" @click="uploadImage">
         {{ $t('profile.imageChangeModal.upload') }}
       </el-button>
       <el-button type="text" @click="deleteImage" :disabled="!file">
         {{ $t('profile.imageChangeModal.delete') }}
       </el-button>
-      <el-button type="confirm" @click="submit" :disabled="!file">
+      <el-button type="primary" @click="submit" :disabled="!file">
         {{ $t('profile.imageChangeModal.submit') }}
       </el-button>
     </div>
@@ -119,7 +119,7 @@ export default {
     font-size: 13px;
     text-align: center;
   }
-  .el-button--primary {
+  .el-button--info {
     float: left;
   }
   .el-button--text {

@@ -14,12 +14,28 @@
     font-size: 12.6px;
   }
 }
+.el-button--info {
+  font-weight: 300;
+  background: $color-info;
+}
 .el-button--primary {
+  color: #fff;
   font-weight: 300;
   background: $color-primary;
 }
-.el-button--confirm {
-  color: #fff;
-  font-weight: 300;
-  background: #1655bf;
+
+.el-button.is-disabled,
+.el-button.is-disabled:hover,
+.el-button.is-disabled:focus,
+.el-button.is-disabled:active {
+  color: #8d939c;
+  background-color: #edf0f4;
+  border-color: #edf0f4;
+  opacity: 0.6;
+}
+.el-button--text.is-disabled,
+.el-button--text.is-disabled:hover,
+.el-button--text.is-disabled:focus,
+.el-button--text.is-disabled:active {
+  background: none;
 }
