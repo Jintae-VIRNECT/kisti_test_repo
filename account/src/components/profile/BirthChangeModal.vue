@@ -53,6 +53,7 @@
 <script>
 import dialogMixin from '@/mixins/dialog'
 import profileService from '@/services/profile'
+import { filters } from '@/plugins/dayjs'
 
 export default {
   mixins: [dialogMixin],
@@ -71,17 +72,19 @@ export default {
   },
   methods: {
     async submit() {
+      const form = {
+        userId: this.$props.me.uuid,
+        birth: filters.localDateFormat(this.birth).replace(/\./g, '-'),
+      }
       try {
-        await profileService.changeMyBirth({
-          me: this.me,
-          birth: this.birth,
-        })
+        await profileService.updateMyProfile(form)
         this.$notify.success({
           message: this.$t('profile.birthChangeModal.message.success'),
           position: 'bottom-left',
         })
         this.$emit('changedBirth', this.birth)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.birthChangeModal.message.fail'),
           position: 'bottom-left',

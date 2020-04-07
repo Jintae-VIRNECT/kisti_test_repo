@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       form: {
+        userId: this.me.uuid,
         lastName: '',
         firstName: '',
       },
@@ -58,17 +59,14 @@ export default {
   methods: {
     async submit() {
       try {
-        await profileService.changeMyName({
-          me: this.me,
-          lastName: this.lastName,
-          firstName: this.firstName,
-        })
+        await profileService.updateMyProfile(this.form)
         this.$notify.success({
           message: this.$t('profile.nameChangeModal.message.success'),
           position: 'bottom-left',
         })
         this.$emit('changedName', this.form)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.nameChangeModal.message.fail'),
           position: 'bottom-left',

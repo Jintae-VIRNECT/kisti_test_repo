@@ -87,6 +87,7 @@ export default {
         })
         this.$emit('changedImage', this.file)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.imageChangeModal.message.fail'),
           position: 'bottom-left',

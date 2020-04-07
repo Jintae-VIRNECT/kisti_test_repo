@@ -17,11 +17,11 @@
           class="horizon"
           :label="$t('profile.contactChangeModal.contact')"
         >
-          <el-select class="country-code" v-model="form.countryCode">
+          <el-select class="country-code" v-model="form.code">
             <el-option
               v-for="code in countryCodes"
-              :key="code.code"
-              :value="code.code"
+              :key="code.dial_code"
+              :value="code.dial_code"
               :label="code.dial_code"
             />
           </el-select>
@@ -55,29 +55,32 @@ export default {
     return {
       countryCodes,
       form: {
-        countryCode: 'KR',
+        code: '+82',
         phone: '',
       },
     }
   },
   watch: {
     visible() {
-      this.form.phone = this.me.contact
+      this.form.code = this.me.contact.replace(/-.*$/, '')
+      this.form.phone = this.me.contact.replace(/^\+.*?-/, '')
     },
   },
   methods: {
     async submit() {
+      const form = {
+        userId: this.$props.me.uuid,
+        mobile: `${this.form.code}-${this.form.phone}`,
+      }
       try {
-        await profileService.changeMyContact({
-          me: this.me,
-          contact: this.form.phone,
-        })
+        await profileService.updateMyProfile(form)
         this.$notify.success({
           message: this.$t('profile.contactChangeModal.message.success'),
           position: 'bottom-left',
         })
-        this.$emit('changedContact', this.form.phone)
+        this.$emit('changedContact', form.mobile)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.contactChangeModal.message.fail'),
           position: 'bottom-left',
