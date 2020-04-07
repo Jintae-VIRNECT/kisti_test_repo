@@ -3,6 +3,77 @@
     <h1 class="test-title">Components</h1>
 
     <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Radio</h2>
+      <div class="action-box">
+        <div class="component">
+          <r-radio
+            :options="radioOption.options"
+            :text="radioOption.text"
+            :value="radioOption.value"
+            :selectedOption.sync="radioOption.selectedOption"
+          ></r-radio>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="radioOption.selectedOption"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[디자인 필요]Switch</h2>
+      <div class="action-box">
+        <div class="component">
+          <switcher :value.sync="switchOption.value"></switcher>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="switchOption.value"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #29292c;">
+      <h2 class="subtitle">[개발 완]Progress</h2>
+      <div class="action-box">
+        <div class="component">
+          <progress-bar
+            :value="progress.value"
+            :max="progress.max"
+          ></progress-bar>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">max</p>
+            <input class="props-options" type="number" v-model="progress.max" />
+          </div>
+          <div class="props-option">
+            <p class="props-title">description</p>
+            <input
+              class="props-options"
+              type="number"
+              v-model="progress.value"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
       <h2 class="subtitle">[개발 완]Profile</h2>
       <div class="action-box">
         <div class="component">
@@ -66,7 +137,7 @@
       <div class="action-box">
         <div class="component" style="position: relative;height: 100px;">
           <scroller>
-            <div style="height: 1000px;border: solid 1px #d8d8d8;"></div>
+            <div style="height: 400px;border: solid 1px #d8d8d8;"></div>
           </scroller>
         </div>
       </div>
@@ -235,6 +306,9 @@
   </div>
 </template>
 <script>
+import RRadio from 'RemoteRadio'
+import Switcher from 'Switcher'
+import ProgressBar from 'ProgressBar'
 import Scroller from 'Scroller'
 import Card from 'Card'
 import Profile from 'Profile'
@@ -249,6 +323,9 @@ import ToggleButton from 'ToggleButton'
 import Search from 'Search'
 export default {
   components: {
+    RRadio,
+    Switcher,
+    ProgressBar,
     Scroller,
     Card,
     Profile,
@@ -264,6 +341,35 @@ export default {
   },
   data() {
     return {
+      radioOption: {
+        options: [
+          {
+            text: 'English',
+            value: 'en',
+            imgSrc: require('assets/image/img_flag_USA.svg'),
+          },
+          {
+            text: '한국어',
+            value: 'ko',
+            imgSrc: require('assets/image/img_flag_korea.svg'),
+          },
+          {
+            text: '중국어',
+            value: 'zh',
+            imgSrc: require('assets/image/img_flag_CN.svg'),
+          },
+        ],
+        text: 'text',
+        value: 'value',
+        selectedOption: 'en',
+      },
+      switchOption: {
+        value: true,
+      },
+      progress: {
+        max: 100,
+        value: 100,
+      },
       search: {
         placeholder: '회원명 검색',
         value: '',
