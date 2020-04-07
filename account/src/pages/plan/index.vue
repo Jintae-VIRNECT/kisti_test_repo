@@ -37,13 +37,13 @@
 import planService from '@/services/plan'
 
 import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import usingPlanList from '@/components/plan/usingPlanList'
+import UsingPlanList from '@/components/plan/UsingPlanList'
 import PlanDetailModal from '@/components/plan/PlanDetailModal'
 
 export default {
   components: {
     SubscribePaymentInfo,
-    usingPlanList,
+    UsingPlanList,
     PlanDetailModal,
   },
   data: function() {

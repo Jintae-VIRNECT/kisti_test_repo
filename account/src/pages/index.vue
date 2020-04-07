@@ -70,13 +70,13 @@
 
 <script>
 import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import usingPlanList from '@/components/plan/usingPlanList'
+import UsingPlanList from '@/components/plan/UsingPlanList'
 import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
-    usingPlanList,
+    UsingPlanList,
     WorkspacePlanList,
     LoggedInDeviceList,
     SubscribePaymentInfo,
