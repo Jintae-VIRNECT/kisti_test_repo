@@ -34,7 +34,7 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="confirm" @click="submit">
+      <el-button type="primary" @click="submit">
         {{ $t('profile.contactChangeModal.submit') }}
       </el-button>
     </div>

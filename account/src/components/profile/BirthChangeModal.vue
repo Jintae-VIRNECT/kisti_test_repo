@@ -43,7 +43,7 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="confirm" @click="submit">
+      <el-button type="primary" @click="submit">
         {{ $t('profile.birthChangeModal.submit') }}
       </el-button>
     </div>
