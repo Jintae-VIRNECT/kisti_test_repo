@@ -50,6 +50,15 @@ pipeline {
           }
         }
 
+        stage('Test Branch') {
+          when {
+            branch 'test'
+          }
+          steps {
+            sh 'docker build -t pf-workspace .'
+          }
+        }
+
       }
     }
 
@@ -105,6 +114,26 @@ pipeline {
             sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=master" -d --name=pf-workspace pf-workspace'
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
           }
+        }
+
+        stage('Test Branch') {
+          when {
+            branch 'test'
+          }
+
+          steps {
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-workspace").push("$GIT_COMMIT")
+                }
+              }
+
+      
+
+            }
+          }
+
         }
 
       }
