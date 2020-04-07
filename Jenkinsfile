@@ -125,7 +125,7 @@ pipeline {
                     sshPublisherDesc(
                       configName: 'aws-bastion-deploy-qa',
                       verbose: true,
-                      transfer: [
+                      transfers: [
                         sshTransfer(
                           execCommand: 'sudo aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                         ),
