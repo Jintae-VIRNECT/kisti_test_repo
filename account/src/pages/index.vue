@@ -96,6 +96,12 @@ export default {
 </script>
 
 <style lang="scss">
+#home .container {
+  padding-top: 80px;
+  .el-table__empty-block {
+    min-height: 300px;
+  }
+}
 .home__bg {
   position: absolute;
   width: 100%;

@@ -10,7 +10,6 @@
       <el-form
         class="virnect-login-form"
         ref="form"
-        :model="form"
         @submit.native.prevent="submit"
       >
         <el-form-item

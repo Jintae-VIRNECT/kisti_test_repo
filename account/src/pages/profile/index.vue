@@ -310,7 +310,7 @@ export default {
     }
     .desc {
       color: $font-color-desc;
-      font-size: 12px;
+      font-size: 12.6px;
     }
   }
   .el-button {
