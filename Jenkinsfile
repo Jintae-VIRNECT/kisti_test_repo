@@ -8,7 +8,7 @@ pipeline {
               sh 'yarn cache clean'
               sh '"echo <password> | sudo -S rm yarn.lock" || true'
               sh 'yarn install'
-              sh 'yarn workspace account dev'
+              sh 'yarn workspace account build'
               sh 'cp docker/Dockerfile ./'
             }    
           }
