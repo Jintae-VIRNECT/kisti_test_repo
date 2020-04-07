@@ -107,6 +107,7 @@ export default {
   methods: {
     changeTrigger() {
       window.removeEventListener('click', this.windowClickHandler)
+      window.removeEventListener('wheel', this.windowClickHandler)
       this.$el.removeEventListener('mouseenter', this.showPopover)
       this.$el.removeEventListener('mouseleave', this.hidePopover)
       this.$el.removeEventListener('click', this.togglePopover)
@@ -117,6 +118,7 @@ export default {
         case 'click':
           this.$el.addEventListener('click', this.togglePopover)
           window.addEventListener('click', this.windowClickHandler)
+          window.addEventListener('wheel', this.windowClickHandler)
           break
         case 'hover':
           this.$el.addEventListener('mouseenter', this.showPopover)
@@ -146,6 +148,7 @@ export default {
         const reference = this.$slots['reference'][0].elm
         let top = calcOffset(reference).top
         let left = calcOffset(reference).left
+        console.log(top)
 
         //Popover 위치 계산 - left
         if (this.placement.indexOf('right') > -1) {
@@ -215,6 +218,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('click', this.windowClickHandler)
+    window.removeEventListener('wheel', this.windowClickHandler)
     this.$eventBus.$off('popover:close')
   },
 }
