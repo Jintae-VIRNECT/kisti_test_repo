@@ -123,7 +123,7 @@ pipeline {
                   continueOnError: false, failOnError: true,
                   publishers: [
                     sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
+                      configName: 'aws-bastion-deploy-prod',
                       verbose: true,
                       transfers: [
                         sshTransfer(
@@ -133,7 +133,7 @@ pipeline {
                           execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&RM"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&RM"; fi;'
+                          execCommand: 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
                           execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=master' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
