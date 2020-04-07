@@ -4,6 +4,22 @@ server:
 spring:
   application:
     name: gateway-server
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - authorization
+              - cookie
+              - Set-Cookie
+
 
 eureka:
   instance:
