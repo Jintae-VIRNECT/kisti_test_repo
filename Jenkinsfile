@@ -127,19 +127,19 @@ pipeline {
                       verbose: true,
                       transfers: [
                         sshTransfer(
-                          execCommand: 'sudo aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                         ),
                         sshTransfer(
-                          execCommand: 'sudo docker pull $aws_ecr_address/pf-workspace:$GIT_COMMIT'
+                          execCommand: 'docker pull $aws_ecr_address/pf-workspace:$GIT_COMMIT'
                         ),
                         sshTransfer(
-                          execCommand: 'sudo docker stop pf-workspace* && sudo docker rm pf-workspace*'
+                          execCommand: 'docker stop pf-workspace* && docker rm pf-workspace*'
                         ),
                         sshTransfer(
-                          execCommand: 'sudo docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=master" -d --restart=always --name=pf-workspace pf-workspace:$GIT_COMMIT'
+                          execCommand: 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=master" -d --restart=always --name=pf-workspace pf-workspace:$GIT_COMMIT'
                         ),
                         sshTransfer(
-                          execCommand: 'sudo docker rmi -f $(docker images -f "dangling=true" -q) || true'
+                          execCommand: 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
                         )
                       ]
                     )
