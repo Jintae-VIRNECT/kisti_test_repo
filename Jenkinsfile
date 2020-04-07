@@ -68,6 +68,8 @@ pipeline {
       }
     }
 
+
+
     stage('Deploy') {
       parallel {
         stage('Deploy') {
