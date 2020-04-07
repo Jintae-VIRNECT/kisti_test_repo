@@ -43,6 +43,9 @@
     color: #d8dde5;
     font-size: 22px;
   }
+  .el-input__suffix {
+    top: -1px;
+  }
 }
 
 .el-input__inner {
@@ -57,12 +60,6 @@
 
   &:focus {
     border-color: #1468e2;
-  }
-}
-
-.el-input--suffix {
-  + .el-input--suffix {
-    margin-top: 12px;
   }
 }
 

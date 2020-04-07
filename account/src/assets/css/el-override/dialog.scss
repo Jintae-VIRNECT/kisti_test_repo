@@ -20,13 +20,26 @@
       color: $font-color-content;
       line-height: 1.71;
     }
-    .el-form {
-      margin: 30px 0 54px;
-      .el-form-item {
-        margin-bottom: 30px;
-      }
-      .el-input + .el-input {
-        margin-top: 10px;
+  }
+  .el-form {
+    margin: 30px 0 54px;
+  }
+  .el-form-item {
+    margin-bottom: 30px;
+
+    &:not(.horizon) .el-input + .el-input {
+      margin-top: 10px;
+    }
+    &.horizon .el-form-item__content {
+      display: flex;
+      width: 100%;
+
+      .el-input,
+      .el-select {
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
       }
     }
   }

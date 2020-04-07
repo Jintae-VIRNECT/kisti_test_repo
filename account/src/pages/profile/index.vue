@@ -99,7 +99,7 @@
             <h4>{{ $t('profile.additional.birth') }}</h4>
             <div class="content">
               <span class="value">
-                {{ me.birth || $t('profile.additional.birthEmpty') }}
+                {{ myBirth }}
               </span>
             </div>
             <el-button type="text" @click="visible.birthChangeModal = true">
@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import { filters } from '@/plugins/dayjs'
 import profileService from '@/services/profile'
 
 import ImageChangeModal from '@/components/profile/ImageChangeModal'
@@ -174,6 +175,9 @@ export default {
     BirthChangeModal,
     ContactChangeModal,
   },
+  filters: {
+    ...filters,
+  },
   data() {
     return {
       me: profileService.getMyProfile(),
@@ -186,6 +190,12 @@ export default {
         contactChangeModal: false,
       },
     }
+  },
+  computed: {
+    myBirth() {
+      if (this.me.birth) return filters.localDateFormat(this.me.birth)
+      else return this.$t('profile.additional.birthEmpty')
+    },
   },
   methods: {
     changedImage(image) {

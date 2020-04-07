@@ -11,7 +11,16 @@ export const filters = {
       .local()
       .format('YYYY.MM.DD HH:mm')
   },
+  localDateFormat(param) {
+    return dayjs
+      .utc(param)
+      .local()
+      .format('YYYY.MM.DD')
+  },
   utcTimeFormat(param) {
     return dayjs.utc(param).format('YYYY.MM.DD HH:mm')
+  },
+  utcDateFormat(param) {
+    return dayjs.utc(param).format('YYYY.MM.DD')
   },
 }

@@ -95,6 +95,7 @@
   },
   "contactChangeModal": {
     "title": "연락처 변경",
+    "contact": "연락처",
     "contactPlaceholder": "전화번호를 입력해 주세요",
     "submit": "변경",
     "message": {
