@@ -68,16 +68,6 @@ pipeline {
       }
     }
 
-    stage('Pre-Deploy') {
-      steps {
-        echo 'Pre-Deploy Stage'
-        catchError() {
-          sh 'docker stop pf-workspace && docker rm pf-workspace || true'
-        }
-
-      }
-    }
-
     stage('Deploy') {
       parallel {
         stage('Deploy') {
