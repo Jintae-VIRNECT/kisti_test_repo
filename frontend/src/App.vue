@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<header-section></header-section>
+		<TheHeader />
 		<transition name="app-fade" mode="out-in">
 			<router-view />
 		</transition>
@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import headerSection from '@/components/layout/common/Header'
+import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	components: {
-		headerSection,
+		TheHeader,
 	},
 	computed: {
 		currentUser() {

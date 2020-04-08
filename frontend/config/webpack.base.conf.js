@@ -15,13 +15,6 @@ const extractCSS = new ExtractTextPlugin({
 	allChunks: true,
 })
 
-const extractLESS = new ExtractTextPlugin({
-	filename: getPath => {
-		return getPath('[name].css').replace('css/js', 'css')
-	},
-	allChunks: true,
-})
-
 const extractSASS = new ExtractTextPlugin({
 	filename: getPath => {
 		return getPath('[name].css').replace('css/js', 'css')
@@ -62,17 +55,7 @@ const styleLoaderOptions = {
 }
 const cssOptions = [
 	{ loader: 'css-loader', options: { sourceMap: true } },
-	{ loader: 'postcss-loader', options: { sourceMap: true } },
-]
-
-const lessOptions = [
-	...cssOptions,
-	{
-		loader: 'less-loader',
-		options: {
-			sourceMap: true,
-		},
-	},
+	{ loader: 'sass-loader', options: { sourceMap: true } },
 ]
 
 const sassOptions = [
@@ -124,12 +107,6 @@ const config = {
 								fallback: styleLoaderOptions,
 							}),
 						),
-						less: ['css-hot-loader'].concat(
-							ExtractTextPlugin.extract({
-								use: lessOptions,
-								fallback: styleLoaderOptions,
-							}),
-						),
 						scss: ['css-hot-loader'].concat(
 							ExtractTextPlugin.extract({
 								use: sassOptions,
@@ -149,15 +126,6 @@ const config = {
 				use: ['css-hot-loader'].concat(
 					ExtractTextPlugin.extract({
 						use: cssOptions,
-						fallback: styleLoaderOptions,
-					}),
-				),
-			},
-			{
-				test: /\.less$/,
-				use: ['css-hot-loader'].concat(
-					ExtractTextPlugin.extract({
-						use: lessOptions,
 						fallback: styleLoaderOptions,
 					}),
 				),
@@ -226,7 +194,6 @@ const config = {
 	},
 	plugins: [
 		new webpack.optimize.ModuleConcatenationPlugin(),
-		extractLESS,
 		extractSASS,
 		extractCSS,
 		new CopyWebpackPlugin(
