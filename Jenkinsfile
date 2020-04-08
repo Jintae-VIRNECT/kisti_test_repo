@@ -28,7 +28,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t pf-workspace:develop .'
+            sh 'docker build -t pf-workspace .'
           }
         }
 
@@ -37,7 +37,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker build -t pf-workspace:staging .'
+            sh 'docker build -t pf-workspace .'
           }
         }
 
@@ -59,16 +59,6 @@ pipeline {
       }
     }
 
-    stage('Pre-Deploy') {
-      steps {
-        echo 'Pre-Deploy Stage'
-        catchError() {
-          sh 'docker stop pf-workspace && docker rm pf-workspace || true'
-        }
-
-      }
-    }
-
     stage('Deploy') {
       parallel {
         stage('Deploy') {
@@ -82,8 +72,9 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:develop'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            sh 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-workspace pf-workspace'
+            sh 'docker image prune'
           }
         }
 
@@ -92,8 +83,44 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace:staging'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-workspace").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=staging' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
+            }
+
           }
         }
 
@@ -102,8 +129,43 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8082:8082 -d --name=pf-workspace pf-workspace'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-workspace").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=master' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
+            }
           }
         }
 

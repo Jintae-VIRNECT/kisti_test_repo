@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,21 +30,30 @@ public class UserInvite implements Serializable {
     private String workspace;
     private String code;
     private List<Long> permission;
-    private List<Map<String, String>> groups;
+    private List<GroupInfo> groups;
+    private Boolean existUser;
 
     @TimeToLive(unit = TimeUnit.MINUTES)
     private Long expireTime;
 
+    @Getter
+    @Setter
+    public static class GroupInfo {
+        private String groupName;
+        private Boolean managerAssign;
+    }
+
     @Builder
-    public UserInvite(String joinUser, String inviteUser, String email, String workspace, String code, List<Long> permission, List<Map<String, String>> groups, Long expireTime){
+    public UserInvite(String joinUser, String inviteUser, String email, String workspace, String code, List<Long> permission, Long expireTime, Boolean existUser, List<GroupInfo> groups) {
         this.joinUser = joinUser;
         this.inviteUser = inviteUser;
         this.email = email;
         this.workspace = workspace;
-        this.code= code;
+        this.code = code;
         this.permission = permission;
-        this.groups = groups;
         this.expireTime = expireTime;
+        this.existUser = existUser;
+        this.groups = groups;
     }
 
 }

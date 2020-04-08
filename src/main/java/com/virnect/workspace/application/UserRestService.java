@@ -1,6 +1,10 @@
 package com.virnect.workspace.application;
 
-import com.virnect.workspace.global.common.ResponseMessage;
+import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
+import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
+import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.config.NetflixFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "UserServer", url = "${user.serverUrl}")
+@FeignClient(name = "UserServer", url = "${user.serverUrl}", configuration = NetflixFeignConfiguration.class)
 public interface UserRestService {
     /**
      * 유저 정보 조회
@@ -24,7 +28,7 @@ public interface UserRestService {
      * @return - 유저 정보
      */
     @GetMapping("/{userId}")
-    ResponseMessage getUserInfoByUserId(@PathVariable("userId") String userId);
+    ApiResponse<UserInfoRestResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
 
     /**
      * 유저 정보 리스트 검색
@@ -34,7 +38,15 @@ public interface UserRestService {
      * @return - 이름 또는 이메일이 검색어와 일치한 유저 정보들의 리스트 데이터
      */
     @GetMapping
-    ResponseMessage getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, Pageable pageable);
+    ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, @RequestParam("paging") boolean paging, Pageable pageable);
 
+    /**
+     * 유저 중복 여부 조회
+     *
+     * @param emailList - 조회 요청 유저 이메일 리스트
+     * @return - 유저 정보
+     */
+    @GetMapping("/invite")
+    ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(@RequestParam("email[]") String[] emailList);
 }
 

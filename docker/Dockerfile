@@ -8,4 +8,4 @@ COPY ./build/libs/PF-Workspace-1.0.0.jar ./PF-Workspace-1.0.0.jar
 EXPOSE 8082
 
 ## Command executed when container is start up.
-CMD ["java","-Dspring.profiles.active=develop", "-jar","PF-Workspace-1.0.0.jar"]
+CMD ["java", "-jar","PF-Workspace-1.0.0.jar"]

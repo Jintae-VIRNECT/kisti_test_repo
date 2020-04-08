@@ -3,7 +3,7 @@ package com.virnect.workspace.dao;
 import com.virnect.workspace.domain.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: PF-Workspace
@@ -13,6 +13,6 @@ import java.util.List;
  * DESCRIPTION:
  */
 public interface GroupRepository extends JpaRepository<Group,Long> {
-    Group findByName(String groupName);
+    Optional<Group> findByName(String groupName);
 }
 
