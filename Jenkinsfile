@@ -27,7 +27,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t pf-login:develop .'
+            sh 'docker build -t pf-login .'
           }
         }
 
@@ -36,7 +36,7 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker build -t pf-login:staging .'
+            sh 'docker build -t pf-login .'
           }
         }
 
@@ -81,8 +81,9 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker run -p 8883:8883 -d --name=pf-login -e "SPRING_PROFILES_ACTIVE=develop" pf-login:develop'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            sh 'count=`docker ps | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-login pf-login'
+            sh 'docker image prune -f'
           }
         }
 
@@ -91,8 +92,44 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker run -p 8883:8883 -d --name=pf-login -e "SPRING_PROFILES_ACTIVE=staging" pf-login:staging'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-login").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-login:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
+            }
+
           }
         }
 
@@ -101,13 +138,46 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker run -p 8883:8883 -d --name=pf-login -e "SPRING_PROFILES_ACTIVE=production" pf-login'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-login").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-login:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
+            }
+
           }
         }
-
-      }
-    }
 
     stage('Notify') {
       steps {
