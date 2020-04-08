@@ -74,7 +74,7 @@ pipeline {
           steps {
             sh 'count=`docker ps | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8082:8082 -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-workspace pf-workspace'
-            sh 'docker image prune'
+            sh 'docker image prune -f'
           }
         }
 
@@ -111,7 +111,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=staging' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune'
+                          execCommand: 'docker image prune -f'
                         )
                       ]
                     )
@@ -157,7 +157,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 -e 'SPRING_PROFILES_ACTIVE=master' -d --restart=always --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune'
+                          execCommand: 'docker image prune -f'
                         )
                       ]
                     )
