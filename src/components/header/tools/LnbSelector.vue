@@ -15,7 +15,10 @@
           @click="changeSelect(option)"
           :class="{ active: option.id === selected.id }"
         >
-          <img class="header-lnb-selector__image" />
+          <span
+            class="header-lnb-selector__check"
+            :class="{ active: option.id === selected.id }"
+          ></span>
           <p class="header-lnb-selector__title">{{ option.title }}</p>
           <p class="header-lnb-selector__description">
             워크스테이션 멤버: {{ option.member }}명
