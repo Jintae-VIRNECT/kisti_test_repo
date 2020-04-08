@@ -6,20 +6,39 @@ spring:
     name: gateway-server
   cloud:
     gateway:
+      routes:
+        - id: auth-server
+          uri: lb://auth-server
+          predicates:
+            - Path=/auth/**
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/users**
+        - id: workspace-server
+          uri: lb://workspace-server
+          predicates:
+            - Path=/workspace**
+        - id: amdin-server
+          uri: lb://admin-server
+          predicates:
+            - Path=/admin**
+        - id: content-server
+          uri: lb://content-server
+          predicates:
+            - Path=/contents**
+        - id: process-server
+          uri: lb://process-server
+          predicates:
+            - Path=/processes**
       globalcors:
         cors-configurations:
           '[/**]':
             allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            allowedHeaders:
-              - authorization
-              - cookie
-              - Set-Cookie
-
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
 
 eureka:
   instance:
