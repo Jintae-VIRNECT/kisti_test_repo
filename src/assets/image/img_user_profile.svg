@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 64 (101010) - https://sketch.com -->
+    <title>827DC456-2D0E-47E1-83AC-837B7C3CC656@1.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="1.62851282%" x2="50%" y2="111.777344%" id="linearGradient-1">
+            <stop stop-color="#D0D5DC" offset="0%"></stop>
+            <stop stop-color="#ABAFB5" offset="100%"></stop>
+        </linearGradient>
+        <circle id="path-2" cx="15" cy="15" r="15"></circle>
+    </defs>
+    <g id="page" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="0.0-리소스-파일모음" transform="translate(-214.000000, -255.000000)">
+            <g id="gnb_icn_user01" transform="translate(214.000000, 255.000000)">
+                <g id="lnb_img_user">
+                    <mask id="mask-3" fill="white">
+                        <use xlink:href="#path-2"></use>
+                    </mask>
+                    <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+                    <path d="M15,18.3461914 C17.900625,18.3461914 20.25,15.9968164 20.25,13.0961914 C20.25,10.1955664 17.900625,7.84619141 15,7.84619141 C12.099375,7.84619141 9.75,10.1955664 9.75,13.0961914 C9.75,15.9968164 12.099375,18.3461914 15,18.3461914 Z M15.375,21.295166 C11.37,21.295166 3.375,23.2340506 3.375,27.0828811 L3.375,29.9767386 C8.12915039,32.6890236 11.8791504,34.045166 14.625,34.045166 C17.3708496,34.045166 21.6208496,32.6890236 27.375,29.9767386 L27.375,27.0828811 C27.375,23.2340506 19.38,21.295166 15.375,21.295166 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -73,7 +73,7 @@ code {
   overflow: hidden;
   @include clearfix;
 
-  section {
+  .test > section {
     padding: 20px 30px 30px;
   }
 
