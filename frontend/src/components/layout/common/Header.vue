@@ -30,7 +30,7 @@ export default {
 			isMobile: false,
 			mShow: false,
 			activeIdx: '',
-			status: 'login',
+			status: 'visitor',
 		}
 	},
 	methods: {

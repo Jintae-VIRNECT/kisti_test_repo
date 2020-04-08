@@ -3,7 +3,6 @@ import API from './url'
 
 const GATEWAY_API_URL = 'http://192.168.6.3:8073'
 const AUTH_API_URL = 'http://192.168.6.3:8321'
-const USER_API_URL = 'http://192.168.6.3:8081'
 
 const axios = Axios.create({
 	timeout: 10000,
@@ -15,9 +14,10 @@ const axios = Axios.create({
 class AuthService {
 	login(user) {
 		return axios
-			.post(GATEWAY_API_URL + API.auth.login, {
+			.post(AUTH_API_URL + API.auth.login, {
 				email: user.email,
 				password: user.password,
+				rememberMe: user.rememberMe,
 			})
 			.then(this.handleResponse)
 			.then(response => {
@@ -32,7 +32,7 @@ class AuthService {
 
 	logout(logout) {
 		return axios
-			.post(GATEWAY_API_URL + API.auth.logout, {
+			.post(AUTH_API_URL + API.auth.logout, {
 				uuid: logout.uuid,
 				accessToken: logout.accessToken,
 			})
@@ -40,6 +40,7 @@ class AuthService {
 			.then(response => {
 				const { data } = response
 				// alert(data);
+				console.log(data)
 				if (data !== undefined) {
 					localStorage.removeItem('user')
 					return data
@@ -47,14 +48,6 @@ class AuthService {
 				return data
 			})
 	}
-
-	// signup(user) {
-	// 	return axios.post(GATEWAY_API_URL + API.auth.signup, {
-	// 		username: user.username,
-	// 		email: user.email,
-	// 		password: user.password,
-	// 	})
-	// }
 
 	emailAuth(email) {
 		return axios
@@ -66,30 +59,6 @@ class AuthService {
 				const { data } = response.data
 				return data
 			})
-	}
-
-	async signup(user = {}) {
-		try {
-			const response = await axios.post(USER_API_URL + API.user.register, {
-				birth: user.birth,
-				description: '',
-				email: user.email,
-				joinInfo: user.joinInfo,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				mobile: '',
-				marketInfoReceive: user.marketInfoReceive,
-				password: user.password,
-				profile: '',
-				recoveryEmail: '',
-				serviceInfo: user.serviceInfo,
-				sessionCode: user.session,
-			})
-			console.log(response.data)
-			return response.data
-		} catch (e) {
-			console.error(e)
-		}
 	}
 
 	async verification(code = {}) {

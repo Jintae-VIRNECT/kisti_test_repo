@@ -1,5 +1,5 @@
 import AuthService from '../service/auth-service'
-import API from 'service/url'
+import UserService from '../service/user-service'
 
 const login = JSON.parse(localStorage.getItem('user'))
 const initialState = login
@@ -51,7 +51,7 @@ export const auth = {
 		// 	)
 		// },
 		async signup(context, param) {
-			const res = await AuthService.signup(param)
+			const res = await UserService.signup(param)
 			context.commit('signupResponse', res.data)
 			if (res.code === 200) {
 				return res.data

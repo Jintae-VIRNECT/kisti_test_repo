@@ -8,7 +8,7 @@ export default class Signup {
 		marketInfoReceive,
 		joinInfo,
 		serviceInfo,
-		session,
+		sessionCode,
 	) {
 		this.email = email
 		this.password = password
@@ -18,6 +18,6 @@ export default class Signup {
 		this.marketInfoReceive = marketInfoReceive
 		this.joinInfo = joinInfo
 		this.serviceInfo = serviceInfo
-		this.session = session
+		this.sessionCode = sessionCode
 	}
 }

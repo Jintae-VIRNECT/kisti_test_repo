@@ -37,14 +37,14 @@ glob.sync('./src/apps/**/app.js').forEach(path => {
 	entries[chunk] = path
 	chunks.push(chunk)
 
-	// const filename = chunk + '.html'
-	// const htmlConf = {
-	// 	filename: filename,
+	const filename = chunk + '.html'
 	const htmlConf = {
-		filename: resolve(
-			__dirname,
-			'../../src/main/resources/templates/index.html',
-		),
+		filename: filename,
+		// const htmlConf = {
+		// 	filename: resolve(
+		// 		__dirname,
+		// 		'../../src/main/resources/templates/index.html',
+		// 	),
 		template: path.replace(/.js/g, '.html'),
 		inject: 'body',
 		favicon: './src/assets/favicon.ico',

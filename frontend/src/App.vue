@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<!-- <header-section></header-section> -->
+		<header-section></header-section>
 		<transition name="app-fade" mode="out-in">
 			<router-view />
 		</transition>
@@ -8,10 +8,10 @@
 </template>
 
 <script>
-// import headerSection from '@/components/layout/common/Header'
+import headerSection from '@/components/layout/common/Header'
 export default {
 	components: {
-		// headerSection,
+		headerSection,
 	},
 	computed: {
 		currentUser() {

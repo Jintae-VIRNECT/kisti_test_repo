@@ -182,7 +182,11 @@
 				>
 				</el-input>
 
-				<el-button class="next-btn block-btn" type="info" @click="checkSignup()"
+				<el-button
+					class="next-btn block-btn"
+					type="info"
+					:disabled="!nextBtn"
+					@click="checkSignup()"
 					>다음</el-button
 				>
 			</el-col>
@@ -216,13 +220,13 @@ export default {
 			signup: {
 				email: '',
 				password: '',
-				lastName: '',
 				firstName: '',
+				lastName: '',
 				birth: '',
 				marketInfoReceive: false,
 				joinInfo: '',
 				serviceInfo: '',
-				session: '',
+				sessionCode: '',
 			},
 			passwordConfirm: '',
 			fullName: {
@@ -272,6 +276,27 @@ export default {
 			if (this.signup.serviceInfo == '')
 				return (this.signup.serviceInfo = this.serviceInfo)
 		},
+		nextBtn() {
+			let val = true
+			if (!this.check.isEmail) return (val = false)
+			if (
+				this.signup.password !== this.passwordConfirm &&
+				this.passwordConfirm !== ''
+			)
+				return (val = false)
+			if (this.signup.lastName == '' || this.signup.firstName == '')
+				return (val = false)
+
+			if (
+				this.birth.year == '' ||
+				this.birth.month == '' ||
+				this.birth.date == ''
+			)
+				return (val = false)
+			if (this.joinInfoComp == '') return (val = false)
+			if (this.serviceInfoComp == '') return (val = false)
+			return val
+		},
 	},
 	mounted() {
 		if (this.loggedIn || !this.policyAgree) {
@@ -284,60 +309,14 @@ export default {
 	methods: {
 		checkSignup() {
 			// 폼내용전송
-			if (!this.check.isEmail)
-				return this.alertMessage(
-					'이메일 미인증',
-					'이메일 인증을 진행해주세요.',
-					'error',
-				)
-			if (
-				this.passValidate(this.signup.password) ||
-				this.signup.password == ''
-			) {
+			if (!this.passValidate(this.signup.password)) {
 				this.alertMessage(
 					'비밀번호 입력 오류',
 					'비밀번호는 8~20자 이내로 영문 대,소문자/숫자/특수문자( . , !, @, #, $, % )를 3가지 이상 조합하여 입력해 주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다.',
 					'error',
 				)
 			}
-			if (
-				this.signup.password !== this.passwordConfirm &&
-				this.passwordConfirm !== ''
-			) {
-				this.alertMessage(
-					'비밀번호 불일치',
-					'비밀번호가 일치하지 않습니다.',
-					'error',
-				)
-			}
-			if (this.signup.lastName == '' || this.signup.firstName == '')
-				return this.alertMessage(
-					'이름 미입력',
-					'이름 항목을 확인해주세요.',
-					'error',
-				)
-			if (
-				this.birth.year == '' ||
-				this.birth.month == '' ||
-				this.birth.date == ''
-			)
-				return this.alertMessage(
-					'생년월일 미입력',
-					'생년월일 항목을 확인해주세요.',
-					'error',
-				)
-			if (this.joinInfoComp == '')
-				return this.alertMessage(
-					'가입 경로 미선택',
-					'가입 경로를 선택해주세요.',
-					'error',
-				)
-			if (this.serviceInfoComp == '')
-				return this.alertMessage(
-					'서비스 분야 미선택',
-					'서비스 분야를 선택해주세요.',
-					'error',
-				)
+
 			this.message = ''
 			this.submitted = true
 			new Signup(
@@ -349,7 +328,7 @@ export default {
 				this.marketInfoReceive,
 				this.joinInfoComp,
 				this.serviceInfoComp,
-				this.signup.session,
+				this.signup.sessionCode,
 			)
 			console.log(this.signup)
 			if (this.signup) {
@@ -413,6 +392,7 @@ export default {
 				this.$store.dispatch('auth/verification', code).then(
 					data => {
 						if (data) {
+							this.signup.sessionCode = data.sessionCode
 							this.isVeritication = false
 							this.isValidEmail = false
 							this.verificationText = '인증 완료'

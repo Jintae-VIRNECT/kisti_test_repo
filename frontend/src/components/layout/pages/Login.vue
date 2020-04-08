@@ -75,7 +75,7 @@ export default {
 	},
 	computed: {
 		loggedIn() {
-			return this.$store.state.auth.status.loggedIn
+			return this.$store.state.auth.initial.status.loggedIn
 		},
 	},
 	data() {
@@ -85,7 +85,6 @@ export default {
 				password: '',
 				rememberMe: null,
 				autoLogin: null,
-				findCategory: 'email',
 			},
 			loading: false,
 			message: '',

@@ -129,7 +129,7 @@
 						>
 					</div>
 				</section>
-				<el-button class="inquiry-btn"
+				<el-button class="inquiry-btn" v-if="false"
 					><i class="el-icon-warning-outline"></i>문의하기</el-button
 				>
 			</el-col>

@@ -1,6 +1,6 @@
 <template>
 	<section class="login-modlue">
-		<ul class="login-wrap" v-if="status == 'visitor'">
+		<ul class="login-wrap" v-if="status == 'visitor' && false">
 			<li class="login-btn"><a href="#">Log in</a></li>
 			<li class="singup-btn"><a href="#">Sign up</a></li>
 		</ul>
@@ -53,7 +53,7 @@
 		<button
 			class="link-btn status-btn"
 			@click="linkControl()"
-			v-if="status == 'login' || 'workstation'"
+			v-if="status == 'login' || ('workstation' && false)"
 		>
 			<img src="~assets/images/common/ic-apps@2x.png" />
 			<div class="hover-box" v-if="linkBox">
@@ -67,7 +67,7 @@
 		</button>
 		<button
 			class="status-btn thumbnail-btn"
-			v-if="status == 'login' || 'workstation'"
+			v-if="status == 'login' || ('workstation' && false)"
 		>
 			<img
 				src="~assets/images/common/ico-kakao-normal@2x.png"
