@@ -73,7 +73,6 @@ pipeline {
         catchError() {
           sh 'docker stop pf-gateway && docker rm pf-gateway || true'
         }
-
       }
     }
 
@@ -139,9 +138,7 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
         }
 
@@ -185,9 +182,7 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
         }
       }
@@ -198,5 +193,4 @@ pipeline {
       }
     }
   }
-}
 }
