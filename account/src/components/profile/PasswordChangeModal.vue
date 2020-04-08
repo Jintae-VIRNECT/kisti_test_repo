@@ -96,7 +96,6 @@ export default {
       } else {
         try {
           const form = {
-            userId: this.$props.me.uuid,
             password: this.form.password1,
           }
           await profileService.updateMyProfile(form)

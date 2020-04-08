@@ -11,7 +11,7 @@ export default async function api(name, option = {}) {
     throw new Error(`API not found '${name}'`)
   }
   let [method, uri] = URI[name]
-  let { route, params } = option
+  let { route, params, headers } = option
 
   // replace route
   method = method.toLowerCase()
@@ -27,11 +27,11 @@ export default async function api(name, option = {}) {
   }
   params = method === 'post' ? params : { params }
 
-  if (!process.server) $nuxt.$loading.start()
+  if (process.client) $nuxt.$loading.start()
   try {
-    const response = await axios[method](uri, params)
+    const response = await axios[method](uri, params, { headers })
     const { code, data, message } = response.data
-    $nuxt.$loading.finish()
+    if (process.client) $nuxt.$loading.finish()
 
     if (code === 200) {
       return data
@@ -39,8 +39,10 @@ export default async function api(name, option = {}) {
       throw new Error(`${code}: ${message}`)
     }
   } catch (e) {
-    $nuxt.$loading.fail()
-    $nuxt.$loading.finish()
+    if (process.client) {
+      $nuxt.$loading.fail()
+      $nuxt.$loading.finish()
+    }
     throw e
   }
 }

@@ -69,7 +69,6 @@ export default {
   methods: {
     async submit() {
       const form = {
-        userId: this.$props.me.uuid,
         mobile: `${this.form.code}-${this.form.phone}`,
       }
       try {

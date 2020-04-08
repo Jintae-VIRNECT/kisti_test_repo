@@ -28,7 +28,7 @@
             <div class="avatar" @click="visible.imageChangeModal = true">
               <img :src="me.image" />
               <i>
-                <img src="~assets/images/ic-camera-alt.svg" />
+                <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
             </div>
           </div>
@@ -222,6 +222,9 @@ export default {
       this.me.contact = contact
       this.visible.contactChangeModal = false
     },
+  },
+  beforeCreate() {
+    this.$store.commit('auth/SET_AUTH', false)
   },
 }
 </script>

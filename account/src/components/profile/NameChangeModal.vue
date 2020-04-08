@@ -44,7 +44,6 @@ export default {
   data() {
     return {
       form: {
-        userId: this.me.uuid,
         lastName: '',
         firstName: '',
       },

@@ -72,7 +72,6 @@ export default {
   methods: {
     async submit() {
       const form = {
-        userId: this.$props.me.uuid,
         birth: filters.localDateFormat(this.birth).replace(/\./g, '-'),
       }
       try {

@@ -40,7 +40,6 @@ export default {
   data() {
     return {
       form: {
-        userId: this.me.uuid,
         nickname: '',
       },
     }
