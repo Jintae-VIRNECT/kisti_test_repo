@@ -39,7 +39,7 @@ module.exports = {
     resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
     '@/assets/css/global.scss',
   ],
-  loading: { color: '#1b293e' },
+  loading: { color: '#1468e2' },
   /**
    * dir
    */
@@ -55,6 +55,7 @@ module.exports = {
     WORKSPACE_API_URL: env.WORKSPACE_API_URL,
     CONTENT_API_URL: env.CONTENT_API_URL,
     PROCESS_API_URL: env.PROCESS_API_URL,
+    API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
   /**
    * build
