@@ -29,7 +29,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t pf-processmanagement:develop .'
+              sh 'docker build -t pf-processmanagement .'
             }
 
           }
@@ -41,7 +41,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-processmanagement:staging .'
+              sh 'docker build -t pf-processmanagement .'
             }
 
           }
@@ -53,7 +53,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-processmanagement .'
+              sh 'docker build -t pf-processmanagement .'
             }
 
           }
@@ -92,8 +92,9 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=develop -v /data/content/processmanagement:/usr/app/upload --restart=always --name=pf-processmanagement pf-processmanagement:develop'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              sh 'count=`docker ps | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+              sh 'docker run -p 8079:8079 --restart=always -e SPRING_PROFILES_ACTIVE=develop -v /data/content/processmanagement:/usr/app/upload -d --name=pf-processmanagement pf-processmanagement'
+              sh 'docker image prune -f'
             }
 
           }
@@ -103,16 +104,43 @@ pipeline {
           when {
             branch 'staging'
           }          
-          
-
           steps {
             catchError() {
-              sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=staging -v /data/content/processmanagement:/usr/app/upload --restart=always --name=pf-processmanagement $registry_server/pf-processmanagement:staging'
-              sh 'docker push $registry_server/pf-processmanagement:staging'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-processmanagement:staging", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker stop pf-processmanagement && docker rm pf-processmanagement || true", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker run -p 8079:8079 -d --restart=always --name=pf-processmanagement \\${registry_server}/pf-processmanagement:staging", failOnError: true)
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-processmanagement").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -v /data/content/processmanagement:/usr/app/upload -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
@@ -124,16 +152,46 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8079:8079 -d -e SPRING_PROFILES_ACTIVE=production -v /data/content/processmanagement:/usr/app/upload --restart=always --name=pf-processmanagement $registry_server/pf-processmanagement'
-              sh 'docker push $registry_server/pf-processmanagement'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-processmanagement").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -v /data/content/processmanagement:/usr/app/upload -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
         }
 
-      }
-    }
 
     stage('Notify') {
       steps {
