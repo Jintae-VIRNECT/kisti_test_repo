@@ -34,8 +34,8 @@
               class="workspace-setting-horizon-wrapper workspace-setting-section"
             >
               <workspace-set-record
-                @selectedRecordLength="saveRecordLength"
-                @selectedRecordRes="saveRecordRes"
+                @selectedRecLength="saveRecordLength"
+                @selectedResolution="saveRecordRes"
               ></workspace-set-record>
             </div>
             <div
@@ -156,9 +156,30 @@ export default {
         )
       }
     },
-    saveRecordLength() {},
-    saveRecordRes() {},
-    saveNotiFlagPC() {},
+    saveRecordLength(recLength) {
+      if (recLength !== null) {
+        localStorage.setItem(
+          CONFIG_CODE.CURRNET_LOCAL_RECORD_LENGTH,
+          JSON.stringify(recLength),
+        )
+      }
+    },
+    saveRecordRes(recResolution) {
+      if (recResolution !== null) {
+        localStorage.setItem(
+          CONFIG_CODE.CURRENT_RECORD_RESOLUTION,
+          JSON.stringify(recResolution),
+        )
+      }
+    },
+    saveNotiFlagPC(notiFlagPC) {
+      if (notiFlagPC !== null) {
+        localStorage.setItem(
+          CONFIG_CODE.CURRENT_NOTI_FLAG_PC,
+          JSON.stringify(notiFlagPC),
+        )
+      }
+    },
   },
 
   /* Lifecycles */

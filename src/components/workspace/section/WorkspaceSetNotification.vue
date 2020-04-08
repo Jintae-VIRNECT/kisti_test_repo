@@ -24,6 +24,13 @@
 </template>
 <script>
 export default {
+  watch: {
+    getPcNotiWhileService: function(flag) {
+      this.$emit('selectedNotiFlagPC', {
+        noti_flag_pc: flag,
+      })
+    },
+  },
   data: function() {
     return {
       getPcNotiWhileService: true,

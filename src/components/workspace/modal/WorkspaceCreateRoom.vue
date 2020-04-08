@@ -62,5 +62,4 @@ export default {
   mounted() {},
 }
 </script>
-
 <style lang="scss" src="assets/style/workspace/workspace-modal"></style>

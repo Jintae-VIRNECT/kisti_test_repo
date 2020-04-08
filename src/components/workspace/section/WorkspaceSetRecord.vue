@@ -7,7 +7,7 @@
         <div class="workspace-setting-label">로컬 녹화 시간</div>
         <r-select
           class="workspace-setting-r-selecter"
-          v-on:changeValue="handleRecTime"
+          v-on:changeValue="saveRecLength"
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
@@ -19,7 +19,7 @@
         <div class="workspace-setting-label">녹화 영상 해상도</div>
         <r-select
           class="workspace-setting-r-selecter"
-          v-on:changeValue="handleRecRes"
+          v-on:changeValue="saveRecResolution"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
@@ -73,11 +73,11 @@ export default {
     RSelect,
   },
   methods: {
-    handleRecTime: function(newTime) {
-      this.localRecordingTime = newTime
+    saveRecLength: function(newRecLength) {
+      this.$emit('selectedRecLength', { rec_length: newRecLength })
     },
-    handleRecRes: function(newRes) {
-      this.localRecordingResolution = newRes
+    saveRecResolution: function(newResolution) {
+      this.$emit('selectedResolution', { rec_res: newResolution })
     },
   },
 }

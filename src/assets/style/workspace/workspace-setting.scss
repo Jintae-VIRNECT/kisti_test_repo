@@ -5,11 +5,16 @@
 
 }
 .workspace-setting-section {
-  margin: 15px 15px 15px 15px;
+  margin: 30px 30px 30px 30px;
 
   padding-right: 20px;
   padding-bottom: 20px;
   padding-left: 20px;
+}
+
+
+.workspace-setting-section:nth-of-type(1){
+  margin-top:60px
 }
 
 .workspace-setting-section:not(:last-child){

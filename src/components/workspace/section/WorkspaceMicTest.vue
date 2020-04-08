@@ -9,12 +9,13 @@
     </div>
     <div class="workspace-setting-horizon-wrapper align-center">
       <div class="align-item">
-        <button class="button" @click="toggleMicTestMode">
+        <button class="btn" @click="toggleMicTestMode">
           {{ micTestWord }}
         </button>
       </div>
       <div class="align-item">
         <toggle-button
+          class="mic-radius"
           :description="''"
           :size="24"
           :active="micTestMode"
@@ -131,15 +132,7 @@ export default {
 .label-margin-bottom {
   margin-bottom: 40px;
 }
-
-.button {
-  width: 120px;
-  height: 38px;
-  background: linear-gradient(90deg, rgb(0, 84, 247) 0%, rgb(20, 95, 198) 100%);
-  border-radius: 2px;
-  color: rgb(255, 255, 255);
-  font-family: NotoSansCJKkr-Medium;
-  font-size: 14px;
-  font-weight: 500;
+.mic-radius {
+  border-radius: 50%;
 }
 </style>
