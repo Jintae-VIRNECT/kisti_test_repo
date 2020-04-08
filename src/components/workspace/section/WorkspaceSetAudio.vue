@@ -1,11 +1,12 @@
 <template>
   <section>
+    <div class="workspace-setting-title">비디오 및 오디오 설정</div>
     <div class="workspace-setting-horizon-wrapper">
-      <div>
+      <div class="workspace-setting-vertical-wrapper">
         <span class="workspace-setting-label">입력 장치</span>
         <r-select
           class="workspace-setting-r-selecter"
-          v-on:changeValue="handleInputAudioStream"
+          v-on:changeValue="setAudioInputDevice"
           :options="audioInputDevices"
           :value="'deviceId'"
           :text="'label'"
@@ -13,52 +14,23 @@
         </r-select>
       </div>
 
-      <span>
+      <div class="workspace-setting-vertical-wrapper">
         <span class="workspace-setting-label">출력 장치</span>
         <r-select
           class="workspace-setting-r-selecter"
-          v-on:changeValue="setAudioOutput"
+          v-on:changeValue="setAudioOutputDevice"
           :options="audioOutputDevices"
           :value="'deviceId'"
           :text="'label'"
         >
         </r-select>
-        <audio
-          ref="audioComponent"
-          :srcObject.prop="audioStream"
-          autoplay
-        ></audio>
-      </span>
-    </div>
-    <div class="workspace-setting-title">마이크 테스트</div>
-    <div class="workspace-setting-label">
-      마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
-      들려드리겠습니다.
-    </div>
-    <div class="workspace-setting-horizon-wrapper align-center">
-      <el-button @click="toggleMicTestMode">{{ micTestWord }}</el-button>
-      <span>
-        <toggle-button
-          :description="''"
-          :size="24"
-          :active="micTestMode"
-          :activeSrc="require('assets/image/setting/mdpi_icn_mic.svg')"
-          :inactiveSrc="require('assets/image/setting/icon_mic_mute.svg')"
-          @action="micTestMode = !micTestMode"
-        ></toggle-button>
-      </span>
-
-      <div style="width:300px">
-        <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
     </div>
   </section>
 </template>
 <script>
-import SoundMeter from 'plugins/remote/soundmeter'
 import RSelect from 'RemoteSelect'
-import ToggleButton from 'ToggleButton'
-import ProgressBar from 'ProgressBar'
+
 export default {
   data: function() {
     return {
@@ -74,8 +46,6 @@ export default {
       selectVideo: null,
       selectAudio: null,
 
-      micTestMode: false,
-      micTestWord: '마이크 테스트',
       progress: {
         max: 100,
         value: 0,
@@ -92,8 +62,6 @@ export default {
   created() {},
   components: {
     RSelect,
-    ToggleButton,
-    ProgressBar,
   },
   computed: {
     soundWidth() {
@@ -105,44 +73,12 @@ export default {
     },
   },
   methods: {
-    handleInputAudioStream(newValue) {
-      this.selectAudio = newValue.deviceId
-      console.log(this.selectAudio)
-      const constraints = {
-        video: false,
-        audio: {
-          deviceId: this.selectAudio,
-        },
-      }
-
-      const connectSoundMeter = stream => {
-        this.audioStream = stream
-        const soundMeter = new SoundMeter(this.audioContext)
-        soundMeter.connectToSource(stream, e => {
-          if (e) {
-            alert(e)
-            return
-          }
-          setInterval(() => {
-            this.audioSoundVolume = soundMeter.instant.toFixed(2)
-          }, 200)
-        })
-      }
-
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(stream => connectSoundMeter(stream))
+    setAudioInputDevice(newInputAudioDevice) {
+      this.$emit('selectedAudioInputDevice', newInputAudioDevice)
     },
-    setAudioOutput(newValue) {
-      //local 스토리지에 저장필요함
-      this.selectOutput = newValue.deviceId
-      console.log(this.selectAudio)
-      this.$nextTick(() => {
-        this.$refs['audioComponent'].setSinkId(this.selectAudio).then(() => {})
-      })
-    },
-    toggleMicTestMode() {
-      this.micTestMode = !this.micTestMode
+
+    setAudioOutputDevice(newOutputAudioDevice) {
+      this.$emit('selectedOutputAudioDevice', newOutputAudioDevice)
     },
   },
 }
@@ -160,5 +96,25 @@ export default {
 
 .align-center {
   align-items: center;
+  justify-content: start;
+}
+
+.align-item {
+  margin-right: 10px;
+}
+
+.align-item:nth-child(2n) {
+  margin-right: 20px;
+}
+
+.button {
+  width: 120px;
+  height: 38px;
+  background: linear-gradient(90deg, rgb(0, 84, 247) 0%, rgb(20, 95, 198) 100%);
+  border-radius: 2px;
+  color: rgb(255, 255, 255);
+  font-family: NotoSansCJKkr-Medium;
+  font-size: 14px;
+  font-weight: 500;
 }
 </style>

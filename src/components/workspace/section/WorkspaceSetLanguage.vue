@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace-setting-section">
+  <section>
     <div class="workspace-setting-title">언어 설정</div>
 
     <div class="radio-width">
@@ -7,7 +7,7 @@
         :options="radioOption.options"
         :text="radioOption.text"
         :value="radioOption.value"
-        :selectedOption.sync="radioOption.selectedOption"
+        :selectedOption.sync="selectLanguage"
       ></r-radio>
     </div>
   </section>
@@ -17,6 +17,7 @@ import RRadio from 'RemoteRadio'
 export default {
   data: function() {
     return {
+      selectLanguage: 'en',
       picked: '',
       radioOption: {
         options: [
@@ -35,6 +36,11 @@ export default {
             value: 'zh',
             imgSrc: require('assets/image/img_flag_CN.svg'),
           },
+          {
+            text: '일본어',
+            value: 'jp',
+            imgSrc: require('assets/image/img_flag_JP.svg'),
+          },
         ],
         text: 'text',
         value: 'value',
@@ -45,11 +51,16 @@ export default {
   components: {
     RRadio,
   },
+  watch: {
+    selectLanguage: function(language) {
+      this.$emit('selectedLanguage', { language: language })
+    },
+  },
 }
 </script>
 
 <style scoped>
 .radio-width {
-  width: 300px;
+  width: 400px;
 }
 </style>

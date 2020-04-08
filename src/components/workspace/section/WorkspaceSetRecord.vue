@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace-setting-section">
+  <section>
     <div class="workspace-setting-title">녹화 설정</div>
 
     <div class="workspace-setting-horizon-wrapper">

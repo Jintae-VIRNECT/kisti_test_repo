@@ -1,25 +1,28 @@
 <template>
-  <section class="workspace-setting-section">
+  <section>
     <div class="workspace-setting-title">영상 설정</div>
 
-    <div class="workspace-setting-horizon-wrapper">
-      <div class="workspace-setting-wrapper">
+    <div class="workspace-setting-vertical-wrapper">
+      <div class="workspace-setting-horizon-wrapper content-space-between">
         <div class="workspace-setting-label">카메라</div>
-        <div class="workspace-setting-label">품질</div>
-      </div>
-      <div class="workspace-setting-wrapper">
         <r-select
           v-on:changeValue="setVideoDevice"
           :options="videoDevices"
           :value="'deviceId'"
           :text="'label'"
         ></r-select>
+      </div>
+      <div class="workspace-setting-horizon-wrapper content-space-between">
+        <div class="workspace-setting-label">품질</div>
         <r-select
-          v-on:changeValue="handleVideoQuality"
+          v-on:changeValue="setVideoQuality"
           :options="videoQualityOpts"
           :value="'value'"
           :text="'text'"
         ></r-select>
+      </div>
+      <div class="workspace-setting-horizon-wrapper content-space-between">
+        <div></div>
         <div class="video-wrapper">
           <div class="preivew-text">미리보기</div>
           <video
@@ -63,13 +66,13 @@ export default {
     RSelect,
   },
   methods: {
-    handleVideoQuality: function(newQuality) {
-      this.videoQuality = newQuality
-    },
     setVideoDevice: function(newDevice) {
-      console.log(newDevice)
       this.selectVideo = newDevice.deviceId
       this.getVideoStream()
+      this.$emit('selectedVideoDevice', newDevice)
+    },
+    setVideoQuality: function(newQuality) {
+      this.$emit('selectedVideoQuality', newQuality)
     },
     getVideoStream() {
       console.log(this.selectVideo)
@@ -100,15 +103,12 @@ export default {
 
   .preivew-text {
     width: 100%;
-
     color: rgb(236, 236, 236);
     font-family: 'NotoSansCJKkr-Medium';
     top: 90%;
     text-align: center;
     background-color: #000000;
     opacity: 50%;
-    // top: 0;
-    // left: 50;
     position: absolute;
   }
 }
