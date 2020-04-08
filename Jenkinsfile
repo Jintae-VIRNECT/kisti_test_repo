@@ -28,7 +28,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t pf-gateway:develop .'
+              sh 'docker build -t pf-gateway .'
             }
 
           }
@@ -40,7 +40,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-gateway:staging .'
+              sh 'docker build -t pf-gateway .'
             }
 
           }
@@ -52,7 +52,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-gateway .'
+              sh 'docker build -t pf-gateway .'
             }
 
           }
@@ -91,8 +91,9 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=develop --name=pf-gateway pf-gateway:develop'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              sh 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+              sh 'docker run -p 8073:8073 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-gateway pf-gateway'
+              sh 'docker image prune -f'
             }
 
           }
@@ -101,17 +102,44 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
-          }          
-          
-
+          }
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=staging --name=pf-gateway $registry_server/pf-gateway:staging'
-              sh 'docker push $registry_server/pf-gateway:staging'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-gateway:staging", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker stop pf-gateway && docker rm pf-gateway || true", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker run -p 8073:8073 -d --restart=always --name=pf-gateway \\${registry_server}/pf-gateway:staging", failOnError: true)
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-gateway").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
@@ -123,16 +151,45 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8073:8073 -d --restart=always -e SPRING_PROFILES_ACTIVE=production --name=pf-gateway $registry_server/pf-gateway'
-              sh 'docker push $registry_server/pf-gateway'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-gateway").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=master' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
         }
-
-      }
-    }
 
     stage('Notify') {
       steps {
