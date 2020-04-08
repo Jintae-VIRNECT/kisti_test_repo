@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
     "build": "nuxt build --modern=server",
-    "start": "cross-env NODE_ENV=production nuxt start --modern=server",
-    "deploy": "nuxt build --modern=server && cross-env NODE_ENV=production nuxt start --modern=server",
+    "start": "nuxt start --modern=server",
+    "deploy": "nuxt build --modern=server && nuxt start --modern=server",
     "generate": "nuxt generate"
   },
   "dependencies": {
