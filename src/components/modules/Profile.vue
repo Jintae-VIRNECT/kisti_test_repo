@@ -19,12 +19,17 @@
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
+    <role v-if="role" :role="role">{{ role }}</role>
   </figure>
 </template>
 
 <script>
+import Role from 'Role'
 export default {
   name: 'Profile',
+  components: {
+    Role,
+  },
   props: {
     image: String,
     imageAlt: {
@@ -50,6 +55,10 @@ export default {
       type: String,
       validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
     },
+    role: {
+      type: String,
+      default: null,
+    },
   },
 }
 </script>
@@ -61,6 +70,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: left;
+  width: fit-content;
 }
 .profile--thumb {
   position: relative;
@@ -91,13 +101,13 @@ export default {
 }
 
 .profile--text {
-  margin-left: 18px;
+  margin: 0 10px 0 18px;
 }
 .profile--maintext {
   color: #fafafa;
   font-weight: 500;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 20px;
 }
 .profile--subtext {
   color: #b7b7b7;

@@ -137,7 +137,7 @@ export default {
   height: 100%;
   background-color: rgba(18, 21, 23, 0.5);
 
-  &--dimmed {
+  .modal--dimmed {
     position: absolute;
     top: 0;
     right: 0;
@@ -145,26 +145,30 @@ export default {
     left: 0;
   }
 
-  &--inner {
+  .modal--inner {
     position: relative;
     min-width: 360px;
-    background-color: #fff;
+    background-color: #1e1e20;
+    border: 1px solid rgba(#a9a9a9, 0.27);
     border-radius: 10px;
+    box-shadow: 0 0 10px 0 rgba(#000, 0.07), 0 12px 12px 0 rgba(#000, 0.3);
   }
 
-  &--header {
+  .modal--header {
     position: relative;
-    padding: 24px 28px;
-    border-bottom: 1px solid #ddd;
+    padding: 22px 30px;
+    background-color: #313135;
+    border-bottom: 1px solid rgba(#7f7f7f, 0.27);
+    border-radius: 10px 10px 0 0;
   }
 
-  &--title {
-    color: #333333;
-    font-weight: 500;
+  .modal--title {
+    color: #dedede;
+    // font-weight: 500;
     font-size: 16px;
   }
 
-  &--close {
+  .modal--close {
     position: absolute;
     top: 24px;
     right: 26px;
@@ -180,16 +184,16 @@ export default {
     }
   }
 
-  &--body {
+  .modal--body {
     position: relative;
     max-height: 80vh;
     padding: 24px 28px;
     overflow: hidden;
   }
 
-  &--footer {
+  .modal--footer {
     padding: 24px 28px 34px;
-    border-top: 1px solid #dddddd;
+    // border-top: 1px solid #7f7f7f;
   }
 }
 
