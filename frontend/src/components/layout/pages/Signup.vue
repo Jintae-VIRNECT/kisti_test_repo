@@ -303,8 +303,8 @@ export default {
 			this.$router.push('/')
 		}
 		if (this.marketInfoReceive)
-			return (this.signup.marketInfoReceive = 'active')
-		else return (this.signup.marketInfoReceive = 'inactive')
+			return (this.signup.marketInfoReceive = 'ACTIVE')
+		else return (this.signup.marketInfoReceive = 'INACTIVE')
 	},
 	methods: {
 		checkSignup() {
