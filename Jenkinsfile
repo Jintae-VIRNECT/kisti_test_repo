@@ -8,7 +8,6 @@ pipeline {
               sh 'yarn cache clean'
               sh '"echo <password> | sudo -S rm yarn.lock" || true'
               sh 'yarn install'
-              sh 'yarn workspace account build'
               sh 'cp docker/Dockerfile ./'
             }    
           }
@@ -27,6 +26,7 @@ pipeline {
                 branch 'develop'
               }
               steps {
+                sh 'yarn workspace account build:develop'
                 sh 'docker build -t pf-webaccount .'
               }
             }
@@ -36,6 +36,7 @@ pipeline {
                 branch 'staging'
               }
               steps {
+                sh 'yarn workspace account build:staging'
                 sh 'docker build -t pf-webaccount .'
               }
             }
@@ -45,6 +46,7 @@ pipeline {
                 branch 'master'
               }
               steps {
+                sh 'yarn workspace account build:production'
                 sh 'docker build -t pf-webaccount .'
               }
             }
