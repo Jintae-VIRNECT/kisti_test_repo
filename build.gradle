@@ -27,20 +27,17 @@ ext {
 node{
     version = '12.13.1'
     npmVersion = '6.12.1'
-    workDir = file("./frontend")
-    nodeModulesDir = file("./frontend")
 }
 
-task setUp(type: NpmTask){
+task setUp(type: YarnTask){
     description = "Install NodeJS Packages"
     args = ['install']
-    inputs.files file('package.json')
-    outputs.files file('node_modules')
+    inputs.files file('./package.json')
 }
 
-task buildFrontend(type: NpmTask, dependsOn: setUp){
+task buildFrontend(type: YarnTask, dependsOn: setUp){
     description = "Build Vue JS"
-    args = ['run', 'build']
+    args = ['workspace', 'frontend', 'build']
 }
 
 processResources.dependsOn 'buildFrontend'
