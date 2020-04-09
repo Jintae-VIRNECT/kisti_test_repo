@@ -1,0 +1,18 @@
+
+{
+  "filter": {
+    "all": "전체",
+    "processPublished": "공정 등록",
+    "processUnpublished": "공정 미등록",
+    "globalIssue": "이슈",
+    "workIssue": "작업 이슈"
+  },
+  "sort": {
+    "alphabetAsc": "ㄱ-ㅎ순",
+    "alphabetDesc": "ㄱ-ㅎ순",
+    "createdAsc": "오래된 등록순",
+    "createdDesc": "최신 등록순",
+    "updatedAsc": "오래된 보고순",
+    "updatedDesc": "최신 보고순"
+  }
+}

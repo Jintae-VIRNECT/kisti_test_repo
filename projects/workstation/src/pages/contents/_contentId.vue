@@ -1,0 +1,65 @@
+<template>
+  <div id="content">
+    <h3>{{ content }}</h3>
+    <el-button @click="deleteContent(content.id)">
+      {{ $t('buttons.delete') }}
+    </el-button>
+    <el-button @click="createProcess(content.id)">
+      {{ $t('buttons.processCreate') }}
+    </el-button>
+    <p v-for="sceneGroup in sceneGroups" :key="sceneGroup.id">
+      {{ sceneGroup }}
+    </p>
+  </div>
+</template>
+
+<script>
+import contentService from '@/services/content'
+
+export default {
+  async asyncData({ params }) {
+    const promise = {
+      content: contentService.getContentInfo(params.contentId),
+      sceneGroups: contentService.getSceneGroupsList(params.contentId),
+    }
+    return {
+      content: await promise.content,
+      sceneGroups: await promise.sceneGroups,
+    }
+  },
+  methods: {
+    createProcess(contentId) {
+      this.$router.push({
+        path: '/processes/new',
+        query: {
+          contentId,
+        },
+      })
+    },
+    async deleteContent(contentId) {
+      try {
+        await this.$confirm(this.$t('questions.deleteConfirm'))
+      } catch (e) {
+        // 취소
+        return false
+      }
+
+      try {
+        await contentService.deleteContent(contentId)
+        // 성공
+        this.$notify.success({
+          title: 'Success',
+          message: this.$t('messages.deleteSuccess'),
+        })
+        this.$router.push('/contents')
+      } catch (e) {
+        // 실패
+        this.$notify.error({
+          title: 'Error',
+          message: e,
+        })
+      }
+    },
+  },
+}
+</script>

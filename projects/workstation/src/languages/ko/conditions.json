@@ -1,0 +1,11 @@
+
+{
+  "wait": "대기",
+  "unprogressing": "미진행",
+  "progressing": "진행",
+  "incompleted": "미흡",
+  "complted": "완료",
+  "failed": "미완수",
+  "success": "완수",
+  "fault": "결함"
+}
