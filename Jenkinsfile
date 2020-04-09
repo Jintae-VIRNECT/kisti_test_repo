@@ -27,7 +27,7 @@ pipeline {
                 branch 'develop'
               }
               steps {
-                sh 'docker build -t pf-webworkstation:develop .'
+                sh 'docker build -t pf-webworkstation .'
               }
             }
     
@@ -36,7 +36,7 @@ pipeline {
                 branch 'staging'
               }
               steps {
-                sh 'docker build -t pf-webworkstation:staging .'
+                sh 'docker build -t pf-webworkstation .'
               }
             }
     
@@ -58,16 +58,6 @@ pipeline {
           }
         }
     
-        stage('Pre-Deploy') {
-          steps {
-            echo 'Pre-Deploy Stage'
-            catchError() {
-              sh 'docker stop pf-webworkstation && docker rm pf-webworkstation || true'
-            }
-    
-          }
-        }
-    
         stage('Deploy') {
           parallel {
             stage('Deploy') {
@@ -81,8 +71,9 @@ pipeline {
                 branch 'develop'
               }
               steps {
-                sh 'docker run -p 8887:8887 -d --name=pf-webworkstation pf-webworkstation:develop'
-                sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+                sh 'count=`docker ps | grep pf-webworkstation | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
+                sh 'docker run -p 8887:8887 --restart=always -e "NODE_ENV=develop" -d --name=pf-webworkstation pf-webworkstation'
+                sh 'docker image prune -f'
               }
             }
     
@@ -90,30 +81,106 @@ pipeline {
               when {
                 branch 'staging'
               }
+
               steps {
-                sh 'docker run -p 8887:8887 -d --name=pf-webworkstation pf-webworkstation:staging'
-                sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-webworkstation").push("$GIT_COMMIT")
+                }
               }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8887:8887 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
+            }
+
+          }
             }
     
             stage('Master Branch') {
               when {
                 branch 'master'
               }
+
               steps {
-                sh 'docker run -p 8887:8887 -d --name=pf-webworkstation pf-webworkstation'
-                sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              catchError() {
+                script {
+                  docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                    docker.image("pf-webworkstation").push("$GIT_COMMIT")
+                  }
+                }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8887:8887 --restart=always -e 'NODE_ENV=master' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
               }
+
+            }
+
+          }
+
             }
     
           }
         }
     
-        stage('Notify') {
-          steps {
-            emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
-          }
-        }
     
+      }
+      
+      post {
+        always {
+          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+        }
       }
     }
