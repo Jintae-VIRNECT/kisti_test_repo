@@ -184,11 +184,11 @@ pipeline {
   }
 }
 
-    stage('Notify') {
-      steps {
+  }
+  
+  post {
+      always {
         emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       }
     }
-
-  }
 }
