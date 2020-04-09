@@ -2,12 +2,12 @@ spring:
   application:
     name: license-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/smic?serverTimezone=UTC
-    username: virnect-smic
-    password: virnect1234!
+    url: jdbc:mysql://192.168.6.3:4336/licens?serverTimezone=UTC
+    username: virnect-license
+    password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
 
 eureka:
