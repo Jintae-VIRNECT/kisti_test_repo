@@ -23,7 +23,6 @@ class AuthService {
 			.then(this.handleResponse)
 			.then(response => {
 				const { data } = response
-				console.log(data)
 				if (data.accessToken) {
 					const cookieOption = {
 						expires: data.expireIn / 3600000,
@@ -94,7 +93,6 @@ class AuthService {
 			// location.reload(true);
 
 			const error = data.message
-			alert(data)
 			// console.log(Promise.reject(error))
 			return Promise.reject(error)
 		}

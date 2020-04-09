@@ -135,7 +135,10 @@ export default {
 				new Login(this.login.email, this.login.password)
 				this.$store.dispatch('auth/login', this.login).then(
 					() => {
-						const redirectTarget = this.$route.query.continue
+						let redirectTarget = this.$route.query.continue
+						if (!/^https?:/.test(redirectTarget)) {
+							redirectTarget = `//${redirectTarget}`
+						}
 						if (redirectTarget) {
 							location.href = redirectTarget
 						} else {
