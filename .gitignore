@@ -1,3 +1,6 @@
+node_modules
+yarn-error.log
+
 HELP.md
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
