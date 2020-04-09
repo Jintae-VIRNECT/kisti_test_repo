@@ -8,6 +8,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 	devServer: {
 		host: 'localhost',
 		port: 8888,
+		disableHostCheck: true,
 		historyApiFallback: { index: '/main/main.html' },
 		hot: true,
 		noInfo: true,

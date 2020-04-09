@@ -135,7 +135,12 @@ export default {
 				new Login(this.login.email, this.login.password)
 				this.$store.dispatch('auth/login', this.login).then(
 					() => {
-						this.$router.push({ name: 'profile' })
+						const redirectTarget = this.$route.query.continue
+						if (redirectTarget) {
+							location.href = redirectTarget
+						} else {
+							location.href = '//virnect.com'
+						}
 					},
 					error => {
 						this.loading = false
