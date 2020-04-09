@@ -108,6 +108,14 @@ export default {
           console.log(err)
         })
     },
+    /**
+     * @todo 1. 기능 정의가 어느정도 확정되면 환경설정값의 저장 정책필요함 - ykmo
+     * 1. localstroage?
+     * 2. vuex store?
+     * 3. server?
+     *
+     * @todo 2. 저장될 데이터 형식 규정 필요함 - ykmo
+     */
     setAudioInputDevice(newInputAudioDevice) {
       this.selectAudioInput = newInputAudioDevice
       this.saveAudioInputDevice(newInputAudioDevice)
@@ -118,6 +126,7 @@ export default {
     },
     saveVideoDevice(videoDevice) {
       if (videoDevice !== null) {
+        this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_VIDEO_DEVICE,
           JSON.stringify(videoDevice),
@@ -126,6 +135,7 @@ export default {
     },
     saveVideoQuality(videoQuality) {
       if (videoQuality !== null) {
+        this.$store.commit('SET_VIDEO_QUALITY', videoQuality)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_VIDEO_QUALITY,
           JSON.stringify(videoQuality),
@@ -134,6 +144,7 @@ export default {
     },
     saveAudioInputDevice(audioInputDevice) {
       if (audioInputDevice !== null) {
+        this.$store.commit('SET_AUDIO_INPUT_DEVICE', audioInputDevice)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_AUDIO_INPUT_DEVICE,
           JSON.stringify(audioInputDevice),
@@ -142,6 +153,7 @@ export default {
     },
     saveAudioOutputDevice(audioOutputDeivce) {
       if (audioOutputDeivce !== null) {
+        this.$store.commit('SET_AUDIO_OUTPUT_DEVICE', audioOutputDeivce)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_AUDIO_OUTPUT_DEVICE,
           JSON.stringify(audioOutputDeivce),
@@ -150,6 +162,7 @@ export default {
     },
     saveLanguage(language) {
       if (language !== null) {
+        this.$store.commit('SET_LANGUAGE', language)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_LANGUAGE,
           JSON.stringify(language),
@@ -158,6 +171,7 @@ export default {
     },
     saveRecordLength(recLength) {
       if (recLength !== null) {
+        this.$store.commit('SET_LOCAL_RECORD_LENGTH', recLength)
         localStorage.setItem(
           CONFIG_CODE.CURRNET_LOCAL_RECORD_LENGTH,
           JSON.stringify(recLength),
@@ -166,6 +180,7 @@ export default {
     },
     saveRecordRes(recResolution) {
       if (recResolution !== null) {
+        this.$store.commit('SET_RECORD_RESOLUTION', recResolution)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_RECORD_RESOLUTION,
           JSON.stringify(recResolution),
@@ -174,6 +189,7 @@ export default {
     },
     saveNotiFlagPC(notiFlagPC) {
       if (notiFlagPC !== null) {
+        this.$store.commit('SET_NOTI_FLAG_PC', notiFlagPC)
         localStorage.setItem(
           CONFIG_CODE.CURRENT_NOTI_FLAG_PC,
           JSON.stringify(notiFlagPC),
