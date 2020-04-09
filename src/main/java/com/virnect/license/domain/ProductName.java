@@ -7,8 +7,8 @@ package com.virnect.license.domain;
  * @description
  * @since 2020.04.09
  */
-public enum CouponStatus {
-    USE,
-    UNUSE,
-    EXPIRED,
+public enum ProductName {
+    REMOTE,
+    MAKE,
+//    VIEW
 }

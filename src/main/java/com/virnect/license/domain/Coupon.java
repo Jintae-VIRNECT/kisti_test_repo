@@ -68,11 +68,17 @@ public class Coupon extends BaseTimeEntity {
     @Column(name = "expired_at")
     private LocalDateTime expiredDate;
 
+    @Column(name = "duration")
+    private Long duration;
+
+    @Column(name = "period_type")
+    @Enumerated(EnumType.STRING)
+    private CouponPeriodType couponPeriodType;
+
     @Column(name = "user_id")
     private String userId;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private CouponStatus  status = CouponStatus.UNUSE;
-
 }

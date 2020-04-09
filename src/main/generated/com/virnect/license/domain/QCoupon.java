@@ -37,10 +37,14 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final StringPath content = createString("content");
 
+    public final EnumPath<CouponPeriodType> couponPeriodType = createEnum("couponPeriodType", CouponPeriodType.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
     public final StringPath department = createString("department");
+
+    public final NumberPath<Long> duration = createNumber("duration", Long.class);
 
     public final DateTimePath<java.time.LocalDateTime> expiredDate = createDateTime("expiredDate", java.time.LocalDateTime.class);
 
