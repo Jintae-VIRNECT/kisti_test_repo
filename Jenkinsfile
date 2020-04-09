@@ -191,7 +191,8 @@ pipeline {
 
           }
         }
-
+  }
+}
 
     stage('Notify') {
       steps {
