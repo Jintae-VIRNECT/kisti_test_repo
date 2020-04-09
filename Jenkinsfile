@@ -5,6 +5,8 @@ pipeline {
       steps {
         echo 'Pre-Build Stage'
         catchError() {
+          sh 'git submodule init'
+          sh 'git submodule update'
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
           sh './gradlew build -x test'
