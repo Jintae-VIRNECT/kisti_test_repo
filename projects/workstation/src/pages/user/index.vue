@@ -1,21 +1,27 @@
-<template lang="pug">
-  div
-    .login-form-wrapper
-      h1.title 로그인
-      user-scaffold(
-        :currentPage="currentPage" 
-        :options="options" 
+<template>
+  <div>
+    <div class="login-form-wrapper">
+      <h1 class="title">로그인</h1>
+      <!-- <user-scaffold
+        :currentPage="currentPage"
+        :options="options"
         @onSubmit="onSubmit"
-        :onError="onError")
-        template(slot="error-alert")
-          p.error-text(v-if="onError") 아이디 또는 비밀번호가 일치하지 않습니다.
+        :onError="onError"
+        ><template slot="error-alert"
+          ><p class="error-text" v-if="onError">
+            아이디 또는 비밀번호가 일치하지 않습니다.
+          </p></template
+        ></user-scaffold
+      > -->
+    </div>
+  </div>
 </template>
 
 <script>
-import UserScaffold from 'scaffold-modules-user/src/views/SignIn.vue'
+// import UserScaffold from 'scaffold-modules-user/src/views/SignIn.vue'
 
 export default {
-  components: { UserScaffold },
+  // components: { UserScaffold },
   data() {
     return {
       currentPage: 'SIGNIN',

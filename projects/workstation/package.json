@@ -6,20 +6,17 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
-    "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production nuxt start",
-    "generate": "nuxt generate",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "npm run lint",
-    "styleguide": "vue-styleguidist server",
-    "styleguide:build": "vue-styleguidist build"
+    "build:develop": "cross-env NODE_ENV=develop nuxt build",
+    "start": "cross-env NODE_ENV=$NODE_ENV nuxt start",
+    "deploy": "yarn build && yarn start",
+    "generate": "nuxt generate"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",
-    "nuxt-i18n": "^6.6.1",
-    "scaffold-modules-user": "^1.0.1"
+    "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {
     "@nuxtjs/style-resources": "^1.0.0",
@@ -30,6 +27,7 @@
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
     "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-loader": "^3.0.3",
@@ -46,7 +44,6 @@
     "stylelint-prettier": "^1.1.2",
     "stylelint-scss": "^3.14.2",
     "vue-loader": "^15.8.3",
-    "vue-style-loader": "^4.1.2",
-    "vue-styleguidist": "^4.13.1"
+    "vue-style-loader": "^4.1.2"
   }
 }
