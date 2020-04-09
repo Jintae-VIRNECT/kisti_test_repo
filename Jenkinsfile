@@ -68,16 +68,6 @@ pipeline {
       }
     }
 
-    stage('Pre-Deploy') {
-      steps {
-        echo 'Pre-Deploy Stage'
-        catchError() {
-          sh 'docker stop pf-contentsmanagement && docker rm pf-contentsmanagement || true'
-        }
-
-      }
-    }
-
     stage('Deploy') {
       parallel {
         stage('Deploy') {
