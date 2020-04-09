@@ -29,7 +29,9 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t pf-login .'
+            catchError() {
+              sh 'docker build -t pf-login .'
+            }
           }
         }
 
