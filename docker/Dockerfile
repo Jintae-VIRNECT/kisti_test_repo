@@ -9,7 +9,7 @@ ADD ./account $APP_HOME/account
 ADD ./WC-Modules $APP_HOME/WC-Modules
 ADD ./package.json $APP_HOME/package.json
 
-RUN yarn
+RUN yarn install --production
 
 EXPOSE $PORT
 
