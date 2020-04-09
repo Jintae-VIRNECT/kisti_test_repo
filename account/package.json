@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
-    "build": "cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server",
+    "build:develop": "cross-env NODE_ENV=develop nuxt build --modern=server",
     "start": "cross-env NODE_ENV=$NODE_ENV nuxt start --modern=server",
     "deploy": "yarn build && yarn start",
     "generate": "nuxt generate"
@@ -15,6 +15,7 @@
     "axios": "^0.19.2",
     "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
+    "js-cookie": "^2.2.1",
     "nuxt": "^2.0.0",
     "nuxt-i18n": "^6.6.1"
   },

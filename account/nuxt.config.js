@@ -55,6 +55,7 @@ module.exports = {
     WORKSPACE_API_URL: env.WORKSPACE_API_URL,
     CONTENT_API_URL: env.CONTENT_API_URL,
     PROCESS_API_URL: env.PROCESS_API_URL,
+    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
   /**

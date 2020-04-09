@@ -16,9 +16,13 @@ import TheSidebar from '@/components/TheSidebar'
 import { sideMenus } from '@/models/layout'
 
 export default {
+  middleware: 'default',
   components: {
     TheHeader,
     TheSidebar,
+  },
+  async asyncData() {
+    return {}
   },
   data() {
     return {

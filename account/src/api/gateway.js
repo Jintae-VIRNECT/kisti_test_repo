@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import URI from './uri'
 import axios from '@/plugins/axios'
 
@@ -26,6 +27,11 @@ export default async function api(name, option = {}) {
     delete params.filter
   }
   params = method === 'post' ? params : { params }
+
+  // default header
+  axios.defaults.headers.common = {
+    Authorization: `Bearer ${Cookies.get('accessToken')}`,
+  }
 
   if (process.client) $nuxt.$loading.start()
   try {

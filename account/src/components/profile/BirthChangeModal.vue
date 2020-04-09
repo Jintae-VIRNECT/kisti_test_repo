@@ -21,22 +21,14 @@
             type="year"
             format="yyyy"
             v-model="birth"
-            :placeholder="$t('profile.birthChangeModal.year')"
           />
           <el-date-picker
             class="month"
             type="month"
             format="MM"
             v-model="birth"
-            :placeholder="$t('profile.birthChangeModal.month')"
           />
-          <el-date-picker
-            class="day"
-            type="date"
-            format="dd"
-            v-model="birth"
-            :placeholder="$t('profile.birthChangeModal.day')"
-          />
+          <el-date-picker class="day" type="date" format="dd" v-model="birth" />
         </el-form-item>
       </el-form>
     </div>
@@ -95,14 +87,34 @@ export default {
 
 <style lang="scss">
 .birth-change-modal {
-  .el-input__inner {
-    text-align: right;
-  }
-  .year .el-input__inner {
-    width: 136px;
+  .el-input {
+    &:after {
+      position: absolute;
+      right: 0;
+      color: #c7cfda;
+      font-size: 16px;
+      line-height: 44px;
+    }
   }
   .el-input__icon {
     display: none;
+  }
+  .year {
+    .el-input__inner {
+      width: 136px;
+    }
+  }
+
+  &:lang(ko) {
+    .year:after {
+      content: '년';
+    }
+    .month:after {
+      content: '월';
+    }
+    .day:after {
+      content: '일';
+    }
   }
 }
 </style>

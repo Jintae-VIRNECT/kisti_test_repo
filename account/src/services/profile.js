@@ -8,6 +8,11 @@ function getMyProfile() {
 
 export default {
   getMyProfile,
+  async getAuthInfo() {
+    const data = await api('GET_AUTH_INFO')
+    console.log(data)
+    return data
+  },
   async certification(form) {
     const data = await api('ACCESS_AUTH', {
       route: { userId: form.uuid },
