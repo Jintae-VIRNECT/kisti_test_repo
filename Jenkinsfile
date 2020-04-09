@@ -178,6 +178,8 @@ pipeline {
 
           }
         }
+      }
+    }
 
     stage('Notify') {
       steps {
