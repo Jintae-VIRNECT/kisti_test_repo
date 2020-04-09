@@ -190,6 +190,9 @@ pipeline {
 
                     }
                 }
+    }
+}
+
 
                 stage('Notify') {
                     steps {
@@ -199,5 +202,3 @@ pipeline {
 
             }
         }
-    }
-}
