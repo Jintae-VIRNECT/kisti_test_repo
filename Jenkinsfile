@@ -82,7 +82,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker ps | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'count=`docker ps | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8084:8084 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-message pf-message'
             sh 'docker image prune -f'
           }
