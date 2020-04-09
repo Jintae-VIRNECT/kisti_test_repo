@@ -60,16 +60,6 @@ pipeline {
       }
     }
 
-    stage('Pre-Deploy') {
-      steps {
-        echo 'Pre-Deploy Stage'
-        catchError() {
-          sh 'docker stop pf-login && docker rm pf-login || true'
-        }
-
-      }
-    }
-
     stage('Deploy') {
       parallel {
         stage('Deploy') {
@@ -183,11 +173,12 @@ pipeline {
       }
     }
 
-    stage('Notify') {
-      steps {
+  }
+  
+    post {
+      always {
         emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       }
     }
-
-  }
+  
 }
