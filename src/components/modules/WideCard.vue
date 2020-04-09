@@ -43,10 +43,12 @@ export default {
 .widecard {
   position: relative;
   width: 100%;
+  margin-bottom: 8px;
   padding: 22px 30px;
   background-color: #313135;
   // border: solid 1px #3e3e42;
   border-radius: 2px;
+
   > .popover--wrapper {
     position: absolute;
     top: 16px;

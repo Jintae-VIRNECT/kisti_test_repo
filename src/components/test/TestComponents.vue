@@ -6,7 +6,6 @@
       <h2 class="subtitle">Modal Text</h2>
       <div class="action-box">
         <div class="component">
-          <profile-image></profile-image>
           <button @click="modalTest = true" style="color: #fff;">
             원격 협업 생성하기
           </button>
@@ -250,6 +249,9 @@
               subText="버넥트 솔루션 사업부/Remote"
             ></profile>
           </div>
+          <br />
+
+          <profile-image></profile-image>
         </div>
         <!-- <div class="props">
           <div class="props-option">
