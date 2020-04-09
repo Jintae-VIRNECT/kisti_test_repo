@@ -36,7 +36,7 @@ export default {
     background-size: 100%;
 
     &.nuxt-link-exact-active {
-      background-image: url('~assets/image/ic-bg.svg');
+      background-image: url('~assets/images/icon/ic-bg.svg');
     }
 
     & > img {
