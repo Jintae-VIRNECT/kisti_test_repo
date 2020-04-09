@@ -42,11 +42,15 @@ import profileService from '@/services/profile'
 export default {
   layout: 'noSidebar',
   data() {
-    const profile = profileService.getMyProfile()
     return {
-      me: profile,
+      me: {
+        lastName: 'SMIC',
+        firstName: 'MASTER',
+        email: 'smic1',
+      },
       form: {
-        id: profile.id,
+        uuid: '498b1839dc29ed7bb2ee90ad6985c608',
+        email: 'smic1',
         password: null,
       },
     }
@@ -57,8 +61,12 @@ export default {
         await profileService.certification(this.form)
         this.$router.push(`/profile`)
       } catch (e) {
+        console.error(e)
+        const message = /^Error: 4001/.test(e)
+          ? this.$t('certification.message.wrong')
+          : this.$t('certification.message.fail')
         this.$message.error({
-          message: e,
+          message,
           showClose: true,
         })
       }

@@ -32,7 +32,7 @@
       <el-button type="text" @click="deleteImage" :disabled="!file">
         {{ $t('profile.imageChangeModal.delete') }}
       </el-button>
-      <el-button type="primary" @click="submit" :disabled="!file">
+      <el-button type="primary" @click="submit" :disabled="disabled">
         {{ $t('profile.imageChangeModal.submit') }}
       </el-button>
     </div>
@@ -52,6 +52,11 @@ export default {
     return {
       file: null,
     }
+  },
+  computed: {
+    disabled() {
+      return this.file === this.$props.me.image
+    },
   },
   watch: {
     visible() {
@@ -76,17 +81,19 @@ export default {
       this.file = null
     },
     async submit() {
+      const { uploadFiles } = this.$refs.upload
+      const form = {
+        profile: uploadFiles[uploadFiles.length - 1].raw,
+      }
       try {
-        await profileService.changeMyImage({
-          me: this.me,
-          image: this.file,
-        })
+        await profileService.updateMyImage(form)
         this.$notify.success({
           message: this.$t('profile.imageChangeModal.message.success'),
           position: 'bottom-left',
         })
         this.$emit('changedImage', this.file)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.imageChangeModal.message.fail'),
           position: 'bottom-left',

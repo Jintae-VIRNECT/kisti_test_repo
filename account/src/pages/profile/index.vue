@@ -28,7 +28,7 @@
             <div class="avatar" @click="visible.imageChangeModal = true">
               <img :src="me.image" />
               <i>
-                <img src="~assets/images/ic-camera-alt.svg" />
+                <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
             </div>
           </div>
@@ -223,6 +223,9 @@ export default {
       this.visible.contactChangeModal = false
     },
   },
+  beforeCreate() {
+    this.$store.commit('auth/SET_AUTH', false)
+  },
 }
 </script>
 
@@ -310,7 +313,7 @@ export default {
     }
     .desc {
       color: $font-color-desc;
-      font-size: 12px;
+      font-size: 12.6px;
     }
   }
   .el-button {

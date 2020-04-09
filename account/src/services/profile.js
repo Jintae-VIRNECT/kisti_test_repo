@@ -1,31 +1,37 @@
 import Profile from '@/models/profile/Profile'
+import api from '@/api/gateway'
 
-import switchPromise from '@/test/switchPromise'
+function getMyProfile() {
+  const profile = $nuxt.$store.getters['auth/myProfile']
+  return new Profile(profile)
+}
 
 export default {
-  getMyProfile() {
-    return new Profile()
-  },
+  getMyProfile,
   async certification(form) {
-    await switchPromise()
+    const data = await api('ACCESS_AUTH', {
+      route: { userId: form.uuid },
+      params: form,
+    })
+    $nuxt.$store.commit('auth/SET_MY_PROFILE', data.userInfo)
     $nuxt.$store.commit('auth/SET_AUTH', true)
   },
-  async changeMyImage(form) {
-    await switchPromise()
+  async updateMyProfile(form) {
+    await api('UPDATE_USER_INFO', {
+      route: { userId: getMyProfile().uuid },
+      params: form,
+    })
   },
-  async changeMyName(form) {
-    await switchPromise()
-  },
-  async changeMyNickname(form) {
-    await switchPromise()
-  },
-  async changeMyPassword(form) {
-    await switchPromise()
-  },
-  async changeMyBirth(form) {
-    await switchPromise()
-  },
-  async changeMyContact(form) {
-    await switchPromise()
+  async updateMyImage(form) {
+    const formData = new FormData()
+    formData.append('profile', form.profile)
+
+    await api('UPDATE_USER_IMAGE', {
+      route: { userId: getMyProfile().uuid },
+      params: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
 }

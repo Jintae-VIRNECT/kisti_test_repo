@@ -70,13 +70,13 @@
 
 <script>
 import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import usingPlanList from '@/components/plan/usingPlanList'
+import UsingPlanList from '@/components/plan/UsingPlanList'
 import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
-    usingPlanList,
+    UsingPlanList,
     WorkspacePlanList,
     LoggedInDeviceList,
     SubscribePaymentInfo,
@@ -96,6 +96,12 @@ export default {
 </script>
 
 <style lang="scss">
+#home .container {
+  padding-top: 80px;
+  .el-table__empty-block {
+    min-height: 300px;
+  }
+}
 .home__bg {
   position: absolute;
   width: 100%;

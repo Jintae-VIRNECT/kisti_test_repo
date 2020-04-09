@@ -95,13 +95,17 @@ export default {
         })
       } else {
         try {
-          await profileService.changeMyPassword(this.form.password1)
+          const form = {
+            password: this.form.password1,
+          }
+          await profileService.updateMyProfile(form)
           this.$notify.success({
             message: this.$t('profile.passwordChangeModal.message.success'),
             position: 'bottom-left',
           })
           this.$emit('changedPassword')
         } catch (e) {
+          console.error(e)
           this.$notify.error({
             message: e,
             position: 'bottom-left',

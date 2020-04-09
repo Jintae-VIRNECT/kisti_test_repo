@@ -6,12 +6,13 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
-    "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production nuxt start",
-    "deploy": "nuxt build && cross-env NODE_ENV=production nuxt start",
+    "build": "nuxt build --modern=server",
+    "start": "nuxt start --modern=server",
+    "deploy": "nuxt build --modern=server && nuxt start --modern=server",
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",

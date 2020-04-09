@@ -7,7 +7,7 @@
         :index="index + ''"
         :route="menu.path"
       >
-        <i class="el-icon-setting"></i>
+        <i class="icon" :style="`mask-image: url(${menu.image})`" />
         <span slot="title">{{ $t(menu.label) }}</span>
       </el-menu-item>
     </el-menu>
@@ -39,7 +39,7 @@ export default {
       this.now = this.menus.findIndex(menu => menu.path === now) + ''
     },
   },
-  beforeMount() {
+  mounted() {
     this.detectActive()
   },
 }
@@ -71,7 +71,27 @@ $the-sidebar-item-height: 40px;
 
   .el-menu-item {
     height: $the-sidebar-item-height;
+    color: #5e6b81;
     line-height: calc(#{$the-sidebar-item-height} - 3px);
+
+    &:hover {
+      background: #f5f7fa;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      background: #919db0;
+    }
+  }
+  .el-menu-item.is-active {
+    color: #1468e2;
+    background: #dfedff;
+    .icon {
+      background: #0f75f5;
+    }
   }
 }
 </style>

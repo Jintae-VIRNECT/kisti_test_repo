@@ -52,13 +52,14 @@ export default {
   methods: {
     async submit() {
       try {
-        await profileService.changeMyNickname(this.form)
+        await profileService.updateMyProfile(this.form)
         this.$notify.success({
           message: this.$t('profile.nicknameChangeModal.message.success'),
           position: 'bottom-left',
         })
         this.$emit('changedNickname', this.form.nickname)
       } catch (e) {
+        console.error(e)
         this.$notify.error({
           message: this.$t('profile.nicknameChangeModal.message.fail'),
           position: 'bottom-left',
