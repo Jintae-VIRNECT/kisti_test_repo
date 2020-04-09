@@ -67,16 +67,6 @@ pipeline {
             }
         }
 
-        stage('Pre-Deploy') {
-            steps {
-                echo 'Pre-Deploy Stage'
-                catchError() {
-                    sh 'docker stop pf-gateway && docker rm pf-gateway || true'
-                }
-
-            }
-        }
-
         stage('Deploy') {
             parallel {
                 stage('Deploy') {
