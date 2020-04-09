@@ -37,7 +37,7 @@ class UserService {
 				marketInfoReceive: user.marketInfoReceive,
 				joinInfo: user.joinInfo,
 				serviceInfo: user.serviceInfo,
-				sessionCode: user.session,
+				sessionCode: user.sessionCode,
 			})
 			console.log(user)
 			console.log('++++++++++++++')
