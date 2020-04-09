@@ -3,32 +3,255 @@
     <h1 class="test-title">Components</h1>
 
     <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">Modal Text</h2>
+      <div class="action-box">
+        <div class="component">
+          <button @click="modalTest = true" style="color: #fff;">
+            원격 협업 생성하기
+          </button>
+          <create-room :visible.sync="modalTest"></create-room>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Button 컴포넌트</h2>
+      <div class="action-box">
+        <div class="component">
+          <div style="width: 300px;">
+            <button class="btn">원격 협업 생성</button><br />
+            <button class="btn small">재시작</button><br />
+            <button class="btn large">시작하기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Input 컴포넌트</h2>
+      <div class="action-box">
+        <div class="component">
+          <div style="width: 300px;">
+            <input-row
+              :title="inputOption.title"
+              :placeholder="inputOption.placeholder"
+              :value.sync="inputOption.value1"
+              type="text"
+              :count="20"
+            ></input-row>
+            <input-row
+              :title="inputOption.title"
+              :placeholder="inputOption.placeholder"
+              :value.sync="inputOption.value1"
+              type="textarea"
+              :count="50"
+            ></input-row>
+            <input-row
+              :title="inputOption.title"
+              :placeholder="inputOption.placeholder"
+              :value.sync="inputOption.value2"
+              type="text"
+              box
+              showCount
+              :count="20"
+            ></input-row>
+            <input-row
+              :title="inputOption.title"
+              :placeholder="inputOption.placeholder"
+              :value.sync="inputOption.value2"
+              type="textarea"
+              box
+              showCount
+              :count="50"
+            ></input-row>
+          </div>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">title</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="inputOption.title"
+            />
+          </div>
+          <div class="props-option">
+            <p class="props-title">placeholder</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="inputOption.placeholder"
+            />
+          </div>
+          <div class="props-option">
+            <p class="props-title">value1</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="inputOption.value1"
+            />
+          </div>
+          <div class="props-option">
+            <p class="props-title">value2</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="inputOption.value2"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">Modal</h2>
+      <div class="action-box">
+        <div class="component">
+          <button
+            @click="modalOption.visible = !modalOption.visible"
+            style="color: #fff;"
+          >
+            모달 테스트
+          </button>
+          <modal
+            :visible.sync="modalOption.visible"
+            :title="'원격협업 상세보기'"
+            :showClose="true"
+            :width="898"
+          >
+            <div style="height: 300px;"></div>
+          </modal>
+        </div>
+        <!-- <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+            />
+          </div>
+        </div> -->
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
       <h2 class="subtitle">Card</h2>
       <div class="action-box">
         <div class="component">
           <card></card>
-          <data-view :list="listviewSample">
-            <template slot="title">원격 협업 가능한 회원</template>
-            <template slot="description">
-              협업 가능한 회원을 선택하고 문자 보내기 또는 1:1통화를 해보세요.
-            </template>
-            <card width="full" :height="90" slot="listview">
-              <div class="listview-body">
-                <img
-                  class="listview-profile"
-                  src="~assets/image/img-default-user.svg"
-                />
-              </div>
-            </card>
-            <card slot="cardview">
-              <div class="cardview-body">
-                <img
-                  class="cardview-profile"
-                  src="~assets/image/img-default-user.svg"
-                />
-              </div>
-            </card>
-          </data-view>
+          <br />
+          <wide-card>
+            <profile
+              :image="require('assets/image/img_user_profile.svg')"
+              imageAlt="버넥트 리모트01"
+              mainText="버넥트 리모트01"
+              subText="example@example.com"
+              status="online"
+              role="Master"
+            ></profile>
+          </wide-card>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Radio</h2>
+      <div class="action-box">
+        <div class="component">
+          <r-radio
+            :options="radioOption.options"
+            :text="radioOption.text"
+            :value="radioOption.value"
+            :selectedOption.sync="radioOption.selectedOption"
+          ></r-radio>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="radioOption.selectedOption"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[디자인 필요]Switch</h2>
+      <div class="action-box">
+        <div class="component">
+          <switcher :value.sync="switchOption.value"></switcher>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="switchOption.value"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #29292c;">
+      <h2 class="subtitle">[개발 완]Progress</h2>
+      <div class="action-box">
+        <div class="component">
+          <progress-bar
+            :value="progress.value"
+            :max="progress.max"
+          ></progress-bar>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">max</p>
+            <input class="props-options" type="number" v-model="progress.max" />
+          </div>
+          <div class="props-option">
+            <p class="props-title">description</p>
+            <input
+              class="props-options"
+              type="number"
+              v-model="progress.value"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Profile</h2>
+      <div class="action-box">
+        <div class="component">
+          <div>
+            <profile
+              :image="require('assets/image/img-default-user.svg')"
+              imageAlt="버넥트 리모트01"
+              mainText="버넥트 리모트01"
+              subText="example@example.com"
+              status="online"
+            ></profile>
+          </div>
+          <br />
+          <div>
+            <profile
+              color="#267bff"
+              mainText="버넥트"
+              subText="버넥트 솔루션 사업부/Remote"
+            ></profile>
+          </div>
+          <br />
+
+          <profile-image></profile-image>
         </div>
         <!-- <div class="props">
           <div class="props-option">
@@ -43,31 +266,69 @@
       </div>
     </section>
 
-    <section class="test-section select">
-      <h2 class="subtitle">Select</h2>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Select</h2>
       <div class="action-box">
         <div class="component">
           <r-select
             :options="selectOptions.options"
             :value="selectOptions.value"
             :text="selectOptions.text"
+            v-on:changeValue="selectOptionValue"
           ></r-select>
         </div>
-        <!-- <div class="props">
+        <div class="props">
           <div class="props-option">
-            <p class="props-title">description</p>
+            <p class="props-title">selection value</p>
             <input
               class="props-options"
               type="text"
-              v-model="toogleButton.description"
+              v-model="selectOptions.selection"
             />
           </div>
-        </div> -->
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Scrollbar</h2>
+      <div class="action-box">
+        <div class="component" style="position: relative;height: 100px;">
+          <scroller>
+            <div style="height: 400px;border: solid 1px #d8d8d8;"></div>
+          </scroller>
+        </div>
+      </div>
+    </section>
+
+    <section class="test-section" style="background-color: #1e1e20;">
+      <h2 class="subtitle">[개발 완]Search</h2>
+      <div class="action-box">
+        <div class="component">
+          <search
+            :placeholder="search.placeholder"
+            v-on:search="txt => (search.value = txt)"
+          ></search>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">placeholder</p>
+            <input
+              class="props-options"
+              type="text"
+              v-model="search.placeholder"
+            />
+          </div>
+          <div class="props-option">
+            <p class="props-title">Search Value</p>
+            <span style="color: #fff;">{{ search.value }}</span>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="test-section">
-      <h2 class="subtitle">Toggle Button</h2>
+      <h2 class="subtitle">[개발 완]Toggle Button</h2>
       <div class="action-box">
         <div class="component">
           <toggle-button
@@ -164,7 +425,7 @@
       </div>
     </section>
     <section class="test-section">
-      <h2 class="subtitle">Tooltip</h2>
+      <h2 class="subtitle">[개발 완]Tooltip</h2>
       <div class="action-box">
         <div class="component">
           <tooltip :content="tooltip.content" :placement="tooltip.placement">
@@ -194,29 +455,92 @@
   </div>
 </template>
 <script>
+import CreateRoom from 'components/workspace/modal/WorkspaceCreateRoom'
+import ProfileImage from 'ProfileImage'
+import InputRow from 'InputRow'
+import RRadio from 'RemoteRadio'
+import Switcher from 'Switcher'
+import ProgressBar from 'ProgressBar'
+import Scroller from 'Scroller'
+import WideCard from 'WideCard'
 import Card from 'Card'
+import Profile from 'Profile'
 // import CardView from 'CardView'
 // import ListView from 'ListView'
-import DataView from 'DataView'
+// import DataView from 'DataView'
 import RSelect from 'RemoteSelect'
 import Popover from 'Popover'
 import Tooltip from 'Tooltip'
-// import Modal from 'Modal'
+import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
+import Search from 'Search'
 export default {
   components: {
+    CreateRoom,
+    ProfileImage,
+    InputRow,
+    RRadio,
+    Switcher,
+    ProgressBar,
+    Scroller,
+    WideCard,
     Card,
+    Profile,
     // CardView,
     // ListView,
-    DataView,
+    // DataView,
     RSelect,
     Popover,
     Tooltip,
-    // Modal,
+    Modal,
     ToggleButton,
+    Search,
   },
   data() {
     return {
+      modalTest: false,
+      inputOption: {
+        placeholder: '입력하세열',
+        title: '타이틀',
+        value1: '',
+        value2: '',
+      },
+      modalOption: {
+        visible: false,
+      },
+      radioOption: {
+        options: [
+          {
+            text: 'English',
+            value: 'en',
+            imgSrc: require('assets/image/img_flag_USA.svg'),
+          },
+          {
+            text: '한국어',
+            value: 'ko',
+            imgSrc: require('assets/image/img_flag_korea.svg'),
+          },
+          {
+            text: '중국어',
+            value: 'zh',
+            imgSrc: require('assets/image/img_flag_CN.svg'),
+          },
+        ],
+        text: 'text',
+        value: 'value',
+        selectedOption: 'en',
+      },
+      switchOption: {
+        value: true,
+      },
+      progress: {
+        max: 100,
+        value: 100,
+      },
+      search: {
+        placeholder: '회원명 검색',
+        value: '',
+      },
       listviewSample: [
         {
           profile: require('assets/image/img-default-user.svg'),
@@ -254,6 +578,7 @@ export default {
         ],
         value: 'value',
         text: 'text',
+        selection: '테스트',
       },
       toogleButton: {
         description: '마이크 on/off',
@@ -304,6 +629,12 @@ export default {
   },
   methods: {
     toogleOnOff() {},
+    searchText(text) {
+      this.search.value = text
+    },
+    selectOptionValue(option) {
+      this.selectOptions.selection = option[this.selectOptions.text]
+    },
   },
 }
 </script>
@@ -336,6 +667,7 @@ export default {
   .action-box {
     display: flex;
     .component {
+      position: relative;
       width: 100%;
     }
 

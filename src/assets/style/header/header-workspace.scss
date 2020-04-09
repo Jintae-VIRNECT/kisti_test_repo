@@ -16,9 +16,91 @@
     height: 100%;
   }
   .header-workspace-selector {
+    position: relative;
     height: 100%;
+    padding-right: 25px;
+    color: #dcdcdc;
+    font-weight: 500;
+    font-size: 16px;
     background: transparent;
+    &::after {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      width: 10px;
+      height: 13px;
+      background: url(~assets/image/ic-select-dropdown.svg) 50% no-repeat;
+      transform: translateY(-50%);
+      content: "";
+    }
   }
+}
+
+.header-lnb-selector.popover {
+  background-color: #242427;
+  border: solid 1px #3a3a3a;
+  border-radius: 4px;
+  transform: translateX(40px);
+  > .popover--body {
+    padding: 6px 0;
+  }
+}
+.header-lnb-selector__button {
+  height: 64px;
+  > button {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    &:hover {
+      background-color: rgba(#4c5259, 0.7);
+    }
+    &.active {
+      background-color: rgba(#4c5259, 0.7);
+    }
+  }
+}
+.header-lnb-selector__check {
+  position: absolute;
+  top: 50%;
+  left: 23px;
+  width: 24px;
+  height: 24px;
+  border: solid 2px #555557;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  &.active {
+    border-color: #0f75f5;
+    &::after {
+      position: absolute;
+      top: 3px;
+      left: 7px;
+      display: block;
+
+      /*Make it a small rectangle so the border will create an L-shape*/
+      width: 4px;
+      height: 8px;
+
+      /*Add a white border on the bottom and left, creating that 'L' */
+      border: solid #0f75f5;
+      border-width: 0 2px 2px 0;
+
+      /*Rotate the L 45 degrees to turn it into a checkmark*/
+      transform: rotate(45deg);
+      content: "";
+    }
+  }
+}
+.header-lnb-selector__title {
+  padding-left: 62px;
+  color: #fff;
+  font-weight: 500;
+  text-align: left;
+}
+.header-lnb-selector__description {
+  padding-left: 62px;
+  color: rgba(#f0f0f0, 0.76);
+  font-size: 12px;
+  text-align: left;
 }
 
 .header-workspace-tools {

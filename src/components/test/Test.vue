@@ -67,18 +67,19 @@ code {
 .test-wrapper {
   $header_height: 80px;
   position: relative;
-  height: 100vh;
+  // height: 100vh;
   padding-top: $header_height;
 
   overflow: hidden;
   @include clearfix;
 
-  section {
+  .test > section {
     padding: 20px 30px 30px;
   }
 
   .header {
-    position: absolute;
+    position: fixed;
+    // position: absolute;
     top: 0;
     left: 0;
     z-index: 10;
@@ -101,6 +102,7 @@ code {
   }
 
   .test-side {
+    position: fixed;
     float: left;
     width: 230px;
     height: 100%;
@@ -133,7 +135,7 @@ code {
   .test-content {
     position: relative;
     height: 100%;
-    overflow-y: auto;
+    margin-left: 230px;
   }
 }
 </style>

@@ -317,7 +317,9 @@ export default {
   },
 
   mounted() {
-    this.calculateSize()
+    this.$nextTick(() => {
+      this.calculateSize()
+    })
 
     // Attach The Event for Responsive View~
     window.addEventListener('resize', this.calculateSize)

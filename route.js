@@ -23,12 +23,12 @@ function IsMobileBrowser(req) {
   return isChromeMobile
 }
 
-router.get('/service', function(req, res) {
+router.get('/workspace', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       res.redirect('/m/qrcode')
     } else {
-      res.sendFile(path.join(__dirname, '/dist/service/index.html'))
+      res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
   } else {
     res.redirect('/support')
@@ -36,12 +36,12 @@ router.get('/service', function(req, res) {
   }
 })
 
-router.get('/service/*', function(req, res) {
+router.get('/service', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       res.redirect('/m/qrcode')
     } else {
-      res.sendFile(path.join(__dirname, '/dist/service/index.html'))
+      res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
   } else {
     res.redirect('/support')
@@ -54,7 +54,7 @@ router.get('/support', function(req, res) {
 })
 
 router.get('/*', function(req, res) {
-  res.redirect('/service')
+  res.redirect('/remote')
 })
 
 module.exports = router

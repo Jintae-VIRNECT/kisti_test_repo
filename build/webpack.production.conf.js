@@ -24,9 +24,9 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       inject: 'body',
       hash: true,
       favicon: './src/assets/favicon.ico',
-      template: './src/apps/service/app.html',
-      filename: 'service/index.html',
-      chunks: ['service'],
+      template: './src/apps/remote/app.html',
+      filename: 'remote/index.html',
+      chunks: ['remote'],
     }),
     new HtmlWebpackPlugin({
       inject: 'body',

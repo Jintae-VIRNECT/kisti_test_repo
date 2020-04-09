@@ -1,0 +1,54 @@
+.createroom {
+  display: flex;
+}
+
+.createroom-info {
+  width: 266px;
+  margin: 50px 60px 50px 56px;
+  border: solid 1px #fff;
+}
+
+.createroom-user {
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  margin: 10px;
+  margin-bottom: 40px;
+  // border: solid 1px #fff;
+}
+.createroom-user__header {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.createroom-user__title {
+  color: #d2d2d2;
+}
+.createroom-user__button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #d2d2d2;
+  font-size: 13px;
+  opacity: 0.72;
+  &::before {
+    position: absolute;
+    top: -2px;
+    left: -22px;
+    width: 22px;
+    height: 22px;
+    background: url(~assets/image/ic_renew.svg) 50% no-repeat;
+    content: "";
+  }
+
+  &:hover,
+  &:active {
+    opacity: 1;
+  }
+}
+
+.createroom-user__body {
+  // height: 100%;
+  // padding-top: 15px;
+  flex: 1 1 auto;
+}

@@ -6,15 +6,29 @@
     popperClass="header-lnb-selector"
   >
     <ul>
-      <li>
-        <button>
-          리모트원격솔루션
+      <li
+        class="header-lnb-selector__button"
+        v-for="option of options"
+        :key="option.id"
+      >
+        <button
+          @click="changeSelect(option)"
+          :class="{ active: option.id === selected.id }"
+        >
+          <span
+            class="header-lnb-selector__check"
+            :class="{ active: option.id === selected.id }"
+          ></span>
+          <p class="header-lnb-selector__title">{{ option.title }}</p>
+          <p class="header-lnb-selector__description">
+            워크스테이션 멤버: {{ option.member }}명
+          </p>
         </button>
       </li>
     </ul>
 
     <button slot="reference" class="header-workspace-selector">
-      리모트원격솔루션
+      {{ selected.title }}
     </button>
   </popover>
 </template>
@@ -22,15 +36,42 @@
 <script>
 import Popover from 'Popover'
 export default {
-  name: 'LnbButton',
+  name: 'LnbSelector',
   components: {
     Popover,
   },
-  computed: {},
+  data() {
+    return {
+      selected: {},
+      options: [
+        {
+          title: '리모트원격솔루션',
+          member: 6,
+          id: '1',
+        },
+        {
+          title: '버넥트신규사업부',
+          member: 99,
+          id: '2',
+        },
+        {
+          title: '버넥트신사옥사업부',
+          member: 999,
+          id: '3',
+        },
+      ],
+    }
+  },
   watch: {},
-  methods: {},
+  methods: {
+    changeSelect(option) {
+      this.selected = option
+    },
+  },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.selected = this.options[0]
+  },
 }
 </script>

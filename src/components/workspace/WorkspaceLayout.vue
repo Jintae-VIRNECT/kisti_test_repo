@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import WorkspaceWelcome from './partials/WorkspaceWelcome'
-import WorkspaceTab from './partials/WorkspaceTab'
+import WorkspaceWelcome from './section/WorkspaceWelcome'
+import WorkspaceTab from './section/WorkspaceTab'
 export default {
   name: 'WorkspaceLayout',
   components: {
