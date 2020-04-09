@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import TabView from '../partials/workspaceTabView'
+import TabView from '../partials/WorkspaceTabView'
 export default {
   name: 'WorkspaceUser',
   components: { TabView },

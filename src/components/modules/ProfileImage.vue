@@ -1,6 +1,7 @@
 <template>
   <div
     class="profile-image"
+    :class="customClass"
     :style="{ width: `${size}px`, height: `${size}px` }"
   >
     <div
@@ -36,6 +37,10 @@ export default {
       type: String,
       default: '버넥트',
     },
+    customClass: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {}
@@ -51,6 +56,7 @@ export default {
 <style lang="scss" scoped>
 .profile-image {
   position: relative;
+  margin: auto;
   overflow: hidden;
   border-radius: 50%;
 }

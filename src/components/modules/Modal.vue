@@ -100,6 +100,15 @@ export default {
       }
     },
   },
+  watch: {
+    visible(value) {
+      if (value) {
+        document.querySelector('body').classList.add('modal-open')
+      } else {
+        document.querySelector('body').classList.remove('modal-open')
+      }
+    },
+  },
   methods: {
     clickHander(event) {
       if (this.eventPropagation) {

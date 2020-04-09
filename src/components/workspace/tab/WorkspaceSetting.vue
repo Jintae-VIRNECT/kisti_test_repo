@@ -52,7 +52,7 @@
   </tab-view>
 </template>
 <script>
-import TabView from '../partials/workspaceTabView'
+import TabView from '../partials/WorkspaceTabView'
 import Scrollbar from 'Scroller'
 import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
 import WorkspaceSetVideo from '../section/WorkspaceSetVideo'

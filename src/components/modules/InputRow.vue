@@ -93,7 +93,7 @@ export default {
 .inputrow {
   position: relative;
   width: 100%;
-  margin-top: 17px;
+  margin-top: 30px;
 }
 .inputrow-title {
   margin-bottom: 8px;
