@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import TabView from '../partials/workspaceTabView'
+import TabView from '../partials/WorkspaceTabView'
 import Scrollbar from 'Scroller'
 export default {
   name: 'WorkspaceSetting',
