@@ -49,4 +49,4 @@ eureka:
 
 logging:
   level:
-    org.springframework.cloud.gateway: trace
+    org.springframework.cloud.gateway: DEBUG
