@@ -18,7 +18,8 @@
     "js-cookie": "^2.2.1",
     "nuxt": "^2.0.0",
     "nuxt-i18n": "^6.6.1",
-    "cross-env": "^7.0.2"
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {
     "@nuxtjs/style-resources": "^1.0.0",
@@ -28,7 +29,6 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
-    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-loader": "^3.0.3",
