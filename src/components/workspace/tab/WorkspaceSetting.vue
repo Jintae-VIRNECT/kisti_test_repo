@@ -2,7 +2,7 @@
   <tab-view title="사용자 환경설정">
     <div style="height: 400px;">
       <scrollbar>
-        <div style="height: 1500px; background-color:#29292c">
+        <div style="height: 100%; background-color:#29292c">
           <div class="workspace-setting-wrapper">
             <workspace-set-audio
               class="workspace-setting-section"
