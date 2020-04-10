@@ -108,7 +108,12 @@ public class WorkspaceService {
             Workspace workspace = workspaceUser.getWorkspace();
             WorkspaceInfoListResponse.WorkspaceInfoResponse workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfoResponse.class);
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+
+            workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
+            UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+            workspaceInfo.setMasterName(userInfoRestResponse.getName());
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+
             workspaceList.add(workspaceInfo);
         });
         return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList));

@@ -36,7 +36,10 @@ public class WorkspaceInfoListResponse {
         private LocalDateTime createdDate;
         @ApiModelProperty(value = "워크스페이스 수정 일자", position = 5, example = "2020-01-20T14:05:30")
         private LocalDateTime updatedDate;
-
+        @ApiModelProperty(value = "워크스페이스 소속 일자", position = 6, example = "2020-01-20T14:05:30")
+        private LocalDateTime joinDate;
+        @ApiModelProperty(value = "해당 워크스페이스의 마스터 유저 이름", position = 7, example = "SMIC")
+        private String masterName;
 
         @Override
         public String toString() {
