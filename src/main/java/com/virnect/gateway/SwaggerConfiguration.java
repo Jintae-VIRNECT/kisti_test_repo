@@ -18,7 +18,6 @@ import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +49,7 @@ public class SwaggerConfiguration {
     @Lazy
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
+                .filter(route -> route.getId().contains("api"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class SwaggerConfiguration {
     private SwaggerResource createResource(String name, String location, String version) {
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
-        swaggerResource.setLocation(location + "/v2/api-docs");
+        swaggerResource.setLocation(location + "api-docs");
         swaggerResource.setSwaggerVersion(version);
         return swaggerResource;
     }

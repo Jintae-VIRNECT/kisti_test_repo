@@ -10,27 +10,63 @@ spring:
         - id: auth-server
           uri: lb://auth-server
           predicates:
-            - Path=/auth**
+            - Path=/auth/**
+        - id: auth-api-docs
+          uri: lb://auth-server
+          predicates:
+            - Path=/auth/v2/**
+          filters:
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
         - id: user-server
           uri: lb://user-server
           predicates:
             - Path=/users**
+        - id: user-api-docs
+          uri: lb://user-server
+          predicates:
+            - Path=/users/v2/**
+          filters:
+            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
             - Path=/workspace**
+        - id: workspace-api-docs
+          uri: lb://workspace-server
+          predicates:
+            - Path=/workspace/v2/**
+          filters:
+            - RewritePath=/workspace/v2/(?<segment>.*), /v2/$\{segment}
         - id: amdin-server
           uri: lb://admin-server
           predicates:
             - Path=/admin**
+        - id: admin-api-docs
+          uri: lb://admin-server
+          predicates:
+            - Path=/admin/v2/**
+          filters:
+            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
         - id: content-server
           uri: lb://content-server
           predicates:
             - Path=/contents**
+        - id: content-api-docs
+          uri: lb://content-server
+          predicates:
+            - Path=/contents/v2/**
+          filters:
+            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
         - id: process-server
           uri: lb://process-server
           predicates:
             - Path=/processes**
+        - id: process-api-docs
+          uri: lb://process-server
+          predicates:
+            - Path=/processes/v2/**
+          filters:
+            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
       globalcors:
         cors-configurations:
           '[/**]':
