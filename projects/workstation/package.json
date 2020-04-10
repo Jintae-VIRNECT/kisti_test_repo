@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=local nuxt",
     "build:develop": "cross-env NODE_ENV=develop nuxt build",
     "start": "cross-env NODE_ENV=$NODE_ENV nuxt start",
-    "deploy": "yarn build && yarn start",
+    "deploy": "yarn start",
     "generate": "nuxt generate"
   },
   "dependencies": {
@@ -16,18 +16,19 @@
     "dayjs": "^1.8.23",
     "element-ui": "^2.13.0",
     "nuxt": "^2.0.0",
-    "nuxt-i18n": "^6.6.1"
+    "nuxt-i18n": "^6.6.1",
+    "@nuxtjs/style-resources": "^1.0.0",
+    "dotenv": "^8.2.0",
+    "cross-env": "^7.0.2"
+
   },
   "devDependencies": {
-    "@nuxtjs/style-resources": "^1.0.0",
     "@vue/component-compiler-utils": "^3.1.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
-    "cross-env": "^7.0.2",
-    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-loader": "^3.0.3",
