@@ -1,6 +1,6 @@
 FROM node:alpine
 ENV APP_HOME=/usr/app
-ENV PORT=8887
+ENV PORT=8878
 
 WORKDIR $APP_HOME
 
