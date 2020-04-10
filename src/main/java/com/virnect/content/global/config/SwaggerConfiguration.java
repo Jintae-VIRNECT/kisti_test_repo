@@ -55,7 +55,6 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.content.api"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("Content Service")
                 .apiInfo(apiInfo);
     }
 }
