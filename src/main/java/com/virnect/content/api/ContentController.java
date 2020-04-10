@@ -1,7 +1,7 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
-import com.virnect.content.domain.ContentType;
+import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
@@ -10,7 +10,6 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
 import com.virnect.content.global.error.ErrorCode;
-import com.virnect.content.global.util.QRcodeGenerator;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.awt.image.BufferedImage;
 
 /**
  * Project: PF-ContentManagement
@@ -222,11 +220,11 @@ public class ContentController {
             @ApiImplicitParam(value = "컨텐츠 공유(YES, NO)", name = "shared", required = false, paramType = "qeury", dataType = "object", example = "YES")
     })
     @PutMapping("/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "contentType") ContentType contentType, @RequestParam(value = "shared") YesOrNo shared) {
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "contentType") Types types, @RequestParam(value = "shared") YesOrNo shared) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, contentType, shared);
+        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, types, shared);
         return ResponseEntity.ok(response);
     }
 }

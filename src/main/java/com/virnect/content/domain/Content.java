@@ -39,7 +39,7 @@ public class Content extends BaseTimeEntity {
     @Column(name = "size", nullable = false)
     private Long size;
 
-    // 공유여부
+    // 공유여부 - 작업전환이 되어 있다면 항상 YES, 작업전환이 NO이지만 YES일 수 있고, 컨텐츠를 매뉴얼처럼 사용함.
     @Column(name = "shared", nullable = false)
     @Enumerated(EnumType.STRING)
     private YesOrNo shared;
@@ -51,16 +51,6 @@ public class Content extends BaseTimeEntity {
     @Column(name = "workspace_uuid", nullable = false)
     private String workspaceUUID;
 
-    // 타겟
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_id", nullable = false)
-    private Target target;
-
-    // 타입 - 증강현실, 보조현실, 크로스플랫폼 등
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private ContentType type;
-
     @Lob
     @Column(name = "metadata", nullable = false)
     private String metadata;
@@ -69,17 +59,28 @@ public class Content extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private YesOrNo converted = YesOrNo.NO;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id")
+    private Type type;
+
     @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SceneGroup> sceneGroupList = new ArrayList<>();
 
-    public void addSceneGroup(SceneGroup productSceneGroup) {
-        productSceneGroup.setContent(this);
-        if (sceneGroupList == null) sceneGroupList = new ArrayList<>();
-        this.sceneGroupList.add(productSceneGroup);
+    @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Target> targetList = new ArrayList<>();
+
+    public void addSceneGroup(SceneGroup sceneGroup) {
+        sceneGroup.setContent(this);
+        this.sceneGroupList.add(sceneGroup);
+    }
+
+    public void addTarget(Target target) {
+        target.setContent(this);
+        this.targetList.add(target);
     }
 
     @Builder
-    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, Target target, ContentType type, String metadata, YesOrNo converted, List<SceneGroup> sceneGroupList) {
+    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, String metadata, YesOrNo converted) {
         this.uuid = uuid;
         this.name = name;
         this.path = path;
@@ -87,10 +88,10 @@ public class Content extends BaseTimeEntity {
         this.shared = shared;
         this.userUUID = userUUID;
         this.workspaceUUID = workspaceUUID;
-        this.target = target;
-        this.type = type;
         this.metadata = metadata;
         this.converted = converted;
-        this.sceneGroupList = sceneGroupList;
+        this.sceneGroupList = new ArrayList<>();
+        this.type = type;
+        this.targetList = new ArrayList<>();
     }
 }

@@ -1,6 +1,6 @@
 package com.virnect.content.dto.request;
 
-import com.virnect.content.domain.ContentType;
+import com.virnect.content.domain.Types;
 import com.virnect.content.domain.TargetType;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,7 @@ public class ContentUploadRequest {
     @NotNull
     private MultipartFile content;
 
-    private ContentType type;
+    private Types type;
 
     @NotBlank
     private String name;

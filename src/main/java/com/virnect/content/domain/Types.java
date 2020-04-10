@@ -1,13 +1,13 @@
 package com.virnect.content.domain;
 
 /**
- * Project: PF-SMIC_CUSTOM
- * DATE: 2020-02-04
- * AUTHOR: JohnMark (Chang Jeong Hyeon)
- * EMAIL: practice1356@gmail.com
- * DESCRIPTION:
+ * @author hangkee.min (henry)
+ * @project PF-ContentManagement
+ * @email hkmin@virnect.com
+ * @description
+ * @since 2020.04.10
  */
-public enum ContentType {
+public enum Types {
     AUGMENTED_REALITY("증강현실"),
     ASSISTED_REALITY("보조현실"),
     CROCESS_PLATFORM("크로스플랫폼"),
@@ -15,7 +15,7 @@ public enum ContentType {
 
     private String message;
 
-    ContentType(String message) {
+    Types(String message) {
         this.message = message;
     }
 

@@ -71,49 +71,20 @@ public class ContentService {
     public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
         // 1. 콘텐츠 업로드 파일 저장
         try {
-            /**
-             * 중요!
-             * QR코드 데이터 : QR코드에 사용되는 데이터를 서버에서 컨텐츠UUID를 발급하여 함께 사용.
-             * QR코드 생성 : 서버는 QR코드를 발급하지 않음. 서버에서 발급한 QR코드 데이터(컨텐츠UUID)를 각 클라이언트에서 QR코드로 생성하여 사용.
-             */
-            // 컨텐츠 식별자 생성 - 파일명과 타겟데이터에 함께 사용.
+            // 컨텐츠 식별자 생성 - 파일명과 함께 사용.
             String contentUUID = UUID.randomUUID().toString();
 
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
-
-            // 컨텐츠 타겟 - 타겟 종류
-            Target target = Target.builder()
-                    .contentList(new ArrayList<>())
-                    .targetQRCodeList(new ArrayList<>())
-                    .type(uploadRequest.getTargetType())
-                    .build();
-
-            this.targetRepository.save(target);
-
-            // 타겟의 데이터 - QR코드
-            TargetQRCode targetQRCode = TargetQRCode.builder()
-                    .target(target)
-                    // 타겟과 컨텐츠 식별자(contentUUID)를 동일하게 씀. 향후 바뀔 여지가 있음.
-                    .data(contentUUID)
-                    .build();
-
-            this.targetQRCodeRepository.save(targetQRCode);
-
-            List<TargetQRCode> targetQRCodes = new ArrayList<>();
-            targetQRCodes.add(targetQRCode);
-            target.setTargetQRCodeList(targetQRCodes);
 
             // 2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
                     // TODO : 유효한 워크스페이스 인지 검증 필요.
                     .workspaceUUID(uploadRequest.getWorkspaceUUID())
                     .uuid(contentUUID)
-                    .type(uploadRequest.getType())
                     .name(uploadRequest.getName())
                     .metadata(uploadRequest.getMetadata())
                     .userUUID(uploadRequest.getUserUUID())
-                    .target(target)
                     .shared(INIT_IS_SHARED)
                     .converted(INIT_IS_CONVERTED)
                     .size(byteToMegaByte(uploadRequest.getContent().getSize()))
@@ -123,16 +94,16 @@ public class ContentService {
             // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
             addSceneGroupToContent(content, content.getMetadata());
 
+            // 타겟 저장 후 타겟데이터 반환
+            String targetData = addTargetToContent(content, uploadRequest);
+
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
 
-            List<Content> contents = new ArrayList<>();
-            contents.add(content);
-            target.setContentList(contents);
-
-            this.targetRepository.save(target);
-
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
+            // 반환할 타겟정보
+            result.setTargetData(targetData);
+            result.setTargetType(uploadRequest.getTargetType());
             return new ApiResponse<>(result);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
@@ -161,6 +132,33 @@ public class ContentService {
         }
     }
 
+    private String addTargetToContent(Content content, final ContentUploadRequest contentUploadRequest) {
+        // 타겟데이터
+        String targetData = UUID.randomUUID().toString();
+
+        Target target = Target.builder()
+                .type(contentUploadRequest.getTargetType())
+                .content(content)
+                .build();
+        content.addTarget(target);
+
+        TargetQRCode targetQRCode = TargetQRCode.builder()
+                .data(targetData)
+                .target(target)
+                .build();
+        target.addTargetQRCode(targetQRCode);
+
+        this.targetQRCodeRepository.save(targetQRCode);
+
+        List<TargetQRCode> targetQRCodeList = new ArrayList<>();
+        targetQRCodeList.add(targetQRCode);
+        target.setTargetQRCodeList(targetQRCodeList);
+
+        this.targetRepository.save(target);
+
+        return targetData;
+    }
+
     /**
      * 콘텐츠 수정 요청 처리
      *
@@ -177,7 +175,7 @@ public class ContentService {
         // 2. 수정 컨텐츠 저장
         String fileUploadPath = null;
         try {
-            fileUploadPath = this.fileUploadService.upload(updateRequest.getContent(), targetContent.getTarget() + "");
+            fileUploadPath = this.fileUploadService.upload(updateRequest.getContent(), targetContent.getUuid() + "");
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -243,11 +241,14 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
         log.info("USER: [{}] , REMOTE CONTENT: [{}]", uuid, content.getName());
 
+        /*
         long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
 
         if (affectRows <= 0) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DELETE);
         }
+         */
+        this.contentRepository.deleteById(content.getId());
 
         boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
 
@@ -304,7 +305,7 @@ public class ContentService {
                     .contentSize(content.getSize())
                     .path(content.getPath())
                     .converted(content.getConverted())
-                    .target(this.modelMapper.map(content.getTarget(), ContentTargetResponse.class))
+                    .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                     .createdDate(content.getUpdatedDate())
                     .build();
 
@@ -396,11 +397,11 @@ public class ContentService {
         return getContentInfoResponseApiResponse(content);
     }
 
-    public ApiResponse<ContentInfoResponse> modifyContentInfo(String contentUUID, ContentType type, YesOrNo shared) {
+    public ApiResponse<ContentInfoResponse> modifyContentInfo(String contentUUID, Types type, YesOrNo shared) {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        content.setType(type);
+        content.getType().setType(type);
         content.setShared(shared);
 
         this.contentRepository.save(content);
@@ -422,7 +423,7 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .target(this.modelMapper.map(content.getTarget(), ContentTargetResponse.class))
+                .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                 .createdDate(content.getUpdatedDate())
                 .build();
         return new ApiResponse<>(contentInfoResponse);

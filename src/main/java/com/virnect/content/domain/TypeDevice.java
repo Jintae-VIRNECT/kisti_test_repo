@@ -17,24 +17,23 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Audited
-@Table(name = "target_qr")
+@Table(name = "type_device")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TargetQRCode extends BaseTimeEntity {
+public class TypeDevice extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "target_qr_id")
+    @Column(name = "type_device_id")
     private Long id;
 
-    @Column(name = "data")
-    private String data;
+    @Column(name = "name")
+    private Devices device;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_id")
-    private Target target;
+    @JoinColumn(name = "type_id")
+    private Type type;
 
     @Builder
-    public TargetQRCode(String data, Target target) {
-        this.data = data;
-        this.target = target;
+    public TypeDevice(Devices device) {
+        this.device = device;
     }
 }

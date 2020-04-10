@@ -1,7 +1,6 @@
 package com.virnect.content.dao;
 
 import com.virnect.content.domain.TargetQRCode;
-import com.virnect.content.domain.TargetQRCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
