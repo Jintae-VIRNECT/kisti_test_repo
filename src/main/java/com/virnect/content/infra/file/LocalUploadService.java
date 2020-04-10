@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,5 +91,29 @@ public class LocalUploadService implements FileUploadService {
     @Override
     public boolean isAllowFileExtension(String fileExtension) {
         return false;
+    }
+
+    @Override
+    public String base64ImageUpload(final String base64Image) {
+        try {
+            byte[] image = Base64.getDecoder().decode(base64Image);
+            String randomFileName = String.format("%s_%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase());
+            File convertImage = new File(path + randomFileName + ".jpg");
+            FileOutputStream fos = new FileOutputStream(convertImage);
+            fos.write(image);
+            // 4. 파일 경로 추출
+            String filePath = String.format("%s%s", url, convertImage.getPath()).replace("\\", "/");
+            log.info("SAVE FILE_URL: {}", filePath);
+            return filePath;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public File getFile(String fileUrl) {
+        log.info("{}", fileUrl.replaceAll(HOST_REGEX, "").replace("\\", "/"));
+        return new File(fileUrl.replaceAll(HOST_REGEX, "").replace('\\', '/'));
     }
 }

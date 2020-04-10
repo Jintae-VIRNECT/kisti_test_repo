@@ -2,6 +2,7 @@ package com.virnect.content.infra.file;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -35,5 +36,15 @@ public class AmazonS3UploadService implements FileUploadService {
     @Override
     public boolean isAllowFileExtension(String fileExtension) {
         return false;
+    }
+
+    @Override
+    public File getFile(String url) {
+        return null;
+    }
+
+    @Override
+    public String base64ImageUpload(String base64Image) {
+        return null;
     }
 }

@@ -55,6 +55,10 @@ public class Content extends BaseTimeEntity {
     @Column(name = "metadata", nullable = false)
     private String metadata;
 
+    @Column(name = "deleted", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YesOrNo deleted = YesOrNo.NO;
+
     @Column(name = "converted", nullable = false)
     @Enumerated(EnumType.STRING)
     private YesOrNo converted = YesOrNo.NO;

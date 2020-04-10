@@ -2,6 +2,7 @@ package com.virnect.content.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@ToString
 public class ContentUpdateRequest {
     @NotNull
     private MultipartFile content;

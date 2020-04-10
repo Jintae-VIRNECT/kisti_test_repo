@@ -1,5 +1,6 @@
 package com.virnect.content.application.user;
 
+import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.ResponseMessage;
@@ -23,5 +24,5 @@ public interface UserRestService {
     ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
 
     @GetMapping
-    ResponseMessage getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
+    ApiResponse<UserInfoListResponse> getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
 }

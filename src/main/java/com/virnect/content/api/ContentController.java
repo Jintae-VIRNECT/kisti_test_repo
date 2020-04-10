@@ -3,6 +3,7 @@ package com.virnect.content.api;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.request.ContentStatusChangeRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -155,10 +156,14 @@ public class ContentController {
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "filter", value = "필터 옵션 (ALL, WAIT, MANAGED)", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping
-    public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(@RequestParam(value = "search", required = false) String search, @ApiIgnore PageRequest pageable) {
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(search, pageable.of());
+    public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "filter", defaultValue = "ALL")
+                    String filter, @ApiIgnore PageRequest pageable) {
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(search, filter, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -210,6 +215,27 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoResponse> responseMessage = this.contentService.getContentInfo(contentUUID);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "전체 컨텐츠 현황 정보 조회")
+    @GetMapping("/statistics")
+    public ResponseEntity<ApiResponse<ContentStatisticResponse>> contentStatusInfoRequestHandler() {
+        ApiResponse<ContentStatisticResponse> responseMessage = this.contentService.getContentStatusInfo();
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "컨텐츠 상태 변경")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "body", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(value = "컨텐츠 상태 (WAIT, MANAGED, PUBLISH)", name = "status", required = true, paramType = "body", example = "MANAGED")
+    })
+    @PostMapping(value = "/status")
+    public ResponseEntity<ApiResponse<ContentStatusInfoResponse>> changeContentStatusRequestHandler(@RequestBody @Valid ContentStatusChangeRequest statusChangeRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentStatusInfoResponse> responseMessage = this.contentService.updateContentStatus(statusChangeRequest);
         return ResponseEntity.ok(responseMessage);
     }
 

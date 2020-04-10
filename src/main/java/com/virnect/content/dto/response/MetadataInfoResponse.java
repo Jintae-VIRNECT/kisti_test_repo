@@ -1,5 +1,6 @@
 package com.virnect.content.dto.response;
 
+import com.virnect.content.domain.ItemType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -127,7 +128,7 @@ public class MetadataInfoResponse {
         @ApiModelProperty(value = "레포트 아이템 우선순위", notes = "레포트 아이템의 우선 순위", position = 1, example = "1")
         private int priority;
         @ApiModelProperty(value = "레포트 아이템 타임", notes = "레포트 아이템의 종류 입니다", position = 2, example = "PROCESS_DETAIL_REPORT")
-        private String type;
+        private ItemType type;
         @ApiModelProperty(value = "레포트 아이텝 이름", notes = "레포트 아이템의 명칭입니다.", position = 3, example = "자른 자재의 무게 기입")
         private String title;
 
@@ -150,7 +151,7 @@ public class MetadataInfoResponse {
         @ApiModelProperty(value = "스마트 툴", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", position = 1, example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
         private String jobId;
         @ApiModelProperty(value = "스마트 툴 정상 토크 값", position = 2, example = "123")
-        private int normalTorque;
+        private String normalTorque;
         @ApiModelProperty(value = "스마트 툴 오브젝트 아이템 정보 리스트", notes = "스마트 툴 오브젝트 아이템에 대한 정보 배열", position = 3)
         private List<SmartToolObjectItem> items;
 

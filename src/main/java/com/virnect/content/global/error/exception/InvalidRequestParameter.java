@@ -3,7 +3,7 @@ package com.virnect.content.global.error.exception;
 import com.virnect.content.global.error.ErrorCode;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ContentManagement
  * DATE: 2020-01-15
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

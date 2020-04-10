@@ -2,6 +2,7 @@ package com.virnect.content.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
 import com.virnect.content.dao.TargetQRCodeRepository;
@@ -9,10 +10,13 @@ import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
 import com.virnect.content.dto.UserDto;
+import com.virnect.content.dto.request.ContentStatusChangeRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
+import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
+import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -30,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,8 +58,10 @@ public class ContentService {
     private final TargetRepository targetRepository;
     private final TargetQRCodeRepository targetQRCodeRepository;
     private final UserRestService userRestService;
+    private final ProcessRestService processRestService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${upload.dir}")
     private String uploadPath;
@@ -107,6 +115,11 @@ public class ContentService {
             return new ApiResponse<>(result);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
+            /**
+             * TODO : 컨텐츠 업로드가 실패 했을 때의 처리
+             * - 컨텐츠 신규 업로드시 실패 : ARUCO와 컨텐츠 연결이 끊어짐. 그냥 업로드 실패 메시지. 그러므로 신규로 발급 받아야 함.
+             * - 컨텐츠 업데이트로 업로드 실패시 : ARUCO와 컨텐츠 연결은 끊어지지 않음. 그냥 업로드 실패 메시지.
+             */
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
     }
@@ -172,17 +185,27 @@ public class ContentService {
         Content targetContent = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
-        // 2. 수정 컨텐츠 저장
+        // 수정할 수 없는 조건
+        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
+        }
+
+        // 2. 저장된 파일 가져오기
+        File oldContent = this.fileUploadService.getFile(targetContent.getPath());
+
+        // 2. 기존 컨텐츠 파일 삭제
+        this.fileUploadService.delete(targetContent.getPath());
+
+        // 3. 수정 컨텐츠 저장
         String fileUploadPath = null;
         try {
             fileUploadPath = this.fileUploadService.upload(updateRequest.getContent(), targetContent.getUuid() + "");
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
+            // 3-1. Recover Deleted File.
+            eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
-        // 3. 기존 컨텐츠 파일 삭제
-        this.fileUploadService.delete(targetContent.getPath());
 
         // 4 수정 컨텐츠 경로 반영
         targetContent.setPath(fileUploadPath);
@@ -241,22 +264,27 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
         log.info("USER: [{}] , REMOTE CONTENT: [{}]", uuid, content.getName());
 
-        /*
+        // 삭제할 수 없는 조건
+        if (content.getConverted() != YesOrNo.NO || content.getShared() != YesOrNo.NO || content.getDeleted() != YesOrNo.NO) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
+        }
+
         long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
+        log.info("deleteByUuid affectRows = {}", affectRows);
 
         if (affectRows <= 0) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DELETE);
         }
-         */
-        this.contentRepository.deleteById(content.getId());
 
-        boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
+        // 파일 존재 유무 확인
+        log.info("content.getPath() = {}", content.getPath());
+        if (this.fileUploadService.getFile(content.getPath()).exists()) {
+            // 파일이 없다면 파일삭제는 무시함.
+            boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
 
-        // aruco 할당해제 관련 프로세스 필요
-//        boolean deallocateResult = this.arucoRepository.deallocatate(content.getUuid());
-
-        if (!fileDeleteResult) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DELETE);
+            if (!fileDeleteResult) {
+                throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+            }
         }
 
         return new ApiResponse<>(new ContentDeleteResponse(true));
@@ -266,37 +294,37 @@ public class ContentService {
      * 콘텐츠 목록 조회
      *
      * @param search   - 조회 검색어
+     * @param filter
      * @param pageable - 페이징 요청 처리 데이터
      * @return - 콘텐츠 정보 목록
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ContentInfoListResponse> getContentList(String search, Pageable pageable) {
-        // 1. 사용자 식별번호 조회
-        ResponseMessage responseMessage = this.userRestService.getUserInfoSearch(search, false);
-        Map<String, Object> data = responseMessage.getData();
-        log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", data);
-        List<Object> results = (List<Object>) data.get("userInfoList");
+    public ApiResponse<ContentInfoListResponse> getContentList(String search, String filter, Pageable pageable) {
+        List<ContentInfoResponse> contentInfoList;
+        Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
+        List<String> userUUIDList = new ArrayList<>();
 
-        Map<String, UserDto.UserInfo> userInfoMap = new HashMap<>();
-        List<UserDto.UserInfo> userInfoList = results.stream()
-                .map(object -> {
-                    UserDto.UserInfo userInfo = modelMapper.map(object, UserDto.UserInfo.class);
-                    userInfoMap.put(userInfo.getUuid(), userInfo);
-                    return userInfo;
-                }).collect(Collectors.toList());
-        List<String> userUUIDList = userInfoList.stream().map(UserDto.UserInfo::getUuid).collect(Collectors.toList());
-        log.info("[{}]", userInfoList);
+        if (search != null) {
+            // 1. 사용자 식별번호 조회
+            ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
+            UserInfoListResponse userInfoList = userInfoListResult.getData();
+            log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", userInfoList);
 
-        // 2. 콘텐츠 조회
-        Page<Content> contentPage;
-        if (search == null) {
-            contentPage = this.contentRepository.findAll(pageable);
-        } else {
-            contentPage = this.contentRepository.findByNameIsContainingOrUserUUIDIsIn(search, userUUIDList, pageable);
+            userInfoList.getUserInfoList().forEach(userInfoResponse -> {
+                userInfoMap.put(userInfoResponse.getUuid(), userInfoResponse);
+            });
+
+            userUUIDList = userInfoList.getUserInfoList().stream()
+                    .map(UserInfoResponse::getUuid).collect(Collectors.toList());
+            log.info("[{}]", userInfoList);
         }
 
-        List<ContentInfoResponse> contentInfoList = contentPage.stream().map(content -> {
-            ContentInfoResponse contentInfo = ContentInfoResponse.builder()
+
+        // 2. 콘텐츠 조회
+        Page<Content> contentPage = this.contentRepository.getContent(search, filter, userUUIDList, pageable);
+
+        contentInfoList = contentPage.stream().map(content -> {
+            ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                     .workspaceUUID(content.getWorkspaceUUID())
                     .contentUUID(content.getUuid())
                     .contentName(content.getName())
@@ -310,18 +338,21 @@ public class ContentService {
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
-                contentInfo.setUploaderName(userInfoMap.get(content.getUserUUID()).getName());
-                contentInfo.setUploaderUUID(userInfoMap.get(content.getUserUUID()).getUuid());
-                contentInfo.setUploaderProfile(userInfoMap.get(content.getUserUUID()).getProfile());
+                contentInfoResponse.setUploaderName(userInfoMap.get(content.getUserUUID()).getName());
+                contentInfoResponse.setUploaderUUID(userInfoMap.get(content.getUserUUID()).getUuid());
+                contentInfoResponse.setUploaderProfile(userInfoMap.get(content.getUserUUID()).getProfile());
             } else {
                 ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
-                contentInfo.setUploaderName(userInfoResponse.getData().getName());
-                contentInfo.setUploaderUUID(userInfoResponse.getData().getUuid());
-                contentInfo.setUploaderProfile(userInfoResponse.getData().getProfile());
+                contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
+                contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+                contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
             }
-            return contentInfo;
-        }).collect(Collectors.toList());
 
+            // 공정 정보에 컨텐츠정보를 넣음
+//            setContentProcessInfo(content, contentInfoResponse);
+
+            return contentInfoResponse;
+        }).collect(Collectors.toList());
         PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
                 .currentPage(pageable.getPageNumber())
                 .currentSize(pageable.getPageSize())
@@ -330,6 +361,17 @@ public class ContentService {
                 .build();
 
         return new ApiResponse<>(new ContentInfoListResponse(contentInfoList, pageMetadataResponse));
+    }
+
+    // 공정 정보에 컨텐츠정보를 넣음
+    private void setContentProcessInfo(Content content, ContentInfoResponse contentInfo) {
+//        if (content.getStatus().equals(ContentStatus.MANAGED)) {
+//            Long targetId = Long.valueOf(content.getAruco());
+//            ApiResponse<ProcessTargetInfoResponse> targetProcessResult = this.processRestService.getProcessInfoByTargetValue(targetId);
+//            ProcessTargetInfoResponse targetInfoResponse = targetProcessResult.getData();
+//            contentInfo.setProcessId(targetInfoResponse.getId());
+//            contentInfo.setProcessName(targetInfoResponse.getName());
+//        }
     }
 
     /**
@@ -426,7 +468,38 @@ public class ContentService {
                 .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                 .createdDate(content.getUpdatedDate())
                 .build();
+        // 공정 정보에 컨텐츠정보를 넣음
+//        setContentProcessInfo(content, contentInfoResponse);
         return new ApiResponse<>(contentInfoResponse);
+    }
+
+    /**
+     * 전체 콘텐츠 수 및 공정으로 등록된 콘텐츠 수 조회
+     *
+     * @return - 전체 콘텐츠 수 및 공정 등록 상태 콘텐츠 수
+     */
+    public ApiResponse<ContentStatisticResponse> getContentStatusInfo() {
+        long numberOfContents = this.contentRepository.count();
+        long numberOfManagedContents = 0;
+//        long numberOfManagedContents = this.contentRepository.countByStatus(ContentStatus.MANAGED);
+        return new ApiResponse<>(new ContentStatisticResponse(numberOfContents, numberOfManagedContents));
+    }
+
+    public ApiResponse<ContentStatusInfoResponse> updateContentStatus(ContentStatusChangeRequest statusChangeRequest) {
+        Content content = this.contentRepository.findByUuid(statusChangeRequest.getContentUUID())
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+//        ContentStatus status = ContentStatus.valueOf(statusChangeRequest.getStatus().toUpperCase());
+//        content.setStatus(status);
+
+        this.contentRepository.save(content);
+
+        ContentStatusInfoResponse contentStatusInfo = new ContentStatusInfoResponse();
+        contentStatusInfo.setContentName(content.getName());
+        contentStatusInfo.setContentUUID(content.getUuid());
+//        contentStatusInfo.setStatus(content.getStatus());
+
+        return new ApiResponse<>(contentStatusInfo);
     }
 
 }
