@@ -6,6 +6,7 @@
   }
 }
 .el-form-item__label {
+  color: $font-color-label;
   line-height: 1;
 }
 
@@ -60,6 +61,9 @@
 
   &:focus {
     border-color: #1468e2;
+  }
+  &::placeholder {
+    color: #c7cfda;
   }
 }
 
