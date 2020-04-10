@@ -29,11 +29,14 @@ export default async function api(name, option = {}) {
   params = method === 'post' ? params : { params }
 
   // default header
+  const accessToken = process.client
+    ? Cookies.get('accessToken')
+    : headers.cookie.match('accessToken=(.*?);')[1]
   axios.defaults.headers.common = {
-    Authorization: `Bearer ${Cookies.get('accessToken')}`,
+    Authorization: `Bearer ${accessToken}`,
   }
 
-  if (process.client) $nuxt.$loading.start()
+  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
   try {
     const response = await axios[method](uri, params, { headers })
     const { code, data, message } = response.data

@@ -2,23 +2,21 @@ import Profile from '@/models/profile/Profile'
 import api from '@/api/gateway'
 
 function getMyProfile() {
-  const profile = $nuxt.$store.getters['auth/myProfile']
-  return new Profile(profile)
+  return process.client && { ...$nuxt.$store.getters['auth/myProfile'] }
 }
 
 export default {
   getMyProfile,
-  async getAuthInfo() {
+  async auth() {
+    if (Object.keys(getMyProfile()).length) return false
     const data = await api('GET_AUTH_INFO')
-    console.log(data)
-    return data
+    $nuxt.$store.commit('auth/SET_MY_PROFILE', new Profile(data.userInfo))
   },
   async certification(form) {
-    const data = await api('ACCESS_AUTH', {
+    await api('ACCESS_AUTH', {
       route: { userId: form.uuid },
       params: form,
     })
-    $nuxt.$store.commit('auth/SET_MY_PROFILE', data.userInfo)
     $nuxt.$store.commit('auth/SET_AUTH', true)
   },
   async updateMyProfile(form) {

@@ -21,9 +21,6 @@ export default {
     TheHeader,
     TheSidebar,
   },
-  async asyncData() {
-    return {}
-  },
   data() {
     return {
       sideMenus,

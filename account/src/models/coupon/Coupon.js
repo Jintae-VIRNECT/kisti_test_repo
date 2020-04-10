@@ -1,13 +1,13 @@
 import Model from '@/models/Model'
 
 export default class Coupon extends Model {
-  constructor() {
+  constructor(json) {
     super()
-    this.name = '2주 무료 사용 쿠폰'
-    this.registerDate = '20.02.30'
-    this.expireDate = '21.12.30'
-    this.startDate = '20.03.06'
-    this.endDate = '20.03.09'
-    this.state = 'wait'
+    this.name = json.name
+    this.registerDate = json.registerDate
+    this.expireDate = json.expireDate
+    this.startDate = json.startDate
+    this.endDate = json.endDate
+    this.status = json.status
   }
 }

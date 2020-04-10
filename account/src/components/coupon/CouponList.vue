@@ -26,13 +26,16 @@ export default {
   },
   data() {
     return {
-      coupons: couponService.getCouponList(),
+      coupons: [],
     }
   },
   methods: {
     select(row) {
       this.$emit('select', row)
     },
+  },
+  async beforeCreate() {
+    this.coupons = await couponService.getCouponList()
   },
 }
 </script>

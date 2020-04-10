@@ -166,7 +166,7 @@ import BirthChangeModal from '@/components/profile/BirthChangeModal'
 import ContactChangeModal from '@/components/profile/ContactChangeModal'
 
 export default {
-  middleware: 'profile',
+  middleware: ['default', 'profile'],
   components: {
     ImageChangeModal,
     NameChangeModal,

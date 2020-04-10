@@ -13,6 +13,7 @@
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 
 export default {
+  middleware: 'default',
   components: {
     TheHeader,
   },

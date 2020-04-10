@@ -9,10 +9,8 @@ const customAxios = axios.create({
 customAxios.interceptors.request.use(function(req) {
   if (/^\/workspace/.test(req.url)) {
     req.baseURL = process.env.WORKSPACE_API_URL
-  } else if (/^\/contents/.test(req.url)) {
-    req.baseURL = process.env.CONTENT_API_URL
-  } else if (/^\/processes/.test(req.url)) {
-    req.baseURL = process.env.PROCESS_API_URL
+  } else if (/^\/licenses/.test(req.url)) {
+    req.baseURL = process.env.LICENSE_API_URL
   }
   return req
 })
