@@ -37,6 +37,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/test/index.html',
         },
         {
+          from: /support(\/.*)?/,
+          to: '/extra/index.html',
+        },
+        {
           from: /.*/,
           to: '/remote/index.html',
         },
@@ -90,10 +94,21 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       inject: 'body',
       hash: true,
       favicon: './src/assets/favicon.ico',
+      template: './src/apps/extra/app.html',
+      filename: 'extra/index.html',
+      chunks: ['extra'],
+    }),
+
+    //test
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
       template: './src/apps/test/app.html',
       filename: 'test/index.html',
       chunks: ['test'],
     }),
+
     // new BundleAnalyzerPlugin({
     //     analyzerHost: '127.0.0.1',
     //     analyzerPort: 8887
