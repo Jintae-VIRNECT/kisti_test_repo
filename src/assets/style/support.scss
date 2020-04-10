@@ -35,7 +35,11 @@
 
       &:hover{
         background: #d8d8d8;
-      }
+			}
+			
+			&:active {
+				background: #afafaf;
+			}
 
 			@include tablet {
 				width: 200px;
