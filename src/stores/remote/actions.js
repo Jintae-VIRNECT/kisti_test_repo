@@ -36,4 +36,12 @@ export default {
   muteOnOff({ commit }) {
     commit(types.MUTE_ON_OFF)
   },
+
+  /**
+   * Set device type
+   * @param {Object} payload
+   */
+  setDeviceType({ commit }, payload) {
+    commit(types.SET_DEVICE, payload)
+  },
 }

@@ -49,6 +49,10 @@ router.get('/service', function(req, res) {
   }
 })
 
+router.get('/support', function(req, res) {
+  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+})
+
 router.get('/*', function(req, res) {
   res.redirect('/remote')
 })

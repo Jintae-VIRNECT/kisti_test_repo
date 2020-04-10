@@ -44,7 +44,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['deviceType']),
     isMobileChrome() {
       const userAgent = navigator.userAgent
       const isChromeMobile =
@@ -53,17 +53,14 @@ export default {
         userAgent.includes('mobileApp')
       return isChromeMobile
     },
-    SCREEN_MODE() {
-      return document.querySelector('html').getAttribute('data-screen')
-    },
     isScreenDesktop() {
-      return 'desktop' === this.SCREEN_MODE
+      return 'desktop' === this.deviceType
     },
     isScreenTablet() {
-      return 'tablet' === this.SCREEN_MODE
+      return 'tablet' === this.deviceType
     },
     isScreenMobile() {
-      return 'mobile' === this.SCREEN_MODE
+      return 'mobile' === this.deviceType
     },
     isScreenApp() {
       // return true
