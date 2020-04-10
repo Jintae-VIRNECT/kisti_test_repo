@@ -5,7 +5,6 @@ ENV PORT=8878
 WORKDIR $APP_HOME
 
 
-ADD ./packages $APP_HOME/packages
 ADD ./projects $APP_HOME/projects
 ADD ./package.json $APP_HOME/package.json
 
