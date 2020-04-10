@@ -136,11 +136,10 @@ export default {
 				this.$store.dispatch('auth/login', this.login).then(
 					() => {
 						let redirectTarget = this.$route.query.continue
-						if (!/^https?:/.test(redirectTarget)) {
-							redirectTarget = `//${redirectTarget}`
-						}
 						if (redirectTarget) {
-							location.href = redirectTarget
+							location.href = /^https?:/.test(redirectTarget)
+								? redirectTarget
+								: `//${redirectTarget}`
 						} else {
 							location.href = '//virnect.com'
 						}

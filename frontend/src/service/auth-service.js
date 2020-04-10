@@ -27,9 +27,9 @@ class AuthService {
 					const cookieOption = {
 						expires: data.expireIn / 3600000,
 						domain:
-							location.hostname.split('.').length < 3
-								? location.hostname
-								: location.hostname.replace(/.*?\./, ''),
+							location.hostname.split('.').length === 3
+								? location.hostname.replace(/.*?\./, '')
+								: location.hostname,
 					}
 					Cookies.set('accessToken', data.accessToken, cookieOption)
 					Cookies.set('refreshToken', data.refreshToken, cookieOption)
