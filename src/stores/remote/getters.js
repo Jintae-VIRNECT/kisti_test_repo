@@ -6,4 +6,6 @@ export default {
   mic: state => state.oncall.mic,
   speaker: state => state.oncall.speaker,
   mute: state => !state.oncall.unmute,
+
+  deviceType: state => state.device.type,
 }
