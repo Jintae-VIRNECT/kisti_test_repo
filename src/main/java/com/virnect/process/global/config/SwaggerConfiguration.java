@@ -55,7 +55,6 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.process.api"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("Process Service")
                 .apiInfo(apiInfo);
     }
 }
