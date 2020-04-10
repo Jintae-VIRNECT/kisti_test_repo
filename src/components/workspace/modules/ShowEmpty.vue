@@ -1,9 +1,10 @@
 <template>
-  <div class="show-empty" :style="{ 'background-image': image }">
-    <p class="show-empty-title">
+  <div class="show-empty">
+    <img class="show-empty__image" :src="image" />
+    <p class="show-empty__title">
       {{ title }}
     </p>
-    <p class="show-empty-description">
+    <p class="show-empty__description">
       {{ description }}
     </p>
   </div>
@@ -39,20 +40,27 @@ export default {
 
 <style lang="scss" scoped>
 .show-empty {
+  position: relative;
   width: 100%;
   height: 100%;
-  background: url(~assets/image/img_user_empty.svg) 50% 35% #29292c no-repeat;
+  background: #29292c;
 }
-.show-empty-title {
-  padding-top: 400px;
+.show-empty__image {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.show-empty__title {
+  padding-top: 22%;
   color: #fafafa;
   font-size: 24px;
   text-align: center;
 }
-.show-empty-description {
+.show-empty__description {
   color: rgba(#fafafa, 0.5);
   font-weight: 300;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 }
 </style>

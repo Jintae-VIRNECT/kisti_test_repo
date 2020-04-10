@@ -15,8 +15,9 @@
       <slot v-if="!empty"></slot>
       <show-empty
         v-else
-        :title="'최근 통화 목록이 없습니다.'"
-        :description="' 원격 협업을 시작해보세요.'"
+        :image="emptyImage"
+        :title="emptyTitle"
+        :description="emptyDescription"
       ></show-empty>
     </div>
   </section>
@@ -34,7 +35,7 @@ export default {
   props: {
     empty: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     title: {
       type: String,
@@ -47,6 +48,18 @@ export default {
     placeholder: {
       type: String,
       default: '',
+    },
+    emptyTitle: {
+      type: String,
+      default: '',
+    },
+    emptyDescription: {
+      type: String,
+      default: '',
+    },
+    emptyImage: {
+      type: String,
+      default: require('assets/image/img_remote_empty.svg'),
     },
   },
   data() {
