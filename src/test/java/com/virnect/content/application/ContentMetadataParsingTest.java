@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Map;
+
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ContentManagement
  * DATE: 2020-02-13
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -22,16 +24,16 @@ public class ContentMetadataParsingTest {
 
     @Test
     public void parse() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
 //        Map<String, Object> parseResultAsMap = objectMapper.readValue(rawMetadata, new TypeReference<Map<String, Object>>() {
 //        });
 //        System.out.println(parseResultAsMap);
 //        parseResultAsMap.entrySet().stream().forEach(stringObjectEntry ->{
 //            log.info("[{}] => [{}]", stringObjectEntry.getKey(), stringObjectEntry.getValue());
 //        });
-        ContentRestDto.RawMetadata contentInfo = objectMapper.readValue(rawMetadata, ContentRestDto.RawMetadata.class);
-        System.out.println("=============================================================================================================================");
-        System.out.println(contentInfo.toString());
-        System.out.println("=============================================================================================================================");
+//        ContentRestDto.RawMetadata contentInfo = objectMapper.readValue(rawMetadata, ContentRestDto.RawMetadata.class);
+//        System.out.println("=============================================================================================================================");
+//        System.out.println(contentInfo.toString());
+//        System.out.println("=============================================================================================================================");
     }
 }

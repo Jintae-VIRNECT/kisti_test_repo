@@ -49,7 +49,7 @@ public class ContentController {
      * @param result        - 요청 파라미터 검증 결과
      * @return - 업로드된 콘텐츠 파일 정보
      */
-    @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환합니다.\n컨텐츠 QR코드는 컨텐츠 식별자와 동일하게 저장하며 이를 클라이언트에서 마커로 생성/인식합니다.")
+    @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장되며, 컨텐츠 용량은 MB(MegaByte)단위임.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "testUUID"),
             @ApiImplicitParam(name = "content", value = "업로드 콘텐츠 파일", dataType = "__file", paramType = "form", required = true),
@@ -151,19 +151,20 @@ public class ContentController {
      */
     @ApiOperation(value = "콘텐츠 목록 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
-            @ApiImplicitParam(name = "filter", value = "필터 옵션 (ALL, WAIT, MANAGED)", paramType = "query", defaultValue = "ALL")
+            @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
             @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "filter", defaultValue = "ALL")
-                    String filter, @ApiIgnore PageRequest pageable) {
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(search, filter, pageable.of());
+            @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
+            @ApiIgnore PageRequest pageable) {
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, search, shareds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 

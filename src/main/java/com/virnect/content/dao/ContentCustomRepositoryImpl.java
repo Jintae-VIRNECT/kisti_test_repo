@@ -3,6 +3,7 @@ package com.virnect.content.dao;
 import com.querydsl.jpa.JPQLQuery;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
+import com.virnect.content.domain.YesOrNo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Content> getContent(String search, String filter, List<String> userUUDList, Pageable pageable) {
+    public Page<Content> getContent(String workspaceUUID, String search, String shareds, List<String> userUUDList, Pageable pageable) {
         QContent qContent = QContent.content;
         JPQLQuery<Content> query = from(qContent);
 
@@ -36,16 +37,20 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
             query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUDList)));
         }
 
+        if (workspaceUUID != null) {
+            query = query.where(qContent.workspaceUUID.contains(workspaceUUID));
+        }
+
         // apply specific filter keyword
-        if (!filter.equals("ALL")) {
-            String[] filters = filter.split(FILTER_DELIMITER);
-//            if (filters.length > 1) {
-//                List<ContentStatus> convertStatus = Stream.of(filters).map(ContentStatus::valueOf).collect(Collectors.toList());
-//                query = query.where(qContent.status.in(convertStatus));
-//            } else {
-//                ContentStatus status = ContentStatus.valueOf(filter);
-//                query = query.where(qContent.status.eq(status));
-//            }
+        if (!shareds.equals("ALL")) {
+            String[] arrShared = shareds.split(FILTER_DELIMITER);
+            if (arrShared.length > 1) {
+                List<YesOrNo> convertShared = Stream.of(arrShared).map(YesOrNo::valueOf).collect(Collectors.toList());
+                query = query.where(qContent.shared.in(convertShared));
+            } else {
+                YesOrNo shared = YesOrNo.valueOf(shareds);
+                query = query.where(qContent.shared.eq(shared));
+            }
         }
 
         // apply pagination

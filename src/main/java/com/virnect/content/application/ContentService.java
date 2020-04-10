@@ -293,13 +293,14 @@ public class ContentService {
     /**
      * 콘텐츠 목록 조회
      *
-     * @param search   - 조회 검색어
-     * @param filter
-     * @param pageable - 페이징 요청 처리 데이터
-     * @return - 콘텐츠 정보 목록
+     * @param workspaceUUID
+     * @param search
+     * @param shareds
+     * @param pageable
+     * @return
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ContentInfoListResponse> getContentList(String search, String filter, Pageable pageable) {
+    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String search, String shareds, Pageable pageable) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
         List<String> userUUIDList = new ArrayList<>();
@@ -321,7 +322,7 @@ public class ContentService {
 
 
         // 2. 콘텐츠 조회
-        Page<Content> contentPage = this.contentRepository.getContent(search, filter, userUUIDList, pageable);
+        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, search, shareds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
@@ -401,7 +402,8 @@ public class ContentService {
     }
 
     private long byteToMegaByte(long size) {
-        return size / (1024L * 1024L);
+        long megaByte = size / (1024L * 1024L);
+        return megaByte == 0 ? 1 : megaByte;
     }
 
     /**
