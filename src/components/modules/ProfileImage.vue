@@ -56,7 +56,7 @@ export default {
 <style lang="scss" scoped>
 .profile-image {
   position: relative;
-  margin: auto;
+  margin: 0 auto;
   overflow: hidden;
   border-radius: 50%;
 }

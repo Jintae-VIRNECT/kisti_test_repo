@@ -9,6 +9,7 @@ const config = mode => {
   return {
     entry: {
       remote: './src/apps/remote/app.js',
+      extra: './src/apps/extra/app.js',
       test: './src/apps/test/app.js',
     },
     output: {

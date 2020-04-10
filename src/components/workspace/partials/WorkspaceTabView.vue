@@ -12,19 +12,31 @@
       ></search>
     </div>
     <div class="tab-view__body">
-      <slot></slot>
+      <slot v-if="!empty"></slot>
+      <show-empty
+        v-else
+        :image="emptyImage"
+        :title="emptyTitle"
+        :description="emptyDescription"
+      ></show-empty>
     </div>
   </section>
 </template>
 
 <script>
+import ShowEmpty from 'ShowEmpty'
 import Search from 'Search'
 export default {
   name: 'WorkspaceTabView',
   components: {
     Search,
+    ShowEmpty,
   },
   props: {
+    empty: {
+      type: Boolean,
+      default: false,
+    },
     title: {
       type: String,
       required: true,
@@ -36,6 +48,18 @@ export default {
     placeholder: {
       type: String,
       default: '',
+    },
+    emptyTitle: {
+      type: String,
+      default: '',
+    },
+    emptyDescription: {
+      type: String,
+      default: '',
+    },
+    emptyImage: {
+      type: String,
+      default: require('assets/image/img_remote_empty.svg'),
     },
   },
   data() {
