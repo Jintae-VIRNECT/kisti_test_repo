@@ -69,6 +69,16 @@ spring:
             - Path=/processes/v2/**
           filters:
             - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
+        - id: license-server
+          uri: lb://license-server
+          predicates:
+            - Path=/licenses**
+        - id: license-api-docs
+          uri: lb://license-server
+          predicates:
+            - Path=/licenses/v2/**
+          filters:
+            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
       globalcors:
         cors-configurations:
           '[/**]':
