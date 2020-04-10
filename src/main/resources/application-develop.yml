@@ -7,16 +7,6 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: auth-server
-          uri: lb://auth-server
-          predicates:
-            - Path=/auth/**
-        - id: auth-api-docs
-          uri: lb://auth-server
-          predicates:
-            - Path=/auth/v2/**
-          filters:
-            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
         - id: user-server
           uri: lb://user-server
           predicates:
@@ -79,6 +69,16 @@ spring:
             - Path=/licenses/v2/**
           filters:
             - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
+        - id: auth-server
+            uri: lb://auth-server
+            predicates:
+              - Path=/auth/**
+        - id: auth-api-docs
+            uri: lb://auth-server
+            predicates:
+              - Path=/auth/v2/**
+            filters:
+              - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
       globalcors:
         cors-configurations:
           '[/**]':
