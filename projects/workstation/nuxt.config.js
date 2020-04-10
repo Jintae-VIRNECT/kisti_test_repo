@@ -61,4 +61,8 @@ module.exports = {
       )
     },
   },
+  server: {
+    port: env.NUXT_PORT, // default: 3000
+    host: env.NUXT_HOST, // default: localhost
+  },
 }
