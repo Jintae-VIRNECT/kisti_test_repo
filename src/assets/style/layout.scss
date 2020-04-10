@@ -9,8 +9,10 @@
   overflow: hidden;
   background-color: $color_bg_default;
 }
-.remote-wrapper {
+.workspace-wrapper.remote-wrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   height: 100vh;
 }

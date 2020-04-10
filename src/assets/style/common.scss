@@ -42,6 +42,7 @@ body.modal-open {
     width: 100%;
     &:disabled {
       background-color: #213d62;
+      cursor: default;
     }
   }
   &.small {
