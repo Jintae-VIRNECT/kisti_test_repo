@@ -1,7 +1,6 @@
 package com.virnect.license.global.config;
 
 import com.fasterxml.classmate.TypeResolver;
-import com.virnect.license.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +10,6 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
-import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.ResponseMessage;
@@ -48,7 +46,7 @@ public class SwaggerConfiguration {
                 .license("VIRNECT INC All rights reserved.")
                 .build();
 
-        List<ResponseMessage> responseMessages = Arrays.asList(new ResponseMessageBuilder().code(400).responseModel(new ModelRef("ErrorCode")).build());
+        List<ResponseMessage> responseMessages = Arrays.asList(new ResponseMessageBuilder().code(400).message("요청 에러").build());
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(true)
@@ -60,7 +58,6 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.license.api"))
                 .paths(PathSelectors.any())
                 .build()
-                .additionalModels(typeResolver.resolve(ErrorCode.class))
                 .apiInfo(apiInfo);
     }
 }
