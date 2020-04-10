@@ -1,6 +1,8 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
+import com.virnect.content.domain.ContentType;
+import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -8,6 +10,7 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.global.util.QRcodeGenerator;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
 
 /**
  * Project: PF-ContentManagement
@@ -46,14 +50,15 @@ public class ContentController {
      * @param result        - 요청 파라미터 검증 결과
      * @return - 업로드된 콘텐츠 파일 정보
      */
-    @ApiOperation(value = "콘텐츠 파일 업로드")
+    @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환합니다.\n컨텐츠 QR코드는 컨텐츠 식별자와 동일하게 저장하며 이를 클라이언트에서 마커로 생성/인식합니다.")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "testUUID"),
             @ApiImplicitParam(name = "content", value = "업로드 콘텐츠 파일", dataType = "__file", paramType = "form", required = true),
-            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "contentType", value = "콘텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
             @ApiImplicitParam(name = "name", value = "콘텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "test_content"),
             @ApiImplicitParam(name = "metadata", value = "메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"aruco\":\"\",\"name\":\"Target(Clone)\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"Toggle\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"InputField\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"Report\",\"title\":\"항목3\"}]}],\"smartToolObjects\":[{\"id\":\"3cc2b7ab-5006-4d45-bccc-9d971bc52875\",\"jobId\":-1,\"normalTorque\":0,\"items\":[{\"id\":null,\"batchCount\":1},{\"id\":null,\"batchCount\":2},{\"id\":null,\"batchCount\":3},{\"id\":null,\"batchCount\":4}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]}]}]}}"),
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
-            @ApiImplicitParam(name = "aruco", value = "aruco 값", dataType = "int", paramType = "form", required = true, defaultValue = "0")
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR"),
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(@ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
@@ -75,7 +80,7 @@ public class ContentController {
      */
     @ApiOperation(value = "콘텐츠 다운로드")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "aruco", value = "aruco값.Ares", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "targetCode", value = "targetCode.Ares", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query")
     })
     @GetMapping("/upload/{fileName}")
@@ -106,7 +111,7 @@ public class ContentController {
             @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form"),
             @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form"),
     })
-    @PostMapping("/{contentUUID}/update")
+    @PostMapping("/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(@ModelAttribute @Valid ContentUpdateRequest updateRequestDto, @PathVariable("contentUUID") String contentUUID, BindingResult result) {
         if (result.hasErrors() || contentUUID.isEmpty()) {
             log.info("[ContentUpdateRequest] => [{}]", updateRequestDto.toString());
@@ -147,6 +152,7 @@ public class ContentController {
      */
     @ApiOperation(value = "콘텐츠 목록 조회")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form"),
             @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
@@ -200,12 +206,27 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
-    @GetMapping("/{contentUUID}/info")
+    @GetMapping("/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> getContentInfo(@PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoResponse> responseMessage = this.contentService.getContentInfo(contentUUID);
         return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "컨텐츠 상세 정보 수정")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(value = "컨텐츠 종류", name = "contentType", required = false, paramType = "qeury", dataType = "string", example = "uuid"),
+            @ApiImplicitParam(value = "컨텐츠 공유(YES, NO)", name = "shared", required = false, paramType = "qeury", dataType = "object", example = "YES")
+    })
+    @PutMapping("/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "contentType") ContentType contentType, @RequestParam(value = "shared") YesOrNo shared) {
+        if (contentUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, contentType, shared);
+        return ResponseEntity.ok(response);
     }
 }

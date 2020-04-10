@@ -15,7 +15,7 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
  * DESCRIPTION:
  */
 @Configuration
-@EnableFeignClients(basePackages = {"com.virnect.content.application", "com.virnect.content.domain.process.application"})
+@EnableFeignClients(basePackages = {"com.virnect.content.application"})
 public class FeignConfiguration {
     @Bean
     Logger.Level feignLoggerLevel() {

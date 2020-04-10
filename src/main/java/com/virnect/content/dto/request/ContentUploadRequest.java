@@ -1,12 +1,14 @@
 package com.virnect.content.dto.request;
 
+import com.virnect.content.domain.ContentType;
+import com.virnect.content.domain.TargetType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Project: PF-ContentManagement
@@ -19,12 +21,15 @@ import javax.validation.constraints.PositiveOrZero;
 
 @Getter
 @Setter
+@ToString
 public class ContentUploadRequest {
+    @NotBlank
+    private String workspaceUUID;
+
     @NotNull
     private MultipartFile content;
 
-    @NotBlank
-    private String contentUUID;
+    private ContentType type;
 
     @NotBlank
     private String name;
@@ -36,18 +41,5 @@ public class ContentUploadRequest {
     private String userUUID;
 
     @NotNull
-    @PositiveOrZero
-    private int aruco;
-
-    @Override
-    public String toString() {
-        return "ContentUploadRequest{" +
-                "content=" + content.getOriginalFilename() +
-                ", contentUUID='" + contentUUID + '\'' +
-                ", name='" + name + '\'' +
-                ", metadata='" + metadata + '\'' +
-                ", userUUID='" + userUUID + '\'' +
-                ", aruco=" + aruco +
-                '}';
-    }
+    private TargetType targetType;
 }

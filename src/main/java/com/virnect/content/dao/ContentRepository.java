@@ -21,4 +21,8 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     Long deleteByUuid(String contentUUID);
 
     Page<Content> findByNameIsContainingOrUserUUIDIsIn(String contentName, List<String> userUUIDList, Pageable pageable);
+
+    Page<Content> findByWorkspaceUUIDAndNameIsContainingOrUserUUIDIsIn(String workspaceUUID, String contentName, List<String> userUUIDList, Pageable pageable);
+
+    Page<Content> findByWorkspaceUUID(String workspaceUUID, Pageable pageable);
 }

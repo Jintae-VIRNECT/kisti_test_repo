@@ -2,7 +2,7 @@ spring:
   application:
     name: content-server
   datasource:
-    url: jdbc:mysql://localhost:4336/contents
+    url: jdbc:mysql://192.168.6.3:4336/contents
     username: virnect-content
     password: virnect1234
   jpa:
@@ -10,9 +10,6 @@ spring:
       ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-      properties:
-        hibernate:
-          format_sql: true
   servlet:
     multipart:
       max-file-size: 300MB
@@ -20,8 +17,7 @@ spring:
 
 logging:
   level:
-    com.virnect.smic.domain.content.application: DEBUG
-    com.virnect.smic.domain.process.application: DEBUG
+    com.virnect: DEBUG
     org.hibernate.type.descriptor.sql: trace
 
 #eureka:
