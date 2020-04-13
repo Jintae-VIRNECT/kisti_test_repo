@@ -9,6 +9,7 @@ const url = {
 	user: {
 		login: '/users/login',
 		register: '/users/register',
+		registerDetail: '/users/register/detail',
 		emailAuth: '/users/email',
 		userInfo: '/users/{userID}',
 		invite: '/users/invite',

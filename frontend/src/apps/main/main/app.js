@@ -20,6 +20,7 @@ import 'element/radio.css'
 import 'element/date-picker.css'
 import 'element/message.css'
 import 'element/message-box.css'
+import 'element/dialog.css'
 
 import 'assets/css/common.scss'
 

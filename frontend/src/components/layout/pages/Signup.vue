@@ -302,9 +302,9 @@ export default {
 		if (this.loggedIn || !this.policyAgree) {
 			this.$router.push('/')
 		}
-		if (this.marketInfoReceive)
-			return (this.signup.marketInfoReceive = 'active')
-		else return (this.signup.marketInfoReceive = 'inactive')
+		if (this.$props.marketInfoReceive)
+			return (this.signup.marketInfoReceive = 'ACCEPT')
+		else return (this.signup.marketInfoReceive = 'REJECT')
 	},
 	methods: {
 		checkSignup() {
@@ -332,22 +332,10 @@ export default {
 			)
 			console.log(this.signup)
 			if (this.signup) {
-				this.$store.dispatch('auth/signup', this.signup).then(
-					data => {
-						if (data) {
-							this.alertMessage('가입 완료', 'ㅁㄴㅇ.', 'success')
-						}
-					},
-					error => {
-						if (error) {
-							this.alertMessage(
-								'기타 오류',
-								`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
-								'error',
-							)
-						}
-					},
-				)
+				this.$router.push({
+					name: 'user',
+					params: { signup: this.signup },
+				})
 			}
 		},
 		async sendEmail() {

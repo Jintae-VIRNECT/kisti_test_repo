@@ -18,15 +18,7 @@ class UserService {
 		})
 	}
 
-	// signup(user) {
-	// 	return axios.post(GATEWAY_API_URL + API.auth.signup, {
-	// 		username: user.username,
-	// 		email: user.email,
-	// 		password: user.password,
-	// 	})
-	// }
-
-	async signup(user = {}) {
+	async register(user = {}) {
 		try {
 			const response = await axios.post(GATEWAY_API_URL + API.user.register, {
 				email: user.email,
@@ -37,8 +29,25 @@ class UserService {
 				marketInfoReceive: user.marketInfoReceive,
 				joinInfo: user.joinInfo,
 				serviceInfo: user.serviceInfo,
-				sessionCode: user.session,
+				sessionCode: user.sessionCode,
 			})
+			return response.data
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
+	async userDetail(user = {}) {
+		try {
+			const response = await axios.post(
+				GATEWAY_API_URL + API.user.registerDetail,
+				user,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				},
+			)
 			console.log(user)
 			console.log('++++++++++++++')
 			console.log(response.data)

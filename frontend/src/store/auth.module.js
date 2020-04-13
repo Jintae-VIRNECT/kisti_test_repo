@@ -11,11 +11,15 @@ export const auth = {
 	state: {
 		initial: initialState,
 		signup: {},
+		userDetail: {},
 		verification: {},
 	},
 	getters: {
 		signup(state) {
 			return state.signup
+		},
+		userDetail(state) {
+			return state.userDetail
 		},
 		verification(state) {
 			return state.verification
@@ -38,21 +42,18 @@ export const auth = {
 			AuthService.logout()
 			commit('logout')
 		},
-		// signup({ commit }, user) {
-		// 	return AuthService.signup(user).then(
-		// 		response => {
-		// 			commit('registerSuccess')
-		// 			return Promise.resolve(response.data)
-		// 		},
-		// 		error => {
-		// 			commit('registerFailure')
-		// 			return Promise.reject(error.response.data)
-		// 		},
-		// 	)
-		// },
-		async signup(context, param) {
-			const res = await UserService.signup(param)
+		async register(context, param) {
+			const res = await UserService.register(param)
 			context.commit('signupResponse', res.data)
+			if (res.code === 200) {
+				return res.data
+			} else {
+				throw new Error(`${res.code}: ${res.message}`)
+			}
+		},
+		async userDetail(context, param) {
+			const res = await UserService.userDetail(param)
+			context.commit('userDetailResponse', res.data)
 			if (res.code === 200) {
 				return res.data
 			} else {
@@ -82,14 +83,11 @@ export const auth = {
 			state.initial.status = {}
 			state.initial.user = null
 		},
-		registerSuccess(state) {
-			state.initial.status = {}
-		},
-		registerFailure(state) {
-			state.initial.status = {}
-		},
 		signupResponse(state, result) {
-			state.verification = result
+			state.signup = result
+		},
+		userDetailResponse(state, result) {
+			state.userDetail = result
 		},
 		verificationResponse(state, result) {
 			state.verification = result

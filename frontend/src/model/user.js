@@ -1,10 +1,9 @@
 export default class User {
-	constructor(profile, name, countryCode, phoneNumber, recoveryEmail, birth) {
+	constructor(profile, nickname, mobile, recoveryEmail, uuid) {
 		this.profile = profile
-		this.name = name
-		this.countryCode = countryCode
-		this.phoneNumber = phoneNumber
+		this.nickname = nickname
+		this.mobile = mobile
 		this.recoveryEmail = recoveryEmail
-		this.birth = birth
+		this.uuid = uuid
 	}
 }

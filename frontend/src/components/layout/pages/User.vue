@@ -10,23 +10,13 @@
 
 				<p class="input-title">프로필 이미지</p>
 				<article class="profile-image">
-					<div class="image-holder">
-						<!-- <input type="file" id="profileImage" @change="uploadImage"> -->
-						<label for="profileImage">
-							<i>
-								<img
-									v-if="user.profile"
-									:src="user.profile"
-									class="avatar"
-									@click="profilePopup()"
-								/>
-								<img
-									v-else
-									src="~assets/images/common/ic-user-profile@2x.png"
-									@click="profilePopup()"
-								/>
-							</i>
-						</label>
+					<div class="image-holder" @click="profilePopup = true">
+						<!-- <img v-if="file" :src="file" /> -->
+						<div
+							class="image"
+							v-if="thumbnail"
+							:style="`background-image: url(${thumbnail})`"
+						></div>
 						<i class="camera-ico"
 							><img src="~assets/images/common/ic-camera-alt@2x.png"
 						/></i>
@@ -36,15 +26,55 @@
 						<p>등록하신 프로필 이미지는 다른 사용자들에게 보여집니다.</p>
 					</div>
 				</article>
+				<el-dialog
+					title="프로필 이미지 설정"
+					:visible.sync="profilePopup"
+					width="30%"
+					:before-close="handleClose"
+				>
+					<div>
+						<p class="contents">
+							프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다.
+						</p>
+						<div class="image-holder pop-profile" @click="profilePopup = true">
+							<input type="file" id="profileImage" @change="uploadImage" />
+							<label for="profileImage" class="avatar">
+								<!-- <img v-if="file" :src="file" /> -->
+								<div
+									class="image"
+									v-if="thumbnail"
+									:style="`background-image: url(${thumbnail})`"
+								></div>
+							</label>
+						</div>
+						<div class="el-upload__tip">
+							최대 5Mb의 Jpg, Png 파일 업로드 가능
+						</div>
+					</div>
+					<span slot="footer" class="dialog-footer">
+						<el-button type="info" @click="uploadBtn" class="left-btn"
+							>이미지 업로드</el-button
+						>
+						<el-button
+							@click="
+								file = null
+								user.profile = null
+							"
+							>삭제</el-button
+						>
+						<el-button type="primary" @click="profileDone" :disabled="disabled"
+							>이미지 등록</el-button
+						>
+					</span>
+				</el-dialog>
 
 				<p class="input-title">닉네임</p>
 				<el-input
 					placeholder="장선영"
-					v-model="user.name"
+					v-model="user.nickname"
 					type="text"
-					name="name"
+					name="nickname"
 					clearable
-					v-validate="'required|min:3|max:20'"
 				>
 				</el-input>
 				<p class="restriction-text">
@@ -77,10 +107,9 @@
 				<el-input
 					class="phonenumber-input"
 					placeholder="전화번호를 입력해 주세요"
-					v-model="user.phoneNumber"
+					v-model="user.mobile"
 					clearable
-					name="phoneNumber"
-					v-validate="'required'"
+					name="mobile"
 				></el-input>
 
 				<p class="input-title">복구 이메일 주소</p>
@@ -90,133 +119,46 @@
 					type="email"
 					name="recoveryEmail"
 					clearable
-					v-validate="'required|email|max:50'"
+					v-validate="'email|max:50'"
 				>
 				</el-input>
 
 				<el-button
 					class="next-btn block-btn"
-					type="primary"
-					@click="handleRegister()"
+					type="info"
+					@click="handleRegisterDetail()"
 					>확인</el-button
 				>
-				<el-button class="block-btn">나중에 하기</el-button>
+				<el-button class="block-btn" @click="later()">나중에 하기</el-button>
 			</el-col>
 		</el-row>
 	</div>
-	<!-- <div class="row">
-    <div class="card card-container">
-      <form id="form" name="form" @submit.prevent="handleRegister">
-        <div v-if="!successful">
-          <div class="form-group">
-            <img
-              id="thumbnail"
-              v-if="!!form.image"
-              :src="register.profile"
-              class="profile-img-card"
-            />
-            <div class="form-inline">
-              <label for="profile" class="fom">프로필</label>
-              <input
-                id="profile"
-                type="file"
-                class="form-control-file"
-                name="profile"
-                accept="image/gif,image/jpeg,image/png"
-                @change="uploadImage($event)"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneNumber">전화번호</label>
-            <input
-              id="phoneNumber"
-              type="tel"
-              class="form-control"
-              name="phoneNumber"
-              v-model="register.phoneNumber"
-            >
-          </div>
-          <div class="form-group">
-            <label for="recoveryEmail">복구 이메일</label>
-            <input
-              id="recoveryEmail"
-              type="email"
-              class="form-control"
-              name="recoveryEmail"
-              v-model="register.recoveryEmail"
-            >
-          </div>
-          <div class="form-group">
-            <label for="birth">생년월일</label>
-            <input
-              id="birth"
-              class="form-control"
-              type="text"
-              name="birth"
-              v-model="register.birth"
-            >
-          </div>
-
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">회원가입</button>
-            <div class="d-flex justify-content-center links">
-              <a href="/" class="ml-2">로그인</a>
-            </div>
-          </div>
-        </div>
-      </form>
-      <div
-        class="alert"
-        :class="successful ? 'alert-success' : 'alert-danger'"
-        v-if="message">{{message}}
-      </div>
-    </div>
-    <div>
-      <b-modal id="email-verify" centered title="이메일 인증">
-        <div>
-          <b-form-input v-model="verificationCode" placeholder="이메일로 전송된 인증코드 6자리를 입력하세요"></b-form-input>
-          <div class="mt-2">이메일로 전송된 인증코드 6자리를 입력하세요</div>
-        </div>
-      </b-modal>
-    </div> -->
-	<!--    &lt;!&ndash; #2 : Modal Window &ndash;&gt;-->
-	<!--    <div class="modal" v-if="isShow">-->
-	<!--      <div class="modal-body">-->
-	<!--        <div class="form-control">-->
-	<!--          <label for="verificationCode">인증코드</label>-->
-	<!--          <input-->
-	<!--            id="verificationCode"-->
-	<!--            name="verificationCode"-->
-	<!--            type="number"-->
-	<!--            maxlength="6"-->
-	<!--          >-->
-	<!--        </div>-->
-	<!--      </div>-->
-	<!--      <button @click="checkVerificationCode()" type="button">-->
-	<!--        확인-->
-	<!--      </button>-->
-	<!--    </div>-->
-	<!-- </div> -->
 </template>
 
 <script>
 import User from 'model/user'
-import AuthService from 'service/auth-service'
+import mixin from 'mixins/mixin'
 
 export default {
 	name: 'user',
+	mixins: [mixin],
 	computed: {
 		loggedIn() {
-			return this.$store.state.auth.status.loggedIn
+			return this.$store.state.auth.initial.status.loggedIn
 		},
+	},
+	props: {
+		signup: Object,
 	},
 	data() {
 		return {
+			profilePopup: false,
 			user: {
-				profile: '',
-				name: '',
-				phoneNumber: '',
+				profile: null,
+				nickname: '',
+				mobile: '',
 				recoveryEmail: '',
+				uuid: '',
 			},
 			countryCodeLists: [
 				{
@@ -225,7 +167,11 @@ export default {
 				},
 				{
 					value: 2,
-					label: '+82',
+					label: '+1',
+				},
+				{
+					value: 3,
+					label: '+81',
 				},
 			],
 			submitted: false,
@@ -234,30 +180,140 @@ export default {
 			isValidEmail: false,
 			isShow: false,
 			message: '',
-			form: {
-				image: '',
-			},
+			formData: new FormData(),
+			file: null,
+			thumbnail: null,
 		}
 	},
+	computed: {
+		disabled() {
+			return this.file === this.user.profile
+		},
+	},
 	mounted() {
-		if (this.loggedIn) {
+		if (this.loggedIn || !this.$props.signup) {
 			this.$router.push('/')
 		}
 	},
 	methods: {
-		profilePopup() {
-			this.$alert(
-				'프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다. ',
-				'프로필 이미지 설정',
-				{
-					confirmButtonText: '확인',
-					cancelButtonText: 'Cancel',
+		async handleRegisterDetail() {
+			new User(
+				this.user.profile,
+				this.user.nickname,
+				this.user.mobile,
+				this.user.recoveryEmail,
+				this.user.uuid,
+			)
+			if (this.user) {
+				let registerData = null
+
+				// 회원가입
+				try {
+					registerData = await this.$store.dispatch(
+						'auth/register',
+						this.$props.signup,
+					)
+				} catch (error) {
+					if (error) {
+						this.alertMessage(
+							'기타 오류',
+							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+							'error',
+						)
+					}
+					return false
+				}
+				if (!registerData.uuid) return false
+
+				// 상세정보등록
+				this.user.uuid = registerData.uuid
+				// this.user.uuid = '4d2fce6e509452d6a1e675a50e16e8f0'
+				this.formData.append('profile', this.user.profile)
+				this.formData.append('nickname', this.user.nickname)
+				this.formData.append('mobile', this.user.mobile)
+				this.formData.append('recoveryEmail', this.user.recoveryEmail)
+				this.formData.append('uuid', this.user.uuid)
+				try {
+					const detailData = await this.$store.dispatch(
+						'auth/userDetail',
+						this.formData,
+					)
+					if (detailData) {
+						this.$router.push({
+							name: 'complete',
+						})
+					}
+				} catch (error) {
+					if (error) {
+						this.alertMessage(
+							'기타 오류',
+							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+							'error',
+						)
+					}
+				}
+			}
+		},
+		later() {
+			// if (this.$props.signup) {
+			this.$store.dispatch('auth/register', this.$props.signup).then(
+				data => {
+					if (data) {
+						// console.log(data.uuid)
+						this.$router.push({
+							name: 'complete',
+						})
+						// this.$router.push({
+						// 	name: 'user',
+						// 	params: { signup: this.signup, uuid: data.uuid },
+						// })
+					}
+				},
+				error => {
+					if (error) {
+						this.alertMessage(
+							'기타 오류',
+							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+							'error',
+						)
+					}
 				},
 			)
+			// }
+		},
+		handleClose(done) {
+			done()
+		},
+		uploadImage(event) {
+			// console.log(event)
+			const files = event.target.files
+			// console.log(files[files.length - 1])
+			this.formData.delete('profile') // profile는 컨텐츠 내의 이미지 리소스
+			this.validImage(event)
+				.then(imageData => {
+					console.log(files[files.length - 1])
+					this.file = files[files.length - 1]
+					this.thumbnail = imageData
+				})
+				.catch(error => {
+					console.log(error)
+				})
+		},
+		uploadBtn() {
+			console.log('asdf')
+			this.$el.querySelector('#profileImage').dispatchEvent(new Event('click'))
+		},
+		profileDone() {
+			this.profilePopup = false
+			this.user.profile = this.file
+		},
+		deleteImage() {
+			this.$refs.upload.clearFiles()
+			this.user.profile = null
+			this.file = null
 		},
 		validImage(event) {
 			const files = event.target.files
-			console.log(files)
 			return new Promise((resolve, reject) => {
 				if (files.length > 0) {
 					if (
@@ -272,7 +328,7 @@ export default {
 						reject('This image size is unavailable.')
 						return
 					}
-					this.form.image = null
+					this.file = null
 
 					const oReader = new FileReader()
 					oReader.onload = e => {
@@ -292,25 +348,99 @@ export default {
 				}
 			})
 		},
-		uploadImage(event) {
-			const files = event.target.files
-			this.validImage(event)
-				.then(imageData => {
-					console.log(imageData)
-					this.user.profile = files[0]
-					this.user.profile = imageData
-					this.form.image = imageData
-				})
-				.catch(error => {
-					console.log(error)
-				})
-		},
 	},
 }
 </script>
 
 <style lang="scss" scoped>
+.el-dialog {
+	border: solid 1px #e6e9ee;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px 0 rgba(8, 23, 48, 0.06),
+		0 2px 4px 0 rgba(8, 23, 48, 0.1);
+
+	.image-holder {
+		float: none;
+		width: 160px;
+		height: 160px;
+		margin: 44px auto 16px;
+		img {
+			width: 100%;
+			height: 100%;
+			-webkit-mask: url('~assets/images/common/ic-bg.svg') no-repeat;
+			-webkit-mask-size: 100%;
+			mask: url('~assets/images/common/ic-bg.svg') no-repeat;
+			mask-size: 100%;
+		}
+	}
+	&__wrapper {
+		text-align: left;
+	}
+	input[type='file'] {
+		position: absolute;
+		top: 0;
+		left: -9999px;
+	}
+	label {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}
+	.el-button {
+		height: 36px;
+		font-weight: normal;
+		font-size: 13px;
+		&.left-btn {
+			float: left;
+		}
+	}
+}
 .el-button.next-btn {
 	margin-top: 60px;
+}
+.el-upload__tip {
+	color: #566173;
+	font-size: 13px;
+	text-align: center;
+}
+
+.image-holder {
+	position: relative;
+	float: left;
+	width: 80px;
+	height: 80px;
+	margin: 20px 16px 0;
+	text-align: center;
+	background: url('~assets/images/common/ic-bg.svg') no-repeat;
+	background-size: 100%;
+	cursor: pointer;
+	&:before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: block;
+		width: 80%;
+		height: 80%;
+		margin: 10%;
+		background: url('~assets/images/common/ic-user-profile.svg') no-repeat;
+		background-size: 100%;
+		content: '';
+	}
+	.image {
+		width: 100%;
+		height: 100%;
+		background-position: center;
+		background-size: cover;
+		-webkit-mask: url('~assets/images/common/ic-bg.svg') no-repeat;
+		-webkit-mask-size: 100%;
+		mask: url('~assets/images/common/ic-bg.svg') no-repeat;
+		mask-size: 100%;
+	}
+	// .avatar {
+	// 	max-width: 80%;
+	// }
 }
 </style>

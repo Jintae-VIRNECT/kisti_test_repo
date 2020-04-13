@@ -84,7 +84,7 @@ class AuthService {
 			// location.reload(true);
 
 			const error = data.message
-			alert(data)
+			// alert(data)
 			// console.log(Promise.reject(error))
 			return Promise.reject(error)
 		}
