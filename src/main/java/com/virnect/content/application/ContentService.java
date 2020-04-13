@@ -74,7 +74,7 @@ public class ContentService {
             Content content = Content.builder()
                     .name(uploadRequest.getName())
                     .metadata(uploadRequest.getMetadata())
-                    .size(byteToMegaByte(uploadRequest.getContent().getSize()))
+                    .size(uploadRequest.getContent().getSize())
                     .userUUID(uploadRequest.getUserUUID())
                     .path(fileUploadPath)
                     .aruco(uploadRequest.getAruco())

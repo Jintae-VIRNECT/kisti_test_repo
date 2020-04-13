@@ -17,7 +17,7 @@ public class ContentUploadResponse {
     private String name;
     @ApiModelProperty(value= "컨텐츠 저장 경로", notes = "컨텐츠가 저장된 경로(url)", position = 2, example = "http://localhost:8083/contents/upload/1.Ares")
     private String path;
-    @ApiModelProperty(value= "컨텐츠 파일 크기", notes = "컨텐츠 파일 크기로 MB 입니다.", dataType = "int", position = 3, example = "10")
+    @ApiModelProperty(value= "컨텐츠 파일 크기", notes = "컨텐츠 파일 크기로 bytes 입니다.", dataType = "int", position = 3, example = "10")
     private int size;
     @ApiModelProperty(value= "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 4, example = "2020-02-15T16:32:13.305")
     private LocalDateTime createdDate;
