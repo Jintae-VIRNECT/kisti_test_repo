@@ -91,7 +91,7 @@ public class ContentService {
                     .userUUID(uploadRequest.getUserUUID())
                     .shared(INIT_IS_SHARED)
                     .converted(INIT_IS_CONVERTED)
-                    .size(byteToMegaByte(uploadRequest.getContent().getSize()))
+                    .size(uploadRequest.getContent().getSize())
                     .path(fileUploadPath)
                     .build();
 
