@@ -154,17 +154,15 @@ public class WorkspaceService {
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
 
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-                WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(object.getUuid(), workspace);
-                //조회하는 사람이 현재 소속한 workspace 내에서 검색한다.
-                MemberInfoDTO memberInfo = new MemberInfoDTO();
-                if (workspaceUser != null) {
-                    memberInfo = modelMapper.map(object, MemberInfoDTO.class);
-                    workspaceUserList.add(workspaceUser);
-                    memberInfo.setRole(getWorkspaceUserRole(workspaceId, workspaceUser.getUserId()).getRole());
-                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
-                    memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                if (getWorkspaceUserRole(workspaceId, memberInfo.getUuid()) != null) {
+                    memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
                 }
+                workspaceUserList.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfo.getUuid(), workspace));
+                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+
                 return memberInfo;
             }).collect(Collectors.toList());
 
@@ -201,20 +199,22 @@ public class WorkspaceService {
             //필터값이 없으면 페이징 처리한 값을 리턴 받아 그대로 리턴한다.
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, true, pageable).getData();
 
-            List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-                WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(object.getUuid(), workspace);
-                MemberInfoDTO memberInfo = new MemberInfoDTO();
+            //조회 대상의 워크스페이스에 소속된 유저들만 검색 대상으로 지정.
+            List<MemberInfoDTO> resultMemberList = new ArrayList<>();
+
+            userInfoListResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+                WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(userInfoRestResponse.getUuid(), workspace);
                 if (workspaceUser != null) {
-                    memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                    MemberInfoDTO memberInfo = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
                     memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
-                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                    resultMemberList.add(memberInfo);
                 }
-                return memberInfo;
-            }).collect(Collectors.toList());
+            });
 
-            resultMemberListResponse = memberInfoList;
+            resultMemberListResponse = resultMemberList;
             pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
             pageMetadataResponse.setTotalPage(userInfoListResponse.getPageMeta().getTotalPage());
             pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
