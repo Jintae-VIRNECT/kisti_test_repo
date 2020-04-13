@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import Axios from 'axios'
 import API from './url'
 
@@ -22,8 +23,16 @@ class AuthService {
 			.then(this.handleResponse)
 			.then(response => {
 				const { data } = response
-				console.log(data)
 				if (data.accessToken) {
+					const cookieOption = {
+						expires: data.expireIn / 3600000,
+						domain:
+							location.hostname.split('.').length === 3
+								? location.hostname.replace(/.*?\./, '')
+								: location.hostname,
+					}
+					Cookies.set('accessToken', data.accessToken, cookieOption)
+					Cookies.set('refreshToken', data.refreshToken, cookieOption)
 					localStorage.setItem('user', JSON.stringify(data))
 				}
 				return data

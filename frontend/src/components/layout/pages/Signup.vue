@@ -302,7 +302,7 @@ export default {
 		if (this.loggedIn || !this.policyAgree) {
 			this.$router.push('/')
 		}
-		if (this.$props.marketInfoReceive)
+		if (this.marketInfoReceive)
 			return (this.signup.marketInfoReceive = 'ACCEPT')
 		else return (this.signup.marketInfoReceive = 'REJECT')
 	},
