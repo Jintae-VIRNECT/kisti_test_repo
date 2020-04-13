@@ -17,7 +17,11 @@
         drag
       >
         <div class="avatar">
-          <img v-if="file" :src="file" />
+          <div
+            class="image"
+            v-if="file"
+            :style="`background-image: url('${file}')`"
+          />
         </div>
         <div class="el-upload__tip" slot="tip">
           {{ $t('profile.imageChangeModal.caution') }}
@@ -83,7 +87,9 @@ export default {
     async submit() {
       const { uploadFiles } = this.$refs.upload
       const form = {
-        profile: uploadFiles[uploadFiles.length - 1].raw,
+        profile: uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null,
       }
       try {
         await profileService.updateMyImage(form)

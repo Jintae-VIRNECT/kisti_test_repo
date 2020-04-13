@@ -4,7 +4,13 @@
       <el-card class="virnect-login-form">
         <div>
           <p v-html="$t('certification.desc')"></p>
-          <div class="avatar"></div>
+          <div class="avatar">
+            <div
+              class="image"
+              v-if="me.image"
+              :style="`background-image: url('${me.image}')`"
+            />
+          </div>
           <span class="name">{{ me.lastName }} {{ me.firstName }}</span>
           <span class="email">{{ me.email }}</span>
           <el-form ref="form" :model="form" @submit.native.prevent="submit">
@@ -42,15 +48,12 @@ import profileService from '@/services/profile'
 export default {
   layout: 'noSidebar',
   data() {
+    const profile = profileService.getMyProfile()
     return {
-      me: {
-        lastName: 'SMIC',
-        firstName: 'MASTER',
-        email: 'smic1',
-      },
+      me: profile,
       form: {
-        uuid: '498b1839dc29ed7bb2ee90ad6985c608',
-        email: 'smic1',
+        uuid: profile.uuid,
+        email: profile.email,
         password: null,
       },
     }

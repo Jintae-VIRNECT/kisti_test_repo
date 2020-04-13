@@ -17,11 +17,23 @@
 .el-button--info {
   font-weight: 300;
   background: $color-info;
+  &:hover {
+    background: $color-info-hover;
+  }
+  &:active {
+    background: $color-info-active;
+  }
 }
 .el-button--primary {
   color: #fff;
   font-weight: 300;
   background: $color-primary;
+  &:hover {
+    background: $color-primary-hover;
+  }
+  &:active {
+    background: $color-primary-active;
+  }
 }
 
 .el-button.is-disabled,

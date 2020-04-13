@@ -47,6 +47,9 @@
   .el-input__suffix {
     top: -1px;
   }
+  input[type="text"] ~ .el-input__suffix .el-input__clear {
+    color: #1468e2;
+  }
 }
 
 .el-input__inner {
@@ -64,6 +67,7 @@
   }
   &::placeholder {
     color: #c7cfda;
+    font-weight: normal;
   }
 }
 

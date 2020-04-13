@@ -33,7 +33,7 @@
                 class="virnect-login-form"
                 ref="form"
                 :model="form"
-                @submit.native.prevent="submit"
+                @submit.native.prevent="addCouponCode"
               >
                 <el-form-item :label="$t('coupon.addCouponCode.label')">
                   <el-input
@@ -41,7 +41,11 @@
                     :placeholder="$t('coupon.addCouponCode.placeholder')"
                   />
                 </el-form-item>
-                <el-button type="primary" :disabled="!form.newCouponCode">
+                <el-button
+                  type="primary"
+                  @click="addCouponCode"
+                  :disabled="!form.newCouponCode"
+                >
                   {{ $t('coupon.addCouponCode.submit') }}
                 </el-button>
               </el-form>
@@ -74,6 +78,7 @@
 </template>
 
 <script>
+import couponService from '@/services/coupon'
 import CouponList from '@/components/coupon/CouponList'
 
 export default {
@@ -88,7 +93,42 @@ export default {
     }
   },
   methods: {
-    couponSelect() {},
+    /**
+     * 쿠폰 등록
+     */
+    async addCouponCode() {
+      try {
+        await couponService.addCouponCode(this.form)
+      } catch (e) {
+        console.error(e)
+        this.$notify.error({
+          message: this.$t('coupon.message.registerFail'),
+          position: 'bottom-left',
+        })
+      }
+    },
+    /**
+     * 쿠폰 사용
+     */
+    couponSelect(column) {
+      this.$alert(
+        this.$t('coupon.useModal.desc'),
+        this.$t('coupon.useModal.title'),
+        {
+          confirmButtonText: this.$t('coupon.useModal.submit'),
+        },
+      ).then(async () => {
+        try {
+          await couponService.useCoupon(column)
+        } catch (e) {
+          console.error(e)
+          this.$notify.error({
+            message: this.$t('coupon.message.useExpired'),
+            position: 'bottom-left',
+          })
+        }
+      })
+    },
   },
 }
 </script>
@@ -146,6 +186,10 @@ export default {
         word-break: break-all;
       }
     }
+  }
+
+  .coupon-list tr {
+    cursor: pointer;
   }
 }
 </style>

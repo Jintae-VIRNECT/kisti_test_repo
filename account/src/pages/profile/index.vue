@@ -26,7 +26,11 @@
               </span>
             </div>
             <div class="avatar" @click="visible.imageChangeModal = true">
-              <img :src="me.image" />
+              <div
+                class="image"
+                v-if="me.image"
+                :style="`background-image: url('${me.image}')`"
+              />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
