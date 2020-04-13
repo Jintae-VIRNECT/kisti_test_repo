@@ -29,7 +29,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t pf-contentsmanagement:develop .'
+              sh 'docker build -t pf-contentsmanagement .'
             }
 
           }
@@ -41,7 +41,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-contentsmanagement:staging .'
+              sh 'docker build -t pf-contentsmanagement .'
             }
 
           }
@@ -53,7 +53,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t $registry_server/pf-contentsmanagement .'
+              sh 'docker build -t pf-contentsmanagement .'
             }
 
           }
@@ -68,13 +68,13 @@ pipeline {
       }
     }
 
-    stage('Pre-Deploy') {
+   stage('Tunneling') {
       steps {
-        echo 'Pre-Deploy Stage'
-        catchError() {
-          sh 'docker stop pf-contentsmanagement && docker rm pf-contentsmanagement || true'
+        echo 'SSH Check'
+         catchError() {
+          sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
+          sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
         }
-
       }
     }
 
@@ -92,8 +92,9 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=develop -v /data/content/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement pf-contentsmanagement:develop'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              sh 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+              sh 'docker run -p 8078:8078 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement pf-contentsmanagement'
+              sh 'docker image prune -f'
             }
 
           }
@@ -103,16 +104,43 @@ pipeline {
           when {
             branch 'staging'
           }          
-          
-
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=staging -v /data/content/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement:staging'
-              sh 'docker push $registry_server/pf-contentsmanagement:staging'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker pull \\${registry_server}/pf-contentsmanagement:staging", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker stop pf-contentsmanagement && docker rm pf-contentsmanagement || true", failOnError: true)
-              sshCommand(remote: [allowAnyHosts: true, name: "${qa_server_name}", host:"${qa_server}", user:"${qa_server_user}", password:"${qa_server_password}"], command: "docker run -p 8078:8078 -d --restart=always --name=pf-contentsmanagement \\${registry_server}/pf-contentsmanagement:staging", failOnError: true)
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-contentsmanagement").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
@@ -122,24 +150,56 @@ pipeline {
           when {
             branch 'master'
           }
+
           steps {
             catchError() {
-              sh 'docker run -p 8078:8078 -d -e SPRING_PROFILES_ACTIVE=production -v /data/content/contentsmanagement:/usr/app/upload --restart=always --name=pf-contentsmanagement $registry_server/pf-contentsmanagement'
-              sh 'docker push $registry_server/pf-contentsmanagement'
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-contentsmanagement").push("$GIT_COMMIT")
+                }
+              }
+
+              script {
+                sshPublisher(
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -f'
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }
+
             }
 
           }
         }
+  }
+}
+ 
 
-      }
-    }
-
-    stage('Notify') {
-      steps {
+  }
+  post {
+      always {
         emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       }
     }
-
-  }
 }
