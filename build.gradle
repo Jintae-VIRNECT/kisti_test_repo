@@ -73,6 +73,9 @@ dependencies {
 
     //Eureka Client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    //Spring data Envers
+    implementation 'org.springframework.data:spring-data-envers'
 }
 
 test {

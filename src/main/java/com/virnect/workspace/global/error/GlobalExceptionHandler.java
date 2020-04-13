@@ -1,6 +1,6 @@
 package com.virnect.workspace.global.error;
 
-import com.virnect.workspace.exception.BusinessException;
+import com.virnect.workspace.exception.WorkspaceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +26,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<ErrorResponseMessage> handleBusinessException(final BusinessException e) {
-        log.error("handleBusinessException", e);
+    @ExceptionHandler(WorkspaceException.class)
+    protected ResponseEntity<ErrorResponseMessage> handleWorkspaceException(final WorkspaceException e) {
+        log.error("handleWorkspaceException", e);
         return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
     }
 }

@@ -9,7 +9,7 @@ import com.virnect.workspace.dto.redis.WorkspaceInviteRedisRequest;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
-import com.virnect.workspace.exception.BusinessException;
+import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.Role;
@@ -60,7 +60,7 @@ public class WorkspaceService {
     public ApiResponse<WorkspaceCreateResponse> createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
         //User Service 에서 유저 조회
         if (getUserInfo(workspaceCreateRequest.getUserId()).getUserType().equals("SUB_USER")) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
         //워크스페이스 생성
@@ -134,14 +134,12 @@ public class WorkspaceService {
             필터가 있을 시 -> workspace 단에서 페이징하고 정렬한다.
             필터가 없거나 전체선택 시 -> user 단에서 페이징하고 정렬한다.
         */
-
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         List<MemberInfoDTO> resultMemberListResponse;
-        if (StringUtils.hasText(filter)) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
 
+        if (StringUtils.hasText(filter)) {
             Pageable pageable = pageRequest.of(true);
-            //필터 쿼리에 쓰일 woskspace
-            Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
 
             //필터 퀴리에 쓰일 workspaceUserList
             List<WorkspaceUser> workspaceUserList = new ArrayList<>();
@@ -154,69 +152,24 @@ public class WorkspaceService {
 
             //user 서비스에서 페이징 안된 membList 받아온다.
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
-            List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-                MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
-                memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
-                workspaceUserList.add(this.workspaceUserRepository.findByUserIdAndWorkspace(memberInfo.getUuid(), workspace));
-                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
-                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
+            List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
+                WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(object.getUuid(), workspace);
+                //조회하는 사람이 현재 소속한 workspace 내에서 검색한다.
+                MemberInfoDTO memberInfo = new MemberInfoDTO();
+                if (workspaceUser != null) {
+                    memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                    workspaceUserList.add(workspaceUser);
+                    memberInfo.setRole(getWorkspaceUserRole(workspaceId, workspaceUser.getUserId()).getRole());
+                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                    memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                    memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                }
                 return memberInfo;
             }).collect(Collectors.toList());
 
-
             Page<WorkspaceUserPermission> pageMember;
 
-
-            // 정렬 검증 - 정렬을 해야 할 때 -> 임시 생략
-            /*if (pageable.getSort().isSorted()) {
-                PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
-                        workspace, workspaceUserList, workspaceRoleList, newPageable);
-
-                List<MemberInfoDTO> filterdMemberList = new ArrayList<>();
-
-                List<String> filterdWorkspaceUserIdList =
-                        pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
-
-                //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
-                memberInfoList.stream().forEach(memberInfoDTO -> {
-                            if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
-                                filterdMemberList.add(memberInfoDTO);
-                            }
-                        }
-                );
-
-                //필터된 memberList 를 가지고 정렬한다.
-                String sortName = pageable.getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
-                String sortDirection = pageable.getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
-
-                //이메일을 기준으로 asc 정렬
-                if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("asc")) {
-                    resultMemberListResponse = Sort.EMAIL_ASC.sorting(filterdMemberList);
-                }
-                //이메일을 기준으로 desc 정렬
-                if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("desc")) {
-                    resultMemberListResponse = Sort.EMAIL_DESC.sorting(filterdMemberList);
-                }
-                //이름을 기준으로 asc 정렬
-                if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("asc")) {
-                    resultMemberListResponse = Sort.NAME_ASC.sorting(filterdMemberList);
-                }
-                //이름을 기준으로 desc 정렬
-                if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("desc")) {
-                    resultMemberListResponse = Sort.NAME_DESC.sorting(filterdMemberList);
-                }
-
-                resultMemberListResponse = filterdMemberList;
-
-            } else {*/
-            //정렬을 하지 않아도 될때는 필터처리만 해서 넘긴다.
-                /*
-                pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
-                        workspace, workspaceUserList, workspaceRoleList, pageable);
-*/
             //임시로 정렬 자체 생략해서 넘김
             PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
             pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
@@ -235,7 +188,6 @@ public class WorkspaceService {
                     }
             );
             resultMemberListResponse = filterdMemberList;
-            // }
 
             pageMetadataResponse.setTotalElements(pageMember.getTotalElements());//전체 데이터 수
             pageMetadataResponse.setTotalPage(pageMember.getTotalPages());//전체 페이지 수
@@ -243,18 +195,22 @@ public class WorkspaceService {
             pageMetadataResponse.setCurrentSize(pageable.getPageSize());
 
         } else {
+            //필터 값이 없을 때
             Pageable pageable = pageRequest.of(false);
 
             //필터값이 없으면 페이징 처리한 값을 리턴 받아 그대로 리턴한다.
-
             UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, true, pageable).getData();
 
             List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-                MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
-                memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
-                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
-                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(object.getUuid(), workspace);
+                MemberInfoDTO memberInfo = new MemberInfoDTO();
+                if (workspaceUser != null) {
+                    memberInfo = modelMapper.map(object, MemberInfoDTO.class);
+                    memberInfo.setRole(getWorkspaceUserRole(workspaceId, memberInfo.getUuid()).getRole());
+                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
+                    memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                    memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                }
                 return memberInfo;
             }).collect(Collectors.toList());
 
@@ -280,7 +236,7 @@ public class WorkspaceService {
     public ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(String workspaceId, String userId) {
         //마스터 인지 체크
         if (getUserInfo(userId).getUserType().equals("SUB_USER")) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         //워크스페이스 소속 멤버 수 조회
         long countUsers = this.workspaceUserRepository.countWorkspaceUser(workspaceId);
@@ -315,7 +271,7 @@ public class WorkspaceService {
             userId, WorkspaceInviteRequest workspaceInviteRequest) {
         //1. 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         //2. 라이선스검사(해야됨)
 
@@ -401,7 +357,7 @@ public class WorkspaceService {
         //1. redis에서 초대 정보 확인
         UserInvite userInvite = this.redisService.getInviteInfo(userId, code);
         if (userInvite == null) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
         //2. 워크스페이스 소속 넣기 (workspace_user)
@@ -435,7 +391,7 @@ public class WorkspaceService {
             userId, UsersCreateRequest userCreateRequest) {
         //1. 생성 권한 확인
         if (getWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         //2. 아이디 중복 확인
         String[] emailList = userCreateRequest.getUserInfoList().stream().map(userInfo -> userInfo.getEmail()).toArray(String[]::new);
@@ -443,7 +399,7 @@ public class WorkspaceService {
         for (InviteUserInfoRestResponse.InviteUserResponse inviteUserResponse : inviteUserInfoRestResponse.getInviteUserInfoList()) {
             if (Arrays.asList(emailList).contains(inviteUserResponse.getEmail())) {
                 //이메일이 중복되는 사용자가 있어서 계정을 생성할 수 없는 경우에 에러 리턴
-                throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+                throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
             }
         }
 
@@ -543,7 +499,7 @@ public class WorkspaceService {
     public ApiResponse reviseUserPermission(String workspaceId, String userId, UserPermissionReviseRequest userPermissionReviseRequest) {
         //1. 요청자 권한 확인
         if (!getWorkspaceUserRole(workspaceId, userId).getRole().equals("MASTER")) {
-            throw new BusinessException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
         WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userPermissionReviseRequest.getUserId(), workspaceRepository.findByUuid(workspaceId));
 
@@ -561,4 +517,5 @@ public class WorkspaceService {
 
         return new ApiResponse<>();
     }
+
 }

@@ -7,7 +7,7 @@ import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
-import com.virnect.workspace.exception.BusinessException;
+import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.PageRequest;
 import com.virnect.workspace.global.error.ErrorCode;
@@ -57,41 +57,43 @@ public class WorkspaceController {
     @PostMapping
     public ResponseEntity<ApiResponse<WorkspaceCreateResponse>> createWorkspace(@RequestBody @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<WorkspaceCreateResponse> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
-
-    /**
-     * 사용자가 속한 워크스페이스 조회
-     *
-     * @param userId - 사용자 uuid
-     * @return - 워크스페이스 정보
-     */
+    /*
     @ApiOperation(
-            value = "워크스페이스 조회",
-            notes = "사용자가 소속되어 있는 워크스페이스 정보를 반환합니다."
+            value = "워크스페이스 이미지 조회(개발 서버 업로드)"
     )
-    @GetMapping()
+    @ApiImplicitParam(name = "fileName", value = "파일 이름", dataType = "string", type = "path", defaultValue = "1.jpg", required = true)
+    @GetMapping("/upload/{fileName}")
+    public ResponseEntity downloadFile(@PathVariable String fileName) throws IOException {
+        if (!StringUtils.hasText(fileName)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        Resource resource = this.workspaceService.downloadFile(fileName);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }*/
+
+    @ApiOperation(
+            value = "워크스페이스 목록조회",
+            notes = "사용자가 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 정보를 반환합니다."
+    )
+    @GetMapping
     public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
         if (!StringUtils.hasText(userId)) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId);
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * 사용자 조회(use 검색, 필터, 정렬 기능)
-     *
-     * @param workspaceId - 워크스페이스 uuid
-     * @param userId      - 사용자 uuid
-     * @param search      - 검색명
-     * @param filter      - 필터명 (all User or Master User)
-     * @param pageable    - 페이징 + 정렬(page : 몇페이지를 보여줄지(default 0), size : 한 페이지에 몇개 보여줄건지(default 20), sort : 뭐를 기준으로 어떻게 정렬할건지)
-     * @return
-     */
     @ApiOperation(
             value = "워크스페이스 멤버 검색",
             notes = "워크스페이스 멤버를 필터 또는 검색명을 걸어서 검색합니다."
@@ -106,7 +108,7 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}/members")
     public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(workspaceId)) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
@@ -126,7 +128,7 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}/info")
     public ResponseEntity<ApiResponse<WorkspaceInfoResponse>> getWorkspaceInfo(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId) {
         if (!StringUtils.hasText(workspaceId)) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse<WorkspaceInfoResponse> apiResponse = this.workspaceService.getWorkspaceInfo(workspaceId, userId);
         return ResponseEntity.ok(apiResponse);
@@ -142,7 +144,7 @@ public class WorkspaceController {
     @PostMapping("/{workspaceId}/invite")
     public ResponseEntity<ApiResponse<WorkspaceInviteRestResponse>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequestList) {
         if (!StringUtils.hasText(workspaceId)) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse<WorkspaceInviteRestResponse> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, userId, workspaceInviteRequestList);
         return ResponseEntity.ok(apiResponse);
@@ -159,7 +161,7 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}/invite/accept")
     public ResponseEntity<ApiResponse<WorkspaceInviteAcceptResponse>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
         if (!StringUtils.hasText(workspaceId)) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse<WorkspaceInviteAcceptResponse> apiResponse = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
         return ResponseEntity.ok(apiResponse);
@@ -177,7 +179,7 @@ public class WorkspaceController {
     @PostMapping("/{workspaceId}/create")
     public ResponseEntity<ApiResponse<UsersCreateResponse>> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse<UsersCreateResponse> apiResponse = this.workspaceService.createUsers(workspaceId, userId, userCreateRequest);
         return ResponseEntity.ok(apiResponse);
@@ -195,7 +197,7 @@ public class WorkspaceController {
     @PostMapping("/{workspaceId}/permission")
     public ResponseEntity<ApiResponse> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody UserPermissionReviseRequest userPermissionReviseRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || bindingResult.hasErrors()) {
-            throw new BusinessException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         ApiResponse apiResponse = this.workspaceService.reviseUserPermission(workspaceId, userId, userPermissionReviseRequest);
         return ResponseEntity.ok(apiResponse);
