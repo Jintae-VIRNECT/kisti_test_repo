@@ -31,9 +31,11 @@ export default async function api(name, option = {}) {
   // default header
   const accessToken = process.client
     ? Cookies.get('accessToken')
-    : headers.cookie.match('accessToken=(.*?);')[1]
-  axios.defaults.headers.common = {
-    Authorization: `Bearer ${accessToken}`,
+    : headers && headers.cookie.match('accessToken=(.*?);')[1]
+  if (accessToken) {
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${accessToken}`,
+    }
   }
 
   if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
@@ -45,6 +47,7 @@ export default async function api(name, option = {}) {
     if (code === 200) {
       return data
     } else {
+      console.error(`URL: ${uri}`)
       throw new Error(`${code}: ${message}`)
     }
   } catch (e) {

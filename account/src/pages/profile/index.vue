@@ -62,7 +62,12 @@
       <el-card>
         <div slot="header">
           <h3>{{ $t('profile.account.title') }}</h3>
-          <span>{{ $t('profile.account.desc') }}</span>
+          <el-tooltip
+            :content="$t('profile.account.desc')"
+            placement="bottom-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
         </div>
         <div>
           <div class="profile__info">
@@ -92,7 +97,12 @@
       <el-card>
         <div slot="header">
           <h3>{{ $t('profile.additional.title') }}</h3>
-          <span>{{ $t('profile.additional.desc') }}</span>
+          <el-tooltip
+            :content="$t('profile.additional.desc')"
+            placement="bottom-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
         </div>
         <div>
           <div class="profile__info">
@@ -193,7 +203,7 @@ export default {
   },
   computed: {
     myBirth() {
-      if (this.me.birth) return filters.localDateFormat(this.me.birth)
+      if (this.me.birth) return filters.dateFormat(this.me.birth)
       else return this.$t('profile.additional.birthEmpty')
     },
   },

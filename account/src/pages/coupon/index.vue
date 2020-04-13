@@ -11,6 +11,7 @@
       </div>
       <el-row>
         <el-col class="container__left">
+          <!-- 배너 -->
           <el-card class="banner">
             <span>{{ $t('coupon.banner.subTitle') }}</span>
             <h4>{{ $t('coupon.banner.mainTitle') }}</h4>
@@ -22,6 +23,7 @@
               />
             </a>
           </el-card>
+          <!-- 쿠폰 입력 -->
           <el-card class="add-coupon">
             <div slot="header">
               <h3>{{ $t('coupon.addCouponCode.title') }}</h3>
@@ -51,10 +53,17 @@
             </div>
           </el-card>
         </el-col>
+        <!-- 쿠폰 리스트 -->
         <el-col class="container__right">
           <el-card class="el-card--table">
             <div slot="header">
               <h3>{{ $t('coupon.couponList.title') }}</h3>
+              <el-tooltip
+                :content="$t('coupon.couponList.desc')"
+                placement="bottom-start"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
             </div>
             <coupon-list @select="couponSelect" />
           </el-card>

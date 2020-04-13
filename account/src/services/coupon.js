@@ -4,9 +4,10 @@ import profileService from '@/services/profile'
 
 export default {
   async getCouponList() {
-    const { myCouponInfoList } = await api('GET_COUPONS', {
-      route: { userId: profileService.getMyProfile().uuid },
-    })
+    const myCouponInfoList = [0, 1, 2]
+    // const { myCouponInfoList } = await api('GET_COUPONS', {
+    //   route: { userId: profileService.getMyProfile().uuid },
+    // })
     return myCouponInfoList.map(coupon => new Coupon(coupon))
   },
 }

@@ -24,9 +24,9 @@
     "registerDate": "등록일",
     "expireDate": "유효 기간",
     "usedDate": "사용일",
-    "state": "사용 상태"
+    "status": "사용 상태"
   },
-  "state": {
+  "status": {
     "UNUSE": "사용 대기",
     "USE": "사용 완료",
     "EXPIRED": "만료"
