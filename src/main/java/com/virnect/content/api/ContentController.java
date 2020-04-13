@@ -140,18 +140,20 @@ public class ContentController {
      */
     @ApiOperation(value = "콘텐츠 다운로드")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetCode", value = "targetCode.Ares", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "targetCode", value = "타겟 코드데이터", dataType = "string", paramType = "query", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/upload/{fileName}")
+    @GetMapping("/file/{contentUUID}")
     public ResponseEntity<Resource> contentDownloadRequestHandler(
-            @PathVariable("fileName") String fileName
-            , @RequestParam(value = "memberUUID", defaultValue = "NONE") String memberUUID) {
-        if (fileName.isEmpty()) {
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "targetCode") String targetCode
+            , @RequestParam(value = "memberUUID") String memberUUID) {
+        if (contentUUID.isEmpty() || targetCode.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        log.info("[DOWNLOAD] USER: [{}] => CONTENT: [{}]", memberUUID, fileName);
-        Resource resource = this.contentService.loadContentFile(fileName);
+        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
+        Resource resource = this.contentService.contentDownloadhandler(contentUUID, targetCode, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);

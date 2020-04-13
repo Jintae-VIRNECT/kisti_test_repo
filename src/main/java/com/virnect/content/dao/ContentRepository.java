@@ -1,6 +1,7 @@
 package com.virnect.content.dao;
 
 import com.virnect.content.domain.Content;
+import com.virnect.content.domain.YesOrNo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,10 @@ import java.util.Optional;
 public interface ContentRepository extends JpaRepository<Content, Long>, ContentCustomRepository {
     @Transactional(readOnly = true)
     Optional<Content> findByUuid(String contentUUID);
+
+    long countByConverted(YesOrNo yesOrNo);
+    long countByShared(YesOrNo yesOrNo);
+    long countByDeleted(YesOrNo yesOrNo);
 
     @Transactional
     Long deleteByUuid(String contentUUID);

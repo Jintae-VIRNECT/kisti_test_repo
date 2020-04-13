@@ -220,6 +220,17 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
+    public Resource contentDownloadhandler(final String contentUUID, final String targetCode, final String memberUUID) {
+        // 1. 수정 대상 컨텐츠 데이터 조회
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+
+        String regex = "/";
+        String[] parts = content.getPath().split(regex);
+
+        return loadContentFile(parts[parts.length - 1]);
+    }
+
     /**
      * 콘텐츠 파일 다운로드 요청 처리
      *
@@ -500,8 +511,11 @@ public class ContentService {
     public ApiResponse<ContentStatisticResponse> getContentStatusInfo() {
         long numberOfContents = this.contentRepository.count();
         long numberOfManagedContents = 0;
+        long numberOfConvertedContents = this.contentRepository.countByConverted(YesOrNo.YES);
+        long numberOfSharedContents = this.contentRepository.countByShared(YesOrNo.YES);
+        long numberOfDeletedContents = this.contentRepository.countByDeleted(YesOrNo.YES);
 //        long numberOfManagedContents = this.contentRepository.countByStatus(ContentStatus.MANAGED);
-        return new ApiResponse<>(new ContentStatisticResponse(numberOfContents, numberOfManagedContents));
+        return new ApiResponse<>(new ContentStatisticResponse(numberOfContents, numberOfManagedContents, numberOfConvertedContents, numberOfSharedContents, numberOfDeletedContents));
     }
 
     public ApiResponse<ContentStatusInfoResponse> updateContentStatus(ContentStatusChangeRequest statusChangeRequest) {
