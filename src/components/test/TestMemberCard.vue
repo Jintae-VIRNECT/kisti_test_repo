@@ -5,7 +5,17 @@
       <h2 class="subtitle">Card Flex Test</h2>
       <div class="action-box">
         <div class="component">
-          <member-card></member-card>
+          <div class="grid-container">
+            <member-card
+              v-for="(userinfo, index) in userInfors"
+              :key="index"
+              :name="userinfo.name"
+              :email="userinfo.mail"
+              :role="userinfo.role"
+              :status="userinfo.status"
+            >
+            </member-card>
+          </div>
         </div>
       </div>
     </section>
@@ -19,27 +29,58 @@ export default {
       userInfors: [
         {
           icon: '',
-          name: '버넥트 리모트 01',
+          name: '펭!!하!!',
           mail: 'example@example.com',
-          level: 'Master',
+          role: 'Master',
+          license: true,
+          status: 'online',
         },
         {
           icon: '',
           name: '버넥트 리모트 02',
           mail: 'example@example.com',
-          level: 'Manager',
+          role: 'Manager',
+          license: false,
+          status: 'busy',
         },
         {
           icon: '',
           name: '버넥트 리모트 03',
           mail: 'example@example.com',
-          level: 'Expired',
+          role: '',
+          license: true,
+          status: 'online',
         },
         {
           icon: '',
           name: '버넥트 리모트 03',
           mail: 'example@example.com',
-          level: 'none',
+          role: 'none',
+          status: 'offline',
+        },
+        {
+          icon: '',
+          name: '펭!!하!!',
+          mail: 'example@example.com',
+          role: 'Master',
+          license: true,
+          status: 'online',
+        },
+        {
+          icon: '',
+          name: '펭!!하!!',
+          mail: 'example@example.com',
+          role: 'Master',
+          license: true,
+          status: 'online',
+        },
+        {
+          icon: '',
+          name: '펭!!하!!',
+          mail: 'example@example.com',
+          role: 'Master',
+          license: true,
+          status: 'online',
         },
       ],
     }
@@ -97,5 +138,11 @@ export default {
       }
     }
   }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 10px;
 }
 </style>
