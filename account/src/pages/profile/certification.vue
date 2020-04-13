@@ -34,7 +34,7 @@
         </div>
       </el-card>
       <div class="bottom">
-        <a href="http://console.virnect.com/password">
+        <a :href="findPasswordUrl" target="_blank">
           {{ $t('certification.forgetPassword') }}
         </a>
       </div>
@@ -56,6 +56,7 @@ export default {
         email: profile.email,
         password: null,
       },
+      findPasswordUrl: `${process.env.LOGIN_SITE_URL}/find`,
     }
   },
   methods: {

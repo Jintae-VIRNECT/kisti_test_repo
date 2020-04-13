@@ -69,7 +69,7 @@ export default {
   methods: {
     async submit() {
       const form = {
-        mobile: `${this.form.code}-${this.form.phone}`,
+        mobile: this.form.phone ? `${this.form.code}-${this.form.phone}` : '',
       }
       try {
         await profileService.updateMyProfile(form)

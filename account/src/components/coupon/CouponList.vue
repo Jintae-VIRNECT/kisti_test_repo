@@ -92,6 +92,7 @@ export default {
       span.USE {
         color: #727f9c;
         border-color: #727f9c;
+        opacity: 0.8;
       }
     }
   }

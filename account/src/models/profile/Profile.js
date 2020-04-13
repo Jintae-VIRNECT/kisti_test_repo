@@ -9,6 +9,7 @@ export default class Profile extends Model {
     this.image = json.profile
     this.nickname = json.nickname
     this.email = json.email
+    this.recoveryEmail = json.recoveryEmail
     this.birth = json.birth
     this.contact = json.mobile
     this.qrCode = json.qrCode

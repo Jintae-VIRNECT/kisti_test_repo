@@ -27,7 +27,8 @@ export default {
   },
   async updateMyImage(form) {
     const formData = new FormData()
-    formData.append('profile', form.profile)
+    formData.append('profile', form.profile ? form.profile : new File())
+    formData.append('hasProfileImage', form.profile ? true : false)
 
     await api('UPDATE_USER_IMAGE', {
       route: { userId: getMyProfile().uuid },

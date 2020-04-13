@@ -60,6 +60,17 @@
               {{ $t('profile.info.nicknameChange') }}
             </el-button>
           </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <div class="content">
+              <span class="value">
+                {{ myBirth }}
+              </span>
+            </div>
+            <el-button type="text" @click="visible.birthChangeModal = true">
+              {{ $t('profile.additional.birthChange') }}
+            </el-button>
+          </div>
         </div>
       </el-card>
       <!-- 계정 정보 -->
@@ -110,14 +121,20 @@
         </div>
         <div>
           <div class="profile__info">
-            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <h4>{{ $t('profile.additional.recoveryEmail') }}</h4>
             <div class="content">
               <span class="value">
-                {{ myBirth }}
+                {{
+                  me.recoveryEmail ||
+                    $t('profile.additional.recoveryEmailEmpty')
+                }}
               </span>
             </div>
-            <el-button type="text" @click="visible.birthChangeModal = true">
-              {{ $t('profile.additional.birthChange') }}
+            <el-button
+              type="text"
+              @click="visible.recoveryEmailChangeModal = true"
+            >
+              {{ $t('profile.additional.recoveryEmailChange') }}
             </el-button>
           </div>
           <div class="profile__info">
@@ -165,6 +182,11 @@
       :visible.sync="visible.contactChangeModal"
       @changedContact="changedContact"
     />
+    <recovery-email-change-modal
+      :me="me"
+      :visible.sync="visible.recoveryEmailChangeModal"
+      @changedRecoveryEmail="changedRecoveryEmail"
+    />
   </div>
 </template>
 
@@ -178,6 +200,7 @@ import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
 import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
 import BirthChangeModal from '@/components/profile/BirthChangeModal'
 import ContactChangeModal from '@/components/profile/ContactChangeModal'
+import RecoveryEmailChangeModal from '@/components/profile/RecoveryEmailChangeModal'
 
 export default {
   middleware: ['default', 'profile'],
@@ -188,6 +211,7 @@ export default {
     PasswordChangeModal,
     BirthChangeModal,
     ContactChangeModal,
+    RecoveryEmailChangeModal,
   },
   filters: {
     ...filters,
@@ -202,6 +226,7 @@ export default {
         passwordChangeModal: false,
         birthChangeModal: false,
         contactChangeModal: false,
+        recoveryEmailChangeModal: false,
       },
     }
   },
@@ -235,6 +260,10 @@ export default {
     changedContact(contact) {
       this.me.contact = contact
       this.visible.contactChangeModal = false
+    },
+    changedRecoveryEmail(email) {
+      this.me.recoveryEmail = email
+      this.visible.recoveryEmailChangeModal = false
     },
   },
   beforeCreate() {

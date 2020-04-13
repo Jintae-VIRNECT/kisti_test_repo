@@ -39,7 +39,7 @@ export default {
   & > span {
     display: inline-block;
     box-sizing: border-box;
-    min-width: 71px;
+    min-width: 74px;
     margin: -10px 0;
     padding: 4px 10px;
     font-size: 12.6px;

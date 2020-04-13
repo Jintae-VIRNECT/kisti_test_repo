@@ -29,7 +29,10 @@
     "birthChange": "생년월일 변경",
     "contact": "연락처",
     "contactEmpty": "등록된 연락처가 없습니다.",
-    "contactChange": "연락처 변경"
+    "contactChange": "연락처 변경",
+    "recoveryEmail": "복구 이메일",
+    "recoveryEmailEmpty": "복구 이메일이 없습니다.",
+    "recoveryEmailChange": "복구 이메일 변경"
   },
   "imageChangeModal": {
     "title": "프로필 이미지 설정",
@@ -101,6 +104,15 @@
     "message": {
       "success": "연락처 변경에 성공하였습니다.",
       "fail": "연락처 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
+    }
+  },
+  "recoveryEmailChangeModal": {
+    "title": "복구 이메일 변경",
+    "recoveryEmail": "복구 이메일",
+    "submit": "변경",
+    "message": {
+      "success": "복구 이메일 변경에 성공하였습니다.",
+      "fail": "복구 이메일 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
     }
   }
 }

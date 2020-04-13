@@ -12,7 +12,7 @@
       <el-row>
         <el-col class="container__left">
           <!-- 배너 -->
-          <el-card class="banner">
+          <el-card class="banner" @click="goGetCouponPage">
             <span>{{ $t('coupon.banner.subTitle') }}</span>
             <h4>{{ $t('coupon.banner.mainTitle') }}</h4>
             <a>
@@ -93,6 +93,9 @@ export default {
     }
   },
   methods: {
+    goGetCouponPage() {
+      window.open('virnect.com')
+    },
     /**
      * 쿠폰 등록
      */
@@ -141,6 +144,20 @@ export default {
   .banner .el-card__body {
     color: #fff;
     background: url('~assets/images/bg_banner.jpg');
+    cursor: pointer;
+    transition: 0.2s;
+
+    img {
+      transition: 0.2s;
+    }
+
+    &:hover {
+      filter: brightness(1.2);
+      img {
+        margin-left: 4px;
+      }
+    }
+
     & > span {
       font-weight: normal;
       font-size: 14px;
@@ -188,8 +205,10 @@ export default {
     }
   }
 
-  .coupon-list tr {
-    cursor: pointer;
+  .coupon-list {
+    tr {
+      cursor: pointer;
+    }
   }
 }
 </style>
