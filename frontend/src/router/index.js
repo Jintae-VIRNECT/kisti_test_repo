@@ -7,8 +7,8 @@ import User from 'components/layout/pages/User'
 import Find from 'components/layout/pages/Find'
 import Profile from 'components/layout/pages/Profile'
 import Complete from 'components/layout/pages/Complete'
-import PageNotFound from 'components/layout/errors/404'
-import InternetNotFound from 'components/layout/errors/504'
+import PageNotFound from 'WC-Modules/vue/components/errors/404'
+import InternetNotFound from 'WC-Modules/vue/components/errors/504'
 
 Vue.use(Router)
 
