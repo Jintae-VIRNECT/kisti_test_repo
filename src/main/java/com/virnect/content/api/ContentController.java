@@ -3,7 +3,6 @@ package com.virnect.content.api;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
-import com.virnect.content.dto.request.ContentStatusChangeRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -43,6 +42,68 @@ public class ContentController {
     private final ContentService contentService;
 
     /**
+     * 컨텐츠 목록 조회
+     *
+     * @param workspaceUUID
+     * @param search
+     * @param shareds
+     * @param pageable
+     * @return
+     */
+    @ApiOperation(value = "콘텐츠 목록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "shared", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL")
+    })
+    @GetMapping
+    public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "shared", defaultValue = "ALL") String shareds,
+            @ApiIgnore PageRequest pageable) {
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, null, search, shareds, pageable.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
+     * 내 콘텐츠 목록 조회
+     *
+     * @param workspaceUUID
+     * @param search
+     * @param shareds
+     * @param userUUID
+     * @param pageable
+     * @return
+     */
+    @ApiOperation(value = "내 콘텐츠 목록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "")
+    })
+    @GetMapping("/user/{userUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
+            @RequestParam(value = "userUUID") String userUUID,
+            @ApiIgnore PageRequest pageable) {
+        if (userUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, pageable.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
      * 콘텐츠 파일 업로드
      *
      * @param uploadRequest - 콘텐츠 파일 업로드 요청 데이터
@@ -80,10 +141,12 @@ public class ContentController {
     @ApiOperation(value = "콘텐츠 다운로드")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetCode", value = "targetCode.Ares", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping("/upload/{fileName}")
-    public ResponseEntity<Resource> contentDownloadRequestHandleR(@PathVariable("fileName") String fileName, @RequestParam(value = "memberUUID", defaultValue = "NONE") String memberUUID) {
+    public ResponseEntity<Resource> contentDownloadRequestHandler(
+            @PathVariable("fileName") String fileName
+            , @RequestParam(value = "memberUUID", defaultValue = "NONE") String memberUUID) {
         if (fileName.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -105,13 +168,15 @@ public class ContentController {
     @ApiOperation(value = "콘텐츠 파일 업데이트")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "content", value = "수정할 콘텐츠 ares 파일", dataType = "__file", paramType = "form"),
-            @ApiImplicitParam(name = "name", value = "수정할 콘텐츠 명", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "content", value = "수정할 콘텐츠 ares 파일", dataType = "__file", paramType = "form", required = true),
+            @ApiImplicitParam(name = "name", value = "수정할 콘텐츠 명", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
     })
     @PostMapping("/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(@ModelAttribute @Valid ContentUpdateRequest updateRequestDto, @PathVariable("contentUUID") String contentUUID, BindingResult result) {
+    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(
+            @ModelAttribute @Valid ContentUpdateRequest updateRequestDto
+            , @PathVariable("contentUUID") String contentUUID, BindingResult result) {
         if (result.hasErrors() || contentUUID.isEmpty()) {
             log.info("[ContentUpdateRequest] => [{}]", updateRequestDto.toString());
             log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
@@ -124,47 +189,23 @@ public class ContentController {
     /**
      * 콘텐츠 파일 삭제 요청
      *
-     * @param contentId - 콘텐츠 고유 식별자
-     * @param uuid      - 삭제 요청 사용자 식별자
-     * @return - 삭제 결과
+     * @param contentUUIDs
+     * @param workerUUID
+     * @return
      */
     @ApiOperation(value = "콘텐츠 삭제 요청")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "uuid", value = "삭제 요청 사용자 고유 번호", dataType = "string", paramType = "query", required = true)
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호 배열(ex : contentUUID=uuid,uuid,uuid,uuid)", allowMultiple = true, dataType = "array", paramType = "query", required = true),
+            @ApiImplicitParam(name = "workerUUID", value = "삭제 요청 사용자 고유 번호", dataType = "string", paramType = "query", required = true)
     })
-    @DeleteMapping("/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentDeleteResponse>> contentDeleteRequestHandler(@PathVariable("contentUUID") String contentId, @RequestParam("uuid") String uuid) {
-        if (contentId.isEmpty() || uuid.isEmpty()) {
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<ContentDeleteListResponse>> contentDeleteRequestHandler(
+            @RequestParam(value = "contentUUID") String[] contentUUIDs
+            , @RequestParam(value = "workerUUID") String workerUUID) {
+        if (contentUUIDs.length < 1 || workerUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentDeleteResponse> responseMessage = this.contentService.contentDelete(contentId, uuid);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    /**
-     * 컨텐츠 목록 조회
-     *
-     * @param search   - 콘텐츠 검색어 (유저 이름, 콘텐츠 명)
-     * @param pageable - 페이징 요청
-     * @return - 콘텐츠 정보 목록
-     */
-    @ApiOperation(value = "콘텐츠 목록 조회")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
-            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
-            @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL")
-    })
-    @GetMapping
-    public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
-            @ApiIgnore PageRequest pageable) {
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, search, shareds, pageable.of());
+        ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(contentUUIDs, workerUUID);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -176,7 +217,7 @@ public class ContentController {
      */
     @ApiOperation(value = "콘텐츠 메타데이터 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "query")
     })
     @GetMapping("/metadata")
     public ResponseEntity<ApiResponse<MetadataInfoResponse>> getContentRawMetadata(@RequestParam(value = "contentUUID") String contentUUID) {
@@ -226,32 +267,25 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "컨텐츠 상태 변경")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "body", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
-            @ApiImplicitParam(value = "컨텐츠 상태 (WAIT, MANAGED, PUBLISH)", name = "status", required = true, paramType = "body", example = "MANAGED")
-    })
-    @PostMapping(value = "/status")
-    public ResponseEntity<ApiResponse<ContentStatusInfoResponse>> changeContentStatusRequestHandler(@RequestBody @Valid ContentStatusChangeRequest statusChangeRequest, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentStatusInfoResponse> responseMessage = this.contentService.updateContentStatus(statusChangeRequest);
-        return ResponseEntity.ok(responseMessage);
-    }
-
     @ApiOperation(value = "컨텐츠 상세 정보 수정")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
-            @ApiImplicitParam(value = "컨텐츠 종류", name = "contentType", required = false, paramType = "qeury", dataType = "string", example = "uuid"),
-            @ApiImplicitParam(value = "컨텐츠 공유(YES, NO)", name = "shared", required = false, paramType = "qeury", dataType = "object", example = "YES")
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "contentType", value = "콘텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "query", required = false, defaultValue = "AUGMENTED_REALITY"),
+            @ApiImplicitParam(name = "shared", value = "컨텐츠 공유(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO"),
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
     })
     @PutMapping("/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "contentType") Types types, @RequestParam(value = "shared") YesOrNo shared) {
-        if (contentUUID.isEmpty()) {
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
+            , @RequestParam(value = "contentType", defaultValue = "AUGMENTED_REALITY", required = false) Types contentType
+            , @RequestParam(value = "userUUID") String userUUID
+    ) {
+        log.info("~~~~ modifyContentInfo ==> shared [{}] contentType [{}] userUUID [{}]", shared, contentType, userUUID);
+        if (contentUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, types, shared);
+        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, shared, contentType, userUUID);
         return ResponseEntity.ok(response);
     }
 }

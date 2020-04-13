@@ -21,8 +21,12 @@ public enum ErrorCode {
     ERR_CONTENT_DELETE(4007, "Content Delete fail."),
     ERR_NO_MORE_ARUCO(4008, "No more ARUCO."),
     ERR_CONTENT_MANAGED(4009, "Content deletion failed. Because it is managed. Delete the process created with this content and try again."),
-    ERR_DEALLOCATE_ARUCO(4010, "Failed deallocate ARUCO."),
-    ERR_DELETE_CONTENT(4011, "Content File deletion failed."),
+    ERR_CONTENT_DELETE_OWNERSHIP(4010, "Content deletion failed. Because it is NOT ownership."),
+    ERR_CONTENT_DELETE_SUCCEED(4011, "Content deletion succeed."),
+    ERR_DEALLOCATE_ARUCO(4012, "Failed deallocate ARUCO."),
+    ERR_DELETE_CONTENT(4013, "Content File deletion failed."),
+    ERR_OWNERSHIP(4014, "An error occurred in the request. Because it is NOT ownership."),
+    ERR_NOT_FOUND_CONTENT_TYPE(4015, "Not found content type."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

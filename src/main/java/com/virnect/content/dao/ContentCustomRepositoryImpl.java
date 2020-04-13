@@ -28,7 +28,7 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Content> getContent(String workspaceUUID, String search, String shareds, List<String> userUUDList, Pageable pageable) {
+    public Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, List<String> userUUDList, Pageable pageable) {
         QContent qContent = QContent.content;
         JPQLQuery<Content> query = from(qContent);
 
@@ -37,9 +37,17 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
             query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUDList)));
         }
 
+        if (userUUID != null) {
+            // userUUID 값이 있으면 '내 컨텐츠 목록' 조회임.
+            query = query.where(qContent.userUUID.eq(userUUID));
+        }
+
         if (workspaceUUID != null) {
             query = query.where(qContent.workspaceUUID.contains(workspaceUUID));
         }
+
+        // 삭제된 컨텐츠 제외
+        query = query.where(qContent.deleted.eq(YesOrNo.NO));
 
         // apply specific filter keyword
         if (!shareds.equals("ALL")) {

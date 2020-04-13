@@ -29,7 +29,7 @@ public class ContentUploadRequest {
     @NotNull
     private MultipartFile content;
 
-    private Types type;
+    private Types contentType;
 
     @NotBlank
     private String name;

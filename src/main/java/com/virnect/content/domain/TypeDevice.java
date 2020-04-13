@@ -26,6 +26,7 @@ public class TypeDevice extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "name")
+    @Enumerated(EnumType.STRING)
     private Devices device;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,14 +2,12 @@ package com.virnect.content.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
-import com.virnect.content.dao.TargetQRCodeRepository;
 import com.virnect.content.dao.TargetRepository;
+import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
-import com.virnect.content.dto.UserDto;
 import com.virnect.content.dto.request.ContentStatusChangeRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
@@ -20,7 +18,6 @@ import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
-import com.virnect.content.global.common.ResponseMessage;
 import com.virnect.content.global.error.ErrorCode;
 import com.virnect.content.infra.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
@@ -56,9 +53,8 @@ public class ContentService {
     private final FileUploadService fileUploadService;
     private final ContentRepository contentRepository;
     private final TargetRepository targetRepository;
-    private final TargetQRCodeRepository targetQRCodeRepository;
+    private final TypeRepository typeRepository;
     private final UserRestService userRestService;
-    private final ProcessRestService processRestService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final ApplicationEventPublisher eventPublisher;
@@ -152,20 +148,10 @@ public class ContentService {
         Target target = Target.builder()
                 .type(contentUploadRequest.getTargetType())
                 .content(content)
+                .data(targetData)
                 .build();
         content.addTarget(target);
 
-        TargetQRCode targetQRCode = TargetQRCode.builder()
-                .data(targetData)
-                .target(target)
-                .build();
-        target.addTargetQRCode(targetQRCode);
-
-        this.targetQRCodeRepository.save(targetQRCode);
-
-        List<TargetQRCode> targetQRCodeList = new ArrayList<>();
-        targetQRCodeList.add(targetQRCode);
-        target.setTargetQRCodeList(targetQRCodeList);
 
         this.targetRepository.save(target);
 
@@ -184,6 +170,9 @@ public class ContentService {
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content targetContent = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+
+        // 컨텐츠 소유자 확인
+        if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID())) new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
@@ -253,41 +242,78 @@ public class ContentService {
     /**
      * 콘텐츠 삭제 요청 처리
      *
-     * @param contentUUID - 콘텐츠 고유 번호
-     * @param uuid        - 사용자 고유 번호
+     * @param contentUUIDs - 콘텐츠 고유 번호
+     * @param workerUUID   - 사용자 고유 번호
      * @return - 파일 삭제 결과
      */
     @Transactional
-    public ApiResponse<ContentDeleteResponse> contentDelete(final String contentUUID, final String uuid) {
-        // 1. 콘텐츠 정보 가져오기
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-        log.info("USER: [{}] , REMOTE CONTENT: [{}]", uuid, content.getName());
+    public ApiResponse<ContentDeleteListResponse> contentDelete(final String[] contentUUIDs, final String workerUUID) {
+        List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
+        for (String contentUUID : contentUUIDs) {
+            // 1. 컨텐츠들 조회
+            Content content = this.contentRepository.findByUuid(contentUUID)
+                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        // 삭제할 수 없는 조건
-        if (content.getConverted() != YesOrNo.NO || content.getShared() != YesOrNo.NO || content.getDeleted() != YesOrNo.NO) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
-        }
+            ContentDeleteResponse contentDeleteResponse = ContentDeleteResponse.builder()
+                    .workspaceUUID(content.getWorkspaceUUID())
+                    .contentUUID(content.getUuid())
+                    .contentName(content.getName())
+                    .shared(content.getShared())
+                    .uploaderUUID(content.getUserUUID())
+                    .converted(content.getConverted())
+                    .updatedDate(content.getUpdatedDate())
+                    .build();
 
-        long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
-        log.info("deleteByUuid affectRows = {}", affectRows);
-
-        if (affectRows <= 0) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DELETE);
-        }
-
-        // 파일 존재 유무 확인
-        log.info("content.getPath() = {}", content.getPath());
-        if (this.fileUploadService.getFile(content.getPath()).exists()) {
-            // 파일이 없다면 파일삭제는 무시함.
-            boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
-
-            if (!fileDeleteResult) {
-                throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+            // 1-1 권한확인 - 권한이 맞지 않다면 continue.
+            // TODO : 관리자 관련 처리 되어있지 않음
+            log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
+            if (!content.getUserUUID().equals(workerUUID)) {
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
             }
-        }
+            // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
+            log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
+            if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
+                // TODO : 실패 원인 반환
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
+            // 파일을 실제 삭제하지 않을 경우. 복구 프로세스가 필요할 수도 있어 일부 구현해 놓음.
+            if (false) {
+                // 2 컨텐츠 삭제 - 삭제여부 YES로 변경, 목록조회시 deleted가 YES인 것은 조회하지 않음.
+                content.setDeleted(YesOrNo.YES);
+                this.contentRepository.save(content);
+            } else {
+                // 2 컨텐츠 삭제
+                long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
+                log.info("deleteByUuid affectRows = {}", affectRows);
 
-        return new ApiResponse<>(new ContentDeleteResponse(true));
+                if (affectRows <= 0) {
+                    throw new ContentServiceException(ErrorCode.ERR_CONTENT_DELETE);
+                }
+
+                // 3 파일 존재 유무 확인 및 파일 삭제
+                log.info("content.getPath() = {}", content.getPath());
+                if (this.fileUploadService.getFile(content.getPath()).exists()) {
+                    // 파일이 없다면 파일삭제는 무시함.
+                    boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
+
+                    if (!fileDeleteResult) {
+                        throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+                    }
+                }
+            }
+            // 5 삭제 성공 반환
+            contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SUCCEED.getMessage());
+            contentDeleteResponse.setResult(true);
+            deleteResponseList.add(contentDeleteResponse);
+        }
+        // 6 최종 결과 반환
+        return new ApiResponse<>(new ContentDeleteListResponse(deleteResponseList));
     }
 
     /**
@@ -300,7 +326,7 @@ public class ContentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String search, String shareds, Pageable pageable) {
+    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String userUUID, String search, String shareds, Pageable pageable) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
         List<String> userUUIDList = new ArrayList<>();
@@ -322,7 +348,7 @@ public class ContentService {
 
 
         // 2. 콘텐츠 조회
-        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, search, shareds, userUUIDList, pageable);
+        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shareds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
@@ -349,9 +375,6 @@ public class ContentService {
                 contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
             }
 
-            // 공정 정보에 컨텐츠정보를 넣음
-//            setContentProcessInfo(content, contentInfoResponse);
-
             return contentInfoResponse;
         }).collect(Collectors.toList());
         PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
@@ -362,17 +385,6 @@ public class ContentService {
                 .build();
 
         return new ApiResponse<>(new ContentInfoListResponse(contentInfoList, pageMetadataResponse));
-    }
-
-    // 공정 정보에 컨텐츠정보를 넣음
-    private void setContentProcessInfo(Content content, ContentInfoResponse contentInfo) {
-//        if (content.getStatus().equals(ContentStatus.MANAGED)) {
-//            Long targetId = Long.valueOf(content.getAruco());
-//            ApiResponse<ProcessTargetInfoResponse> targetProcessResult = this.processRestService.getProcessInfoByTargetValue(targetId);
-//            ProcessTargetInfoResponse targetInfoResponse = targetProcessResult.getData();
-//            contentInfo.setProcessId(targetInfoResponse.getId());
-//            contentInfo.setProcessName(targetInfoResponse.getName());
-//        }
     }
 
     /**
@@ -394,7 +406,6 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_METADATA_READ);
         }
     }
-
 
     private Path load(final String fileName) {
         Path rootLocation = Paths.get(uploadPath);
@@ -441,11 +452,17 @@ public class ContentService {
         return getContentInfoResponseApiResponse(content);
     }
 
-    public ApiResponse<ContentInfoResponse> modifyContentInfo(String contentUUID, Types type, YesOrNo shared) {
+    @Transactional
+    public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, final YesOrNo shared, final Types contentType, final String userUUID) {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        content.getType().setType(type);
+        // 컨텐츠 소유자 확인
+        if (!content.getUserUUID().equals(userUUID)) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        // TODO : 제품 2.0 기능
+        Type type = this.typeRepository.findByType(contentType).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT_TYPE));
+        content.setType(type);
         content.setShared(shared);
 
         this.contentRepository.save(content);
@@ -490,6 +507,9 @@ public class ContentService {
     public ApiResponse<ContentStatusInfoResponse> updateContentStatus(ContentStatusChangeRequest statusChangeRequest) {
         Content content = this.contentRepository.findByUuid(statusChangeRequest.getContentUUID())
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        // 컨텐츠 소유자 확인
+        if (!content.getUserUUID().equals(statusChangeRequest.getUserUUID())) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
 //        ContentStatus status = ContentStatus.valueOf(statusChangeRequest.getStatus().toUpperCase());
 //        content.setStatus(status);

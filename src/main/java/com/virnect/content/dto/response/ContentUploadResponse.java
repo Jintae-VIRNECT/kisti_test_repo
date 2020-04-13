@@ -32,8 +32,10 @@ public class ContentUploadResponse {
     private Types types;
     @ApiModelProperty(value= "작업 전환", notes = "작업전환 여부(YES, NO)", dataType = "string", position = 8, example = "NO")
     private YesOrNo converted;
-    @ApiModelProperty(value= "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 4, example = "2020-02-15T16:32:13.305")
+    @ApiModelProperty(value= "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 9, example = "2020-02-15T16:32:13.305")
     private LocalDateTime createdDate;
-    @ApiModelProperty(value= "컨텐츠 수정 일자", notes = "컨텐츠 수정 일자(수정 등록) 기간 정보입니다.", position = 5, example = "2020-02-15T16:32:13.305")
+    @ApiModelProperty(value= "컨텐츠 수정 일자", notes = "컨텐츠 수정 일자(수정 등록) 기간 정보입니다.", position = 10, example = "2020-02-15T16:32:13.305")
     private LocalDateTime updatedDate;
+    @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", position = 11, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+    private String workspaceUUID;
 }

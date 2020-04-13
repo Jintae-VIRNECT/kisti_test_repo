@@ -31,22 +31,17 @@ public class Target extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private TargetType type;
 
+    @Column(name = "data")
+    private String data;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")
     private Content content;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "target")
-    private List<TargetQRCode> targetQRCodeList;
-
-    public void addTargetQRCode(TargetQRCode targetQRCode) {
-        targetQRCode.setTarget(this);
-        targetQRCodeList.add(targetQRCode);
-    }
-
     @Builder
-    public Target(TargetType type, Content content) {
+    public Target(TargetType type, String data, Content content) {
         this.type = type;
+        this.data = data;
         this.content = content;
-        this.targetQRCodeList = new ArrayList<>();
     }
 }

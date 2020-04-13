@@ -28,6 +28,7 @@ public class Type extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private Types type;
 
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)

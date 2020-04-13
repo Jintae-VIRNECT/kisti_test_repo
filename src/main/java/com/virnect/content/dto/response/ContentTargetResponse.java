@@ -20,5 +20,5 @@ import lombok.ToString;
 public class ContentTargetResponse {
     private Long id;
     private TargetType type;
-    private String targetCode;
+    private String data;
 }
