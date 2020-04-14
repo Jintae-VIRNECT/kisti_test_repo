@@ -47,6 +47,7 @@
   display: flex;
   flex: 0;
   padding: 51px 0 23px;
+  flex-direction: column;
 }
 .tab-view__title {
   color: #d2d2d2;
@@ -55,7 +56,6 @@
 }
 .tab-view__description {
   margin-top: 9px;
-  margin-left: 19px;
   color: rgba(#fafafa, 0.3);
 }
 .tab-view__search.search {
