@@ -1,6 +1,5 @@
 package com.virnect.license.dto.request;
 
-import com.virnect.license.domain.ProductName;
 import com.virnect.license.domain.Status;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,8 +21,8 @@ import java.util.Arrays;
 public class EventCouponRequest {
     @ApiModelProperty(value = "사용자 식별번호", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String userId;
-    @ApiModelProperty(value = "선택된 제품 이름", notes = "VIEW 는 제외함", position = 1, example = "REMOTE")
-    private ProductName[] products;
+    @ApiModelProperty(value = "선택된 제품 이름", notes = "VIEW 는 제외함", dataType = "String[]", position = 1, example = "[\"REMOTE\",\"MAKE\"]")
+    private String[] products;
     @ApiModelProperty(value = "회사 이름", position = 2, example = "VIRENCT")
     private String companyName;
     @ApiModelProperty(value = "부서명", position = 3, example = "플랫폼팀")

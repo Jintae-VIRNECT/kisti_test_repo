@@ -1,7 +1,6 @@
 package com.virnect.license.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -18,6 +17,7 @@ import javax.persistence.*;
 @Setter
 @Audited
 @Table(name = "coupon_product")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CouponProduct extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +35,12 @@ public class CouponProduct extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
+
+    @Builder
+    public CouponProduct(Product product, LicenseType licenseType, Coupon coupon) {
+        this.product = product;
+        this.licenseType = licenseType;
+        this.coupon = coupon;
+    }
 }

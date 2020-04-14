@@ -1,7 +1,6 @@
 package com.virnect.license.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -20,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Audited
 @Table(name = "coupon")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,10 +75,41 @@ public class Coupon extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CouponPeriodType couponPeriodType;
 
+    @Column(name = "serial_key", nullable = false)
+    private String serialKey;
+
     @Column(name = "user_id")
     private String userId;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private CouponStatus  status = CouponStatus.UNUSE;
+    private CouponStatus status = CouponStatus.UNUSE;
+
+
+    @Builder
+    public Coupon(String company, String department, String position, String companyEmail,
+                  String callNumber, String companySite, String companyCategory,
+                  String companyService, Integer companyWorker, String content,
+                  Status personalInfoPolicy, Status marketInfoReceive, LocalDateTime expiredDate, Long duration,
+                  CouponPeriodType periodType, CouponStatus couponStatus, String userId, String serialKey) {
+        this.company = company;
+        this.department = department;
+        this.position = position;
+        this.companyEmail = companyEmail;
+        this.callNumber = callNumber;
+        this.companySite = companySite;
+        this.companyCategory = companyCategory;
+        this.companyService = companyService;
+        this.companyWorker = companyWorker;
+        this.content = content;
+        this.personalInfoPolicy = personalInfoPolicy;
+        this.marketInfoReceive = marketInfoReceive;
+        this.duration = duration;
+        this.couponPeriodType = periodType;
+        this.status = couponStatus;
+        this.userId = userId;
+        this.expiredDate = expiredDate;
+        this.serialKey = serialKey;
+    }
+
 }

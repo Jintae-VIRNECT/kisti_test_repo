@@ -40,10 +40,6 @@ public final class PageRequest {
             sort = "DESC";
         }
 
-        if (properties == null || properties.isEmpty()) {
-            properties = "createdDate";
-        }
-
         return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
     }
 }

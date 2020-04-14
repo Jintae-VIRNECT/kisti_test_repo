@@ -56,6 +56,8 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final StringPath position = createString("position");
 
+    public final StringPath serialKey = createString("serialKey");
+
     public final EnumPath<CouponStatus> status = createEnum("status", CouponStatus.class);
 
     //inherited

@@ -1,6 +1,8 @@
 package com.virnect.license.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
@@ -21,6 +23,7 @@ import java.util.List;
 @Setter
 @Audited
 @Table(name = "license_plan")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LicensePlan extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

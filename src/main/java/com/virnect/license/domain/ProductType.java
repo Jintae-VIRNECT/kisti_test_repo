@@ -1,6 +1,8 @@
 package com.virnect.license.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
@@ -21,7 +23,8 @@ import java.util.List;
 @Setter
 @Audited
 @Table(name = "product_type")
-public class ProductType extends BaseTimeEntity{
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ProductType extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_type_id")
@@ -32,4 +35,8 @@ public class ProductType extends BaseTimeEntity{
 
     @OneToMany(mappedBy = "productType", fetch = FetchType.LAZY)
     private List<Product> productList = new ArrayList<>();
+
+    public ProductType(String productTypeName) {
+        this.name = productTypeName;
+    }
 }

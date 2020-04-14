@@ -9,6 +9,11 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  mail:
+    host: email-smtp.us-west-2.amazonaws.com
+    port: 587
+    username: AKIARQGLJD3UHE5MGO5U
+    password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
 
 eureka:
   instance:
@@ -19,3 +24,8 @@ eureka:
 
 server:
   port: 8632
+
+
+# User Server Configuration
+user:
+  serverUrl: "http://localhost:8081/users"

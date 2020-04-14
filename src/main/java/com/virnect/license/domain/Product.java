@@ -1,6 +1,8 @@
 package com.virnect.license.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
@@ -18,6 +20,7 @@ import javax.persistence.*;
 @Setter
 @Audited
 @Table(name = "product")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +36,10 @@ public class Product extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_type_id")
     private ProductType productType;
+
+    public Product(String name, Integer price, ProductType productType) {
+        this.name = name;
+        this.price = price;
+        this.productType = productType;
+    }
 }
