@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 export default {
@@ -17,11 +18,27 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['account']),
+  },
   watch: {},
-  methods: {},
+  methods: {
+    ...mapActions(['updateAccount']),
+  },
 
   /* Lifecycles */
+  created() {
+    this.updateAccount({
+      userId: 123456,
+      profile: require('assets/image/img_user_profile.svg'),
+      description: null,
+      email: 'remote@remote.com',
+      name: '리모트',
+      serviceInfo: null,
+      userType: 'Manager',
+      uuid: null,
+    })
+  },
   mounted() {},
 }
 </script>

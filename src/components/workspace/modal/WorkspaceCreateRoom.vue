@@ -9,7 +9,7 @@
   >
     <div class="createroom">
       <section class="createroom-info">
-        <profile-image></profile-image>
+        <profile-image :btnText="'등록'"></profile-image>
         <input-row
           :title="'협업 이름'"
           :placeholder="'그룹이름을 입력해 주세요. (최대20자)'"

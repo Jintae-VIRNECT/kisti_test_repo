@@ -118,7 +118,7 @@ export default {
         case 'click':
           this.$el.addEventListener('click', this.togglePopover)
           window.addEventListener('click', this.windowClickHandler)
-          window.addEventListener('wheel', this.windowClickHandler)
+          // window.addEventListener('wheel', this.windowClickHandler)
           break
         case 'hover':
           this.$el.addEventListener('mouseenter', this.showPopover)
