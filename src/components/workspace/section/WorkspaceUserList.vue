@@ -12,6 +12,7 @@
       </member-card>
     </div>
     <div v-else class="no-list">
+      <div class="no-list__img"></div>
       <div class="no-list__title">협업 가능 멤버가 없습니다.</div>
       <div class="no-list__description">협업 멤버를 추가해주세요.</div>
     </div>
@@ -141,29 +142,37 @@ export default {
   row-gap: 8px;
 }
 .no-list {
-  background-image: url('~assets/image/back/mdpi_04.svg');
-  background-repeat: no-repeat;
-  height: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-}
+  justify-content: center;
+  align-items: center;
+  background-color: #29292c;
+  height: 400px;
 
-.no-list__title {
-  color: rgb(250, 250, 250);
-  font-size: 24px;
-  font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
-  letter-spacing: 0px;
-}
-.no-list__description {
-  color: rgb(250, 250, 250);
-  font-size: 18px;
-  font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
-  letter-spacing: 0px;
-  opacity: 50%;
+  .no-list__img {
+    height: 233px;
+    width: 191px;
+    background-image: url('~assets/image/mdpi_02.svg');
+    background-repeat: no-repeat;
+    margin-bottom: 30px;
+  }
+
+  .no-list__title {
+    color: rgb(250, 250, 250);
+    font-size: 24px;
+    font-family: NotoSansCJKkr-Regular;
+    font-weight: normal;
+    text-align: center;
+    letter-spacing: 0px;
+  }
+  .no-list__description {
+    color: rgb(250, 250, 250);
+    font-size: 18px;
+    font-family: NotoSansCJKkr-Regular;
+    font-weight: normal;
+    text-align: center;
+    letter-spacing: 0px;
+    opacity: 50%;
+  }
 }
 </style>
