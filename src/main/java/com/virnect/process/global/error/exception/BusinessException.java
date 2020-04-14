@@ -3,7 +3,7 @@ package com.virnect.process.global.error.exception;
 import com.virnect.process.global.error.ErrorCode;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-15
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

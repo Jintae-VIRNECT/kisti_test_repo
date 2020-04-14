@@ -3,7 +3,7 @@ package com.virnect.process.global.error;
 import io.swagger.annotations.ApiModel;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-07
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

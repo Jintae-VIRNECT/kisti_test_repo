@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-20
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

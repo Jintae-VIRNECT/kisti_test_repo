@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author jeonghyeon.chang (johnmark)
- * @project PF-SMIC_CUSTOM
+ * @project PF-ProcessManagement
  * @email practice1356@gmail.com
  * @description
  * @since 2020.03.13

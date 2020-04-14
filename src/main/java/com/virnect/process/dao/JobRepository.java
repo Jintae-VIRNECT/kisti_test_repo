@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-20
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

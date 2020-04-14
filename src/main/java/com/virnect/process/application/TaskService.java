@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-23
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProcessService {
+public class TaskService {
     private static final String CONTENT_DOWNLOAD_CONTEXT_PATH = "/contents/upload/";
     private static final String CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION = ".Ares";
     private static final LocalDateTime DEFATUL_LOCAL_DATE_TIME = LocalDateTime.parse("1500-01-01T00:00:00");

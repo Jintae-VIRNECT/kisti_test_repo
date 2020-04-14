@@ -1,6 +1,6 @@
 package com.virnect.process.api;
 
-import com.virnect.process.application.ProcessService;
+import com.virnect.process.application.TaskService;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.dto.request.*;
 import com.virnect.process.dto.response.*;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-14
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -40,56 +40,18 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/processes")
 @RequiredArgsConstructor
-public class ProcessController {
-    private final String EXAMPLE_METADATA = "{\"aruco\":\"0\",\"contents\":[{\"id\":\"0\",\"name\":\"0\",\"managerUUID\":\"0\",\"subProcessTotal\":\"0\",\"sceneGroups\":[{\"id\":\"0\",\"priority\":\"0\",\"name\":\"0\",\"jobTotal\":\"0\",\"scenes\":[{\"id\":\"0\",\"priority\":\"0\",\"name\":\"0\",\"subJobTotal\":\"0\",\"reportObjects\":[{\"id\":\"0\",\"items\":[{\"id\":\"0\",\"priority\":\"0\",\"type\":\"0\",\"title\":\"0\"}]}],\"smartToolObjects\":[{\"id\":\"0\",\"jobId\":\"0\",\"normalTorque\":\"0\",\"items\":[{\"id\":\"0\",\"batchCount\":\"0\"}]}]}]}]}]}";
-    private final ProcessService processService;
+public class TaskController {
+    private final TaskService taskService;
 
     /**
-     * ARUCO 발급
+     * 신규 할당된 하위작업 유무 조회
      *
-     * @return - aruco정보(aruco_id)
-     */
-    @ApiOperation(value = "ARUCO 발급", notes = "by 민항기\nARUCO 발급과 함께 컨텐츠 식별자도 함께 발급됩니다.\n발급된 ARUCO와 컨텐츠 식별자는 MARS파일과 메타데이터에 삽입됩니다.")
-    @ApiImplicitParams({
-    })
-    @GetMapping("/aruco")
-    public ResponseEntity<ApiResponse<ArucoWithContentUUIDResponse>> getAruco() {
-        // TODO : 2020.02.06 hkmin - aruco가 더이상 없을 때의 예외처리
-        ApiResponse<ArucoWithContentUUIDResponse> responseMessage = this.processService.getAruco();
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    /**
-     * ARUCO 회수
-     *
-     * @param deallocateRequest
-     * @param result
-     * @return
-     */
-    @ApiOperation(value = "ARUCO 회수", notes = "by 민항기\n컨텐츠가 삭제될 때 컨텐츠 식별자로 ARUCO의 삭제를 요청합니다.\n에러코드 200 : 회수가 정상처리됨.\n에러코드 5002 : ARUCO가 존재하지 않습니다.(입력된 컨텐츠 UUID로 등록된 ARUCO가 없습니다.)\n에러코드 5003 : 해당 컨텐츠 식별자는 아직 공정으로 생성되지 않았거나, 공정이 삭제되어 변환된 공정이 없습니다.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "form", required = true, example = "fae2100d-aa26-4ff6-b5dc-ffe3d06a7df4")
-    })
-    @PostMapping("/aruco")
-    public ResponseEntity<ApiResponse<ArucoDeallocateResponse>> clearArucoRelation(@RequestBody ArucoDeallocateRequest deallocateRequest, BindingResult result) {
-        if (result.hasErrors() || deallocateRequest.getContentUUID().isEmpty()) {
-            log.info("[contentUUID] => [{}]", deallocateRequest.getContentUUID());
-            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ArucoDeallocateResponse> responseMessage = this.processService.emptyAruco(deallocateRequest);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    /**
-     * 신규 할당된 세부공정 유무 조회
-     *
-     * @param workerUUID 작업자 식별자
+     * @param workerUUID 사용자 식별자
      * @return By 장정현
      */
-    @ApiOperation(value = "신규 할당된 세부공정 유무 조회", notes = "by 장정현")
+    @ApiOperation(value = "신규 할당된 하위작업 유무 조회", notes = "by 장정현")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workerUUID", value = "작업자 식별자", dataType = "string", paramType = "query", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
     })
     @GetMapping("/newWork")
     public ResponseEntity<ApiResponse<RecentSubProcessResponse>> getNewWork(@RequestParam(value = "workerUUID") String workerUUID) {
@@ -97,21 +59,21 @@ public class ProcessController {
             log.info("[workerUUID] => [{}]", workerUUID);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RecentSubProcessResponse> responseMessage = this.processService.getNewWork(workerUUID);
+        ApiResponse<RecentSubProcessResponse> responseMessage = this.taskService.getNewWork(workerUUID);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 컨텐츠 파일의 공정 조회
+     * 컨텐츠 파일의 작업 조회
      *
      * @param contentUUID 콘텐츠 식별자
      * @return
      */
-    @ApiOperation(value = "컨텐츠 파일의 공정 조회",
-            notes = "by 민항기\n컨텐츠 식별자를 통해 변환된 공정의 id를 가져옵니다.\n메이크에서 MARS파일을 수정하기 위해 open시 본 API로 공정으로 변환되었는지 확인 후 공정이 있다면 다른 이름으로 저장하도록 유도합니다.(메이크 협의 필요)" +
-                    "\nARUCO가 없다면(컨텐츠가 없다면) 5002 반환" +
-                    "\n해당 컨텐츠로 만들어진 공정이 없다면 5003 반환" +
-                    "\n해당 컨텐츠로 만들어진 공정이 있다면 공정 식별자를 반환")
+    @ApiOperation(value = "컨텐츠 파일의 작업 조회",
+            notes = "by 민항기\n컨텐츠 식별자를 통해 변환된 작업의 id를 가져옵니다." +
+                    "\n컨텐츠가 없다면 5002 반환" +
+                    "\n해당 컨텐츠로 만들어진 작업이 없다면 5003 반환" +
+                    "\n해당 컨텐츠로 만들어진 작업이 있다면 작업 식별자를 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 식별자", dataType = "string", paramType = "path", required = true, example = "fae2100d-aa26-4ff6-b5dc-ffe3d06a7df4")
     })
@@ -121,19 +83,20 @@ public class ProcessController {
             log.info("[contentUUID] => [{}]", contentUUID);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessIdRetrieveResponse> responseMessage = this.processService.getProcessIdOfContent(contentUUID);
+        ApiResponse<ProcessIdRetrieveResponse> responseMessage = this.taskService.getProcessIdOfContent(contentUUID);
         return ResponseEntity.ok(responseMessage);
     }
 
+    // TODO : ARUCO가 아닌 target 가져오기로 변경
     /**
-     * 공정과 연계된 ContentUUID와 ARUCO 가져오기
+     * 작업과 연계된 ContentUUID와 ARUCO 가져오기
      *
      * @param processId
      * @return
      */
-    @ApiOperation(value = "공정과 연계된 ContentUUID와 ARUCO 가져오기", notes = "by 민항기")
+    @ApiOperation(value = "작업과 연계된 ContentUUID와 ARUCO 가져오기", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/process/content/{processId}")
     public ResponseEntity<ApiResponse<ArucoWithContentUUIDResponse>> getRelatedInfoOfProcess(@PathVariable("processId") Long processId) {
@@ -141,75 +104,75 @@ public class ProcessController {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ArucoWithContentUUIDResponse> responseMessage = this.processService.getRelatedInfoOfProcess(processId);
+        ApiResponse<ArucoWithContentUUIDResponse> responseMessage = this.taskService.getRelatedInfoOfProcess(processId);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 공정들의 메타데이터 가져오기
+     * 작업들의 메타데이터 가져오기
      *
-     * @param processesId 공정 식별자 배열
-     * @param workerUUID  작업자 식별자
+     * @param processesId 작업 식별자 배열
+     * @param workerUUID  사용자 식별자
      * @return By 민항기
      */
-    @ApiOperation(value = "공정들의 메타데이터 가져오기", notes = "by 민항기\n뷰에서 필요한 공정들의 메타데이터를 가져온다. 다수 작업자가 동시 또는 개별 작업시 작업자별 작업이 저장됨.")
+    @ApiOperation(value = "작업들의 메타데이터 가져오기", notes = "by 민항기\n뷰에서 필요한 작업들의 메타데이터를 가져온다. 다수 사용자가 동시 또는 개별 단계수행시 사용자별 단계수행이 저장됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processesId", value = "콘텐츠 식별자 배열(ex : processesId=3,7,1,10)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1,3,4,5,7,14,16,17,18,19,20,21,22,23"),
-            @ApiImplicitParam(name = "workerUUID", value = "작업자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
     })
     @GetMapping("/metadata")
     public ResponseEntity<ApiResponse<ProcessMetadataResponse.ProcessesMetadata>> getMetadataTheProcess(@RequestParam(value = "processesId") Long[] processesId, @RequestParam(value = "workerUUID") String workerUUID) {
-        // 공정 여러개 동시 가져오기. 단 사용자 권한이 체크되어 해당 권한의 세부공정만 가져올 수 있음.
+        // 작업 여러개 동시 가져오기. 단 사용자 권한이 체크되어 해당 권한의 하위작업만 가져올 수 있음.
         if (processesId.length < 1) throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
-        ApiResponse<ProcessMetadataResponse.ProcessesMetadata> processMetadataResponseApiResponse = this.processService.getMetadataTheProcess(processesId, workerUUID);
+        ApiResponse<ProcessMetadataResponse.ProcessesMetadata> processMetadataResponseApiResponse = this.taskService.getMetadataTheProcess(processesId, workerUUID);
         return ResponseEntity.ok(processMetadataResponseApiResponse);
     }
 
     /**
-     * 세부공정들의 메타데이터 가져오기
+     * 하위작업들의 메타데이터 가져오기
      *
-     * @param subProcessesId 세부공정 식별자 배열
-     * @param workerUUID     작업자 식별자
+     * @param subProcessesId 하위작업 식별자 배열
+     * @param workerUUID     사용자 식별자
      * @return By 민항기
      */
-    @ApiOperation(value = "세부공정들의 메타데이터 가져오기", notes = "by 민항기")
+    @ApiOperation(value = "하위작업들의 메타데이터 가져오기", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "subProcessesId", value = "세부공정 식별자 배열(ex : subProcessesId=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1"),
-            @ApiImplicitParam(name = "workerUUID", value = "작업자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
+            @ApiImplicitParam(name = "subProcessesId", value = "하위작업 식별자 배열(ex : subProcessesId=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1"),
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
     })
     @GetMapping("/subProcesses/metadata")
     public ResponseEntity<ApiResponse<ProcessMetadataResponse.ProcessesMetadata>> getMetadataTheSubProcess(@RequestParam(value = "subProcessesId") Long[] subProcessesId, @RequestParam(value = "workerUUID") String workerUUID) {
         if (subProcessesId.length < 1) throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS);
-        ApiResponse<ProcessMetadataResponse.ProcessesMetadata> processMetadataResponseApiResponse = this.processService.getMetadataTheSubProcess(subProcessesId, workerUUID);
+        ApiResponse<ProcessMetadataResponse.ProcessesMetadata> processMetadataResponseApiResponse = this.taskService.getMetadataTheSubProcess(subProcessesId, workerUUID);
         return ResponseEntity.ok(processMetadataResponseApiResponse);
     }
 
     /**
-     * 업무결과 업로드(동기화)
+     * 수행결과 업로드(동기화)
      *
-     * @param workResultSyncRequest - 업로드 요청 업무 결과 데이터
+     * @param workResultSyncRequest - 업로드 요청 수행 결과 데이터
      * @param result                - 업로드 동기화 여부
      * @return By 장정현
      */
-    @ApiOperation(value = "업무결과 업로드(동기화)", notes = "by 장정현")
+    @ApiOperation(value = "수행결과 업로드(동기화)", notes = "by 장정현")
     @PostMapping("/subProcesses/subProcess/work")
     public ResponseEntity<ApiResponse<WorkResultSyncResponse>> setWorkResult(@RequestBody @Valid WorkResultSyncRequest workResultSyncRequest, BindingResult result) {
         if (result.hasErrors()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         log.info("Request Data: {}", workResultSyncRequest.toString());
-        ApiResponse<WorkResultSyncResponse> responseMessage = this.processService.uploadOrSyncWorkResult(workResultSyncRequest);
+        ApiResponse<WorkResultSyncResponse> responseMessage = this.taskService.uploadOrSyncWorkResult(workResultSyncRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 해당일의 시간대별 세부공정보고수 조회
+     * 해당일의 시간대별 하위작업보고수 조회
      *
      * @param targetDate 조회할 날짜
      * @param status     조회할 상태
      * @return
      */
-    @ApiOperation(value = "해당일의 시간대별 세부공정보고수 조회", notes = "by 민항기", tags = "dev")
+    @ApiOperation(value = "해당일의 시간대별 하위작업보고수 조회", notes = "by 민항기", tags = "dev")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetDate", value = "조회할 날짜", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "status", value = "조회할 상태", dataType = "string", paramType = "query", required = false)
@@ -220,7 +183,7 @@ public class ProcessController {
             log.info("[targetDate] => [{}]", targetDate);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<HourlyReportCountListResponse> apiResponse = this.processService.getHourlyReports(targetDate, status);
+        ApiResponse<HourlyReportCountListResponse> apiResponse = this.taskService.getHourlyReports(targetDate, status);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -234,7 +197,7 @@ public class ProcessController {
             log.info("[month] => [{}]", month);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MonthlyStatisticsResponse> dailyTotalApiResponse = this.processService.getDailyTotalRateAtMonth(month);
+        ApiResponse<MonthlyStatisticsResponse> dailyTotalApiResponse = this.taskService.getDailyTotalRateAtMonth(month);
         return ResponseEntity.ok(dailyTotalApiResponse);
     }
 
@@ -243,7 +206,7 @@ public class ProcessController {
      *
      * @param searchType 검색분류
      * @param search     검색어
-     * @param inout      공정내외 필터
+     * @param inout      작업내외 필터
      * @param pageable
      * @return
      */
@@ -251,7 +214,7 @@ public class ProcessController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "searchType", value = "검색분류(PROCESS_NAME, SUBPROCESS_NAME, JOB_NAME, USER_NAME, NONE)", dataType = "object", paramType = "query", defaultValue = "NONE"),
             @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
-            @ApiImplicitParam(name = "inout", value = "공정내외 필터 - ALL, IN, OUT", dataType = "object", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "inout", value = "작업내외 필터 - ALL, IN, OUT", dataType = "object", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
@@ -271,51 +234,51 @@ public class ProcessController {
         }
         switch (searchType) {
             case USER_NAME:
-                // 작업자명 검색시
+                // 사용자명 검색시
                 switch (inout) {
                     case IN:
-                        // 공정내에서의 작업자명 검색시
-                        issuesResponseApiResponse = this.processService.getIssuesInSearchUserName(search, pageable.of());
+                        // 작업내에서의 사용자명 검색시
+                        issuesResponseApiResponse = this.taskService.getIssuesInSearchUserName(search, pageable.of());
                         break;
                     case OUT:
-                        // 공정외에서의 작업자명 검색시
-                        issuesResponseApiResponse = this.processService.getIssuesOutSearchUserName(search, pageable.of());
+                        // 작업외에서의 사용자명 검색시
+                        issuesResponseApiResponse = this.taskService.getIssuesOutSearchUserName(search, pageable.of());
                         break;
                     default:
-                        // 모든 이슈의 작업자명 검색시
-                        issuesResponseApiResponse = this.processService.getIssuesAllSearchUserName(search, pageable.of());
+                        // 모든 이슈의 사용자명 검색시
+                        issuesResponseApiResponse = this.taskService.getIssuesAllSearchUserName(search, pageable.of());
                 }
                 break;
             case NONE:
                 // 검색어가 비어 있을 경우
                 switch (inout) {
                     case IN:
-                        issuesResponseApiResponse = this.processService.getIssuesIn(pageable.of());
+                        issuesResponseApiResponse = this.taskService.getIssuesIn(pageable.of());
                         break;
                     case OUT:
-                        issuesResponseApiResponse = this.processService.getIssuesOut(pageable.of());
+                        issuesResponseApiResponse = this.taskService.getIssuesOut(pageable.of());
                         break;
                     default:
-                        issuesResponseApiResponse = this.processService.getIssuesAll(pageable.of());
+                        issuesResponseApiResponse = this.taskService.getIssuesAll(pageable.of());
                 }
                 break;
             default:
-                // 공정, 세부공정, 작업으로 검색시
+                // 작업, 하위작업, 단계으로 검색시
                 switch (inout) {
                     case OUT:
-                        // 작업외 검색이므로 작업을 검색시 예외처리
+                        // 단계외 검색이므로 단계을 검색시 예외처리
                         throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
                     default:
-                        // 작업 내에서 공정, 세부공정, 작업을 검색
+                        // 단계 내에서 작업, 하위작업, 단계을 검색
                         switch (searchType) {
                             case PROCESS_NAME:
-                                issuesResponseApiResponse = this.processService.getIssuesInSearchProcessTitle(search, pageable.of());
+                                issuesResponseApiResponse = this.taskService.getIssuesInSearchProcessTitle(search, pageable.of());
                                 break;
                             case SUBPROCESS_NAME:
-                                issuesResponseApiResponse = this.processService.getIssuesInSearchSubProcessTitle(search, pageable.of());
+                                issuesResponseApiResponse = this.taskService.getIssuesInSearchSubProcessTitle(search, pageable.of());
                                 break;
                             case JOB_NAME:
-                                issuesResponseApiResponse = this.processService.getIssuesInSearchJobTitle(search, pageable.of());
+                                issuesResponseApiResponse = this.taskService.getIssuesInSearchJobTitle(search, pageable.of());
                                 break;
                             default:
                                 throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -329,15 +292,15 @@ public class ProcessController {
     /**
      * 리포트 목록 조회
      *
-     * @param processId    공정 식별자
-     * @param subProcessId 세부공정 식별자
+     * @param processId    작업 식별자
+     * @param subProcessId 하위작업 식별자
      * @param pageable
      * @return
      */
     @ApiOperation(value = "리포트 목록 조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자 - 공정내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "subProcessId", value = "세부공정 식별자 - 세부공정내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "processId", value = "작업 식별자 - 작업내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자 - 하위작업내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "reported", value = "보고일 필터링 여부(true, false)", dataType = "Boolean", paramType = "query", defaultValue = "false"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
@@ -346,12 +309,12 @@ public class ProcessController {
     })
     @GetMapping("/reports")
     public ResponseEntity<ApiResponse<ReportsResponse>> getReports(@RequestParam(value = "processId", required = false) Long processId, @RequestParam(value = "subProcessId", required = false) Long subProcessId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "reported", required = false) Boolean reported, @ApiIgnore PageRequest pageable) {
-        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.processService.getReports(processId, subProcessId, search, reported, pageable.of());
+        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(processId, subProcessId, search, reported, pageable.of());
         return ResponseEntity.ok(reportsResponseApiResponse);
     }
 
     /**
-     * 스마트툴 작업 목록 조회
+     * 스마트툴 단계 목록 조회
      *
      * @param subProcessId
      * @param search
@@ -359,9 +322,9 @@ public class ProcessController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "스마트툴 작업 목록 조회", notes = "by 민항기")
+    @ApiOperation(value = "스마트툴 단계 목록 조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "subProcessId", value = "세부공정 식별자 - 세부공정내에서 조회", dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자 - 하위작업내에서 조회", dataType = "string", paramType = "query", defaultValue = ""),
             @ApiImplicitParam(name = "search", value = "검색어 - smartToolJobId를 검색", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "reported", value = "보고일 필터링 여부(true, false)", dataType = "Boolean", paramType = "query", defaultValue = "false"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
@@ -370,45 +333,45 @@ public class ProcessController {
     })
     @GetMapping("/smartToolJobs")
     public ResponseEntity<ApiResponse<SmartToolsResponse>> getSmartToolJobs(@RequestParam(value = "subProcessId", required = false) Long subProcessId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "reported", required = false) Boolean reported, @ApiIgnore PageRequest pageable) {
-        ApiResponse<SmartToolsResponse> smartToolsResponseApiResponse = this.processService.getSmartToolJobs(subProcessId, search, reported, pageable.of());
+        ApiResponse<SmartToolsResponse> smartToolsResponseApiResponse = this.taskService.getSmartToolJobs(subProcessId, search, reported, pageable.of());
         return ResponseEntity.ok(smartToolsResponseApiResponse);
     }
 
     /**
-     * 전체 공정 진행률 조회
+     * 전체 작업 진행률 조회
      *
      * @return
      */
-    @ApiOperation(value = "전체 공정 진행률 조회", notes = "by 민항기")
+    @ApiOperation(value = "전체 작업 진행률 조회", notes = "by 민항기")
     @GetMapping("/totalRate")
     public ResponseEntity<ResponseMessage> getTotalRate() {
-        ResponseMessage responseMessage = this.processService.getTotalRate();
+        ResponseMessage responseMessage = this.taskService.getTotalRate();
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 전체 공정 진행률 및 공정진행상태별 현황 조회
+     * 전체 작업 진행률 및 작업진행상태별 현황 조회
      *
      * @return
      */
-    @ApiOperation(value = "전체 공정 진행률 및 공정진행상태별 현황 조회", notes = "by 민항기")
+    @ApiOperation(value = "전체 작업 진행률 및 작업진행상태별 현황 조회", notes = "by 민항기")
     @GetMapping("/statistics")
     public ResponseEntity<ApiResponse<ProcessesStatisticsResponse>> getStatistics() {
-        ApiResponse<ProcessesStatisticsResponse> processesStatisticsResponseApiResponse = this.processService.getStatistics();
+        ApiResponse<ProcessesStatisticsResponse> processesStatisticsResponseApiResponse = this.taskService.getStatistics();
         return ResponseEntity.ok(processesStatisticsResponseApiResponse);
     }
 
     /**
-     * 전체 공정의 목록을 조회
+     * 전체 작업의 목록을 조회
      *
      * @param search   검색어
      * @param pageable - 페이징 요청
      * @return
      */
-    @ApiOperation(value = "전체 공정 목록 조회", notes = "by 민항기\n")
+    @ApiOperation(value = "전체 작업 목록 조회", notes = "by 민항기\n")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "filter", value = "공정상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reported_date, name, start_date, end_date, state)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
@@ -416,19 +379,19 @@ public class ProcessController {
     @GetMapping
     public ResponseEntity<ApiResponse<ProcessListResponse>> getProcessList(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) List<Conditions> filter, @ApiIgnore PageRequest pageable) {
         // TODO : 필터 구현 필요
-        ApiResponse<ProcessListResponse> processListApiResponse = this.processService.getProcessList(search, filter, pageable.of());
+        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(search, filter, pageable.of());
         return ResponseEntity.ok(processListApiResponse);
     }
 
     /**
-     * 공정종료
+     * 작업종료
      *
-     * @param processId 공정 식별자
+     * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "공정종료", notes = "by 민항기\n진행중인 공정을 종료합니다. 더이상 공정 수행을 할 수 없게 됩니다. 또한 활성화된 공정은 하나이기 때문에 공정이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
+    @ApiOperation(value = "작업종료", notes = "by 민항기\n진행중인 작업을 종료합니다. 더이상 작업 수행을 할 수 없게 됩니다. 또한 활성화된 작업은 하나이기 때문에 작업이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
     @PutMapping("/{processId}/closed")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(@PathVariable("processId") Long processId) {
@@ -436,19 +399,19 @@ public class ProcessController {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.processService.setClosedProcess(processId);
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(processId);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
     /**
-     * 공정상세조회
+     * 작업상세조회
      *
-     * @param processId 공정 식별자
+     * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "공정상세조회", notes = "by 민항기\n공정 상세내용을 조회합니다.")
+    @ApiOperation(value = "작업상세조회", notes = "by 민항기\n작업 상세내용을 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/{processId}")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfo(@PathVariable("processId") Long processId) {
@@ -456,74 +419,74 @@ public class ProcessController {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.processService.getProcessInfo(processId);
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.getProcessInfo(processId);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
     /**
-     * 공정생성
+     * 작업생성
      *
      * @param registerNewProcess
      * @param result
      * @return
      * @throws IOException by 장정현
      */
-    @ApiOperation(value = "공정생성", notes = "by 장정현")
+    @ApiOperation(value = "작업생성", notes = "by 장정현")
     @PostMapping("/process")
     public ResponseEntity<ApiResponse<ProcessRegisterResponse>> createProcess(@RequestBody @Valid ProcessRegisterRequest registerNewProcess, BindingResult result) {
         if (result.hasErrors()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessRegisterResponse> responseMessage = this.processService.createTheProcess(registerNewProcess);
+        ApiResponse<ProcessRegisterResponse> responseMessage = this.taskService.createTheProcess(registerNewProcess);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 공정삭제
+     * 작업삭제
      *
      * @param processId
      * @return
      */
-    @ApiOperation(value = "공정삭제", notes = "by 민항기")
+    @ApiOperation(value = "작업삭제", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "10")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "10")
     })
     @DeleteMapping("/{processId}")
     public ResponseEntity<ApiResponse<ProcessSimpleResponse>> deleteProcessHandler(@PathVariable("processId") Long processId) {
-        ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.processService.deleteTheProcess(processId);
+        ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(processId);
         return ResponseEntity.ok(processSimpleResponseApiResponse);
     }
 
     /**
-     * 공정편집
+     * 작업편집
      *
-     * @param processId 공정 식별자
+     * @param processId 작업 식별자
      * @return BY 민항기
      */
-    @ApiOperation(value = "공정편집", notes = "by 민항기")
+    @ApiOperation(value = "작업편집", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
     @PostMapping("/{processId}")
     public ResponseEntity<ResponseMessage> updateProcess(@PathVariable("processId") Long processId, @RequestBody @Valid EditProcessRequest editProcessRequest, BindingResult result) {
         if (Objects.isNull(processId) || result.hasErrors()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = this.processService.updateProcess(editProcessRequest);
+        ResponseMessage responseMessage = this.taskService.updateProcess(editProcessRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 세부공정목록조회
+     * 하위작업목록조회
      *
-     * @param processId 공정 식별자
+     * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "세부공정목록조회", notes = "by 민항기")
+    @ApiOperation(value = "하위작업목록조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "filter", value = "공정상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - start_date, end_date, name, priority, reported_date)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
@@ -534,19 +497,19 @@ public class ProcessController {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<SubProcessListResponse> subProcessListResponseApiResponse = this.processService.getSubProcessList(processId, search, filter, pageable.of());
+        ApiResponse<SubProcessListResponse> subProcessListResponseApiResponse = this.taskService.getSubProcessList(processId, search, filter, pageable.of());
         return ResponseEntity.ok(subProcessListResponseApiResponse);
     }
 
     /**
-     * 워크스페이스의 전체 세부공정목록조회
+     * 워크스페이스의 전체 하위작업목록조회
      *
-     * @param processId 공정 식별자
+     * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "워크스페이스의 전체 세부공정목록조회", notes = "by 민항기")
+    @ApiOperation(value = "워크스페이스의 전체 하위작업목록조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "query", example = ""),
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "query", example = ""),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
@@ -554,36 +517,36 @@ public class ProcessController {
     })
     @GetMapping("/subProcesses")
     public ResponseEntity<ApiResponse<SubProcessesResponse>> getSubProcesses(@RequestParam(required = false, value = "processId") Long processId, @RequestParam(value = "search", required = false) String search, @ApiIgnore PageRequest pageable) {
-        ApiResponse<SubProcessesResponse> subProcessesResponseApiResponse = this.processService.getSubProcesses(processId, search, pageable.of());
+        ApiResponse<SubProcessesResponse> subProcessesResponseApiResponse = this.taskService.getSubProcesses(processId, search, pageable.of());
         return ResponseEntity.ok(subProcessesResponseApiResponse);
     }
 
     /**
-     * 세부공정 상세조회
+     * 하위작업 상세조회
      *
-     * @param subProcessId 세부공정 식별자
+     * @param subProcessId 하위작업 식별자
      * @return
      */
-    @ApiOperation(value = "세부공정 상세조회", notes = "by 민항기")
+    @ApiOperation(value = "하위작업 상세조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "subProcessId", value = "세부공정 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
+            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
     })
     @GetMapping("/subProcesses/{subProcessId}")
     public ResponseEntity<ApiResponse<SubProcessInfoResponse>> getSubProcess(@PathVariable("subProcessId") Long subProcessId) {
-        ApiResponse<SubProcessInfoResponse> subProcessesResponseApiResponse = this.processService.getSubProcess(subProcessId);
+        ApiResponse<SubProcessInfoResponse> subProcessesResponseApiResponse = this.taskService.getSubProcess(subProcessId);
         return ResponseEntity.ok(subProcessesResponseApiResponse);
     }
 
     /**
-     * 내 세부공정(나에게 할당된 세부공정) 목록 조회
+     * 내 하위작업(나에게 할당된 하위작업) 목록 조회
      *
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "내 세부공정(나에게 할당된 세부공정) 목록 조회", notes = "by 민항기\n파라미터의 공정 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 세부공정 목록 조회만 가능합니다.")
+    @ApiOperation(value = "내 하위작업(나에게 할당된 하위작업) 목록 조회", notes = "by 민항기\n파라미터의 작업 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 하위작업 목록 조회만 가능합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
-            @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "query", defaultValue = ""),
             @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명) - 미개발", dataType = "string", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
@@ -595,11 +558,11 @@ public class ProcessController {
             log.info("[workerUUID] => [{}]", workerUUID);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MyWorkListResponse> myWorkListResponseApiResponse = this.processService.getMyWorks(workerUUID, processId, search, pageable.of());
+        ApiResponse<MyWorkListResponse> myWorkListResponseApiResponse = this.taskService.getMyWorks(workerUUID, processId, search, pageable.of());
         return ResponseEntity.ok(myWorkListResponseApiResponse);
     }
 
-    @ApiOperation(value = "Aruco의 세부공정 목록 조회", notes = "by 민항기")
+    @ApiOperation(value = "Aruco의 하위작업 목록 조회", notes = "by 민항기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "arucoId", value = "ARUCO 식별자", dataType = "string", required = true, paramType = "path", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
@@ -612,19 +575,19 @@ public class ProcessController {
             log.info("[arucoId] => [{}]", arucoId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<SubProcessesOfArucoResponse> subProcessesOfArucoResponseApiResponse = this.processService.getSubProcessesOfAruco(arucoId, pageable.of());
+        ApiResponse<SubProcessesOfArucoResponse> subProcessesOfArucoResponseApiResponse = this.taskService.getSubProcessesOfAruco(arucoId, pageable.of());
         return ResponseEntity.ok(subProcessesOfArucoResponseApiResponse);
     }
 
     /**
-     * 세부공정편집
+     * 하위작업편집
      *
      * @param subProcessId
      * @return
      */
-    @ApiOperation(value = "세부공정편집", notes = "by 민항기")
+    @ApiOperation(value = "하위작업편집", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "subProcessId", value = "세부공정 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
+            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
     })
     @PostMapping("/subProcesses/{subProcessId}")
     public ResponseEntity<ResponseMessage> updateSubProcess(@PathVariable("subProcessId") Long subProcessId, @RequestBody EditSubProcessRequest subProcessRequest) {
@@ -632,22 +595,22 @@ public class ProcessController {
             log.info("[subProcessId] => [{}]", subProcessId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = this.processService.updateSubProcess(subProcessId, subProcessRequest);
+        ResponseMessage responseMessage = this.taskService.updateSubProcess(subProcessId, subProcessRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
     /**
-     * 작업목록조회
+     * 단계목록조회
      *
      * @param subProcessId
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "작업목록조회", notes = "by 민항기")
+    @ApiOperation(value = "단계목록조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "subProcessId", value = "세부공정 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
+            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "filter", value = "공정상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, is_reported)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
@@ -658,7 +621,7 @@ public class ProcessController {
             log.info("[subProcessId] => [{}]", subProcessId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<JobListResponse> jobListResponseApiResponse = this.processService.getJobs(subProcessId, search, filter, pageable.of());
+        ApiResponse<JobListResponse> jobListResponseApiResponse = this.taskService.getJobs(subProcessId, search, filter, pageable.of());
         return ResponseEntity.ok(jobListResponseApiResponse);
     }
 
@@ -678,7 +641,7 @@ public class ProcessController {
             log.info("[issueId] => [{}]", issueId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<IssueInfoResponse> issueInfoResponseApiResponse = this.processService.getIssueInfo(issueId);
+        ApiResponse<IssueInfoResponse> issueInfoResponseApiResponse = this.taskService.getIssueInfo(issueId);
         return ResponseEntity.ok(issueInfoResponseApiResponse);
     }
 
@@ -698,33 +661,33 @@ public class ProcessController {
             log.info("[reportId] => [{}]", reportId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ReportInfoResponse> reportInfoResponseApiResponse = this.processService.getReportInfo(reportId);
+        ApiResponse<ReportInfoResponse> reportInfoResponseApiResponse = this.taskService.getReportInfo(reportId);
         return ResponseEntity.ok(reportInfoResponseApiResponse);
     }
 
-    @ApiOperation(value = "aruco 값으로 활성화된(State.CREATED) 공정 조회", notes = "by 장정현")
+    @ApiOperation(value = "aruco 값으로 활성화된(State.CREATED) 작업 조회", notes = "by 장정현")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetId", value = "공정에 할당된 aruco 값", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "targetId", value = "작업에 할당된 aruco 값", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/target/{targetId}")
     public ResponseEntity<ApiResponse<ProcessTargetInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetId") Long targetId) {
         if (targetId <= 0) {
             throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
         }
-        ApiResponse<ProcessTargetInfoResponse> responseMessage = this.processService.getProcessInfoByTarget(targetId);
+        ApiResponse<ProcessTargetInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetId);
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "작업자에게 할당된 세부공정수 및 진행중인 세부공정수 조회", notes = "by 민항기")
+    @ApiOperation(value = "사용자에게 할당된 하위작업수 및 진행중인 하위작업수 조회", notes = "by 민항기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workerUUID", value = "작업자 uuid", paramType = "path", required = true, example = "449ae69cee53b8a6819053828c94e496")
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 uuid", paramType = "path", required = true, example = "449ae69cee53b8a6819053828c94e496")
     })
     @GetMapping("/subProcesses/count/onWorker/{workerUUID}")
     public ResponseEntity<ApiResponse<CountSubProcessOnWorkerResponse>> getCountSubProcessOnWorker(@PathVariable("workerUUID") String workerUUID) {
         if (workerUUID.isEmpty()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<CountSubProcessOnWorkerResponse> apiResponse = this.processService.getCountSubProcessOnWorker(workerUUID);
+        ApiResponse<CountSubProcessOnWorkerResponse> apiResponse = this.taskService.getCountSubProcessOnWorker(workerUUID);
         return ResponseEntity.ok(apiResponse);
     }
 }

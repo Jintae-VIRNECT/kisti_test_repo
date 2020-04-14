@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-19
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
