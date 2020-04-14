@@ -1,42 +1,48 @@
 <template>
-  <div class="card" :style="{ width: cardWidth, height: height + 'px' }">
-    <div class="profile--thumb">
-      <div
-        v-if="color.length > 0"
-        class="profile--image"
-        :style="{ 'background-color': color }"
-      ></div>
-      <p v-else class="profile--image">
-        <img :src="imageUrl" />
-      </p>
-      <span v-if="status" class="profile--badge" :class="status">{{
-        status
-      }}</span>
-    </div>
-    <div>{{ name }}</div>
-    <div>{{ email }}</div>
-    <role v-if="role" :role="role">{{ role }}</role>
-    <!-- <popover v-if="menu" trigger="click" placement="bottom-start">
-      <button slot="reference" class="card__button"></button>
-      <slot name="menuPopover"></slot>
-
-      <div>
-        버튼
+  <div class="card" :class="{ no__button: !showMessageButton }">
+    <div class="card-center">
+      <div class="card-center-profile--thumb" :class="{ expired: !license }">
+        <div
+          v-if="color.length > 0"
+          class="card-center-profile--image"
+          :style="{ 'background-color': color }"
+        ></div>
+        <p v-else class="card-center-profile--image">
+          <img :src="imageUrl" />
+        </p>
+        <span
+          v-if="status && license"
+          class="card-center-profile--badge"
+          :class="status"
+          >{{ status }}</span
+        >
       </div>
-    </popover>
-    <slot></slot> -->
+      <div class="card-center-profile--name" :class="{ expired: !license }">
+        {{ name }}
+      </div>
+      <div class="card-center-profile--email">{{ email }}</div>
+
+      <role v-if="role && license" :role="role" :opt="opt"></role>
+      <role
+        v-else-if="license === false"
+        :role="'라이센스 만료'"
+        :opt="opt"
+      ></role>
+    </div>
+    <div v-if="showMessageButton" class="card-bottom">
+      <p>메시지 보내기</p>
+    </div>
   </div>
 </template>
 
 <script>
-import Popover from 'Popover'
 import Role from 'Role'
 export default {
   name: 'Card',
   components: {
-    Popover,
     Role,
   },
+
   props: {
     status: {
       type: String,
@@ -48,18 +54,6 @@ export default {
     imageUrl: {
       type: String,
       default: require('assets/image/img-default-user.svg'),
-    },
-    width: {
-      type: [Number, String],
-      default: 204,
-    },
-    height: {
-      type: Number,
-      default: 244,
-    },
-    menu: {
-      type: Boolean,
-      default: false,
     },
     name: {
       type: String,
@@ -75,6 +69,14 @@ export default {
     },
     license: {
       type: Boolean,
+      default: true,
+    },
+    showMessageButton: {
+      type: Boolean,
+      default: false,
+    },
+    showSignal: {
+      type: Boolean,
       default: false,
     },
   },
@@ -89,6 +91,13 @@ export default {
         return this.width + 'px'
       }
     },
+    opt() {
+      if (this.license) {
+        return 'card'
+      } else {
+        return 'expired'
+      }
+    },
   },
   methods: {},
 
@@ -97,76 +106,78 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '~assets/style/vars';
 .card {
   display: flex;
   flex-direction: column;
-  position: relative;
-  padding: 30px;
-  background-color: #313135;
+  align-items: center;
+  padding-top: 32px;
+
+  background-color: #313135e6;
   border: solid 1px #3e3e42;
   border-radius: 2px;
-  > .popover--wrapper {
-    position: absolute;
-    top: 16px;
-    right: 16px;
+  &.no__button {
+    padding-bottom: 20px;
   }
 }
-.card__button {
-  width: 28px;
-  height: 28px;
-  background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
-}
-
-.profile {
+.card-center {
   display: flex;
-  flex-direction: row;
-  justify-content: left;
-  width: fit-content;
-}
-.profile--thumb {
-  position: relative;
-  width: 42px;
-  height: 42px;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 3;
+  min-height: 180px;
+  margin-bottom: 10px;
 }
 
-.profile--image {
+.card-center-profile--thumb {
+  position: relative;
+  width: 64px;
+  height: 64px;
+
+  &.expired {
+    height: 73px;
+    width: 73px;
+    border: solid;
+    border-width: 1.4px;
+    border-color: red;
+    border-radius: 50%;
+    padding: 3px;
+  }
+}
+
+.card-center-profile--image {
   width: 100%;
   height: 100%;
   overflow: hidden;
   line-height: 0;
   background-color: #fff;
   border-radius: 50%;
-
-  > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  > p {
-    width: fit-content;
-    margin: auto;
-    color: #fff;
-    font-size: 16px;
-    line-height: 42px;
-  }
 }
 
-.profile--text {
-  margin: 0 10px 0 18px;
-}
-.profile--maintext {
-  color: #fafafa;
-  font-weight: 500;
+.card-center-profile--name {
+  color: rgb(255, 255, 255);
   font-size: 15px;
-  line-height: 20px;
+  font-family: NotoSansCJKkr-Medium;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 17px;
+  margin-bottom: 4px;
+  &.expired {
+    margin-top: 11px;
+    margin-bottom: 3px;
+  }
 }
-.profile--subtext {
-  color: #b7b7b7;
+.card-center-profile--email {
+  color: rgb(152, 160, 166);
+  font-size: 13px;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: center;
+  margin-bottom: 11px;
 }
 
-.profile--badge {
+.card-center-profile--badge {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -184,6 +195,26 @@ export default {
   }
   &.offline {
     background-color: $color_offline;
+  }
+}
+
+.card-bottom {
+  border-top-color: rgba(62, 62, 66, 0.92);
+  border-top-style: solid;
+  border-top-width: 1px;
+  text-align: center;
+  width: 100%;
+
+  font-size: 13px;
+  font-family: NotoSansCJKkr-Regular;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0px;
+  flex-grow: 1;
+  padding-top: 14px;
+  margin-bottom: 14px;
+  > p {
+    color: rgb(255, 255, 255);
   }
 }
 </style>

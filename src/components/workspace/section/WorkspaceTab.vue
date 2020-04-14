@@ -43,7 +43,7 @@ export default {
         },
         {
           name: 'user',
-          text: '회원',
+          text: '멤버',
         },
         {
           name: 'setting',

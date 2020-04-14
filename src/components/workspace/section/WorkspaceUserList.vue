@@ -1,44 +1,38 @@
 <template>
-  <div class="test">
-    <h1 class="test-title">테스트</h1>
-    <section class="test-section" style="background-color: #1e1e20;">
-      <h2 class="subtitle">Card Flex Test</h2>
-      <div class="action-box">
-        <div class="component">
-          <div class="grid-container">
-            <member-card
-              v-for="(userinfo, index) in userInfos"
-              :key="index"
-              :name="userinfo.name"
-              :email="userinfo.mail"
-              :role="userinfo.role"
-              :status="userinfo.status"
-              :license="userinfo.license"
-            >
-            </member-card>
-            <member-card
-              v-for="(userinfo, index) in userInfos"
-              :key="index"
-              :name="userinfo.name"
-              :email="userinfo.mail"
-              :role="userinfo.role"
-              :status="userinfo.status"
-              :license="userinfo.license"
-              :showMessageButton="true"
-            >
-            </member-card>
-          </div>
-        </div>
+  <div class="grid-container">
+    <member-card
+      v-for="(userinfo, index) in list"
+      :key="index"
+      :name="userinfo.name"
+      :email="userinfo.mail"
+      :role="userinfo.role"
+      :status="userinfo.status"
+      :license="userinfo.license"
+    >
+    </member-card>
+    <div class="no-list" v-if="userList.length === 0">
+      <div style="width:500px height:500px">
+        <img src="" />
       </div>
-    </section>
+      <div class="no-list__title">협업 가능 멤버가 없습니다.</div>
+      <div class="no-list__description">협업 멤버를 추가해주세요.</div>
+    </div>
   </div>
 </template>
+
 <script>
 import MemberCard from 'MemberCard'
+import sort from 'mixins/admin/adminSort'
 export default {
-  data: function() {
+  name: 'WorkspaceUserList',
+  mixins: [sort],
+  components: {
+    MemberCard,
+  },
+  data() {
     return {
-      userInfos: [
+      //userList: [],
+      userList: [
         {
           icon: '',
           name: 'Sherry K. Demmer',
@@ -120,13 +114,26 @@ export default {
       ],
     }
   },
-  components: {
-    MemberCard,
+  computed: {
+    list() {
+      if (this.searchFilter === '') {
+        return this.userList
+      }
+
+      const array = []
+      for (const list of this.userList) {
+        // if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+        array.push(list)
+        // }
+      }
+      return array
+    },
   },
+  watch: {},
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -134,50 +141,21 @@ export default {
   row-gap: 8px;
 }
 
-.test {
-  height: 100%;
-  padding: 30px;
+.no-list__title {
+  color: rgb(250, 250, 250);
+  font-size: 24px;
+  font-family: NotoSansCJKkr-Regular;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0px;
 }
-
-.text-title {
-  margin-bottom: 30px;
-  font-weight: 500;
-}
-
-.test-section {
-  margin-bottom: 30px;
-  background-color: #787878;
-  border-radius: 10px;
-
-  .subtitle {
-    color: #fff;
-    font-weight: 500;
-  }
-  .action-box {
-    display: flex;
-    .component {
-      position: relative;
-      width: 100%;
-    }
-
-    .props {
-      flex-shrink: 0;
-      width: 600px;
-      &-option {
-        display: flex;
-        margin-bottom: 10px;
-      }
-      &-title {
-        flex-shrink: 0;
-        width: 100px;
-        padding-right: 10px;
-        color: #fff;
-        text-align: right;
-      }
-      &-options {
-        width: 100%;
-      }
-    }
-  }
+.no-list__description {
+  color: rgb(250, 250, 250);
+  font-size: 18px;
+  font-family: NotoSansCJKkr-Regular;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0px;
+  opacity: 50%;
 }
 </style>
