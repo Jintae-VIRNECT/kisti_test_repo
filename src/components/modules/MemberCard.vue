@@ -120,6 +120,7 @@ export default {
   &.no__button {
     padding-bottom: 20px;
   }
+  max-width: 204px;
 }
 .card-center {
   display: flex;
