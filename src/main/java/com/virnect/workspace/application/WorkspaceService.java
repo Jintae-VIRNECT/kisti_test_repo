@@ -112,6 +112,7 @@ public class WorkspaceService {
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
             workspaceInfo.setMasterName(userInfoRestResponse.getName());
+            workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
 
             workspaceList.add(workspaceInfo);

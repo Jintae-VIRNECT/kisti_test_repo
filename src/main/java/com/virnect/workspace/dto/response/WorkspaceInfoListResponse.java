@@ -40,6 +40,8 @@ public class WorkspaceInfoListResponse {
         private LocalDateTime joinDate;
         @ApiModelProperty(value = "해당 워크스페이스의 마스터 유저 이름", position = 7, example = "SMIC")
         private String masterName;
+        @ApiModelProperty(value = "해당 워크스페이스의 마스터 유저 프로필 사진", position = 8, example = "http://192.168.6.3:8081/users/upload/master.png")
+        private String masterProfile;
 
         @Override
         public String toString() {
