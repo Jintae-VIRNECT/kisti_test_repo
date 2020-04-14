@@ -28,8 +28,7 @@
             <div class="avatar" @click="visible.imageChangeModal = true">
               <div
                 class="image"
-                v-if="me.image"
-                :style="`background-image: url('${me.image}')`"
+                :style="`background-image: url('${profileImg}')`"
               />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
@@ -231,6 +230,10 @@ export default {
     }
   },
   computed: {
+    profileImg() {
+      if (this.me.image) return this.me.image
+      else return require('assets/images/icon/ic-user-profile.png')
+    },
     myBirth() {
       if (this.me.birth) return filters.dateFormat(this.me.birth)
       else return this.$t('profile.additional.birthEmpty')

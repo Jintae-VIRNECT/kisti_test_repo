@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header />
+      <the-header :subTitle="$t('menu.account')" :showSection="showSection" />
     </header>
     <main>
       <nuxt />
@@ -16,6 +16,16 @@ export default {
   middleware: 'default',
   components: {
     TheHeader,
+  },
+  data: function() {
+    return {
+      showSection: {
+        login: false,
+        lang: false,
+        link: true,
+        profile: true,
+      },
+    }
   },
 }
 </script>

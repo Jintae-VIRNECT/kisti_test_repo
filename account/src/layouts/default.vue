@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header />
+      <the-header :subTitle="$t('menu.account')" :showSection="showSection" />
     </header>
     <the-sidebar :menus="sideMenus" />
     <main>
@@ -24,6 +24,12 @@ export default {
   data() {
     return {
       sideMenus,
+      showSection: {
+        login: false,
+        lang: false,
+        link: true,
+        profile: true,
+      },
     }
   },
 }

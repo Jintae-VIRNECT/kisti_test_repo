@@ -26,15 +26,23 @@ export default {
     })
   },
   async updateMyImage(form) {
-    const formData = new FormData()
-    formData.append('profile', form.profile)
+    if (form.profile) {
+      const formData = new FormData()
+      formData.append('profile', form.profile)
 
-    await api('UPDATE_USER_IMAGE', {
-      route: { userId: getMyProfile().uuid },
-      params: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+      await api('UPDATE_USER_IMAGE', {
+        route: { userId: getMyProfile().uuid },
+        params: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    } else {
+      // 업로드했던 이미지 지우고 기본이미지로 수정
+      await api('UPDATE_USER_IMAGE', {
+        route: { userId: getMyProfile().uuid },
+        params: { profile: null },
+      })
+    }
   },
 }

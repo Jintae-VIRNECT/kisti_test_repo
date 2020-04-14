@@ -12,8 +12,12 @@ export default {
     // })
     return myCouponInfoList.map(coupon => new Coupon(coupon))
   },
-  async addCouponCode() {
-    return switchPromise()
+  async addCouponCode(code) {
+    const data = await api('ADD_COUPON', {
+      couponSerialKey: code,
+      userId: profileService.getMyProfile().uuid,
+    })
+    return data
   },
   async useCoupon() {
     return switchPromise()

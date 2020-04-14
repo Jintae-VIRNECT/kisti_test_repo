@@ -13,4 +13,6 @@ module.exports = {
   GET_AUTH_INFO: ['GET', '/users/info'],
   // 내 쿠폰 정보 리스트 조회
   GET_COUPONS: ['GET', '/licenses/coupon/{userId}'],
+  // 쿠폰 등록
+  ADD_COUPON: ['GET', '/licenses/coupon/register'],
 }

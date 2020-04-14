@@ -114,11 +114,12 @@ export default {
      * 쿠폰 사용
      */
     couponSelect(column) {
-      this.$alert(
+      this.$confirm(
         this.$t('coupon.useModal.desc'),
         this.$t('coupon.useModal.title'),
         {
           confirmButtonText: this.$t('coupon.useModal.submit'),
+          showCancelButton: false,
         },
       ).then(async () => {
         try {
