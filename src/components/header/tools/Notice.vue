@@ -23,6 +23,16 @@
       <div class="popover-notice__body">
         <scroller :height="400">
           <notice-item
+            section="file"
+            :info="'Harry Ha 님'"
+            :description="'파일 링크 전달드립니다.'"
+            :date="'2020.01.20 오전 11:00'"
+            :filename="'VIRNECT Remote WEB 2.0'"
+            :filelink="'https://virnect.com'"
+            :image="require('assets/image/img_user_profile.svg')"
+            btnType="file"
+          ></notice-item>
+          <notice-item
             section="message"
             :info="'Harry Ha 님'"
             :description="'통화요청 부탁드립니다.'"

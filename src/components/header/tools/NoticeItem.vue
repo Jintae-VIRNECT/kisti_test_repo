@@ -12,6 +12,9 @@
         <button class="btn small">수락</button>
         <button class="btn small sub">거절</button>
       </div>
+      <div class="notice-item__buttons" v-if="btnType === 'file'">
+        <button class="btn small sub filelink">{{ filename }}</button>
+      </div>
       <button class="notice-item__close">삭제</button>
     </div>
   </div>
@@ -41,12 +44,22 @@ export default {
       type: String,
       validate(value) {
         return (
-          ['message', 'invite', 'info', 'alert', 'license'].indexOf(value) >= 0
+          ['message', 'invite', 'info', 'alert', 'license', 'file'].indexOf(
+            value,
+          ) >= 0
         )
       },
       default: 'message',
     },
     image: {
+      type: String,
+      default: '',
+    },
+    filename: {
+      type: String,
+      default: '',
+    },
+    filelink: {
       type: String,
       default: '',
     },
@@ -127,7 +140,8 @@ export default {
   color: #f55560;
   font-size: 12px;
   &.message,
-  &.invite {
+  &.invite,
+  &.file {
     color: rgba(#fff, 0.5);
   }
 }
@@ -145,6 +159,22 @@ export default {
 .notice-item__buttons {
   > button {
     margin-right: 14px;
+    &.filelink {
+      position: relative;
+      padding-left: 40px;
+      color: #bfddff;
+      background-color: rgba(#bfddff, 0.12);
+      border: solid 1px rgba(#bfddff, 0.4);
+      &:before {
+        position: absolute;
+        top: 5px;
+        left: 10px;
+        width: 22px;
+        height: 22px;
+        background: url(~assets/image/material_link.svg) 50%/22px no-repeat;
+        content: '';
+      }
+    }
   }
 }
 </style>
