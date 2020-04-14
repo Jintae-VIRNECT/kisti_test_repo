@@ -69,7 +69,7 @@ public class WorkResultSyncRequest {
         @ApiModelProperty(value = "보고 여부", notes = "값은 \"YES\" or \"NO\" 둘 중 하나임", position = 1, example = "YES")
         private YesOrNo isReported;
         @ApiModelProperty(value = "정상작업 여부", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 2, example = "OK")
-        private String result;
+        private Result result;
         @ApiModelProperty(value = "작업의 레포트 내용", position = 3)
         private List<ReportWorkResult> reports;
         @ApiModelProperty(value = "작업의 스마트 툴 내용", position = 4)
@@ -160,7 +160,7 @@ public class WorkResultSyncRequest {
         @ApiModelProperty(value = "스마트 툴 아이템 작업 토크 값", position = 2)
         private String workingTorque;
         @ApiModelProperty(value = "스마트 툴 아이템 작업 결과", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 3, example = "OK")
-        private String result;
+        private Result result;
 
         @Override
         public String toString() {
@@ -184,7 +184,7 @@ public class WorkResultSyncRequest {
         @Override
         public String toString() {
             return "WorkIssueResult{" +
-                    "photoFile=" + photoFile +
+                    ", photoFile=" + photoFile +
                     ", caption='" + caption + '\'' +
                     '}';
         }

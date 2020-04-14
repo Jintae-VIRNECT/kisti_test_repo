@@ -34,8 +34,8 @@ public interface SubProcessRepository extends JpaRepository<SubProcess, Long>, S
             , nativeQuery = true)
     Page<SubProcess> selectSubProcesses(Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
 
-    @Query(value = "select * from sub_process s where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
-            , countQuery = "select count(*) from sub_process s where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
+    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
+            , countQuery = "select count(*) from sub_process s join process p on p.process_id = s.process_id and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
             , nativeQuery = true)
     Page<SubProcess> getMyWorksInProcess(@Param("worker") String workerUUID, Long processId, @Param("search") String search, Pageable pageable);
 

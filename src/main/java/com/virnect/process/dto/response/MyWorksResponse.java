@@ -1,6 +1,7 @@
 package com.virnect.process.dto.response;
 
 import com.virnect.process.domain.Conditions;
+import com.virnect.process.domain.State;
 import com.virnect.process.domain.YesOrNo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class MyWorksResponse {
     @NotBlank
     @ApiModelProperty(value = "공정식별자", notes = "공정식별자(UUID)", example = "1")
@@ -68,10 +68,13 @@ public class MyWorksResponse {
     private final String workerUUID;
 
     @ApiModelProperty(value = "완료된 작업수", notes = "완료된 작업의 개수", position = 15, example = "1")
-    private int doneCount;
+    private final int doneCount;
+
+    @ApiModelProperty(value = "공정 생명주기 상태", notes = "공정 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 16, example = "CREATED")
+    private final State state;
 
     @Builder
-    public MyWorksResponse(@NotBlank Long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank Long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, int doneCount) {
+    public MyWorksResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, int doneCount, State state) {
         this.processId = processId;
         this.processName = processName;
         this.contentUUID = contentUUID;
@@ -88,5 +91,6 @@ public class MyWorksResponse {
         this.isRecent = isRecent;
         this.workerUUID = workerUUID;
         this.doneCount = doneCount;
+        this.state = state;
     }
 }

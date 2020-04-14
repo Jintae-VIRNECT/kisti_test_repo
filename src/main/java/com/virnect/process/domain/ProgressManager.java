@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class ProgressManager {
     // CLOSED가 아니고 DELETED도 아닐 때의 상태
-    private static final EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>> CLOSED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED = new EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>>(RateRange.class) {
+    private static final EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>> CREATED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED = new EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>>(RateRange.class) {
         {
             put(RateRange.MIN, new EnumMap<Period, EnumMap<YesOrNo, Conditions>>(Period.class) {
                 {
@@ -36,7 +36,7 @@ public class ProgressManager {
                         put(YesOrNo.NO, Conditions.WAIT);
                     }});
                     put(Period.BETWEEN, new EnumMap<YesOrNo, Conditions>(YesOrNo.class) {{
-                        put(YesOrNo.YES, Conditions.PROGRESSING);
+                        put(YesOrNo.YES, Conditions.INCOMPLETED);
                         put(YesOrNo.NO, Conditions.PROGRESSING);
                     }});
                     put(Period.AFTER, new EnumMap<YesOrNo, Conditions>(YesOrNo.class) {{
@@ -65,7 +65,7 @@ public class ProgressManager {
     };
 
     // CLOSED이거나 DELETED일 때의 상태
-    private static final EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>> NOT_CLOSED_AND_NOT_UPDATED_AND_CLOSED_OR_DELETED = new EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>>(RateRange.class) {
+    private static final EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>> NOT_CREATED_AND_NOT_UPDATED_AND_CLOSED_OR_DELETED = new EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>>(RateRange.class) {
         {
             put(RateRange.MIN, new EnumMap<Period, EnumMap<YesOrNo, Conditions>>(Period.class) {
                 {
@@ -134,17 +134,16 @@ public class ProgressManager {
      */
     private static Conditions getConditions(LocalDateTime startDate, LocalDateTime endDate, int rate, State state, YesOrNo reportedYN, YesOrNo result) {
         // 적용조건(보고 또는 작업정상여부))
-        YesOrNo yn = reportedYN;
-
+        YesOrNo yn = result;
 
         // 공정 State
         EnumMap<RateRange, EnumMap<Period, EnumMap<YesOrNo, Conditions>>> baseRule = null;
         if (state.equals(State.CREATED) || state.equals(State.UPDATED)) {
             // 정상공정 수행일 때
-            baseRule = CLOSED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED;
+            baseRule = CREATED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED;
         } else if (state.equals(State.CLOSED) || state.equals(State.DELETED)) {
             // 공정이 종료되거나 삭제되었을 때
-            baseRule = NOT_CLOSED_AND_NOT_UPDATED_AND_CLOSED_OR_DELETED;
+            baseRule = NOT_CREATED_AND_NOT_UPDATED_AND_CLOSED_OR_DELETED;
         }
 
 
@@ -181,10 +180,9 @@ public class ProgressManager {
 
 
         // 적용조건
-        if (baseRule == CLOSED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED && rateRange == RateRange.MIDDLE && period == Period.BETWEEN) {
-            yn = result;
+        if (baseRule == CREATED_OR_UPDATED_AND_NOT_CLOSED_AND_NOT_DELETED && period == Period.BETWEEN) {
+            yn = reportedYN;
         }
-
 
         // 종합 conditions
         assert baseRule != null;
@@ -226,8 +224,8 @@ public class ProgressManager {
     // 공정의 상태
     public static Conditions getProcessConditions(Process process) {
         // 초기화
-        YesOrNo reportedYN = null;
-        YesOrNo resultYN = null;
+        YesOrNo reportedYN = YesOrNo.YES;
+        YesOrNo resultYN = YesOrNo.YES;
 
         // 세부공정들의 정보 확인
         for (SubProcess subProcess : process.getSubProcessList()) {
@@ -240,9 +238,6 @@ public class ProgressManager {
                 resultYN = YesOrNo.NO;
             }
         }
-
-        reportedYN = reportedYN == null ? YesOrNo.YES : reportedYN;
-        resultYN = resultYN == null ? YesOrNo.YES : resultYN;
 
         return getConditions(process.getStartDate()
                 , process.getEndDate()
@@ -353,7 +348,7 @@ public class ProgressManager {
     public static Conditions getJobConditions(Job job) {
         // 초기화
         YesOrNo reportedYN = job.getIsReported();
-        YesOrNo resultYN = null;
+        YesOrNo resultYN = YesOrNo.YES;
 
         // 세부공정들의 정보 확인
         for (Report report : job.getReportList()) {
@@ -373,8 +368,6 @@ public class ProgressManager {
             }
         }
 
-        resultYN = resultYN == null ? YesOrNo.YES : resultYN;
-
         return getConditions(job.getSubProcess().getStartDate()
                 , job.getSubProcess().getEndDate()
                 , getJobProgressRate(job)
@@ -385,37 +378,41 @@ public class ProgressManager {
 
     // 공정 보고가 모두 되었는지 여부
     public static YesOrNo checkAllReportedIs(List<Job> jobs) {
-        YesOrNo returnYN = null;
+        YesOrNo returnYN = YesOrNo.YES;
         for (Job job : jobs) {
             if (job.getIsReported().equals(YesOrNo.NO)) {
                 returnYN = YesOrNo.NO;
             }
         }
-        return returnYN == null ? YesOrNo.YES : returnYN;
+        return returnYN;
     }
 
 
     public static YesOrNo checkAllResult(List<Job> jobs) {
-        Result result = Result.NOK;
+        Result result = Result.OK;
+        Result reportResult = Result.OK;
+        Result smartToolResult = Result.OK;
         // 하위의 작업 아이템 결과가 하나라도 NOK라면 세부공정의 결과는 비정상
         for (Job job : jobs) {
             for (SmartTool smartTool : job.getSmartToolList()) {
-                if (smartTool.getSmartToolItemList().size() > 0) result = Result.OK;
                 for (SmartToolItem smartToolItem : smartTool.getSmartToolItemList()) {
                     if (Optional.of(smartToolItem).map(SmartToolItem::getResult).orElseGet(() -> Result.NOK).equals(Result.NOK)) {
-                        result = Result.NOK;
+                        smartToolResult = Result.NOK;
                     }
                 }
             }
             for (Report report : job.getReportList()) {
-                if (report.getItemList().size() > 0) result = Result.OK;
                 for (Item item : report.getItemList()) {
                     if (Optional.of(item).map(Item::getResult).orElseGet(() -> Result.NOK).equals(Result.NOK)) {
-                        result = Result.NOK;
+                        reportResult = Result.NOK;
                     }
                 }
             }
         }
+
+        result = smartToolResult == Result.NOK ? Result.NOK : result;
+        result = reportResult == Result.NOK ? Result.NOK : result;
+
         return result.equals(Result.NOK) ? YesOrNo.NO : YesOrNo.YES;
     }
 }

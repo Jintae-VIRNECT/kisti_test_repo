@@ -27,6 +27,7 @@ import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -45,8 +46,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProcessService {
-    private static final String CONTENT_DOWNLOAD_CONTEXT_PATH_PREFIX = "/contents/upload/";
-    private static final String CONTENT_DOWNLOAD_CONTEXT_PATH_SUFFIX = ".Ares";
+    private static final String CONTENT_DOWNLOAD_CONTEXT_PATH = "/contents/upload/";
+    private static final String CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION = ".Ares";
     private static final LocalDateTime DEFATUL_LOCAL_DATE_TIME = LocalDateTime.parse("1500-01-01T00:00:00");
     private static final Conditions INIT_CONDITIONS = Conditions.WAIT;
     private static final Integer INIT_PROGRESS_RATE = 0;
@@ -566,6 +567,7 @@ public class ProcessService {
                 .priority(job.getPriority())
                 .subJobTotal(job.getReportList().size() + job.getSmartToolList().size())
                 .conditions(job.getConditions())
+                .isReported(job.getIsReported())
                 .progressRate(job.getProgressRate())
                 .smartTools(buildSmartToolList(job.getSmartToolList()))
                 .reports(buildReportList(job.getReportList()))
@@ -938,9 +940,15 @@ public class ProcessService {
         jobWorkResults.forEach(jobWorkResult -> {
             Job job = this.jobRepository.findById(jobWorkResult.getId()).
                     orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-            job.setIsReported(jobWorkResult.getIsReported());
-            job.setResult(Result.valueOf(jobWorkResult.getResult()));
-            jobRepository.save(job);
+            if (jobWorkResult.getIsReported() != null) {
+                job.setIsReported(jobWorkResult.getIsReported());
+            }
+            if (jobWorkResult.getResult() != null) {
+                job.setResult(jobWorkResult.getResult());
+            }
+            if (jobWorkResult.getIsReported() != null || jobWorkResult.getResult() != null) {
+                jobRepository.save(job);
+            }
 
             if (jobWorkResult.getReports() != null) {
                 syncReportWork(jobWorkResult.getReports());
@@ -968,11 +976,11 @@ public class ProcessService {
         reportItemWorkResults.forEach(reportItemWorkResult -> {
             Item item = this.itemRepository.findById(reportItemWorkResult.getId())
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-            if (reportItemWorkResult.getPhotoFile() != null) {
+            if (reportItemWorkResult != null && !StringUtils.isEmpty(reportItemWorkResult.getPhotoFile())) {
                 item.setPath(getFileUploadUrl(reportItemWorkResult.getPhotoFile()));
             }
             item.setAnswer(reportItemWorkResult.getAnswer());
-            item.setResult(reportItemWorkResult.getResult());
+            item.setResult(reportItemWorkResult.getResult() == null ? INIT_RESULT : reportItemWorkResult.getResult());
             itemRepository.save(item);
         });
     }
@@ -993,7 +1001,7 @@ public class ProcessService {
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
             smartToolItem.setBatchCount(smartToolItemWorkResult.getBatchCount());
             smartToolItem.setWorkingToque(smartToolItemWorkResult.getWorkingTorque());
-            smartToolItem.setResult(Result.valueOf(smartToolItemWorkResult.getResult()));
+            smartToolItem.setResult(smartToolItemWorkResult.getResult() == null ? INIT_RESULT : smartToolItemWorkResult.getResult());
             this.smartToolItemRepository.save(smartToolItem);
         });
     }
@@ -1006,7 +1014,7 @@ public class ProcessService {
                     .content(workIssueResult.getCaption())
                     .workerUUID(syncUserUUID)
                     .build();
-            if (workIssueResult.getPhotoFile() != null) {
+            if (workIssueResult != null && !StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
                 issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile()));
             }
             issue.setJob(job);
@@ -1022,7 +1030,7 @@ public class ProcessService {
                     .content(issueResult.getCaption())
                     .workerUUID(issueResult.getWorkerUUID())
                     .build();
-            if (issueResult.getPhotoFile() != null) {
+            if (issueResult != null && !StringUtils.isEmpty(issueResult.getPhotoFile())) {
                 issue.setPath(getFileUploadUrl(issueResult.getPhotoFile()));
             }
             log.info("IssueResult: {}", issueResult);
@@ -1343,16 +1351,19 @@ public class ProcessService {
                 .build());
     }
 
+    @Transactional
     public ApiResponse<MyWorkListResponse> getMyWorks(String workerUUID, Long processId, String search, Pageable pageable) {
-        // 내 작업 조회
+        // 내 작업 조회. 종료된 공정은 제외.
         // TODO : ARUCO테이블에 process id가 없어도 조회되어야 함. 공정이 마감되면 컨텐츠와 링크는 끊기지만, 공정은 계속 조회할 수 있어야 함.
         Page<SubProcess> subProcessPage = this.subProcessRepository.getMyWorksInProcess(workerUUID, processId, search, pageable);
 //        Page<SubProcess> subProcessPage = this.subProcessRepository.findByWorkerUUID(workerUUID, pageable);
         List<MyWorksResponse> myWorksResponseList = subProcessPage.stream().map(subProcess -> {
             // 신규작업확인 처리
-            if (workerUUID == subProcess.getWorkerUUID()) {
-                subProcess.setIsRecent(YesOrNo.NO);
-                this.subProcessRepository.save(subProcess);
+            if (workerUUID.equals(subProcess.getWorkerUUID())) {
+                if (subProcess.getIsRecent() == YesOrNo.YES) {
+                    subProcess.setIsRecent(YesOrNo.NO);
+                    this.subProcessRepository.save(subProcess);
+                }
             }
 
             Process process = Optional.of(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
@@ -1363,7 +1374,7 @@ public class ProcessService {
                     .processName(process.getName())
                     .contentUUID(aruco.getContentUUID())
                     // TODO : 해당 컨텐츠(contentUUID)로 컨텐츠 DB에서 조회하여 경로를 가져와야 정상이지만, 임의로 처리함.
-                    .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH_PREFIX.concat(aruco.getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_PATH_SUFFIX))
+                    .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH.concat(aruco.getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION))
                     .subProcessId(subProcess.getId())
                     .priority(subProcess.getPriority())
                     .name(subProcess.getName())
@@ -1377,6 +1388,7 @@ public class ProcessService {
                     .workerUUID(subProcess.getWorkerUUID())
                     .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
                     .doneCount((int) subProcess.getJobList().stream().filter(job -> job.getConditions() == Conditions.COMPLETED || job.getConditions() == Conditions.SUCCESS).count())
+                    .state(process.getState())
                     .build();
         }).collect(Collectors.toList());
 
@@ -1397,7 +1409,7 @@ public class ProcessService {
                 .processId(process.getId())
                 .processName(process.getName())
                 .contentUUID(process.getAruco().getContentUUID())
-                .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH_PREFIX.concat(process.getAruco().getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_PATH_SUFFIX))
+                .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH.concat(process.getAruco().getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION))
                 .subProcesses(subProcessPage.getContent().stream().map(subProcess -> {
                     return SubProcessOfArucoResponse.builder()
                             .subProcessId(subProcess.getId())

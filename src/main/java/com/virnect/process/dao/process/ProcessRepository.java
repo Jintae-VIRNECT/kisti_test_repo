@@ -63,6 +63,12 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
             , nativeQuery = true)
     Page<Process> getProcessPageSearchUser(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
 
+    @Query(value = "select * from (SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at FROM process p JOIN sub_process s ON p.process_id = s.process_id AND STRCMP(p.state, 'CLOSED') = 0 or STRCMP(p.state, 'DELETED') = 0 WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id) a ORDER BY :orderStr :directionName, updated_at DESC", nativeQuery = true)
+    List<Process> getProcessClosedList(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, String orderStr, String directionName);
+
+    @Query(value = "select * from (SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at FROM process p JOIN sub_process s ON p.process_id = s.process_id AND STRCMP(p.state, 'CLOSED') != 0 AND STRCMP(p.state, 'DELETED') != 0 WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id) a ORDER BY :orderStr :directionName, updated_at DESC", nativeQuery = true)
+    List<Process> getProcessList(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, String orderStr, String directionName);
+
     @Query(value = "select process_id from process where aruco_id = :arucoId", nativeQuery = true)
     List<Long> getProcessIdList(Long arucoId);
 

@@ -164,22 +164,26 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "작업진행상태", notes = "작업의 진행상태", position = 4, example = "progress")
         private Conditions conditions;
 
-        @ApiModelProperty(value = "작업 진행률", notes = "작업의 진행률(%)", position = 5, example = "30")
+        @ApiModelProperty(value = "작업의 보고여부", notes = "해당 작업이 보고 되었는지의 여부", position = 5, example = "true")
+        private YesOrNo isReported;
+
+        @ApiModelProperty(value = "작업 진행률", notes = "작업의 진행률(%)", position = 6, example = "30")
         private int progressRate;
 
-        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 6)
+        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 7)
         private List<SmartTool> smartTools;
 
-        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 7)
+        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 8)
         private List<Report> reports;
 
         @Builder
-        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, int progressRate, List<SmartTool> smartTools, List<Report> reports) {
+        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, YesOrNo isReported, int progressRate, List<SmartTool> smartTools, List<Report> reports) {
             this.id = id;
             this.name = name;
             this.priority = priority;
             this.subJobTotal = subJobTotal;
             this.conditions = conditions;
+            this.isReported = isReported;
             this.progressRate = progressRate;
             this.smartTools = smartTools;
             this.reports = reports;
