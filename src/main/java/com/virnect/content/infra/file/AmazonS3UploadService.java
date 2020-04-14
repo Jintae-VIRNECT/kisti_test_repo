@@ -12,7 +12,7 @@ import java.io.IOException;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public class AmazonS3UploadService implements FileUploadService {
+public class AmazonS3UploadService implements FileUploadService, FileIOService {
     @Override
     public String upload(MultipartFile file) {
         return null;
@@ -46,5 +46,10 @@ public class AmazonS3UploadService implements FileUploadService {
     @Override
     public String base64ImageUpload(String base64Image) {
         return null;
+    }
+
+    @Override
+    public boolean copyFile(String targetUrl, String destinationaUrl) {
+        return false;
     }
 }

@@ -2,16 +2,17 @@ package com.virnect.content.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
 import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
-import com.virnect.content.dto.request.ContentStatusChangeRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
+import com.virnect.content.dto.rest.ProcessInfoResponse;
 import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.event.ContentUpdateFileRollbackEvent;
@@ -22,6 +23,9 @@ import com.virnect.content.global.error.ErrorCode;
 import com.virnect.content.infra.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,9 +35,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -51,16 +57,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContentService {
     private final FileUploadService fileUploadService;
+
     private final ContentRepository contentRepository;
     private final TargetRepository targetRepository;
     private final TypeRepository typeRepository;
+
     private final UserRestService userRestService;
+    private final ProcessRestService processRestService;
+
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Value("${upload.dir}")
     private String uploadPath;
+    private static final String ARES_FILE_EXTENSION = ".Ares";
 
     private static final YesOrNo INIT_IS_SHARED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_CONVERTED = YesOrNo.NO;
@@ -172,7 +184,8 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID())) new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
@@ -186,9 +199,11 @@ public class ContentService {
         this.fileUploadService.delete(targetContent.getPath());
 
         // 3. 수정 컨텐츠 저장
-        String fileUploadPath = null;
         try {
-            fileUploadPath = this.fileUploadService.upload(updateRequest.getContent(), targetContent.getUuid() + "");
+            String fileUploadPath = this.fileUploadService.upload(updateRequest.getContent(), targetContent.getUuid() + "");
+
+            // 4 수정 컨텐츠 경로 반영
+            targetContent.setPath(fileUploadPath);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
             // 3-1. Recover Deleted File.
@@ -196,8 +211,6 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
 
-        // 4 수정 컨텐츠 경로 반영
-        targetContent.setPath(fileUploadPath);
 
         // 5 수정 컨텐츠 파일 크기 반영
         targetContent.setSize(byteToMegaByte(updateRequest.getContent().getSize()));
@@ -225,6 +238,9 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
+        if (!targetCode.equals(content.getTargetList().get(0).getData()))
+            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+
         String regex = "/";
         String[] parts = content.getPath().split(regex);
 
@@ -235,7 +251,7 @@ public class ContentService {
      * 콘텐츠 파일 다운로드 요청 처리
      *
      * @param fileName - 콘텐츠 파일 이름
-     * @return
+     * @return - 리소스
      */
     public Resource loadContentFile(final String fileName) {
         try {
@@ -330,14 +346,15 @@ public class ContentService {
     /**
      * 콘텐츠 목록 조회
      *
-     * @param workspaceUUID
-     * @param search
-     * @param shareds
-     * @param pageable
-     * @return
+     * @param workspaceUUID - 워크스페이스 식별자
+     * @param userUUID      - 사용자 식별자
+     * @param search        - 검색어(컨텐츠명 / 사용자명)
+     * @param shared        - 공유여부
+     * @param pageable      - 페이징
+     * @return - 컨텐츠 목록
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String userUUID, String search, String shareds, Pageable pageable) {
+    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String userUUID, String search, String shared, Pageable pageable) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
         List<String> userUUIDList = new ArrayList<>();
@@ -348,9 +365,7 @@ public class ContentService {
             UserInfoListResponse userInfoList = userInfoListResult.getData();
             log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", userInfoList);
 
-            userInfoList.getUserInfoList().forEach(userInfoResponse -> {
-                userInfoMap.put(userInfoResponse.getUuid(), userInfoResponse);
-            });
+            userInfoList.getUserInfoList().forEach(userInfoResponse -> userInfoMap.put(userInfoResponse.getUuid(), userInfoResponse));
 
             userUUIDList = userInfoList.getUserInfoList().stream()
                     .map(UserInfoResponse::getUuid).collect(Collectors.toList());
@@ -359,7 +374,7 @@ public class ContentService {
 
 
         // 2. 콘텐츠 조회
-        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shareds, userUUIDList, pageable);
+        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shared, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
@@ -432,7 +447,7 @@ public class ContentService {
      * 씬그룹 목록 가져오기
      *
      * @param contentUUID - 컨텐츠 UUID
-     * @return
+     * @return - 씬그룹리스트
      */
     public ApiResponse<SceneGroupInfoListResponse> getContentSceneGroups(String contentUUID) {
         Content content = this.contentRepository.findByUuid(contentUUID)
@@ -518,24 +533,45 @@ public class ContentService {
         return new ApiResponse<>(new ContentStatisticResponse(numberOfContents, numberOfManagedContents, numberOfConvertedContents, numberOfSharedContents, numberOfDeletedContents));
     }
 
-    public ApiResponse<ContentStatusInfoResponse> updateContentStatus(ContentStatusChangeRequest statusChangeRequest) {
-        Content content = this.contentRepository.findByUuid(statusChangeRequest.getContentUUID())
+    public ApiResponse<ContentUploadResponse> convertTaskToContent(Long taskId, String userUUID) {
+        // 작업 가져오기
+        ApiResponse<ProcessInfoResponse> response = this.processRestService.getProcessInfo(taskId);
+        // 작업의 컨텐츠 식별자 가져오기
+        String contentUUID = response.getData().getContentUUID();
+        // 컨텐츠 가져오기
+        Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
         // 컨텐츠 소유자 확인
-        if (!content.getUserUUID().equals(statusChangeRequest.getUserUUID())) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-
-//        ContentStatus status = ContentStatus.valueOf(statusChangeRequest.getStatus().toUpperCase());
-//        content.setStatus(status);
-
-        this.contentRepository.save(content);
-
-        ContentStatusInfoResponse contentStatusInfo = new ContentStatusInfoResponse();
-        contentStatusInfo.setContentName(content.getName());
-        contentStatusInfo.setContentUUID(content.getUuid());
-//        contentStatusInfo.setStatus(content.getStatus());
-
-        return new ApiResponse<>(contentStatusInfo);
+        if (!content.getUserUUID().equals(userUUID))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        // 멀티파트 파일 가져오기
+        ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
+                // TODO : 공정 수정 후 반영 예정
+                .workspaceUUID(content.getWorkspaceUUID())
+                .content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+                // TODO : 공정 수정 후 반영 예정
+                .contentType(content.getType().getType())
+                .name(response.getData().getName())
+                .metadata(content.getMetadata())
+                .userUUID(content.getUserUUID())
+                // 컨텐츠:타겟은 1:1이므로
+                .targetType(content.getTargetList().get(0).getType())
+                .build();
+        return contentUpload(uploadRequest);
     }
 
+    private MultipartFile convertFileToMultipart(String fileUrl) {
+        File file = new File(fileUrl);
+        try {
+            FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+            InputStream inputStream = new FileInputStream(file);
+            OutputStream outputStream = fileItem.getOutputStream();
+            IOUtils.copy(inputStream, outputStream);
+            return new CommonsMultipartFile(fileItem);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("ERROR!! CONVERT FILE TO MULTIPARTFILE : {}", e.getMessage());
+        }
+        return null;
+    }
 }

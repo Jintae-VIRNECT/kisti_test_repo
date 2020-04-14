@@ -27,6 +27,7 @@ public enum ErrorCode {
     ERR_DELETE_CONTENT(4013, "Content File deletion failed."),
     ERR_OWNERSHIP(4014, "An error occurred in the request. Because it is NOT ownership."),
     ERR_NOT_FOUND_CONTENT_TYPE(4015, "Not found content type."),
+    ERR_MISMATCH_TARGET(4016, "Target data does not match."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
