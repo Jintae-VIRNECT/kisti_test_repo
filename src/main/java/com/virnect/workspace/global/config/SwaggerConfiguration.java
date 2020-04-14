@@ -33,11 +33,11 @@ public class SwaggerConfiguration {
         Contact contact = new Contact("이주경", "https://virnect.com", "ljk@virnect.com");
 
         ApiInfo apiInfo = new ApiInfoBuilder()
-                //.contact(contact)
-                //.description("워크스페이스 API")
+                .contact(contact)
+                .description("워크스페이스 API")
                 .version("v0.0.1")
                 .title("VIRNECT Platform Workspace Service API Document.")
-                //.license("VIRNECT INC All rights reserved.")
+                .license("VIRNECT INC All rights reserved.")
                 .build();
 
         ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
