@@ -571,6 +571,7 @@ public class ProcessService {
                 .progressRate(job.getProgressRate())
                 .smartTools(buildSmartToolList(job.getSmartToolList()))
                 .reports(buildReportList(job.getReportList()))
+                .result(job.getResult())
                 .build();
     }
 
@@ -611,6 +612,7 @@ public class ProcessService {
                 .title(item.getTitle())
                 .answer(item.getAnswer())
                 .photoFile(item.getPath())
+                .result(item.getResult())
                 .build();
     }
 
@@ -940,15 +942,9 @@ public class ProcessService {
         jobWorkResults.forEach(jobWorkResult -> {
             Job job = this.jobRepository.findById(jobWorkResult.getId()).
                     orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-            if (jobWorkResult.getIsReported() != null) {
-                job.setIsReported(jobWorkResult.getIsReported());
-            }
-            if (jobWorkResult.getResult() != null) {
-                job.setResult(jobWorkResult.getResult());
-            }
-            if (jobWorkResult.getIsReported() != null || jobWorkResult.getResult() != null) {
-                jobRepository.save(job);
-            }
+            job.setIsReported(jobWorkResult.getIsReported());
+            job.setResult(jobWorkResult.getResult() == null ? INIT_RESULT : jobWorkResult.getResult());
+            jobRepository.save(job);
 
             if (jobWorkResult.getReports() != null) {
                 syncReportWork(jobWorkResult.getReports());
@@ -976,7 +972,7 @@ public class ProcessService {
         reportItemWorkResults.forEach(reportItemWorkResult -> {
             Item item = this.itemRepository.findById(reportItemWorkResult.getId())
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-            if (reportItemWorkResult != null && !StringUtils.isEmpty(reportItemWorkResult.getPhotoFile())) {
+            if (!StringUtils.isEmpty(reportItemWorkResult.getPhotoFile())) {
                 item.setPath(getFileUploadUrl(reportItemWorkResult.getPhotoFile()));
             }
             item.setAnswer(reportItemWorkResult.getAnswer());
@@ -1014,7 +1010,7 @@ public class ProcessService {
                     .content(workIssueResult.getCaption())
                     .workerUUID(syncUserUUID)
                     .build();
-            if (workIssueResult != null && !StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
+            if (!StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
                 issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile()));
             }
             issue.setJob(job);
@@ -1030,7 +1026,7 @@ public class ProcessService {
                     .content(issueResult.getCaption())
                     .workerUUID(issueResult.getWorkerUUID())
                     .build();
-            if (issueResult != null && !StringUtils.isEmpty(issueResult.getPhotoFile())) {
+            if (!StringUtils.isEmpty(issueResult.getPhotoFile())) {
                 issue.setPath(getFileUploadUrl(issueResult.getPhotoFile()));
             }
             log.info("IssueResult: {}", issueResult);

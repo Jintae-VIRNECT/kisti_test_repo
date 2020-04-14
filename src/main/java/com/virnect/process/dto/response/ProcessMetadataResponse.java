@@ -170,14 +170,17 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "작업 진행률", notes = "작업의 진행률(%)", position = 6, example = "30")
         private int progressRate;
 
-        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 7)
-        private List<SmartTool> smartTools;
+        @ApiModelProperty(value = "작업 수행 결과", notes = "작업을 수행한 결과", position = 7, example = "NOK")
+        private Result result;
 
         @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 8)
+        private List<SmartTool> smartTools;
+
+        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 9)
         private List<Report> reports;
 
         @Builder
-        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, YesOrNo isReported, int progressRate, List<SmartTool> smartTools, List<Report> reports) {
+        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, YesOrNo isReported, int progressRate, List<SmartTool> smartTools, List<Report> reports, Result result) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -187,6 +190,7 @@ public class ProcessMetadataResponse {
             this.progressRate = progressRate;
             this.smartTools = smartTools;
             this.reports = reports;
+            this.result = result;
         }
     }
 
@@ -232,14 +236,18 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "사진파일 경로", notes = "사진파일 경로", position = 5, example = "http://localhost:8083/process/issue/photo/1.jpg")
         private String photoFile;
 
+        @ApiModelProperty(value = "리포트 항목 수행 결과", notes = "리포트 항목을 수행한 결과", position = 6, example = "NOK")
+        private Result result;
+
         @Builder
-        public ReportItem(long id, int priority, ItemType type, String title, String answer, String photoFile) {
+        public ReportItem(long id, int priority, ItemType type, String title, String answer, String photoFile, Result result) {
             this.id = id;
             this.priority = priority;
             this.type = type;
             this.title = title;
             this.answer = answer;
             this.photoFile = photoFile;
+            this.result = result;
         }
     }
 
@@ -286,7 +294,7 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "체결 작업 토크값", notes = "체결 작업된 토크값", position = 2, example = "12.20")
         private String workingToque;
 
-        @ApiModelProperty(value = "체결 결과", notes = "스마트툴에서 판정한 체결 결과", position = 3, example = "success")
+        @ApiModelProperty(value = "체결 결과", notes = "스마트툴에서 판정한 체결 결과", position = 3, example = "NOK")
         private Result result;
 
         @Builder

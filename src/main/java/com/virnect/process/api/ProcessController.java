@@ -575,12 +575,12 @@ public class ProcessController {
     }
 
     /**
-     * 내 작업(나에게 할당된 세부공정) 목록 조회
+     * 내 세부공정(나에게 할당된 세부공정) 목록 조회
      *
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "내 작업(나에게 할당된 세부공정) 목록 조회", notes = "by 민항기\n파라미터의 공정 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 작업목록 조회만 가능합니다.")
+    @ApiOperation(value = "내 세부공정(나에게 할당된 세부공정) 목록 조회", notes = "by 민항기\n파라미터의 공정 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 세부공정 목록 조회만 가능합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
             @ApiImplicitParam(name = "processId", value = "공정 식별자", dataType = "string", paramType = "query", defaultValue = ""),
