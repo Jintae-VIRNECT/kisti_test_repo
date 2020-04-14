@@ -1,65 +1,97 @@
 <template>
   <nav class="the-sidebar">
-    <div class="the-sidebar__inner">
-      <h1 class="the-sidebar__logo">
-        <nuxt-link :to="logo.path">
-          <img :src="logo.image" />
-        </nuxt-link>
-      </h1>
-      <div class="the-sidebar__upper">
-        <the-sidebar-menu-list :menus="menus" />
-      </div>
-      <div class="the-sidebar__lower">
-        <the-sidebar-menu-list :menus="bottomMenus" />
-      </div>
-    </div>
+      <el-menu-item
+        v-for="(menu, index) in menus"
+        :key="menu.path"
+        :index="index + ''"
+        :route="menu.path"
+      >
+        <i class="icon" :style="`mask-image: url(${menu.image})`" />
+        <span slot="title">{{ $t(menu.label) }}</span>
+      </el-menu-item>
+    </el-menu>
   </nav>
 </template>
 
 <script>
-import TheSidebarMenuList from './TheSidebarMenuList.vue'
-
 export default {
-  components: {
-    TheSidebarMenuList,
-  },
   props: {
-    logo: Object,
+    /**
+     * [{ path, image, label }, ...]
+     */
     menus: Array,
-    bottomMenus: Array,
+  },
+  data() {
+    return {
+      now: '0',
+      isCollapse: false,
+    }
+  },
+  watch: {
+    $route() {
+      this.detectActive()
+    },
+  },
+  methods: {
+    detectActive() {
+      const now = this.$router.currentRoute.path
+      this.now = this.menus.findIndex(menu => menu.path === now) + ''
+    },
+  },
+  mounted() {
+    this.detectActive()
   },
 }
 </script>
 
 <style lang="scss">
-$sidebar-width: 60px;
+$the-sidebar-width: 240px;
+$the-sidebar-item-height: 40px;
 
 .the-sidebar {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  width: $sidebar-width;
+  z-index: 9;
   height: 100vh;
+  border-right: 1px solid #eaedf3;
 
-  & + div {
-    padding-left: $sidebar-width;
+  & + main {
+    position: relative;
+    margin-left: $the-sidebar-width;
   }
 }
-.the-sidebar__inner {
+.the-sidebar .el-menu {
   height: 100%;
-  background-color: #1b293e;
-}
-.the-sidebar__logo {
-  img {
-    width: 100%;
-    padding: 8px 6px;
+  padding: 12px;
+  border-right: none;
+
+  &:not(.el-menu--collapse) {
+    width: $the-sidebar-width;
   }
-}
-.the-sidebar__lower {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+
+  .el-menu-item {
+    height: $the-sidebar-item-height;
+    color: #5e6b81;
+    line-height: calc(#{$the-sidebar-item-height} - 3px);
+    border-radius: 3px;
+
+    &:hover {
+      background: #f5f7fa;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      background: #919db0;
+    }
+  }
+  .el-menu-item.is-active {
+    color: #1468e2;
+    background: #dfedff;
+    .icon {
+      background: #0f75f5;
+    }
+  }
 }
 </style>
