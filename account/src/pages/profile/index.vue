@@ -286,8 +286,8 @@ export default {
   .el-card__header {
     height: 240px;
     padding: 36px 40px;
-    background: url('~assets/images/bg@2x.jpg') center no-repeat;
-    background-size: 200%;
+    background: url('~assets/images/bg_profile.jpg') center no-repeat;
+    background-size: 100%;
 
     & > div > h3 {
       display: block;

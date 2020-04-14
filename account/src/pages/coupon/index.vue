@@ -142,21 +142,10 @@ export default {
     margin-bottom: 44px;
   }
   .banner .el-card__body {
+    position: relative;
     color: #fff;
     background: url('~assets/images/bg_banner.jpg');
     cursor: pointer;
-    transition: 0.2s;
-
-    img {
-      transition: 0.2s;
-    }
-
-    &:hover {
-      filter: brightness(1.2);
-      img {
-        margin-left: 4px;
-      }
-    }
 
     & > span {
       font-weight: normal;
@@ -175,6 +164,30 @@ export default {
       & > * {
         display: inline-block;
         vertical-align: middle;
+      }
+    }
+
+    // effect
+    &:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(140deg, #fff, transparent);
+      opacity: 0;
+      content: '';
+    }
+    &:after,
+    img {
+      transition: 0.3s;
+    }
+    &:hover {
+      &:after {
+        opacity: 0.3;
+      }
+      img {
+        margin-left: 4px;
       }
     }
   }
@@ -208,6 +221,9 @@ export default {
   .coupon-list {
     tr {
       cursor: pointer;
+    }
+    th:nth-last-child(2) {
+      text-align: center;
     }
   }
 }

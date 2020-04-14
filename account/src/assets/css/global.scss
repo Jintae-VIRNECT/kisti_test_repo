@@ -12,6 +12,9 @@
 
 body {
   overflow-y: scroll;
+  .v-modal {
+    background: #020a17;
+  }
 }
 
 #__nuxt {
@@ -33,3 +36,4 @@ body {
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
 @import "@/assets/css/el-override/tooltip.scss";
+@import "@/assets/css/el-override/datepicker.scss";

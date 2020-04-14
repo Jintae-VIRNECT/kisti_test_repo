@@ -73,6 +73,12 @@
     margin: -10px -3px;
     transform: scale(0.8);
   }
+  .el-table .ascending .sort-caret.ascending {
+    border-bottom-color: $color-primary;
+  }
+  .el-table .descending .sort-caret.descending {
+    border-top-color: $color-primary;
+  }
   // 리스트 스타일
   .el-table--list {
     td,

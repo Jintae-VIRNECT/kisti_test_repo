@@ -73,6 +73,7 @@ $the-sidebar-item-height: 40px;
     height: $the-sidebar-item-height;
     color: #5e6b81;
     line-height: calc(#{$the-sidebar-item-height} - 3px);
+    border-radius: 3px;
 
     &:hover {
       background: #f5f7fa;

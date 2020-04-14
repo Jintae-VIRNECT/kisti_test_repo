@@ -1,11 +1,13 @@
 $container-width: 1280px;
+$header-height: 64px;
 
 a {
   color: $color-link;
 }
 main {
   min-width: $container-width;
-  margin-top: 64px;
+  min-height: calc(100vh - #{$header-height});
+  margin-top: $header-height;
   background: #fafbfc;
 }
 .container {

@@ -106,8 +106,8 @@ export default {
   position: absolute;
   width: 100%;
   height: 420px;
-  background: url('~assets/images/bg@2x.jpg') center no-repeat;
-  background-size: 200%;
+  background: url('~assets/images/bg_profile.jpg') center no-repeat;
+  background-size: 100%;
 }
 .page-description {
   margin-bottom: 60px;
