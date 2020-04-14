@@ -129,7 +129,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -f'
@@ -175,7 +175,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -f'
