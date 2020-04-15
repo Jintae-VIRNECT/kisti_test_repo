@@ -18,9 +18,13 @@ public class QLicensePlan extends EntityPathBase<LicensePlan> {
 
     private static final long serialVersionUID = 1477954657L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QLicensePlan licensePlan = new QLicensePlan("licensePlan");
 
     public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
+
+    public final QCoupon coupon;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
@@ -39,15 +43,24 @@ public class QLicensePlan extends EntityPathBase<LicensePlan> {
     public final StringPath userId = createString("userId");
 
     public QLicensePlan(String variable) {
-        super(LicensePlan.class, forVariable(variable));
+        this(LicensePlan.class, forVariable(variable), INITS);
     }
 
     public QLicensePlan(Path<? extends LicensePlan> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QLicensePlan(PathMetadata metadata) {
-        super(LicensePlan.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QLicensePlan(PathMetadata metadata, PathInits inits) {
+        this(LicensePlan.class, metadata, inits);
+    }
+
+    public QLicensePlan(Class<? extends LicensePlan> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.coupon = inits.isInitialized("coupon") ? new QCoupon(forProperty("coupon"), inits.get("coupon")) : null;
     }
 
 }

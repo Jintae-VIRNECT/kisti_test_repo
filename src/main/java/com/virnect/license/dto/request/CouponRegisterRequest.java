@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-License
@@ -16,8 +18,10 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class CouponRegisterRequest {
+    @NotBlank
     @ApiModelProperty(value = "사용자 식별 번호", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String userId;
-    @ApiModelProperty(value = "쿠폰 시리얼 번호", example = "")
+    @NotBlank
+    @ApiModelProperty(value = "쿠폰 시리얼 번호", example = "02851F30-B0FE-47EE-B049-CB4BEDB2F20A")
     private String couponSerialKey;
 }

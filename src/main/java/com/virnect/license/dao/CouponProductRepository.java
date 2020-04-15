@@ -11,5 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 2020.04.13
  */
 public interface CouponProductRepository extends JpaRepository<CouponProduct, Long> {
-    boolean existsByLicenseType_Name(String licenseType);
+    boolean existsByLicenseType_NameAndAndCoupon_UserId(String licenseType, String userId);
 }

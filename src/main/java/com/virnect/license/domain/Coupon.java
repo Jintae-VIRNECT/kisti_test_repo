@@ -5,6 +5,8 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -85,6 +87,11 @@ public class Coupon extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CouponStatus status = CouponStatus.UNUSE;
 
+    @OneToMany(mappedBy = "coupon")
+    List<CouponProduct> couponProductList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "coupon", fetch = FetchType.LAZY)
+    LicensePlan licensePlan;
 
     @Builder
     public Coupon(String company, String department, String position, String companyEmail,

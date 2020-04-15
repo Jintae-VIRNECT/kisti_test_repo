@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QCoupon extends EntityPathBase<Coupon> {
 
     private static final long serialVersionUID = -1740780433L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QCoupon coupon = new QCoupon("coupon");
 
@@ -39,6 +42,8 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final EnumPath<CouponPeriodType> couponPeriodType = createEnum("couponPeriodType", CouponPeriodType.class);
 
+    public final ListPath<CouponProduct, QCouponProduct> couponProductList = this.<CouponProduct, QCouponProduct>createList("couponProductList", CouponProduct.class, QCouponProduct.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
@@ -49,6 +54,8 @@ public class QCoupon extends EntityPathBase<Coupon> {
     public final DateTimePath<java.time.LocalDateTime> expiredDate = createDateTime("expiredDate", java.time.LocalDateTime.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final QLicensePlan licensePlan;
 
     public final EnumPath<Status> marketInfoReceive = createEnum("marketInfoReceive", Status.class);
 
@@ -66,15 +73,24 @@ public class QCoupon extends EntityPathBase<Coupon> {
     public final StringPath userId = createString("userId");
 
     public QCoupon(String variable) {
-        super(Coupon.class, forVariable(variable));
+        this(Coupon.class, forVariable(variable), INITS);
     }
 
     public QCoupon(Path<? extends Coupon> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QCoupon(PathMetadata metadata) {
-        super(Coupon.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QCoupon(PathMetadata metadata, PathInits inits) {
+        this(Coupon.class, metadata, inits);
+    }
+
+    public QCoupon(Class<? extends Coupon> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.licensePlan = inits.isInitialized("licensePlan") ? new QLicensePlan(forProperty("licensePlan"), inits.get("licensePlan")) : null;
     }
 
 }

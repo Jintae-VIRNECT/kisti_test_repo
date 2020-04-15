@@ -60,7 +60,7 @@ public class QLicenseProduct extends EntityPathBase<LicenseProduct> {
 
     public QLicenseProduct(Class<? extends LicenseProduct> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.licensePlan = inits.isInitialized("licensePlan") ? new QLicensePlan(forProperty("licensePlan")) : null;
+        this.licensePlan = inits.isInitialized("licensePlan") ? new QLicensePlan(forProperty("licensePlan"), inits.get("licensePlan")) : null;
         this.licenseType = inits.isInitialized("licenseType") ? new QLicenseType(forProperty("licenseType")) : null;
         this.product = inits.isInitialized("product") ? new QProduct(forProperty("product"), inits.get("product")) : null;
     }

@@ -13,8 +13,14 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel
 public enum ErrorCode {
     // 쿠폰 생성
-    ERR_CREATE_COUPON(2001, "Coupon Generate fail."),
-    ERR_ALREADY_REGISTER_EVENT_COUPON(2002, "Already event coupon is registered"),
+    ERR_CREATE_COUPON(1000, "Coupon Generate fail."),
+    ERR_ALREADY_REGISTER_EVENT_COUPON(1001, "Already event coupon is registered"),
+
+    // 쿠폰 등록
+    ERR_COUPON_NOT_FOUND(2000, "Coupon not found by serial key"),
+    ERR_COUPON_REGISTER_ALREADY_USED(2001, "Coupon is already use"),
+    ERR_COUPON_REGISTER_EXPIRED(2002, "Coupon is expired"),
+    ERR_COUPON_REGISTER_LICENSE_EXPIRED(2002, "Coupon license is expired"),
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),

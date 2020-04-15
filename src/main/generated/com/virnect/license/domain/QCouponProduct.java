@@ -56,7 +56,7 @@ public class QCouponProduct extends EntityPathBase<CouponProduct> {
 
     public QCouponProduct(Class<? extends CouponProduct> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.coupon = inits.isInitialized("coupon") ? new QCoupon(forProperty("coupon")) : null;
+        this.coupon = inits.isInitialized("coupon") ? new QCoupon(forProperty("coupon"), inits.get("coupon")) : null;
         this.licenseType = inits.isInitialized("licenseType") ? new QLicenseType(forProperty("licenseType")) : null;
         this.product = inits.isInitialized("product") ? new QProduct(forProperty("product"), inits.get("product")) : null;
     }

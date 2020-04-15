@@ -1,9 +1,6 @@
 package com.virnect.license.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -36,9 +33,22 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PlanStatus planStatus = PlanStatus.INACTIVE;
 
     @OneToMany(mappedBy = "licensePlan")
     private List<License> licenseList = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    Coupon coupon;
+
+    @Builder
+    public LicensePlan(String userId, LocalDateTime expiredDate, PlanStatus planStatus, Coupon coupon) {
+        this.userId = userId;
+        this.expiredDate = expiredDate;
+        this.planStatus = planStatus;
+        this.coupon = coupon;
+    }
 }
