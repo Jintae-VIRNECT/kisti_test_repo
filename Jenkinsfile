@@ -66,16 +66,16 @@ pipeline {
                 echo 'Test Stage'
             }
         }
-        
-   stage('Tunneling') {
-      steps {
-        echo 'SSH Check'
-         catchError() {
-          sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
-          sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
+
+        stage('Tunneling') {
+            steps {
+                echo 'SSH Check'
+                catchError() {
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
+                }
+            }
         }
-      }
-    }
 
         stage('Deploy') {
             parallel {
@@ -113,30 +113,30 @@ pipeline {
 
                             script {
                                 sshPublisher(
-                                        continueOnError: false, failOnError: true,
-                                        publishers: [
-                                                sshPublisherDesc(
-                                                        configName: 'aws-bastion-deploy-qa',
-                                                        verbose: true,
-                                                        transfers: [
-                                                                sshTransfer(
-                                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'docker image prune -f'
-                                                                )
-                                                        ]
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-qa',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
                                                 )
-                                        ]
+                                            ]
+                                        )
+                                    ]
                                 )
                             }
 
@@ -159,30 +159,30 @@ pipeline {
 
                             script {
                                 sshPublisher(
-                                        continueOnError: false, failOnError: true,
-                                        publishers: [
-                                                sshPublisherDesc(
-                                                        configName: 'aws-bastion-deploy-prod',
-                                                        verbose: true,
-                                                        transfers: [
-                                                                sshTransfer(
-                                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-gatewaye $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'docker image prune -f'
-                                                                )
-                                                        ]
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-prod',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
                                                 )
-                                        ]
+                                            ]
+                                        )
+                                    ]
                                 )
                             }
 
@@ -190,16 +190,16 @@ pipeline {
 
                     }
                 }
+            }
+        }
+
+
+
+
+    }
+    post {
+        always {
+            emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+        }
     }
 }
-
-
-             
-
-            }
-    post {
-      always {
-        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
-      }
-    }
-        }
