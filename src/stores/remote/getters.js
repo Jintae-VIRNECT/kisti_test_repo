@@ -10,4 +10,6 @@ export default {
   mute: state => !state.oncall.unmute,
 
   deviceType: state => state.device.type,
+
+  searchFilter: state => state.workspace.search.filter,
 }

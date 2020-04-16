@@ -11,3 +11,6 @@ export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
 
 export const SET_DEVICE = 'SET_DEVICE'
+
+export const SEARCH_SORT = 'SEARCH_SORT'
+export const SEARCH_FILTER = 'SEARCH_FILTER'
