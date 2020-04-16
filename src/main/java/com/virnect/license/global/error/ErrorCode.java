@@ -20,7 +20,9 @@ public enum ErrorCode {
     ERR_COUPON_NOT_FOUND(2000, "Coupon not found by serial key"),
     ERR_COUPON_REGISTER_ALREADY_USED(2001, "Coupon is already use"),
     ERR_COUPON_REGISTER_EXPIRED(2002, "Coupon is expired"),
-    ERR_COUPON_REGISTER_LICENSE_EXPIRED(2002, "Coupon license is expired"),
+
+    // 쿠폰 사용
+    ERR_COUPON_ACTIVE_NOT_FOUND(3000, "Coupon activated fail. coupon information not found"),
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),

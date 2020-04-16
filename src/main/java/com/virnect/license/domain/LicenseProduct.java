@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -42,6 +43,8 @@ public class LicenseProduct extends BaseTimeEntity {
     @JoinColumn(name = "license_type_id")
     private LicenseType licenseType;
 
+    @OneToMany(mappedBy = "licenseProduct", fetch = FetchType.LAZY)
+    private List<License> licenseList;
 
     @Builder
     public LicenseProduct(Integer quantity, Integer price, LicensePlan licensePlan, Product product, LicenseType licenseType) {

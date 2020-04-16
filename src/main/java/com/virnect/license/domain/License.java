@@ -27,17 +27,23 @@ public class License extends BaseTimeEntity {
     @Column(name = "serial_key")
     private String serialKey;
 
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "workspace_id")
+    private String workspaceId;
+
     @Column(name = "license_status")
     private LicenseStatus status = LicenseStatus.UNUSE;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ilcense_plan_id")
-    private LicensePlan licensePlan;
+    @JoinColumn(name = "license_product_id")
+    private LicenseProduct licenseProduct;
 
     @Builder
-    public License(String serialKey, LicenseStatus status, LicensePlan licensePlan) {
+    public License(String serialKey, LicenseStatus status, LicenseProduct licenseProduct) {
         this.serialKey = serialKey;
         this.status = status;
-        this.licensePlan = licensePlan;
+        this.licenseProduct = licenseProduct;
     }
 }

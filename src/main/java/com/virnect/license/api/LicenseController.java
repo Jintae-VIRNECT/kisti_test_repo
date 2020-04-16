@@ -6,6 +6,7 @@ import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.EventCouponResponse;
 import com.virnect.license.dto.response.MyCouponInfoListResponse;
+import com.virnect.license.dto.response.MyCouponInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageRequest;
@@ -53,12 +54,12 @@ public class LicenseController {
 
     @ApiOperation(value = "쿠폰 등록")
     @PostMapping("/coupon/register")
-    public ResponseEntity<ApiResponse<MyCouponInfoListResponse>> couponRegisterRequestHandler(@RequestBody @Valid CouponRegisterRequest couponRegisterRequest, BindingResult result){
+    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponRegisterRequestHandler(@RequestBody @Valid CouponRegisterRequest couponRegisterRequest, BindingResult result){
         if(result.hasErrors()){
             result.getAllErrors().forEach(System.out::println);
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MyCouponInfoListResponse> responseMessage = this.licenseService.couponRegister(couponRegisterRequest);
+        ApiResponse<MyCouponInfoResponse> responseMessage = this.licenseService.couponRegister(couponRegisterRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -81,12 +82,12 @@ public class LicenseController {
 
     @ApiOperation(value = "내 쿠폰 사용")
     @PutMapping("/coupon/active")
-    public ResponseEntity<ApiResponse<MyCouponInfoListResponse>> couponActiveRequestHandler(@RequestBody @Valid CouponActiveRequest couponActiveRequest, BindingResult result){
+    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponActiveRequestHandler(@RequestBody @Valid CouponActiveRequest couponActiveRequest, BindingResult result){
         if(result.hasErrors()){
             result.getAllErrors().forEach(System.out::println);
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MyCouponInfoListResponse> responseMessage = this.licenseService.couponActiveHandler(couponActiveRequest);
+        ApiResponse<MyCouponInfoResponse> responseMessage = this.licenseService.couponActiveHandler(couponActiveRequest);
         return ResponseEntity.ok(responseMessage);
     }
 

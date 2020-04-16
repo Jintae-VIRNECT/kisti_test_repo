@@ -29,13 +29,13 @@ public class QLicensePlan extends EntityPathBase<LicensePlan> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
-    public final DateTimePath<java.time.LocalDateTime> expiredDate = createDateTime("expiredDate", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> endDate = createDateTime("endDate", java.time.LocalDateTime.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<License, QLicense> licenseList = this.<License, QLicense>createList("licenseList", License.class, QLicense.class, PathInits.DIRECT2);
-
     public final EnumPath<PlanStatus> planStatus = createEnum("planStatus", PlanStatus.class);
+
+    public final DateTimePath<java.time.LocalDateTime> startDate = createDateTime("startDate", java.time.LocalDateTime.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;

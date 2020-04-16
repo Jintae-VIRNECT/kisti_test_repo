@@ -83,6 +83,12 @@ public class Coupon extends BaseTimeEntity {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "register_at")
+    private LocalDateTime registerDate;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private CouponStatus status = CouponStatus.UNUSE;
@@ -90,7 +96,8 @@ public class Coupon extends BaseTimeEntity {
     @OneToMany(mappedBy = "coupon")
     List<CouponProduct> couponProductList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "coupon", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "license_plan_id")
     LicensePlan licensePlan;
 
     @Builder
@@ -98,7 +105,7 @@ public class Coupon extends BaseTimeEntity {
                   String callNumber, String companySite, String companyCategory,
                   String companyService, Integer companyWorker, String content,
                   Status personalInfoPolicy, Status marketInfoReceive, LocalDateTime expiredDate, Long duration,
-                  CouponPeriodType periodType, CouponStatus couponStatus, String userId, String serialKey) {
+                  CouponPeriodType periodType, CouponStatus couponStatus, String userId, String serialKey, String name) {
         this.company = company;
         this.department = department;
         this.position = position;
@@ -117,6 +124,24 @@ public class Coupon extends BaseTimeEntity {
         this.userId = userId;
         this.expiredDate = expiredDate;
         this.serialKey = serialKey;
+        this.name = name;
     }
 
+    /**
+     * 쿠폰 만료 여부
+     *
+     * @return
+     */
+    public boolean isExpired() {
+        return this.expiredDate.isBefore(LocalDateTime.now()) || this.status.equals(CouponStatus.EXPIRED);
+    }
+
+    /**
+     * 쿠폰 사용 여부
+     *
+     * @return
+     */
+    public boolean isUsed() {
+        return this.status.equals(CouponStatus.USE);
+    }
 }

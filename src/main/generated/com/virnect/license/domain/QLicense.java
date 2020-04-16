@@ -29,7 +29,7 @@ public class QLicense extends EntityPathBase<License> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QLicensePlan licensePlan;
+    public final QLicenseProduct licenseProduct;
 
     public final StringPath serialKey = createString("serialKey");
 
@@ -37,6 +37,10 @@ public class QLicense extends EntityPathBase<License> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
+
+    public final StringPath userId = createString("userId");
+
+    public final StringPath workspaceId = createString("workspaceId");
 
     public QLicense(String variable) {
         this(License.class, forVariable(variable), INITS);
@@ -56,7 +60,7 @@ public class QLicense extends EntityPathBase<License> {
 
     public QLicense(Class<? extends License> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.licensePlan = inits.isInitialized("licensePlan") ? new QLicensePlan(forProperty("licensePlan"), inits.get("licensePlan")) : null;
+        this.licenseProduct = inits.isInitialized("licenseProduct") ? new QLicenseProduct(forProperty("licenseProduct"), inits.get("licenseProduct")) : null;
     }
 
 }

@@ -27,8 +27,11 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "license_plan_id")
     private Long id;
 
+    @Column(name = "start_at")
+    private LocalDateTime startDate;
+
     @Column(name = "expired_at")
-    private LocalDateTime expiredDate;
+    private LocalDateTime endDate;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
@@ -37,17 +40,14 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "status")
     private PlanStatus planStatus = PlanStatus.INACTIVE;
 
-    @OneToMany(mappedBy = "licensePlan")
-    private List<License> licenseList = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "licensePlan")
     Coupon coupon;
 
     @Builder
-    public LicensePlan(String userId, LocalDateTime expiredDate, PlanStatus planStatus, Coupon coupon) {
+    public LicensePlan(String userId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon) {
         this.userId = userId;
-        this.expiredDate = expiredDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.planStatus = planStatus;
         this.coupon = coupon;
     }

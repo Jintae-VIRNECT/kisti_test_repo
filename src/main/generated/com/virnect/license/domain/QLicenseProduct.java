@@ -29,6 +29,8 @@ public class QLicenseProduct extends EntityPathBase<LicenseProduct> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<License, QLicense> licenseList = this.<License, QLicense>createList("licenseList", License.class, QLicense.class, PathInits.DIRECT2);
+
     public final QLicensePlan licensePlan;
 
     public final QLicenseType licenseType;

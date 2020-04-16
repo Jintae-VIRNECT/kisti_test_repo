@@ -59,9 +59,13 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final EnumPath<Status> marketInfoReceive = createEnum("marketInfoReceive", Status.class);
 
+    public final StringPath name = createString("name");
+
     public final EnumPath<Status> personalInfoPolicy = createEnum("personalInfoPolicy", Status.class);
 
     public final StringPath position = createString("position");
+
+    public final DateTimePath<java.time.LocalDateTime> registerDate = createDateTime("registerDate", java.time.LocalDateTime.class);
 
     public final StringPath serialKey = createString("serialKey");
 

@@ -45,9 +45,10 @@ public class LicenseService {
     private final LicenseTypeRepository licenseTypeRepository;
     private final LicensePlanRepository licensePlanRepository;
     private final LicenseProductRepository licenseProductRepository;
+    private final LicenseRepository licenseRepository;
+    private final ProductTypeRepository productTypeRepository;
     private final UserRestService userRestService;
     private final EmailService emailService;
-    private final ProductTypeRepository productTypeRepository;
 
 
     /**
@@ -58,8 +59,17 @@ public class LicenseService {
      */
     @Transactional
     public ApiResponse<EventCouponResponse> generateEventCoupon(EventCouponRequest eventCouponRequest) {
+        // 1. 요청 사용자 정보 확인
+        ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserId(eventCouponRequest.getUserId());
+        if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData().getEmail() == null) {
+            log.info("User service error response: [{}]", userInfoApiResponse.getMessage());
+            throw new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON);
+        }
+
         String LICENSE_TYPE_OF_2WEEK_FREE_COUPON = "2_WEEK_FREE_TRIAL_LICENSE";
+        String COUPON_NAME = "2주 무료 사용 쿠폰";
         String serialKey = UUID.randomUUID().toString().toUpperCase();
+
 //         Check Duplicate Register Request
         boolean isAlreadyRegisterEventCoupon = this.couponProductRepository.existsByLicenseType_NameAndAndCoupon_UserId(LICENSE_TYPE_OF_2WEEK_FREE_COUPON, eventCouponRequest.getUserId());
 
@@ -87,6 +97,7 @@ public class LicenseService {
                 .expiredDate(couponExpiredDate)
                 .periodType(CouponPeriodType.DAY)
                 .couponStatus(CouponStatus.UNUSE)
+                .name(COUPON_NAME)
                 .serialKey(serialKey)
                 .userId(eventCouponRequest.getUserId())
                 .build();
@@ -96,32 +107,38 @@ public class LicenseService {
         LicenseType licenseType = this.licenseTypeRepository.findByName(LICENSE_TYPE_OF_2WEEK_FREE_COUPON)
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 
-        for (String productName : eventCouponRequest.getProducts()) {
-            Product product = this.productRepository.findByProductType_NameAndName("BASIC", productName)
-                    .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
-
-            CouponProduct couponProduct = CouponProduct.builder()
-                    .product(product)
-                    .coupon(coupon)
-                    .licenseType(licenseType)
-                    .build();
-
-            this.couponProductRepository.save(couponProduct);
-        }
-
-//        ApiResponse<UserInfoRestResponse> apiResponse = this.userRestService.getUserInfoByUserId(eventCouponRequest.getUserId());
-//        UserInfoRestResponse userInfoRestResponse = apiResponse.getData();
+        // 모든 제품군의 경우
+//        for (String productName : eventCouponRequest.getProducts()) {
+//            Product product = this.productRepository.findByProductType_NameAndName("BASIC", productName)
+//                    .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 //
-//        if (apiResponse.getCode() != 200 || userInfoRestResponse.getEmail() == null) {
-//            log.info("user server error: {}", apiResponse.toString());
-//            throw new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON);
+//            CouponProduct couponProduct = CouponProduct.builder()
+//                    .product(product)
+//                    .coupon(coupon)
+//                    .licenseType(licenseType)
+//                    .build();
+//
+//            this.couponProductRepository.save(couponProduct);
 //        }
-//
-//        EmailMessage message = new EmailMessage();
-//        message.setSubject("2주 무료 라이선스 쿠폰 발급 : 시리얼 코드를 확인하세요");
-//        message.setTo(userInfoRestResponse.getEmail());
-//        message.setMessage("Serial Key : " + serialKey);
-//        emailService.sendEmail(message);
+
+        // 메이크와 뷰 제품 (2020-04-15: MAKE VIEW 제품군만 출시일정 잡힘)
+
+        Product product = this.productRepository.findByProductType_NameAndName("BASIC", "MAKE")
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
+
+        CouponProduct couponProduct = CouponProduct.builder()
+                .product(product)
+                .coupon(coupon)
+                .licenseType(licenseType)
+                .build();
+        this.couponProductRepository.save(couponProduct);
+
+        UserInfoRestResponse userInfoRestResponse = userInfoApiResponse.getData();
+        EmailMessage message = new EmailMessage();
+        message.setSubject("2주 무료 라이선스 쿠폰 발급 : 시리얼 코드를 확인하세요");
+        message.setTo(userInfoRestResponse.getEmail());
+        message.setMessage("Serial Key : " + serialKey);
+        emailService.sendEmail(message);
 
         return new ApiResponse<>(new EventCouponResponse(true, coupon.getCreatedDate()));
     }
@@ -134,62 +151,35 @@ public class LicenseService {
      */
 
     @Transactional
-    public ApiResponse<MyCouponInfoListResponse> couponRegister(CouponRegisterRequest couponRegisterRequest) {
+    public ApiResponse<MyCouponInfoResponse> couponRegister(CouponRegisterRequest couponRegisterRequest) {
         // 1. 쿠폰 조회
         Coupon coupon = this.couponRepository.findByUserIdAndSerialKey(couponRegisterRequest.getUserId(), couponRegisterRequest.getCouponSerialKey())
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_NOT_FOUND));
 
         // 2. 쿠폰 사용 여부 검사
-        if (coupon.getStatus().equals(CouponStatus.USE)) {
+        if (coupon.isUsed()) {
             throw new LicenseServiceException(ErrorCode.ERR_COUPON_REGISTER_ALREADY_USED);
         }
 
         // 3. 쿠폰 만료일 검사
-        if (coupon.getExpiredDate().isBefore(LocalDateTime.now()) || coupon.getStatus().equals(CouponStatus.EXPIRED)) {
+        if (coupon.isExpired()) {
             throw new LicenseServiceException(ErrorCode.ERR_COUPON_REGISTER_EXPIRED);
         }
 
-        // 4. 쿠폰 상태 변경 (미사용 -> 사용)
-        coupon.setStatus(CouponStatus.USE);
+        // 4. 쿠폰 등록 일자 수정
+        coupon.setRegisterDate(LocalDateTime.now());
 
         this.couponRepository.save(coupon);
-        // 5. 쿠폰 기반으로 라이선스 정보 등록
-        licenseRegisterByCouponProduct(couponRegisterRequest.getUserId(), coupon);
+
+        MyCouponInfoResponse registerCouponInfo = new MyCouponInfoResponse();
+        registerCouponInfo.setId(coupon.getId());
+        registerCouponInfo.setName(coupon.getName());
+        registerCouponInfo.setStatus(coupon.getStatus());
+        registerCouponInfo.setExpiredDate(coupon.getExpiredDate());
+        registerCouponInfo.setRegisterDate(coupon.getCreatedDate());
 
 
-        return null;
-    }
-
-
-    private void licenseRegisterByCouponProduct(String userId, Coupon coupon) {
-        // 1. 라이선스 플랜 생성
-        LicensePlan licensePlan = LicensePlan.builder()
-                .expiredDate(LocalDateTime.now().plusDays(coupon.getDuration()))
-                .userId(userId)
-                .coupon(coupon)
-                .planStatus(PlanStatus.ACTIVE)
-                .build();
-
-        this.licensePlanRepository.save(licensePlan);
-
-        List<CouponProduct> couponProductList = coupon.getCouponProductList();
-
-        // 2. 쿠폰 기반으로 쿠폰에 관련된 상품 정보 입력
-        for (CouponProduct couponProduct : couponProductList) {
-            // 2-1. 쿠폰 상품 조회
-            Product product = couponProduct.getProduct();
-            // 2-2. 쿠폰에 부여된 라이선스 타입 조회
-            LicenseType licenseType = couponProduct.getLicenseType();
-            LicenseProduct licenseProduct = LicenseProduct.builder()
-                    .product(product)
-                    .licenseType(licenseType)
-                    .price(product.getPrice() * 9)
-                    .quantity(9)
-                    .licensePlan(licensePlan)
-                    .build();
-
-            this.licenseProductRepository.save(licenseProduct);
-        }
+        return new ApiResponse<>(registerCouponInfo);
     }
 
     /**
@@ -201,19 +191,19 @@ public class LicenseService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<MyCouponInfoListResponse> getMyCouponInfoList(String userId, Pageable pageable) {
-        Page<Coupon> couponList = couponRepository.findByUserId(userId, pageable);
+        Page<Coupon> couponList = couponRepository.findMyCouponListByUserIdAndPageable(userId, pageable);
 
         List<MyCouponInfoResponse> couponInfoList = couponList.stream().map(coupon -> {
             MyCouponInfoResponse myCouponInfo = new MyCouponInfoResponse();
             myCouponInfo.setId(coupon.getId());
-            myCouponInfo.setName("2주 무료 사용 쿠폰");
+            myCouponInfo.setName(coupon.getName());
             myCouponInfo.setStatus(coupon.getStatus());
             myCouponInfo.setRegisterDate(coupon.getCreatedDate());
             myCouponInfo.setExpiredDate(coupon.getExpiredDate());
             if (coupon.getStatus().equals(CouponStatus.USE)) {
                 LicensePlan licensePlan = coupon.getLicensePlan();
-                myCouponInfo.setStartDate(licensePlan.getCreatedDate());
-                myCouponInfo.setExpiredDate(licensePlan.getExpiredDate());
+                myCouponInfo.setStartDate(licensePlan.getStartDate());
+                myCouponInfo.setExpiredDate(licensePlan.getEndDate());
             }
             return myCouponInfo;
         }).collect(Collectors.toList());
@@ -234,7 +224,67 @@ public class LicenseService {
      * @param couponActiveRequest
      * @return
      */
-    public ApiResponse<MyCouponInfoListResponse> couponActiveHandler(CouponActiveRequest couponActiveRequest) {
-        return null;
+    @Transactional
+    public ApiResponse<MyCouponInfoResponse> couponActiveHandler(CouponActiveRequest couponActiveRequest) {
+        Coupon coupon = this.couponRepository.findByUserIdAndId(couponActiveRequest.getUserId(), couponActiveRequest.getCouponId())
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_ACTIVE_NOT_FOUND));
+
+        // 1. 라이선스 플랜 생성
+        LicensePlan licensePlan = LicensePlan.builder()
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(coupon.getDuration()))
+                .userId(couponActiveRequest.getUserId())
+                .planStatus(PlanStatus.ACTIVE)
+                .coupon(coupon)
+                .build();
+
+        this.licensePlanRepository.save(licensePlan);
+
+        coupon.setStatus(CouponStatus.USE);
+        this.couponRepository.save(coupon);
+
+        // 5. 쿠폰 기반으로 라이선스 정보 등록
+        licenseRegisterByCouponProduct(coupon.getUserId(), coupon, licensePlan);
+        MyCouponInfoResponse myCouponInfoResponse = new MyCouponInfoResponse();
+        myCouponInfoResponse.setId(coupon.getId());
+        myCouponInfoResponse.setRegisterDate(coupon.getRegisterDate());
+        myCouponInfoResponse.setExpiredDate(coupon.getExpiredDate());
+        myCouponInfoResponse.setStartDate(licensePlan.getStartDate());
+        myCouponInfoResponse.setEndDate(licensePlan.getEndDate());
+        return new ApiResponse<>(myCouponInfoResponse);
     }
+
+
+    private void licenseRegisterByCouponProduct(String userId, Coupon coupon, LicensePlan licensePlan) {
+        List<CouponProduct> couponProductList = coupon.getCouponProductList();
+
+        // 2. 쿠폰 기반으로 쿠폰에 관련된 상품 정보 입력
+        for (CouponProduct couponProduct : couponProductList) {
+            // 2-1. 쿠폰 상품 조회
+            Product product = couponProduct.getProduct();
+            // 2-2. 쿠폰에 부여된 라이선스 타입 조회
+            LicenseType licenseType = couponProduct.getLicenseType();
+            // 2-3. 라이선스 타입에 맞는 상품 등록
+            LicenseProduct licenseProduct = LicenseProduct.builder()
+                    .product(product)
+                    .licenseType(licenseType)
+                    .price(product.getPrice())
+                    .quantity(1)
+                    .licensePlan(licensePlan)
+                    .build();
+
+            this.licenseProductRepository.save(licenseProduct);
+
+            // 2-4. 라이선스 상품별 사용가능한 라이선스 생성
+            for (int i = 0; i < licenseProduct.getQuantity(); i++) {
+                License license = License.builder()
+                        .status(LicenseStatus.UNUSE)
+                        .serialKey(UUID.randomUUID().toString().toUpperCase())
+                        .licenseProduct(licenseProduct)
+                        .build();
+                this.licenseRepository.save(license);
+            }
+        }
+    }
+
 }

@@ -1,5 +1,9 @@
 package com.virnect.license.dao;
 
+import com.virnect.license.domain.Coupon;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-License
@@ -8,5 +12,5 @@ package com.virnect.license.dao;
  * @since 2020.04.14
  */
 public interface CouponCustomRepository {
-    boolean hasAlreadyGenerateEventCoupon(String userId);
+    Page<Coupon> findMyCouponListByUserIdAndPageable(String userId, Pageable pageable);
 }
