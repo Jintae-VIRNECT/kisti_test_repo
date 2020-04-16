@@ -23,7 +23,7 @@ export default {
 
 <style lang="scss" scoped>
 .icon-button {
-  margin-top: 10px;
+  margin-left: 9px;
   background: rgb(41, 41, 44);
   border-radius: 2px;
   width: 104px;

@@ -78,10 +78,13 @@
   margin-top: 9px;
   color: rgba(#fafafa, 0.3);
 }
-.tab-view__search.search {
-  position: absolute;
-  right: 0;
+
+.tab-view__tools{
+  display: flex;
+  align-items: center;
+  
 }
+
 .tab-view__sub-header{
   padding-bottom: 23px;
   display: flex;

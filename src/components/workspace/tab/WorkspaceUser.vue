@@ -4,6 +4,8 @@
     description="협업 가능한 회원을 선택하고 메세지를 보내보세요."
     placeholder="멤버 검색"
     :showListCountBadge="true"
+    :showDeleteButton="false"
+    :showRefreshButton="true"
     ><scroller> <workspace-user-list></workspace-user-list></scroller> >
     ></tab-view
   >
