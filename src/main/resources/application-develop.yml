@@ -78,9 +78,9 @@ spring:
           filters:
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
         - id: message-server
-            uri: lb://message-server
-            predicates:
-              - Path=/message**
+          uri: lb://message-server
+          predicates:
+            - Path=/message**
         - id: message-api-docs
           uri: lb://message-server
           predicates:
@@ -88,9 +88,9 @@ spring:
           filters:
             - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
         - id: download-server
-            uri: lb://download-server
-            predicates:
-              - Path=/download**
+          uri: lb://download-server
+          predicates:
+            - Path=/download**
         - id: download-api-docs
           uri: lb://download-server
           predicates:
