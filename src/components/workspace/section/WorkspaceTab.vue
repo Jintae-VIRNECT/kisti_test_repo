@@ -21,6 +21,7 @@ import WorkspaceHistory from '../tab/WorkspaceHistory'
 import WorkspaceRemote from '../tab/WorkspaceRemote'
 import WorkspaceUser from '../tab/WorkspaceUser'
 import WorkspaceSetting from '../tab/WorkspaceSetting'
+import ListBadge from 'ListBadge'
 export default {
   name: 'WorkspaceTab',
   components: {
@@ -29,6 +30,7 @@ export default {
     remote: WorkspaceRemote,
     user: WorkspaceUser,
     setting: WorkspaceSetting,
+    ListBadge,
   },
   data() {
     return {

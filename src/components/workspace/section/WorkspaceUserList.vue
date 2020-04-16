@@ -1,19 +1,18 @@
 <template>
-  <div class="grid-container">
-    <member-card
-      v-for="(userinfo, index) in list"
-      :key="index"
-      :name="userinfo.name"
-      :email="userinfo.mail"
-      :role="userinfo.role"
-      :status="userinfo.status"
-      :license="userinfo.license"
-    >
-    </member-card>
-    <div class="no-list" v-if="userList.length === 0">
-      <div style="width:500px height:500px">
-        <img src="" />
-      </div>
+  <div>
+    <div v-if="list.length > 0" class="grid-container">
+      <member-card
+        v-for="(userinfo, index) in list"
+        :key="index"
+        :name="userinfo.name"
+        :email="userinfo.mail"
+        :role="userinfo.role"
+        :license="userinfo.license"
+      >
+      </member-card>
+    </div>
+    <div v-else class="no-list">
+      <div class="no-list__img"></div>
       <div class="no-list__title">협업 가능 멤버가 없습니다.</div>
       <div class="no-list__description">협업 멤버를 추가해주세요.</div>
     </div>
@@ -122,40 +121,58 @@ export default {
 
       const array = []
       for (const list of this.userList) {
-        // if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
-        array.push(list)
-        // }
+        if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+          array.push(list)
+        }
       }
       return array
     },
   },
-  watch: {},
+  watch: {
+    searchFilter() {},
+  },
 }
 </script>
 
 <style lang="scss">
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   column-gap: 8px;
   row-gap: 8px;
 }
+.no-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #29292c;
+  height: 400px;
 
-.no-list__title {
-  color: rgb(250, 250, 250);
-  font-size: 24px;
-  font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
-  letter-spacing: 0px;
-}
-.no-list__description {
-  color: rgb(250, 250, 250);
-  font-size: 18px;
-  font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
-  letter-spacing: 0px;
-  opacity: 50%;
+  .no-list__img {
+    height: 233px;
+    width: 191px;
+    background-image: url('~assets/image/mdpi_02.svg');
+    background-repeat: no-repeat;
+    margin-bottom: 30px;
+  }
+
+  .no-list__title {
+    color: rgb(250, 250, 250);
+    font-size: 24px;
+    font-family: NotoSansCJKkr-Regular;
+    font-weight: normal;
+    text-align: center;
+    letter-spacing: 0px;
+  }
+  .no-list__description {
+    color: rgb(250, 250, 250);
+    font-size: 18px;
+    font-family: NotoSansCJKkr-Regular;
+    font-weight: normal;
+    text-align: center;
+    letter-spacing: 0px;
+    opacity: 50%;
+  }
 }
 </style>

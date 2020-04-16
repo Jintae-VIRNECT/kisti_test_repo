@@ -44,4 +44,12 @@ export default {
   setDeviceType({ commit }, payload) {
     commit(types.SET_DEVICE, payload)
   },
+
+  /**
+   * filter
+   * @param {String} payload
+   */
+  setFilter({ commit }, payload) {
+    commit(types.SEARCH_FILTER, payload)
+  },
 }

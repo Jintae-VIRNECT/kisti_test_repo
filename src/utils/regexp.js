@@ -34,3 +34,7 @@ export const validGroupName = target => {
 export const validId = target => {
   return id.test(target)
 }
+
+export const escapeRegExp = string => {
+  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
+}

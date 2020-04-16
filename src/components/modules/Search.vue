@@ -4,12 +4,14 @@
       class="search__input"
       type="text"
       :placeholder="placeholder"
-      v-model="search"
+      v-on:input="search = $event.target.value"
     />
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import * as Regexp from 'utils/regexp'
 export default {
   name: 'Search',
   props: {
@@ -30,13 +32,19 @@ export default {
   watch: {
     search(sch) {
       console.log(sch)
+      sch = Regexp.escapeRegExp(sch)
       this.$emit('search', sch)
+      this.setFilter(sch)
     },
   },
-  methods: {},
+  methods: {
+    ...mapActions(['setFilter']),
+  },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.setFilter(this.search)
+  },
 }
 </script>
 
