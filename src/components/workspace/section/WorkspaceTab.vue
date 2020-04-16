@@ -62,6 +62,7 @@ export default {
   methods: {
     tabChange(tabName) {
       this.component = tabName
+      this.$emit('tabChange')
     },
   },
 

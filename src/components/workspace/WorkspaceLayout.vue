@@ -6,7 +6,11 @@
   >
     <div class="workspace-wrapper">
       <workspace-welcome ref="welcomeSection"></workspace-welcome>
-      <workspace-tab :fix="tabFix" ref="tabSection"></workspace-tab>
+      <workspace-tab
+        ref="tabSection"
+        :fix="tabFix"
+        @tabChange="tabChange"
+      ></workspace-tab>
     </div>
   </vue2-scrollbar>
 </template>
@@ -38,6 +42,9 @@ export default {
       } else {
         this.tabFix = false
       }
+    },
+    tabChange() {
+      this.$refs['wrapperScroller'].scrollToY(0)
     },
   },
 

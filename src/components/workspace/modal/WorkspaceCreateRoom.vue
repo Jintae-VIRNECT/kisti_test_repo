@@ -16,6 +16,7 @@
           :value.sync="name"
           type="text"
           :count="20"
+          required
         ></input-row>
         <input-row
           :title="'협업 설명'"

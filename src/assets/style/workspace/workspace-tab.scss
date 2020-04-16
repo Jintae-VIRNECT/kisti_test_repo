@@ -59,6 +59,12 @@
   &.fix {
     margin-top: 50px;
   }
+  > div {
+    position: relative;
+    width: 100%;
+    max-width: 1480px;
+    margin: auto;
+  }
 }
 .tab-view__header {
   position: relative;
