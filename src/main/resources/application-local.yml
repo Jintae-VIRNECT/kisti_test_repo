@@ -32,12 +32,12 @@ file:
   allow-extension: "exe,apk"
 
 ## Eureka Server Configuration
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
 
 ## AWS Storage
 cloud:

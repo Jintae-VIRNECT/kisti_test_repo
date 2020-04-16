@@ -50,7 +50,7 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
     // Netflix Eureka Client
-    //implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // AWS Storage Service
     compile 'com.amazonaws:aws-java-sdk-s3:1.11.415'
@@ -85,5 +85,15 @@ sourceSets {
         java {
             srcDirs = ['src/main/java', querydslSrcDir]
         }
+    }
+}
+
+ext {
+    springCloudVersion = 'Greenwich.SR2'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }

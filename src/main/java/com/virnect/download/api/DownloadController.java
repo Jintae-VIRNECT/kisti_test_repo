@@ -2,7 +2,6 @@ package com.virnect.download.api;
 
 import com.virnect.download.application.DownloadService;
 import com.virnect.download.global.common.ApiResponse;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
