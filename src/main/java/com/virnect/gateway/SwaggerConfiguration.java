@@ -51,13 +51,14 @@ public class SwaggerConfiguration {
     @Lazy
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
+                .filter(route -> route.getId().contains("api"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     private String getRouteLocation(RouteDefinition route) {
-        log.info("ROUTE LOCATION:: [{}]", Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
+        log.info("ROUTE LOCATION:: [{}]",Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
                 .map(String::valueOf)
                 .map(s -> s.replace("*", ""))
                 .orElse(null));
@@ -70,7 +71,7 @@ public class SwaggerConfiguration {
     private SwaggerResource createResource(String name, String location, String version) {
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
-        swaggerResource.setLocation(location + "/v2/api-docs");
+        swaggerResource.setLocation(location + "api-docs");
         swaggerResource.setSwaggerVersion(version);
 
         log.info("[{}}] - [{}] - [{}]", swaggerResource.getName(), swaggerResource.getUrl(), swaggerResource.getSwaggerVersion());
@@ -101,7 +102,6 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
-                .pathMapping("/api")
                 .apiInfo(apiInfo);
     }
 }
