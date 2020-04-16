@@ -58,6 +58,10 @@ public class SwaggerConfiguration {
     }
 
     private String getRouteLocation(RouteDefinition route) {
+        log.info("ROUTE LOCATION:: [{}]", Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
+                .map(String::valueOf)
+                .map(s -> s.replace("*", ""))
+                .orElse(null));
         return Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
                 .map(String::valueOf)
                 .map(s -> s.replace("*", ""))
@@ -65,11 +69,12 @@ public class SwaggerConfiguration {
     }
 
     private SwaggerResource createResource(String name, String location, String version) {
-        log.info("[name: [{}] , location: [{}], url: [{}], version: [{}]", name, location + "api-docs", location, version);
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
         swaggerResource.setLocation(location + "api-docs");
         swaggerResource.setSwaggerVersion(version);
+
+        log.info("[{}}] - [{}] - [{}]", swaggerResource.getName(), swaggerResource.getUrl(), swaggerResource.getSwaggerVersion());
         return swaggerResource;
     }
 
@@ -97,6 +102,7 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
+                .pathMapping("/api")
                 .apiInfo(apiInfo);
     }
 }

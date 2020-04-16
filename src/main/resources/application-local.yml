@@ -13,6 +13,7 @@ spring:
             - Path=/users/**
           filters:
             - StripPrefix=0
+            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
         - id: user-api-docs
           uri: lb://user-server
           predicates:
