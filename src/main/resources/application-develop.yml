@@ -23,7 +23,7 @@ spring:
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
-            - Path=/workspace/**
+            - Path=/workspace**
           filters:
             - StripPrefix=0
         - id: workspace-api-docs
@@ -35,7 +35,7 @@ spring:
         - id: amdin-server
           uri: lb://admin-server
           predicates:
-            - Path=/admin/**
+            - Path=/admin**
           filters:
             - StripPrefix=0
         - id: admin-api-docs
@@ -47,7 +47,7 @@ spring:
         - id: content-server
           uri: lb://content-server
           predicates:
-            - Path=/contents/**
+            - Path=/contents**
           filters:
             - StripPrefix=0
         - id: content-api-docs
@@ -59,7 +59,7 @@ spring:
         - id: process-server
           uri: lb://process-server
           predicates:
-            - Path=/processes/**
+            - Path=/processes**
           filters:
             - StripPrefix=0
         - id: process-api-docs
@@ -83,7 +83,7 @@ spring:
         - id: auth-server
           uri: lb://auth-server
           predicates:
-            - Path=/auth/**
+            - Path=/auth**
           filters:
             - StripPrefix=0
         - id: auth-api-docs
@@ -95,7 +95,7 @@ spring:
         - id: message-server
           uri: lb://message-server
           predicates:
-            - Path=/message/**
+            - Path=/message**
           filters:
             - StripPrefix=0
         - id: message-api-docs
@@ -107,7 +107,7 @@ spring:
         - id: download-server
           uri: lb://download-server
           predicates:
-            - Path=/download/**
+            - Path=/download**
           filters:
             - StripPrefix=0
         - id: download-api-docs

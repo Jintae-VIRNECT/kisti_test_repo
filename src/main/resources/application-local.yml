@@ -13,6 +13,7 @@ spring:
             - Path=/users/**
           filters:
             - StripPrefix=0
+            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
         - id: user-api-docs
           uri: lb://user-server
           predicates:
@@ -25,6 +26,7 @@ spring:
             - Path=/workspace/**
           filters:
             - StripPrefix=0
+            - RewritePath=/workspace/v2/(?<segment>.*), /v2/$\{segment}
         - id: workspace-api-docs
           uri: lb://workspace-server
           predicates:
@@ -123,7 +125,8 @@ spring:
             allowedHeaders: "*"
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
-
+    filter:
+      remove-non-proxy-headers: ""
 eureka:
   instance:
     prefer-ip-address: true
