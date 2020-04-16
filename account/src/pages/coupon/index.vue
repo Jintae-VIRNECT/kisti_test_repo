@@ -109,8 +109,14 @@ export default {
         })
       } catch (e) {
         console.error(e)
+        const code = e.toString().match(/Error: ([0-9]*)/)[1]
+        const messages = {
+          '2000': this.$t('coupon.message.registerNotExist'),
+          '2001': this.$t('coupon.message.registerAlready'),
+          '2002': this.$t('coupon.message.registerExpired'),
+        }
         this.$notify.error({
-          message: this.$t('coupon.message.registerFail'),
+          message: messages[code] || this.$t('coupon.message.registerFail'),
           position: 'bottom-left',
         })
       }

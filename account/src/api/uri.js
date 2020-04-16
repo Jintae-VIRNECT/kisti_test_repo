@@ -14,7 +14,7 @@ module.exports = {
   // 내 쿠폰 정보 리스트 조회
   GET_COUPONS: ['GET', '/licenses/coupon/{userId}'],
   // 쿠폰 등록
-  ADD_COUPON: ['GET', '/licenses/coupon/register'],
+  ADD_COUPON: ['POST', '/licenses/coupon/register'],
   // 쿠폰 사용
   USE_COUPON: ['PUT', '/licenses/coupon/active'],
 }

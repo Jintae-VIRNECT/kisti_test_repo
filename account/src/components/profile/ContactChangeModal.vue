@@ -62,8 +62,9 @@ export default {
   },
   watch: {
     visible() {
-      this.form.code = this.me.contact.replace(/-.*$/, '')
-      this.form.phone = this.me.contact.replace(/^\+.*?-/, '')
+      const contact = this.me.contact || ''
+      this.form.code = contact.replace(/-.*$/, '')
+      this.form.phone = contact.replace(/^\+.*?-/, '')
     },
   },
   methods: {
