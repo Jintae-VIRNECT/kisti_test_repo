@@ -28,7 +28,10 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'docker build -t pf-license .'
+                        catchError() {
+                            sh 'docker build -t pf-license .'
+                        }
+
                     }
                 }
 
@@ -37,7 +40,10 @@ pipeline {
                         branch 'staging'
                     }
                     steps {
-                        sh 'docker build -t pf-license .'
+                        catchError() {
+                            sh 'docker build -t pf-license .'
+                        }
+
                     }
                 }
 
@@ -46,7 +52,10 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        sh 'docker build -t pf-license .'
+                        catchError() {
+                            sh 'docker build -t pf-license .'
+                        }
+
                     }
                 }
 
@@ -59,11 +68,12 @@ pipeline {
             }
         }
 
-        stage('Pre-Deploy') {
+        stage('Tunneling') {
             steps {
-                echo 'Pre-Deploy Stage'
+                echo 'SSH Check'
                 catchError() {
-                    sh 'docker stop pf-license && docker rm pf-license || true'
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
                 }
 
             }
@@ -74,6 +84,7 @@ pipeline {
                 stage('Deploy') {
                     steps {
                         echo 'Deploy Stage'
+
                     }
                 }
 
@@ -82,9 +93,12 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'count=`docker ps | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8632:8632 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-license pf-license'
-                        sh 'docker image prune -f'
+                        catchError() {
+                            sh 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
+                            sh 'docker run -p 8632:8632 -e "SPRING_PROFILES_ACTIVE=develop" -d --restart=always --name=pf-license pf-license'
+                            sh 'docker image prune -f'
+                        }
+
                     }
                 }
 
@@ -102,30 +116,30 @@ pipeline {
 
                             script {
                                 sshPublisher(
-                                        continueOnError: false, failOnError: true,
-                                        publishers: [
-                                                sshPublisherDesc(
-                                                        configName: 'aws-bastion-deploy-qa',
-                                                        verbose: true,
-                                                        transfers: [
-                                                                sshTransfer(
-                                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker pull $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'count=`docker ps | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'docker image prune -f'
-                                                                )
-                                                        ]
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-qa',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
                                                 )
-                                        ]
+                                            ]
+                                        )
+                                    ]
                                 )
                             }
 
@@ -133,7 +147,6 @@ pipeline {
 
                     }
                 }
-
 
                 stage('Master Branch') {
                     when {
@@ -149,30 +162,30 @@ pipeline {
 
                             script {
                                 sshPublisher(
-                                        continueOnError: false, failOnError: true,
-                                        publishers: [
-                                                sshPublisherDesc(
-                                                        configName: 'aws-bastion-deploy-prod',
-                                                        verbose: true,
-                                                        transfers: [
-                                                                sshTransfer(
-                                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker pull $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'count=`docker ps | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
-                                                                ),
-                                                                sshTransfer(
-                                                                        execCommand: 'docker image prune -f'
-                                                                )
-                                                        ]
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-prod',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
                                                 )
-                                        ]
+                                            ]
+                                        )
+                                    ]
                                 )
                             }
 
@@ -181,13 +194,15 @@ pipeline {
                     }
                 }
 
-                stage('Notify') {
-                    steps {
-                        emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
-                    }
-                }
-
             }
         }
+
+    }
+    post {
+        always {
+            emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+            office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
+        }
+
     }
 }
