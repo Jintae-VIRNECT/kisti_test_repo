@@ -2,6 +2,9 @@
   <section class="tab-view">
     <div class="tab-view__header">
       <span class="tab-view__title">{{ title }}</span>
+      <ListBadge></ListBadge>
+    </div>
+    <div class="tab-view__sub-header">
       <span class="tab-view__description" v-if="description.length > 0">{{
         description
       }}</span>
@@ -26,11 +29,13 @@
 <script>
 import ShowEmpty from 'ShowEmpty'
 import Search from 'Search'
+import ListBadge from 'ListBadge'
 export default {
   name: 'WorkspaceTabView',
   components: {
     Search,
     ShowEmpty,
+    ListBadge,
   },
   props: {
     empty: {

@@ -22,6 +22,14 @@
             <button class="btn">원격 협업 생성</button><br />
             <button class="btn small">재시작</button><br />
             <button class="btn large">시작하기</button>
+            <icon-button
+              :imgSrc="require('assets/image/back/mdpi_tr.svg')"
+              :text="'삭제하기'"
+            ></icon-button>
+            <icon-button
+              :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
+              :text="'새로고침'"
+            ></icon-button>
           </div>
         </div>
       </div>
@@ -474,6 +482,7 @@ import Tooltip from 'Tooltip'
 import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
 import Search from 'Search'
+import IconButton from 'IconButton'
 export default {
   components: {
     CreateRoom,
@@ -495,6 +504,7 @@ export default {
     Modal,
     ToggleButton,
     Search,
+    IconButton,
   },
   data() {
     return {
