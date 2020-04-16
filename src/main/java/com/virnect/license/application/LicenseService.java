@@ -177,7 +177,7 @@ public class LicenseService {
         registerCouponInfo.setStatus(coupon.getStatus());
         registerCouponInfo.setExpiredDate(coupon.getExpiredDate());
         registerCouponInfo.setRegisterDate(coupon.getCreatedDate());
-
+        registerCouponInfo.setSerialKey(coupon.getSerialKey());
 
         return new ApiResponse<>(registerCouponInfo);
     }
@@ -191,7 +191,7 @@ public class LicenseService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<MyCouponInfoListResponse> getMyCouponInfoList(String userId, Pageable pageable) {
-        Page<Coupon> couponList = couponRepository.findByUserId(userId, pageable);
+        Page<Coupon> couponList = couponRepository.findByUserIdAndRegisterDateIsNotNull(userId, pageable);
 
         List<MyCouponInfoResponse> couponInfoList = couponList.stream().map(coupon -> {
             MyCouponInfoResponse myCouponInfo = new MyCouponInfoResponse();
@@ -227,7 +227,7 @@ public class LicenseService {
     @Transactional
     public ApiResponse<MyCouponInfoResponse> couponActiveHandler(CouponActiveRequest couponActiveRequest) {
         // 1. 활성화 할 쿠폰 찾기
-        Coupon coupon = this.couponRepository.findByUserIdAndId(couponActiveRequest.getUserId(), couponActiveRequest.getCouponId())
+        Coupon coupon = this.couponRepository.findByUserIdAndIdAndRegisterDateIsNotNull(couponActiveRequest.getUserId(), couponActiveRequest.getCouponId())
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_NOT_FOUND));
 
         // 2. 이미 사용된 쿠폰의 경우
@@ -260,6 +260,7 @@ public class LicenseService {
         // 5. 쿠폰 기반으로 라이선스 정보 등록
         licenseRegisterByCouponProduct(coupon.getUserId(), coupon, licensePlan);
         MyCouponInfoResponse myCouponInfoResponse = new MyCouponInfoResponse();
+        myCouponInfoResponse.setSerialKey(coupon.getSerialKey());
         myCouponInfoResponse.setId(coupon.getId());
         myCouponInfoResponse.setName(coupon.getName());
         myCouponInfoResponse.setStatus(coupon.getStatus());
