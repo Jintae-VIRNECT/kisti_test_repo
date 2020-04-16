@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import couponService from '@/services/coupon'
-
 import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
 import ColumnDate from '@/components/common/tableColumn/ColumnDate'
 import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
@@ -53,21 +51,28 @@ export default {
     ColumnDate,
     ColumnStatus,
   },
-  data() {
-    return {
-      coupons: [],
-    }
+  props: {
+    coupons: Array,
   },
   methods: {
-    select(row) {
-      this.$emit('select', row)
+    async select(row) {
+      if (row.status === 'UNUSE') {
+        this.$emit('select', row)
+      } else if (row.status === 'USE') {
+        this.$notify.error({
+          message: this.$t('coupon.message.useAlready'),
+          position: 'bottom-left',
+        })
+      } else if (row.status === 'EXPIRED') {
+        this.$notify.error({
+          message: this.$t('coupon.message.useExpired'),
+          position: 'bottom-left',
+        })
+      }
     },
     sort(column) {
       console.log(column)
     },
-  },
-  async beforeCreate() {
-    this.coupons = await couponService.getCouponList()
   },
 }
 </script>

@@ -26,7 +26,7 @@ export default async function api(name, option = {}) {
   if (params && params.filter && params.filter === 'ALL') {
     delete params.filter
   }
-  params = method === 'post' ? params : { params }
+  params = method !== 'get' ? params : { params }
 
   // default header
   const accessToken = process.client

@@ -11,8 +11,10 @@
         <span v-if="scope.row[prop]">
           {{ scope.row[prop] | localDateFormat }}
         </span>
-        <span v-if="prop2">~</span>
-        <span v-if="prop2">{{ scope.row[prop2] | localDateFormat }}</span>
+        <span v-if="scope.row[prop2]">~</span>
+        <span v-if="scope.row[prop2]">
+          {{ scope.row[prop2] | localDateFormat }}
+        </span>
       </div>
     </template>
   </el-table-column>

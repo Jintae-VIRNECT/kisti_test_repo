@@ -69,7 +69,7 @@
                 <img src="~assets/images/icon/ic-error.svg" />
               </el-tooltip>
             </div>
-            <coupon-list @select="couponSelect" />
+            <coupon-list :coupons="coupons" @select="couponSelect" />
           </el-card>
         </el-col>
       </el-row>
@@ -87,6 +87,7 @@ export default {
   },
   data() {
     return {
+      coupons: [],
       form: {
         newCouponCode: '',
       },
@@ -101,7 +102,11 @@ export default {
      */
     async addCouponCode() {
       try {
-        await couponService.addCouponCode(this.form)
+        await couponService.addCouponCode(this.form.newCouponCode)
+        this.$notify.success({
+          message: this.$t('coupon.message.registerSuccess'),
+          position: 'bottom-left',
+        })
       } catch (e) {
         console.error(e)
         this.$notify.error({
@@ -113,26 +118,38 @@ export default {
     /**
      * 쿠폰 사용
      */
-    couponSelect(column) {
-      this.$confirm(
-        this.$t('coupon.useModal.desc'),
-        this.$t('coupon.useModal.title'),
-        {
-          confirmButtonText: this.$t('coupon.useModal.submit'),
-          showCancelButton: false,
-        },
-      ).then(async () => {
-        try {
-          await couponService.useCoupon(column)
-        } catch (e) {
-          console.error(e)
-          this.$notify.error({
-            message: this.$t('coupon.message.useExpired'),
-            position: 'bottom-left',
-          })
-        }
-      })
+    async couponSelect(column) {
+      try {
+        await this.$confirm(
+          this.$t('coupon.useModal.desc'),
+          this.$t('coupon.useModal.title'),
+          {
+            confirmButtonText: this.$t('coupon.useModal.submit'),
+            showCancelButton: false,
+          },
+        )
+      } catch (e) {
+        return false
+      }
+
+      try {
+        await couponService.useCoupon(column.id)
+        this.$notify.success({
+          message: this.$t('coupon.message.useSuccess'),
+          position: 'bottom-left',
+        })
+        this.coupons = await couponService.getCouponList()
+      } catch (e) {
+        console.error(e)
+        this.$notify.error({
+          message: e,
+          position: 'bottom-left',
+        })
+      }
     },
+  },
+  async beforeCreate() {
+    this.coupons = await couponService.getCouponList()
   },
 }
 </script>
