@@ -71,7 +71,7 @@ spring:
         - id: license-server
           uri: lb://license-server
           predicates:
-            - Path=/licenses**
+            - Path=/licenses/**
           filters:
             - StripPrefix=0
         - id: license-api-docs
@@ -131,7 +131,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
