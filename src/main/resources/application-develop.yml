@@ -30,7 +30,7 @@ spring:
         - id: amdin-server
           uri: lb://admin-server
           predicates:
-            - Path=/admin**
+            - Path=/admin/**
         - id: admin-api-docs
           uri: lb://admin-server
           predicates:
