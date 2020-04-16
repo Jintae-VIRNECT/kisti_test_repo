@@ -3,18 +3,17 @@
     title="협업 가능 멤버"
     description="협업 가능한 회원을 선택하고 메세지를 보내보세요."
     placeholder="통화 기록 검색"
-    ><scroller> <workspace-user-list></workspace-user-list></scroller>
-    ></tab-view
   >
+    <workspace-user-list></workspace-user-list
+  ></tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
-import Scroller from 'Scroller'
 export default {
   name: 'WorkspaceUser',
-  components: { TabView, WorkspaceUserList, Scroller },
+  components: { TabView, WorkspaceUserList },
   data() {
     return {}
   },

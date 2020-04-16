@@ -1,6 +1,6 @@
 <template>
   <div class="workspace-tab">
-    <nav class="workspace-tab__nav" :class="{ fix: fix }">
+    <nav class="workspace-tab__nav" :class="{ fix: !!fix }">
       <ul class="flex">
         <tab-button
           v-for="tab of tabComponents"
@@ -11,9 +11,7 @@
         ></tab-button>
       </ul>
     </nav>
-    <vue2-scrollbar classes="workspace-scroller" :canScroll="canScroll">
-      <component :is="component"></component>
-    </vue2-scrollbar>
+    <component :is="component" :class="{ fix: fix }"></component>
   </div>
 </template>
 
@@ -56,43 +54,18 @@ export default {
     }
   },
   props: {
-    canScroll: {
-      type: Boolean,
+    fix: {
+      type: [Number, Boolean],
       default: false,
-    },
-  },
-  computed: {
-    fix() {
-      if (this.$el && this.$el.offsetTop < 56) {
-        return true
-      } else {
-        return false
-      }
-    },
-    marginTop() {
-      return this.$el ? this.$el.offsetTop : 0
-    },
-  },
-  watch: {
-    marginTop(val) {
-      console.log(val)
-      console.log(this.fix)
     },
   },
   methods: {
     tabChange(tabName) {
       this.component = tabName
-      console.log(this.fix)
-      console.log(this.$el.offsetTop)
     },
   },
 
   /* Lifecycles */
-  mounted() {
-    console.log(this.$el)
-    window.addEventListener('scroll', e => {
-      console.log(this.$el.offsetTop)
-    })
-  },
+  mounted() {},
 }
 </script>

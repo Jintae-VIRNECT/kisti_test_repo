@@ -1,16 +1,14 @@
 <template>
-  <!-- <vue2-scrollbar classes="remote-wrapper" ref="scroller" @onScroll="onScroll">
-  </vue2-scrollbar> -->
-  <div class="workspace-wrapper">
-    <workspace-welcome
-      :class="{ 'welcome-hide': !showWelcome }"
-    ></workspace-welcome>
-    <workspace-tab
-      ref="workspaceTab"
-      :canScroll="scroll"
-      :class="{ 'welcome-hide': !showWelcome }"
-    ></workspace-tab>
-  </div>
+  <vue2-scrollbar
+    classes="remote-wrapper"
+    ref="wrapperScroller"
+    @onScroll="onScroll"
+  >
+    <div class="workspace-wrapper">
+      <workspace-welcome ref="welcomeSection"></workspace-welcome>
+      <workspace-tab :fix="tabFix" ref="tabSection"></workspace-tab>
+    </div>
+  </vue2-scrollbar>
 </template>
 
 <script>
@@ -25,28 +23,22 @@ export default {
   },
   data() {
     return {
-      showWelcome: true,
-      scroll: false,
+      tabFix: false,
+      tabTop: 0,
     }
   },
   computed: {
     ...mapGetters(['account']),
   },
-  watch: {
-    showWelcome(val) {
-      if (val) {
-        this.scroll = false
-      } else {
-        setTimeout(() => {
-          if (!this.showWelcome) {
-            this.scroll = true
-          }
-        }, 500)
-      }
-    },
-  },
   methods: {
     ...mapActions(['updateAccount']),
+    onScroll(scrollX, scrollY) {
+      if (scrollY > this.tabTop) {
+        this.tabFix = true
+      } else {
+        this.tabFix = false
+      }
+    },
   },
 
   /* Lifecycles */
@@ -63,32 +55,9 @@ export default {
     })
   },
   mounted() {
-    window.addEventListener('wheel', e => {
-      if (e.deltaY > 0) {
-        this.showWelcome = false
-      } else {
-        this.showWelcome = true
-      }
-    })
+    this.tabTop = this.$refs['tabSection'].$el.offsetTop
   },
 }
 </script>
 
 <style lang="scss" src="assets/style/workspace.scss"></style>
-
-<style>
-.workspace-welcome {
-  transform: translateY(0);
-  transition: transform 0.5s;
-}
-.workspace-welcome.welcome-hide {
-  transform: translateY(-280px);
-}
-.workspace-tab {
-  transform: translateY(0);
-  transition: transform 0.5s;
-}
-.workspace-tab.welcome-hide {
-  transform: translateY(-280px);
-}
-</style>

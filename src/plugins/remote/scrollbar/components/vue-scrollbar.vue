@@ -299,6 +299,7 @@ export default {
     },
 
     calculateSize(cb) {
+      console.log('calculateSize')
       if (typeof cb !== 'function') cb = null
 
       let elementSize = this.getSize()
