@@ -1,7 +1,15 @@
 <template>
-  <div class="remote-wrapper workspace-wrapper">
-    <workspace-welcome></workspace-welcome>
-    <workspace-tab></workspace-tab>
+  <!-- <vue2-scrollbar classes="remote-wrapper" ref="scroller" @onScroll="onScroll">
+  </vue2-scrollbar> -->
+  <div class="workspace-wrapper">
+    <workspace-welcome
+      :class="{ 'welcome-hide': !showWelcome }"
+    ></workspace-welcome>
+    <workspace-tab
+      ref="workspaceTab"
+      :canScroll="scroll"
+      :class="{ 'welcome-hide': !showWelcome }"
+    ></workspace-tab>
   </div>
 </template>
 
@@ -16,12 +24,27 @@ export default {
     WorkspaceTab,
   },
   data() {
-    return {}
+    return {
+      showWelcome: true,
+      scroll: false,
+    }
   },
   computed: {
     ...mapGetters(['account']),
   },
-  watch: {},
+  watch: {
+    showWelcome(val) {
+      if (val) {
+        this.scroll = false
+      } else {
+        setTimeout(() => {
+          if (!this.showWelcome) {
+            this.scroll = true
+          }
+        }, 500)
+      }
+    },
+  },
   methods: {
     ...mapActions(['updateAccount']),
   },
@@ -39,8 +62,33 @@ export default {
       uuid: null,
     })
   },
-  mounted() {},
+  mounted() {
+    window.addEventListener('wheel', e => {
+      if (e.deltaY > 0) {
+        this.showWelcome = false
+      } else {
+        this.showWelcome = true
+      }
+    })
+  },
 }
 </script>
 
 <style lang="scss" src="assets/style/workspace.scss"></style>
+
+<style>
+.workspace-welcome {
+  transform: translateY(0);
+  transition: transform 0.5s;
+}
+.workspace-welcome.welcome-hide {
+  transform: translateY(-280px);
+}
+.workspace-tab {
+  transform: translateY(0);
+  transition: transform 0.5s;
+}
+.workspace-tab.welcome-hide {
+  transform: translateY(-280px);
+}
+</style>

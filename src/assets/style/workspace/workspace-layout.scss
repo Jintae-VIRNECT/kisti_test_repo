@@ -1,6 +1,24 @@
-.workspace-wrapper {
-  max-width: 1480px;
+.remote-layout {
+  position: relative;
   height: 100vh;
+  overflow: hidden;
+  background-color: $color_bg_default;
+}
+.remote-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100vw;
+  height: calc(100vh - #{$header_height});
+  margin-top: $header_height;
+  // padding: $header_height 10px 20px 0;
+  margin-right: 0;
+}
+
+.workspace-wrapper {
+  max-width: 1440px;
+  height: calc(100vh - 56px);
   margin: 0 auto;
-  padding: $header_height 0 20px;
+  margin-top: 56px;
 }

@@ -157,6 +157,7 @@ export default {
   font-size: 12px;
 }
 .notice-item__buttons {
+  margin-top: 10px;
   > button {
     margin-right: 14px;
     &.filelink {

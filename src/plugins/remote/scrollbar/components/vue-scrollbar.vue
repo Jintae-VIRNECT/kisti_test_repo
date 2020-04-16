@@ -65,6 +65,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    canScroll: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   components: {
@@ -91,6 +95,9 @@ export default {
 
   methods: {
     scroll(e) {
+      if (!this.canScroll) {
+        return
+      }
       // Make sure the content height is not changed
       this.calculateSize(() => {
         // Set the wheel step
