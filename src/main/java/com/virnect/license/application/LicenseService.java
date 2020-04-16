@@ -228,7 +228,7 @@ public class LicenseService {
     public ApiResponse<MyCouponInfoResponse> couponActiveHandler(CouponActiveRequest couponActiveRequest) {
         // 1. 활성화 할 쿠폰 찾기
         Coupon coupon = this.couponRepository.findByUserIdAndId(couponActiveRequest.getUserId(), couponActiveRequest.getCouponId())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_ACTIVE_NOT_FOUND));
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_NOT_FOUND));
 
         // 2. 이미 사용된 쿠폰의 경우
         if (coupon.isUsed()) {
