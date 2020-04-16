@@ -1,9 +1,9 @@
 <template>
   <div class="support">
     <div class="support--body">
-      <div class="support--grapic">
+      <div class="support--graphic">
         <img
-          src="~assets/image/mdpi_Rectangle.svg"
+          src="~assets/image/support/mdpi_404.svg"
           alt="Browser is not supported"
         />
       </div>
@@ -12,12 +12,14 @@
         class="support--description"
         v-html="$t('support.header_description')"
       ></p>
-      <el-button v-if="isScreenDesktop" class="card-button" @click="pcWeb">{{
-        $t('support.pc_web_button')
-      }}</el-button>
-      <el-button v-else class="card-button" @click="mobile">{{
-        $t('support.mobile_button')
-      }}</el-button>
+      <div>
+        <el-button v-if="isScreenDesktop" @click="pcWeb">{{
+          $t('support.pc_web_button')
+        }}</el-button>
+        <el-button v-else @click="mobile">{{
+          $t('support.mobile_button')
+        }}</el-button>
+      </div>
     </div>
 
     <footer class="footer" v-if="isScreenDesktop">
