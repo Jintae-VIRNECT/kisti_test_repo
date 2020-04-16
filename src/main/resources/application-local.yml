@@ -7,30 +7,114 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: auth-server
-          uri: lb://auth-server
-          predicates:
-            - Path=/auth/**
         - id: user-server
           uri: lb://user-server
           predicates:
-            - Path=/users**
+            - Path=/users/**
+          filters:
+            - StripPrefix=0
+        - id: user-api-docs
+          uri: lb://user-server
+          predicates:
+            - Path=/users/v2/**
+          filters:
+            - StripPrefix=1
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
             - Path=/workspace**
+          filters:
+            - StripPrefix=0
+        - id: workspace-api-docs
+          uri: lb://workspace-server
+          predicates:
+            - Path=/workspace/v2/**
+          filters:
+            - StripPrefix=1
         - id: amdin-server
           uri: lb://admin-server
           predicates:
             - Path=/admin**
+          filters:
+            - StripPrefix=0
+        - id: admin-api-docs
+          uri: lb://admin-server
+          predicates:
+            - Path=/admin/v2/**
+          filters:
+            - StripPrefix=1
         - id: content-server
           uri: lb://content-server
           predicates:
             - Path=/contents**
+          filters:
+            - StripPrefix=0
+        - id: content-api-docs
+          uri: lb://content-server
+          predicates:
+            - Path=/contents/v2/**
+          filters:
+            - StripPrefix=1
         - id: process-server
           uri: lb://process-server
           predicates:
             - Path=/processes**
+          filters:
+            - StripPrefix=0
+        - id: process-api-docs
+          uri: lb://process-server
+          predicates:
+            - Path=/processes/v2/**
+          filters:
+            - StripPrefix=1
+        - id: license-server
+          uri: lb://license-server
+          predicates:
+            - Path=/licenses**
+          filters:
+            - StripPrefix=0
+        - id: license-api-docs
+          uri: lb://license-server
+          predicates:
+            - Path=/licenses/v2/**
+          filters:
+            - StripPrefix=1
+        - id: auth-server
+          uri: lb://auth-server
+          predicates:
+            - Path=/auth**
+          filters:
+            - StripPrefix=0
+        - id: auth-api-docs
+          uri: lb://auth-server
+          predicates:
+            - Path=/auth/v2/**
+          filters:
+            - StripPrefix=1
+        - id: message-server
+          uri: lb://message-server
+          predicates:
+            - Path=/message**
+          filters:
+            - StripPrefix=0
+        - id: message-api-docs
+          uri: lb://message-server
+          predicates:
+            - Path=/message/v2/**
+          filters:
+            - StripPrefix=1
+        - id: download-server
+          uri: lb://download-server
+          predicates:
+            - Path=/download**
+          filters:
+            - StripPrefix=0
+        - id: download-api-docs
+          uri: lb://download-server
+          predicates:
+            - Path=/download/v2/**
+          filters:
+            - StripPrefix=1
       globalcors:
         cors-configurations:
           '[/**]':
@@ -46,7 +130,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
 logging:
   level:
-    org.springframework.cloud.gateway: trace
-
+    org.springframework.cloud.gateway: DEBUG

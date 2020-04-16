@@ -10,7 +10,7 @@ spring:
         - id: user-server
           uri: lb://user-server
           predicates:
-            - Path=/users**
+            - Path=/users/**
           filters:
             - StripPrefix=0
         - id: user-api-docs
@@ -130,7 +130,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
