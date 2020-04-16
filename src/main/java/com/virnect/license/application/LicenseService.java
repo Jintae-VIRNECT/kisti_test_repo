@@ -140,7 +140,7 @@ public class LicenseService {
         message.setMessage("Serial Key : " + serialKey);
         emailService.sendEmail(message);
 
-        return new ApiResponse<>(new EventCouponResponse(true, coupon.getCreatedDate()));
+        return new ApiResponse<>(new EventCouponResponse(true, coupon.getSerialKey(), coupon.getCreatedDate()));
     }
 
     /**
@@ -200,6 +200,7 @@ public class LicenseService {
             myCouponInfo.setStatus(coupon.getStatus());
             myCouponInfo.setRegisterDate(coupon.getCreatedDate());
             myCouponInfo.setExpiredDate(coupon.getExpiredDate());
+            myCouponInfo.setSerialKey(coupon.getSerialKey());
             if (coupon.getStatus().equals(CouponStatus.USE)) {
                 myCouponInfo.setStartDate(coupon.getStartDate());
                 myCouponInfo.setEndDate(coupon.getEndDate());
