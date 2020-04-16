@@ -86,6 +86,7 @@ export default {
   position: relative;
   min-width: 300px;
   min-height: 36px;
+  width: 100%;
   padding: 9px 20px;
   color: rgba(#fff, 0.76);
   line-height: 20px;

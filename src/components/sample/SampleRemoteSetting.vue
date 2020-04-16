@@ -11,8 +11,8 @@
             v-for="device in videoDevices"
             :key="device.deviceId"
             :value="device.deviceId"
-            >{{ device.label }}
-          </option>
+            >{{ device.label }}</option
+          >
         </select>
       </div>
       <video :srcObject.prop="videoStream" autoplay></video>
@@ -27,14 +27,17 @@
             v-for="device in audioDevices"
             :key="device.deviceId"
             :value="device.deviceId"
-            >{{ device.label }}
-          </option>
+            >{{ device.label }}</option
+          >
         </select>
         <label>볼륨</label>
         <select v-model="audioVolume" @change="changeAudioVolume">
-          <option v-for="(volume, idx) in volumeList" :key="idx" :value="volume"
-            >{{ volume }}
-          </option>
+          <option
+            v-for="(volume, idx) in volumeList"
+            :key="idx"
+            :value="volume"
+            >{{ volume }}</option
+          >
         </select>
         <button @click="$refs['audioComponent'].play()">재생</button>
         <button @click="$refs['audioComponent'].pause()">정지</button>
@@ -60,17 +63,31 @@
             v-for="device in outputDevices"
             :key="device.deviceId"
             :value="device.deviceId"
-            >{{ device.label }}
-          </option>
+            >{{ device.label }}</option
+          >
         </select>
         <label>볼륨</label>
         <select v-model="outputVolume" @change="changeOutputVolume">
-          <option v-for="(volume, idx) in volumeList" :key="idx" :value="volume"
-            >{{ volume }}
-          </option>
+          <option
+            v-for="(volume, idx) in volumeList"
+            :key="idx"
+            :value="volume"
+            >{{ volume }}</option
+          >
         </select>
-        <button @click="$refs['outputComponent'].play()">재생</button>
-        <button @click="$refs['outputComponent'].pause()">정지</button>
+        <div class="block">
+          <span class="output-volumn-slider">출력 볼륨 슬라이더 웩!</span>
+          <!-- 볼륨은 0에서 최대 1까지에요! -->
+          <el-slider
+            v-model="outputVolume"
+            @change="changeOutputVolume"
+            :max="1"
+            :min="0"
+            :step="0.01"
+          ></el-slider>
+        </div>
+        <el-button @click="$refs['outputComponent'].play()">재생</el-button>
+        <el-button @click="$refs['outputComponent'].pause()">정지</el-button>
       </div>
       <audio ref="outputComponent" :src="mp3" autoplay></audio>
       <meter ref="outputMeter" min="0" max="100" :value="outputWidth"></meter>
@@ -108,6 +125,10 @@ export default {
       outputVolume: 1,
       outputSoundVolume: 0,
       outputSoundMeter: null,
+
+      outputVolumeMax: 1,
+      outputVolumeMin: 0,
+      outputVolumeStep: 0.01,
     }
   },
   computed: {
@@ -212,7 +233,9 @@ export default {
   },
 }
 </script>
-
+<style lang="scss">
+@import './TestTheme.scss';
+</style>
 <style lang="scss" scoped>
 .setting-section {
   margin: 20px;
