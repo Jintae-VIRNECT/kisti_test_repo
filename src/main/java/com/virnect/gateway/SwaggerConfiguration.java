@@ -70,7 +70,7 @@ public class SwaggerConfiguration {
     private SwaggerResource createResource(String name, String location, String version) {
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
-        swaggerResource.setLocation(location + "api-docs");
+        swaggerResource.setLocation(location + "/v2/api-docs");
         swaggerResource.setSwaggerVersion(version);
 
         log.info("[{}}] - [{}] - [{}]", swaggerResource.getName(), swaggerResource.getUrl(), swaggerResource.getSwaggerVersion());
