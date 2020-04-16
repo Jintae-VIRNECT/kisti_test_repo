@@ -26,8 +26,9 @@ public enum ErrorCode {
     ERR_DEALLOCATE_ARUCO(4012, "Failed deallocate ARUCO."),
     ERR_DELETE_CONTENT(4013, "Content File deletion failed."),
     ERR_OWNERSHIP(4014, "An error occurred in the request. Because it is NOT ownership."),
-    ERR_NOT_FOUND_CONTENT_TYPE(4015, "Not found content type."),
-    ERR_MISMATCH_TARGET(4016, "Target data does not match."),
+    ERROR_WORKSPACE(4015, "An error occurred in the request. Because Workspace is different."),
+    ERR_NOT_FOUND_CONTENT_TYPE(4016, "Not found content type."),
+    ERR_MISMATCH_TARGET(4017, "Target data does not match."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

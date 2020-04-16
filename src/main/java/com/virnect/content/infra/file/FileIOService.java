@@ -1,5 +1,7 @@
 package com.virnect.content.infra.file;
 
+import java.io.File;
+
 /**
  * @author hangkee.min (henry)
  * @project PF-ContentManagement
@@ -10,11 +12,29 @@ package com.virnect.content.infra.file;
 public interface FileIOService {
 
     /**
-     * target 파일을 destination 파일명으로 복제
+     * sourceFile 파일을 destinationUrl 파일명으로 복제
      *
-     * @param targetUrl - 복제할 파일 경로
-     * @param destinationaUrl - 복제 후 파일 경로
+     * @param sourceUrl - 원본파일의 경로
+     * @param destinationUrl - 복제 후 파일 경로
      * @return - 복제 성공 여부
      */
-    boolean copyFile(final String targetUrl, final String destinationaUrl);
+    boolean copyFileWithUrl(final String sourceUrl, final String destinationUrl);
+
+    /**
+     * sourceFile 파일을 destinationUrl 파일명으로 복제
+     *
+     * @param sourceFile - 원본파일
+     * @param destinationUrl - 복제 후 파일 경로
+     * @return - 복제 성공 여부
+     */
+    boolean copyFileWithFile(final File sourceFile, final String destinationUrl);
+
+    /**
+     * sourceUrl 파일을 destinationUrl 파일명으로 이름 변경
+     * 
+     * @param sourceUrl - 원본파일의 경로
+     * @param destinationUrl - 변경할 파일의 경로
+     * @return
+     */
+    boolean rename(final String sourceUrl, final String destinationUrl);
 }

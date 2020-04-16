@@ -20,6 +20,7 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.infra.file.FileIOService;
 import com.virnect.content.infra.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContentService {
     private final FileUploadService fileUploadService;
+    private final FileIOService fileIOService;
 
     private final ContentRepository contentRepository;
     private final TargetRepository targetRepository;
@@ -120,6 +122,7 @@ public class ContentService {
             // 반환할 타겟정보
             result.setTargetData(targetData);
             result.setTargetType(uploadRequest.getTargetType());
+            result.setContentUUID(contentUUID);
             return new ApiResponse<>(result);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
@@ -544,7 +547,7 @@ public class ContentService {
         // 컨텐츠 소유자 확인
         if (!content.getUserUUID().equals(userUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-        // 멀티파트 파일 가져오기
+
         ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
                 // TODO : 공정 수정 후 반영 예정
                 .workspaceUUID(content.getWorkspaceUUID())
@@ -573,5 +576,43 @@ public class ContentService {
             log.error("ERROR!! CONVERT FILE TO MULTIPARTFILE : {}", e.getMessage());
         }
         return null;
+    }
+
+    @Transactional
+    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID, final TargetType targetType) {
+        // 컨텐츠 가져오기
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        // 컨텐츠의 워크스페이스 확인
+        if (!content.getWorkspaceUUID().equals(workspaceUUID))
+            throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
+
+        // 컨텐츠 소유자 확인
+        if (!content.getUserUUID().equals(userUUID))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        // 컨텐츠 파일 복제
+        String tempUUID = UUID.randomUUID().toString();
+        boolean successCopy = this.fileIOService.copyFileWithFile(new File(content.getPath()), uploadPath.concat(tempUUID).concat(ARES_FILE_EXTENSION));
+
+        ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
+                // TODO : 공정 수정 후 반영 예정
+                .workspaceUUID(workspaceUUID)
+                .content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+                // TODO : 공정 수정 후 반영 예정
+                .contentType(content.getType().getType())
+                .name(content.getName())
+                .metadata(content.getMetadata())
+                .userUUID(userUUID)
+                .targetType(targetType)
+                .build();
+
+        ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse = contentUpload(uploadRequest);
+
+        // 파일명 변경
+        this.fileIOService.rename(tempUUID, contentUploadResponseApiResponse.getData().getContentUUID());
+
+        return contentUploadResponseApiResponse;
     }
 }

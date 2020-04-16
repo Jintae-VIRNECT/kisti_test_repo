@@ -1,6 +1,7 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
+import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentUpdateRequest;
@@ -41,15 +42,6 @@ import javax.validation.Valid;
 public class ContentController {
     private final ContentService contentService;
 
-    /**
-     * 컨텐츠 목록 조회
-     *
-     * @param workspaceUUID
-     * @param search
-     * @param shareds
-     * @param pageable
-     * @return
-     */
     @ApiOperation(value = "콘텐츠 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
@@ -69,16 +61,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    /**
-     * 내 콘텐츠 목록 조회
-     *
-     * @param workspaceUUID
-     * @param search
-     * @param shareds
-     * @param userUUID
-     * @param pageable
-     * @return
-     */
     @ApiOperation(value = "내 콘텐츠 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
@@ -103,13 +85,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    /**
-     * 콘텐츠 파일 업로드
-     *
-     * @param uploadRequest - 콘텐츠 파일 업로드 요청 데이터
-     * @param result        - 요청 파라미터 검증 결과
-     * @return - 업로드된 콘텐츠 파일 정보
-     */
     @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장되며, 컨텐츠 용량은 MB(MegaByte)단위임.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "testUUID"),
@@ -118,7 +93,7 @@ public class ContentController {
             @ApiImplicitParam(name = "name", value = "콘텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "test_content"),
             @ApiImplicitParam(name = "metadata", value = "메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"aruco\":\"\",\"name\":\"Target(Clone)\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"Toggle\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"InputField\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"Report\",\"title\":\"항목3\"}]}],\"smartToolObjects\":[{\"id\":\"3cc2b7ab-5006-4d45-bccc-9d971bc52875\",\"jobId\":-1,\"normalTorque\":0,\"items\":[{\"id\":null,\"batchCount\":1},{\"id\":null,\"batchCount\":2},{\"id\":null,\"batchCount\":3},{\"id\":null,\"batchCount\":4}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]}]}]}}"),
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(@ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
@@ -130,14 +105,27 @@ public class ContentController {
         ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
         return ResponseEntity.ok(uploadResponse);
     }
+    
+    @ApiOperation(value = "컨텐츠 복제", notes = "컨텐츠 파일을 복제 후 컨텐츠 신규 생성. 공정서버에서 컨텐츠를 이용한 공정 생성에 사용되는 API임.", tags = "callFromProcessServer")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "testUUID"),
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "query", required = true, defaultValue = "QR")
+    })
+    @PostMapping("/duplicate/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentDuplicateHandler(
+            @RequestParam(value = "contentUUID") String contentUUID,
+            @RequestParam(value = "workspaceUUID") String workspaceUUID,
+            @RequestParam(value = "userUUID") String userUUID,
+            @RequestParam(value = "targetType") TargetType targetType) {
+        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty() || targetType == null) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID, targetType);
+        return ResponseEntity.ok(uploadResponse);
+    }
 
-    /**
-     * 콘텐츠 파일 다운로드
-     * GET /contents/{contentUUID}
-     *
-     * @param fileName - 콘텐츠 파일 식별자
-     * @return - 콘텐츠 파일
-     */
     @ApiOperation(value = "콘텐츠 다운로드")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
@@ -159,14 +147,6 @@ public class ContentController {
                 .body(resource);
     }
 
-    /**
-     * 콘텐츠 파일 수정 요청
-     *
-     * @param updateRequestDto - 콘텐츠 파일 수정 요청 데이터
-     * @param contentUUID      - 콘텐츠 고유 식별번호
-     * @param result           - 요청 데이터 검증 결과
-     * @return - 수정된 콘텐츠 파일 정보
-     */
     @ApiOperation(value = "콘텐츠 파일 업데이트")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
@@ -188,13 +168,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    /**
-     * 콘텐츠 파일 삭제 요청
-     *
-     * @param contentUUIDs
-     * @param workerUUID
-     * @return
-     */
     @ApiOperation(value = "콘텐츠 삭제 요청")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호 배열(ex : contentUUID=uuid,uuid,uuid,uuid)", allowMultiple = true, dataType = "array", paramType = "query", required = true),
@@ -211,12 +184,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    /**
-     * 메타데이터 정보 요청 처리
-     *
-     * @param contentUUID - 콘텐츠 식별자
-     * @return - 콘텐츠 메타데이터 정보
-     */
     @ApiOperation(value = "콘텐츠 메타데이터 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "query")
@@ -230,12 +197,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    /**
-     * 씬그룹 목록 조회
-     *
-     * @param contentUUID - 콘텐츠 식별자
-     * @return - 콘텐츠 씬그룹 목록
-     */
     @ApiOperation(value = "씬그룹 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "query", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")

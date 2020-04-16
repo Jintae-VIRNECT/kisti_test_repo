@@ -49,7 +49,17 @@ public class AmazonS3UploadService implements FileUploadService, FileIOService {
     }
 
     @Override
-    public boolean copyFile(String targetUrl, String destinationaUrl) {
+    public boolean copyFileWithUrl(final String sourceUrl, final String destinationUrl) {
+        return false;
+    }
+
+    @Override
+    public boolean copyFileWithFile(final File sourceFile, final String destinationUrl) {
+        return false;
+    }
+
+    @Override
+    public boolean rename(final String sourceUrl, final String destinationUrl) {
         return false;
     }
 }
