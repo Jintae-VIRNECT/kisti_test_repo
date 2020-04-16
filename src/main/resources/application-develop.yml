@@ -70,7 +70,7 @@ spring:
         - id: auth-server
           uri: lb://auth-server
           predicates:
-            - Path=/auth/**
+            - Path=/auth**
         - id: auth-api-docs
           uri: lb://auth-server
           predicates:
