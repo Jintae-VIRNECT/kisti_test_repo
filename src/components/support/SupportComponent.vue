@@ -12,6 +12,10 @@
         class="support--description"
         v-html="$t('support.header_description')"
       ></p>
+      <p
+        class="support--description--mobile"
+        v-html="$t('support.header_description_mobile')"
+      ></p>
       <div>
         <el-button v-if="isScreenDesktop" @click="pcWeb">{{
           $t('support.pc_web_button')
@@ -22,7 +26,7 @@
       </div>
     </div>
 
-    <footer class="footer" v-if="isScreenDesktop">
+    <footer class="footer">
       <div class="footer--inner">
         <p class="copyright">
           Copyright&copy; <strong>VIRNECT INC</strong>. All Rights Reserved.
