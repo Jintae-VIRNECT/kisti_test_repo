@@ -33,8 +33,8 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
-          from: /test(\/.*)?/,
-          to: '/test/index.html',
+          from: /sample(\/.*)?/,
+          to: '/sample/index.html',
         },
         {
           from: /support(\/.*)?/,
@@ -66,7 +66,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     },
     noInfo: true,
     open: false,
-    before: function(app, server) {
+    before: function(app) {
       var bodyParser = require('body-parser')
       app.use(
         bodyParser.json({
@@ -99,14 +99,14 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       chunks: ['extra'],
     }),
 
-    //test
+    // sample
     new HtmlWebpackPlugin({
       inject: 'body',
       hash: true,
       favicon: './src/assets/favicon.ico',
-      template: './src/apps/test/app.html',
-      filename: 'test/index.html',
-      chunks: ['test'],
+      template: './src/apps/sample/app.html',
+      filename: 'sample/index.html',
+      chunks: ['sample'],
     }),
 
     // new BundleAnalyzerPlugin({

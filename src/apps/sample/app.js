@@ -5,7 +5,7 @@ import Vue from 'vue'
 import ElementUI from 'element-ui'
 import moment from 'moment'
 import VueMoment from 'vue-moment'
-import Router from 'routers/test'
+import Router from 'routers/sample'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 
 import App from './app.vue'

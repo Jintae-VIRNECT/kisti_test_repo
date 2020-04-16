@@ -32,9 +32,9 @@ const developWebpackConfig = merge(baseWebpackConfig(mode), {
       inject: 'body',
       hash: true,
       favicon: './src/assets/favicon.ico',
-      template: './src/apps/test/app.html',
-      filename: 'test/index.html',
-      chunks: ['test'],
+      template: './src/apps/sample/app.html',
+      filename: 'sample/index.html',
+      chunks: ['sample'],
     }),
     new HtmlWebpackPlugin({
       inject: 'body',
@@ -42,7 +42,7 @@ const developWebpackConfig = merge(baseWebpackConfig(mode), {
       favicon: './src/assets/favicon.ico',
       template: './src/apps/extra/app.html',
       filename: 'extra/index.html',
-      chunks: ['extra']
+      chunks: ['extra'],
     }),
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',

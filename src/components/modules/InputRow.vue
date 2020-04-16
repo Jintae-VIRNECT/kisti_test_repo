@@ -1,6 +1,6 @@
 <template>
-  <figure class="inputrow" :class="{ box: box === true }">
-    <p class="inputrow-title">{{ title }}</p>
+  <figure class="inputrow">
+    <p class="inputrow-title" :class="{ required }">{{ title }}</p>
     <input
       v-if="type === 'text'"
       class="inputrow-input input"
@@ -51,10 +51,6 @@ export default {
       type: String,
       default: null,
     },
-    box: {
-      type: Boolean,
-      default: false,
-    },
     showCount: {
       type: Boolean,
       default: false,
@@ -62,6 +58,10 @@ export default {
     count: {
       type: Number,
       default: 20,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {},
@@ -97,25 +97,45 @@ export default {
   margin-top: 30px;
 }
 .inputrow-title {
+  position: relative;
+  width: fit-content;
   margin-bottom: 8px;
   color: #d2d2d2;
   font-weight: 500;
   font-size: 13px;
+  &.required::after {
+    position: absolute;
+    top: 0px;
+    right: -10px;
+    width: 5px;
+    height: 5px;
+    background-color: #0f75f5;
+    border-radius: 50%;
+    content: '';
+  }
 }
 
 .inputrow-input {
-  width: calc(100% - 16px);
+  width: calc(100% - 40px);
   min-height: 20px;
   padding: 8px;
+  padding: 14px 18px;
   color: #fff;
-  background: transparent;
-  border: none;
-  border-bottom: solid 1px rgba(#fff, 0.18);
+  background-color: #111012;
+  border: solid 1px #282828;
+  border-radius: 3px;
   &::placeholder {
     color: rgba(#979fb0, 0.7);
   }
+  &:hover {
+    border: solid 1px #585858;
+  }
+  &:active,
+  &:focus {
+    border: solid 1px #0f75f5;
+  }
   &.textarea {
-    height: fit-content;
+    height: 60px;
     overflow-y: hidden;
     resize: none;
   }
@@ -126,24 +146,5 @@ export default {
   bottom: -22px;
   color: rgba(#979fb0, 0.7);
   font-size: 12px;
-}
-.inputrow.box {
-  .inputrow-input {
-    width: calc(100% - 40px);
-    padding: 16px 20px;
-    background-color: #111012;
-    border: solid 1px #282828;
-    border-radius: 3px;
-    &.textarea {
-      height: 60px;
-    }
-    &:hover {
-      border: solid 1px #585858;
-    }
-    &:active,
-    &:focus {
-      border: solid 1px #0f75f5;
-    }
-  }
 }
 </style>
