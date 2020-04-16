@@ -259,7 +259,7 @@
           </div>
           <br />
 
-          <profile-image></profile-image>
+          <profile-image :btnText="'등록'"></profile-image>
         </div>
         <!-- <div class="props">
           <div class="props-option">

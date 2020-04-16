@@ -1,6 +1,6 @@
 <template>
   <div class="workspace-tab">
-    <nav class="workspace-tab__nav">
+    <nav class="workspace-tab__nav" :class="{ fix: !!fix }">
       <ul class="flex">
         <tab-button
           v-for="tab of tabComponents"
@@ -11,7 +11,7 @@
         ></tab-button>
       </ul>
     </nav>
-    <component :is="component"></component>
+    <component :is="component" :class="{ fix: fix }"></component>
   </div>
 </template>
 
@@ -55,8 +55,12 @@ export default {
       component: 'history',
     }
   },
-  computed: {},
-  watch: {},
+  props: {
+    fix: {
+      type: [Number, Boolean],
+      default: false,
+    },
+  },
   methods: {
     tabChange(tabName) {
       this.component = tabName

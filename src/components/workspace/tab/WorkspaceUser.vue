@@ -12,10 +12,9 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
-import Scroller from 'Scroller'
 export default {
   name: 'WorkspaceUser',
-  components: { TabView, WorkspaceUserList, Scroller },
+  components: { TabView, WorkspaceUserList },
   data() {
     return {}
   },

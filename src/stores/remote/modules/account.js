@@ -3,6 +3,7 @@ import { ACCOUNT_SET, ACCOUNT_CLEAR } from '../mutation-types'
 function getDefaultState() {
   return {
     userId: null,
+    profile: null,
     description: null,
     email: null,
     name: null,

@@ -1,11 +1,18 @@
 <template>
-  <div class="remote-wrapper workspace-wrapper">
-    <workspace-welcome></workspace-welcome>
-    <workspace-tab></workspace-tab>
-  </div>
+  <vue2-scrollbar
+    classes="remote-wrapper"
+    ref="wrapperScroller"
+    @onScroll="onScroll"
+  >
+    <div class="workspace-wrapper">
+      <workspace-welcome ref="welcomeSection"></workspace-welcome>
+      <workspace-tab :fix="tabFix" ref="tabSection"></workspace-tab>
+    </div>
+  </vue2-scrollbar>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 export default {
@@ -15,14 +22,41 @@ export default {
     WorkspaceTab,
   },
   data() {
-    return {}
+    return {
+      tabFix: false,
+      tabTop: 0,
+    }
   },
-  computed: {},
-  watch: {},
-  methods: {},
+  computed: {
+    ...mapGetters(['account']),
+  },
+  methods: {
+    ...mapActions(['updateAccount']),
+    onScroll(scrollX, scrollY) {
+      if (scrollY > this.tabTop) {
+        this.tabFix = true
+      } else {
+        this.tabFix = false
+      }
+    },
+  },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.updateAccount({
+      userId: 123456,
+      profile: require('assets/image/img_user_profile.svg'),
+      description: null,
+      email: 'remote@remote.com',
+      name: '리모트',
+      serviceInfo: null,
+      userType: 'Manager',
+      uuid: null,
+    })
+  },
+  mounted() {
+    this.tabTop = this.$refs['tabSection'].$el.offsetTop
+  },
 }
 </script>
 

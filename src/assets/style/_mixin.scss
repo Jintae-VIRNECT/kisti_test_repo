@@ -21,7 +21,7 @@
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: rgba($color_bg_border, 0.79);
+    background-color: rgba(#fff, 0.04);
     @include theme-bright() {
       background-color: #fff;
     }
