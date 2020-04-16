@@ -17,11 +17,13 @@ export default async function({ req, store, redirect }) {
       const data = await api('GET_AUTH_INFO', { headers: req.headers })
       store.commit('auth/SET_MY_PROFILE', new Profile(data.userInfo))
     } catch (e) {
-      return redirect(
-        `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
-          req.headers.referer || req.headers.host,
-        )}`,
-      )
+      if (/^Error: 8003/.test(e)) {
+        return redirect(
+          `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
+            req.headers.referer || req.headers.host,
+          )}`,
+        )
+      }
     }
 
     // 홈이 없어서 쿠폰으로 임시 리다이렉트

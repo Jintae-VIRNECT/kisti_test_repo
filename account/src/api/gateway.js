@@ -55,6 +55,7 @@ export default async function api(name, option = {}) {
       $nuxt.$loading.fail()
       $nuxt.$loading.finish()
     }
+    console.error(`URL: ${uri}`)
     throw e
   }
 }
