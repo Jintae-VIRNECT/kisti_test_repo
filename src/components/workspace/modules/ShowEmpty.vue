@@ -40,7 +40,7 @@ export default {
 
 <style lang="scss" scoped>
 .show-empty {
-  position: relative;
+  position: absolute;
   width: 100%;
   height: 100%;
   background: #29292c;
@@ -58,6 +58,7 @@ export default {
   text-align: center;
 }
 .show-empty__description {
+  margin-top: 5px;
   color: rgba(#fafafa, 0.5);
   font-weight: 300;
   font-size: 18px;

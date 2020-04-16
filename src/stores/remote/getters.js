@@ -1,4 +1,6 @@
 export default {
+  account: state => state.account,
+
   // oncall
   view: state => state.oncall.view,
   action: state => state.oncall.action,

@@ -20,7 +20,7 @@ body.modal-open {
 }
 
 .btn {
-  margin-top: 10px;
+  // margin-top: 10px;
   padding: 10px 40px;
   color: #fff;
   font-weight: 500;
@@ -46,7 +46,8 @@ body.modal-open {
     }
   }
   &.small {
-    padding: 8px 30px;
+    min-width: 120px;
+    padding: 6px 30px;
     font-size: 14px;
     line-height: 20px;
     background-color: rgba(#0f75f5, 0.27);
@@ -59,6 +60,19 @@ body.modal-open {
     }
     &:active {
       background-color: #0f75f5;
+    }
+    &.sub {
+      background-color: rgba(#4c5259, 0.15);
+      border-color: #4c5259;
+      &:focus {
+        background-color: rgba(#4c5259, 0.15);
+      }
+      &:hover {
+        background-color: rgba(#4c5259, 0.3);
+      }
+      &:active {
+        background-color: rgba(#4c5259, 0.5);
+      }
     }
   }
 }
