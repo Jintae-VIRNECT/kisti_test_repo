@@ -26,7 +26,7 @@ pipeline {
                 branch 'develop'
               }
               steps {
-                sh 'yarn workspace workstation build:develop'
+                sh 'NODE_ENV=develop yarn workspace workstation build'
                 sh 'docker build -t pf-webworkstation .'
               }
             }
@@ -36,7 +36,7 @@ pipeline {
                 branch 'staging'
               }
               steps {
-                sh 'yarn workspace workstation build:staging'
+                sh 'NODE_ENV=staging yarn workspace workstation build'
                 sh 'docker build -t pf-webworkstation .'
               }
             }
@@ -46,7 +46,7 @@ pipeline {
                 branch 'master'
               }
               steps {
-                sh 'yarn workspace workstation build:production'
+                sh 'NODE_ENV=production yarn workspace workstation build'
                 sh 'docker build -t pf-webworkstation .'
               }
             }

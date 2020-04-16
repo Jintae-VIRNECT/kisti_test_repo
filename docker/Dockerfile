@@ -5,7 +5,7 @@ ENV PORT=8878
 WORKDIR $APP_HOME
 
 
-ADD ./projects $APP_HOME/projects
+ADD ./workstation $APP_HOME/workstation
 ADD ./package.json $APP_HOME/package.json
 
 RUN yarn install --production
