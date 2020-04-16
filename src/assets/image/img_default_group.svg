@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="42px" height="42px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 64 (101010) - https://sketch.com -->
+    <title>30F613A8-49D4-45CA-B604-2D3B2020DC4F@1.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="1.62851282%" x2="50%" y2="111.777344%" id="linearGradient-1">
+            <stop stop-color="#D0D5DC" offset="0%"></stop>
+            <stop stop-color="#ABAFB5" offset="100%"></stop>
+        </linearGradient>
+        <circle id="path-2" cx="21" cy="21" r="21"></circle>
+        <linearGradient x1="9.21052632%" y1="58.3182734%" x2="38.1578947%" y2="50%" id="linearGradient-4">
+            <stop stop-color="#E1E1E1" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <path d="M16.135,11.48 C19.30635,11.48 21.875,8.91135 21.875,5.74 C21.875,2.56865 19.30635,7.21200877e-14 16.135,7.21200877e-14 C12.96365,7.21200877e-14 10.395,2.56865 10.395,5.74 C10.395,8.91135 12.96365,11.48 16.135,11.48 Z" id="path-5"></path>
+        <filter x="-61.0%" y="-61.0%" width="239.4%" height="239.4%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0811024913 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path d="M15.9863525,15.4509961 C8.33665976,15.4509961 2.975,19.8806597 1.5343201,24.4409322 C0.573866841,27.4811139 0.0624268057,29.7427776 -3.35731443e-13,31.2259234 C6.96481402,31.2425575 12.0774335,31.2508745 15.3378585,31.2508745 C18.5982835,31.2508745 24.1432324,31.2425575 31.9727051,31.2259234 C31.9727051,29.8288856 31.325786,27.5672219 30.0319478,24.4409322 C28.0911905,19.7514977 23.6360453,15.4509961 15.9863525,15.4509961 Z" id="path-7"></path>
+        <filter x="-21.9%" y="-44.3%" width="150.0%" height="201.3%" filterUnits="objectBoundingBox" id="filter-8">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.195093969 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="리소스-파일모음" transform="translate(-366.000000, -40.000000)">
+            <g id="42x42" transform="translate(366.000000, 40.000000)">
+                <g id="lnb_img_user">
+                    <mask id="mask-3" fill="white">
+                        <use xlink:href="#path-2"></use>
+                    </mask>
+                    <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+                    <path d="M30.8,26.6642578 C33.50725,26.6642578 35.7,24.4715078 35.7,21.7642578 C35.7,19.0570078 33.50725,16.8642578 30.8,16.8642578 C28.09275,16.8642578 25.9,19.0570078 25.9,21.7642578 C25.9,24.4715078 28.09275,26.6642578 30.8,26.6642578 Z M30.5727051,30.4951172 C22.8029785,30.4951172 16.8,36.0569936 16.8,40.7057772 L16.8,44.8 C22.3465088,44.8 26.7215088,44.8 29.925,44.8 C33.1284912,44.8 38.0868245,44.8 44.8,44.8 L44.8,40.7057772 C44.8,36.0569936 38.3424316,30.4951172 30.5727051,30.4951172 Z" id="Shape" fill="url(#linearGradient-4)" fill-rule="nonzero" opacity="0.76" mask="url(#mask-3)" transform="translate(30.800000, 30.832129) rotate(-2.000000) translate(-30.800000, -30.832129) "></path>
+                    <g id="Group" mask="url(#mask-3)" fill-rule="nonzero">
+                        <g transform="translate(13.207219, 29.156481) rotate(4.000000) translate(-13.207219, -29.156481) translate(-2.792781, 13.156481)">
+                            <g id="Shape">
+                                <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                                <use fill="#FFFFFF" xlink:href="#path-5"></use>
+                            </g>
+                            <g id="Path">
+                                <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                                <use fill="#FFFFFF" xlink:href="#path-7"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -19,8 +19,8 @@
       <div class="action-box">
         <div class="component">
           <div style="width: 300px;">
-            <button class="btn">원격 협업 생성</button><br />
-            <button class="btn small">재시작</button><br />
+            <button class="btn">원격 협업 생성</button>
+            <button class="btn small">재시작</button>
             <button class="btn large">시작하기</button>
             <icon-button
               :imgSrc="require('assets/image/back/mdpi_tr.svg')"
@@ -30,6 +30,8 @@
               :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
               :text="'새로고침'"
             ></icon-button>
+            <button class="btn normal">협업 프로필 등록</button>
+            <button class="btn line">내보내기</button>
           </div>
         </div>
       </div>
@@ -52,24 +54,6 @@
               :placeholder="inputOption.placeholder"
               :value.sync="inputOption.value1"
               type="textarea"
-              :count="50"
-            ></input-row>
-            <input-row
-              :title="inputOption.title"
-              :placeholder="inputOption.placeholder"
-              :value.sync="inputOption.value2"
-              type="text"
-              box
-              showCount
-              :count="20"
-            ></input-row>
-            <input-row
-              :title="inputOption.title"
-              :placeholder="inputOption.placeholder"
-              :value.sync="inputOption.value2"
-              type="textarea"
-              box
-              showCount
               :count="50"
             ></input-row>
           </div>
@@ -700,5 +684,8 @@ export default {
       }
     }
   }
+}
+.btn {
+  margin-bottom: 10px;
 }
 </style>

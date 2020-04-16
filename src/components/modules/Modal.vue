@@ -158,7 +158,7 @@ export default {
     position: relative;
     min-width: 360px;
     background-color: #1e1e20;
-    border: 1px solid rgba(#a9a9a9, 0.27);
+    border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(#000, 0.07), 0 12px 12px 0 rgba(#000, 0.3);
   }
@@ -167,7 +167,7 @@ export default {
     position: relative;
     padding: 22px 30px;
     background-color: #313135;
-    border-bottom: 1px solid rgba(#7f7f7f, 0.27);
+    border-bottom: 1px solid rgba(#7f7f7f, 0.2);
     border-radius: 10px 10px 0 0;
   }
 

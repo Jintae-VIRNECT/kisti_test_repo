@@ -75,4 +75,36 @@ body.modal-open {
       }
     }
   }
+  &.normal {
+    background-color: #313135;
+    color: rgba(#fff, 0.6);
+    font-weight: 300;
+    padding: 10px 22px;
+    
+    &:focus {
+      background-color: #313135;
+      color: rgba(#fff, 0.6);
+      }
+    &:hover, &:active {
+      color: #fff;
+      background-color: #38383a;
+    }
+  }
+  &.line {
+    background: transparent;
+    border: solid 1px #fff;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 300;
+    padding: 8px 17px;
+    
+    &:focus{
+      border-color: #fff;
+      color: #fff;
+    }
+    &:hover, &:active {
+      border-color: #0f75f5;
+      color: #0f75f5;
+    }
+  }
 }
