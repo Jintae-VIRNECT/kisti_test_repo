@@ -1,6 +1,12 @@
 <template>
   <div class="card" :style="{ width: cardWidth, height: height + 'px' }">
-    <popover v-if="menu" trigger="click" placement="bottom-start">
+    <popover
+      v-if="menu"
+      trigger="click"
+      placement="bottom-start"
+      :popperClass="popoverClass"
+      :width="120"
+    >
       <button slot="reference" class="card__button"></button>
       <slot name="menuPopover"></slot>
       <!-- <div>
@@ -30,6 +36,10 @@ export default {
     menu: {
       type: Boolean,
       default: false,
+    },
+    popoverClass: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -61,12 +71,25 @@ export default {
   > .popover--wrapper {
     position: absolute;
     top: 16px;
-    right: 16px;
+    right: 8px;
   }
 }
 .card__button {
+  position: relative;
   width: 28px;
   height: 28px;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
+  &:hover {
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(#fff, 0.05);
+      border-radius: 50%;
+      content: '';
+    }
+  }
 }
 </style>

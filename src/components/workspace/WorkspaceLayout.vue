@@ -45,6 +45,7 @@ export default {
     },
     tabChange() {
       this.$refs['wrapperScroller'].scrollToY(0)
+      this.tabFix = false
     },
   },
 

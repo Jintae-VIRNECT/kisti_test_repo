@@ -1,7 +1,7 @@
 <template>
   <div class="workspace-tab">
     <nav class="workspace-tab__nav" :class="{ fix: !!fix }">
-      <ul class="flex">
+      <ul class="flex offsetwidth">
         <tab-button
           v-for="tab of tabComponents"
           :key="tab.name"

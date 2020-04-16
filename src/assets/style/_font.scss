@@ -18,7 +18,7 @@
 
 @font-face {
   font-weight: 200;
-  font-family: $font_family;
+  font-family: $font_family3;
   font-style: normal;
   font-stretch: normal;
   src: local("NotoSansKR-Thin"),
@@ -33,18 +33,18 @@
   font-family: $font_family;
   font-style: normal;
   font-stretch: normal;
-  src: local("NotoSansKR-Light"),
-    url("~assets/font/NotoSansKR-Light-Hangul.woff2") format("woff2"),
-    url("~assets/font/NotoSansKR-Light-Hangul.woff") format("woff");
+  src: local("NotoSansKR-Regular"),
+    url("~assets/font/NotoSansKR-Regular-Hangul.woff2") format("woff2"),
+    url("~assets/font/NotoSansKR-Regular-Hangul.woff") format("woff");
   unicode-range: U+0021-33FF, U+A000-F8FF, U+FB00-F251;
 }
 
 @font-face {
   font-weight: 300;
-  font-family: $font_family;
+  font-family: $font_family3;
   font-style: normal;
   font-stretch: normal;
-  src: local("NotoSansKR-Light"),
+  src: local("NotoSansKR-Regular"),
     url("~assets/font/NotoSansKR-Light-Hanja.woff2") format("woff2"),
     url("~assets/font/NotoSansKR-Light-Hanja.woff") format("woff");
   unicode-range: U+4E00-9F95, U+F900-FA0B;
@@ -64,7 +64,7 @@
 
 @font-face {
   font-weight: 350;
-  font-family: $font_family;
+  font-family: $font_family3;
   font-style: normal;
   font-stretch: normal;
   src: local("NotoSansKR-DemiLight"),
@@ -87,7 +87,7 @@
 
 @font-face {
   font-weight: 400;
-  font-family: $font_family;
+  font-family: $font_family3;
   font-style: normal;
   font-stretch: normal;
   src: local("NotoSansKR-Regular"),
@@ -110,7 +110,7 @@
 
 @font-face {
   font-weight: 500;
-  font-family: $font_family;
+  font-family: $font_family3;
   font-style: normal;
   font-stretch: normal;
   src: local("NotoSansKR-Medium"),

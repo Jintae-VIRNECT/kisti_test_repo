@@ -11,3 +11,9 @@
 @import "./workspace/workspace-remote";
 @import "./workspace/workspace-user";
 @import "./workspace/workspace-setting";
+
+.offsetwidth {
+  width: 100%;
+  max-width: 1480px;
+  margin: auto;
+}

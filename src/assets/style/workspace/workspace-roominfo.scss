@@ -1,0 +1,50 @@
+.roominfo {
+  position: relative;
+  display: flex;
+}
+
+.roominfo-nav {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  height: 100%;
+  padding: 42px 74px;
+  background-color: #29292c;
+}
+
+.roominfo-nav__image {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 35px;
+  border-radius: 50%;
+}
+.roominfo-nav__menu {
+  margin-bottom: 16px;
+  color: rgba(#dedede, 0.5);
+  font-size: 16px;
+  &:focus {
+    color: rgba(#dedede, 0.5);
+  }
+  &:hover {
+    color: rgba(#dedede, 0.9);
+  }
+  &:active {
+    color: rgba(#dedede, 0.7);
+  }
+  &.active {
+    color: #fff;
+    font-weight: 500;
+  }
+}
+
+.roominfo-view {
+  padding: 40px;
+}
+.roominfo-view__title {
+  font-size: 14px;
+}
+.roominfo-view__body {
+}
+.roominfo-view__footer {
+}

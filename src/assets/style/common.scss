@@ -76,35 +76,37 @@ body.modal-open {
     }
   }
   &.normal {
-    background-color: #313135;
+    padding: 10px 22px;
     color: rgba(#fff, 0.6);
     font-weight: 300;
-    padding: 10px 22px;
-    
+    background-color: #313135;
+
     &:focus {
-      background-color: #313135;
       color: rgba(#fff, 0.6);
-      }
-    &:hover, &:active {
+      background-color: #313135;
+    }
+    &:hover,
+    &:active {
       color: #fff;
       background-color: #38383a;
     }
   }
   &.line {
-    background: transparent;
-    border: solid 1px #fff;
-    font-size: 12px;
+    padding: 8px 17px;
     color: #fff;
     font-weight: 300;
-    padding: 8px 17px;
-    
-    &:focus{
-      border-color: #fff;
+    font-size: 12px;
+    background: transparent;
+    border: solid 1px #fff;
+
+    &:focus {
       color: #fff;
+      border-color: #fff;
     }
-    &:hover, &:active {
-      border-color: #0f75f5;
+    &:hover,
+    &:active {
       color: #0f75f5;
+      border-color: #0f75f5;
     }
   }
 }
