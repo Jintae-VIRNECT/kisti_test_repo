@@ -1,5 +1,5 @@
 <template>
-  <figure class="role" v-if="role && role.length > 0">
+  <figure class="role" v-if="role && role.length > 0" :class="opt">
     {{ role }}
   </figure>
 </template>
@@ -11,6 +11,10 @@ export default {
     role: {
       type: String,
       default: '',
+    },
+    opt: {
+      type: String,
+      validator: value => ['', 'card', 'expired'].indexOf(value) >= 0,
     },
   },
 }
@@ -29,5 +33,20 @@ export default {
   line-height: 12px;
   border: solid 1px #bfddff;
   border-radius: 12px;
+
+  &.card {
+    font-family: NotoSansCJKkr-Medium;
+    color: rgb(242, 242, 242);
+    background: rgb(56, 56, 58);
+    border: 1px solid rgb(204, 204, 204);
+  }
+
+  &.expired {
+    font-family: NotoSansCJKkr-Medium;
+    color: rgb(242, 242, 242);
+    background: rgba(204, 23, 1, 0.3);
+    border: 1px solid rgb(204, 23, 1);
+    border-radius: 13px;
+  }
 }
 </style>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 64 (101010) - https://sketch.com -->
+    <title>B46E2677-99BF-438C-B383-E5B5D4E3011C@1.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <circle id="path-1" cx="18" cy="18" r="18"></circle>
+    </defs>
+    <g id="-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="0.0-리소스-파일모음" transform="translate(-115.000000, -39.000000)">
+            <rect id="bg_screen" fill="#1E1E20" fill-rule="nonzero" x="0" y="0" width="1920" height="1080"></rect>
+            <g id="gnb_icn_notice" transform="translate(115.000000, 39.000000)">
+                <g id="notice">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <circle stroke="#DEAF35" cx="18" cy="18" r="17.5"></circle>
+                    <g id="icon-(1)" mask="url(#mask-2)" fill="#FFFFFF" fill-rule="nonzero">
+                        <g transform="translate(8.000000, 7.530801)" id="Path">
+                            <path d="M10.5291948,15 C9.15331284,15 8,16.14 8,17.5 C8,18.86 9.15331284,20 10.5291948,20 C11.8544929,20 13.0583896,18.86 12.997689,17.56 C13.0583896,16.13 11.9151936,15 10.5291948,15 Z"></path>
+                            <path d="M9.91089109,1.05323175 C8.73267327,1.30966491 8,2.12421729 8,3.11223916 C8.05940594,3.70806914 8.10891089,4.31144128 8.16831683,4.90727126 C8.33663366,7.17745891 8.5049505,9.40239365 8.67326733,11.6725813 C8.73267327,12.4418808 9.51485149,13 10.5247525,13 C11.5346535,13 12.3267327,12.40417 12.3762376,11.6273284 C12.3762376,11.159715 12.3762376,10.7298123 12.4356436,10.2546568 C12.5445545,8.79902152 12.6633663,7.34338625 12.7722772,5.88775097 C12.8316832,4.94498202 12.9405941,4.00221306 13,3.0594441 C13,2.72004727 12.9405941,2.41836121 12.7722772,2.11667514 C12.2673267,1.27195415 11.0891089,0.842051507 9.91089109,1.05323175 Z"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

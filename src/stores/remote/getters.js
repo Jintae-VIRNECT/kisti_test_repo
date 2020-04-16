@@ -1,4 +1,6 @@
 export default {
+  account: state => state.account,
+
   // oncall
   view: state => state.oncall.view,
   action: state => state.oncall.action,
@@ -6,4 +8,6 @@ export default {
   mic: state => state.oncall.mic,
   speaker: state => state.oncall.speaker,
   mute: state => !state.oncall.unmute,
+
+  deviceType: state => state.device.type,
 }

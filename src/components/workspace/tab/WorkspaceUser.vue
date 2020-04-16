@@ -1,16 +1,19 @@
 <template>
   <tab-view
-    title="원격 협업 가능한 멤버"
-    description="협업 가능한 회원을 선택하고 문자 보내기 또는 1:1통화를 해보세요."
+    title="협업 가능 멤버"
+    description="협업 가능한 회원을 선택하고 메세지를 보내보세요."
     placeholder="통화 기록 검색"
+  >
+    <workspace-user-list></workspace-user-list
   ></tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
+import WorkspaceUserList from '../section/WorkspaceUserList'
 export default {
   name: 'WorkspaceUser',
-  components: { TabView },
+  components: { TabView, WorkspaceUserList },
   data() {
     return {}
   },

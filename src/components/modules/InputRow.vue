@@ -10,7 +10,7 @@
       :maxlength="count"
     />
     <textarea
-      v-else
+      v-else-if="type === 'textarea'"
       ref="inputTextarea"
       class="inputrow-input textarea"
       type="text"
@@ -19,6 +19,7 @@
       @keyup="cmaTextareaSize(30)"
       :maxlength="count"
     />
+    <slot v-else></slot>
     <span class="inputrow-length" v-if="showCount">{{
       `${inputText.length}/${count}`
     }}</span>

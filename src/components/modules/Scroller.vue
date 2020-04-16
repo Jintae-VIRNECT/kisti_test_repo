@@ -37,6 +37,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    height: {
+      type: Number,
+      deafult: 0,
+    },
   },
   data() {
     return {
@@ -82,6 +86,10 @@ export default {
       }
     },
     getScrollH(target) {
+      if (this.height > 0) {
+        this.scrollH = this.height
+        return this.height
+      }
       let element
       let totalHeight = document.body.offsetHeight
 

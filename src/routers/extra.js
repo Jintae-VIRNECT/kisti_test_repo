@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+const SupportComponent = () => import('components/support/SupportComponent')
 
 Vue.use(VueRouter)
 
@@ -8,13 +9,9 @@ export default new VueRouter({
   mode: 'history',
   routes: [
     {
-      path: '/test/:tab?',
-      name: 'test',
-      component: () => import('components/test/Test'),
-    },
-    {
-      path: '*',
-      redirect: 'test',
+      path: '/support',
+      name: 'support',
+      component: SupportComponent,
     },
   ],
 })

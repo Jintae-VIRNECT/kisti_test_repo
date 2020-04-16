@@ -1,5 +1,5 @@
 <template>
-  <div class="widecard" :style="{ height: height + 'px' }">
+  <div class="widecard" :style="{ height: height + 'px' }" :class="customClass">
     <popover v-if="menu" trigger="click" placement="bottom-start">
       <button slot="reference" class="widecard__button"></button>
       <slot name="menuPopover"></slot>
@@ -26,6 +26,12 @@ export default {
     menu: {
       type: Boolean,
       default: false,
+    },
+    customClass: {
+      type: Object,
+      default: () => {
+        return {}
+      },
     },
   },
   data() {

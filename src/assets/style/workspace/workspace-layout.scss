@@ -1,5 +1,32 @@
-.workspace-wrapper {
+.remote-layout {
+  position: relative;
   height: 100vh;
-  margin: 0 222px;
-  padding: $header_height 0 20px;
+  overflow: hidden;
+  background-color: $color_bg_default;
+}
+.remote-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100vw;
+  height: calc(100vh - #{$header_height});
+  margin-top: $header_height;
+  // padding: $header_height 10px 20px 0;
+  margin-right: 0;
+  > .vue-scrollbar-transition {
+    height: 100%;
+    transition: none;
+  }
+}
+
+.workspace-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  // max-width: 1440px;
+  // height: calc(100vh - 56px);
+  // margin: 0 auto;
+  // margin-top: 56px;
+  // text-align: center;
 }

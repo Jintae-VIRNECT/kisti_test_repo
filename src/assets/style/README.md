@@ -16,6 +16,7 @@
 |-- mobileApp/
 |-- service/
 |-- service.scss
+|-- support.scss
 |-- plugin/
     |-- vue-toasted.scss
     `-- material-icons.scss

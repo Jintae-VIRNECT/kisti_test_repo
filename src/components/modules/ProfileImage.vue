@@ -4,15 +4,21 @@
     :class="customClass"
     :style="{ width: `${size}px`, height: `${size}px` }"
   >
+    <img
+      class="profile-image__image"
+      v-if="image && image.length > 0"
+      :src="image"
+    />
     <div
       class="profile-image__color"
-      v-if="color && color.length > 0"
+      v-else
       :style="{ 'background-color': color }"
     >
       <p>{{ groupName.slice(0, 1) }}</p>
     </div>
-    <img class="profile-image__image" v-else :src="img" />
-    <button class="profile-image__button">등록</button>
+    <button class="profile-image__button" v-if="btnText.length > 0">
+      {{ btnText }}
+    </button>
   </div>
 </template>
 
@@ -29,7 +35,7 @@ export default {
       type: String,
       default: '#0f75f5', // ''
     },
-    img: {
+    image: {
       type: String,
       default: '',
     },
@@ -38,6 +44,10 @@ export default {
       default: '버넥트',
     },
     customClass: {
+      type: String,
+      default: '',
+    },
+    btnText: {
       type: String,
       default: '',
     },
@@ -56,7 +66,7 @@ export default {
 <style lang="scss" scoped>
 .profile-image {
   position: relative;
-  margin: auto;
+  margin: 0 auto;
   overflow: hidden;
   border-radius: 50%;
 }
