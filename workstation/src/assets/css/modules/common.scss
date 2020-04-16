@@ -1,0 +1,26 @@
+$container-width: 1280px;
+$header-height: 64px;
+
+a {
+  color: $color-link;
+}
+main {
+  min-width: $container-width;
+  min-height: calc(100vh - #{$header-height});
+  margin-top: $header-height;
+  background: #fafbfc;
+}
+.container {
+  position: relative;
+  width: $container-width;
+  margin: 0 auto;
+  padding: 64px 20px;
+
+  &__left.el-col-24 {
+    width: 340px;
+    margin-right: 30px;
+  }
+  &__right.el-col-24 {
+    width: 870px;
+  }
+}

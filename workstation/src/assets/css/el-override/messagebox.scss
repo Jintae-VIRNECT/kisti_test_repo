@@ -1,0 +1,72 @@
+// message
+body .el-message {
+  max-width: 426px;
+  padding: 14px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px -2px rgba(9, 30, 66, 0.25),
+    0 0 1px 0 rgba(9, 30, 66, 0.31);
+
+  &--error {
+    background-color: #b92500;
+    border-color: #b92500;
+    .el-message__content {
+      color: #fff;
+    }
+  }
+
+  .el-message__content {
+    margin-right: 20px;
+    line-height: 1.5;
+  }
+  .el-message__icon {
+    display: none;
+  }
+  .el-icon-close:before {
+    color: #fff;
+  }
+}
+
+// messagebox
+body .el-message-box {
+  margin-top: 110px;
+  padding-bottom: 0;
+  font-weight: 500;
+  vertical-align: top;
+  border-radius: 4px;
+
+  &__header {
+    padding: 20px 30px;
+    border-bottom: solid 1px #eaedf3;
+
+    .el-dialog__headerbtn {
+      right: 28px;
+    }
+    .el-icon-close:before {
+      color: $font-color-content;
+      font-weight: bold;
+    }
+  }
+  &__title {
+    color: $font-color-content;
+  }
+  &__content {
+    padding: 24px 30px;
+    p {
+      color: $font-color-content;
+      line-height: 1.71;
+    }
+  }
+
+  .el-message-box__btns {
+    padding: 30px 30px 24px;
+    .el-button--small {
+      height: 36px;
+      margin-top: 0;
+      padding: 7px 20px;
+      font-size: 14px;
+      background-color: #1468e2;
+      border-color: #1468e2;
+      border-radius: 3px;
+    }
+  }
+}

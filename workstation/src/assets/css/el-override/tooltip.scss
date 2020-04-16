@@ -1,0 +1,10 @@
+.el-tooltip__popper.is-dark[role="tooltip"] {
+  margin-top: 5px;
+  padding: 11px 12px;
+  font-size: 12px;
+  background: #102b53;
+
+  .popper__arrow {
+    display: none;
+  }
+}

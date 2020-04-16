@@ -1,12 +1,12 @@
 <template>
   <div>
-    <the-sidebar :logo="sideLogo" :menus="sideMenus" />
-    <div>
+    <header>
       <the-header />
-      <main class="main-container">
-        <nuxt />
-      </main>
-    </div>
+    </header>
+    <the-sidebar :menus="sideMenus" />
+    <main>
+      <nuxt />
+    </main>
   </div>
 </template>
 

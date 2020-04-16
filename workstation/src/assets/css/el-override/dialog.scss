@@ -1,0 +1,51 @@
+.el-dialog {
+  border-radius: 4px;
+
+  &__header {
+    padding: 20px 30px;
+    border-bottom: solid 1px #eaedf3;
+
+    .el-dialog__headerbtn {
+      right: 28px;
+    }
+    .el-icon-close:before {
+      color: $font-color-content;
+      font-weight: bold;
+    }
+  }
+  &__title {
+    color: $font-color-content;
+  }
+  &__body {
+    padding: 24px 30px;
+    p {
+      color: $font-color-content;
+      line-height: 1.71;
+    }
+  }
+  .el-form {
+    margin: 30px 0 54px;
+  }
+  .el-form-item {
+    margin-bottom: 30px;
+
+    &:not(.horizon) .el-input + .el-input {
+      margin-top: 10px;
+    }
+    &.horizon .el-form-item__content {
+      display: flex;
+      width: 100%;
+
+      .el-input,
+      .el-select {
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+  &__footer {
+    padding: 24px 30px;
+  }
+}

@@ -10,7 +10,10 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: 'workstation',
+    htmlAttrs: {
+      lang: 'ko',
+    },
+    title: 'Workstation',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -28,17 +31,20 @@ module.exports = {
    */
   styleResources: {
     scss: [
-      '@/assets/style/_vars.scss',
-      '@/assets/style/_reset.scss',
-      '@/assets/style/common.scss',
+      resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
+      '@/assets/css/_vars.scss',
     ],
   },
-  loading: { color: '#1b293e' },
+  css: [
+    resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
+    '@/assets/css/global.scss',
+  ],
+  loading: { color: '#1468e2' },
   /**
    * dir
    */
-  srcDir: 'src/',
-  modulesDir: ['../../node_modules'],
+  srcDir: resolve(__dirname, 'src'),
+  modulesDir: [resolve(__dirname, '../WC-Modules/src')],
   /**
    * env
    */
@@ -49,6 +55,8 @@ module.exports = {
     WORKSPACE_API_URL: env.WORKSPACE_API_URL,
     CONTENT_API_URL: env.CONTENT_API_URL,
     PROCESS_API_URL: env.PROCESS_API_URL,
+    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
+    API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
   /**
    * build
@@ -57,7 +65,7 @@ module.exports = {
     extend(config, { isDev, isClient }) {
       config.resolve.alias['WC-Modules'] = resolve(
         __dirname,
-        '../../WC-Modules/src',
+        '../WC-Modules/src',
       )
     },
   },

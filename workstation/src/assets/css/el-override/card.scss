@@ -1,0 +1,99 @@
+// 카드
+.el-card {
+  margin-bottom: 30px;
+  box-shadow: none;
+}
+.el-card__header {
+  height: 64px;
+  padding-right: 30px;
+  padding-left: 30px;
+
+  & > div > h3 {
+    float: left;
+    color: $font-color-content;
+    font-size: 16px;
+  }
+  & > div > span {
+    margin-left: 20px;
+    color: $font-color-desc;
+    font-size: 12.6px;
+    line-height: 16px;
+    vertical-align: bottom;
+  }
+  & > div > a,
+  & > div > button {
+    float: right;
+    color: $color-link;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  & > div > img {
+    margin-left: 7px;
+    vertical-align: middle;
+  }
+}
+.el-card__body {
+  padding-right: 30px;
+  padding-left: 30px;
+}
+// 카드 - 테이블
+.el-card--table .el-card__body {
+  padding: 0;
+
+  .el-table th {
+    padding: 8px 0;
+    color: $font-color-desc;
+    font-size: 12px;
+  }
+  .el-table td {
+    padding: 20px 0;
+    color: $font-color-content;
+  }
+  th:first-child,
+  td:first-child {
+    padding-left: 20px;
+  }
+  th:nth-last-child(2),
+  td:last-child {
+    padding-right: 20px;
+  }
+  .el-table__empty-block {
+    min-height: 480px;
+    .el-table__empty-text {
+      margin-bottom: 100px;
+      line-height: 2;
+      & > span {
+        color: $font-color-content;
+        font-size: 12.6px;
+        opacity: 0.55;
+      }
+    }
+  }
+  .el-table .caret-wrapper {
+    margin: -10px -3px;
+    transform: scale(0.8);
+  }
+  .el-table .ascending .sort-caret.ascending {
+    border-bottom-color: $color-primary;
+  }
+  .el-table .descending .sort-caret.descending {
+    border-top-color: $color-primary;
+  }
+  // 리스트 스타일
+  .el-table--list {
+    td,
+    th.is-leaf {
+      border-bottom: none;
+    }
+    &::before {
+      display: none;
+    }
+    td {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    td:last-child {
+      color: $font-color-desc;
+    }
+  }
+}

@@ -1,5 +1,6 @@
 <template>
   <nav class="the-sidebar">
+    <el-menu :default-active="now" :router="true" :collapse="isCollapse">
       <el-menu-item
         v-for="(menu, index) in menus"
         :key="menu.path"
