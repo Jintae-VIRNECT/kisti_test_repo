@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
     "build:develop": "cross-env NODE_ENV=develop nuxt build --modern=server",
+    "build": "cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server",
     "start": "cross-env NODE_ENV=$NODE_ENV nuxt start --modern=server",
     "deploy": "yarn start",
     "generate": "nuxt generate"
