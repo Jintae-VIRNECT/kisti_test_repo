@@ -191,7 +191,7 @@ public class LicenseService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<MyCouponInfoListResponse> getMyCouponInfoList(String userId, Pageable pageable) {
-        Page<Coupon> couponList = couponRepository.findMyCouponListByUserIdAndPageable(userId, pageable);
+        Page<Coupon> couponList = couponRepository.findByUserId(userId, pageable);
 
         List<MyCouponInfoResponse> couponInfoList = couponList.stream().map(coupon -> {
             MyCouponInfoResponse myCouponInfo = new MyCouponInfoResponse();
@@ -201,9 +201,8 @@ public class LicenseService {
             myCouponInfo.setRegisterDate(coupon.getCreatedDate());
             myCouponInfo.setExpiredDate(coupon.getExpiredDate());
             if (coupon.getStatus().equals(CouponStatus.USE)) {
-                LicensePlan licensePlan = coupon.getLicensePlan();
-                myCouponInfo.setStartDate(licensePlan.getStartDate());
-                myCouponInfo.setExpiredDate(licensePlan.getEndDate());
+                myCouponInfo.setStartDate(coupon.getStartDate());
+                myCouponInfo.setEndDate(coupon.getEndDate());
             }
             return myCouponInfo;
         }).collect(Collectors.toList());
@@ -235,18 +234,23 @@ public class LicenseService {
                 .endDate(LocalDateTime.now().plusDays(coupon.getDuration()))
                 .userId(couponActiveRequest.getUserId())
                 .planStatus(PlanStatus.ACTIVE)
-                .coupon(coupon)
                 .build();
 
         this.licensePlanRepository.save(licensePlan);
 
+        coupon.setLicensePlan(licensePlan);
         coupon.setStatus(CouponStatus.USE);
+        coupon.setStartDate(licensePlan.getStartDate());
+        coupon.setEndDate(licensePlan.getEndDate());
+
         this.couponRepository.save(coupon);
 
         // 5. 쿠폰 기반으로 라이선스 정보 등록
         licenseRegisterByCouponProduct(coupon.getUserId(), coupon, licensePlan);
         MyCouponInfoResponse myCouponInfoResponse = new MyCouponInfoResponse();
         myCouponInfoResponse.setId(coupon.getId());
+        myCouponInfoResponse.setName(coupon.getName());
+        myCouponInfoResponse.setStatus(coupon.getStatus());
         myCouponInfoResponse.setRegisterDate(coupon.getRegisterDate());
         myCouponInfoResponse.setExpiredDate(coupon.getExpiredDate());
         myCouponInfoResponse.setStartDate(licensePlan.getStartDate());

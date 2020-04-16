@@ -41,6 +41,7 @@ public class LicensePlan extends BaseTimeEntity {
     private PlanStatus planStatus = PlanStatus.INACTIVE;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "licensePlan")
+    @JoinColumn(name = "coupon_id")
     Coupon coupon;
 
     @Builder
