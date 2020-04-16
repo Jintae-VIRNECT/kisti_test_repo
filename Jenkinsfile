@@ -92,7 +92,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+              sh 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
               sh 'docker run -p 8078:8078 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement pf-contentsmanagement'
               sh 'docker image prune -f'
             }
@@ -127,7 +127,7 @@ pipeline {
                           execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                          execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
                           execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
@@ -174,7 +174,7 @@ pipeline {
                           execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                          execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
                           execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_COMMIT}"
@@ -200,6 +200,7 @@ pipeline {
   post {
       always {
         emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+        office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'            
       }
     }
 }
