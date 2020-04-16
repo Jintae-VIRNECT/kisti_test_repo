@@ -16,7 +16,7 @@ spring:
           predicates:
             - Path=/users/v2/**
           filters:
-            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
@@ -26,7 +26,7 @@ spring:
           predicates:
             - Path=/workspace/v2/**
           filters:
-            - RewritePath=/workspace/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: amdin-server
           uri: lb://admin-server
           predicates:
@@ -36,7 +36,7 @@ spring:
           predicates:
             - Path=/admin/v2/**
           filters:
-            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: content-server
           uri: lb://content-server
           predicates:
@@ -46,7 +46,7 @@ spring:
           predicates:
             - Path=/contents/v2/**
           filters:
-            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: process-server
           uri: lb://process-server
           predicates:
@@ -56,7 +56,7 @@ spring:
           predicates:
             - Path=/processes/v2/**
           filters:
-            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: license-server
           uri: lb://license-server
           predicates:
@@ -66,7 +66,7 @@ spring:
           predicates:
             - Path=/licenses/v2/**
           filters:
-            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: auth-server
           uri: lb://auth-server
           predicates:
@@ -76,7 +76,7 @@ spring:
           predicates:
             - Path=/auth/v2/**
           filters:
-            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: message-server
           uri: lb://message-server
           predicates:
@@ -86,7 +86,7 @@ spring:
           predicates:
             - Path=/message/v2/**
           filters:
-            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
         - id: download-server
           uri: lb://download-server
           predicates:
@@ -96,7 +96,7 @@ spring:
           predicates:
             - Path=/download/v2/**
           filters:
-            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+            - StripPrefix=1
       globalcors:
         cors-configurations:
           '[/**]':
