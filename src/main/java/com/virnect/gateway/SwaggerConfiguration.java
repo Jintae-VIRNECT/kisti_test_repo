@@ -1,6 +1,7 @@
 package com.virnect.gateway;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.context.annotation.*;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * @description
  * @since 2020.04.09
  */
-
+@Slf4j
 @Profile({"local", "develop"})
 @Configuration
 @RequiredArgsConstructor
@@ -63,10 +64,12 @@ public class SwaggerConfiguration {
     }
 
     private SwaggerResource createResource(String name, String location, String version) {
+        log.info("[name: [{}] , location: [{}], url: [{}], version: [{}]", name, location + "api-docs", location, version);
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
         swaggerResource.setLocation(location + "api-docs");
         swaggerResource.setSwaggerVersion(version);
+        swaggerResource.setUrl(location);
         return swaggerResource;
     }
 
