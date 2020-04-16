@@ -11,6 +11,8 @@ spring:
           uri: lb://user-server
           predicates:
             - Path=/users**
+          filters:
+            - StripPrefix=0
         - id: user-api-docs
           uri: lb://user-server
           predicates:
@@ -21,6 +23,8 @@ spring:
           uri: lb://workspace-server
           predicates:
             - Path=/workspace**
+          filters:
+            - StripPrefix=0
         - id: workspace-api-docs
           uri: lb://workspace-server
           predicates:
@@ -31,6 +35,8 @@ spring:
           uri: lb://admin-server
           predicates:
             - Path=/admin**
+          filters:
+            - StripPrefix=0
         - id: admin-api-docs
           uri: lb://admin-server
           predicates:
@@ -41,6 +47,8 @@ spring:
           uri: lb://content-server
           predicates:
             - Path=/contents**
+          filters:
+            - StripPrefix=0
         - id: content-api-docs
           uri: lb://content-server
           predicates:
@@ -51,6 +59,8 @@ spring:
           uri: lb://process-server
           predicates:
             - Path=/processes**
+          filters:
+            - StripPrefix=0
         - id: process-api-docs
           uri: lb://process-server
           predicates:
@@ -61,6 +71,8 @@ spring:
           uri: lb://license-server
           predicates:
             - Path=/licenses**
+          filters:
+            - StripPrefix=0
         - id: license-api-docs
           uri: lb://license-server
           predicates:
@@ -71,6 +83,8 @@ spring:
           uri: lb://auth-server
           predicates:
             - Path=/auth**
+          filters:
+            - StripPrefix=0
         - id: auth-api-docs
           uri: lb://auth-server
           predicates:
@@ -81,6 +95,8 @@ spring:
           uri: lb://message-server
           predicates:
             - Path=/message**
+          filters:
+            - StripPrefix=0
         - id: message-api-docs
           uri: lb://message-server
           predicates:
@@ -91,6 +107,8 @@ spring:
           uri: lb://download-server
           predicates:
             - Path=/download**
+          filters:
+            - StripPrefix=0
         - id: download-api-docs
           uri: lb://download-server
           predicates:
