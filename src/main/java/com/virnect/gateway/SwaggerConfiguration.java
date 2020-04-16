@@ -51,7 +51,6 @@ public class SwaggerConfiguration {
     @Lazy
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
-                .filter(route -> route.getId().contains("api"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
