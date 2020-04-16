@@ -69,7 +69,6 @@ public class SwaggerConfiguration {
         swaggerResource.setName(name);
         swaggerResource.setLocation(location + "api-docs");
         swaggerResource.setSwaggerVersion(version);
-        swaggerResource.setUrl(location);
         return swaggerResource;
     }
 
