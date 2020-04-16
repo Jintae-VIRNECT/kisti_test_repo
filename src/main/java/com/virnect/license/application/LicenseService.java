@@ -156,14 +156,14 @@ public class LicenseService {
         Coupon coupon = this.couponRepository.findByUserIdAndSerialKey(couponRegisterRequest.getUserId(), couponRegisterRequest.getCouponSerialKey())
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_NOT_FOUND));
 
-        // 2. 쿠폰 사용 여부 검사
-        if (coupon.isUsed()) {
-            throw new LicenseServiceException(ErrorCode.ERR_COUPON_REGISTER_ALREADY_USED);
+        // 2. 쿠폰 등록 여부 검사 (등록일이 존재하는 경우)
+        if (coupon.getRegisterDate() != null) {
+            throw new LicenseServiceException(ErrorCode.ERR_COUPON_REGISTER_ALREADY_REGISTER);
         }
 
         // 3. 쿠폰 만료일 검사
         if (coupon.isExpired()) {
-            throw new LicenseServiceException(ErrorCode.ERR_COUPON_REGISTER_EXPIRED);
+            throw new LicenseServiceException(ErrorCode.ERR_COUPON_EXPIRED);
         }
 
         // 4. 쿠폰 등록 일자 수정
@@ -226,8 +226,19 @@ public class LicenseService {
      */
     @Transactional
     public ApiResponse<MyCouponInfoResponse> couponActiveHandler(CouponActiveRequest couponActiveRequest) {
+        // 1. 활성화 할 쿠폰 찾기
         Coupon coupon = this.couponRepository.findByUserIdAndId(couponActiveRequest.getUserId(), couponActiveRequest.getCouponId())
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_COUPON_ACTIVE_NOT_FOUND));
+
+        // 2. 이미 사용된 쿠폰의 경우
+        if (coupon.isUsed()) {
+            throw new LicenseServiceException(ErrorCode.ERR_COUPON_ALREADY_ACTIVATED);
+        }
+
+        // 3. 쿠폰 기한이 만료된 경우
+        if(coupon.isExpired()){
+            throw new LicenseServiceException(ErrorCode.ERR_COUPON_EXPIRED);
+        }
 
         // 1. 라이선스 플랜 생성
         LicensePlan licensePlan = LicensePlan.builder()

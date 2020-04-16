@@ -18,11 +18,12 @@ public enum ErrorCode {
 
     // 쿠폰 등록
     ERR_COUPON_NOT_FOUND(2000, "Coupon not found by serial key"),
-    ERR_COUPON_REGISTER_ALREADY_USED(2001, "Coupon is already use"),
-    ERR_COUPON_REGISTER_EXPIRED(2002, "Coupon is expired"),
+    ERR_COUPON_REGISTER_ALREADY_REGISTER(2001, "Coupon is already register"),
+    ERR_COUPON_EXPIRED(2002, "Coupon is expired"),
 
     // 쿠폰 사용
     ERR_COUPON_ACTIVE_NOT_FOUND(3000, "Coupon activated fail. coupon information not found"),
+    ERR_COUPON_ALREADY_ACTIVATED(3001, "Coupon is already activated"),
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
