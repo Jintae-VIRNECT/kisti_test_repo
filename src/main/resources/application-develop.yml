@@ -30,7 +30,7 @@ spring:
         - id: amdin-server
           uri: lb://admin-server
           predicates:
-            - Path=/admin/**
+            - Path=/admin**
         - id: admin-api-docs
           uri: lb://admin-server
           predicates:
@@ -77,6 +77,26 @@ spring:
             - Path=/auth/v2/**
           filters:
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+        - id: message-server
+            uri: lb://message-server
+            predicates:
+              - Path=/message**
+        - id: message-api-docs
+          uri: lb://message-server
+          predicates:
+            - Path=/message/v2/**
+          filters:
+            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+        - id: download-server
+            uri: lb://download-server
+            predicates:
+              - Path=/download**
+        - id: download-api-docs
+          uri: lb://download-server
+          predicates:
+            - Path=/download/v2/**
+          filters:
+            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
       globalcors:
         cors-configurations:
           '[/**]':
