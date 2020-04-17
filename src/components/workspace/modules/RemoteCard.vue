@@ -44,7 +44,7 @@
     </div>
     <ul slot="menuPopover" class="groupcard-popover">
       <li>
-        <button class="group-pop__button" @click="showRoomInfo = !showRoomInfo">
+        <button class="group-pop__button" @click="openRoomInfo">
           상세 보기
         </button>
       </li>
@@ -54,7 +54,10 @@
         </button>
       </li>
       <li v-else><button class="group-pop__button">협업 나가기</button></li>
-      <roominfo-modal :visible="showRoomInfo" :room="room"></roominfo-modal>
+      <roominfo-modal
+        :visible.sync="showRoomInfo"
+        :room="room"
+      ></roominfo-modal>
     </ul>
   </card>
 </template>
@@ -176,7 +179,11 @@ export default {
       return this.room.connectedMembers[idx]
     },
   },
-  methods: {},
+  methods: {
+    openRoomInfo() {
+      this.showRoomInfo = !this.showRoomInfo
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -252,10 +259,10 @@ export default {
   &:before {
     position: absolute;
     top: 0;
-    right: 107%;
+    right: 105%;
     width: 20px;
     height: 20px;
-    background: url(~assets/image/ic_leader_.svg) 50%/20px no-repeat;
+    background: url(~assets/image/ic_leader.svg) 50%/20px no-repeat;
     content: '';
   }
 }

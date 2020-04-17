@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="modal" :class="customClass">
+  <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
     <div class="modal--dimmed" @click.stop="doClose($event)"></div>
     <transition name="modal">
       <div
@@ -125,6 +125,10 @@ export default {
     },
   },
   methods: {
+    scroll(e) {
+      e.preventDefault()
+      e.stopPropagation()
+    },
     clickHander(event) {
       if (this.eventPropagation) {
         event.stopPropagation()

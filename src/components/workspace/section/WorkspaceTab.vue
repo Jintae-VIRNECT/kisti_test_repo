@@ -63,8 +63,11 @@ export default {
   },
   methods: {
     tabChange(tabName) {
-      this.component = tabName
-      this.$emit('tabChange')
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.component = tabName
+        this.$emit('tabChange')
+      })
     },
   },
 

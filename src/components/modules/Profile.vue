@@ -65,6 +65,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .profile {
   display: flex;
@@ -83,13 +84,12 @@ export default {
   height: 100%;
   overflow: hidden;
   line-height: 0;
-  background-color: #fff;
-  border-radius: 50%;
 
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    @include image();
   }
   > p {
     width: fit-content;

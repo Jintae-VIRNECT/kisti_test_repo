@@ -196,6 +196,7 @@ export default {
     },
 
     normalizeVertical(next) {
+      this.$eventBus.$emit('popover:scrollClose')
       const elementSize = this.getSize()
 
       // Vertical Scrolling
@@ -299,7 +300,6 @@ export default {
     },
 
     calculateSize(cb) {
-      console.log('calculateSize')
       if (typeof cb !== 'function') cb = null
 
       let elementSize = this.getSize()

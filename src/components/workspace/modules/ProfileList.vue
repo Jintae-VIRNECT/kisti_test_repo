@@ -72,6 +72,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .profilelist {
   display: flex;
@@ -88,6 +89,7 @@ export default {
 .profilelist-user__image {
   width: 100%;
   height: 100%;
+  @include image();
 }
 
 .profilelist-user__expend {

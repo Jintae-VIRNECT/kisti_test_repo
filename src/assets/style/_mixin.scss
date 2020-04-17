@@ -151,6 +151,12 @@
   text-indent: -999px;
 }
 
+@mixin image {
+  overflow: hidden;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
 @mixin clearfix {
   &::after {
     display: block;

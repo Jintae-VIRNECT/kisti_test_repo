@@ -1,8 +1,11 @@
 <template>
-  <div class="icon-button">
-    <img class="icon-button__icon" :src="imgSrc" />
-    <div class="icon-button__text">{{ text }}</div>
-  </div>
+  <button
+    class="icon-button"
+    @click="$listeners['click']"
+    :style="{ 'background-image': `url(${imgSrc})` }"
+  >
+    {{ text }}
+  </button>
 </template>
 
 <script>
@@ -23,38 +26,21 @@ export default {
 
 <style lang="scss" scoped>
 .icon-button {
+  margin-bottom: 10px;
   margin-left: 9px;
-  background: rgb(41, 41, 44);
+  padding: 8px 15px 8px 40px;
+  color: rgba(#d2d2d2, 0.8);
+  font-size: 13px;
+  line-height: 20px;
+  background: #38383a 13px 50%/22px no-repeat;
   border-radius: 2px;
-  width: 104px;
-  height: 36px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 40%;
+  opacity: 0.4;
 
   &:hover {
-    background-color: rgb(56, 56, 58);
-    opacity: 80%;
+    opacity: 0.8;
   }
   &:active {
-    background-color: rgb(56, 56, 58);
-    opacity: 80%;
-  }
-
-  .icon-button__icon {
-    margin-right: 5px;
-  }
-
-  .icon-button__text {
-    color: rgb(210, 210, 210);
-    font-size: 13px;
-    font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    width: 48px;
-    height: 19px;
-    text-align: center;
+    opacity: 0.8;
   }
 }
 </style>

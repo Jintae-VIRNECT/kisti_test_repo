@@ -65,8 +65,7 @@ export default {
 .profile-image {
   position: relative;
   margin: 0 auto;
-  overflow: hidden;
-  border-radius: 50%;
+  @include image();
 }
 .profile-image__color {
   width: 100%;
@@ -85,6 +84,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
+  border-radius: 50%;
 }
 .profile-image__button {
   position: absolute;
@@ -96,7 +96,7 @@ export default {
   background-color: transparent;
   @include ir();
   &:hover {
-    background: url(~assets/image/ic_delete.svg) 50%/40px no-repeat;
+    background: url(~assets/image/ic_trash.svg) 50%/20px no-repeat;
     background-color: rgba(#000, 0.8);
   }
 }

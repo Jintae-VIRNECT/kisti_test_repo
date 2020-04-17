@@ -6,6 +6,7 @@
       placement="bottom-start"
       :popperClass="popoverClass"
       :width="120"
+      :scrollHide="true"
     >
       <button slot="reference" class="card__button"></button>
       <slot name="menuPopover"></slot>

@@ -1,10 +1,10 @@
 <template>
-  <section class="tab-view offsetwidth" :class="[customClass]">
-    <div class="tab-view__header">
+  <section class="tab-view" :class="[customClass]">
+    <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
       <list-badge v-if="!(listCount === null)"></list-badge>
     </div>
-    <div class="tab-view__sub-header">
+    <div class="tab-view__sub-header offsetwidth">
       <span class="tab-view__description" v-if="description.length > 0">{{
         description
       }}</span>
@@ -26,7 +26,7 @@
         ></icon-button>
       </div>
     </div>
-    <div class="tab-view__body">
+    <div class="tab-view__body offsetwidth">
       <slot v-if="!empty"></slot>
       <show-empty
         v-else
