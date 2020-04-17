@@ -9,7 +9,6 @@
         <h2>워크스페이스 정보</h2>
         <p>회원님이 참여중인 전체 워크스페이스 목록입니다.</p>
       </div>
-      <search-tab-nav placeholder="워크스페이스 이름 검색" />
       <el-card class="el-card--table">
         <div slot="header">
           <h3>전체 워크스페이스 정보</h3>
@@ -44,13 +43,11 @@
 <script>
 import workspaceService from '@/services/workspace'
 
-import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
 import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
 import ColumnPlan from '@/components/common/tableColumn/ColumnPlan'
 
 export default {
   components: {
-    SearchTabNav,
     ColumnDefault,
     ColumnPlan,
   },
