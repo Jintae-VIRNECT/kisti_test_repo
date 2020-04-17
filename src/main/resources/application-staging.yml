@@ -2,7 +2,7 @@ spring:
   application:
     name: content-server
   datasource:
-    url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8203/contents
+    url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/contents
     username: virnect-contents
     password: virnect1234
   jpa:
