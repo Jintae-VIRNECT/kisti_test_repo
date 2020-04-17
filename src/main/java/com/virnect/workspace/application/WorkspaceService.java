@@ -94,7 +94,7 @@ public class WorkspaceService {
 
         String workspaceNickName = null;
         if (!StringUtils.hasText(workspaceCreateRequest.getName())) {
-            workspaceNickName = userInfoRestResponse.getNickName() + "'s Workspace";
+            workspaceNickName = userInfoRestResponse.getNickname() + "'s Workspace";
         }
 
         Workspace newWorkspace = Workspace.builder()
@@ -183,59 +183,48 @@ public class WorkspaceService {
     public MemberListResponse filterdMemberList(Workspace workspace, String userId, String search, String filter, Pageable pageable) {
         //필터로 넘어온 권한을 리스트로 변환.
         List<WorkspaceRole> workspaceRoleList = new ArrayList<>();
-        if (filter.contains("MASTER")){
+        if (filter.contains("MASTER")) {
             workspaceRoleList.add(WorkspaceRole.builder().id(1L).build());
         }
-        if (filter.contains("MANAGER")){
+        if (filter.contains("MANAGER")) {
             workspaceRoleList.add(WorkspaceRole.builder().id(2L).build());
         }
-        if (filter.contains("MEMBER")){
+        if (filter.contains("MEMBER")) {
             workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
         }
 
-        //user 서비스에서 받아온 유저 정보를 가지고 workspace_user를 찾는다. -> workspace 에서 필터이용해서 페이징하는 데에 사용.
-        List<WorkspaceUser> workspaceUserList = new ArrayList<>();
-
-        //user 서비스에서 페이징 안된 membList 받아온다.
         UserInfoListRestResponse userInfoListResponse = this.userRestService.getUserInfoListUserIdAndSearchKeyword(userId, search, false, pageable).getData();
 
-        List<MemberInfoDTO> memberInfoList = userInfoListResponse.getUserInfoList().stream().map(object -> {
-            workspaceUserList.add(this.workspaceUserRepository.findByUserIdAndWorkspace(object.getUuid(), workspace));
+        List<MemberInfoDTO> resultMemberInfoList = new ArrayList<>();
+        List<WorkspaceUser> workspaceUserList = new ArrayList<>();
 
-            MemberInfoDTO memberInfo = modelMapper.map(object, MemberInfoDTO.class);
-            memberInfo.setRole(getWorkspaceUserRole(workspace.getUuid(), memberInfo.getUuid()).getRole());
-            SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(object.getUuid()).getData();
-            memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
-            memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+        userInfoListResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+            WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userInfoRestResponse.getUuid(), workspace);
+            WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
 
-            return memberInfo;
-        }).collect(Collectors.toList());
+            if (workspaceUser != null && workspaceUserPermission != null && filter.contains(workspaceUserPermission.getWorkspaceRole().getRole())) {
+                MemberInfoDTO memberInfo = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+                memberInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+                SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
+                memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                resultMemberInfoList.add(memberInfo);
+            }
 
-        //정렬은 생략, 필터링 및 페이징은 해서 pageMember 만듬.
+            workspaceUserList.add(workspaceUser);
+        });
+
         PageRequest newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        Page<WorkspaceUserPermission> pageMember = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
-                workspace, workspaceUserList, workspaceRoleList, newPageable);
-
-        List<MemberInfoDTO> resultMemberList = new ArrayList<>();
-
-        List<String> filterdWorkspaceUserIdList =
-                pageMember.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
-
-        //필터 조건에 해당하지 않는 유저는 제외해서 memberList에 넣는다.
-        memberInfoList.stream().forEach(memberInfoDTO -> {
-                    if (filterdWorkspaceUserIdList.contains(memberInfoDTO.getUuid())) {
-                        resultMemberList.add(memberInfoDTO);
-                    }
-                }
-        );
+        Page<WorkspaceUserPermission> permissionPage =
+                this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(workspace, workspaceUserList, workspaceRoleList, newPageable);
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        pageMetadataResponse.setTotalElements(pageMember.getTotalElements());//전체 데이터 수
-        pageMetadataResponse.setTotalPage(pageMember.getTotalPages());//전체 페이지 수
+        pageMetadataResponse.setTotalElements(permissionPage.getTotalElements());
+        pageMetadataResponse.setTotalPage(permissionPage.getTotalPages());
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
 
-        return new MemberListResponse(resultMemberList, pageMetadataResponse);
+        return new MemberListResponse(resultMemberInfoList, pageMetadataResponse);
     }
 
     public MemberListResponse notFilterdMemberList(Workspace workspace, String userId, String search, Pageable pageable) {
@@ -258,6 +247,7 @@ public class WorkspaceService {
                 resultMemberList.add(memberInfo);
             }
         });
+
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(userInfoListResponse.getPageMeta().getTotalElements());
