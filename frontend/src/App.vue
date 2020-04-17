@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<TheHeader />
+		<TheHeader :showSection="showSection" />
 		<transition name="app-fade" mode="out-in">
 			<router-view />
 		</transition>
@@ -10,6 +10,13 @@
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
+	data() {
+		return {
+			showSection: {
+				login: false,
+			},
+		}
+	},
 	components: {
 		TheHeader,
 	},
