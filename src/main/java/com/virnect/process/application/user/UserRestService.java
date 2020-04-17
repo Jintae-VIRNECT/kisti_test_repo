@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * DESCRIPTION: User Server Rest Client Service
  */
 
-@FeignClient(name = "UserServerRestClient", url = "${user.serverUrl}")
+@FeignClient(name = "user-server")
 public interface UserRestService {
 
     @GetMapping("/{userUUID}")

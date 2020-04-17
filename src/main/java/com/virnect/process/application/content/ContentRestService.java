@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "ContentServerRestClient", url = "${content.serverUrl}")
+@FeignClient(name = "content-server")
 public interface ContentRestService {
     @GetMapping("/metadata")
     ApiResponse<ContentRestDto> getContentMetadata(@RequestParam("contentUUID") String contentUUID);
