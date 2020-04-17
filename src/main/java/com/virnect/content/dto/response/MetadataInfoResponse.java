@@ -4,6 +4,7 @@ import com.virnect.content.domain.ItemType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -22,32 +23,25 @@ public class MetadataInfoResponse {
 
     @Getter
     @Setter
+    @ToString
     public static class Content {
         @ApiModelProperty(value = "공정(컨텐츠) 식별자", notes = "컨텐츠를 식별하기 위해 사용되는 식별자", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
         private String id;
         @ApiModelProperty(value = "공정(컨텐츠) 이름", position = 2, example = "고길동")
         private String name;
-        @ApiModelProperty(value = "공정(컨텐츠) 담당자", position = 3, example = "498b1839dc29ed7bb2ee90ad6985c608")
+        @ApiModelProperty(value = "컨텐츠 고유 식별자", position = 3, notes = "해당 식별자를 통해 컨텐츠를 구별합니다.", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+        private String uuid;
+        @ApiModelProperty(value = "공정(컨텐츠) 담당자", position = 4, example = "498b1839dc29ed7bb2ee90ad6985c608")
         private String managerUUID;
-        @ApiModelProperty(value = "세부 공정 수(씬그룹 갯수)", position = 4, example = "5")
+        @ApiModelProperty(value = "세부 공정 수(씬그룹 갯수)", position = 5, example = "5")
         private int subProcessTotal;
-        @ApiModelProperty(value = "세부 공정 정보 리스트(씬그룹 정보 리스트)", position = 5)
+        @ApiModelProperty(value = "세부 공정 정보 리스트(씬그룹 정보 리스트)", position = 6)
         private List<SceneGroup> sceneGroups;
-
-        @Override
-        public String toString() {
-            return "Content{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    ", managerUUID='" + managerUUID + '\'' +
-                    ", subProcessTotal=" + subProcessTotal +
-                    ", sceneGroups=" + sceneGroups +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class SceneGroup {
         @ApiModelProperty(value = "세부공정(씬그룹) 식별자", notes = "세부 공정(씬그룹)을 식별하기 위해 사용되는 식별자", example = "0292b07c-414a-499d-82ee-ad14e2e40dc1")
         private String id;
@@ -59,21 +53,11 @@ public class MetadataInfoResponse {
         private int jobTotal;
         @ApiModelProperty(value = "세부작업 정보 리스트", notes = "세부 작업 정보들에 대한 배열", position = 4)
         private List<Scene> scenes;
-
-        @Override
-        public String toString() {
-            return "SceneGroup{" +
-                    "id='" + id + '\'' +
-                    ", priority=" + priority +
-                    ", name='" + name + '\'' +
-                    ", jobTotal=" + jobTotal +
-                    ", sceneList=" + scenes +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class Scene {
         @ApiModelProperty(value = "작업(씬) 식별자", notes = "작업(씬)을 구별하기 위해 사용되는 식별자", example = "0292b07c-414a-499d-82ee-ad14e2e40dc1")
         private String id;
@@ -87,39 +71,21 @@ public class MetadataInfoResponse {
         private List<ReportObject> reportObjects;
         @ApiModelProperty(value = "스마트 툴 정보 리스트", position = 5)
         private List<SmartToolObject> smartToolObjects;
-
-        @Override
-        public String toString() {
-            return "Scene{" +
-                    "id=" + id +
-                    ", priority=" + priority +
-                    ", name='" + name + '\'' +
-                    ", subJobTotal=" + subJobTotal +
-                    ", reportObjects=" + reportObjects +
-                    ", smartToolObjects=" + smartToolObjects +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class ReportObject {
         @ApiModelProperty(value = "레포트 식별자", notes = "레포트를 식별하기 위해 사용되는 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
         private String id;
         @ApiModelProperty(value = "레포트 아이템 정보 리스트", notes = "레포트에 들어있는 아이템들에 대한 정보를 담은 배열", position = 1)
         private List<ReportObjectItem> items;
-
-        @Override
-        public String toString() {
-            return "ReportObject{" +
-                    "id=" + id +
-                    ", items=" + items +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class ReportObjectItem {
         @ApiModelProperty(value = "레포트 아이템 식별자", notes = "레포트 아이템을 구별하기 위해 사용되는 식별자", example = "b5db6bb8-9976-2231-231c-ab238e57a3dc5")
         private String id;
@@ -129,20 +95,11 @@ public class MetadataInfoResponse {
         private ItemType type;
         @ApiModelProperty(value = "레포트 아이텝 이름", notes = "레포트 아이템의 명칭입니다.", position = 3, example = "자른 자재의 무게 기입")
         private String title;
-
-        @Override
-        public String toString() {
-            return "ReportObjectItem{" +
-                    "id=" + id +
-                    ", priority=" + priority +
-                    ", type=" + type +
-                    ", title='" + title + '\'' +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class SmartToolObject {
         @ApiModelProperty(value = "스마트 툴 오브젝트 식별자", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
         private String id;
@@ -152,32 +109,15 @@ public class MetadataInfoResponse {
         private String normalTorque;
         @ApiModelProperty(value = "스마트 툴 오브젝트 아이템 정보 리스트", notes = "스마트 툴 오브젝트 아이템에 대한 정보 배열", position = 3)
         private List<SmartToolObjectItem> items;
-
-        @Override
-        public String toString() {
-            return "SmartToolObject{" +
-                    "id=" + id +
-                    ", jobId=" + jobId +
-                    ", normalTorque=" + normalTorque +
-                    ", items=" + items +
-                    '}';
-        }
     }
 
     @Getter
     @Setter
+    @ToString
     public static class SmartToolObjectItem {
         @ApiModelProperty(value = "스마트툴 오브젝트 아이템 식별자", notes = "스마트 툴 오브젝트 아이템을 구별하기 위한 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
         private String id;
         @ApiModelProperty(value = "스마트 툴 배치 카운트 값", position = 1, example = "123")
         private int batchCount;
-
-        @Override
-        public String toString() {
-            return "SmartToolObjectItem{" +
-                    "id=" + id +
-                    ", batchCount=" + batchCount +
-                    '}';
-        }
     }
 }
