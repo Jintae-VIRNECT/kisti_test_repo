@@ -12,7 +12,7 @@
       <el-row>
         <el-col class="container__left">
           <!-- 배너 -->
-          <el-card class="banner" @click="goGetCouponPage">
+          <el-card class="banner" @click.native="goGetCouponPage">
             <span>{{ $t('coupon.banner.subTitle') }}</span>
             <h4>{{ $t('coupon.banner.mainTitle') }}</h4>
             <a>
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     goGetCouponPage() {
-      window.open('virnect.com')
+      window.open(`${process.env.PROMOTION_SITE_URL}/coupon`)
     },
     /**
      * 쿠폰 리스트

@@ -52,6 +52,7 @@ module.exports = {
     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     SSL_ENV: JSON.stringify(process.env.SSL_ENV),
     LOGIN_SITE_URL: env.LOGIN_SITE_URL,
+    PROMOTION_SITE_URL: env.PROMOTION_SITE_URL,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
