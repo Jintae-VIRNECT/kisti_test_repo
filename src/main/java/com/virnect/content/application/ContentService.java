@@ -422,6 +422,7 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
         try {
             MetadataInfoResponse metadataInfoResponse = this.objectMapper.readValue(content.getMetadata(), MetadataInfoResponse.class);
+            metadataInfoResponse.getContents().setUuid(contentUUID);
             log.info("{}", content.toString());
             return new ApiResponse<>(metadataInfoResponse);
         } catch (JsonProcessingException e) {
