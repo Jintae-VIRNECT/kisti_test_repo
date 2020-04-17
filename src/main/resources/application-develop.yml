@@ -47,7 +47,7 @@ spring:
         - id: content-server
           uri: lb://content-server
           predicates:
-            - Path=/contents
+            - Path=/contents/**
           filters:
             - StripPrefix=0
         - id: content-api-docs
@@ -59,7 +59,7 @@ spring:
         - id: process-server
           uri: lb://process-server
           predicates:
-            - Path=/processes
+            - Path=/processes/**
           filters:
             - StripPrefix=0
         - id: process-api-docs
