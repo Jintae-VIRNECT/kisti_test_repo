@@ -8,7 +8,7 @@
         <router-link
           v-for="(component, index) in components"
           :key="index"
-          :to="`/test/${component}`"
+          :to="`/sample/${component}`"
           tag="button"
         >
           {{ component }}
@@ -41,7 +41,7 @@ export default {
   /* Lifecycles */
   created() {
     if (this.components.indexOf(this.$route.params.tab) < 0) {
-      this.$router.replace('/test/TestElementAdmin')
+      //this.$router.replace('/test/TestElementAdmin')
     }
   },
 }
