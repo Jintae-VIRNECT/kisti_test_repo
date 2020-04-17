@@ -1,5 +1,6 @@
 <template>
   <el-table-column
+    :prop="prop"
     :label="label"
     :width="width"
     :align="align"
@@ -30,7 +31,7 @@ export default {
     prop2: String,
     width: Number,
     align: String,
-    sortable: Boolean,
+    sortable: [Boolean, String],
   },
   filters: { ...filters },
 }

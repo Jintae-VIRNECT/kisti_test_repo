@@ -2,14 +2,16 @@ import api from '@/api/gateway'
 import Coupon from '@/models/coupon/Coupon'
 import profileService from '@/services/profile'
 
-import switchPromise from '@/test/switchPromise'
-
 export default {
-  async getCouponList() {
-    const { myCouponInfoList } = await api('GET_COUPONS', {
+  async getCouponList(searchParams) {
+    const { myCouponInfoList, pageMeta } = await api('GET_COUPONS', {
       route: { userId: profileService.getMyProfile().uuid },
+      params: searchParams,
     })
-    return myCouponInfoList.map(coupon => new Coupon(coupon))
+    return {
+      list: myCouponInfoList.map(coupon => new Coupon(coupon)),
+      total: pageMeta.totalElements,
+    }
   },
   async addCouponCode(code) {
     const data = await api('ADD_COUPON', {

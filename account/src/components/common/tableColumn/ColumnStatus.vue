@@ -1,5 +1,6 @@
 <template>
   <el-table-column
+    :prop="prop"
     :label="label"
     :width="width"
     :align="align"
@@ -16,15 +17,15 @@
 <script>
 export default {
   props: {
-    label: String,
     prop: String,
+    label: String,
     /**
      * i18n object name
      */
     statusList: String,
     width: Number,
     align: String,
-    sortable: Boolean,
+    sortable: [Boolean, String],
   },
   methods: {
     codeToWord(code) {

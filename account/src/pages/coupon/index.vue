@@ -32,19 +32,19 @@
               <el-form
                 class="virnect-login-form"
                 ref="form"
-                :model="form"
+                :model="addCouponForm"
                 @submit.native.prevent="addCouponCode"
               >
                 <el-form-item :label="$t('coupon.addCouponCode.label')">
                   <el-input
-                    v-model="form.newCouponCode"
+                    v-model="addCouponForm.newCouponCode"
                     :placeholder="$t('coupon.addCouponCode.placeholder')"
                   />
                 </el-form-item>
                 <el-button
                   type="primary"
                   @click="addCouponCode"
-                  :disabled="!form.newCouponCode"
+                  :disabled="!addCouponForm.newCouponCode"
                 >
                   {{ $t('coupon.addCouponCode.submit') }}
                 </el-button>
@@ -69,7 +69,19 @@
                 <img src="~assets/images/icon/ic-error.svg" />
               </el-tooltip>
             </div>
-            <coupon-list :coupons="coupons" @select="couponSelect" />
+            <coupon-list
+              :coupons="coupons"
+              @select="couponSelect"
+              @sort="sortCoupons"
+            />
+            <el-row type="flex" justify="center">
+              <el-pagination
+                layout="prev, pager, next"
+                :total="couponsTotal"
+                @current-change="getCoupons"
+              >
+              </el-pagination>
+            </el-row>
           </el-card>
         </el-col>
       </el-row>
@@ -88,7 +100,13 @@ export default {
   data() {
     return {
       coupons: [],
-      form: {
+      couponsTotal: 0,
+      searchParams: {
+        page: 1,
+        size: 10,
+        sort: null,
+      },
+      addCouponForm: {
         newCouponCode: '',
       },
     }
@@ -96,6 +114,26 @@ export default {
   methods: {
     goGetCouponPage() {
       window.open('virnect.com')
+    },
+    /**
+     * 쿠폰 리스트
+     */
+    async getCoupons(page) {
+      this.searchParams.page = page || 1
+      const { list, total } = await couponService.getCouponList(
+        this.searchParams,
+      )
+      this.coupons = list
+      this.couponsTotal = total
+    },
+    /**
+     * 쿠폰 정렬
+     */
+    async sortCoupons({ prop, order }) {
+      this.searchParams.sort = order
+        ? `${prop},${order.replace('ending', '')}`
+        : null
+      this.getCoupons()
     },
     /**
      * 쿠폰 등록
@@ -144,7 +182,7 @@ export default {
           message: this.$t('coupon.message.useSuccess'),
           position: 'bottom-left',
         })
-        this.coupons = await couponService.getCouponList()
+        this.getCoupons()
       } catch (e) {
         console.error(e)
         this.$notify.error({
@@ -154,8 +192,8 @@ export default {
       }
     },
   },
-  async beforeCreate() {
-    this.coupons = await couponService.getCouponList()
+  created() {
+    this.getCoupons()
   },
 }
 </script>

@@ -17,12 +17,15 @@ export default async function({ req, store, redirect }) {
       const data = await api('GET_AUTH_INFO', { headers: req.headers })
       store.commit('auth/SET_MY_PROFILE', new Profile(data.userInfo))
     } catch (e) {
-      if (/^Error: 8003/.test(e)) {
+      // 토큰 만료됨
+      if (/^Error: 8005/.test(e)) {
         return redirect(
           `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
             req.headers.referer || req.headers.host,
           )}`,
         )
+      } else {
+        throw e
       }
     }
 

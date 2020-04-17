@@ -4,33 +4,33 @@
       <column-default
         :label="$t('coupon.column.couponName')"
         prop="name"
-        :sortable="true"
+        sortable="custom"
       />
       <column-date
         :label="$t('coupon.column.registerDate')"
         prop="registerDate"
         :width="88"
-        :sortable="true"
+        sortable="custom"
       />
       <column-date
         :label="$t('coupon.column.expireDate')"
-        prop="expireDate"
+        prop="expiredDate"
         :width="88"
-        :sortable="true"
+        sortable="custom"
       />
       <column-date
         :label="$t('coupon.column.usedDate')"
         prop="startDate"
         prop2="endDate"
         :width="160"
-        :sortable="true"
+        sortable="custom"
       />
       <column-status
         :label="$t('coupon.column.status')"
         prop="status"
         statusList="coupon.status"
         :width="120"
-        :sortable="true"
+        sortable="custom"
       />
       <template #empty>
         <img src="~assets/images/empty/img-coupon.png" />
@@ -71,7 +71,7 @@ export default {
       }
     },
     sort(column) {
-      console.log(column)
+      this.$emit('sort', column)
     },
   },
 }
