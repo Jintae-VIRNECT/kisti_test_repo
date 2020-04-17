@@ -36,7 +36,7 @@ upload:
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://192.168.6.3:8079/process"
+  serverUrl: "http://192.168.6.3:8079/processes"
 
 content:
   serverUrl: "http://192.168.6.3:${server.port}/contents"

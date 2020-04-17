@@ -1,6 +1,7 @@
 package com.virnect.content.dto;
 
 import com.virnect.content.domain.ItemType;
+import com.virnect.content.domain.TargetType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +18,6 @@ public class MetadataDto {
     @ToString
     public static class Content {
         private String id;
-        private int aruco;
         private String name;
         private String managerUUID;
         private int subProcessTotal;
