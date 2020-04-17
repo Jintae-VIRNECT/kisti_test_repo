@@ -262,5 +262,5 @@ export default {
 <style
   lang="scss"
   scoped
-  src="assets/style/workspace/workspace-modal.scss"
+  src="assets/style/workspace/workspace-createroom.scss"
 ></style>

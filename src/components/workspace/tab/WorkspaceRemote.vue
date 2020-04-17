@@ -68,7 +68,7 @@ export default {
           ],
         },
         {
-          id: 1,
+          id: 2,
           image: require('assets/image/img_default_group.svg'),
           name: '협업1',
           description: '협업 설명 블라블라블라블라',

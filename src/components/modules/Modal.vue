@@ -5,7 +5,7 @@
       <div
         v-show="_isMounted"
         class="modal--inner"
-        :style="innerWidth"
+        :style="[innerWidth, innerHeight]"
         @click="clickHander"
       >
         <div class="modal--header">
@@ -78,6 +78,10 @@ export default {
       type: Number,
       default: 360,
     },
+    height: {
+      type: [Number, String],
+      default: 'auto',
+    },
     eventPropagation: {
       type: Boolean,
       default: true,
@@ -97,6 +101,17 @@ export default {
     innerWidth() {
       return {
         width: this.width + 'px',
+      }
+    },
+    innerHeight() {
+      if (this.height === 'auto') {
+        return {
+          height: 'auto',
+        }
+      } else {
+        return {
+          height: this.height + 'px',
+        }
       }
     },
   },

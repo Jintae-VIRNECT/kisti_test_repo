@@ -9,7 +9,7 @@
         <p>{{ mainText.slice(0, 1) }}</p>
       </div>
       <p v-else class="profile--image">
-        <img :src="image" :alt="imageAlt" @error="onError" />
+        <img :src="image" :alt="mainText" @error="onError" />
       </p>
       <span v-if="status" class="profile--badge" :class="status">{{
         status

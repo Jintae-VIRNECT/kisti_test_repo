@@ -43,13 +43,18 @@
       <button class="groupcard-button btn small">참가하기</button>
     </div>
     <ul slot="menuPopover" class="groupcard-popover">
-      <li><button class="group-pop__button">상세 보기</button></li>
+      <li>
+        <button class="group-pop__button" @click="showRoomInfo = !showRoomInfo">
+          상세 보기
+        </button>
+      </li>
       <li v-if="accountId === reader.ids">
         <button class="group-pop__button">
           협업 삭제
         </button>
       </li>
       <li v-else><button class="group-pop__button">협업 나가기</button></li>
+      <roominfo-modal :visible="showRoomInfo" :room="room"></roominfo-modal>
     </ul>
   </card>
 </template>
@@ -57,15 +62,18 @@
 <script>
 import Card from 'Card'
 import ProfileList from './ProfileList'
+import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
 export default {
   name: 'RemoteCard',
   components: {
     Card,
     ProfileList,
+    RoominfoModal,
   },
   data() {
     return {
+      showRoomInfo: false,
       accountId: 11,
       users: [
         {
@@ -296,6 +304,9 @@ export default {
   > .popover--body {
     padding: 0;
   }
+}
+.groupcard-popover {
+  padding: 4px 0;
 }
 .group-pop__button {
   width: 100%;

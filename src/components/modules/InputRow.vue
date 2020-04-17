@@ -97,7 +97,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    if (this.value && this.value.length > 0) {
+      this.inputText = this.value
+    }
+  },
 }
 </script>
 <style lang="scss" scoped>

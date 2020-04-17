@@ -38,12 +38,12 @@ body.modal-open {
   &:active {
     background-color: #003986;
   }
+  &:disabled {
+    background-color: #213d62;
+    cursor: default;
+  }
   &.large {
     width: 100%;
-    &:disabled {
-      background-color: #213d62;
-      cursor: default;
-    }
   }
   &.small {
     min-width: 120px;

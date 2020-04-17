@@ -7,9 +7,6 @@ export default {
     }
   },
   methods: {
-    imageUpload() {
-      this.$refs['inputImage'].click()
-    },
     uploadImage(event) {
       this.validImage(event)
     },
