@@ -19,6 +19,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
+import { getAccount } from 'api/common/account'
 export default {
   name: 'WorkspaceLayout',
   components: {
@@ -50,7 +51,7 @@ export default {
   },
 
   /* Lifecycles */
-  created() {
+  async created() {
     this.updateAccount({
       userId: 123456,
       profile: require('assets/image/img_user_profile.svg'),
@@ -61,6 +62,17 @@ export default {
       userType: 'Manager',
       uuid: null,
     })
+    try {
+      const datas = await getAccount({
+        email: 'smic1',
+        password: 'smic1234',
+        rememberMe: false,
+      })
+      console.log(datas)
+    } catch (err) {
+      // 에러처리
+      console.error(err)
+    }
   },
   mounted() {
     this.tabTop = this.$refs['tabSection'].$el.offsetTop

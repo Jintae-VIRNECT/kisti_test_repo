@@ -8,6 +8,7 @@
     :listCount="0"
     :empty="roomList.length === 0"
     customClass="remote"
+    :showRefreshButton="true"
   >
     <remote-card
       v-for="room of roomList"

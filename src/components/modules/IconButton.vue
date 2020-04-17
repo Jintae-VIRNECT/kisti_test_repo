@@ -26,7 +26,6 @@ export default {
 
 <style lang="scss" scoped>
 .icon-button {
-  margin-bottom: 10px;
   margin-left: 9px;
   padding: 8px 15px 8px 40px;
   color: rgba(#d2d2d2, 0.8);

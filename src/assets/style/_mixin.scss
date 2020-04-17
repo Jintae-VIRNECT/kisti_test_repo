@@ -138,14 +138,6 @@
   border-image: gradient($start_color, $end_color);
 }
 
-@mixin button($type: default) {
-  &:hover {
-  }
-
-  &:active {
-  }
-}
-
 @mixin ir {
   overflow: hidden;
   text-indent: -999px;
@@ -153,7 +145,7 @@
 
 @mixin image {
   overflow: hidden;
-  background-color: #fff;
+  // background-color: #fff;
   border-radius: 50%;
 }
 
