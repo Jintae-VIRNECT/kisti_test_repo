@@ -23,13 +23,13 @@ spring:
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
-            - Path=/workspace
+            - Path=/workspaces
           filters:
             - StripPrefix=0
         - id: workspace-api-docs
           uri: lb://workspace-server
           predicates:
-            - Path=/workspace/v2/**
+            - Path=/workspaces/v2/**
           filters:
             - StripPrefix=1
         - id: amdin-server
