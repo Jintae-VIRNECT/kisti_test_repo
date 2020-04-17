@@ -1,6 +1,7 @@
 package com.virnect.content.infra.file;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author hangkee.min (henry)
@@ -18,7 +19,7 @@ public interface FileIOService {
      * @param destinationUrl - 복제 후 파일 경로
      * @return - 복제 성공 여부
      */
-    boolean copyFileWithUrl(final String sourceUrl, final String destinationUrl);
+    boolean copyFileWithUrl(final String sourceUrl, final String destinationUrl) throws IOException;
 
     /**
      * sourceFile 파일을 destinationUrl 파일명으로 복제
@@ -27,7 +28,7 @@ public interface FileIOService {
      * @param destinationUrl - 복제 후 파일 경로
      * @return - 복제 성공 여부
      */
-    boolean copyFileWithFile(final File sourceFile, final String destinationUrl);
+    boolean copyFileWithFile(final File sourceFile, final String destinationUrl) throws IOException;
 
     /**
      * sourceUrl 파일을 destinationUrl 파일명으로 이름 변경
@@ -36,5 +37,5 @@ public interface FileIOService {
      * @param destinationUrl - 변경할 파일의 경로
      * @return
      */
-    boolean rename(final String sourceUrl, final String destinationUrl);
+    boolean rename(final String sourceUrl, final String destinationUrl) throws IOException;
 }
