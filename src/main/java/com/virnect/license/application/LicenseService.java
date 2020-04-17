@@ -46,7 +46,6 @@ public class LicenseService {
     private final LicensePlanRepository licensePlanRepository;
     private final LicenseProductRepository licenseProductRepository;
     private final LicenseRepository licenseRepository;
-    private final ProductTypeRepository productTypeRepository;
     private final UserRestService userRestService;
     private final EmailService emailService;
 
@@ -54,8 +53,8 @@ public class LicenseService {
     /**
      * 이벤트 쿠폰 생성
      *
-     * @param eventCouponRequest
-     * @return
+     * @param eventCouponRequest - 쿠폰 생성 요청 데이터
+     * @return - 쿠폰 생성 정보
      */
     @Transactional
     public ApiResponse<EventCouponResponse> generateEventCoupon(EventCouponRequest eventCouponRequest) {
@@ -68,7 +67,7 @@ public class LicenseService {
 
         String LICENSE_TYPE_OF_2WEEK_FREE_COUPON = "2_WEEK_FREE_TRIAL_LICENSE";
         String COUPON_NAME = "2주 무료 사용 쿠폰";
-        String serialKey = UUID.randomUUID().toString().toUpperCase();
+        String serialKey = this.generateCouponSerialKey();
 
 //         Check Duplicate Register Request
         boolean isAlreadyRegisterEventCoupon = this.couponProductRepository.existsByLicenseType_NameAndAndCoupon_UserId(LICENSE_TYPE_OF_2WEEK_FREE_COUPON, eventCouponRequest.getUserId());
@@ -236,7 +235,7 @@ public class LicenseService {
         }
 
         // 3. 쿠폰 기한이 만료된 경우
-        if(coupon.isExpired()){
+        if (coupon.isExpired()) {
             throw new LicenseServiceException(ErrorCode.ERR_COUPON_EXPIRED);
         }
 
@@ -258,7 +257,7 @@ public class LicenseService {
         this.couponRepository.save(coupon);
 
         // 5. 쿠폰 기반으로 라이선스 정보 등록
-        licenseRegisterByCouponProduct(coupon.getUserId(), coupon, licensePlan);
+        licenseRegisterByCouponProduct(coupon, licensePlan);
         MyCouponInfoResponse myCouponInfoResponse = new MyCouponInfoResponse();
         myCouponInfoResponse.setSerialKey(coupon.getSerialKey());
         myCouponInfoResponse.setId(coupon.getId());
@@ -271,8 +270,13 @@ public class LicenseService {
         return new ApiResponse<>(myCouponInfoResponse);
     }
 
-
-    private void licenseRegisterByCouponProduct(String userId, Coupon coupon, LicensePlan licensePlan) {
+    /**
+     * 쿠폰에 등록된 정보로 라이선스 생성
+     *
+     * @param coupon      쿠폰 정보
+     * @param licensePlan - 신규 라이선스 플랜 정보
+     */
+    private void licenseRegisterByCouponProduct(Coupon coupon, LicensePlan licensePlan) {
         List<CouponProduct> couponProductList = coupon.getCouponProductList();
 
         // 2. 쿠폰 기반으로 쿠폰에 관련된 상품 정보 입력
@@ -304,4 +308,11 @@ public class LicenseService {
         }
     }
 
+    /**
+     * 쿠폰 시리얼 키 생성 (0,1은 O,I로 치환)
+     * @return - 시리얼 코드
+     */
+    private String generateCouponSerialKey() {
+        return UUID.randomUUID().toString().replaceAll("0", "O").replaceAll("1", "I");
+    }
 }
