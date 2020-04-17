@@ -126,11 +126,6 @@ public class ContentService {
             return new ApiResponse<>(result);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
-            /**
-             * TODO : 컨텐츠 업로드가 실패 했을 때의 처리
-             * - 컨텐츠 신규 업로드시 실패 : ARUCO와 컨텐츠 연결이 끊어짐. 그냥 업로드 실패 메시지. 그러므로 신규로 발급 받아야 함.
-             * - 컨텐츠 업데이트로 업로드 실패시 : ARUCO와 컨텐츠 연결은 끊어지지 않음. 그냥 업로드 실패 메시지.
-             */
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
     }
@@ -306,7 +301,6 @@ public class ContentService {
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
             if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
-                // TODO : 실패 원인 반환
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
