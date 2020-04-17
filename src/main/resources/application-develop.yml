@@ -71,7 +71,7 @@ spring:
         - id: license-server
           uri: lb://license-server
           predicates:
-            - Path=/licenses/**
+            - Path=/licenses
           filters:
             - StripPrefix=0
         - id: license-api-docs
@@ -83,7 +83,7 @@ spring:
         - id: auth-server
           uri: lb://auth-server
           predicates:
-            - Path=/auth/**
+            - Path=/auth
           filters:
             - StripPrefix=0
         - id: auth-api-docs
