@@ -2,6 +2,8 @@ package com.virnect.workspace.infra.file;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 /**
  * Project: service-server
  * DATE: 2019-10-28
@@ -15,7 +17,7 @@ public interface FileUploadService {
      * @param file -  파일 업로드 요청
      * @return - 업로드된 파일 url
      */
-    String upload(MultipartFile file);
+    String upload(MultipartFile file) throws IOException;
 
     /**
      * 업로드 된 파일 삭제 요청

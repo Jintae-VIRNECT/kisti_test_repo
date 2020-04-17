@@ -30,9 +30,11 @@ public class UserInfoRestResponse {
     private String loginLock;
     @ApiModelProperty(value = "사용자 타입 ( USER(일반), SUB_USER(서브유저), VIRNECT_USER(사내 유저) )", position = 6, example = "smic 워크스페이스 유저")
     private String userType;
-    @ApiModelProperty(value = "계정 생성 일자", position = 7, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "닉네임", position = 7, example = "smic 워크스페이스 유저 닉네임")
+    private String nickName;
+    @ApiModelProperty(value = "계정 생성 일자", position = 8, example = "2020-01-20T14:05:30")
     private LocalDateTime createdDate;
-    @ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 8, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 9, example = "2020-01-20T14:05:30")
     private LocalDateTime updatedDate;
 
     @Override

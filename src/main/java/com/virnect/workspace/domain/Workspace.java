@@ -1,8 +1,6 @@
 package com.virnect.workspace.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,7 +30,13 @@ public class Workspace extends TimeEntity {
     @Column(name = "pin_number", length = 6, nullable = false, unique = true)
     private String pinNumber;
 
-    @Column(name = "description")
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "profile")
+    private String profile;
+
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "user_id", nullable = false)
@@ -45,8 +49,10 @@ public class Workspace extends TimeEntity {
     List<WorkspaceUser> workspaceUserList = new ArrayList<>();
 
     @Builder
-    public Workspace(String uuid, String pinNumber, String description, String userId) {
+    public Workspace(String uuid, String pinNumber, String name, String profile, String description, String userId) {
         this.uuid = uuid;
+        this.name = name;
+        this.profile = profile;
         this.pinNumber = pinNumber;
         this.description = description;
         this.userId = userId;

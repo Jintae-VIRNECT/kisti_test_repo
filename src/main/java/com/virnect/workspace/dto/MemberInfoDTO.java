@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto;
 
-import com.virnect.workspace.dto.rest.SubProcessCountResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,12 +20,13 @@ public class MemberInfoDTO {
     private String profile;
     private String loginLock;
     private String userType;
+    private String nickName;
     private String role;
     private String createdDate;
     private String updatedDate;
     private Integer countProgressing;
     private Integer countAssigned;
-
+    //사용중인 플랜정보
 
     @Override
     public String toString() {

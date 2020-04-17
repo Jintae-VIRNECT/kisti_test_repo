@@ -14,7 +14,6 @@ public enum ErrorCode {
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
     ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
-
     private int code;
     private String message;
 

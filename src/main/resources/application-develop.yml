@@ -27,18 +27,17 @@ spring:
 server:
   port: 8082
 
-
-    ## Project Configuration
+## Project Configuration
 file:
   upload-path: "upload/"
   url: "http://localhost:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
 
-# User Server Configuration
+## User Server Configuration
 user:
   serverUrl: "http://192.168.6.3:8081/users"
 
-# Message Server Configuration
+## Message Server Configuration
 message:
   serverUrl: "http://192.168.6.3:8084/messages"
 
@@ -52,6 +51,6 @@ eureka:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
 
-# Process Server Configuration
+## Process Server Configuration
 process:
   serverUrl: "http://192.168.6.3:8083/processes"
