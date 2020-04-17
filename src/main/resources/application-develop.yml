@@ -58,3 +58,16 @@ eureka:
 ## Process Server Configuration
 process:
   serverUrl: "http://192.168.6.3:8083/processes"
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-admin"
+        resource: "resource"
