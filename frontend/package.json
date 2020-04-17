@@ -5,14 +5,17 @@
   "author": "shkang",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --hot --config config/webpack.dev.conf.js",
-    "build": "webpack --mode production --progress --config config/webpack.prod.conf.js",
+    "dev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --config config/webpack.dev.conf.js",
+    "build:develop": "cross-env NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
+    "build": "cross-env NODE_ENV=$NODE_ENV webpack --mode production --progress --config config/webpack.prod.conf.js",
     "start": "node server.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "cross-env": "^7.0.2",
     "dayjs": "^1.8.23",
+    "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
     "express": "^4.16.3",
     "js-cookie": "^2.2.1",

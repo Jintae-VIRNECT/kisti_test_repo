@@ -160,3 +160,7 @@
         content: "";
     }
 }
+
+.el-popper[x-placement^="bottom"] .popper__arrow {
+    display: none;
+}
