@@ -163,6 +163,7 @@ public class WorkspaceService {
      * @return - 멤버 정보 리스트
      */
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String userId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest) {
+
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         /*
             필터가 있을 시 -> workspace 단에서 페이징하고 정렬한다.

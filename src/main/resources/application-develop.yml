@@ -17,11 +17,15 @@ spring:
         hibernate:
           envers:
             audit_table_suffix: _history
-    redis:
-      port: 6379
-      database: 0
-      password: qjsprxm0!
-      host: 192.168.0.121
+  redis:
+    port: 6379
+    database: 0
+    password: qjsprxm0!
+    host: 192.168.0.121
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
+    com.virnect.workspace.application.*: DEBUG
 
 ## Server Configuration
 server:
@@ -30,7 +34,7 @@ server:
 ## Project Configuration
 file:
   upload-path: "upload/"
-  url: "http://localhost:${server.port}"
+  url: "http://192.168.6.3:${server.port}"
   allow-extension: "gif,jpg,jpeg,png"
 
 ## User Server Configuration
