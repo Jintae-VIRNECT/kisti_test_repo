@@ -50,6 +50,7 @@ spring:
             - Path=/contents/**
           filters:
             - StripPrefix=0
+            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
         - id: content-api-docs
           uri: lb://content-server
           predicates:
@@ -62,6 +63,7 @@ spring:
             - Path=/processes/**
           filters:
             - StripPrefix=0
+            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
         - id: process-api-docs
           uri: lb://process-server
           predicates:
