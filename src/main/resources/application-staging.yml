@@ -1,1 +1,41 @@
+spring:
+  application:
+    name: content-server
+  datasource:
+    url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8203/contents
+    username: virnect-contents
+    password: virnect1234
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 400MB
 
+#logging:
+#  level:
+#    org.hibernate.type.descriptor.sql: trace
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://192.168.6.3:8761/eureka
+
+## Server Configuration
+server:
+  port: 8078
+
+# File Upload Configuration
+upload:
+  dir: "upload/"
+  serverUrl: "http://192.168.6.3:${server.port}/contents/"
+  allowed-extension: '.ares,.mars,.Ares,.Mars'
+
+## FEIGN Configuration
+feign:
+  okhttp:
+    enabled: true
