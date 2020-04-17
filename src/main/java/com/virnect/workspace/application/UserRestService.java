@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "UserServer", url = "${user.serverUrl}", configuration = NetflixFeignConfiguration.class)
+@FeignClient(name = "user-server", configuration = NetflixFeignConfiguration.class)
 public interface UserRestService {
     /**
      * 유저 정보 조회

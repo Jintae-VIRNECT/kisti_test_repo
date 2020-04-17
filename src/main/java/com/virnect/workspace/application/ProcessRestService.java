@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "ProcessServer", url = "${process.serverUrl}", configuration = NetflixFeignConfiguration.class)
+@FeignClient(name = "process-server", configuration = NetflixFeignConfiguration.class)
 public interface ProcessRestService {
     @GetMapping("/subProcesses/count/onWorker/{workerUUID}")
     ApiResponse<SubProcessCountResponse> getSubProcessCount(@PathVariable("workerUUID") String workerUUID);

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "MessageServer", url = "${message.serverUrl}", configuration = NetflixFeignConfiguration.class)
+@FeignClient(name = "message-server", configuration = NetflixFeignConfiguration.class)
 public interface MessageRestService {
     @PostMapping("workspace/invite")
     ApiResponse<WorkspaceInviteRestResponse> sendMail(@RequestBody WorkspaceInviteMailRequest workspaceInviteMailRequest);
