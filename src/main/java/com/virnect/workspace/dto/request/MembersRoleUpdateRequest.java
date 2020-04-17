@@ -1,10 +1,9 @@
 package com.virnect.workspace.dto.request;
 
-import com.virnect.workspace.dto.GroupInfoDTO;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * Project: PF-Workspace
@@ -15,8 +14,12 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserPermissionReviseRequest {
-    private String userId;
-    private List<Long> workspacePermissions;
-    private List<GroupInfoDTO> groups;
+public class MembersRoleUpdateRequest {
+    @NotNull
+    private String masterUserId;
+    @NotNull
+    private String uuid;
+    @NotNull
+    private String role;
+
 }

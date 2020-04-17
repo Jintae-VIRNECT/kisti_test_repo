@@ -3,8 +3,7 @@ package com.virnect.workspace.application;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
-import com.virnect.workspace.dto.GroupInfoDTO;
-import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.dto.*;
 import com.virnect.workspace.dto.redis.WorkspaceInviteRedisRequest;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
@@ -67,7 +66,7 @@ public class WorkspaceService {
      * @param workspaceCreateRequest - 생성 할 워크스페이스 정보
      * @return - 생성 된 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceCreateResponse> createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
+    public ApiResponse<WorkspaceInfoDTO> createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
         //User Service 에서 유저 조회
         UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
 
@@ -85,22 +84,16 @@ public class WorkspaceService {
             try {
                 profile = this.fileUploadService.upload(workspaceCreateRequest.getProfile());
             } catch (IOException e) {
-
+                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }
-
         } else {
             profile = null;//디폴트 이미지 경로.
-        }
-
-        String workspaceNickName = null;
-        if (!StringUtils.hasText(workspaceCreateRequest.getName())) {
-            workspaceNickName = userInfoRestResponse.getNickname() + "'s Workspace";
         }
 
         Workspace newWorkspace = Workspace.builder()
                 .uuid(uuid)
                 .userId(workspaceCreateRequest.getUserId())
-                .name(workspaceNickName)
+                .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
                 .profile(profile)
                 .pinNumber(pinNumber)
@@ -125,7 +118,9 @@ public class WorkspaceService {
                 .build();
         this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
-        return new ApiResponse<>(new WorkspaceCreateResponse(newWorkspace));
+        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(newWorkspace, WorkspaceInfoDTO.class);
+        workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
+        return new ApiResponse<>(workspaceInfoDTO);
     }
 
     /**
@@ -259,25 +254,35 @@ public class WorkspaceService {
     }
 
     /**
-     * 워크스페이스 정보 조회(현재는 멤버수만 return 추후에.. +라이선스, +워크스페이스 Strorage 정보)
+     * 워크스페이스 정보 조회
      *
      * @param workspaceId - 워크스페이스 uuid
      * @param userId      - 사용자 uuid
      * @return - 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(String workspaceId, String userId) {
-        //마스터 인지 체크
-        if (getUserInfo(userId).getUserType().equals("SUB_USER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
-        //워크스페이스 소속 멤버 수 조회
-        long countUsers = this.workspaceUserRepository.countWorkspaceUser(workspaceId);
+    public ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(String workspaceId) {
+        //workspace 정보 set
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        WorkspaceInfoDTO workspaceInfo = modelMapper.map(workspace, WorkspaceInfoDTO.class);
+        workspaceInfo.setMasterUserId(workspace.getUserId());
 
-        //라이선스 수 조회
-        //제품 이용 멤버 수 조회(Remote, Make, View)
-        //워크스페이스 Storage 수 조회
+        //user 정보 set
+        List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
+        List<UserInfoDTO> userInfoList = new ArrayList<>();
+        workspaceUserList.stream().forEach(workspaceUser -> {
+            UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
+            UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
+            userInfoList.add(userInfoDTO);
+            WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+            userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+        });
 
-        return new ApiResponse<>(new WorkspaceInfoResponse(countUsers));
+        //role 정보 set
+        long masterUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MASTER");
+        long managerUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
+        long memberUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MEMBER");
+
+        return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount));
     }
 
     /**
@@ -464,6 +469,25 @@ public class WorkspaceService {
 
     }
 
+    public ApiResponse<Boolean> reviseUserPermission(String workspaceId, MembersRoleUpdateRequest membersRoleUpdateRequest){
+        //1. 요청자 권한 확인
+        String role = getWorkspaceUserRole(workspaceId, membersRoleUpdateRequest.getMasterUserId()).getRole();
+        if (!role.equals("MASTER") || !role.equals("MANAGER")) {
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(membersRoleUpdateRequest.getUuid(), workspaceRepository.findByUuid(workspaceId));
+
+        //2. 권한 변경
+        WorkspaceUserPermission workspaceUserPermission =this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+        WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(membersRoleUpdateRequest.getRole());
+        workspaceUserPermission.setWorkspaceRole(workspaceRole);
+
+        this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+
+        return new ApiResponse<>(true);
+    }
+
     /**
      * 워크스페이스 소속 부여 : insert workspace_user table
      *
@@ -531,34 +555,50 @@ public class WorkspaceService {
         }
     }
 
-    /**
-     * 사용자 워크스페이스,그룹 내 권한 변경
-     *
-     * @param workspaceId                 - 권한 변경이 이루어지는 워크스페이스 uuid
-     * @param userId                      - 권한 변경을 하는 워크스페이스 마스터 또는 매니저 유저 uuid
-     * @param userPermissionReviseRequest - 변경 될 권한 정보
-     * @return - 사용자 권한 정보
-     */
-    public ApiResponse reviseUserPermission(String workspaceId, String userId, UserPermissionReviseRequest userPermissionReviseRequest) {
-        //1. 요청자 권한 확인
-        if (!getWorkspaceUserRole(workspaceId, userId).getRole().equals("MASTER")) {
+    public ApiResponse<List<WorkspaceNewMemberInfoDTO>> getWorkspaceNewUserInfo(String workspaceId) {
+
+        List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findTop4ByWorkspace_UuidOrderByCreatedDateDesc(workspaceId);//최신 4명만 가져와서
+
+        List<WorkspaceNewMemberInfoDTO> workspaceNewMemberInfoList = new ArrayList<>();
+        workspaceUserList.stream().forEach(workspaceUser -> {
+            UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
+            WorkspaceNewMemberInfoDTO newMemberInfo = modelMapper.map(userInfoRestResponse, WorkspaceNewMemberInfoDTO.class);
+            newMemberInfo.setJoinDate(workspaceUser.getCreatedDate());
+            newMemberInfo.setRole(this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser).getWorkspaceRole().getRole());
+            workspaceNewMemberInfoList.add(newMemberInfo);
+        });
+        return new ApiResponse<>(workspaceNewMemberInfoList);
+    }
+
+    public ApiResponse<WorkspaceInfoDTO> setWorkspace(String workspaceId, WorkspaceUpdateRequest workspaceUpdateRequest) {
+        //마스터 유저 체크
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        if (!workspace.getUserId().equals(workspaceUpdateRequest.getUserId())) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
-        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userPermissionReviseRequest.getUserId(), workspaceRepository.findByUuid(workspaceId));
+        workspace.setName(workspaceUpdateRequest.getName());
+        workspace.setDescription(workspaceUpdateRequest.getDescription());
 
-        //2. workspace permission 변경
-        if (!userPermissionReviseRequest.getWorkspacePermissions().isEmpty()) {
-            WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
-            WorkspaceRole userRole = workspaceUserPermission.getWorkspaceRole();
-            this.workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
-            this.setWorkspaceUserPermissionInfo(userPermissionReviseRequest.getWorkspacePermissions(), workspaceUser);
+        String profile = workspace.getProfile();
+        if (workspaceUpdateRequest.getProfile() != null) {
+            //기존꺼 삭제
+            if (StringUtils.hasText(profile)) {
+                this.fileUploadService.delete(profile.substring(profile.lastIndexOf("/") + 1));
+            }
+            try {
+                profile = this.fileUploadService.upload(workspaceUpdateRequest.getProfile());
+            } catch (Exception e) {
+                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            }
         }
-        //3. group permission 변경
-        if (!userPermissionReviseRequest.getGroups().isEmpty()) {
-            this.groupService.reviseGroupUserPermission(userPermissionReviseRequest.getGroups(), workspaceUser);
-        }
+        workspace.setProfile(profile);
 
-        return new ApiResponse<>();
+        this.workspaceRepository.save(workspace);
+
+        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(workspace, WorkspaceInfoDTO.class);
+        workspaceInfoDTO.setMasterUserId(workspace.getUserId());
+
+        return new ApiResponse<>(workspaceInfoDTO);
     }
 
 }

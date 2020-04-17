@@ -29,8 +29,8 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
-  url: "http://localhost:${server.port}"
+  upload-path: "workspaces/upload/"
+  url: "http://localhost:${server.port}/"
   allow-extension: "gif,jpg,jpeg,png"
 
 # User Server Configuration

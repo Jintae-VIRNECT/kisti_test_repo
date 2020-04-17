@@ -79,7 +79,7 @@ public class S3FileUploadService implements FileUploadService {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
-        return fileUrl +"/"+ fileName;
+        return fileUrl + fileName;
     }
 
     // 로컬 임시 파일 삭제

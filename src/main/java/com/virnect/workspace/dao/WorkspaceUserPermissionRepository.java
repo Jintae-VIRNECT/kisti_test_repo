@@ -27,5 +27,6 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
 
     @Transactional
     void deleteAllByWorkspaceUser(WorkspaceUser workspaceUser);
+    long countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String WorkspaceRole);
 
 }

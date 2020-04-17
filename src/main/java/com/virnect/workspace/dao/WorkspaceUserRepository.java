@@ -14,8 +14,8 @@ import java.util.List;
  * DESCRIPTION:
  */
 public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Long>, WorkspaceUserRepositoryCustom{
-
+    List<WorkspaceUser> findByWorkspace_Uuid(String workspaceId);
     List<WorkspaceUser> findByUserId(String userId);
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
-
+    List<WorkspaceUser> findTop4ByWorkspace_UuidOrderByCreatedDateDesc(String workspaceId);
 }

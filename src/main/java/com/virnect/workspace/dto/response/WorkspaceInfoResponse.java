@@ -1,8 +1,11 @@
 package com.virnect.workspace.dto.response;
 
+import com.virnect.workspace.dto.UserInfoDTO;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -11,9 +14,12 @@ import lombok.Setter;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Setter
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class WorkspaceInfoResponse {
-    private final long countUsers;
+    private final WorkspaceInfoDTO workspaceInfo;
+    private final List<UserInfoDTO> workspaceUserInfo;
+    private final long masterUserCount;
+    private final long manageUserCount;
+    private final long memberUserCount;
 }

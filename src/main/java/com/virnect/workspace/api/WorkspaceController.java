@@ -1,12 +1,13 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.WorkspaceService;
-import com.virnect.workspace.dto.request.UserPermissionReviseRequest;
-import com.virnect.workspace.dto.request.UsersCreateRequest;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
+import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
+import com.virnect.workspace.dto.response.MemberListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.PageRequest;
@@ -17,6 +18,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -45,19 +51,37 @@ public class WorkspaceController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = " 유저 uuid", dataType = "string", paramType = "form", defaultValue = "uuid", required = true),
-            @ApiImplicitParam(name = "name", value = "워크스페이스 이름(빈값 일 경우 닉네임's Workspace로 저장됩니다.)", dataType = "string", paramType = "form", defaultValue = "USER's Workspace"),
+            @ApiImplicitParam(name = "name", value = "워크스페이스 이름(빈값 일 경우 닉네임's Workspace로 저장됩니다.)", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
-            @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.")
+            @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<WorkspaceCreateResponse>> createWorkspace(@ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceCreateResponse> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
+        ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
-/*
+    @ApiOperation(
+            value = "워크스페이스 프로필 설정",
+            notes = "생성된 워크스페이스의 프로필을 변경하는 기능입니다.(마스터 유저만 가능한 기능입니다.)"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", paramType = "form", defaultValue = "uuid", required = true),
+            @ApiImplicitParam(name = "name", value = "워크스페이스 이름(빈값 일 경우 닉네임's Workspace로 저장됩니다.)", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
+            @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
+    })
+    @PutMapping("/{workspaceId}")
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@PathVariable("workspaceId") String workspaceId, @ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceId,workspaceUpdateRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @ApiOperation(
             value = "워크스페이스 이미지 조회(개발 서버 업로드)"
     )
@@ -72,7 +96,7 @@ public class WorkspaceController {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }*/
+    }
 
     @ApiOperation(
             value = "내가 속한 워크스페이스 목록 조회",
@@ -107,33 +131,48 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * 워크스페이스 정보 조회
-     *
-     * @param workspaceId - 워크스페이스 uuid
-     * @param userId      - 사용자 uuid
-     * @return- 워크스페이스 정보
-     */
+
+
     @ApiOperation(
-            value = "워크스페이스 정보 조회",
-            notes = "워크스페이스의 정보를 조회합니다."
+            value = "워크스페이스 홈 - 정보 조회",
+            notes = "워크스페이스 홈에서 워크스페이스의 정보를 조회합니다."
     )
-    @GetMapping("/{workspaceId}/info")
-    public ResponseEntity<ApiResponse<WorkspaceInfoResponse>> getWorkspaceInfo(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId) {
+    @GetMapping("/home/{workspaceId}")
+    public ResponseEntity<ApiResponse<WorkspaceInfoResponse>> getWorkspaceInfo(@PathVariable("workspaceId") String workspaceId) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<WorkspaceInfoResponse> apiResponse = this.workspaceService.getWorkspaceInfo(workspaceId, userId);
+        ApiResponse<WorkspaceInfoResponse> apiResponse = this.workspaceService.getWorkspaceInfo(workspaceId);
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * 워크스페이스 멤버 초대
-     *
-     * @param workspaceId                - 초대할 워크스페이스 uuid
-     * @param workspaceInviteRequestList - 워크스페이스 초대 정보
-     * @return - 멤버 초대 성공 여부
-     */
+    @ApiOperation(
+            value = "워크스페이스 홈 - 신규 멤버 조회",
+            notes = "워크스페이스 홈에서 워크스페이스의 신규 참여 멤버 정보를 조회합니다."
+    )
+    @GetMapping("/home/{workspaceId}/members")
+    public ResponseEntity<ApiResponse<List<WorkspaceNewMemberInfoDTO>>> getWorkspaceNewUserInfo(@PathVariable("workspaceId") String workspaceId) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse<List<WorkspaceNewMemberInfoDTO>> apiResponse = this.workspaceService.getWorkspaceNewUserInfo(workspaceId);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+ /*
+    @ApiOperation(
+            value = "워크스페이스 멤버 권한 설정",
+            notes = "워크스페이스 사용자에서 멤버의 권한, 플랜할당을 설정합니다."
+    )
+    @PostMapping("/{workspaceId}/members")
+    public ResponseEntity<ApiResponse<Boolean>> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestBody MembersRoleUpdateRequest membersRoleUpdateRequest, BindingResult bindingResult) {
+        if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse<Boolean> apiResponse = this.workspaceService.reviseUserPermission(workspaceId, membersRoleUpdateRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @PostMapping("/{workspaceId}/invite")
     public ResponseEntity<ApiResponse<WorkspaceInviteRestResponse>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequestList) {
         if (!StringUtils.hasText(workspaceId)) {
@@ -143,14 +182,7 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * 워크스페이스 멤버 초대 수락
-     *
-     * @param workspaceId - 수락한 워크스페이스 uuid
-     * @param userId      - 수락한 유저 uuid
-     * @param code        - 초대 코드
-     * @return - 멤버 초대 수락 성공 여부
-     */
+
     @GetMapping("/{workspaceId}/invite/accept")
     public ResponseEntity<ApiResponse<WorkspaceInviteAcceptResponse>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
         if (!StringUtils.hasText(workspaceId)) {
@@ -160,15 +192,7 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * 워크스페이스 멤버 생성
-     *
-     * @param workspaceId       - 대상 워크스페이스 uuid
-     * @param userId            - 생성하는 유저 uuid
-     * @param userCreateRequest - 생성 되는 userInfo List
-     * @param bindingResult
-     * @return - 멤버 생성 성공 여부
-     */
+
     @PostMapping("/{workspaceId}/create")
     public ResponseEntity<ApiResponse<UsersCreateResponse>> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
@@ -177,22 +201,5 @@ public class WorkspaceController {
         ApiResponse<UsersCreateResponse> apiResponse = this.workspaceService.createUsers(workspaceId, userId, userCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
-
-    /**
-     * 워크스페이스 매니저 권한 수정
-     *
-     * @param workspaceId                 - 권한 수정이 일어나는 워크스페이스 uuid
-     * @param userId                      - 권한 수정하는 마스터/매니저 uuid
-     * @param userPermissionReviseRequest - 권한이 수정될 멤버 정보
-     * @param bindingResult
-     * @return - 권한 수정 성공 여부
-     */
-    @PostMapping("/{workspaceId}/permission")
-    public ResponseEntity<ApiResponse> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody UserPermissionReviseRequest userPermissionReviseRequest, BindingResult bindingResult) {
-        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || bindingResult.hasErrors()) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
-        }
-        ApiResponse apiResponse = this.workspaceService.reviseUserPermission(workspaceId, userId, userPermissionReviseRequest);
-        return ResponseEntity.ok(apiResponse);
-    }
+*/
 }
