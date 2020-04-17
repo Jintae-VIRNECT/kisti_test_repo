@@ -71,9 +71,10 @@ spring:
         - id: license-server
           uri: lb://license-server
           predicates:
-            - Path=/licenses
+            - Path=/licenses/**
           filters:
             - StripPrefix=0
+            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
         - id: license-api-docs
           uri: lb://license-server
           predicates:
@@ -83,9 +84,10 @@ spring:
         - id: auth-server
           uri: lb://auth-server
           predicates:
-            - Path=/auth
+            - Path=/auth/**
           filters:
             - StripPrefix=0
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
         - id: auth-api-docs
           uri: lb://auth-server
           predicates:
