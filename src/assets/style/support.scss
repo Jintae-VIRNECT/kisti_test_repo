@@ -15,7 +15,7 @@
 		background: #1e1e20;
 	}
 
-	.support--body {
+	.body {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -64,7 +64,7 @@
     color: #ffffff;
   }
 
-	.support--graphic {
+	.body__graphic {
 		margin: 0 auto;
 		padding: 10px 0;
 		line-height: 0;
@@ -76,7 +76,7 @@
 		}
 	}
 
-	.support--title {
+	.body__title {
 		margin: 28px 20px 0;
 		color: #ffffff;
 		font-size: 30px;
@@ -89,7 +89,7 @@
 		}
 	}
 
-	.support--description {
+	.body--description {
 		margin: 14px 0 40px;
     color: #ffffff;
     opacity: 70%;
@@ -106,7 +106,7 @@
 		}
 	}
 
-	.support--description--mobile {
+	.body--mobile {
 		margin: 14px 0 40px;
     color: #ffffff;
     opacity: 70%;
@@ -127,23 +127,14 @@
 		padding-bottom: 40px;
 		text-align: center;
 
-        .footer--inner {
+        .footer__inner {
             margin: 0 auto;
         }
 
-        .copyright {
+        .footer__copyright {
             color: #ffffff;
             margin-top: 6px;
             opacity: 50%;
-				}
-				
-				@include tablet {
-					display: none;
-				}
-
-				@include mobile {
-					display: block;
-					padding-bottom: 32px;
 				}
     }
 }
