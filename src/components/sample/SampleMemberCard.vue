@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import MemberCard from 'MemberCard'
+import MemberCard from 'components/workspace/modules/MemberCard'
 export default {
   data: function() {
     return {
