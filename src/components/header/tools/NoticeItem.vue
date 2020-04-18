@@ -1,6 +1,6 @@
 <template>
   <div class="notice-item">
-    <img class="notice-item__image" :src="icon" />
+    <img class="notice-item__image" :class="section" :src="icon" />
     <div class="notice-item__body">
       <p class="notice-item__info" :class="section">{{ info }}</p>
       <p class="notice-item__description" v-html="description"></p>
@@ -131,8 +131,13 @@ export default {
   width: 36px;
   height: 36px;
   margin: 0 20px auto 0;
-  overflow: hidden;
-  border-radius: 50%;
+  @include image();
+  &.info {
+    background-color: #0f75f5;
+  }
+  &.alert {
+    background-color: #ffd059;
+  }
 }
 .notice-item__body {
 }

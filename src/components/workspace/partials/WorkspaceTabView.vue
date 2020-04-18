@@ -1,10 +1,10 @@
 <template>
-  <section class="tab-view">
-    <div class="tab-view__header">
+  <section class="tab-view" :class="[customClass]">
+    <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
-      <ListBadge v-if="showListCountBadge"></ListBadge>
+      <list-badge v-if="!(listCount === null)"></list-badge>
     </div>
-    <div class="tab-view__sub-header">
+    <div class="tab-view__sub-header offsetwidth">
       <span class="tab-view__description" v-if="description.length > 0">{{
         description
       }}</span>
@@ -26,7 +26,7 @@
         ></icon-button>
       </div>
     </div>
-    <div class="tab-view__body">
+    <div class="tab-view__body offsetwidth">
       <slot v-if="!empty"></slot>
       <show-empty
         v-else
@@ -52,6 +52,10 @@ export default {
     IconButton,
   },
   props: {
+    customClass: {
+      type: String,
+      default: '',
+    },
     empty: {
       type: Boolean,
       default: false,
@@ -80,9 +84,9 @@ export default {
       type: String,
       default: require('assets/image/img_remote_empty.svg'),
     },
-    showListCountBadge: {
-      type: Boolean,
-      default: false,
+    listCount: {
+      type: Number,
+      default: null,
     },
     showRefreshButton: {
       type: Boolean,

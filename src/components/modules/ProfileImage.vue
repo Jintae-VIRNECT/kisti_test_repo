@@ -4,20 +4,9 @@
     :class="customClass"
     :style="{ width: `${size}px`, height: `${size}px` }"
   >
-    <img
-      class="profile-image__image"
-      v-if="image && image.length > 0"
-      :src="image"
-    />
-    <div
-      class="profile-image__color"
-      v-else
-      :style="{ 'background-color': color }"
-    >
-      <p>{{ groupName.slice(0, 1) }}</p>
-    </div>
-    <button class="profile-image__button" v-if="btnText.length > 0">
-      {{ btnText }}
+    <img class="profile-image__image" :src="showImage" />
+    <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
+      이미지 삭제
     </button>
   </div>
 </template>
@@ -31,32 +20,40 @@ export default {
       type: Number,
       default: 120,
     },
-    color: {
+    defaultImage: {
       type: String,
-      default: '#0f75f5', // ''
+      default: require('assets/image/img_default_group.svg'),
     },
     image: {
       type: String,
       default: '',
     },
-    groupName: {
-      type: String,
-      default: '버넥트',
-    },
     customClass: {
       type: String,
       default: '',
     },
-    btnText: {
-      type: String,
-      default: '',
+    deleteBtn: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
     return {}
   },
-  computed: {},
-  methods: {},
+  computed: {
+    showImage() {
+      if (this.image && this.image.length > 0) {
+        return this.image
+      } else {
+        return this.defaultImage
+      }
+    },
+  },
+  methods: {
+    deleteImage() {
+      this.$emit('delete')
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -64,11 +61,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/mixin';
 .profile-image {
   position: relative;
   margin: 0 auto;
-  overflow: hidden;
-  border-radius: 50%;
+  @include image();
 }
 .profile-image__color {
   width: 100%;
@@ -86,13 +83,21 @@ export default {
 .profile-image__image {
   width: 100%;
   height: 100%;
+  background-color: #fff;
+  border-radius: 50%;
 }
 .profile-image__button {
   position: absolute;
-  bottom: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 34px;
+  height: 100%;
   color: #fff;
-  background-color: rgba(#000, 0.29);
+  background-color: transparent;
+  @include ir();
+  &:hover {
+    background: url(~assets/image/ic_trash.svg) 50%/20px no-repeat;
+    background-color: rgba(#000, 0.8);
+  }
 }
 </style>

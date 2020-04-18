@@ -1,6 +1,9 @@
 <template>
   <figure class="inputrow">
-    <p class="inputrow-title" :class="{ required }">{{ title }}</p>
+    <p class="inputrow-title valid" v-if="valid" :class="{ required }">
+      {{ validMessage }}
+    </p>
+    <p class="inputrow-title" v-else :class="{ required }">{{ title }}</p>
     <input
       v-if="type === 'text'"
       class="inputrow-input input"
@@ -16,7 +19,6 @@
       type="text"
       :placeholder="placeholder"
       v-model="inputText"
-      @keyup="cmaTextareaSize(30)"
       :maxlength="count"
     />
     <slot v-else></slot>
@@ -27,14 +29,20 @@
 </template>
 
 <script>
+import * as regexp from 'utils/regexp.js'
 export default {
   name: 'InputRow',
   data() {
     return {
       inputText: '',
+      valid: false,
     }
   },
   props: {
+    value: {
+      type: String,
+      default: '',
+    },
     type: {
       type: String,
       default: 'input',
@@ -47,9 +55,13 @@ export default {
       type: String,
       default: '그룹이름을 입력해 주세요.',
     },
-    regexp: {
+    validate: {
       type: String,
       default: null,
+    },
+    validMessage: {
+      type: String,
+      default: '',
     },
     showCount: {
       type: Boolean,
@@ -67,27 +79,29 @@ export default {
   computed: {},
   watch: {
     inputText(text) {
-      this.$emit('update:value', text)
-      if (this.type === 'textarea' && !this.box) {
-        this.cmaTextareaSize(30)
+      if (this.validate) {
+        const invalid = regexp[this.validate](text)
+        if (!invalid) {
+          this.valid = true
+        } else {
+          this.valid = false
+        }
       }
+      this.$emit('update:value', text)
     },
-  },
-  methods: {
-    cmaTextareaSize(bsize) {
-      if (this.box) return
-      let sTextarea = this.$refs['inputTextarea']
-      sTextarea.style.height = 'fit-content'
-      let csize =
-        sTextarea.scrollHeight >= bsize
-          ? sTextarea.scrollHeight - 16 + 'px'
-          : bsize - 16 + 'px'
-      sTextarea.style.height = csize
+    value(val) {
+      if (val !== this.inputText) {
+        this.inputText = val
+      }
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    if (this.value && this.value.length > 0) {
+      this.inputText = this.value
+    }
+  },
 }
 </script>
 <style lang="scss" scoped>
@@ -100,8 +114,7 @@ export default {
   position: relative;
   width: fit-content;
   margin-bottom: 8px;
-  color: #d2d2d2;
-  font-weight: 500;
+  color: rgba(#d2d2d2, 0.5);
   font-size: 13px;
   &.required::after {
     position: absolute;
@@ -113,6 +126,12 @@ export default {
     border-radius: 50%;
     content: '';
   }
+  &.valid {
+    color: #ff757b;
+    &.required::after {
+      display: none;
+    }
+  }
 }
 
 .inputrow-input {
@@ -121,8 +140,8 @@ export default {
   padding: 8px;
   padding: 14px 18px;
   color: #fff;
-  background-color: #111012;
-  border: solid 1px #282828;
+  background-color: #1a1a1b;
+  border: solid 1px #303030;
   border-radius: 3px;
   &::placeholder {
     color: rgba(#979fb0, 0.7);

@@ -1,7 +1,7 @@
 <template>
   <div class="workspace-tab">
     <nav class="workspace-tab__nav" :class="{ fix: !!fix }">
-      <ul class="flex">
+      <ul class="flex offsetwidth">
         <tab-button
           v-for="tab of tabComponents"
           :key="tab.name"
@@ -63,7 +63,11 @@ export default {
   },
   methods: {
     tabChange(tabName) {
-      this.component = tabName
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.component = tabName
+        this.$emit('tabChange')
+      })
     },
   },
 

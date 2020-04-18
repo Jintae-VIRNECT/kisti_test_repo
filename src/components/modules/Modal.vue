@@ -1,11 +1,11 @@
 <template>
-  <div v-if="visible" class="modal" :class="customClass">
+  <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
     <div class="modal--dimmed" @click.stop="doClose($event)"></div>
     <transition name="modal">
       <div
         v-show="_isMounted"
         class="modal--inner"
-        :style="innerWidth"
+        :style="[innerWidth, innerHeight]"
         @click="clickHander"
       >
         <div class="modal--header">
@@ -78,6 +78,10 @@ export default {
       type: Number,
       default: 360,
     },
+    height: {
+      type: [Number, String],
+      default: 'auto',
+    },
     eventPropagation: {
       type: Boolean,
       default: true,
@@ -99,6 +103,17 @@ export default {
         width: this.width + 'px',
       }
     },
+    innerHeight() {
+      if (this.height === 'auto') {
+        return {
+          height: 'auto',
+        }
+      } else {
+        return {
+          height: this.height + 'px',
+        }
+      }
+    },
   },
   watch: {
     visible(value) {
@@ -110,6 +125,10 @@ export default {
     },
   },
   methods: {
+    scroll(e) {
+      e.preventDefault()
+      e.stopPropagation()
+    },
     clickHander(event) {
       if (this.eventPropagation) {
         event.stopPropagation()
@@ -158,7 +177,7 @@ export default {
     position: relative;
     min-width: 360px;
     background-color: #1e1e20;
-    border: 1px solid rgba(#a9a9a9, 0.27);
+    border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(#000, 0.07), 0 12px 12px 0 rgba(#000, 0.3);
   }
@@ -167,7 +186,7 @@ export default {
     position: relative;
     padding: 22px 30px;
     background-color: #313135;
-    border-bottom: 1px solid rgba(#7f7f7f, 0.27);
+    border-bottom: 1px solid rgba(#7f7f7f, 0.2);
     border-radius: 10px 10px 0 0;
   }
 

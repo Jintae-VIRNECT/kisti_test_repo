@@ -9,23 +9,52 @@
   >
     <div class="createroom">
       <section class="createroom-info">
-        <profile-image :btnText="'등록'"></profile-image>
+        <profile-image
+          :image="imageURL"
+          :deleteBtn="!!imageURL"
+          @delete="imageRemove"
+        ></profile-image>
+        <input
+          ref="inputImage"
+          type="file"
+          name="file"
+          accept="image/gif,image/jpeg,image/png"
+          style="display: none;"
+          @change="uploadImage($event)"
+        />
+        <button
+          class="btn normal createroom-info_regist-image"
+          @click="imageUpload"
+        >
+          협업 프로필 등록
+        </button>
         <input-row
           :title="'협업 이름'"
-          :placeholder="'그룹이름을 입력해 주세요. (최대20자)'"
+          :placeholder="'그룹이름을 입력해 주세요.'"
           :value.sync="name"
+          validate="validName"
+          validMessage="특수 문자는 협업 이름에서 제외시켜주세요."
           type="text"
           :count="20"
+          required
+          showCount
         ></input-row>
         <input-row
           :title="'협업 설명'"
-          :placeholder="'그룹 설명을 입력해주세요. (최대50자)'"
+          :placeholder="'그룹 설명을 입력해주세요.'"
           :value.sync="description"
           type="textarea"
           :count="50"
+          showCount
         ></input-row>
-        <input-row v-if="users.length > 0" :title="'선택한 멤버'">
-          <profile-list :users="selection"></profile-list>
+        <input-row v-if="users.length > 0" :title="'선택한 멤버'" required>
+          <profile-list
+            v-if="selection.length > 0"
+            :users="selection"
+          ></profile-list>
+          <p class="createroom-info__add-member" v-else>
+            멤버를 추가해 주세요.
+          </p>
           <!-- <div style="color: #fff;">HAHA</div> -->
         </input-row>
         <button
@@ -37,7 +66,10 @@
       </section>
       <section class="createroom-user">
         <div class="createroom-user__header">
-          <p class="createroom-user__title">선택 가능한 멤버 리스트</p>
+          <p class="createroom-user__title">
+            선택 가능한 멤버 리스트
+            <span class="createroom-user__number">12</span>
+          </p>
           <button class="createroom-user__button">새로고침</button>
         </div>
         <div class="createroom-user__body">
@@ -86,8 +118,11 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import ProfileList from 'ProfileList'
+
+import mixinImage from 'mixins/uploadImage'
 export default {
   name: 'WorkspaceCreateRoom',
+  mixins: [mixinImage],
   components: {
     Modal,
     ProfileImage,
@@ -103,6 +138,7 @@ export default {
       visibleFlag: false,
       name: '',
       description: '',
+      image: null,
     }
   },
   props: {
@@ -194,6 +230,7 @@ export default {
     visible(flag) {
       if (flag) {
         this.reset()
+        this.name = '우경아의 원격 협업협업'
       }
       this.visibleFlag = flag
     },
@@ -225,5 +262,5 @@ export default {
 <style
   lang="scss"
   scoped
-  src="assets/style/workspace/workspace-modal.scss"
+  src="assets/style/workspace/workspace-createroom.scss"
 ></style>

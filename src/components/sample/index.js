@@ -2,10 +2,10 @@ const files = require.context('.', false, /\.vue$/)
 const modules = {}
 // const exceptName = './Test.vue'
 const exceptName = [
-  './Test.vue',
+  './Sample.vue',
   './before',
-  './TestTranslate.vue',
-  './TestTranslate2.vue',
+  './SampleTranslate.vue',
+  './SampleTranslate2.vue',
 ]
 
 files.keys().forEach(key => {
