@@ -23,8 +23,11 @@
         <span class="text">{{ item.leaderName }}</span>
       </div>
       <button slot="menuPopover"></button>
-      <button class="btn" slot="column4">재시작</button>
+      <button class="btn" @click="createRoom" slot="column4">
+        재시작
+      </button>
     </wide-card-extend>
+    <create-room-modal :visible.sync="visible"></create-room-modal>
   </div>
   <div v-else class="no-list">
     <div class="no-list__img"></div>
@@ -38,12 +41,14 @@ import Profile from 'Profile'
 import WideCardExtend from 'WideCardExtend'
 
 import sort from 'mixins/admin/adminSort'
+import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 export default {
   name: 'WorkspaceHistoryList',
   mixins: [sort],
-  components: { Profile, WideCardExtend },
+  components: { Profile, WideCardExtend, CreateRoomModal },
   data() {
     return {
+      visible: false,
       testdata: [
         {
           profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
@@ -173,6 +178,11 @@ export default {
   },
   watch: {
     searchFilter() {},
+  },
+  methods: {
+    createRoom() {
+      this.visible = !this.visible
+    },
   },
 }
 </script>
