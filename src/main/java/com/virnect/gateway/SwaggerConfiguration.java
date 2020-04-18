@@ -51,7 +51,6 @@ public class SwaggerConfiguration {
     @Lazy
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
-                .filter(route -> route.getId().contains("api"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -71,7 +70,7 @@ public class SwaggerConfiguration {
     private SwaggerResource createResource(String name, String location, String version) {
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
-        swaggerResource.setLocation(location + "api-docs");
+        swaggerResource.setLocation(location + "v2/api-docs");
         swaggerResource.setSwaggerVersion(version);
 
         log.info("[{}}] - [{}] - [{}]", swaggerResource.getName(), swaggerResource.getUrl(), swaggerResource.getSwaggerVersion());

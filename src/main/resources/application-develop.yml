@@ -14,36 +14,23 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
-        - id: user-api-docs
-          uri: lb://user-server
-          predicates:
-            - Path=/users/v2/**
-          filters:
-            - StripPrefix=1
+
         - id: workspace-server
           uri: lb://workspace-server
           predicates:
-            - Path=/workspaces
+            - Path=/workspaces/**
           filters:
             - StripPrefix=0
-        - id: workspace-api-docs
-          uri: lb://workspace-server
-          predicates:
-            - Path=/workspaces/v2/**
-          filters:
-            - StripPrefix=1
+            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
+
         - id: amdin-server
           uri: lb://admin-server
           predicates:
-            - Path=/admin
+            - Path=/admin/**
           filters:
             - StripPrefix=0
-        - id: admin-api-docs
-          uri: lb://admin-server
-          predicates:
-            - Path=/admin/v2/**
-          filters:
-            - StripPrefix=1
+            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
+
         - id: content-server
           uri: lb://content-server
           predicates:
@@ -51,12 +38,7 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
-        - id: content-api-docs
-          uri: lb://content-server
-          predicates:
-            - Path=/contents/v2/**
-          filters:
-            - StripPrefix=1
+
         - id: process-server
           uri: lb://process-server
           predicates:
@@ -64,12 +46,7 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
-        - id: process-api-docs
-          uri: lb://process-server
-          predicates:
-            - Path=/processes/v2/**
-          filters:
-            - StripPrefix=1
+
         - id: license-server
           uri: lb://license-server
           predicates:
@@ -77,12 +54,7 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
-        - id: license-api-docs
-          uri: lb://license-server
-          predicates:
-            - Path=/licenses/v2/**
-          filters:
-            - StripPrefix=1
+
         - id: auth-server
           uri: lb://auth-server
           predicates:
@@ -90,36 +62,23 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
-        - id: auth-api-docs
-          uri: lb://auth-server
-          predicates:
-            - Path=/auth/v2/**
-          filters:
-            - StripPrefix=1
+
         - id: message-server
           uri: lb://message-server
           predicates:
-            - Path=/message
+            - Path=/message/**
           filters:
             - StripPrefix=0
-        - id: message-api-docs
-          uri: lb://message-server
-          predicates:
-            - Path=/message/v2/**
-          filters:
-            - StripPrefix=1
+            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+
         - id: download-server
           uri: lb://download-server
           predicates:
-            - Path=/download
+            - Path=/download/**
           filters:
             - StripPrefix=0
-        - id: download-api-docs
-          uri: lb://download-server
-          predicates:
-            - Path=/download/v2/**
-          filters:
-            - StripPrefix=1
+            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -128,6 +87,8 @@ spring:
             allowedHeaders: "*"
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+      x-forwarded:
+        prefix-enabled: false
 
 eureka:
   instance:
@@ -135,3 +96,4 @@ eureka:
   client:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
+
