@@ -191,79 +191,79 @@ export default {
 .no-list {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: #29292c;
+  justify-content: center;
   height: 400px;
+  background-color: #29292c;
 
   .no-list__img {
-    height: 233px;
     width: 191px;
+    height: 233px;
+    margin-bottom: 30px;
     background-image: url('~assets/image/mdpi_02.svg');
     background-repeat: no-repeat;
-    margin-bottom: 30px;
   }
 
   .no-list__title {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
+    font-weight: normal;
     font-size: 24px;
     font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    text-align: center;
     letter-spacing: 0px;
+    text-align: center;
   }
   .no-list__description {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
+    font-weight: normal;
     font-size: 18px;
     font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    text-align: center;
     letter-spacing: 0px;
+    text-align: center;
     opacity: 50%;
   }
 }
 
 .label {
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .label--noraml {
   color: #d2d2d2;
+  font-weight: normal;
   font-size: 15px;
   font-family: AppleSDGothicNeo-Regular;
-  font-weight: normal;
-  text-align: center;
   letter-spacing: 0px;
+  text-align: center;
 }
 
 .label--date {
   color: #fafafa;
+  font-weight: normal;
   font-size: 15px;
   font-family: Roboto-Regular;
-  font-weight: normal;
-  text-align: center;
   letter-spacing: 0px;
+  text-align: center;
   opacity: 50%;
 }
 
 .lable__icon {
-  opacity: 86%;
   display: flex;
   align-items: center;
   padding-left: 30px;
+  opacity: 86%;
   .icon {
-    height: 24px;
     width: 24px;
+    height: 24px;
     margin-right: 5px;
   }
 
   .text {
     color: #fafafa;
+    font-weight: normal;
     font-size: 14px;
     font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
     letter-spacing: 0px;
   }
 }
