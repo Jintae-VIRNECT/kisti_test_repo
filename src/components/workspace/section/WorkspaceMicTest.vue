@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="workspace-setting-title title-low-bottom-margin">
+    <div class="workspace-setting-title">
       마이크 테스트
     </div>
     <div class="workspace-setting-label label-margin-bottom">

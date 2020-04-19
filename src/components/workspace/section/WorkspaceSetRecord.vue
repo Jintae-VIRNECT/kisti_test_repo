@@ -1,10 +1,9 @@
 <template>
   <section>
-    <div class="workspace-setting-title">녹화 설정</div>
-
+    <div class="workspace-setting-title">로컬 녹화 설정</div>
     <div class="workspace-setting-horizon-wrapper">
       <div>
-        <div class="workspace-setting-label">로컬 녹화 시간</div>
+        <div class="workspace-setting-label">최대 녹화 시간</div>
         <r-select
           class="workspace-setting-r-selecter"
           v-on:changeValue="saveRecLength"

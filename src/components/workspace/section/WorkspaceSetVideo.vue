@@ -1,37 +1,15 @@
 <template>
   <section>
     <div class="workspace-setting-title">영상 설정</div>
-
     <div class="workspace-setting-vertical-wrapper">
-      <div class="workspace-setting-horizon-wrapper content-space-between">
-        <div class="workspace-setting-label">카메라</div>
-        <r-select
-          v-on:changeValue="setVideoDevice"
-          :options="videoDevices"
-          :value="'deviceId'"
-          :text="'label'"
-        ></r-select>
-      </div>
-      <div class="workspace-setting-horizon-wrapper content-space-between">
-        <div class="workspace-setting-label">품질</div>
-        <r-select
-          v-on:changeValue="setVideoQuality"
-          :options="videoQualityOpts"
-          :value="'value'"
-          :text="'text'"
-        ></r-select>
-      </div>
-      <div class="workspace-setting-horizon-wrapper content-space-between">
-        <div></div>
-        <div class="video-wrapper">
-          <div class="preivew-text">미리보기</div>
-          <video
-            class="video-preview"
-            :srcObject.prop="videoStream"
-            autoplay
-          ></video>
-        </div>
-      </div>
+      <div class="workspace-setting-label">카메라</div>
+      <r-select
+        class="workspace-setting-r-selecter"
+        v-on:changeValue="setVideoDevice"
+        :options="videoDevices"
+        :value="'deviceId'"
+        :text="'label'"
+      ></r-select>
     </div>
   </section>
 </template>
@@ -68,24 +46,7 @@ export default {
   methods: {
     setVideoDevice: function(newDevice) {
       this.selectVideo = newDevice.deviceId
-      this.getVideoStream()
       this.$emit('selectedVideoDevice', newDevice)
-    },
-    setVideoQuality: function(newQuality) {
-      this.$emit('selectedVideoQuality', newQuality)
-    },
-    getVideoStream() {
-      console.log(this.selectVideo)
-      const constraints = {
-        video: {
-          deviceId: this.selectVideo,
-        },
-        audio: false,
-      }
-      navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-        console.log(stream)
-        this.videoStream = stream
-      })
     },
   },
 }

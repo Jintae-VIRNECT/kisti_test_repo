@@ -1,53 +1,77 @@
 <template>
-  <tab-view title="사용자 환경설정">
-    <div style="height: 400px;">
-      <scrollbar>
-        <div style="height: 100%; background-color:#29292c">
-          <div class="workspace-setting-wrapper">
-            <workspace-set-audio
-              class="workspace-setting-section"
-              :audioInputDevices="audioInputDevices"
-              :audioOutputDevices="audioOutputDevices"
-              @selectedAudioInputDevice="setAudioInputDevice"
-              @selectedOutputAudioDevice="setAudioOutputDevice"
-            ></workspace-set-audio>
-            <workspace-mic-test
-              class="workspace-setting-section"
-              :selectAudioInput="selectAudioInput"
-            >
-            </workspace-mic-test>
+  <tab-view title="">
+    <div class="setting-wrapper">
+      <div class="setting-nav">
+        <div class="setting-nav__header">환경설정</div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'audio-video' }"
+          @click="tabChange('audio-video', '비디오 및 오디오 설정')"
+        >
+          비디오 및 오디오 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'video-record' }"
+          @click="tabChange('video-record', '영상 및 녹화 설정')"
+        >
+          영상 및 녹화 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'language' }"
+          @click="tabChange('language', '언어 설정')"
+        >
+          언어 설정
+        </div>
+      </div>
+      <div class="setting-view" style="height: 400px;">
+        <scrollbar>
+          <div class="setting-view__header">{{ headerText }}</div>
 
-            <div
-              class="workspace-setting-horizon-wrapper workspace-setting-section"
-            >
-              <workspace-set-video
-                :videoDevices="videoDevices"
-                @selectedVideoDevice="saveVideoDevice"
-                @selectedVideoQuality="saveVideoQuality"
-              ></workspace-set-video>
+          <div style="height: 100%; background-color:#29292c">
+            <div class="workspace-setting-wrapper">
+              <div v-if="tabview === 'audio-video'">
+                <workspace-set-audio
+                  class="workspace-setting-section"
+                  :audioInputDevices="audioInputDevices"
+                  :audioOutputDevices="audioOutputDevices"
+                  @selectedAudioInputDevice="setAudioInputDevice"
+                  @selectedOutputAudioDevice="setAudioOutputDevice"
+                ></workspace-set-audio>
 
-              <workspace-set-language
-                @selectedLanguage="saveLanguage"
-              ></workspace-set-language>
-            </div>
-            <div
-              class="workspace-setting-horizon-wrapper workspace-setting-section"
-            >
-              <workspace-set-record
-                @selectedRecLength="saveRecordLength"
-                @selectedResolution="saveRecordRes"
-              ></workspace-set-record>
-            </div>
-            <div
-              class="workspace-setting-horizon-wrapper workspace-setting-section"
-            >
-              <workspace-set-notification
-                @selectedNotiFlagPC="saveNotiFlagPC"
-              ></workspace-set-notification>
+                <workspace-mic-test
+                  class="workspace-setting-section"
+                  :selectAudioInput="selectAudioInput"
+                >
+                </workspace-mic-test>
+              </div>
+
+              <div v-else-if="tabview === 'video-record'">
+                <workspace-set-video
+                  class="workspace-setting-section"
+                  :videoDevices="videoDevices"
+                  @selectedVideoDevice="saveVideoDevice"
+                  @selectedVideoQuality="saveVideoQuality"
+                ></workspace-set-video>
+
+                <workspace-set-record
+                  class="workspace-setting-section"
+                  @selectedRecLength="saveRecordLength"
+                  @selectedResolution="saveRecordRes"
+                ></workspace-set-record>
+              </div>
+              <div v-else-if="tabview === 'language'">
+                <workspace-set-language
+                  style="height: 254px;"
+                  class="workspace-setting-section"
+                  @selectedLanguage="saveLanguage"
+                ></workspace-set-language>
+              </div>
             </div>
           </div>
-        </div>
-      </scrollbar>
+        </scrollbar>
+      </div>
     </div>
   </tab-view>
 </template>
@@ -57,7 +81,6 @@ import Scrollbar from 'Scroller'
 import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
 import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
-import WorkspaceSetNotification from '../section/WorkspaceSetNotification'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
 import { CONFIG_CODE } from 'utils/config-codes'
@@ -70,17 +93,18 @@ export default {
     WorkspaceSetAudio,
     WorkspaceSetVideo,
     WorkspaceSetLanguage,
-    WorkspaceSetNotification,
     WorkspaceSetRecord,
     WorkspaceMicTest,
   },
   data() {
     return {
+      tabview: 'audio-video',
+      headerText: '비디오 및 오디오 설정',
+
       //device list
       videoDevices: [],
       audioInputDevices: [],
       audioOutputDevices: [],
-
       //audio context
       audioContext: null,
       selectAudioInput: null,
@@ -90,6 +114,10 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    tabChange(view, headerText) {
+      this.tabview = view
+      this.headerText = headerText
+    },
     getMediaDevice() {
       navigator.mediaDevices
         .enumerateDevices()
@@ -108,14 +136,6 @@ export default {
           console.log(err)
         })
     },
-    /**
-     * @todo 1. 기능 정의가 어느정도 확정되면 환경설정값의 저장 정책필요함 - ykmo
-     * 1. localstroage?
-     * 2. vuex store?
-     * 3. server?
-     *
-     * @todo 2. 저장될 데이터 형식 규정 필요함 - ykmo
-     */
     setAudioInputDevice(newInputAudioDevice) {
       this.selectAudioInput = newInputAudioDevice
       this.saveAudioInputDevice(newInputAudioDevice)
