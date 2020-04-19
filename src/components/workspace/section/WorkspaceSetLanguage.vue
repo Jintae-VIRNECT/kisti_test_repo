@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="workspace-setting-title">언어 선택</div>
+    <div class="setting__title">언어 선택</div>
     <div class="radio-custom">
       <r-radio
         :options="radioOption.options"

@@ -1,10 +1,10 @@
 <template>
   <section>
-    <div class="workspace-setting-title">영상 설정</div>
-    <div class="workspace-setting-vertical-wrapper">
-      <div class="workspace-setting-label">카메라</div>
+    <div class="setting__title">영상 설정</div>
+    <div class="setting-vertical-wrapper">
+      <div class="setting__label">카메라</div>
       <r-select
-        class="workspace-setting-r-selecter"
+        class="setting__r-selecter"
         v-on:changeValue="setVideoDevice"
         :options="videoDevices"
         :value="'deviceId'"

@@ -1,11 +1,11 @@
 <template>
   <section>
-    <div class="workspace-setting-title">로컬 녹화 설정</div>
-    <div class="workspace-setting-horizon-wrapper">
+    <div class="setting__title">로컬 녹화 설정</div>
+    <div class="setting-horizon-wrapper">
       <div>
-        <div class="workspace-setting-label">최대 녹화 시간</div>
+        <div class="setting__label">최대 녹화 시간</div>
         <r-select
-          class="workspace-setting-r-selecter"
+          class="setting__r-selecter"
           v-on:changeValue="saveRecLength"
           :options="localRecTimeOpt"
           :value="'value'"
@@ -15,9 +15,9 @@
       </div>
 
       <div>
-        <div class="workspace-setting-label">녹화 영상 해상도</div>
+        <div class="setting__label">녹화 영상 해상도</div>
         <r-select
-          class="workspace-setting-r-selecter"
+          class="setting__r-selecter"
           v-on:changeValue="saveRecResolution"
           :options="localRecResOpt"
           :value="'value'"

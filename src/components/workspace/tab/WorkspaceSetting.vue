@@ -25,49 +25,48 @@
           언어 설정
         </div>
       </div>
+
       <div class="setting-view" style="height: 400px;">
         <scrollbar>
           <div class="setting-view__header">{{ headerText }}</div>
 
-          <div style="height: 100%; background-color:#29292c">
-            <div class="workspace-setting-wrapper">
-              <div v-if="tabview === 'audio-video'">
-                <workspace-set-audio
-                  class="workspace-setting-section"
-                  :audioInputDevices="audioInputDevices"
-                  :audioOutputDevices="audioOutputDevices"
-                  @selectedAudioInputDevice="setAudioInputDevice"
-                  @selectedOutputAudioDevice="setAudioOutputDevice"
-                ></workspace-set-audio>
+          <div class="setting-view__body">
+            <div v-if="tabview === 'audio-video'">
+              <workspace-set-audio
+                class="setting-section"
+                :audioInputDevices="audioInputDevices"
+                :audioOutputDevices="audioOutputDevices"
+                @selectedAudioInputDevice="setAudioInputDevice"
+                @selectedOutputAudioDevice="setAudioOutputDevice"
+              ></workspace-set-audio>
 
-                <workspace-mic-test
-                  class="workspace-setting-section"
-                  :selectAudioInput="selectAudioInput"
-                >
-                </workspace-mic-test>
-              </div>
+              <workspace-mic-test
+                class="setting-section"
+                :selectAudioInput="selectAudioInput"
+              >
+              </workspace-mic-test>
+            </div>
 
-              <div v-else-if="tabview === 'video-record'">
-                <workspace-set-video
-                  class="workspace-setting-section"
-                  :videoDevices="videoDevices"
-                  @selectedVideoDevice="saveVideoDevice"
-                  @selectedVideoQuality="saveVideoQuality"
-                ></workspace-set-video>
+            <div v-else-if="tabview === 'video-record'">
+              <workspace-set-video
+                class="setting-section"
+                :videoDevices="videoDevices"
+                @selectedVideoDevice="saveVideoDevice"
+                @selectedVideoQuality="saveVideoQuality"
+              ></workspace-set-video>
 
-                <workspace-set-record
-                  class="workspace-setting-section"
-                  @selectedRecLength="saveRecordLength"
-                  @selectedResolution="saveRecordRes"
-                ></workspace-set-record>
-              </div>
-              <div v-else-if="tabview === 'language'">
-                <workspace-set-language
-                  style="height: 254px;"
-                  class="workspace-setting-section"
-                  @selectedLanguage="saveLanguage"
-                ></workspace-set-language>
-              </div>
+              <workspace-set-record
+                class="setting-section"
+                @selectedRecLength="saveRecordLength"
+                @selectedResolution="saveRecordRes"
+              ></workspace-set-record>
+            </div>
+            <div v-else-if="tabview === 'language'">
+              <workspace-set-language
+                style="height: 254px;"
+                class="setting-section"
+                @selectedLanguage="saveLanguage"
+              ></workspace-set-language>
             </div>
           </div>
         </scrollbar>

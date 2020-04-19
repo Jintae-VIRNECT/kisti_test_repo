@@ -1,19 +1,19 @@
 <template>
   <section>
-    <div class="workspace-setting-title">
+    <div class="setting__title">
       마이크 테스트
     </div>
-    <div class="workspace-setting-label label-margin-bottom">
+    <div class="setting__label label-margin-bottom">
       마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
       들려드리겠습니다.
     </div>
-    <div class="workspace-setting-horizon-wrapper align-center">
-      <div class="align-item">
+    <div class="setting-horizon-wrapper align-center">
+      <div class="mic-item">
         <button class="btn" @click="toggleMicTestMode">
           {{ micTestWord }}
         </button>
       </div>
-      <div class="align-item">
+      <div class="mic-item">
         <toggle-button
           class="mic-radius"
           :description="''"
@@ -25,7 +25,7 @@
         ></toggle-button>
       </div>
 
-      <div class="align-item" style="width:755px">
+      <div class="mic-item" style="width:755px">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
       <audio
@@ -122,11 +122,11 @@ export default {
   justify-content: start;
 }
 
-.align-item {
+.mic-item {
   margin-right: 10px;
 }
 
-.align-item:nth-child(2n) {
+.mic-item:nth-child(2n) {
   margin-right: 20px;
 }
 .label-margin-bottom {
