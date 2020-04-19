@@ -55,7 +55,7 @@ export default {
   padding-right: 20px;
   padding-bottom: 10px;
   padding-left: 20px;
-  background-color: rgb(36, 36, 39);
+  background-color: #242427;
   border-radius: 2px;
 
   .radio-option:first-of-type {

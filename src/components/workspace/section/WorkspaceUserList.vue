@@ -144,34 +144,34 @@ export default {
 .no-list {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: #29292c;
+  justify-content: center;
   height: 400px;
+  background-color: #29292c;
 
   .no-list__img {
-    height: 233px;
     width: 191px;
+    height: 233px;
+    margin-bottom: 30px;
     background-image: url('~assets/image/mdpi_02.svg');
     background-repeat: no-repeat;
-    margin-bottom: 30px;
   }
 
   .no-list__title {
     color: rgb(250, 250, 250);
+    font-weight: normal;
     font-size: 24px;
     font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    text-align: center;
     letter-spacing: 0px;
+    text-align: center;
   }
   .no-list__description {
     color: rgb(250, 250, 250);
+    font-weight: normal;
     font-size: 18px;
     font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    text-align: center;
     letter-spacing: 0px;
+    text-align: center;
     opacity: 50%;
   }
 }

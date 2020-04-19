@@ -52,30 +52,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.video-wrapper {
-  width: 300px;
-  height: 226px;
-  margin-top: 50px;
-  border: 1px solid;
-  border-color: #363638;
-  position: relative;
-  overflow: hidden;
-
-  .preivew-text {
-    width: 100%;
-    color: rgb(236, 236, 236);
-    font-family: 'NotoSansCJKkr-Medium';
-    top: 90%;
-    text-align: center;
-    background-color: #000000;
-    opacity: 50%;
-    position: absolute;
-  }
-}
-
-.video-preview {
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style scoped lang="scss"></style>
