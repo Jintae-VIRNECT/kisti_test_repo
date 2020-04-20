@@ -1,16 +1,20 @@
 <template>
   <div class="support">
-    <div class="support--body">
-      <div class="support--graphic">
+    <div class="body">
+      <div class="body__graphic">
         <img
           src="~assets/image/support/mdpi_404.svg"
           alt="Browser is not supported"
         />
       </div>
-      <h2 class="support--title" v-html="$t('support.header_title')"></h2>
+      <h2 class="body__title" v-html="$t('support.header_title')"></h2>
       <p
-        class="support--description"
+        class="body--description"
         v-html="$t('support.header_description')"
+      ></p>
+      <p
+        class="body--mobile"
+        v-html="$t('support.header_description_mobile')"
       ></p>
       <div>
         <el-button v-if="isScreenDesktop" @click="pcWeb">{{
@@ -22,9 +26,9 @@
       </div>
     </div>
 
-    <footer class="footer" v-if="isScreenDesktop">
-      <div class="footer--inner">
-        <p class="copyright">
+    <footer class="footer">
+      <div class="footer__inner">
+        <p class="footer__copyright">
           Copyright&copy; <strong>VIRNECT INC</strong>. All Rights Reserved.
         </p>
       </div>
