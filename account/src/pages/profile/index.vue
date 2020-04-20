@@ -290,7 +290,6 @@ export default {
     height: 240px;
     padding: 36px 40px;
     background: url('~assets/images/bg_profile.jpg') center no-repeat;
-    background-size: 100%;
 
     & > div > h3 {
       display: block;
