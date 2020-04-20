@@ -7,6 +7,14 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: auth-server
+          uri: lb://auth-server
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+
         - id: user-server
           uri: lb://user-server
           predicates:
@@ -54,14 +62,6 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
-
-        - id: auth-server
-          uri: lb://auth-server
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=0
-            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: message-server
           uri: lb://message-server
