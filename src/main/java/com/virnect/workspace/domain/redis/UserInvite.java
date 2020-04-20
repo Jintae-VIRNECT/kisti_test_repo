@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,38 +21,31 @@ import java.util.concurrent.TimeUnit;
 @Setter
 @RedisHash("userInvite")
 public class UserInvite implements Serializable {
-
     @Id
-    private String joinUser;
-    private String inviteUser;
+    private String joinUserId;
+    private String inviteUserId;
+    private String name;
     private String email;
-    private String workspace;
+    private String workspaceId;
     private String code;
-    private List<Long> permission;
-    private List<GroupInfo> groups;
-    private Boolean existUser;
+    private String role;
+    private String makeType;
+    private String viewType;
 
     @TimeToLive(unit = TimeUnit.MINUTES)
     private Long expireTime;
 
-    @Getter
-    @Setter
-    public static class GroupInfo {
-        private String groupName;
-        private Boolean managerAssign;
-    }
-
     @Builder
-    public UserInvite(String joinUser, String inviteUser, String email, String workspace, String code, List<Long> permission, Long expireTime, Boolean existUser, List<GroupInfo> groups) {
-        this.joinUser = joinUser;
-        this.inviteUser = inviteUser;
+    public UserInvite(String joinUserId, String inviteUserId, String name, String email, String workspaceId, String code, String role, String makeType, String viewType, Long expireTime) {
+        this.joinUserId = joinUserId;
+        this.inviteUserId = inviteUserId;
+        this.name = name;
         this.email = email;
-        this.workspace = workspace;
+        this.workspaceId = workspaceId;
         this.code = code;
-        this.permission = permission;
+        this.role = role;
+        this.makeType = makeType;
+        this.viewType = viewType;
         this.expireTime = expireTime;
-        this.existUser = existUser;
-        this.groups = groups;
     }
-
 }

@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.redis;
 
-import com.virnect.workspace.dto.GroupInfoDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,16 +18,16 @@ public class WorkspaceInviteRedisRequest {
     private String userId;
     private String workspaceId;
     private String inviteCode;
-    private List<UserInfo> userInfoList;
+    private List<InviteUserInfo> inviteUserInfo;
 
     @Getter
     @Setter
-    public static class UserInfo{
+    public static class InviteUserInfo {
+        private String uuid;
         private String email;
         private String name;
-        private List<Long> permission;
-        private List<GroupInfoDTO> groups;
-        private Boolean existUser;
+        private String role;
+        private String makeType;
+        private String viewType;
     }
-
 }

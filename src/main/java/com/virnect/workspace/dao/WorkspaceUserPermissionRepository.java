@@ -21,12 +21,14 @@ import java.util.List;
 public interface WorkspaceUserPermissionRepository extends JpaRepository<WorkspaceUserPermission, Long>, WorkspaceUserPermissionRepositoryCustom {
     WorkspaceUserPermission findByWorkspaceUser(WorkspaceUser workspaceUser);
 
+    WorkspaceUserPermission findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(Workspace workspace, String userId);
+
     Page<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(Workspace workspace, List<WorkspaceUser> workspaceUserList, List<WorkspaceRole> workspaceRoleList, Pageable pageable);
 
-    //Page<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(Workspace workspace, String userId, Pageable pageable);
 
     @Transactional
     void deleteAllByWorkspaceUser(WorkspaceUser workspaceUser);
+
     long countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String WorkspaceRole);
 
 }

@@ -1,8 +1,8 @@
 package com.virnect.workspace.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Project: PF-Workspace
@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@CrossOrigin
 @RequestMapping("/workspaces/groups")
 public class GroupController {
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity createGroup(){
         return ResponseEntity.ok(200);
-    }/*
+    }
     @GetMapping
     public ResponseEntity getGroupPermission(){
         return ResponseEntity.ok(200);

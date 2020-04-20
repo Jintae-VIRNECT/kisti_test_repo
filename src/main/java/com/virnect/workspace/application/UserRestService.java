@@ -4,7 +4,6 @@ import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.config.NetflixFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "UserServer", url = "${user.serverUrl}", configuration = NetflixFeignConfiguration.class)
+@FeignClient(name = "user-server")
 public interface UserRestService {
     /**
      * 유저 정보 조회

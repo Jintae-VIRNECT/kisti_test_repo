@@ -1,10 +1,10 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.WorkspaceService;
+import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
@@ -63,22 +63,24 @@ public class WorkspaceController {
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
+
     @ApiOperation(
             value = "워크스페이스 프로필 설정",
             notes = "생성된 워크스페이스의 프로필을 변경하는 기능입니다.(마스터 유저만 가능한 기능입니다.)"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", paramType = "form", defaultValue = "uuid", required = true),
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", paramType = "form", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", required = true),
+            @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", paramType = "form", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
             @ApiImplicitParam(name = "name", value = "워크스페이스 이름(빈값 일 경우 닉네임's Workspace로 저장됩니다.)", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
-    @PutMapping("/{workspaceId}")
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@PathVariable("workspaceId") String workspaceId, @ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest, BindingResult bindingResult) {
+    @PutMapping
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceId,workspaceUpdateRequest);
+        ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -112,7 +114,7 @@ public class WorkspaceController {
     }
 
     @ApiOperation(
-            value = "워크스페이스 멤버 검색(워크스페이스 멤버 목록 조회)",
+            value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
             notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
     )
     @ApiImplicitParams({
@@ -130,7 +132,6 @@ public class WorkspaceController {
         ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
     }
-
 
 
     @ApiOperation(
@@ -159,39 +160,91 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
- /*
     @ApiOperation(
-            value = "워크스페이스 멤버 권한 설정",
+            value = "워크스페이스 사용자 - 멤버 권한 설정",
             notes = "워크스페이스 사용자에서 멤버의 권한, 플랜할당을 설정합니다."
     )
-    @PostMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<Boolean>> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestBody MembersRoleUpdateRequest membersRoleUpdateRequest, BindingResult bindingResult) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    })
+    @PostMapping("/{workspaceId}/members/info")
+    public ResponseEntity<ApiResponse<Boolean>> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestBody MemberUpdateRequest memberUpdateRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<Boolean> apiResponse = this.workspaceService.reviseUserPermission(workspaceId, membersRoleUpdateRequest);
+        ApiResponse<Boolean> apiResponse = this.workspaceService.reviseMemberInfo(workspaceId, memberUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 정보 조회",
+            notes = "워크스페이스 내에서 해당 멤버의 정보를 조회합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "userId", value = "유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "query", required = true)
+    })
+    @GetMapping("/{workspaceId}/members/info")
+    public ResponseEntity<ApiResponse<UserInfoDTO>> getMemberInfo(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse<UserInfoDTO> apiResponse = this.workspaceService.getMemberInfo(workspaceId, userId);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 내보내기",
+            notes = "워크스페이스 내에서 해당 멤버를 내보내기합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "form", required = true),
+            @ApiImplicitParam(name = "kickedUserId", value = "내보내기 대상 유저 uuid", dataType = "string", defaultValue = "", paramType = "form", required = true)
+    })
+    @DeleteMapping("/{workspaceId}/members/info")
+    public ResponseEntity<ApiResponse<Boolean>> kickOutMember(@PathVariable("workspaceId") String workspaceId, @ModelAttribute MemberKickOutRequest memberKickOutRequest) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+        }
+        ApiResponse<Boolean> apiResponse = this.workspaceService.kickOutMember(workspaceId, memberKickOutRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 초대하기",
+            notes = "워크스페이스 내에서 사용자를 초대합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    })
     @PostMapping("/{workspaceId}/invite")
-    public ResponseEntity<ApiResponse<WorkspaceInviteRestResponse>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequestList) {
-        if (!StringUtils.hasText(workspaceId)) {
+    public ResponseEntity<ApiResponse<Boolean>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestBody WorkspaceInviteRequest workspaceInviteRequest, BindingResult bindingResult) {
+        if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<WorkspaceInviteRestResponse> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, userId, workspaceInviteRequestList);
+        ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, workspaceInviteRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
-
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 초대 수락",
+            notes = "초대받은 사용자가 이메일 인증에서 초대를 수락합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "userId", value = "초대받은 사용자 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c60", paramType = "query", required = true),
+            @ApiImplicitParam(name = "code", value = "워크스페이스 초대 코드", dataType = "string", defaultValue = "123456", paramType = "query", required = true)
+    })
     @GetMapping("/{workspaceId}/invite/accept")
-    public ResponseEntity<ApiResponse<WorkspaceInviteAcceptResponse>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
-        if (!StringUtils.hasText(workspaceId)) {
+    public ResponseEntity<ApiResponse<Boolean>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(code)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<WorkspaceInviteAcceptResponse> apiResponse = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
+        ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
         return ResponseEntity.ok(apiResponse);
     }
-
+ /*
 
     @PostMapping("/{workspaceId}/create")
     public ResponseEntity<ApiResponse<UsersCreateResponse>> createUsers(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestBody @Valid UsersCreateRequest userCreateRequest, BindingResult bindingResult) {

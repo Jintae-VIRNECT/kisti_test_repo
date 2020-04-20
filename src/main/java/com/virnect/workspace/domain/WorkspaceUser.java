@@ -1,7 +1,8 @@
 package com.virnect.workspace.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 @Setter
 @Table(name = "workspace_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
 public class WorkspaceUser extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +34,7 @@ public class WorkspaceUser extends TimeEntity {
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
+    @NotAudited
     @OneToMany(mappedBy = "workspaceUser")
     private List<GroupUser> groupUserList = new ArrayList<>();
 

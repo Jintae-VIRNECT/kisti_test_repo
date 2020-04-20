@@ -1,0 +1,31 @@
+package com.virnect.workspace.dto.request;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
+
+/**
+ * Project: PF-Workspace
+ * DATE: 2020-03-02
+ * AUTHOR: jkleee (Jukyoung Lee)
+ * EMAIL: ljk@virnect.com
+ * DESCRIPTION:
+ */
+@Getter
+@Setter
+public class MemberUpdateRequest {
+    @ApiModelProperty(value = "마스터 유저의 uuid", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
+    @NotNull
+    private String masterUserId;
+
+    @ApiModelProperty(value = "유저 uuid", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
+    @NotNull
+    private String uuid;
+
+    @ApiModelProperty(value = "권한 변경 대상 uuid", required = true, example = "MANAGER")
+    @NotNull
+    private String role;
+
+}

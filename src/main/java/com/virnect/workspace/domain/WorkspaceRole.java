@@ -1,6 +1,7 @@
 package com.virnect.workspace.domain;
 
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "workspace_role")
+@Audited
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkspaceRole extends TimeEntity {
     @Id

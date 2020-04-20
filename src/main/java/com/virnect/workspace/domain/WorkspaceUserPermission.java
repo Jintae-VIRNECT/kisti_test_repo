@@ -1,6 +1,7 @@
 package com.virnect.workspace.domain;
 
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -16,6 +17,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "workspace_user_permission")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
 public class WorkspaceUserPermission extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,7 @@ public class WorkspaceUserPermission extends TimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_permission_id")
     private WorkspacePermission workspacePermission;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_user")
