@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @FeignClient(name = "process-server")
 public interface ProcessRestService {
-    @GetMapping("/subProcesses/count/onWorker/{workerUUID}")
+    @GetMapping("/processes/subProcesses/count/onWorker/{workerUUID}")
     ApiResponse<SubProcessCountResponse> getSubProcessCount(@PathVariable("workerUUID") String workerUUID);
 
 }

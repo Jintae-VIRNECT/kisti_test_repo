@@ -26,7 +26,7 @@ public interface UserRestService {
      * @param userId - 유저 고유 아이디
      * @return - 유저 정보
      */
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     ApiResponse<UserInfoRestResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
 
     /**
@@ -36,7 +36,7 @@ public interface UserRestService {
      * @param search - 검색어
      * @return - 이름 또는 이메일이 검색어와 일치한 유저 정보들의 리스트 데이터
      */
-    @GetMapping
+    @GetMapping("/users")
     ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(@RequestParam("uuid") String userId, @RequestParam("search") String search, @RequestParam("paging") boolean paging, Pageable pageable);
 
     /**
@@ -45,7 +45,7 @@ public interface UserRestService {
      * @param emailList - 조회 요청 유저 이메일 리스트
      * @return - 유저 정보
      */
-    @GetMapping("/invite")
+    @GetMapping("/users/invite")
     ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(@RequestParam("email[]") String[] emailList);
 }
 
