@@ -18,23 +18,7 @@ import RSelect from 'RemoteSelect'
 export default {
   data: function() {
     return {
-      videoStream: null,
       selectVideo: null,
-      videoQuality: '',
-      videoQualityOpts: [
-        {
-          value: 720,
-          text: '720p',
-        },
-        {
-          value: 1080,
-          text: '1080p',
-        },
-        {
-          value: 2080,
-          text: '2K',
-        },
-      ],
     }
   },
   props: {

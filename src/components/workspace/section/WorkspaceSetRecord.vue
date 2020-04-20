@@ -36,7 +36,6 @@ export default {
       localRecordingTime: '',
       localRecordingResolution: '',
 
-      //데이터 미정
       localRecTimeOpt: [
         {
           value: 5,
@@ -49,6 +48,10 @@ export default {
         {
           value: 15,
           text: '15분',
+        },
+        {
+          value: 30,
+          text: '30분',
         },
       ],
 

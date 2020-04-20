@@ -12,6 +12,12 @@ const URL = {
   /* Account */
   LOGIN: ['POST', 'http://192.168.6.3:8321/auth/signin'],
   // ACCESS_TOKEN: ['POST', '/api/auth/accessToken'],
+
+  /* CONFIGURATION */
+  //!!!!!!Warning! API Request url is not fixed!!!!!!
+  GET_CONFIG: ['GET', '/api/media/properties/'],
+  UPDATE_CONFIG: ['POST', '/api/media/properties/'],
+  PUT_CONFIG: ['PUT', '/api/media/properties/'],
 }
 
 const axios = Axios.create({

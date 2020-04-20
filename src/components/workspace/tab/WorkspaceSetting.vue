@@ -83,6 +83,7 @@ import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
 import { CONFIG_CODE } from 'utils/config-codes'
+import { putLanguage } from 'api/workspace/configuration'
 
 export default {
   name: 'WorkspaceSetting',
@@ -147,7 +148,7 @@ export default {
       if (videoDevice !== null) {
         this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
         localStorage.setItem(
-          CONFIG_CODE.CURRENT_VIDEO_DEVICE,
+          CONFIG_CODE.VIDEO_DEVICE,
           JSON.stringify(videoDevice),
         )
       }
@@ -156,7 +157,7 @@ export default {
       if (videoQuality !== null) {
         this.$store.commit('SET_VIDEO_QUALITY', videoQuality)
         localStorage.setItem(
-          CONFIG_CODE.CURRENT_VIDEO_QUALITY,
+          CONFIG_CODE.VIDEO_QUALITY,
           JSON.stringify(videoQuality),
         )
       }
@@ -165,7 +166,7 @@ export default {
       if (audioInputDevice !== null) {
         this.$store.commit('SET_AUDIO_INPUT_DEVICE', audioInputDevice)
         localStorage.setItem(
-          CONFIG_CODE.CURRENT_AUDIO_INPUT_DEVICE,
+          CONFIG_CODE.AUDIO_INPUT_DEVICE,
           JSON.stringify(audioInputDevice),
         )
       }
@@ -181,18 +182,16 @@ export default {
     },
     saveLanguage(language) {
       if (language !== null) {
+        putLanguage(language)
         this.$store.commit('SET_LANGUAGE', language)
-        localStorage.setItem(
-          CONFIG_CODE.CURRENT_LANGUAGE,
-          JSON.stringify(language),
-        )
+        //localStorage.setItem(CONFIG_CODE.LANGUAGE, JSON.stringify(language))
       }
     },
     saveRecordLength(recLength) {
       if (recLength !== null) {
         this.$store.commit('SET_LOCAL_RECORD_LENGTH', recLength)
         localStorage.setItem(
-          CONFIG_CODE.CURRNET_LOCAL_RECORD_LENGTH,
+          CONFIG_CODE.LOCAL_RECORD_LENGTH,
           JSON.stringify(recLength),
         )
       }
@@ -201,17 +200,8 @@ export default {
       if (recResolution !== null) {
         this.$store.commit('SET_RECORD_RESOLUTION', recResolution)
         localStorage.setItem(
-          CONFIG_CODE.CURRENT_RECORD_RESOLUTION,
+          CONFIG_CODE.RECORD_RESOLUTION,
           JSON.stringify(recResolution),
-        )
-      }
-    },
-    saveNotiFlagPC(notiFlagPC) {
-      if (notiFlagPC !== null) {
-        this.$store.commit('SET_NOTI_FLAG_PC', notiFlagPC)
-        localStorage.setItem(
-          CONFIG_CODE.CURRENT_NOTI_FLAG_PC,
-          JSON.stringify(notiFlagPC),
         )
       }
     },
