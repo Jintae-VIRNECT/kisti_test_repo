@@ -24,7 +24,7 @@
 import { filter as issueFilter, sort as issueSort } from '@/models/job/Issue'
 import issueService from '@/services/issue'
 
-import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
+import SearchTabNav from '@/components/common/SearchTabNav'
 
 export default {
   components: {

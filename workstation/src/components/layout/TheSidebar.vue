@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       now: '0',
-      isCollapse: false,
+      isCollapse: true,
     }
   },
   watch: {
@@ -46,16 +46,17 @@ export default {
 </script>
 
 <style lang="scss">
-$the-sidebar-width: 240px;
 $the-sidebar-item-height: 40px;
 
 .the-sidebar {
   position: fixed;
+  top: 0;
   z-index: 9;
   height: 100vh;
   border-right: 1px solid #eaedf3;
+  background: #172b4d;
 
-  & + main {
+  & + div {
     position: relative;
     margin-left: $the-sidebar-width;
   }

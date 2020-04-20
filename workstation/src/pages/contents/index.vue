@@ -31,7 +31,7 @@ import {
 // services
 import contentService from '@/services/content'
 // components
-import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
+import SearchTabNav from '@/components/common/SearchTabNav'
 
 export default {
   components: {

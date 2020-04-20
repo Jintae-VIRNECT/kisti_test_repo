@@ -67,7 +67,7 @@ import {
 // services
 import processService from '@/services/process'
 // components
-import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
+import SearchTabNav from '@/components/common/SearchTabNav'
 import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
 import ColumnCount from '@/components/common/tableColumn/ColumnCount'
 import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
