@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
+const path = require('path')
 
 module.exports = {
   /*
@@ -70,5 +71,9 @@ module.exports = {
   server: {
     port: env.NUXT_PORT, // default: 3000
     host: env.NUXT_HOST, // default: localhost
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
+    },
   },
 }

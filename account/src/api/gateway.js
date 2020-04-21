@@ -47,7 +47,6 @@ export default async function api(name, option = {}) {
     if (code === 200) {
       return data
     } else {
-      console.error(`URL: ${uri}`)
       throw new Error(`${code}: ${message}`)
     }
   } catch (e) {
