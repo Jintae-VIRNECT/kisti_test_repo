@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 64 (101010) - https://sketch.com -->
+    <title>B5A25779-79C3-4D2D-92F7-E96C1EA7EADF@1.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="리소스-파일모음" transform="translate(-403.000000, -141.000000)">
+            <g id="icn-expert03" transform="translate(403.000000, 141.000000)">
+                <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                <g id="icon">
+                    <g id="icn" transform="translate(2.000000, 2.000000)" fill-rule="nonzero">
+                        <path d="M10,0.5 C7.378,0.5 5.00303972,1.56406706 3.28355339,3.28355339 C1.56406706,5.00303972 0.5,7.378 0.5,10 C0.5,12.622 1.56406706,14.9969603 3.28355339,16.7164466 C5.00303972,18.4359329 7.378,19.5 10,19.5 C12.622,19.5 14.9969603,18.4359329 16.7164466,16.7164466 C18.4359329,14.9969603 19.5,12.622 19.5,10 C19.5,7.378 18.4359329,5.00303972 16.7164466,3.28355339 C14.9969603,1.56406706 12.622,0.5 10,0.5 Z" id="Shape" stroke-opacity="0.11956403" stroke="#BFDDFF" fill-opacity="0.237762238" fill="#BFDDFF"></path>
+                        <path d="M10,11.4821429 C11.99,11.4821429 15.97,12.5721429 16,14.5621429 C14.71,16.5021429 12.5,17.7821429 10,17.7821429 C7.5,17.7821429 5.29,16.5021429 4,14.5621429 C4.03,12.5721429 8,11.4821429 10,11.4821429 Z M10,3.58214286 C11.66,3.58214286 13,4.92214286 13,6.58214286 C13,8.24214286 11.66,9.58214286 10,9.58214286 C8.34,9.58214286 7,8.24214286 7,6.58214286 C7,4.92214286 8.34,3.58214286 10,3.58214286 Z" id="Combined-Shape" fill="#D2D6DB"></path>
+                    </g>
+                    <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
