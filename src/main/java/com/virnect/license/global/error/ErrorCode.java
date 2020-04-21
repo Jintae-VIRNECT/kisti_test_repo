@@ -23,6 +23,9 @@ public enum ErrorCode {
     ERR_COUPON_ALREADY_ACTIVATED(2003, "Coupon is already activated"),
 
 
+    // 라이선스 관련
+    ERR_LICENSE_PLAN_NOT_FOUND(3000, "License plant not found"),
+
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004, "Invalid Value"),

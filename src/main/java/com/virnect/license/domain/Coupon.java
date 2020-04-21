@@ -53,7 +53,7 @@ public class Coupon extends BaseTimeEntity {
     private String companyService;
 
     @Column(name = "comany_worker")
-    private Integer companyWorker;
+    private String companyWorker;
 
     @Lob
     @Column(name = "content")
@@ -109,7 +109,7 @@ public class Coupon extends BaseTimeEntity {
     @Builder
     public Coupon(String company, String department, String position, String companyEmail,
                   String callNumber, String companySite, String companyCategory,
-                  String companyService, Integer companyWorker, String content,
+                  String companyService, String companyWorker, String content,
                   Status personalInfoPolicy, Status marketInfoReceive, LocalDateTime expiredDate, Long duration,
                   CouponPeriodType periodType, CouponStatus couponStatus, String userId, String serialKey, String name) {
         this.company = company;

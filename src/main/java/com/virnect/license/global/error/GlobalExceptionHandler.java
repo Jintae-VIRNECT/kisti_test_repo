@@ -26,6 +26,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseMessage> generalExceptionHandler(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.ERR_API_AUTHENTICATION));
+        return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
     }
 }

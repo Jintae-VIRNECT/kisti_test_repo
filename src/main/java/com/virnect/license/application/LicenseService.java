@@ -5,9 +5,7 @@ import com.virnect.license.domain.*;
 import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
-import com.virnect.license.dto.response.EventCouponResponse;
-import com.virnect.license.dto.response.MyCouponInfoListResponse;
-import com.virnect.license.dto.response.MyCouponInfoResponse;
+import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
@@ -21,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.IThrottledTemplateProcessor;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -241,9 +240,10 @@ public class LicenseService {
 
         // 1. 라이선스 플랜 생성
         LicensePlan licensePlan = LicensePlan.builder()
+                .userId(couponActiveRequest.getUserId())
+                .workspaceId(couponActiveRequest.getWorkspaceId())
                 .startDate(LocalDateTime.now())
                 .endDate(LocalDateTime.now().plusDays(coupon.getDuration()))
-                .userId(couponActiveRequest.getUserId())
                 .planStatus(PlanStatus.ACTIVE)
                 .build();
 
@@ -258,6 +258,8 @@ public class LicenseService {
 
         // 5. 쿠폰 기반으로 라이선스 정보 등록
         licenseRegisterByCouponProduct(coupon, licensePlan);
+
+        // 6. 응답 데이터 설정
         MyCouponInfoResponse myCouponInfoResponse = new MyCouponInfoResponse();
         myCouponInfoResponse.setSerialKey(coupon.getSerialKey());
         myCouponInfoResponse.setId(coupon.getId());
@@ -310,9 +312,51 @@ public class LicenseService {
 
     /**
      * 쿠폰 시리얼 키 생성 (0,1은 O,I로 치환)
+     *
      * @return - 시리얼 코드
      */
     private String generateCouponSerialKey() {
         return UUID.randomUUID().toString().replaceAll("0", "O").replaceAll("1", "I");
+    }
+
+    /**
+     * 내 라이선스 플랜 정보 조회
+     * @param userId - 사용자 식별자
+     * @param workspaceId - 워크스페이스 식별자
+     * @return - 내 라이선스 플랜 정보
+     */
+    public ApiResponse<MyLicensePlanInfoResponse> getMyLicensePlanInfo(String userId, String workspaceId) {
+        LicensePlan licensePlan = this.licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(userId, workspaceId, PlanStatus.ACTIVE)
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+
+
+        return null;
+    }
+
+    /**
+     * 내 라이선스 플랜의 라이선스 정보 목록 가져오기
+     * @param userId - 사용자 식별자
+     * @param workspaceId - 워크스페이스 식별자
+     * @param status - 라이선스 상태 (ALL, USE, UNUSE)
+     * @return - 라이선스 정보 목록
+     */
+    public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId, String status) {
+        LicensePlan licensePlan = this.licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(userId, workspaceId, PlanStatus.ACTIVE)
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+
+        if (status.equals("ALL")) {
+            List<LicenseProduct> licenseProductList = licensePlan.getLicenseProductList();
+        } else {
+            // QueryParameter Validator 구현 필요
+            try {
+                    LicenseStatus licenseStatus = LicenseStatus.valueOf(status);
+
+                }catch (Exception e){
+                    e.printStackTrace();;
+            }
+
+        }
+
+        return null;
     }
 }

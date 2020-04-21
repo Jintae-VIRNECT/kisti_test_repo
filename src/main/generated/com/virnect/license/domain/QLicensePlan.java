@@ -33,6 +33,8 @@ public class QLicensePlan extends EntityPathBase<LicensePlan> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<LicenseProduct, QLicenseProduct> licenseProductList = this.<LicenseProduct, QLicenseProduct>createList("licenseProductList", LicenseProduct.class, QLicenseProduct.class, PathInits.DIRECT2);
+
     public final EnumPath<PlanStatus> planStatus = createEnum("planStatus", PlanStatus.class);
 
     public final DateTimePath<java.time.LocalDateTime> startDate = createDateTime("startDate", java.time.LocalDateTime.class);
@@ -41,6 +43,8 @@ public class QLicensePlan extends EntityPathBase<LicensePlan> {
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
 
     public final StringPath userId = createString("userId");
+
+    public final StringPath workspaceId = createString("workspaceId");
 
     public QLicensePlan(String variable) {
         this(LicensePlan.class, forVariable(variable), INITS);

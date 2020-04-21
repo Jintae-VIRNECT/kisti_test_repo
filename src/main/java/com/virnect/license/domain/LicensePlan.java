@@ -5,7 +5,6 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,17 +35,24 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(name = "workspace_id", nullable = false)
+    private String workspaceId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PlanStatus planStatus = PlanStatus.INACTIVE;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "licensePlan")
     @JoinColumn(name = "coupon_id")
-    Coupon coupon;
+    private Coupon coupon;
+
+    @OneToMany(mappedBy = "licensePlan", fetch = FetchType.LAZY)
+    private List<LicenseProduct> licenseProductList;
 
     @Builder
-    public LicensePlan(String userId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon) {
+    public LicensePlan(String userId, String workspaceId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon) {
         this.userId = userId;
+        this.workspaceId = workspaceId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.planStatus = planStatus;

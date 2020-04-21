@@ -36,7 +36,7 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final StringPath companySite = createString("companySite");
 
-    public final NumberPath<Integer> companyWorker = createNumber("companyWorker", Integer.class);
+    public final StringPath companyWorker = createString("companyWorker");
 
     public final StringPath content = createString("content");
 

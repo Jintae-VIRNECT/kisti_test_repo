@@ -40,8 +40,6 @@ public class QLicense extends EntityPathBase<License> {
 
     public final StringPath userId = createString("userId");
 
-    public final StringPath workspaceId = createString("workspaceId");
-
     public QLicense(String variable) {
         this(License.class, forVariable(variable), INITS);
     }

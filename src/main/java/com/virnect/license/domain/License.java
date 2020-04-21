@@ -30,9 +30,6 @@ public class License extends BaseTimeEntity {
     @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "workspace_id")
-    private String workspaceId;
-
     @Column(name = "license_status")
     private LicenseStatus status = LicenseStatus.UNUSE;
 
