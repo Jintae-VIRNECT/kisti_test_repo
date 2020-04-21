@@ -6,17 +6,16 @@
     :listCount="0"
     :showDeleteButton="false"
     :showRefreshButton="true"
-    ><scroller> <workspace-user-list></workspace-user-list></scroller>
+    ><workspace-user-list></workspace-user-list>
   </tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
-import Scroller from 'Scroller'
 export default {
   name: 'WorkspaceUser',
-  components: { TabView, WorkspaceUserList, Scroller },
+  components: { TabView, WorkspaceUserList },
   data() {
     return {}
   },
