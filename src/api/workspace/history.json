@@ -1,0 +1,316 @@
+{
+  "data": {
+    "totalCount": "20",
+    "currentCount": "10",
+    "romms": [
+      {
+        "roomId": "1",
+        "title": "더미1",
+        "description": "더미 1",
+        "memberCount": "3",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-02-10",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "aaa",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "sss",
+            "path": "No"
+          },
+          {
+            "participantId": "3",
+            "participantRole": "Manager",
+            "participantName": "ddd ddd",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "2",
+        "title": "더미2",
+        "description": "더미 2",
+        "memberCount": "2",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "더미3",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "xxxxx",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"더미 더미",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      }
+    ]
+  },
+  "code": 200,
+  "message": "complete"
+}

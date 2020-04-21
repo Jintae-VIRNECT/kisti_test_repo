@@ -1,0 +1,43 @@
+{
+  "data": {
+    "collaboration": {
+      "title": "방 이름",
+      "description": "방 설명",
+      "collaborationStartDate": "2020-03-22T17:32:55.123",
+      "collaborationFinishedDate": "2020-03-22T17:32:55.123",
+      "progressTime": "진행 시간",
+      "roomLeader": {
+        "participantId": "리더 아이디",
+        "participantRole": "유저 권한",
+        "participantName": "유저 이름"
+      },
+      "member": [
+        {
+          "participantId": "유저 아이디",
+          "participantRole": "유저 권한",
+          "participantName": "유저 이름",
+          "path": "프로필 경로"
+        },
+        {
+          "participantId": "유저 아이디",
+          "participantRole": "유저 권한",
+          "participantName": "유저 이름",
+          "path": "프로필 경로"
+        }
+      ]
+    },
+    "download": {
+      "chatlog": "https://{url}:port/chat/log/path/",
+
+      "files": [
+        {
+          "link": "https://{url}:port/file/log/path/",
+          "fileName": "공유 파일 이름",
+          "period": "6일 남음"
+        }
+      ]
+    }
+  },
+  "code": 200,
+  "message": "complete"
+}

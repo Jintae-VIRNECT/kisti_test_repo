@@ -2,7 +2,10 @@
   <section class="tab-view" :class="[customClass]">
     <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
-      <list-badge v-if="!(listCount === null)"></list-badge>
+      <list-badge
+        :listCount="listCount"
+        v-if="!(listCount === null)"
+      ></list-badge>
     </div>
     <div class="tab-view__sub-header offsetwidth">
       <span class="tab-view__description" v-if="description.length > 0">{{
