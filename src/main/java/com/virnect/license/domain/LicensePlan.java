@@ -35,7 +35,9 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "workspace_id", nullable = false)
+
+    // nullable false 로 나중에 바꾸기
+    @Column(name = "workspace_id")
     private String workspaceId;
 
     @Enumerated(EnumType.STRING)
