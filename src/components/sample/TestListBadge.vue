@@ -35,7 +35,7 @@
 </template>
 <script>
 import Profile from 'Profile'
-import WideCard from 'WideCard'
+import WideCard from 'components/workspace/modules/WideCard'
 import ListBadge from 'ListBadge'
 export default {
   data: function() {

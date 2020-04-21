@@ -9,7 +9,7 @@
         <p>{{ mainText.slice(0, 1) }}</p>
       </div>
       <p v-else class="profile--image">
-        <img :src="image" :alt="imageAlt" @error="onError" />
+        <img :src="image" :alt="mainText" @error="onError" />
       </p>
       <span v-if="status" class="profile--badge" :class="status">{{
         status
@@ -65,6 +65,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .profile {
   display: flex;
@@ -83,13 +84,12 @@ export default {
   height: 100%;
   overflow: hidden;
   line-height: 0;
-  background-color: #fff;
-  border-radius: 50%;
 
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    @include image();
   }
   > p {
     width: fit-content;

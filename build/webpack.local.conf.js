@@ -20,10 +20,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
   mode,
   devtool: 'cheap-module-eval-source-map',
   devServer: {
-    https: {
-      key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
-      cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
-    },
+    // https: {
+    //   key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
+    //   cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
+    // },
     host,
     port,
     historyApiFallback: {
@@ -47,22 +47,18 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       ],
     },
     proxy: {
-      // "/api/admin/*": {
-      //   target: configService.getAsString("GATEWAY_ADMIN_URL"),
-      //   headers: {
-      //     "Access-Control-Allow-Origin": "*"
-      //   },
-      //   secure: false,
-      //   changeOrigin: true
-      // },
-      // "/api/*": {
-      //   target: configService.getAsString("GATEWAY_SERVICE_URL"),
-      //   headers: {
-      //     "Access-Control-Allow-Origin": "*"
-      //   },
-      //   secure: false,
-      //   changeOrigin: true
-      // }
+      '/admin': {
+        target: 'http://192.168.6.3:8081',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
+      '/auth': {
+        target: 'http://192.168.6.3:8321',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
     },
     noInfo: true,
     open: false,
