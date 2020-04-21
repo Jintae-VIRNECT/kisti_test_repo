@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @since 2020.03.13
  */
 
-@FeignClient(name = "process-service", url = "${process.serverUrl}")
+@FeignClient(name = "process-server")
 public interface ProcessRestService {
 
     @GetMapping("/target/{targetId}")
