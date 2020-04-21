@@ -15,21 +15,16 @@
 
 .setting-nav__header {
   margin-left: 29px;
-  color: #ffffff;
   font-weight: normal;
   font-size: 20px;
   font-family: NotoSansCJKkr-Regular;
-  letter-spacing: 0px;
 }
 
 .setting-nav__menu {
-  margin-top: 18px;
-  margin-left: 48px;
-  color: #ffffff;
+  margin: 18px 0px 0px 48px;
   font-weight: normal;
   font-size: 14px;
   font-family: NotoSansCJKkr-Regular;
-  letter-spacing: 0px;
   opacity: 0.5;
 
   &.active {
@@ -37,7 +32,6 @@
     font-weight: 500;
     font-size: 14px;
     font-family: NotoSansCJKkr-Medium;
-    letter-spacing: 0px;
     opacity: 1;
   }
 }
@@ -48,11 +42,10 @@
 
 .setting-view__header {
   margin-bottom: 19px;
-  color: rgb(255, 255, 255);
+  color: #ffffff;
   font-weight: normal;
   font-size: 24px;
   font-family: NotoSansCJKkr-Regular;
-  letter-spacing: 0px;
 }
 
 .setting-view__body {
@@ -66,14 +59,8 @@
   color: #fff;
 }
 .setting-section {
-  margin-top: 30px;
-  margin-right: 30px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-
-  padding-right: 20px;
-  padding-bottom: 35px;
-  padding-left: 20px;
+  margin: 30px;
+  padding: 0px 20px 35px 20px;
 }
 
 .setting-section:nth-of-type(1) {
@@ -110,12 +97,10 @@
   font-weight: normal;
   font-size: 14px;
   font-family: "NotoSansCJKkr-Regular";
-  letter-spacing: 0px;
-  opacity: 62%;
+  opacity: 0.62;
 }
 
 .setting__r-selecter {
   width: 446px;
-  margin-right: 60px;
-  margin-bottom: 5px;
+  margin: 0px 60px 5px 0px;
 }
