@@ -1,0 +1,9 @@
+{
+  "info": "워크스페이스 정보",
+  "master": "워크스페이스 마스터",
+  "manager": "워크스페이스 매니저",
+  "member": "워크스페이스 멤버",
+  "planMemberCount": "플랜 별 사용자 수",
+  "planPurchase": "플랜 구매",
+  "addMember": "멤버 추가"
+}

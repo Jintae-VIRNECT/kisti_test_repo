@@ -1,5 +1,5 @@
 import api from '@/api/gateway'
-import Member from '@/models/Member'
+import Member from '@/models/workspace/Member'
 
 export default {
   async getDefaultMembersList() {

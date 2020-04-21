@@ -1,7 +1,9 @@
 <template>
   <nav class="the-sidebar">
     <div class="the-sidebar__logo">
-      <img :src="logo" />
+      <router-link :to="logo.path">
+        <img :src="logo.image" />
+      </router-link>
     </div>
     <div class="the-sidebar__inner">
       <div class="the-sidebar__upper">

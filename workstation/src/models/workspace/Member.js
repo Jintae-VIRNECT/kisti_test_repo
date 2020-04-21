@@ -7,10 +7,15 @@ export default class Member extends Model {
    */
   constructor(json) {
     super()
-    this.id = json.uuid
+    this.uuid = json.uuid
     this.email = json.email
     this.name = json.name
-    this.image = json.profile
+    this.description = json.description
+    this.profile = json.profile
+    this.loginLock = json.loginLock
+    this.userType = json.userType
     this.role = json.role
+    this.createdDate = json.createdDate
+    this.updatedDate = json.updatedDate
   }
 }

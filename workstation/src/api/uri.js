@@ -8,6 +8,8 @@ module.exports = {
   /**
    * Workspace
    */
+  // 워크스페이스 홈 - 정보 조회
+  WORKSPACE_INFO: ['GET', '/workspaces/home/{workspaceId}'],
   // 워크스페이스 멤버 검색
   MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
   /**
