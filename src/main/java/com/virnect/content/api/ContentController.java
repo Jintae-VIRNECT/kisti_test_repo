@@ -71,7 +71,7 @@ public class ContentController {
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "")
     })
-    @GetMapping("/user/{userUUID}")
+    @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
             @RequestParam(value = "search", required = false) String search,
@@ -96,7 +96,7 @@ public class ContentController {
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
             @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR")
     })
-    @PostMapping(value = "/upload/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
             @PathVariable("contentUUID") String contentUUID, @ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
         if (contentUUID.isEmpty() || result.hasErrors()) {
@@ -134,7 +134,7 @@ public class ContentController {
             @ApiImplicitParam(name = "targetCode", value = "타겟 코드데이터", dataType = "string", paramType = "query", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/file/{contentUUID}")
+    @GetMapping("/fileDownload/{contentUUID}")
     public ResponseEntity<Resource> contentDownloadRequestHandler(
             @PathVariable("contentUUID") String contentUUID
             , @RequestParam(value = "targetCode") String targetCode
@@ -157,7 +157,7 @@ public class ContentController {
             @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true),
             @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
     })
-    @PostMapping("/update/{contentUUID}")
+    @PutMapping("/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(
             @ModelAttribute @Valid ContentUpdateRequest updateRequestDto
             , @PathVariable("contentUUID") String contentUUID, BindingResult result) {
@@ -203,7 +203,7 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "query", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
-    @GetMapping("/metadata/sceneGroups")
+    @GetMapping("/sceneGroups/metadata")
     public ResponseEntity<ApiResponse<SceneGroupInfoListResponse>> getContentSceneGroupInfoList(@RequestParam(value = "contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -259,7 +259,7 @@ public class ContentController {
             @ApiImplicitParam(name = "taskId", value = "작업 식별자로 컨텐츠 파일을 판별.", dataType = "string", required = true, paramType = "path"),
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/task/{taskId}")
+    @GetMapping("/convertTask/{taskId}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> taskToContentConvertHandler(
             @PathVariable("taskId") Long taskId
             , @RequestParam(value = "userUUID") String userUUID
