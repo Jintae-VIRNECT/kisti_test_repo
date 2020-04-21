@@ -1,8 +1,7 @@
 <template>
   <section>
-    <div class="workspace-setting-title">언어 설정</div>
-
-    <div class="radio-width">
+    <div class="setting__title">언어 선택</div>
+    <div class="radio-custom">
       <r-radio
         :options="radioOption.options"
         :text="radioOption.text"
@@ -31,16 +30,6 @@ export default {
             value: 'ko',
             imgSrc: require('assets/image/img_flag_korea.svg'),
           },
-          {
-            text: '중국어',
-            value: 'zh',
-            imgSrc: require('assets/image/img_flag_CN.svg'),
-          },
-          {
-            text: '일본어',
-            value: 'jp',
-            imgSrc: require('assets/image/img_flag_JP.svg'),
-          },
         ],
         text: 'text',
         value: 'value',
@@ -59,8 +48,20 @@ export default {
 }
 </script>
 
-<style scoped>
-.radio-width {
+<style lang="scss">
+.radio-custom {
   width: 400px;
+  padding-top: 10px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #242427;
+  border-radius: 2px;
+
+  .radio-option:first-of-type {
+    border-bottom-color: rgba(61, 61, 61, 0.5);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
 }
 </style>
