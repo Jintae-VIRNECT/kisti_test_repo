@@ -28,12 +28,15 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
     @Transactional
     Long deleteByUuid(String contentUUID);
 
+    Boolean existsByUuid(String uuid);
+
     @Transactional(readOnly = true)
     Page<Content> findByNameIsContainingOrUserUUIDIsIn(String contentName, List<String> userUUIDList, Pageable pageable);
 
     Page<Content> findByWorkspaceUUIDAndNameIsContainingOrUserUUIDIsIn(String workspaceUUID, String contentName, List<String> userUUIDList, Pageable pageable);
 
     Page<Content> findByWorkspaceUUID(String workspaceUUID, Pageable pageable);
+
 
 //    @Transactional(readOnly = true)
 //    List<Content> findByStatus(ContentStatus contentStatus);

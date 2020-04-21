@@ -27,13 +27,13 @@ public class Content extends BaseTimeEntity {
     @Column(name = "content_id")
     private Long id;
 
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "path", nullable = false)
+    @Column(name = "path", nullable = false, unique = true)
     private String path;
 
     @Column(name = "size", nullable = false)
@@ -55,6 +55,10 @@ public class Content extends BaseTimeEntity {
     @Column(name = "metadata", nullable = false)
     private String metadata;
 
+    @Lob
+    @Column(name = "properties", nullable = false)
+    private String properties;
+
     @Column(name = "deleted", nullable = false)
     @Enumerated(EnumType.STRING)
     private YesOrNo deleted = YesOrNo.NO;
@@ -70,21 +74,13 @@ public class Content extends BaseTimeEntity {
     @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SceneGroup> sceneGroupList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Target> targetList = new ArrayList<>();
-
     public void addSceneGroup(SceneGroup sceneGroup) {
         sceneGroup.setContent(this);
         this.sceneGroupList.add(sceneGroup);
     }
 
-    public void addTarget(Target target) {
-        target.setContent(this);
-        this.targetList.add(target);
-    }
-
     @Builder
-    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, String metadata, YesOrNo converted) {
+    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, String metadata, String properties, YesOrNo deleted, YesOrNo converted, Type type, List<SceneGroup> sceneGroupList) {
         this.uuid = uuid;
         this.name = name;
         this.path = path;
@@ -93,9 +89,10 @@ public class Content extends BaseTimeEntity {
         this.userUUID = userUUID;
         this.workspaceUUID = workspaceUUID;
         this.metadata = metadata;
+        this.properties = properties;
+        this.deleted = deleted;
         this.converted = converted;
-        this.sceneGroupList = new ArrayList<>();
         this.type = type;
-        this.targetList = new ArrayList<>();
+        this.sceneGroupList = new ArrayList<>();
     }
 }

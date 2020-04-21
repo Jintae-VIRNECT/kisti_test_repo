@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ContentInfoResponse {
+public class ContentPropertiesResponse {
     @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     private String workspaceUUID;
     @ApiModelProperty(value = "컨텐츠 고유 식별자", notes = "해당 식별자를 통해 컨텐츠를 구별합니다.", position = 1, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
@@ -35,9 +35,11 @@ public class ContentInfoResponse {
     private YesOrNo converted;
     @ApiModelProperty(value = "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 12, example = "2020-02-15 16:32:13")
     private LocalDateTime createdDate;
+    @ApiModelProperty(value = "컨텐츠 속성 메타데이터", notes = "컨텐츠 속성 메타데이터", position = 13, example = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}")
+    private String propertiesMetadata;
 
     @Builder
-    public ContentInfoResponse(String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal, long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path, YesOrNo converted, LocalDateTime createdDate) {
+    public ContentPropertiesResponse(String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal, long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path, YesOrNo converted, LocalDateTime createdDate, String propertiesMetadata) {
         this.workspaceUUID = workspaceUUID;
         this.contentUUID = contentUUID;
         this.contentName = contentName;
@@ -50,5 +52,6 @@ public class ContentInfoResponse {
         this.path = path;
         this.converted = converted;
         this.createdDate = createdDate;
+        this.propertiesMetadata = propertiesMetadata;
     }
 }

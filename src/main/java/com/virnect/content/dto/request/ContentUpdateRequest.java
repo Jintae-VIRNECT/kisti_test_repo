@@ -30,5 +30,8 @@ public class ContentUpdateRequest {
     private String metadata;
 
     @NotBlank
+    private String properties;
+
+    @NotBlank
     private String userUUID;
 }

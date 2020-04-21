@@ -1,7 +1,6 @@
 package com.virnect.content.dto.request;
 
 import com.virnect.content.domain.Types;
-import com.virnect.content.domain.TargetType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,19 +38,19 @@ public class ContentUploadRequest {
     private String metadata;
 
     @NotBlank
+    private String properties;
+
+    @NotBlank
     private String userUUID;
 
-    @NotNull
-    private TargetType targetType;
-
     @Builder
-    public ContentUploadRequest(@NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, @NotBlank String metadata, @NotBlank String userUUID, @NotNull TargetType targetType) {
+    public ContentUploadRequest(@NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, @NotBlank String metadata, @NotBlank String properties, @NotBlank String userUUID) {
         this.workspaceUUID = workspaceUUID;
         this.content = content;
         this.contentType = contentType;
         this.name = name;
         this.metadata = metadata;
+        this.properties = properties;
         this.userUUID = userUUID;
-        this.targetType = targetType;
     }
 }

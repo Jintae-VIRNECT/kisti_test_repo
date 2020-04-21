@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
-import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
+import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -20,7 +20,6 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
-import com.virnect.content.infra.file.FileIOService;
 import com.virnect.content.infra.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +57,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContentService {
     private final FileUploadService fileUploadService;
-    private final FileIOService fileIOService;
 
     private final ContentRepository contentRepository;
-    private final TargetRepository targetRepository;
     private final TypeRepository typeRepository;
 
     private final UserRestService userRestService;
@@ -78,6 +75,7 @@ public class ContentService {
 
     private static final YesOrNo INIT_IS_SHARED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_CONVERTED = YesOrNo.NO;
+    private static final YesOrNo INIT_IS_DELETED = YesOrNo.NO;
 
     /**
      * 콘텐츠 업로드
@@ -99,9 +97,11 @@ public class ContentService {
                     .uuid(contentUUID)
                     .name(uploadRequest.getName())
                     .metadata(uploadRequest.getMetadata())
+                    .properties(uploadRequest.getProperties())
                     .userUUID(uploadRequest.getUserUUID())
                     .shared(INIT_IS_SHARED)
                     .converted(INIT_IS_CONVERTED)
+                    .deleted(INIT_IS_DELETED)
                     .size(uploadRequest.getContent().getSize())
                     .path(fileUploadPath)
                     .build();
@@ -109,16 +109,11 @@ public class ContentService {
             // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
             addSceneGroupToContent(content, content.getMetadata());
 
-            // 타겟 저장 후 타겟데이터 반환
-            String targetData = addTargetToContent(content, uploadRequest);
-
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
             // 반환할 타겟정보
-            result.setTargetData(targetData);
-            result.setTargetType(uploadRequest.getTargetType());
             result.setContentUUID(contentUUID);
             return new ApiResponse<>(result);
         } catch (IOException e) {
@@ -146,23 +141,6 @@ public class ContentService {
             log.info("SCENEGROUP UPLOAD ERROR: {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-    }
-
-    private String addTargetToContent(Content content, final ContentUploadRequest contentUploadRequest) {
-        // 타겟데이터
-        String targetData = UUID.randomUUID().toString();
-
-        Target target = Target.builder()
-                .type(contentUploadRequest.getTargetType())
-                .content(content)
-                .data(targetData)
-                .build();
-        content.addTarget(target);
-
-
-        this.targetRepository.save(target);
-
-        return targetData;
     }
 
     /**
@@ -216,6 +194,9 @@ public class ContentService {
         // 7. 컨텐츠 메타데이터 변경
         targetContent.setMetadata(updateRequest.getMetadata());
 
+        // 속성 메타데이터 변경
+        targetContent.setProperties(updateRequest.getProperties());
+
         // 7-1. 컨텐츠 씬그룹 수정
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, updateRequest.getMetadata());
@@ -228,16 +209,13 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
-    public Resource contentDownloadhandler(final String contentUUID, final String targetCode, final String memberUUID) {
+    public Resource contentDownloadhandler(final String contentUUID, final String memberUUID) {
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         if (!content.getUserUUID().equals(memberUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-
-        if (!targetCode.equals(content.getTargetList().get(0).getData()))
-            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);
@@ -383,7 +361,6 @@ public class ContentService {
                     .contentSize(content.getSize())
                     .path(content.getPath())
                     .converted(content.getConverted())
-                    .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                     .createdDate(content.getUpdatedDate())
                     .build();
 
@@ -485,8 +462,8 @@ public class ContentService {
         if (!content.getUserUUID().equals(userUUID)) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // TODO : 제품 2.0 기능
-        Type type = this.typeRepository.findByType(contentType).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT_TYPE));
-        content.setType(type);
+//        Type type = this.typeRepository.findByType(contentType).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT_TYPE));
+//        content.setType(type);
         content.setShared(shared);
 
         this.contentRepository.save(content);
@@ -508,7 +485,6 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                 .createdDate(content.getUpdatedDate())
                 .build();
         // 공정 정보에 컨텐츠정보를 넣음
@@ -545,18 +521,16 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
-                // TODO : 공정 수정 후 반영 예정
                 .workspaceUUID(content.getWorkspaceUUID())
                 .content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
                 // TODO : 공정 수정 후 반영 예정
-                .contentType(content.getType().getType())
+//                .contentType(content.getType().getType())
                 .name(response.getData().getName())
                 .metadata(content.getMetadata())
                 .userUUID(content.getUserUUID())
-                // 컨텐츠:타겟은 1:1이므로
-                .targetType(content.getTargetList().get(0).getType())
                 .build();
-        return contentUpload(contentUUID, uploadRequest);
+
+        return contentUpload(UUID.randomUUID().toString(), uploadRequest);
     }
 
     private MultipartFile convertFileToMultipart(String fileUrl) {
@@ -576,7 +550,7 @@ public class ContentService {
     }
 
     @Transactional
-    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID, final TargetType targetType) {
+    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID) {
         // 컨텐츠 가져오기
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
@@ -590,19 +564,80 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
-                // TODO : 공정 수정 후 반영 예정
                 .workspaceUUID(workspaceUUID)
                 .content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
                 // TODO : 공정 수정 후 반영 예정
 //                .contentType(content.getType().getType())
                 .name(content.getName())
                 .metadata(content.getMetadata())
+                .properties(content.getProperties())
                 .userUUID(userUUID)
-                .targetType(targetType)
                 .build();
 
-        ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse = contentUpload(contentUUID, uploadRequest);
+        return contentUpload(UUID.randomUUID().toString(), uploadRequest);
+    }
 
-        return contentUploadResponseApiResponse;
+    public ApiResponse<ContentPropertiesResponse> getContentPropertiesMetadata(String contentUUID, String userUUID) {
+        // 컨텐츠 조회
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        if (!content.getUserUUID().equals(userUUID))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        // 사용자 조회
+        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
+
+        // 속성 메타데이터 저장
+        return new ApiResponse<>(ContentPropertiesResponse.builder()
+                .workspaceUUID(content.getWorkspaceUUID())
+                .contentUUID(contentUUID)
+                .contentName(content.getName())
+                .shared(content.getShared())
+                .sceneGroupTotal(content.getSceneGroupList().size())
+                .contentSize(content.getSize())
+                .uploaderUUID(content.getUserUUID())
+                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderProfile(userInfoResponse.getData().getProfile())
+                .path(content.getPath())
+                .converted(content.getConverted())
+                .createdDate(content.getUpdatedDate())
+                .propertiesMetadata(content.getProperties())
+                .build());
+    }
+
+    public ApiResponse<ContentPropertiesResponse> setContentPropertiesMetadata(String contentUUID, ContentPropertiesMetadataRequest metadataRequest) {
+        // 컨텐츠 조회
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        if (!metadataRequest.getUserUUID().equals(content.getUserUUID()))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        content.setProperties(metadataRequest.getProperties());
+        this.contentRepository.save(content);
+
+        Content returnContent = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        // 사용자 조회
+        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(returnContent.getUserUUID());
+
+        // 속성 메타데이터 저장
+        return new ApiResponse<>(ContentPropertiesResponse.builder()
+                .workspaceUUID(returnContent.getWorkspaceUUID())
+                .contentUUID(contentUUID)
+                .contentName(returnContent.getName())
+                .shared(returnContent.getShared())
+                .sceneGroupTotal(returnContent.getSceneGroupList().size())
+                .contentSize(returnContent.getSize())
+                .uploaderUUID(returnContent.getUserUUID())
+                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderProfile(userInfoResponse.getData().getProfile())
+                .path(returnContent.getPath())
+                .converted(returnContent.getConverted())
+                .createdDate(returnContent.getUpdatedDate())
+                .propertiesMetadata(returnContent.getProperties())
+                .build());
     }
 }

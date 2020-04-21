@@ -1,6 +1,5 @@
 package com.virnect.content.dao;
 
-import com.virnect.content.domain.Target;
 import com.virnect.content.domain.Type;
 import com.virnect.content.domain.Types;
 import org.springframework.data.jpa.repository.JpaRepository;

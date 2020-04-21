@@ -25,7 +25,6 @@ public class LocalIOService implements FileIOService {
 
     @Override
     public boolean copyFileWithUrl(final String sourceFullUrl, final String destinationUrl) throws IOException {
-        Path targetPath = Paths.get(convertHostUrl(sourceFullUrl));
         Path destinationPath = Paths.get(convertHostUrl(destinationUrl));
 
         FileUtils.copyFile(new File(convertHostUrl(sourceFullUrl)), new File(destinationUrl));

@@ -1,9 +1,9 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
-import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -92,9 +92,9 @@ public class ContentController {
             @ApiImplicitParam(name = "content", value = "업로드 콘텐츠 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "contentType", value = "콘텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
             @ApiImplicitParam(name = "name", value = "콘텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "test_content"),
-            @ApiImplicitParam(name = "metadata", value = "메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"name\":\"Target(Clone)\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"5f43e519-0f18-46c1-947e-198f801bf3cc\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"TOGGLE\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"INPUT_FIELD\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"REPORT\",\"title\":\"항목3\"}]}],\"smartToolObjects\":[{\"id\":\"3cc2b7ab-5006-4d45-bccc-9d971bc52875\",\"jobId\":-1,\"normalTorque\":0,\"items\":[{\"id\":null,\"batchCount\":1},{\"id\":null,\"batchCount\":2},{\"id\":null,\"batchCount\":3},{\"id\":null,\"batchCount\":4}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]}]}]}}"),
+            @ApiImplicitParam(name = "metadata", value = "공정 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"name\":\"SampleContent\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"5f43e519-0f18-46c1-947e-198f801bf3cc\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"TOGGLE\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"INPUT_FIELD\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"REPORT\",\"title\":\"항목3\"}]}],\"smartToolObjects\":[{\"id\":\"3cc2b7ab-5006-4d45-bccc-9d971bc52875\",\"jobId\":-1,\"normalTorque\":0,\"items\":[{\"id\":null,\"batchCount\":1},{\"id\":null,\"batchCount\":2},{\"id\":null,\"batchCount\":3},{\"id\":null,\"batchCount\":4}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[],\"smartToolObjects\":[]}]}]}}"),
+            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR")
     })
     @PostMapping(value = "/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
@@ -113,37 +113,33 @@ public class ContentController {
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "testUUID"),
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "query", required = true, defaultValue = "QR")
     })
     @PostMapping("/duplicate/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentDuplicateHandler(
             @PathVariable("contentUUID") String contentUUID,
             @RequestParam(value = "workspaceUUID") String workspaceUUID,
-            @RequestParam(value = "userUUID") String userUUID,
-            @RequestParam(value = "targetType") TargetType targetType) {
-        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty() || targetType == null) {
+            @RequestParam(value = "userUUID") String userUUID) {
+        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID, targetType);
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID);
         return ResponseEntity.ok(uploadResponse);
     }
 
     @ApiOperation(value = "콘텐츠 다운로드")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "targetCode", value = "타겟 코드데이터", dataType = "string", paramType = "query", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/download/{contentUUID}")
+    @GetMapping("/downloadFile/{contentUUID}")
     public ResponseEntity<Resource> contentDownloadRequestHandler(
             @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "targetCode") String targetCode
             , @RequestParam(value = "memberUUID") String memberUUID) {
-        if (contentUUID.isEmpty() || targetCode.isEmpty() || memberUUID.isEmpty()) {
+        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
-        Resource resource = this.contentService.contentDownloadhandler(contentUUID, targetCode, memberUUID);
+        Resource resource = this.contentService.contentDownloadhandler(contentUUID, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
@@ -155,6 +151,7 @@ public class ContentController {
             @ApiImplicitParam(name = "content", value = "수정할 콘텐츠 ares 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "name", value = "수정할 콘텐츠 명", dataType = "string", paramType = "form", required = true),
             @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
             @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
     })
     @PutMapping("/{contentUUID}")
@@ -242,8 +239,8 @@ public class ContentController {
     @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
             @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
             , @RequestParam(value = "contentType", defaultValue = "AUGMENTED_REALITY", required = false) Types contentType
+            , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
             , @RequestParam(value = "userUUID") String userUUID
     ) {
         log.info("~~~~ modifyContentInfo ==> shared [{}] contentType [{}] userUUID [{}]", shared, contentType, userUUID);
@@ -269,5 +266,38 @@ public class ContentController {
         }
         ApiResponse<ContentUploadResponse> responseApiResponse = this.contentService.convertTaskToContent(taskId, userUUID);
         return ResponseEntity.ok(responseApiResponse);
+    }
+
+    @ApiOperation(value = "콘텐츠 속성 메타데이터 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, dataType = "string", paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", required = true, dataType = "string", paramType = "query")
+    })
+    @GetMapping("/properties/metadata/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentPropertiesResponse>> getContentPropertiesMetadata(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "userUUID") String userUUID) {
+        if (contentUUID.isEmpty() || userUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.getContentPropertiesMetadata(contentUUID, userUUID);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "콘텐츠 속성 메타데이터 수정", tags = "dev")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, dataType = "string", paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", required = true, dataType = "string", paramType = "form")
+    })
+    @PutMapping("/properties/metadata/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentPropertiesResponse>> contentPropertiesMetadataRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @ModelAttribute @Valid ContentPropertiesMetadataRequest metadataRequest
+            , BindingResult result) {
+        if (contentUUID.isEmpty() || result.hasErrors()) {
+            log.error("REQUEST BINDING contentUUID: {}, metadataRequest: {}", contentUUID, metadataRequest.toString());
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.setContentPropertiesMetadata(contentUUID, metadataRequest);
+        return ResponseEntity.ok(responseMessage);
     }
 }

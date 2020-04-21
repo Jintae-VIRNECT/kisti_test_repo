@@ -1,6 +1,5 @@
 package com.virnect.content.dto.response;
 
-import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,10 +23,6 @@ public class ContentUploadResponse {
     private int size;
     @ApiModelProperty(value = "컨텐츠 공유", notes = "컨텐츠 공유 여부(YES, NO)", dataType = "string", position = 4, example = "NO")
     private YesOrNo shared;
-    @ApiModelProperty(value = "타겟 유형", notes = "컨텐츠의 타겟 유형", dataType = "string", position = 5, example = "QR")
-    private TargetType targetType;
-    @ApiModelProperty(value = "타겟 데이터", notes = "컨텐츠의 타겟 데이터", dataType = "string", position = 6, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
-    private String targetData;
     @ApiModelProperty(value = "컨텐츠 타입", notes = "컨텐츠의 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", position = 7, example = "AUGMENTED_REALITY")
     private Types types;
     @ApiModelProperty(value = "작업 전환", notes = "작업전환 여부(YES, NO)", dataType = "string", position = 8, example = "NO")
