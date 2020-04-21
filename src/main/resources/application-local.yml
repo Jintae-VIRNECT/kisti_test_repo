@@ -36,8 +36,6 @@ file:
   url: "http://localhost:${server.port}/"
   allow-extension: "gif,jpg,jpeg,png"
 
-serverUrl: "http://localhost:8082"
-
 ## Eureka Server Configuration
 eureka:
   instance:

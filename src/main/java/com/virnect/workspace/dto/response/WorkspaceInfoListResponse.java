@@ -19,11 +19,11 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class WorkspaceInfoListResponse {
-    private final List<WorkspaceInfoResponse> workspaceList;
+    private final List<WorkspaceInfo> workspaceList;
 
     @Getter
     @Setter
-    public static class WorkspaceInfoResponse {
+    public static class WorkspaceInfo {
         @ApiModelProperty(value = "워크스페이스 식별자", notes = "워크 스페이스를 구별하기 위해 필요한 식별자", example = "4d6eab0860969a50acbfa4599fbb5ae8")
         private String uuid;
         @ApiModelProperty(value = "워크스페이스 고유번호", notes = "워크스페이스에 할당된 고유 번호", position = 1, example = "532878")

@@ -58,8 +58,7 @@ public class WorkspaceService {
     private final ProcessRestService processRestService;
     private final FileUploadService fileUploadService;
     private final UserInviteRepository userInviteRepository;
-    @Value("${serverUrl}")
-    private String serverUrl;
+
 
     @Value("${file.upload-path}")
     private String fileUploadPath;
@@ -134,10 +133,10 @@ public class WorkspaceService {
      * @return - 소속된 워크스페이스 정보
      */
     public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId) {
-        List<WorkspaceInfoListResponse.WorkspaceInfoResponse> workspaceList = new ArrayList<>();
+        List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
         this.workspaceUserRepository.findByUserId(userId).forEach(workspaceUser -> {
             Workspace workspace = workspaceUser.getWorkspace();
-            WorkspaceInfoListResponse.WorkspaceInfoResponse workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfoResponse.class);
+            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
 
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
@@ -362,7 +361,8 @@ public class WorkspaceService {
         WorkspaceInviteMailRequest.InviteInfo inviteInfo = new WorkspaceInviteMailRequest.InviteInfo();
         List<WorkspaceInviteMailRequest.InviteInfo> inviteInfoList = new ArrayList<>();
 
-        String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
+        //String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept";
+        String acceptUrl = "/" + workspaceId + "/invite/accept";
         WorkspaceInviteMailRequest workspaceInviteMailRequest = new WorkspaceInviteMailRequest();
         workspaceInviteMailRequest.setAcceptUrl(acceptUrl);
         workspaceInviteMailRequest.setInviteCode(inviteCode);
