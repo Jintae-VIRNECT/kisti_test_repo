@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.regex.Matcher;
 
 /**
  * @author hangkee.min (henry)
@@ -21,36 +21,50 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 @Service
 public class LocalIOService implements FileIOService {
+    private String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/contents/";
+
     @Override
-    public boolean copyFileWithUrl(final String sourceUrl, final String destinationUrl) throws IOException {
-        File targetFile = new File(sourceUrl);
-        Path targetPath = targetFile.toPath();
-        Path destinationPath = Paths.get(destinationUrl);
-        destinationPath = Files.copy(targetPath, destinationPath, StandardCopyOption.COPY_ATTRIBUTES);
+    public boolean copyFileWithUrl(final String sourceFullUrl, final String destinationUrl) throws IOException {
+        Path targetPath = Paths.get(convertHostUrl(sourceFullUrl));
+        Path destinationPath = Paths.get(convertHostUrl(destinationUrl));
+
+        FileUtils.copyFile(new File(convertHostUrl(sourceFullUrl)), new File(destinationUrl));
+
         // check file exists and isReadable
         return Files.exists(destinationPath) && Files.isReadable(destinationPath);
     }
 
     @Override
     public boolean copyFileWithFile(final File sourceFile, final String destinationUrl) throws IOException {
-        File destinationFile = new File(destinationUrl);
+        File destinationFile = new File(convertHostUrl(destinationUrl));
+
         FileUtils.copyFile(sourceFile, destinationFile);
-        log.info("FILE COPY - name : [{}], path : [{}]", destinationFile.getName(), destinationFile.getPath());
+
         Path destinationPath = Paths.get(destinationFile.getPath());
+
         // check file exists and isReadable
         return Files.exists(destinationPath) && Files.isReadable(destinationPath);
     }
 
     @Override
     public boolean rename(final String sourceUrl, final String destinationUrl) throws IOException {
+        String sourceHostUrl = convertHostUrl(sourceUrl);
+        String destinationHostUrl = convertHostUrl(destinationUrl);
+
         FileUtils.moveFile(
-                FileUtils.getFile(sourceUrl)
-                , FileUtils.getFile(destinationUrl)
+                FileUtils.getFile(sourceHostUrl)
+                , FileUtils.getFile(destinationHostUrl)
         );
-        Path destinationPath = Paths.get(destinationUrl);
-        log.info("FILE RENAME - sourceUrl : [{}], destinationUrl : [{}], varificationName : [{}]"
-                , sourceUrl, destinationUrl, FileUtils.getFile(destinationUrl).getName());
+
+        Path destinationPath = Paths.get(destinationHostUrl);
+
         // check file exists and isReadable
         return Files.exists(destinationPath) && Files.isReadable(destinationPath);
+    }
+
+    private String convertHostUrl(final String sourceUrl) {
+        String result = sourceUrl.replaceAll(HOST_REGEX, "").replace(Matcher.quoteReplacement(File.separator), "/");
+        log.debug("CONVERT FILE PATH : {}", result);
+        return result;
     }
 }

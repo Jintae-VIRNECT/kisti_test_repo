@@ -86,12 +86,9 @@ public class ContentService {
      * @return - 업로드된 콘텐츠 정보
      */
     @Transactional
-    public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
+    public ApiResponse<ContentUploadResponse> contentUpload(final String contentUUID, final ContentUploadRequest uploadRequest) {
         // 1. 콘텐츠 업로드 파일 저장
         try {
-            // 컨텐츠 식별자 생성 - 파일명과 함께 사용.
-            String contentUUID = UUID.randomUUID().toString();
-
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
 
@@ -146,7 +143,7 @@ public class ContentService {
                 content.addSceneGroup(sceneGroup);
             });
         } catch (JsonProcessingException e) {
-            log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
+            log.info("SCENEGROUP UPLOAD ERROR: {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
     }
@@ -203,7 +200,7 @@ public class ContentService {
             // 4 수정 컨텐츠 경로 반영
             targetContent.setPath(fileUploadPath);
         } catch (IOException e) {
-            log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
+            log.info("CONTENT UPDATE ERROR: {}", e.getMessage());
             // 3-1. Recover Deleted File.
             eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -235,6 +232,9 @@ public class ContentService {
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+
+        if (!content.getUserUUID().equals(memberUUID))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         if (!targetCode.equals(content.getTargetList().get(0).getData()))
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
@@ -531,6 +531,7 @@ public class ContentService {
         return new ApiResponse<>(new ContentStatisticResponse(numberOfContents, numberOfManagedContents, numberOfConvertedContents, numberOfSharedContents, numberOfDeletedContents));
     }
 
+    @Transactional
     public ApiResponse<ContentUploadResponse> convertTaskToContent(Long taskId, String userUUID) {
         // 작업 가져오기
         ApiResponse<ProcessInfoResponse> response = this.processRestService.getProcessInfo(taskId);
@@ -555,11 +556,12 @@ public class ContentService {
                 // 컨텐츠:타겟은 1:1이므로
                 .targetType(content.getTargetList().get(0).getType())
                 .build();
-        return contentUpload(uploadRequest);
+        return contentUpload(contentUUID, uploadRequest);
     }
 
     private MultipartFile convertFileToMultipart(String fileUrl) {
         File file = new File(fileUrl);
+        log.debug("MULTIPART FILE SOURCE - fileUrl: {}, path: {}", fileUrl, file.getPath());
         try {
             FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
             InputStream inputStream = new FileInputStream(file);
@@ -587,26 +589,19 @@ public class ContentService {
         if (!content.getUserUUID().equals(userUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 컨텐츠 파일 복제
-        String tempUUID = UUID.randomUUID().toString();
-        boolean successCopy = this.fileIOService.copyFileWithFile(new File(content.getPath()), uploadPath.concat(tempUUID).concat(ARES_FILE_EXTENSION));
-
         ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
                 // TODO : 공정 수정 후 반영 예정
                 .workspaceUUID(workspaceUUID)
                 .content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
                 // TODO : 공정 수정 후 반영 예정
-                .contentType(content.getType().getType())
+//                .contentType(content.getType().getType())
                 .name(content.getName())
                 .metadata(content.getMetadata())
                 .userUUID(userUUID)
                 .targetType(targetType)
                 .build();
 
-        ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse = contentUpload(uploadRequest);
-
-        // 파일명 변경
-        this.fileIOService.rename(tempUUID, contentUploadResponseApiResponse.getData().getContentUUID());
+        ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse = contentUpload(contentUUID, uploadRequest);
 
         return contentUploadResponseApiResponse;
     }
