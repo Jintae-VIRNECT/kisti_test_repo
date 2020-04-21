@@ -1,4 +1,4 @@
-package com.virnect.gateway;
+package com.virnect.gateway.docs;
 
 import io.swagger.models.Swagger;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,11 @@
 server:
   port: 8073
+  ssl:
+    enabled: true
+    key-store: keystore.p12
+    key-store-password: 1234
+    key-store-type: PKCS12
+    key-alias: bns-ssl
 
 spring:
   application:
@@ -25,33 +31,6 @@ spring:
             - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
             - RewritePath=/workspaces/workspace/(?<segment>.*), /workspaces/$\{segment}
 
-#        - id: amdin-server
-#          uri: lb://admin-server
-#          predicates:
-#            - Path=/admin/**
-#          filters:
-#            - StripPrefix=0
-#            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
-#            - RewritePath=/admin/admin/(?<segment>.*), /admin/$\{segment}
-
-#        - id: content-server
-#          uri: lb://content-server
-#          predicates:
-#            - Path=/contents/**
-#          filters:
-#            - StripPrefix=0
-#            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
-#            - RewritePath=/contents/contents/(?<segment>.*), /contents/$\{segment}
-
-#        - id: process-server
-#          uri: lb://process-server
-#          predicates:
-#            - Path=/processes/**
-#          filters:
-#            - StripPrefix=0
-#            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
-#            - RewritePath=/processes/processes/(?<segment>.*), /processes/$\{segment}
-
         - id: license-server
           uri: lb://license-server
           predicates:
@@ -69,24 +48,6 @@ spring:
             - StripPrefix=0
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
             - RewritePath=/auth/auth/(?<segment>.*), /auth/$\{segment}
-#
-#        - id: message-server
-#          uri: lb://message-server
-#          predicates:
-#            - Path=/message/**
-#          filters:
-#            - StripPrefix=0
-#            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
-#            - RewritePath=/message/message/(?<segment>.*), /message/$\{segment}
-#
-#        - id: download-server
-#          uri: lb://download-server
-#          predicates:
-#            - Path=/download/**
-#          filters:
-#            - StripPrefix=0
-#            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
-#            - RewritePath=/download/download/(?<segment>.*), /download/$\{segment}
       globalcors:
         cors-configurations:
           '[/**]':
@@ -104,4 +65,5 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
 
