@@ -24,7 +24,7 @@ public class EventCouponRequest {
     @NotBlank
     @ApiModelProperty(value = "사용자 식별번호", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String userId;
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "선택된 제품 이름", notes = "VIEW 는 제외함", dataType = "String[]", position = 1, example = "[\"REMOTE\",\"MAKE\"]")
     private String[] products;
     @NotBlank
