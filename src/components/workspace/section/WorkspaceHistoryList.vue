@@ -2,21 +2,21 @@
   <div v-if="testdata.length > 0" class="list-wrapper">
     <wide-card-extend
       :menu="true"
-      v-for="(item, index) in testdata"
+      v-for="(item, index) in historyList"
       v-bind:key="index"
     >
       <profile
-        :image="item.profileImg"
-        :imageAlt="item.mainText"
-        :mainText="item.mainText"
-        :subText="item.subText"
+        :image="require('assets/image/back/mdpi_lnb_img_user.svg')"
+        :imageAlt="'profileImg'"
+        :mainText="item.title"
+        :subText="item.description"
       ></profile>
 
       <div slot="column1" class="label label--noraml">
-        {{ item.entireTime }}
+        {{ item.totalUseTime }}
       </div>
       <div slot="column2" class="label label--date">
-        {{ item.lastTime }}
+        {{ item.collaborationStartDate }}
       </div>
       <div slot="column3" class="label lable__icon">
         <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
@@ -42,6 +42,7 @@ import WideCardExtend from 'WideCardExtend'
 
 import sort from 'mixins/admin/adminSort'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import { getHistoryList } from 'api/workspace/history'
 export default {
   name: 'WorkspaceHistoryList',
   mixins: [sort],
@@ -49,6 +50,7 @@ export default {
   data() {
     return {
       visible: false,
+      historyList: [],
       testdata: [
         {
           profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
@@ -183,6 +185,22 @@ export default {
     createRoom() {
       this.visible = !this.visible
     },
+  },
+  async created() {
+    try {
+      const datas = await getHistoryList()
+      this.historyList = datas.data.romms
+      console.log(datas)
+
+      //전체 방수
+      console.log(datas.data.totalCount)
+
+      //검색결과로 인한 방수? 아닐까..?
+      console.log(datas.data.currentCount)
+    } catch (err) {
+      // 에러처리
+      console.error(err)
+    }
   },
 }
 </script>
