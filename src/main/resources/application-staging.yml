@@ -2,9 +2,9 @@ spring:
   application:
     name: license-server
   datasource:
-    url: jdbc:mysql://localhost:8203/licenses?serverTimezone=UTC
-    username: vntadmin
-    password: QjsprtmElqlQA12#
+    url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/licenses
+    username: virnect-license
+    password: virnect1234
   jpa:
     hibernate:
       ddl-auto: validate
@@ -21,11 +21,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://stgeureka.virnect.com/eureka
 
 server:
   port: 8632
-
-# User Server Configuration
-user:
-  serverUrl: "http://192.168.6.3:8081/users"

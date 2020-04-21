@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMessage;
  */
 
 @Slf4j
-@Profile({"local", "develop", "production"})
+@Profile(value = "!local")
 @Component
 @RequiredArgsConstructor
 public class HtmlEmailService implements EmailService {
