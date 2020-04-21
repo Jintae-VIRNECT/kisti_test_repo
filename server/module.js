@@ -11,8 +11,7 @@ var ServerModule = (function() {
   let instance
 
   const NODE_ENV = process.env.NODE_ENV || 'production'
-  // const SSL_ENV = NODE_ENV === 'production' ? 'public' : 'private'
-  const SSL_ENV = 'public'
+  const SSL_ENV = NODE_ENV === 'production' ? 'public' : 'private'
   const PORT = process.env.PORT || 8886
 
   function start(app) {

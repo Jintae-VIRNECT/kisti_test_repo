@@ -20,10 +20,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
   mode,
   devtool: 'cheap-module-eval-source-map',
   devServer: {
-    // https: {
-    //   key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
-    //   cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
-    // },
+    https: {
+      key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
+      cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
+    },
     host,
     port,
     historyApiFallback: {
