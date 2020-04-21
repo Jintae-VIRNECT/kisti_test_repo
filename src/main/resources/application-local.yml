@@ -14,7 +14,7 @@ spring:
     gateway:
       routes:
         - id: user-server
-          uri: lb://user-server
+          uri: lb:http://user-server
           predicates:
             - Path=/users/**
           filters:
@@ -23,7 +23,7 @@ spring:
             - RewritePath=/users/users/(?<segment>.*), /users/$\{segment}
 
         - id: workspace-server
-          uri: lb://workspace-server
+          uri: lb:http://workspace-server
           predicates:
             - Path=/workspaces/**
           filters:
@@ -32,7 +32,7 @@ spring:
             - RewritePath=/workspaces/workspace/(?<segment>.*), /workspaces/$\{segment}
 
         - id: license-server
-          uri: lb://license-server
+          uri: lb:http://license-server
           predicates:
             - Path=/licenses/**
           filters:
@@ -41,7 +41,7 @@ spring:
             - RewritePath=/licenses/licenses/(?<segment>.*), /licenses/$\{segment}
 
         - id: auth-server
-          uri: lb://auth-server
+          uri: lb:http://auth-server
           predicates:
             - Path=/auth/**
           filters:
