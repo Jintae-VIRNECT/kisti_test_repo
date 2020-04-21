@@ -108,7 +108,7 @@ public class ContentController {
         return ResponseEntity.ok(uploadResponse);
     }
     
-    @ApiOperation(value = "컨텐츠 복제", notes = "컨텐츠 파일을 복제 후 컨텐츠 신규 생성. 공정서버에서 컨텐츠를 이용한 공정 생성에 사용되는 API임.", tags = "processs server only")
+    @ApiOperation(value = "컨텐츠 복제", notes = "컨텐츠 파일을 복제 후 컨텐츠 신규 생성. 공정서버에서 컨텐츠를 이용한 공정 생성에 사용되는 API임.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "testUUID"),
