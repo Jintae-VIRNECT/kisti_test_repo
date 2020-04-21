@@ -42,6 +42,10 @@ public class WorkspaceInfoListResponse {
         private String masterName;
         @ApiModelProperty(value = "해당 워크스페이스의 마스터 유저 프로필 사진", position = 8, example = "http://192.168.6.3:8081/users/upload/master.png")
         private String masterProfile;
+        @ApiModelProperty(value = "워크스페이스 이름", position = 9, example = "Workspace")
+        private String name;
+        @ApiModelProperty(value = "워크스페이스 사진", position = 10, example = "http://192.168.6.3:8081/users/upload/master.png")
+        private String profile;
 
         @Override
         public String toString() {
