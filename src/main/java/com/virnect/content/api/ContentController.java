@@ -134,7 +134,7 @@ public class ContentController {
             @ApiImplicitParam(name = "targetCode", value = "타겟 코드데이터", dataType = "string", paramType = "query", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/fileDownload/{contentUUID}")
+    @GetMapping("/download/{contentUUID}")
     public ResponseEntity<Resource> contentDownloadRequestHandler(
             @PathVariable("contentUUID") String contentUUID
             , @RequestParam(value = "targetCode") String targetCode
