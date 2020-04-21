@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "workstation",
-    "WC-Modules"
+    "WC-Modules/**/*"
   ],
   "scripts": {},
   "license": "ISC"

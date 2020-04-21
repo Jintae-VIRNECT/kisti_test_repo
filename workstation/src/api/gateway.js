@@ -38,23 +38,13 @@ export default async function api(name, option = {}) {
     }
   }
 
-  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
-  try {
-    const response = await axios[method](uri, params, { headers })
-    const { code, data, message } = response.data
-    if (process.client) $nuxt.$loading.finish()
+  const response = await axios[method](uri, params, { headers })
+  const { code, data, message } = response.data
 
-    if (code === 200) {
-      return data
-    } else {
-      console.error(`URL: ${uri}`)
-      throw new Error(`${code}: ${message}`)
-    }
-  } catch (e) {
-    if (process.client) {
-      $nuxt.$loading.fail()
-      $nuxt.$loading.finish()
-    }
-    throw e
+  if (code === 200) {
+    return data
+  } else {
+    console.error(`URL: ${uri}`)
+    throw new Error(`${code}: ${message}`)
   }
 }

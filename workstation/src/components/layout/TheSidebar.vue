@@ -1,99 +1,53 @@
 <template>
   <nav class="the-sidebar">
-    <el-menu :default-active="now" :router="true" :collapse="isCollapse">
-      <el-menu-item
-        v-for="(menu, index) in menus"
-        :key="menu.path"
-        :index="index + ''"
-        :route="menu.path"
-      >
-        <i class="icon" :style="`mask-image: url(${menu.image})`" />
-        <span slot="title">{{ $t(menu.label) }}</span>
-      </el-menu-item>
-    </el-menu>
+    <div class="the-sidebar__logo">
+      <img :src="logo" />
+    </div>
+    <div class="the-sidebar__inner">
+      <div class="the-sidebar__upper">
+        <the-sidebar-menu-list :menus="menus" />
+      </div>
+      <div class="the-sidebar__lower">
+        <the-sidebar-menu-list :menus="bottomMenus" />
+      </div>
+    </div>
   </nav>
 </template>
 
 <script>
+import TheSidebarMenuList from './TheSidebarMenuList.vue'
 export default {
+  components: {
+    TheSidebarMenuList,
+  },
   props: {
-    /**
-     * [{ path, image, label }, ...]
-     */
+    logo: Object,
     menus: Array,
-  },
-  data() {
-    return {
-      now: '0',
-      isCollapse: true,
-    }
-  },
-  watch: {
-    $route() {
-      this.detectActive()
-    },
-  },
-  methods: {
-    detectActive() {
-      const now = this.$router.currentRoute.path
-      this.now = this.menus.findIndex(menu => menu.path === now) + ''
-    },
-  },
-  mounted() {
-    this.detectActive()
+    bottomMenus: Array,
   },
 }
 </script>
 
 <style lang="scss">
-$the-sidebar-item-height: 40px;
-
 .the-sidebar {
   position: fixed;
   top: 0;
-  z-index: 9;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: $the-sidebar-width;
   height: 100vh;
-  border-right: 1px solid #eaedf3;
-  background: #172b4d;
-
+  background-color: #1b293e;
   & + div {
-    position: relative;
-    margin-left: $the-sidebar-width;
+    padding-left: $the-sidebar-width;
   }
 }
-.the-sidebar .el-menu {
+.the-sidebar__inner {
   height: 100%;
-  padding: 12px;
-  border-right: none;
-
-  &:not(.el-menu--collapse) {
-    width: $the-sidebar-width;
-  }
-
-  .el-menu-item {
-    height: $the-sidebar-item-height;
-    color: #5e6b81;
-    line-height: calc(#{$the-sidebar-item-height} - 3px);
-    border-radius: 3px;
-
-    &:hover {
-      background: #f5f7fa;
-    }
-
-    .icon {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      margin-right: 10px;
-      background: #919db0;
-    }
-  }
-  .el-menu-item.is-active {
-    color: #1468e2;
-    background: #dfedff;
-    .icon {
-      background: #0f75f5;
-    }
-  }
+}
+.the-sidebar__lower {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 </style>

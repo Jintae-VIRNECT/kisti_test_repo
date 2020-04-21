@@ -1,0 +1,12 @@
+{
+  "title": "{nickname}님,<br> 반갑습니다",
+  "workspaceName": "워크스페이스 이름",
+  "workspaceNamePlaceholder": "{nickname}의 Worksapce",
+  "workspaceNameComment": "워크스페이스 이름은 30자 이내로 입력해 주세요.",
+  "workspaceDesc": "워크스페이스 설명",
+  "workspaceDescPlaceholder": "워크스페이스 설명을 입력해 주세요",
+  "workspaceDescComment": "워크스페이스 설명은 40자 이내로 입력해 주세요.",
+  "workspaceImage": "워크스페이스 프로필 이미지",
+  "workspaceImageComment": "<li>워크스페이스 프로필 이미지를 등록해 주세요.</li><li>등록하신 워크스페이스 프로필 이미지는<br>사이드 바 및 알림에 표시됩니다.</li>",
+  "submit": "워크스테이션 시작하기"
+}
