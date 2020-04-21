@@ -42,7 +42,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://stgeureka.virnect.com/eureka
 
 ## AWS Storage
 cloud:

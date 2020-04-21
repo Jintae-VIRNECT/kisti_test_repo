@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: workspace-server
+  datasource:
+    url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/workspaces
+    username: virnect-workspaces
+    password: qjsprxm2020!#@$
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _history
+  redis:
+    port: 6379
+    database: 0
+    host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
+logging:
+  level:
+    com.virnect.workspace.application.*: DEBUG
+
+## Server Configuration
+server:
+  port: 8082
+
+## Project Configuration
+file:
+  upload-path: "upload/"
+  url: "https://image.virnect.com:${server.port}/"
+  allow-extension: "gif,jpg,jpeg,png"
+
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka.virnect.com/eureka
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-admin"
+        resource: "resource"
