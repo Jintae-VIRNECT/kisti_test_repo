@@ -96,7 +96,7 @@ public class ContentController {
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
             @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "form", required = true, defaultValue = "QR")
     })
-    @PostMapping(value = "/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
             @PathVariable("contentUUID") String contentUUID, @ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
         if (contentUUID.isEmpty() || result.hasErrors()) {
@@ -157,7 +157,7 @@ public class ContentController {
             @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true),
             @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
     })
-    @PostMapping("/{contentUUID}")
+    @PostMapping("/update/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(
             @ModelAttribute @Valid ContentUpdateRequest updateRequestDto
             , @PathVariable("contentUUID") String contentUUID, BindingResult result) {
@@ -216,7 +216,7 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
-    @GetMapping("/{contentUUID}")
+    @GetMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> getContentInfo(@PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -239,7 +239,7 @@ public class ContentController {
             @ApiImplicitParam(name = "shared", value = "컨텐츠 공유(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO"),
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @PutMapping("/{contentUUID}")
+    @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
             @PathVariable("contentUUID") String contentUUID
             , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
