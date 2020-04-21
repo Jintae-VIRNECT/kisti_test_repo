@@ -7,6 +7,8 @@ import User from 'components/layout/pages/User'
 import Find from 'components/layout/pages/Find'
 import Profile from 'components/layout/pages/Profile'
 import Complete from 'components/layout/pages/Complete'
+import QRLoginCenter from 'components/layout/pages/QRLoginCenter'
+import QRLogin from 'components/layout/pages/QRLogin'
 import PageNotFound from 'WC-Modules/vue/components/errors/404'
 import InternetNotFound from 'WC-Modules/vue/components/errors/504'
 
@@ -52,6 +54,16 @@ export default new Router({
 			path: '/complete',
 			name: 'complete',
 			component: Complete,
+		},
+		{
+			path: '/qr_login_center',
+			name: 'qr_login_center',
+			component: QRLoginCenter,
+		},
+		{
+			path: '/qr_login',
+			name: 'qr_login',
+			component: QRLogin,
 		},
 		{
 			path: '*',

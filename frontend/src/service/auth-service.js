@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import Axios from 'axios'
 import API from './url'
 
-const GATEWAY_API_URL = 'http://192.168.6.3:8073'
+const GATEWAY_API_URL = 'https://192.168.6.3:8073'
 const AUTH_API_URL = 'http://192.168.6.3:8321'
 
 const axios = Axios.create({
@@ -15,7 +15,7 @@ const axios = Axios.create({
 class AuthService {
 	login(user) {
 		return axios
-			.post(AUTH_API_URL + API.auth.login, {
+			.post(GATEWAY_API_URL + API.auth.login, {
 				email: user.email,
 				password: user.password,
 				rememberMe: user.rememberMe,
@@ -41,7 +41,7 @@ class AuthService {
 
 	logout(logout) {
 		return axios
-			.post(AUTH_API_URL + API.auth.logout, {
+			.post(GATEWAY_API_URL + API.auth.logout, {
 				uuid: logout.uuid,
 				accessToken: logout.accessToken,
 			})
@@ -60,7 +60,7 @@ class AuthService {
 
 	emailAuth(email) {
 		return axios
-			.post(AUTH_API_URL + API.auth.emailAuth, {
+			.post(GATEWAY_API_URL + API.auth.emailAuth, {
 				email,
 			})
 			.then(this.handleResponse)
@@ -72,12 +72,15 @@ class AuthService {
 
 	async verification(code = {}) {
 		try {
-			const response = await axios.get(AUTH_API_URL + API.auth.verification, {
-				params: {
-					code: code.code,
-					email: code.email,
+			const response = await axios.get(
+				GATEWAY_API_URL + API.auth.verification,
+				{
+					params: {
+						code: code.code,
+						email: code.email,
+					},
 				},
-			})
+			)
 			return response.data
 		} catch (e) {
 			console.error(e)

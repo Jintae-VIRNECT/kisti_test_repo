@@ -7,7 +7,7 @@ const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-	mode: process.env.NODE_ENV === 'develop' ? 'development' : 'production',
+	mode: process.env.NODE_ENV === 'local' ? 'development' : 'production',
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
 		host: env.LOCAL_HOST,
@@ -16,7 +16,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 		historyApiFallback: { index: '/main/main.html' },
 		hot: true,
 		noInfo: true,
-		// https: true,
+		https: true,
 		proxy: {
 			'/api': {
 				target: 'http://127.0.0.1:3334',
