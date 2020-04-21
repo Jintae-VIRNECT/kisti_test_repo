@@ -81,7 +81,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8761:8761 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-eureka pf-eureka'
+            sh 'docker run -p 8761:8761 --restart=always -d --name=pf-eureka pf-eureka'
             sh 'docker image prune -f'
           }
         }
@@ -116,7 +116,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
+                          execCommand: "docker run -p 8761:8761 --restart=always -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
@@ -160,7 +160,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
+                          execCommand: "docker run -p 8761:8761 --restart=always -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
