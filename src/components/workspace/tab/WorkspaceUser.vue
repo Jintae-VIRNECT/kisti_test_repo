@@ -6,8 +6,8 @@
     :listCount="0"
     :showDeleteButton="false"
     :showRefreshButton="true"
-    ><scroller> <workspace-user-list></workspace-user-list></scroller
-  ></tab-view>
+    ><workspace-user-list></workspace-user-list>
+  </tab-view>
 </template>
 
 <script>

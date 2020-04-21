@@ -13,11 +13,19 @@ const URL = {
   LOGIN: ['POST', 'http://192.168.6.3:8321/auth/signin'],
   // ACCESS_TOKEN: ['POST', '/api/auth/accessToken'],
 
+
   /* CONFIGURATION */
   //!!!!!!Warning! API Request url is not fixed!!!!!!
   GET_CONFIG: ['GET', '/api/media/properties/'],
   UPDATE_CONFIG: ['POST', '/api/media/properties/'],
   PUT_CONFIG: ['PUT', '/api/media/properties/'],
+
+  /* Workspace - History */
+  GET_HISTORY_LIST: ['GET', ''],
+  GET_HISTORY_ITEM: ['GET', ''],
+  DELETE_HISTORY_ITEM: ['DELETE', ''],
+  DELETE_HISTORY_ALL: ['DELETE'],
+
 }
 
 const axios = Axios.create({
