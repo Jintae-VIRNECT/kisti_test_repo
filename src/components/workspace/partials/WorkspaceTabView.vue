@@ -17,7 +17,7 @@
         <icon-button
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/back/mdpi_tr.svg')"
-          :text="'삭제하기'"
+          :text="deleteButtonText"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
@@ -95,6 +95,10 @@ export default {
     showDeleteButton: {
       type: Boolean,
       default: false,
+    },
+    deleteButtonText: {
+      type: String,
+      default: '삭제하기',
     },
   },
   data() {
