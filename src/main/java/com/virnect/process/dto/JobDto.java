@@ -26,7 +26,6 @@ public class JobDto {
         private Conditions conditions;
         private long progressRate;
         private List<ReportDto.ReportInfo> reports;
-        private List<SmartToolDto.SmartToolInfo> smartTools;
         private List<IssueDto.IssueInfo> issues;
 
         @Override
@@ -39,7 +38,6 @@ public class JobDto {
                     "conditions=" + conditions +
                     "progressRate=" + progressRate +
                     "reports=" + reports +
-                    "smartTools=" + smartTools +
                     "issues=" + issues +
                     '}';
         }

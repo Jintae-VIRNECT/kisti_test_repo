@@ -332,36 +332,6 @@ public class TaskController {
     }
 
     /**
-     * 스마트툴 단계 목록 조회
-     *
-     * @param subProcessId
-     * @param search
-     * @param reported
-     * @param pageable
-     * @return
-     */
-    @ApiOperation(value = "스마트툴 단계 목록 조회", tags = "dev")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자 - 하위작업내에서 조회", dataType = "string", paramType = "query", defaultValue = ""),
-            @ApiImplicitParam(name = "search", value = "검색어 - smartToolJobId를 검색", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "reported", value = "보고일 필터링 여부(true, false)", dataType = "Boolean", paramType = "query", defaultValue = "false"),
-            @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
-    })
-    @GetMapping("/smartToolJobs")
-    public ResponseEntity<ApiResponse<SmartToolsResponse>> getSmartToolJobs(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @RequestParam(value = "subProcessId", required = false) Long subProcessId
-            , @RequestParam(value = "search", required = false) String search
-            , @RequestParam(value = "reported", required = false) Boolean reported
-            , @ApiIgnore PageRequest pageable) {
-        ApiResponse<SmartToolsResponse> smartToolsResponseApiResponse = this.taskService.getSmartToolJobs(workspaceUUID, subProcessId, search, reported, pageable.of());
-        return ResponseEntity.ok(smartToolsResponseApiResponse);
-    }
-
-    /**
      * 전체 작업 진행률 조회
      *
      * @return

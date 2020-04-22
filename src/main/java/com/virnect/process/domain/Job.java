@@ -60,9 +60,6 @@ public class Job extends BaseTimeEntity {
     private List<Report> reportList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<SmartTool> smartToolList = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
     private List<Issue> issueList = new ArrayList<>();
 
 
@@ -70,12 +67,6 @@ public class Job extends BaseTimeEntity {
         report.setJob(this);
         log.info("CREATE REPORT ---> {}", report.toString());
         this.reportList.add(report);
-    }
-
-    public void addSmartTool(SmartTool smartTool) {
-        smartTool.setJob(this);
-        log.info("CREATE SMARTTOOL ---> {}", smartTool.toString());
-        this.smartToolList.add(smartTool);
     }
 
     public void addIssue(Issue issue) {
@@ -95,7 +86,7 @@ public class Job extends BaseTimeEntity {
     }
 
     @Builder
-    public Job(Integer priority, String name, Integer progressRate, Conditions conditions, YesOrNo isReported, Result result, SubProcess subProcess, List<Report> reportList, List<SmartTool> smartToolList, List<Issue> issueList) {
+    public Job(Integer priority, String name, Integer progressRate, Conditions conditions, YesOrNo isReported, Result result, SubProcess subProcess, List<Report> reportList, List<Issue> issueList) {
         this.priority = priority;
         this.name = name;
         this.progressRate = progressRate;
@@ -104,7 +95,6 @@ public class Job extends BaseTimeEntity {
         this.result = result;
         this.subProcess = subProcess;
         this.reportList = new ArrayList<>();
-        this.smartToolList = new ArrayList<>();
         this.issueList = new ArrayList<>();
     }
 
@@ -120,7 +110,6 @@ public class Job extends BaseTimeEntity {
                 ", result=" + result +
 //                ", subProcess=" + subProcess +      // 무한 toString 방지
                 ", reportList=" + reportList +
-                ", smartToolList=" + smartToolList +
                 ", issueList=" + issueList +
                 '}';
     }

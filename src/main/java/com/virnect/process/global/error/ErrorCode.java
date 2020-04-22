@@ -31,9 +31,6 @@ public enum ErrorCode {
     ERR_NOT_FOUND_REPORT(5071, "Not found report."),
     ERR_NOT_FOUND_REPORT_ITEM(5072, "Not found report item."),
 
-    ERR_NOT_FOUND_SMART_TOOL(5081, "Not found smart-tool."),
-    ERR_NOT_FOUND_SMART_TOOL_ITEM(5072, "Not found smart-tool item."),
-
     ERR_NOT_FOUND_ISSUE(5091, "Not found issue from this issue_id."),
 
     ERR_PROCESS_WORK_RESULT_SYNC(5100, "Process work result synchronization failed."),
@@ -45,7 +42,6 @@ public enum ErrorCode {
     ERR_SUB_PROCESS_REGISTER(5902, "SubProcess Registration failed."),
     ERR_JOB_REGISTER(5903, "Job Registration failed."),
     ERR_REPORT_REGISTER(5904, "Report Registration failed."),
-    ERR_SMART_TOOL_REGISTER(5905, "SmartTool Registration failed."),
     ERR_TARGET_REGISTER(5906, "Target Registration failed."),
 
     // 공통 에러

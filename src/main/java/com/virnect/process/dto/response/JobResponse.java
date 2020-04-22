@@ -37,11 +37,8 @@ public class JobResponse {
     @ApiModelProperty(value = "이슈", notes = "현재 작업의 이슈", position = 7, example = "1")
     private Issue issue;
 
-    @ApiModelProperty(value = "스마트 툴", notes = "현재 작업의 스마트 툴", position = 8)
-    private SmartTool smartTool;
-
     @Builder
-    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Report report, Issue issue, SmartTool smartTool) {
+    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Report report, Issue issue) {
         this.id = id;
         this.name = name;
         this.priority = priority;
@@ -50,7 +47,6 @@ public class JobResponse {
         this.conditions = conditions;
         this.report = report;
         this.issue = issue;
-        this.smartTool = smartTool;
     }
 
     @Getter
@@ -76,31 +72,6 @@ public class JobResponse {
         @Builder
         public Issue(long id) {
             this.id = id;
-        }
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartTool {
-        @ApiModelProperty(value = "스마트 툴", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", example = "1")
-        private long id;
-
-        @ApiModelProperty(value = "스마트툴 JobId", notes = "스마트툴의 JobId", position = 1, example = "2")
-        private String smartToolJobId;
-
-        @ApiModelProperty(value = "체결수", notes = "현재 작업의 체결 완료한 개수", position = 2, example = "3")
-        private long smartToolWorkedCount;
-
-        @ApiModelProperty(value = "체결 총수", notes = "체결해야할 총 개수", position = 3, example = "12")
-        private int smartToolBatchTotal;
-
-        @Builder
-        public SmartTool(long id, String smartToolJobId, long smartToolWorkedCount, int smartToolBatchTotal) {
-            this.id = id;
-            this.smartToolJobId = smartToolJobId;
-            this.smartToolWorkedCount = smartToolWorkedCount;
-            this.smartToolBatchTotal = smartToolBatchTotal;
         }
     }
 }

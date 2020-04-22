@@ -288,12 +288,6 @@ public class ProgressManager {
                 count++;
             }
         }
-        if (job.getSmartToolList().size() > 0) {
-            for (SmartTool smartTool : job.getSmartToolList()) {
-                rate.set(smartTool.getProgressRate() + rate.get());
-                count++;
-            }
-        }
         // 작업의 통계
         if (count < 1) {
             // job 하위에 세부작업이 없는 경우 1개의 세부작업을 완료한 것으로 간주 함. 단, result를 확인
@@ -326,25 +320,6 @@ public class ProgressManager {
         return rate.get();
     }
 
-    // 스마트툴의 공정률
-    public static Integer getSmartToolProgressRate(SmartTool smartTool) {
-        AtomicInteger rate = new AtomicInteger(0);
-        if (smartTool.getSmartToolItemList().size() > 0) {
-            int ok = 0, count = 0;
-            // 세부공정들의 공정률을 합산
-            for (SmartToolItem smartToolItem : smartTool.getSmartToolItemList()) {
-                if (smartToolItem.getResult() == Result.OK) {
-                    ok++;
-                }
-                count++;
-            }
-            // 스마트툴의 통계
-            rate.set((int) Math.floor((double) ok / (double) count * 100));
-        }
-
-        return rate.get();
-    }
-
     // 작업의 상태
     public static Conditions getJobConditions(Job job) {
         // 초기화
@@ -356,14 +331,6 @@ public class ProgressManager {
             // 결과가 하나라도 비정상이라면 공정은 비정상
             for (Item item : report.getItemList()) {
                 if (item.getResult().equals(Result.NOK)) {
-                    resultYN = YesOrNo.NO;
-                }
-            }
-        }
-
-        for (SmartTool smartTool : job.getSmartToolList()) {
-            for (SmartToolItem smartToolItem : smartTool.getSmartToolItemList()) {
-                if (smartToolItem.getResult().equals(Result.NOK)) {
                     resultYN = YesOrNo.NO;
                 }
             }
@@ -392,16 +359,8 @@ public class ProgressManager {
     public static YesOrNo checkAllResult(List<Job> jobs) {
         Result result = Result.OK;
         Result reportResult = Result.OK;
-        Result smartToolResult = Result.OK;
         // 하위의 작업 아이템 결과가 하나라도 NOK라면 세부공정의 결과는 비정상
         for (Job job : jobs) {
-            for (SmartTool smartTool : job.getSmartToolList()) {
-                for (SmartToolItem smartToolItem : smartTool.getSmartToolItemList()) {
-                    if (Optional.of(smartToolItem).map(SmartToolItem::getResult).orElseGet(() -> Result.NOK).equals(Result.NOK)) {
-                        smartToolResult = Result.NOK;
-                    }
-                }
-            }
             for (Report report : job.getReportList()) {
                 for (Item item : report.getItemList()) {
                     if (Optional.of(item).map(Item::getResult).orElseGet(() -> Result.NOK).equals(Result.NOK)) {
@@ -411,7 +370,6 @@ public class ProgressManager {
             }
         }
 
-        result = smartToolResult == Result.NOK ? Result.NOK : result;
         result = reportResult == Result.NOK ? Result.NOK : result;
 
         return result.equals(Result.NOK) ? YesOrNo.NO : YesOrNo.YES;

@@ -72,9 +72,7 @@ public class WorkResultSyncRequest {
         private Result result;
         @ApiModelProperty(value = "작업의 레포트 내용", position = 3)
         private List<ReportWorkResult> reports;
-        @ApiModelProperty(value = "작업의 스마트 툴 내용", position = 4)
-        private List<SmartToolWorkResult> smartTools;
-        @ApiModelProperty(value = "공정 작업 이슈 리스트", position = 5)
+        @ApiModelProperty(value = "공정 작업 이슈 리스트", position = 4)
         private List<WorkIssueResult> issues;
 
         @Override
@@ -84,7 +82,6 @@ public class WorkResultSyncRequest {
                     ", isReported=" + isReported +
                     ", result=" + result +
                     ", reports=" + reports +
-                    ", smartTools=" + smartTools +
                     ", issues=" + issues +
                     '}';
         }
@@ -126,49 +123,6 @@ public class WorkResultSyncRequest {
                     ", answer='" + answer + '\'' +
                     ", photoFile=" + photoFile +
                     ", result=" + result +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolWorkResult {
-        @ApiModelProperty(value = "스마트 툴 식별자")
-        private long id;
-        @ApiModelProperty(value = "스마트 툴 작업 식별자", position = 1)
-        private long jobId;
-        @ApiModelProperty(value = "스마트 툴 아이템 정보", position = 2)
-        private List<SmartToolItemWorkResult> items;
-
-        @Override
-        public String toString() {
-            return "SmartToolWorkResult{" +
-                    "id=" + id +
-                    ", jobId=" + jobId +
-                    ", items=" + items +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolItemWorkResult {
-        @ApiModelProperty(value = "스마트 툴 아이템 식별자")
-        private long id;
-        @ApiModelProperty(value = "스마트 툴 아이템 배치 카운트 값", position = 1)
-        private int batchCount;
-        @ApiModelProperty(value = "스마트 툴 아이템 작업 토크 값", position = 2)
-        private String workingTorque;
-        @ApiModelProperty(value = "스마트 툴 아이템 작업 결과", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 3, example = "OK")
-        private Result result;
-
-        @Override
-        public String toString() {
-            return "SmartToolItemWorkResult{" +
-                    "id=" + id +
-                    ", batchCount=" + batchCount +
-                    ", workingTorque='" + workingTorque + '\'' +
-                    ", result='" + result + '\'' +
                     '}';
         }
     }

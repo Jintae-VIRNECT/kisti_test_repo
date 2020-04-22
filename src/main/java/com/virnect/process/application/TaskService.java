@@ -61,9 +61,7 @@ public class TaskService {
     private final IssueRepository issueRepository;
     private final ReportRepository reportRepository;
     private final ItemRepository itemRepository;
-    private final SmartToolRepository smartToolRepository;
     private final JobRepository jobRepository;
-    private final SmartToolItemRepository smartToolItemRepository;
     private final DailyTotalRepository dailyTotalRepository;
     private final DailyTotalWorkspaceRepository dailyTotalWorkspaceRepository;
 
@@ -267,7 +265,6 @@ public class TaskService {
                                 .result(INIT_RESULT)
                                 .issueList(new ArrayList<>())
                                 .reportList(new ArrayList<>())
-                                .smartToolList(new ArrayList<>())
                                 .build();
 
                         job = this.jobRepository.save(job);
@@ -275,12 +272,7 @@ public class TaskService {
 
                         // Job 에 Report 아이템 추가하기
                         addJobToReport(scene, job, newProcess);
-                        addSmartToolInfoToJob(scene, job, newProcess);
 
-
-                        // Calculate number of sub job on main job
-                        int smartToolJobs = Optional.of(job.getSmartToolList().size()).orElse(0);
-                        int reportJobs = Optional.of(job.getReportList().size()).orElse(0);
                         job.setConditions(INIT_CONDITIONS);
 
                         this.jobRepository.save(job);
@@ -329,45 +321,6 @@ public class TaskService {
             log.error("ERROR : ADD REPORT ON JOB: {}", e.getMessage());
             rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_REPORT_REGISTER);
-        }
-    }
-
-    /**
-     * 작업에 스마트 툴 및 레포트 관련 정보 추가 처리
-     *
-     * @param scene - 메타데이터로부터 파싱된 작업(씬) 정보
-     * @param job   - 신규 작업 관련 정보
-     */
-    private void addSmartToolInfoToJob(ContentRestDto.Scene scene, Job job, Process newProcess) {
-        // Job에 SmartTool 정보 추가
-        try {
-            if (!scene.getSmartToolObjects().isEmpty()) {
-                scene.getSmartToolObjects().forEach(smartToolObject -> {
-                    SmartTool smartTool = SmartTool.builder()
-                            // smart tool job id
-                            .jobId(smartToolObject.getJobId())
-                            .normalToque(smartToolObject.getNormalTorque() + "")
-                            .progressRate(INIT_PROGRESS_RATE)
-                            .smartToolItemList(new ArrayList<>())
-                            .build();
-
-                    job.addSmartTool(smartTool);
-                    this.smartToolRepository.save(smartTool);
-
-                    smartToolObject.getItems().forEach(item -> smartTool.addSmartToolItem(SmartToolItem.builder()
-                            .batchCount(item.getBatchCount())
-                            .workingToque(null)
-                            .result(INIT_RESULT)
-                            .build()));
-                    this.smartToolItemRepository.saveAll(smartTool.getSmartToolItemList());
-                });
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("ERROR : ADD SMART-TOOL ON JOB: {}", e.getMessage());
-            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
-            throw new ProcessServiceException(ErrorCode.ERR_SMART_TOOL_REGISTER);
         }
     }
 
@@ -570,11 +523,10 @@ public class TaskService {
                 .id(job.getId())
                 .name(job.getName())
                 .priority(job.getPriority())
-                .subJobTotal(job.getReportList().size() + job.getSmartToolList().size())
+                .subJobTotal(job.getReportList().size())
                 .conditions(job.getConditions())
                 .isReported(job.getIsReported())
                 .progressRate(job.getProgressRate())
-                .smartTools(buildSmartToolList(job.getSmartToolList()))
                 .reports(buildReportList(job.getReportList()))
                 .result(job.getResult())
                 .build();
@@ -618,46 +570,6 @@ public class TaskService {
                 .answer(item.getAnswer())
                 .photoFile(item.getPath())
                 .result(item.getResult())
-                .build();
-    }
-
-    // CONVERT metadata - SMART TOOL LIST
-    private List<ProcessMetadataResponse.SmartTool> buildSmartToolList(List<SmartTool> smartTools) {
-        List<ProcessMetadataResponse.SmartTool> metaSmartToolList = new ArrayList<>();
-        for (SmartTool smartTool : smartTools) {
-            ProcessMetadataResponse.SmartTool metadataSmartTool = buildMetadataSmartTool(smartTool);
-            metaSmartToolList.add(metadataSmartTool);
-        }
-        return metaSmartToolList;
-    }
-
-    // CONVERT metadata - SMART TOOL
-    private ProcessMetadataResponse.SmartTool buildMetadataSmartTool(SmartTool smartTool) {
-        return ProcessMetadataResponse.SmartTool.builder()
-                .smartToolId(smartTool.getId())
-                .smartToolJobId(smartTool.getJobId())
-                .normalToque(smartTool.getNormalToque())
-                .items(buildSmartToolItemList(smartTool.getSmartToolItemList()))
-                .build();
-    }
-
-    // CONVERT metadata - SMART TOOL ITEM LIST
-    private List<ProcessMetadataResponse.SmartToolItem> buildSmartToolItemList(List<SmartToolItem> smartToolItems) {
-        List<ProcessMetadataResponse.SmartToolItem> metaSmartToolItemList = new ArrayList<>();
-        for (SmartToolItem smartToolItem : smartToolItems) {
-            ProcessMetadataResponse.SmartToolItem metadataSmartToolItem = buildMetadataSmartToolItem(smartToolItem);
-            metaSmartToolItemList.add(metadataSmartToolItem);
-        }
-        return metaSmartToolItemList;
-    }
-
-    // CONVERT metadata - SMART TOOL ITEM
-    private ProcessMetadataResponse.SmartToolItem buildMetadataSmartToolItem(SmartToolItem smartToolItem) {
-        return ProcessMetadataResponse.SmartToolItem.builder()
-                .id(smartToolItem.getId())
-                .batchCount(smartToolItem.getBatchCount())
-                .workingToque(smartToolItem.getWorkingToque())
-                .result(smartToolItem.getResult())
                 .build();
     }
 
@@ -845,53 +757,6 @@ public class TaskService {
         return new ApiResponse<>(new ReportsResponse(reportInfoResponseList, pageMetadataResponse));
     }
 
-    public ApiResponse<SmartToolsResponse> getSmartToolJobs(String workspaceUUID, Long subProcessId, String search, Boolean reported, Pageable pageable) {
-        // category 범주 내의 스마트툴 작업 목록 조회
-        Page<SmartTool> smartToolPage = this.smartToolRepository.getSmartToolJobs(workspaceUUID, subProcessId, search, reported, pageable);
-//        Page<SmartTool> smartToolPage = this.smartToolRepository.findSmartToolsByJob(processId, subProcessId, pageable);
-        List<SmartToolResponse> smartToolResponseList = smartToolPage.stream().map(smartTool -> {
-            List<SmartToolItem> smartToolItems = Optional.ofNullable(this.smartToolItemRepository.findBySmartTool(smartTool)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SMART_TOOL_ITEM));
-            // 스마트툴의 아이템
-            List<SmartToolItemResponse> smartToolItemResponseList = smartToolItems.stream().map(smartToolItem -> {
-                return SmartToolItemResponse.builder()
-                        .id(smartToolItem.getId())
-                        .batchCount(Optional.of(smartToolItem).map(SmartToolItem::getBatchCount).orElseGet(() -> 0))
-                        .workingToque(Optional.of(smartToolItem).map(SmartToolItem::getWorkingToque).orElseGet(() -> ""))
-                        .result(Optional.of(smartToolItem).map(SmartToolItem::getResult).orElseGet(() -> INIT_RESULT))
-                        .build();
-            }).collect(Collectors.toList());
-            Job job = Optional.of(smartTool).map(SmartTool::getJob).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
-            SubProcess subProcess = Optional.ofNullable(job).map(Job::getSubProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
-            Process process = Optional.ofNullable(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-            return SmartToolResponse.builder()
-                    .processId(process.getId())
-                    .subProcessId(subProcess.getId())
-                    .jobId(job.getId())
-                    .smartToolId(smartTool.getId())
-                    .reportedDate(subProcess.getReportedDate())
-                    .processName(process.getName())
-                    .subProcessName(subProcess.getName())
-                    .jobName(job.getName())
-                    .smartToolJobId(smartTool.getJobId())
-                    .smartToolBatchTotal(smartTool.getSmartToolItemList().size())
-                    .smartToolWorkedCount(smartTool.getSmartToolItemList().stream().filter(smartToolItem ->
-                            Optional.of(smartToolItem).map(SmartToolItem::getResult).orElseGet(() -> INIT_RESULT).equals(Result.OK)).count())
-                    .normalToque(smartTool.getNormalToque())
-                    // TODO : user info
-                    .workerUUID(subProcess.getWorkerUUID())
-                    .smartToolItems(smartToolItemResponseList)
-                    .build();
-        }).collect(Collectors.toList());
-
-        PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
-                .currentPage(pageable.getPageNumber())
-                .currentSize(pageable.getPageSize())
-                .totalPage(smartToolPage.getTotalPages())
-                .totalElements(smartToolPage.getTotalElements())
-                .build();
-        return new ApiResponse<>(new SmartToolsResponse(smartToolResponseList, pageMetadataResponse));
-    }
-
     @Transactional
     public ApiResponse<WorkResultSyncResponse> uploadOrSyncWorkResult(WorkResultSyncRequest uploadWorkResult) {
         // 1. 작업 내용 가져오기
@@ -973,9 +838,6 @@ public class TaskService {
             if (jobWorkResult.getReports() != null) {
                 syncReportWork(jobWorkResult.getReports());
             }
-            if (jobWorkResult.getSmartTools() != null) {
-                syncSmartToolWork(jobWorkResult.getSmartTools());
-            }
             if (jobWorkResult.getIssues() != null) {
                 syncIssueWork(jobWorkResult.getIssues(), syncUserUUID, job);
             }
@@ -1002,27 +864,6 @@ public class TaskService {
             item.setAnswer(reportItemWorkResult.getAnswer());
             item.setResult(reportItemWorkResult.getResult() == null ? INIT_RESULT : reportItemWorkResult.getResult());
             itemRepository.save(item);
-        });
-    }
-
-    // 스마트 툴 작업 동기화
-    private void syncSmartToolWork(List<WorkResultSyncRequest.SmartToolWorkResult> smartToolWorkResults) {
-        smartToolWorkResults.forEach(smartToolWorkResult -> {
-            if (smartToolWorkResult.getItems() != null) {
-                syncSmartToolItemWork(smartToolWorkResult.getItems());
-            }
-        });
-    }
-
-    // 스마트 툴 작업 아이템 동기화
-    private void syncSmartToolItemWork(List<WorkResultSyncRequest.SmartToolItemWorkResult> smartToolItemWorkResults) {
-        smartToolItemWorkResults.forEach(smartToolItemWorkResult -> {
-            SmartToolItem smartToolItem = smartToolItemRepository.findById(smartToolItemWorkResult.getId())
-                    .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-            smartToolItem.setBatchCount(smartToolItemWorkResult.getBatchCount());
-            smartToolItem.setWorkingToque(smartToolItemWorkResult.getWorkingTorque());
-            smartToolItem.setResult(smartToolItemWorkResult.getResult() == null ? INIT_RESULT : smartToolItemWorkResult.getResult());
-            this.smartToolItemRepository.save(smartToolItem);
         });
     }
 
@@ -1497,7 +1338,7 @@ public class TaskService {
                     .progressRate(job.getProgressRate())
                     .conditions(job.getConditions())
                     .build();
-            // report, issue, smart tool은 job 하위에 1개씩만 생성하는 것으로 메이크와 협의됨.
+            // report, issue는 job 하위에 1개씩만 생성하는 것으로 메이크와 협의됨.
             if (job.getReportList().size() > 0) {
                 JobResponse.Report report = JobResponse.Report.builder()
                         .id(job.getReportList().get(0).getId())
@@ -1509,15 +1350,6 @@ public class TaskService {
                         .id(job.getIssueList().get(0).getId())
                         .build();
                 jobResponse.setIssue(issue);
-            }
-            if (job.getSmartToolList().size() > 0) {
-                JobResponse.SmartTool smartTool = JobResponse.SmartTool.builder()
-                        .id(job.getSmartToolList().get(0).getId())
-                        .smartToolJobId(job.getSmartToolList().get(0).getJobId())
-                        .smartToolWorkedCount(job.getSmartToolList().get(0).getSmartToolItemList().stream().filter(smartToolItem -> !Objects.isNull(smartToolItem.getResult()) && smartToolItem.getResult().equals(Result.OK)).count())
-                        .smartToolBatchTotal(job.getSmartToolList().get(0).getSmartToolItemList().size())
-                        .build();
-                jobResponse.setSmartTool(smartTool);
             }
             return jobResponse;
         }).collect(Collectors.toList());

@@ -28,7 +28,7 @@ public enum Result {
 
     @Override
     public String toString() {
-        return "SmartToolResult{" +
+        return "Result{" +
                 "message='" + message + '\'' +
                 '}';
     }

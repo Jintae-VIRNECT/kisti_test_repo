@@ -177,14 +177,11 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "작업 수행 결과", notes = "작업을 수행한 결과", position = 7, example = "NOK")
         private Result result;
 
-        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 8)
-        private List<SmartTool> smartTools;
-
         @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 9)
         private List<Report> reports;
 
         @Builder
-        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, YesOrNo isReported, int progressRate, List<SmartTool> smartTools, List<Report> reports, Result result) {
+        public Job(long id, String name, int priority, int subJobTotal, Conditions conditions, YesOrNo isReported, int progressRate, List<Report> reports, Result result) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -192,7 +189,6 @@ public class ProcessMetadataResponse {
             this.conditions = conditions;
             this.isReported = isReported;
             this.progressRate = progressRate;
-            this.smartTools = smartTools;
             this.reports = reports;
             this.result = result;
         }
@@ -251,61 +247,6 @@ public class ProcessMetadataResponse {
             this.title = title;
             this.answer = answer;
             this.photoFile = photoFile;
-            this.result = result;
-        }
-    }
-
-
-    @Getter
-    @Setter
-    @ToString
-    @NoArgsConstructor
-    public static class SmartTool {
-
-        @ApiModelProperty(value = "스마트툴 식별자", notes = "스마트툴 식별자", example = "uuid")
-        private long smartToolId;
-
-        @ApiModelProperty(value = "스마트툴 jobId", notes = "스마트툴 기기에서의 jobId", position = 1, example = "-1")
-        private String smartToolJobId;
-
-        @ApiModelProperty(value = "체결 기준 토크", notes = "체결해야할 토크 기준값", position = 2, example = "12.21")
-        private String normalToque;
-
-        @ApiModelProperty(value = "스마트 툴 오브젝트 아이템 정보 리스트", notes = "스마트 툴 오브젝트 아이템에 대한 정보 배열", position = 3)
-        private List<SmartToolItem> items;
-
-        @Builder
-        public SmartTool(long smartToolId, String smartToolJobId, String normalToque, List<SmartToolItem> items) {
-            this.smartToolId = smartToolId;
-            this.smartToolJobId = smartToolJobId;
-            this.normalToque = normalToque;
-            this.items = items;
-        }
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    @NoArgsConstructor
-    public static class SmartToolItem {
-
-        @ApiModelProperty(value = "스마트툴 아이템 식별자", notes = "스마트툴 아이템의 식별자", example = "1")
-        private long id;
-
-        @ApiModelProperty(value = "체결번호", notes = "체결번호", position = 1, example = "1")
-        private int batchCount;
-
-        @ApiModelProperty(value = "체결 작업 토크값", notes = "체결 작업된 토크값", position = 2, example = "12.20")
-        private String workingToque;
-
-        @ApiModelProperty(value = "체결 결과", notes = "스마트툴에서 판정한 체결 결과", position = 3, example = "NOK")
-        private Result result;
-
-        @Builder
-        public SmartToolItem(long id, int batchCount, String workingToque, Result result) {
-            this.id = id;
-            this.batchCount = batchCount;
-            this.workingToque = workingToque;
             this.result = result;
         }
     }
