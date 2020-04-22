@@ -5,6 +5,8 @@ WORKDIR $APP_HOME
 
 COPY ./build/libs/PF-Workspace-1.0.0.jar ./PF-Workspace-1.0.0.jar
 
+ENV JAVA_OPTS="-XX:PermSize=1024m -XX:MaxPermSize=512m"
+
 EXPOSE 8082
 
 ## Command executed when container is start up.
