@@ -4,14 +4,15 @@
   box-shadow: none;
 }
 .el-card__header {
-  height: 64px;
-  padding-right: 30px;
-  padding-left: 30px;
+  height: 56px;
+  padding-right: 24px;
+  padding-left: 24px;
 
   & > div > h3 {
     float: left;
     color: $font-color-content;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 20px;
   }
   & > div > span {
     margin-left: 20px;
@@ -24,8 +25,8 @@
   & > div > button {
     float: right;
     color: $color-link;
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: 12px;
+    line-height: 20px;
   }
   & > div > img {
     margin-left: 7px;
@@ -33,8 +34,7 @@
   }
 }
 .el-card__body {
-  padding-right: 30px;
-  padding-left: 30px;
+  padding: 20px 24px;
 }
 // 카드 - 테이블
 .el-card--table .el-card__body {
