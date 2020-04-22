@@ -2,7 +2,10 @@
   <section class="tab-view" :class="[customClass]">
     <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
-      <list-badge v-if="!(listCount === null)"></list-badge>
+      <list-badge
+        :listCount="listCount"
+        v-if="!(listCount === null)"
+      ></list-badge>
     </div>
     <div class="tab-view__sub-header offsetwidth">
       <span class="tab-view__description" v-if="description.length > 0">{{
@@ -18,11 +21,13 @@
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/back/mdpi_tr.svg')"
           :text="deleteButtonText"
+          v-on="deleteListeners"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
           :text="'새로고침'"
+          v-on="refreshListeners"
         ></icon-button>
       </div>
     </div>
@@ -104,7 +109,24 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    deleteListeners: function() {
+      const _this = this
+      return Object.assign({}, this.$listeners, {
+        click: function(event) {
+          _this.$eventBus.$emit('historyList:delete')
+        },
+      })
+    },
+    refreshListeners: function() {
+      const _this = this
+      return Object.assign({}, this.$listeners, {
+        click: function(event) {
+          _this.$eventBus.$emit('historyList:refresh')
+        },
+      })
+    },
+  },
   watch: {},
   methods: {},
 

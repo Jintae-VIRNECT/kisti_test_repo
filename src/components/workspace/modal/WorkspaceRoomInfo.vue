@@ -69,11 +69,11 @@
           <div class="roominfo-view__footer">
             <div class="roominfo-view__data">
               <span class="data-title">협업 진행일</span>
-              <span class="data-value">2020.03.05</span>
+              <span class="data-value">{{ collaborationStartDate }}</span>
             </div>
             <div class="roominfo-view__data">
               <span class="data-title">시작 시간</span>
-              <span class="data-value">15:20:25</span>
+              <span class="data-value">{{ collaborationStartDateTime }}</span>
             </div>
             <div class="roominfo-view__button">
               <button class="btn" :disabled="!canSave">저장하기</button>
@@ -88,13 +88,13 @@
         </p>
         <div class="roominfo-view__body">
           <scroller>
-            <wide-card v-for="user of users" :key="user.id">
+            <wide-card v-for="user of users" :key="user.participantId">
               <div class="roominfo-userinfo">
                 <profile
-                  :image="user.image"
-                  :mainText="user.mainText"
-                  :subText="user.subText"
-                  :role="user.role"
+                  :image="require('assets/image/img_user_profile.svg')"
+                  :mainText="user.participantName"
+                  :subText="user.email"
+                  :role="user.participantRole"
                 ></profile>
 
                 <img
@@ -138,80 +138,83 @@ export default {
       name: '',
       description: '',
       image: null,
-      users: [
-        {
-          id: 1,
-          image: require('assets/image/홍길동.png'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 2,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 02',
-          mainText: '버넥트 리모트03',
-          subText: 'example2@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 3,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 4,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 5,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 6,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 7,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 8,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-      ],
+      users: [],
+      collaborationStartDate: '',
+      collaborationStartDateTime: '',
+      // users: [
+      //   {
+      //     id: 1,
+      //     image: require('assets/image/홍길동.png'),
+      //     imageAlt: '버넥트 리모트 01',
+      //     mainText: '버넥트 리모트01',
+      //     subText: 'example@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 2,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 02',
+      //     mainText: '버넥트 리모트03',
+      //     subText: 'example2@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 3,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 03',
+      //     mainText: '버넥트 리모트03',
+      //     subText: 'example3@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 4,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 01',
+      //     mainText: '버넥트 리모트01',
+      //     subText: 'example@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 5,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 03',
+      //     mainText: '버넥트 리모트03',
+      //     subText: 'example3@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 6,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 01',
+      //     mainText: '버넥트 리모트01',
+      //     subText: 'example@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 7,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 03',
+      //     mainText: '버넥트 리모트03',
+      //     subText: 'example3@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      //   {
+      //     id: 8,
+      //     image: require('assets/image/img_user_profile.svg'),
+      //     imageAlt: '버넥트 리모트 01',
+      //     mainText: '버넥트 리모트01',
+      //     subText: 'example@example.com',
+      //     status: 'online',
+      //     role: 'Master',
+      //   },
+      // ],
     }
   },
   computed: {
@@ -254,9 +257,17 @@ export default {
     },
     room: {
       handler(room) {
-        this.name = room.name
-        this.description = room.description
-        this.image = room.image
+        this.name = room.collaboration.title
+        this.description = room.collaboration.description
+        this.image = room.collaboration.path
+        this.users = room.collaboration.member
+
+        this.collaborationStartDate = this.$moment(
+          room.collaboration.collaborationStartDate,
+        ).format('YYYY.MM.DD')
+        this.collaborationStartDateTime = this.$moment(
+          room.collaboration.collaborationStartDate,
+        ).format('hh:mm:ss')
       },
       deep: true,
     },
@@ -285,9 +296,9 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    this.name = this.room.name
-    this.description = this.room.description
-    this.image = this.room.image
+    // this.name = this.room.collaboration.title
+    // this.description = this.room.collaboration.description
+    // this.image = this.room.collaboration.image
   },
 }
 </script>
