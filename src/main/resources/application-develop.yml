@@ -15,6 +15,10 @@ spring:
     port: 587
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
 
 eureka:
   instance:
