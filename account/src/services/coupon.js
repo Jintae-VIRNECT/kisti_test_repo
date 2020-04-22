@@ -1,6 +1,7 @@
 import api from '@/api/gateway'
 import Coupon from '@/models/coupon/Coupon'
 import profileService from '@/services/profile'
+import workspaceService from '@/services/workspace'
 
 export default {
   async getCouponList(searchParams) {
@@ -27,6 +28,9 @@ export default {
       params: {
         couponId,
         userId: profileService.getMyProfile().uuid,
+        workspaceId: workspaceService
+          .getMyWorkspaces()
+          .find(workspace => workspace.role === 'MASTER').uuid,
       },
     })
     return data
