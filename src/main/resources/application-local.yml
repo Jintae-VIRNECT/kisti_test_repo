@@ -17,6 +17,7 @@ spring:
         hibernate:
           envers:
             audit_table_suffix: _history
+    open-in-view: false
   redis:
     port: 32768
     database: 0

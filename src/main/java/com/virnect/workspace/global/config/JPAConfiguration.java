@@ -18,11 +18,4 @@ import javax.persistence.PersistenceContext;
 @Configuration
 @EnableJpaAuditing
 public class JPAConfiguration {
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Bean
-    public JPAQueryFactory jpaQueryFactory() {
-        return new JPAQueryFactory(entityManager);
-    }
 }

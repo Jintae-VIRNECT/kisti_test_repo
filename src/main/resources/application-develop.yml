@@ -17,6 +17,7 @@ spring:
         hibernate:
           envers:
             audit_table_suffix: _history
+    open-in-view: false
   redis:
     port: 6379
     database: 0
@@ -62,3 +63,4 @@ cloud:
       bucket:
         name: "virnect-admin"
         resource: "resource"
+
