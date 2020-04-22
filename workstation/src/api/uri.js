@@ -9,6 +9,8 @@ module.exports = {
   /**
    * Workspace
    */
+  // 내가 속한 워크스페이스 목록 조회
+  WORKSPACES_LIST: ['GET', '/workspaces'],
   // 워크스페이스 홈 - 정보 조회
   WORKSPACE_INFO: ['GET', '/workspaces/home/{workspaceId}'],
   // 워크스페이스 멤버 검색

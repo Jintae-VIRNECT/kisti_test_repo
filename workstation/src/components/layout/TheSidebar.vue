@@ -20,7 +20,7 @@
     </div>
     <div v-if="showCollapse" class="the-sidebar__collapse" @click.stop>
       <keep-alive>
-        <component :is="collapseComponent" />
+        <component :is="collapseComponent" @closeCollapse="closeCollapse" />
       </keep-alive>
     </div>
   </nav>
@@ -49,20 +49,21 @@ export default {
   methods: {
     openCollapse(component) {
       this.collapseComponent = component.substr(1)
-      console.log(this.collapseComponent)
       this.showCollapse = true
+    },
+    closeCollapse() {
+      this.showCollapse = false
     },
   },
   mounted() {
-    document.addEventListener('click', () => {
-      this.showCollapse = false
-    })
+    document.addEventListener('click', this.closeCollapse)
   },
 }
 </script>
 
 <style lang="scss">
 $the-sidebar-background: #172b4d;
+$the-sidebar-border: solid 1px #0d1d39;
 
 .the-sidebar {
   position: fixed;
@@ -73,7 +74,7 @@ $the-sidebar-background: #172b4d;
   width: $the-sidebar-width;
   height: 100vh;
   background-color: $the-sidebar-background;
-  border-right: solid 1px #0d1d39;
+  border-right: $the-sidebar-border;
   & + main {
     padding-left: $the-sidebar-width;
   }
@@ -82,7 +83,8 @@ $the-sidebar-background: #172b4d;
   width: 36px;
   height: 36px;
   margin: 12px;
-  border: solid 2px rgba(191, 212, 255, 0.4);
+  border: solid 2px;
+  border-color: rgba(191, 212, 255, 0.4);
   border-radius: 50%;
 
   & > a {
@@ -106,6 +108,16 @@ $the-sidebar-background: #172b4d;
   left: $the-sidebar-width;
   width: 240px;
   height: 100%;
+  color: #fff;
   background: $the-sidebar-background;
+
+  &__header {
+    padding: 21px 20px;
+    line-height: 20px;
+    border-bottom: $the-sidebar-border;
+  }
+  &__body {
+    margin: 12px;
+  }
 }
 </style>

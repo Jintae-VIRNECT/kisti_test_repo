@@ -14,6 +14,7 @@ export default class Workspace extends Model {
     this.name = json.name
     this.description = json.description
     this.profile = json.profile
+    this.role = json.role
     this.updatedDate = json.updatedDate
     this.createdDate = json.createdDate
   }
