@@ -19,7 +19,9 @@
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="role" :role="role">{{ role }}</role>
+    <role v-if="role && role.toLowerCase() === 'master'" :role="role">{{
+      'Master'
+    }}</role>
   </figure>
 </template>
 

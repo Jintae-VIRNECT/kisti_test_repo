@@ -53,7 +53,7 @@ export default {
   /* Lifecycles */
   async created() {
     this.updateAccount({
-      userId: 123456,
+      userId: '123456',
       profile: require('assets/image/img_user_profile.svg'),
       description: null,
       email: 'remote@remote.com',
@@ -62,17 +62,17 @@ export default {
       userType: 'Manager',
       uuid: null,
     })
-    try {
-      const datas = await getAccount({
-        email: 'smic1',
-        password: 'smic1234',
-        rememberMe: false,
-      })
-      console.log(datas)
-    } catch (err) {
-      // 에러처리
-      console.error(err)
-    }
+    // try {
+    //   const datas = await getAccount({
+    //     email: 'smic1',
+    //     password: 'smic1234',
+    //     rememberMe: false,
+    //   })
+    //   console.log(datas)
+    // } catch (err) {
+    //   // 에러처리
+    //   console.error(err)
+    // }
   },
   mounted() {
     this.tabTop = this.$refs['tabSection'].$el.offsetTop

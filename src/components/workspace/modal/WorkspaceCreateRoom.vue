@@ -70,7 +70,10 @@
             선택 가능한 멤버 리스트
             <span class="createroom-user__number">12</span>
           </p>
-          <button class="createroom-user__button">새로고침</button>
+          <icon-button
+            text="새로고침"
+            :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
+          ></icon-button>
         </div>
         <div class="createroom-user__body">
           <scroller v-if="users.length > 0">
@@ -118,6 +121,7 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import ProfileList from 'ProfileList'
+import IconButton from 'IconButton'
 
 import mixinImage from 'mixins/uploadImage'
 export default {
@@ -131,6 +135,7 @@ export default {
     Profile,
     WideCard,
     ProfileList,
+    IconButton,
   },
   data() {
     return {
