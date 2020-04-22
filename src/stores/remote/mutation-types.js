@@ -25,3 +25,5 @@ export const SET_DEVICE = 'SET_DEVICE'
 
 export const SEARCH_SORT = 'SEARCH_SORT'
 export const SEARCH_FILTER = 'SEARCH_FILTER'
+
+export const SET_MEMBER_LIST = 'SET_MEMBER_LIST'
