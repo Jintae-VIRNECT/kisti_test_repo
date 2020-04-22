@@ -7,7 +7,7 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -38,14 +38,14 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://localhost:${server.port}/process/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
+  serverUrl: "http://localhost:${server.port}/processes/"
+  allowed-extension: '.jpg'
 
 process:
-  serverUrl: "http://localhost:${server.port}/process"
+  serverUrl: "http://localhost:${server.port}/processes"
 
 content:
-  serverUrl: "http://192.168.6.3:8078/contents"
+  serverUrl: "http://localhost:8078/contents"
 
 user:
   serverUrl: "http://192.168.6.3:8081/users"

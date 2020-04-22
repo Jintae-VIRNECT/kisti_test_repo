@@ -32,11 +32,11 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://192.168.6.3:${server.port}/process/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
+  serverUrl: "http://192.168.6.3:${server.port}/processes/"
+    allowed-extension: '.jpg'
 
 process:
-  serverUrl: "http://192.168.6.3:${server.port}/process"
+  serverUrl: "http://192.168.6.3:${server.port}/processes"
 
 content:
   serverUrl: "http://192.168.6.3:8078/contents"
