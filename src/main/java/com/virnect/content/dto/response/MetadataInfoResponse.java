@@ -69,8 +69,6 @@ public class MetadataInfoResponse {
         private int subJobTotal;
         @ApiModelProperty(value = "레포트 정보 리스트", position = 4)
         private List<ReportObject> reportObjects;
-        @ApiModelProperty(value = "스마트 툴 정보 리스트", position = 5)
-        private List<SmartToolObject> smartToolObjects;
     }
 
     @Getter
@@ -95,29 +93,5 @@ public class MetadataInfoResponse {
         private ItemType type;
         @ApiModelProperty(value = "레포트 아이텝 이름", notes = "레포트 아이템의 명칭입니다.", position = 3, example = "자른 자재의 무게 기입")
         private String title;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartToolObject {
-        @ApiModelProperty(value = "스마트 툴 오브젝트 식별자", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String id;
-        @ApiModelProperty(value = "스마트 툴", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", position = 1, example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String jobId;
-        @ApiModelProperty(value = "스마트 툴 정상 토크 값", position = 2, example = "123")
-        private String normalTorque;
-        @ApiModelProperty(value = "스마트 툴 오브젝트 아이템 정보 리스트", notes = "스마트 툴 오브젝트 아이템에 대한 정보 배열", position = 3)
-        private List<SmartToolObjectItem> items;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartToolObjectItem {
-        @ApiModelProperty(value = "스마트툴 오브젝트 아이템 식별자", notes = "스마트 툴 오브젝트 아이템을 구별하기 위한 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String id;
-        @ApiModelProperty(value = "스마트 툴 배치 카운트 값", position = 1, example = "123")
-        private int batchCount;
     }
 }

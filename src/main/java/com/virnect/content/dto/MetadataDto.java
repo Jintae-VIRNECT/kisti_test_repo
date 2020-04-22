@@ -43,7 +43,6 @@ public class MetadataDto {
         private String name;
         private int subJobTotal;
         private List<ReportObject> reportObjects;
-        private List<SmartToolObject> smartToolObjects;
     }
 
     @Getter
@@ -62,24 +61,6 @@ public class MetadataDto {
         private int priority;
         private ItemType type;
         private String title;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartToolObject {
-        private String id;
-        private long jobId;
-        private String normalTorque;
-        private List<SmartToolObjectItem> items;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartToolObjectItem {
-        private String id;
-        private int batchCount;
     }
 }
 
