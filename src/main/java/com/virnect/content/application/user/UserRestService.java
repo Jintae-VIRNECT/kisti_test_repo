@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "user-server")
 public interface UserRestService {
 
-    @GetMapping("/{userUUID}")
+    @GetMapping("/users/{userUUID}")
     ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
 
-    @GetMapping
+    @GetMapping("/users")
     ApiResponse<UserInfoListResponse> getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
 }
