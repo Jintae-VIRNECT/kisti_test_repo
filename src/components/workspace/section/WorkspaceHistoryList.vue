@@ -1,8 +1,11 @@
 <template>
-  <div v-if="historyList.length > 0" class="list-wrapper">
+  <div
+    v-if="this.$store.state.workspace.historyList.length > 0"
+    class="list-wrapper"
+  >
     <wide-card-extend
       :menu="true"
-      v-for="(history, index) in historyList"
+      v-for="(history, index) in list"
       v-bind:key="index"
     >
       <profile
@@ -35,7 +38,10 @@
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">
           <li>
-            <button class="group-pop__button" @click="openRoomInfo">
+            <button
+              class="group-pop__button"
+              @click="openRoomInfo(history.roomId)"
+            >
               상세 보기
             </button>
           </li>
@@ -50,7 +56,10 @@
         </ul>
       </popover>
     </wide-card-extend>
-    <roominfo-modal :visible.sync="showRoomInfo" :room="room"></roominfo-modal>
+    <roominfo-modal
+      :visible.sync="showRoomInfo"
+      :room="roomInfo"
+    ></roominfo-modal>
     <create-room-modal :visible.sync="visible"></create-room-modal>
   </div>
   <div v-else class="no-list">
@@ -87,128 +96,18 @@ export default {
     return {
       visible: false,
       showRoomInfo: false,
-      testdata: [
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-      ],
-      users: [],
+      roomInfo: {},
     }
   },
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.userList
+        return this.$store.state.workspace.historyList
       }
 
       const array = []
-      for (const list of this.userList) {
-        if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+      for (const list of this.$store.state.workspace.historyList) {
+        if (list.title.toLowerCase().match(this.searchFilter.toLowerCase())) {
           array.push(list)
         }
       }
@@ -219,37 +118,29 @@ export default {
     searchFilter() {},
   },
   props: {
-    historyList: {
-      type: Array,
-      default: () => {
-        ;[]
-      },
-    },
     placeholder: {
       type: String,
       default: '',
     },
-    room: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
   },
   methods: {
-    openRoomInfo() {
+    //상세보기
+    async openRoomInfo(roomId) {
       this.showRoomInfo = !this.showRoomInfo
+      let result = await getHistorySingleItem({ roomId })
+      this.roomInfo = result.data
     },
-    async deleteItem(historyId) {
-      let result = await deleteHistorySingleItem({ historyId })
+    async deleteItem(roomId) {
+      this.$store.dispatch('deleteHistorySingleItem', roomId)
+      let result = await deleteHistorySingleItem({ roomId })
     },
-    async createRoom(historyId) {
-      let result = await getHistorySingleItem({ historyId })
-      this.users = result.data.collaboration.member
+    async createRoom(roomId) {
+      let result = await getHistorySingleItem({ roomId })
+      this.room = result.data.collaboration.member
       this.visible = !this.visible
     },
-    modifiycollaborationStartDate() {},
   },
+  created() {},
 }
 </script>
 

@@ -1,0 +1,53 @@
+{
+  "data": {
+    "collaboration": {
+      "title": "타이틀입니다",
+      "description": "방을 설명할께요!",
+      "collaborationStartDate": "2020-03-22T17:32:55.123", 
+      "collaborationFinishedDate": "2020-03-22T17:32:55.123",
+      "progressTime": "진행 시간",
+      "roomLeader": {
+        "participantId": "123456",
+        "participantRole": "Master",
+        "participantName": "이름!"
+      },
+      "member": [
+        {
+          "participantId": "132456",
+          "participantRole": "Master",
+          "participantName": "AAAAA AAAAA",
+          "email" : "example@test.com",
+          "path": "프로필 경로"
+        },
+        {
+          "participantId": "12321421542154215",
+          "participantRole": "Manager",
+          "participantName": "BBBBB BBBBB",
+          "email" : "example@test.com",
+          "path": "프로필 경로"
+        },
+        {
+          "participantId": "53sdtgsAZGTE",
+          "participantRole": "",
+          "participantName": "cccc cccc",
+          "email" : "example@test.com",
+          "path": "프로필 경로"
+        }
+      ],
+      "path": "room 프로필 경로"
+    },
+    "download": {
+      "chatlog": "https://{url}:port/chat/log/path/", 
+
+      "files": [
+        {
+          "link": "https://{url}:port/file/log/path/",
+          "fileName": "공유 파일 이름",
+          "period": "6일 남음" 
+        }
+      ]
+    }
+  },
+  "code": 200,
+  "message": "complete"
+}

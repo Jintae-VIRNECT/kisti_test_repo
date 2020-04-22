@@ -12,4 +12,6 @@ export default {
   deviceType: state => state.device.type,
 
   searchFilter: state => state.workspace.search.filter,
+
+  historyListLength: state => state.workspace.historyList.length,
 }

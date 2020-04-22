@@ -6,16 +6,17 @@
     :showDeleteButton="true"
     :showRefreshButton="true"
     :deleteButtonText="'전체삭제'"
-    :listCount="listCount"
+    :listCount="historyListLength"
   >
-    <workspace-history-list :historyList="historyList"></workspace-history-list>
+    <workspace-history-list></workspace-history-list>
   </tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
-import { getHistoryList } from 'api/workspace/history'
+import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
+import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceHistory',
   components: {
@@ -23,35 +24,48 @@ export default {
     WorkspaceHistoryList,
   },
   data() {
-    return {
-      historyList: [],
-    }
+    return {}
   },
   computed: {
-    listCount() {
-      return this.historyList.length
-    },
+    ...mapGetters(['historyListLength']),
   },
   watch: {},
   methods: {},
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    //이 패턴은 옳은 패턴인가?...
+    const _this = this
+
+    this.$eventBus.$on('historyList:delete', async function(payload) {
+      try {
+        const result = await deleteAllHistory()
+        _this.$store.dispatch('deleteAllHistoryList', '')
+      } catch (err) {
+        console.log(err)
+      }
+    })
+    this.$eventBus.$on('historyList:refresh', async function(payload) {
+      try {
+        const datas = await getHistoryList()
+        _this.$store.dispatch('setHistoryList', datas.data.romms)
+      } catch (err) {
+        console.log(err)
+      }
+    })
+  },
   async created() {
     try {
       const datas = await getHistoryList()
-      this.historyList = datas.data.romms
-      console.log(datas)
-
-      //전체 방수
-      console.log(datas.data.totalCount)
-
-      //검색결과로 인한 방수? 아닐까..?
-      console.log(datas.data.currentCount)
+      this.$store.dispatch('setHistoryList', datas.data.romms)
     } catch (err) {
       // 에러처리
       console.error(err)
     }
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('historyList:delete')
+    this.$eventBus.$off('historyList:refresh')
   },
 }
 </script>

@@ -100,9 +100,9 @@
         ]
       },
       {
-        "roomId": "3",
-        "title": "더미3",
-        "description": "더미 3",
+        "roomId": "4444",
+        "title": "더미444",
+        "description": "더미 444",
         "memberCount": "5",
         "totalUseTime": "xxxxx",
         "collaborationStartDate": "2020-04-20",
@@ -142,9 +142,9 @@
         ]
       },
       {
-        "roomId": "3",
-        "title": "더미3",
-        "description": "더미 3",
+        "roomId": "555",
+        "title": "더미5555",
+        "description": "더미 555",
         "memberCount": "5",
         "totalUseTime": "xxxxx",
         "collaborationStartDate": "2020-04-20",
@@ -184,9 +184,9 @@
         ]
       },
       {
-        "roomId": "3",
-        "title": "더미3",
-        "description": "더미 3",
+        "roomId": "6666",
+        "title": "더미666",
+        "description": "더미 666",
         "memberCount": "5",
         "totalUseTime": "xxxxx",
         "collaborationStartDate": "2020-04-20",
@@ -226,9 +226,9 @@
         ]
       },
       {
-        "roomId": "3",
-        "title": "더미3",
-        "description": "더미 3",
+        "roomId": "77777",
+        "title": "더미777",
+        "description": "더미 777",
         "memberCount": "5",
         "totalUseTime": "xxxxx",
         "collaborationStartDate": "2020-04-20",
@@ -268,14 +268,14 @@
         ]
       },
       {
-        "roomId": "3",
-        "title": "더미3",
-        "description": "더미 3",
+        "roomId": "888",
+        "title": "더미888",
+        "description": "더미 888",
         "memberCount": "5",
         "totalUseTime": "xxxxx",
         "collaborationStartDate": "2020-04-20",
         "roomLeaderId" : "123",
-        "roomLeaderName":"더미 더미",
+        "roomLeaderName":"더미 더미88",
         "member": [
           {
             "participantId": "1",

@@ -26,10 +26,12 @@ const mutations = {
     state.historyList = payload
   },
   [DELETE_SINGLE_HISTORY_LIST](state, payload) {
-    const { historyId } = payload
+    const roomId = payload
+    console.log(roomId)
     const pos = state.historyList.findIndex(room => {
-      room.roomId === historyId
+      return room.roomId === roomId
     })
+    console.log(pos)
 
     state.historyList.splice(pos, 1)
   },

@@ -24,6 +24,7 @@ const URL = {
   GET_HISTORY_ITEM: ['GET', ''],
   DELETE_HISTORY_ITEM: ['DELETE', ''],
   DELETE_HISTORY_ALL: ['DELETE', ''],
+  GET_HISTORY_ROOM_INFO: ['GET'],
 }
 
 const axios = Axios.create({

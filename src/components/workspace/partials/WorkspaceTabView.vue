@@ -21,11 +21,13 @@
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/back/mdpi_tr.svg')"
           :text="deleteButtonText"
+          v-on="deleteListeners"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
           :text="'새로고침'"
+          v-on="refreshListeners"
         ></icon-button>
       </div>
     </div>
@@ -107,7 +109,24 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    deleteListeners: function() {
+      const _this = this
+      return Object.assign({}, this.$listeners, {
+        click: function(event) {
+          _this.$eventBus.$emit('historyList:delete')
+        },
+      })
+    },
+    refreshListeners: function() {
+      const _this = this
+      return Object.assign({}, this.$listeners, {
+        click: function(event) {
+          _this.$eventBus.$emit('historyList:refresh')
+        },
+      })
+    },
+  },
   watch: {},
   methods: {},
 
