@@ -9,10 +9,7 @@ import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.MemberListResponse;
-import com.virnect.workspace.dto.response.UsersCreateResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
+import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -41,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -76,6 +74,13 @@ public class WorkspaceService {
         //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
         if (userInfoRestResponse.getUserType().equals("SUB_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+
+        // 이미 생성한 워크스페이스가 있는지 확인
+        boolean userHasWorkspace = this.workspaceRepository.existsByUserId(workspaceCreateRequest.getUserId());
+
+        if (userHasWorkspace) {
+            throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
         }
 
         //워크스페이스 생성

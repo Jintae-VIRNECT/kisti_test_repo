@@ -8,6 +8,9 @@ package com.virnect.workspace.global.error;
  * DESCRIPTION:
  */
 public enum ErrorCode {
+    // 워크스페이스 에러
+    ERR_MASTER_WORKSPACE_ALREADY_EXIST(1001, "User already have master workspace."),
+
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),
@@ -28,5 +31,11 @@ public enum ErrorCode {
 
     public String getMessage() {
         return message;
+    }
+
+
+    @Override
+    public String toString() {
+        return new ErrorResponseMessage(this).toString();
     }
 }
