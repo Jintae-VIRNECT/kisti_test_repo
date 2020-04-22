@@ -4,10 +4,10 @@
       <member-card
         v-for="(userinfo, index) in list"
         :key="index"
-        :name="userinfo.name"
-        :email="userinfo.mail"
-        :role="userinfo.role"
-        :license="userinfo.license"
+        :name="userinfo.participantName"
+        :email="'example@test.com'"
+        :role="userinfo.participantRole"
+        :license="''"
       >
       </member-card>
     </div>
@@ -28,100 +28,111 @@ export default {
   components: {
     MemberCard,
   },
+  props: {
+    memberList: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       //userList: [],
-      userList: [
-        {
-          icon: '',
-          name: 'Sherry K. Demmer',
-          mail: 'SherryKDemmer@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Samantha J. Fenner',
-          mail: 'SamanthaJFenner@armyspy.com',
-          role: 'Manager',
-          license: false,
-          status: 'busy',
-        },
-        {
-          icon: '',
-          name: '柳沼 和子',
-          mail: 'Tuaid1975@rhyta.com',
-          role: '',
-          license: false,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: '펭수',
-          mail: 'pengsoo@ebs.com',
-          status: 'offline',
-        },
-        {
-          icon: '',
-          name: 'Hong Chang',
-          mail: 'HongChang@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Sheng Ts ai',
-          mail: 'ShengTsai@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Gang Pai',
-          mail: 'GangPai@armyspy.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Clara Almeida Martins',
-          mail: 'ClaraAlmeidaMartins@armyspy.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: '모영권',
-          mail: 'moyeongkwon@google.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Mo Yeong Kwon',
-          mail: 'ykmo@virnect.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-      ],
+      // userList: [
+      //   {
+      //     icon: '',
+      //     name: 'Sherry K. Demmer',
+      //     mail: 'SherryKDemmer@armyspy.com',
+      //     role: 'Master',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Samantha J. Fenner',
+      //     mail: 'SamanthaJFenner@armyspy.com',
+      //     role: 'Manager',
+      //     license: false,
+      //     status: 'busy',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: '柳沼 和子',
+      //     mail: 'Tuaid1975@rhyta.com',
+      //     role: '',
+      //     license: false,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: '펭수',
+      //     mail: 'pengsoo@ebs.com',
+      //     status: 'offline',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Hong Chang',
+      //     mail: 'HongChang@armyspy.com',
+      //     role: 'Master',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Sheng Ts ai',
+      //     mail: 'ShengTsai@armyspy.com',
+      //     role: 'Master',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Gang Pai',
+      //     mail: 'GangPai@armyspy.com',
+      //     role: 'Manager',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Clara Almeida Martins',
+      //     mail: 'ClaraAlmeidaMartins@armyspy.com',
+      //     role: 'Manager',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: '모영권',
+      //     mail: 'moyeongkwon@google.com',
+      //     role: 'Manager',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      //   {
+      //     icon: '',
+      //     name: 'Mo Yeong Kwon',
+      //     mail: 'ykmo@virnect.com',
+      //     role: 'Manager',
+      //     license: true,
+      //     status: 'online',
+      //   },
+      // ],
     }
   },
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.userList
+        console.log('this.memberList', this.memberList)
+        return this.memberList
       }
 
       const array = []
-      for (const list of this.userList) {
-        if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+      for (const list of this.memberList) {
+        if (
+          list.participantName
+            .toLowerCase()
+            .match(this.searchFilter.toLowerCase())
+        ) {
           array.push(list)
         }
       }

@@ -13,7 +13,6 @@ const URL = {
   LOGIN: ['POST', 'http://192.168.6.3:8321/auth/signin'],
   // ACCESS_TOKEN: ['POST', '/api/auth/accessToken'],
 
-
   /* CONFIGURATION */
   //!!!!!!Warning! API Request url is not fixed!!!!!!
   GET_CONFIG: ['GET', '/api/media/properties/'],
@@ -26,6 +25,8 @@ const URL = {
   DELETE_HISTORY_ITEM: ['DELETE', ''],
   DELETE_HISTORY_ALL: ['DELETE'],
 
+  /* Workspace - Member */
+  GET_MEMBER_LIST: ['GET'],
 }
 
 const axios = Axios.create({

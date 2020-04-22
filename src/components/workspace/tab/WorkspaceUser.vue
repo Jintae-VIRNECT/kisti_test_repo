@@ -6,6 +6,7 @@
     :listCount="0"
     :showDeleteButton="false"
     :showRefreshButton="true"
+    :memberList="memberList"
     ><workspace-user-list></workspace-user-list>
   </tab-view>
 </template>
@@ -13,17 +14,24 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
+import { getMemberList } from 'api/workspace/member'
 export default {
   name: 'WorkspaceUser',
   components: { TabView, WorkspaceUserList },
   data() {
-    return {}
+    return {
+      memberList: [],
+    }
   },
   computed: {},
   watch: {},
   methods: {},
 
   /* Lifecycles */
-  mounted() {},
+  async created() {
+    const memberList = await getMemberList()
+    this.memberList = memberList.data.participants
+    console.log('this.memberList', this.memberList)
+  },
 }
 </script>
