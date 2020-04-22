@@ -33,7 +33,7 @@ export default {
   mounted() {
     const _this = this
 
-    this.$eventBus.$on('memberList:refresh', async function(payload) {
+    this.$eventBus.$on('dataList:refresh', async function(payload) {
       try {
         const datas = await getMemberList()
         _this.$store.dispatch('setHistoryList', datas.data.participants)
@@ -53,7 +53,7 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$eventBus.$off('memberList:refresh')
+    this.$eventBus.$off('dataList:refresh')
   },
 }
 </script>
