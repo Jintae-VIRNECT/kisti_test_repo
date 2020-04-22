@@ -28,12 +28,13 @@ logging:
     com.virnect: DEBUG
     org.hibernate.type.descriptor.sql: trace
 
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#  client:
-#    service-url:
-#        defaultZone: http://192.168.6.3:8761/eureka
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    enabled: false
+    service-url:
+        defaultZone: http://192.168.6.3:8761/eureka
 
 ## Server Configuration
 server:
