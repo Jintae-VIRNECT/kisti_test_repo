@@ -1,3 +1,4 @@
+
 import {
   SEARCH_SORT,
   SEARCH_FILTER,
@@ -6,13 +7,20 @@ import {
   DELETE_SINGLE_HISTORY_LIST,
 } from '../mutation-types'
 
+import { SEARCH_SORT, SEARCH_FILTER, SET_MEMBER_LIST } from '../mutation-types'
+
+
 const state = {
   search: {
     sort: '',
     filter: '',
   },
   beforeRoute: null,
+
   historyList: [],
+
+  memberList: [],
+
 }
 
 const mutations = {
@@ -22,6 +30,7 @@ const mutations = {
   [SEARCH_FILTER](state, payload) {
     state.search.filter = payload
   },
+
   [SET_HISTORY_LIST](state, payload) {
     state.historyList = payload
   },
@@ -37,6 +46,10 @@ const mutations = {
   },
   [DELETE_ALL_HISTORY_LIST](state) {
     state.historyList = []
+
+  [SET_MEMBER_LIST](state, payload) {
+    state.memberList = payload
+
   },
 }
 

@@ -23,8 +23,15 @@ const URL = {
   GET_HISTORY_LIST: ['GET', ''],
   GET_HISTORY_ITEM: ['GET', ''],
   DELETE_HISTORY_ITEM: ['DELETE', ''],
+
   DELETE_HISTORY_ALL: ['DELETE', ''],
   GET_HISTORY_ROOM_INFO: ['GET'],
+
+  DELETE_HISTORY_ALL: ['DELETE'],
+
+  /* Workspace - Member */
+  GET_MEMBER_LIST: ['GET'],
+
 }
 
 const axios = Axios.create({

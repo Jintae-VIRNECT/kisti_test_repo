@@ -13,5 +13,10 @@ export default {
 
   searchFilter: state => state.workspace.search.filter,
 
+
   historyListLength: state => state.workspace.historyList.length,
+
+  //member
+  memberListLength: state => state.workspace.memberList.length,
+
 }
