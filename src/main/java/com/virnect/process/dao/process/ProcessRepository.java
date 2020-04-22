@@ -18,7 +18,7 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
 
 //    Long deleteById(Long processId);
 
-    Optional<Process> findByArucoIdAndState(Long arucoId, State state);
+    List<Process> findByContentUUID(String contentUUID);
 
     @Query(value = "SELECT\n" +
             "(SELECT '0') AS total_rate,\n" +
@@ -44,24 +44,24 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
     @Query(value = "SELECT count(NAME) FROM process WHERE conditions = :conditions", nativeQuery = true)
     int getCountConditions(@Param("conditions") String conditions);
 
-    @Query(value = "select * from process where aruco_id = :arucoId and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
-            , countQuery = "select count(*) from process where aruco_id = :arucoId and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
+    @Query(value = "select * from process p join Target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
+            , countQuery = "select count(*) from process p join Target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
             , nativeQuery = true)
-    Optional<Process> getProcessUnClosed(Long arucoId);
+    Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 
-    @Query(value = "select * from process"
-            , countQuery = "select count(*) from process"
+    @Query(value = "select * from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID))"
+            , countQuery = "select count(*) from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID))"
             , nativeQuery = true)
-    List<Process> getProcesses();
+    List<Process> getProcesses(String workspaceUUID);
 
-    @Query(value = "SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at from process p join sub_process s on p.process_id = s.process_id WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id #sort"
+    @Query(value = "SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at from process p join sub_process s on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id #sort"
             , nativeQuery = true)
-    List<Process> getProcessListSearchUser(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, Sort sort);
+    List<Process> getProcessListSearchUser(String workspaceUUID, @Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, Sort sort);
 
-    @Query(value = "SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at from process p join sub_process s on p.process_id = s.process_id WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id"
-            , countQuery = "select count(*) from process p join sub_process s on p.process_id = s.process_id WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id"
+    @Query(value = "SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, t.data, p.created_at, p.updated_at from process p join target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) join sub_process s on p.process_id = s.process_id WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id, t.data"
+            , countQuery = "select count(*) from process p join target t on t.process_id = p.process_id join sub_process s on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id, t.data"
             , nativeQuery = true)
-    Page<Process> getProcessPageSearchUser(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
+    Page<Process> getProcessPageSearchUser(String workspaceUUID, @Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
 
     @Query(value = "select * from (SELECT p.process_id, p.name, p.position, p.state, p.start_date, p.end_date, p.reported_date, p.aruco_id, p.created_at, p.updated_at FROM process p JOIN sub_process s ON p.process_id = s.process_id AND STRCMP(p.state, 'CLOSED') = 0 or STRCMP(p.state, 'DELETED') = 0 WHERE 1=1 and (((:title is null) or (:title is not null and p.name like %:title%)) or s.worker_uuid in (:userUUIDList)) group by p.process_id) a ORDER BY :orderStr :directionName, updated_at DESC", nativeQuery = true)
     List<Process> getProcessClosedList(@Param("title") String title, @Param("userUUIDList") List<String> userUUIDList, String orderStr, String directionName);

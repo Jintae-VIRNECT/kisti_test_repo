@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SubProcessesOfArucoResponse {
+public class SubProcessesOfTargetResponse {
 
     @NotBlank
     @ApiModelProperty(value = "공정식별자", notes = "공정식별자(UUID)", example = "1")
@@ -31,13 +31,13 @@ public class SubProcessesOfArucoResponse {
 
 
     @ApiModelProperty(value = "공정 목록", notes = "조회한 공정의 배열", position = 4)
-    private final List<SubProcessOfArucoResponse> subProcesses;
+    private final List<SubProcessOfTargetResponse> subProcesses;
 
     @ApiModelProperty(value = "페이지 정보", position = 5, notes = "pangenation 정보")
     private final PageMetadataResponse pageMeta;
 
     @Builder
-    public SubProcessesOfArucoResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, List<SubProcessOfArucoResponse> subProcesses, PageMetadataResponse pageMeta) {
+    public SubProcessesOfTargetResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, List<SubProcessOfTargetResponse> subProcesses, PageMetadataResponse pageMeta) {
         this.processId = processId;
         this.processName = processName;
         this.contentUUID = contentUUID;

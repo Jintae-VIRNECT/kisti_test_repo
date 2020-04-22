@@ -2,6 +2,7 @@ package com.virnect.process.domain;
 
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "issue")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Issue extends BaseTimeEntity {

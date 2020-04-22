@@ -5,16 +5,14 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Audited
-@Table(name = "daily_total")
+@Table(name = "daily_total_workspace")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DailyTotal extends BaseTimeEntity {
+public class DailyTotalWorkspace extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -26,28 +24,28 @@ public class DailyTotal extends BaseTimeEntity {
     @Column(name = "total_count_processes", nullable = false)
     private int totalCountProcesses;
 
-    @OneToMany(mappedBy = "dailyTotal", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<DailyTotalWorkspace> dailyTotalWorkspaceList = new ArrayList<>();
+    @Column(name = "workspace_uuid", nullable = false)
+    private String workspaceUUID;
 
-    public void addDailyTotalWorkspace(DailyTotalWorkspace dailyTotalWorkspace) {
-        dailyTotalWorkspace.setDailyTotal(this);
-        dailyTotalWorkspaceList.add(dailyTotalWorkspace);
-    }
+    @ManyToOne
+    @JoinColumn(name = "daily_total_id")
+    private DailyTotal dailyTotal;
 
     @Builder
-    public DailyTotal(int totalRate, int totalCountProcesses, List<DailyTotalWorkspace> dailyTotalWorkspaceList) {
+    public DailyTotalWorkspace(int totalRate, int totalCountProcesses, String workspaceUUID) {
         this.totalRate = totalRate;
         this.totalCountProcesses = totalCountProcesses;
-        this.dailyTotalWorkspaceList = new ArrayList<>();
+        this.workspaceUUID = workspaceUUID;
     }
 
     @Override
     public String toString() {
-        return "DailyTotal{" +
+        return "DailyTotalWorkspace{" +
                 "id=" + id +
                 ", totalRate=" + totalRate +
                 ", totalCountProcesses=" + totalCountProcesses +
-                ", dailyTotalWorkspaceList=" + dailyTotalWorkspaceList +
+                ", workspaceUUID='" + workspaceUUID + '\'' +
+//                ", dailyTotal=" + dailyTotal +
                 '}';
     }
 }

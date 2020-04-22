@@ -1,8 +1,10 @@
 package com.virnect.process.dto.request;
 
+import com.virnect.process.domain.TargetType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,10 +13,11 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class ProcessRegisterRequest {
 
     @NotBlank
-    @ApiModelProperty(value = "공정으로 등록될 컨텐츠의 식별자", notes = "컨텐츠를 구별하기 위해 사용되는 식별자", required = true, example = "48254844-235e-4421-b713-4ea682994a98")
+    @ApiModelProperty(value = "공정으로 등록될 컨텐츠의 식별자", notes = "컨텐츠를 구별하기 위해 사용되는 식별자", required = true, example = "da67f860-8462-11ea-bc55-0242ac130003")
     private String contentUUID;
 
     @NotBlank
@@ -36,19 +39,14 @@ public class ProcessRegisterRequest {
     private String position = "미 입력";
 
     @NotNull
-    @ApiModelProperty(value = "세부 공정 정보 배열", notes = "해당 공정에서의 세부 공정 정보들이 담긴 배열", required = true, position = 6)
-    private List<NewSubProcessRequest> subProcessList;
+    @ApiModelProperty(value = "타겟 종류", notes = "공정 타겟의 종류(QR)", required = true, position = 6, example = "QR")
+    private TargetType targetType;
 
-    @Override
-    public String toString() {
-        return "ProcessRegisterRequest{" +
-                "contentUUID='" + contentUUID + '\'' +
-                ", name='" + name + '\'' +
-                ", ownerUUID='" + ownerUUID + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", position='" + position + '\'' +
-                ", subProcessList=" + subProcessList +
-                '}';
-    }
+    @NotBlank
+    @ApiModelProperty(value = "워크스페이스 식별자", notes = "공정의 워크스페이스 식별자", required = true, position = 7, example = "48254844-235e-4421-b713-4ea682994a98")
+    private String workspaceUUID;
+
+    @NotNull
+    @ApiModelProperty(value = "세부 공정 정보 배열", notes = "해당 공정에서의 세부 공정 정보들이 담긴 배열", required = true, position = 8)
+    private List<NewSubProcessRequest> subProcessList;
 }

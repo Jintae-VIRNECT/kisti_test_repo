@@ -3,9 +3,11 @@ package com.virnect.process.domain;
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "sub_process")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubProcess extends BaseTimeEntity {
@@ -63,7 +66,7 @@ public class SubProcess extends BaseTimeEntity {
     private Process process;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess", cascade = CascadeType.ALL)
-    private List<Job> jobList;
+    private List<Job> jobList = new ArrayList<>();
 
     public void addJob(Job job) {
         job.setSubProcess(this);
@@ -93,7 +96,7 @@ public class SubProcess extends BaseTimeEntity {
         this.conditions = conditions;
         this.workerUUID = workerUUID;
         this.process = process;
-        this.jobList = jobList;
+        this.jobList = new ArrayList<>();
     }
 
     @Override

@@ -127,7 +127,7 @@ public class MetadataInfoResponse {
         private String id;
         @ApiModelProperty(value = "레포트 아이템 우선순위", notes = "레포트 아이템의 우선 순위", position = 1, example = "1")
         private int priority;
-        @ApiModelProperty(value = "레포트 아이템 타임", notes = "레포트 아이템의 종류 입니다", position = 2, example = "PROCESS_DETAIL_REPORT")
+        @ApiModelProperty(value = "레포트 아이템 타임", notes = "레포트 아이템의 종류 입니다", position = 2, example = "REPORT")
         private ItemType type;
         @ApiModelProperty(value = "레포트 아이텝 이름", notes = "레포트 아이템의 명칭입니다.", position = 3, example = "자른 자재의 무게 기입")
         private String title;

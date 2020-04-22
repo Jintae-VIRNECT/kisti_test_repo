@@ -16,7 +16,7 @@ public enum State {
      */
     CREATED("최초생성됨"),
     UPDATED("업데이트됨"),
-    CLOSED("마감됨"),
+    CLOSED("종료됨"),
     DELETED("제거됨");
 
     private String message;

@@ -67,12 +67,8 @@ public class ProcessInfoResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 15)
     private List<SubProcessAssignedResponse> subProcessAssign;
 
-    @NotBlank
-    @ApiModelProperty(value = "ARUCO id", notes = "ARUCO 식별자", position = 16)
-    private long aruco_id;
-
     @Builder
-    public ProcessInfoResponse(@NotBlank long id, @NotBlank String name, @NotBlank String contentUUID, String position, Conditions conditions, State state, int progressRate, int subProcessTotal, int doneCount, int issuesTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, LocalDateTime createdDate, LocalDateTime updatedDate, List<SubProcessAssignedResponse> subProcessAssign, @NotBlank long aruco_id) {
+    public ProcessInfoResponse(@NotBlank long id, @NotBlank String name, @NotBlank String contentUUID, String position, Conditions conditions, State state, int progressRate, int subProcessTotal, int doneCount, int issuesTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, LocalDateTime createdDate, LocalDateTime updatedDate, List<SubProcessAssignedResponse> subProcessAssign) {
         this.id = id;
         this.name = name;
         this.contentUUID = contentUUID;
@@ -89,6 +85,5 @@ public class ProcessInfoResponse {
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
         this.subProcessAssign = subProcessAssign;
-        this.aruco_id = aruco_id;
     }
 }

@@ -2,6 +2,7 @@ package com.virnect.process.domain;
 
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "report")
 @NoArgsConstructor
 public class Report extends BaseTimeEntity {
@@ -51,7 +53,7 @@ public class Report extends BaseTimeEntity {
     public Report(Integer progressRate, Job job, List<Item> itemList) {
         this.progressRate = progressRate;
         this.job = job;
-        this.itemList = itemList;
+        this.itemList = new ArrayList<>();
     }
 
     @Override

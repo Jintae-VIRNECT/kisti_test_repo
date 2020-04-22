@@ -28,8 +28,8 @@ public class ProcessMetadataResponse {
     @ToString
     @NoArgsConstructor
     public static class Process {
-        @ApiModelProperty(value = "컨텐츠에 할당할 aruco 값", notes = "컨텐츠가 증강하기 위한 마커의 값(0~999)", example = "0")
-        private long arucoId;
+        @ApiModelProperty(value = "컨텐츠 타겟 정보", notes = "컨텐츠에 할당된 타겟의 정보")
+        private List<ProcessTargetResponse> targetList;
 
         @ApiModelProperty(value = "공정 식별자", notes = "공정 식별자", position = 1, example = "1")
         private long processId;
@@ -61,12 +61,15 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "세부 공정 진행률", notes = "세부 공정 작업의 진행률(%)", position = 10, example = "30")
         private int progressRate;
 
-        @ApiModelProperty(value = "세부 공정 목록", notes = "조회한 세부 공정의 목록", position = 11)
+        @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", position = 11, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+        private String workspaceUUID;
+
+        @ApiModelProperty(value = "세부 공정 목록", notes = "조회한 세부 공정의 목록", position = 12)
         private List<SubProcess> subProcesses;
 
         @Builder
-        public Process(long arucoId, long processId, String processName, String managerUUID, String position, int subProcessTotal, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, State state, int progressRate, List<SubProcess> subProcesses) {
-            this.arucoId = arucoId;
+        public Process(List<ProcessTargetResponse> targetList, long processId, String processName, String managerUUID, String position, int subProcessTotal, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, State state, int progressRate, String workspaceUUID, List<SubProcess> subProcesses) {
+            this.targetList = targetList;
             this.processId = processId;
             this.processName = processName;
             this.managerUUID = managerUUID;
@@ -77,6 +80,7 @@ public class ProcessMetadataResponse {
             this.conditions = conditions;
             this.state = state;
             this.progressRate = progressRate;
+            this.workspaceUUID = workspaceUUID;
             this.subProcesses = subProcesses;
         }
     }

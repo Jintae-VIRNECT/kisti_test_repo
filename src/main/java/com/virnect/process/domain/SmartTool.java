@@ -2,8 +2,10 @@ package com.virnect.process.domain;
 
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "smart_tool")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SmartTool extends BaseTimeEntity {
@@ -35,7 +38,7 @@ public class SmartTool extends BaseTimeEntity {
     private Integer progressRate;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "smartTool", cascade = CascadeType.REMOVE)
-    private List<SmartToolItem> smartToolItemList;
+    private List<SmartToolItem> smartToolItemList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
@@ -56,7 +59,7 @@ public class SmartTool extends BaseTimeEntity {
         this.jobId = jobId;
         this.normalToque = normalToque;
         this.progressRate = progressRate;
-        this.smartToolItemList = smartToolItemList;
+        this.smartToolItemList = new ArrayList<>();
         this.job = job;
     }
 

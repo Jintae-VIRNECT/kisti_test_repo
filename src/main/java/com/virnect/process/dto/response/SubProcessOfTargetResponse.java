@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class SubProcessOfArucoResponse {
+public class SubProcessOfTargetResponse {
 
     @NotBlank
     @ApiModelProperty(value = "세부공정식별자", notes = "세부공정식별자", example = "1")
@@ -51,7 +51,7 @@ public class SubProcessOfArucoResponse {
     private final String workerUUID;
 
     @Builder
-    public SubProcessOfArucoResponse(@NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID) {
+    public SubProcessOfTargetResponse(@NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID) {
         this.subProcessId = subProcessId;
         this.name = name;
         this.priority = priority;

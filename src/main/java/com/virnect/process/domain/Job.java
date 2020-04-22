@@ -3,8 +3,10 @@ package com.virnect.process.domain;
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "job")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Job extends BaseTimeEntity {
@@ -54,13 +57,13 @@ public class Job extends BaseTimeEntity {
     private SubProcess subProcess;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<Report> reportList;
+    private List<Report> reportList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<SmartTool> smartToolList;
+    private List<SmartTool> smartToolList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<Issue> issueList;
+    private List<Issue> issueList = new ArrayList<>();
 
 
     public void addReport(Report report) {
@@ -100,9 +103,9 @@ public class Job extends BaseTimeEntity {
         this.isReported = isReported;
         this.result = result;
         this.subProcess = subProcess;
-        this.reportList = reportList;
-        this.smartToolList = smartToolList;
-        this.issueList = issueList;
+        this.reportList = new ArrayList<>();
+        this.smartToolList = new ArrayList<>();
+        this.issueList = new ArrayList<>();
     }
 
     @Override

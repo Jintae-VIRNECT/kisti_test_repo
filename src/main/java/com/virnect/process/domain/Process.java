@@ -3,9 +3,11 @@ package com.virnect.process.domain;
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "process")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Process extends BaseTimeEntity {
@@ -51,21 +54,35 @@ public class Process extends BaseTimeEntity {
     @Getter(AccessLevel.PROTECTED)
     private Integer progressRate;
 
-    @Enumerated(value = EnumType.STRING)
     @Column(name = "state")
+    @Enumerated(value = EnumType.STRING)
     private State state;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aruco_id")
-    private Aruco aruco;
+    @Column(name = "content_uuid")
+    private String contentUUID;
+
+    @Column(name = "content_manager_uuid")
+    private String contentManagerUUID;
+
+    @Column(name = "workspace_uuid")
+    private String workspaceUUID;
 
     @OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
-    private List<SubProcess> subProcessList;
+    private List<Target> targetList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
+    private List<SubProcess> subProcessList = new ArrayList<>();
+
+    public void addTarget(Target target) {
+        target.setProcess(this);
+        log.info("CREATE TARGET ---> {}", target.toString());
+        this.targetList.add(target);
+    }
 
     public void addSubProcess(SubProcess subProcess) {
         subProcess.setProcess(this);
         log.info("CREATE SUB PROCESS ---> {}", subProcess.toString());
-        subProcessList.add(subProcess);
+        this.subProcessList.add(subProcess);
     }
 
     // 공정 상태 조회
@@ -79,19 +96,21 @@ public class Process extends BaseTimeEntity {
     }
 
     @Builder
-    public Process(Long id, String name, String position, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, Integer progressRate, State state, Aruco aruco, List<SubProcess> subProcessList) {
-        this.id = id;
+    public Process(String name, String position, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, Integer progressRate, State state, String contentUUID, String contentManagerUUID, String workspaceUUID, List<Target> targetList, List<SubProcess> subProcessList) {
         this.name = name;
         this.position = position;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.reportedDate = reportedDate;
         this.conditions = conditions;
         this.progressRate = progressRate;
         this.state = state;
-        this.aruco = aruco;
-        this.subProcessList = subProcessList;
+        this.contentUUID = contentUUID;
+        this.contentManagerUUID = contentManagerUUID;
+        this.workspaceUUID = workspaceUUID;
+        this.targetList = new ArrayList<>();
+        this.subProcessList = new ArrayList<>();
     }
-
 
     @Override
     public String toString() {
@@ -101,10 +120,14 @@ public class Process extends BaseTimeEntity {
                 ", position='" + position + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", reportedDate=" + reportedDate +
                 ", conditions=" + conditions +
                 ", progressRate=" + progressRate +
                 ", state=" + state +
-//                ", aruco=" + aruco +      // 무한 toString 방지
+                ", contentUUID='" + contentUUID + '\'' +
+                ", contentManagerUUID='" + contentManagerUUID + '\'' +
+                ", workspaceUUID='" + workspaceUUID + '\'' +
+                ", targetList=" + targetList +
                 ", subProcessList=" + subProcessList +
                 '}';
     }

@@ -3,14 +3,15 @@ package com.virnect.process.application;
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
 import com.virnect.process.dao.*;
-import com.virnect.process.dao.aruco.ArucoRepository;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.*;
 import com.virnect.process.dto.request.*;
 import com.virnect.process.dto.response.*;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
+import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
+import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
@@ -46,8 +47,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class TaskService {
-    private static final String CONTENT_DOWNLOAD_CONTEXT_PATH = "/contents/upload/";
-    private static final String CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION = ".Ares";
     private static final LocalDateTime DEFATUL_LOCAL_DATE_TIME = LocalDateTime.parse("1500-01-01T00:00:00");
     private static final Conditions INIT_CONDITIONS = Conditions.WAIT;
     private static final Integer INIT_PROGRESS_RATE = 0;
@@ -56,7 +55,7 @@ public class TaskService {
     private static final YesOrNo INIT_IS_REPORTED = YesOrNo.NO;
     private static final Result INIT_RESULT = Result.NOK;
 
-    private final ArucoRepository arucoRepository;
+    private final TargetRepository targetRepository;
     private final ProcessRepository processRepository;
     private final SubProcessRepository subProcessRepository;
     private final IssueRepository issueRepository;
@@ -66,6 +65,7 @@ public class TaskService {
     private final JobRepository jobRepository;
     private final SmartToolItemRepository smartToolItemRepository;
     private final DailyTotalRepository dailyTotalRepository;
+    private final DailyTotalWorkspaceRepository dailyTotalWorkspaceRepository;
 
     private final ContentRestService contentRestService;
     private final UserRestService userRestService;
@@ -73,35 +73,7 @@ public class TaskService {
     private final ModelMapper modelMapper;
     private final FileUploadService fileUploadService;
 
-
-    /**
-     * Aruco 및 컨텐츠 식별자 발급 처리
-     *
-     * @return - aruco 및 컨텐츠 식별자 정보
-     */
-    public ApiResponse<ArucoWithContentUUIDResponse> getAruco() {
-        Aruco aruco = this.arucoRepository.getAruco()
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NO_MORE_ARUCO));
-        aruco.setContentUUID(UUID.randomUUID().toString());
-        this.arucoRepository.save(aruco);
-        return new ApiResponse<>(new ArucoWithContentUUIDResponse(aruco.getId(), aruco.getContentUUID()));
-    }
-
-    /**
-     * Aruco 컨텐츠 할당 해제 처리
-     *
-     * @return - 할당 해제 처리 결과
-     */
-    public ApiResponse<ArucoDeallocateResponse> emptyAruco(ArucoDeallocateRequest arucoInfo) {
-        // get aruco
-        Aruco aruco = this.arucoRepository.findByContentUUID(arucoInfo.getContentUUID())
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-        // set aruco in dto
-        aruco.setContentUUID(null);
-        this.arucoRepository.save(aruco);
-        return new ApiResponse<>(new ArucoDeallocateResponse(true));
-    }
-
+    // TODO : 작업저장실패시 컨텐츠 서버도 함께 롤백하는 프로세스 필요. 현재는 만약 예외가 발생할 경우 컨텐츠 서버는 파일 및 컨텐츠가 복제된 채로 그대로 남으므로 저장소가 낭비됨..
     @Transactional
     public ApiResponse<ProcessRegisterResponse> createTheProcess(ProcessRegisterRequest registerNewProcess) {
         // 공정 생성 요청 처리
@@ -109,9 +81,8 @@ public class TaskService {
 
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
-        // TODO : 컨텐츠 메타데이터의 id를 활용하고 있는데, 워크스테이션에서 컨텐츠 id들을 알아야만 공정을 생성시킬 수 있는 상황임. 향후 지속할 것인지 확인필요.
 
-        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().toString());
+        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
 
         // 1-1. 에러가 난 경우
         if (contentApiResponse.getCode() != 200) {
@@ -122,22 +93,7 @@ public class TaskService {
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
         }
 
-        // 3. Aruco 값 가져오기
-        Aruco aruco = this.arucoRepository.findByContentUUID(registerNewProcess.getContentUUID())
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER));
-
-        log.info("ARUCO: [{}]", aruco.toString());
-
-        // TODO SMIC 예외사항 :  하나의 컨텐츠가 여러 공정을 가질 수 없으므로(1:1) 예외발생. 제품에서는 1:N이므로 대책필요.
-        // ARUCO로 공정목록 가져오기
-        List<Long> processeIds = this.processRepository.getProcessIdList(aruco.getId());
-        // 공정이 존재할 경우 에러. 단 마감된 공정은 다시 진행하지 못하고 재생성 가능하므로 마감된 공정은 제외함.
-        for (Long processId : processeIds) {
-            Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-            if (!(process.getState().equals(State.CLOSED) || process.getState().equals(State.DELETED))) {
-                throw new ProcessServiceException(ErrorCode.ERR_HAS_ALREADY_PROCESS_OF_THIS_CONTENT);
-            }
-        }
+        log.debug("----------content uuid : {}", contentApiResponse.getData().getContents().getUuid());
 
         // 4. 공정 정보 저장
         Process newProcess = Process.builder()
@@ -149,27 +105,42 @@ public class TaskService {
                 .progressRate(INIT_PROGRESS_RATE)
                 .state(INIT_STATE)
                 .subProcessList(new ArrayList<>())
+                .workspaceUUID(registerNewProcess.getWorkspaceUUID())
+                .contentUUID(contentApiResponse.getData().getContents().getUuid())
+                .contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())
                 .build();
 
+        // 컨텐츠 파일 복제 요청
+        ApiResponse<ContentUploadResponse> contentDuplicate = this.contentRestService.contentDuplicate(
+                registerNewProcess.getContentUUID()
+                , registerNewProcess.getWorkspaceUUID()
+                , registerNewProcess.getOwnerUUID());
+
         try {
+
+            log.info("CREATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", registerNewProcess.getContentUUID(), contentDuplicate.getData().getContentUUID());
+
+            // 복제된 컨텐츠 식별자 등록
+            newProcess.setContentUUID(contentDuplicate.getData().getContentUUID());
+            newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
+
+            // 컨텐츠의 전환상태 변경
+            this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+
+            // 작업 저장
             this.processRepository.save(newProcess);
-
-            // 4-1. 공정에 aruco 값 할당
-            aruco.addProcess(newProcess);
-
-            // 7. 작업 등록
-            this.arucoRepository.save(aruco);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
+            rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), registerNewProcess.getOwnerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
         }
 
-        log.info("{}", contentApiResponse.getData().getContents().toString());
+        // 타겟
+        addTargetToProcess(newProcess, registerNewProcess.getTargetType());
 
         // 5. 세부 공정 정보 리스트 생성
-
-        // TODO 제품 : 컨텐츠 메타데이터에 들어 있는 id값들을 DB에 넣어 놓아야 함.. 차후 컨텐츠 수정시 활용..
+        log.info("{}", contentApiResponse.getData().getContents().toString());
         ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
         Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
 
@@ -177,7 +148,11 @@ public class TaskService {
 
         addSubProcessOnProcess(registerNewProcess, sceneGroupMap, newProcess);
 
-
+        List<ProcessTargetResponse> targetResponseList = new ArrayList<>();
+        newProcess.getTargetList().forEach(target -> {
+            ProcessTargetResponse processTargetResponse = this.modelMapper.map(target, ProcessTargetResponse.class);
+            targetResponseList.add(processTargetResponse);
+        });
         ProcessRegisterResponse processRegisterResponse = ProcessRegisterResponse.builder()
                 .processId(newProcess.getId())
                 .name(newProcess.getName())
@@ -187,15 +162,43 @@ public class TaskService {
                 .conditions(newProcess.getConditions())
                 .progressRate(newProcess.getProgressRate())
                 .state(newProcess.getState())
+                .target(targetResponseList)
+                .workspaceUUID(registerNewProcess.getWorkspaceUUID())
                 .build();
 
-        ContentStatusChangeRequest contentStatusChangeRequest = new ContentStatusChangeRequest();
-        contentStatusChangeRequest.setContentUUID(registerNewProcess.getContentUUID());
-        contentStatusChangeRequest.setStatus("MANAGED");
-
-        this.contentRestService.changeContentStatus(contentStatusChangeRequest);
+        // TODO : 공정전환 완료 후 converted yes로 변경해야 함.
 
         return new ApiResponse<>(processRegisterResponse);
+    }
+
+    private void rollbackDuplicateContent(String contentUUID, String userUUID) {
+        this.contentRestService.contentConvertHandler(contentUUID, YesOrNo.NO);
+        String[] contentUUIDs = {contentUUID};
+        this.contentRestService.contentDeleteRequestHandler(contentUUIDs, userUUID);
+    }
+
+    private void addTargetToProcess(Process newProcess, final TargetType targetType) {
+        // 타겟데이터
+        try {
+            String targetData = UUID.randomUUID().toString();
+
+            Target target = Target.builder()
+                    .type(targetType)
+                    .process(newProcess)
+                    .data(targetData)
+                    .build();
+
+            this.targetRepository.save(target);
+
+            log.debug("TARGET : {}", target.toString());
+            log.debug("newProcess : {}", newProcess.toString());
+            newProcess.addTarget(target);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("ERROR : ADD TARGET ON PROCESS getMessage: {}, getCause: {}", e.getMessage(), e.getCause());
+            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+            throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
+        }
     }
 
     /**
@@ -220,6 +223,7 @@ public class TaskService {
                                 .progressRate(INIT_PROGRESS_RATE)
                                 .isRecent(INIT_IS_RECENT)
                                 .reportedDate(null)
+                                // TODO : user info
                                 .workerUUID("")
                                 .jobList(new ArrayList<>())
                                 .build();
@@ -234,11 +238,12 @@ public class TaskService {
                         newProcess.addSubProcess(subProcess);
 
                         // SubProcess 에 job 정보 추가
-                        addJobToSubProcess(sceneGroup, subProcess);
+                        addJobToSubProcess(sceneGroup, subProcess, newProcess);
                     });
         } catch (Exception e) {
             e.printStackTrace();
             log.error("ERROR : ADD SUB-PROCESS ON PROCESS: {}", e.getMessage());
+            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_SUB_PROCESS_REGISTER);
         }
     }
@@ -249,7 +254,7 @@ public class TaskService {
      * @param sceneGroup - 메타데이터로부터 파싱된 세부공정(씬구룹) 정보
      * @param subProcess - 신규 세부 공정 관련 정보
      */
-    private void addJobToSubProcess(ContentRestDto.SceneGroup sceneGroup, SubProcess subProcess) {
+    private void addJobToSubProcess(ContentRestDto.SceneGroup sceneGroup, SubProcess subProcess, Process newProcess) {
         try {
             sceneGroup.getScenes().forEach(
                     scene -> {
@@ -269,8 +274,8 @@ public class TaskService {
                         subProcess.addJob(job);
 
                         // Job 에 Report 아이템 추가하기
-                        addJobToReport(scene, job);
-                        addSmartToolInfoToJob(scene, job);
+                        addJobToReport(scene, job, newProcess);
+                        addSmartToolInfoToJob(scene, job, newProcess);
 
 
                         // Calculate number of sub job on main job
@@ -283,6 +288,7 @@ public class TaskService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("ERROR : ADD JOB ON SUB-PROCESS: {}", e.getMessage());
+            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_JOB_REGISTER);
         }
     }
@@ -293,7 +299,7 @@ public class TaskService {
      * @param scene - 메타데이터로부터 파싱된 작업(씬) 정보
      * @param job   - 신규 작업 관련 정보
      */
-    private void addJobToReport(ContentRestDto.Scene scene, Job job) {
+    private void addJobToReport(ContentRestDto.Scene scene, Job job, Process newProcess) {
         try {
             if (!scene.getReportObjects().isEmpty()) {
                 scene.getReportObjects().forEach(reportObject -> {
@@ -321,6 +327,7 @@ public class TaskService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("ERROR : ADD REPORT ON JOB: {}", e.getMessage());
+            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_REPORT_REGISTER);
         }
     }
@@ -331,7 +338,7 @@ public class TaskService {
      * @param scene - 메타데이터로부터 파싱된 작업(씬) 정보
      * @param job   - 신규 작업 관련 정보
      */
-    private void addSmartToolInfoToJob(ContentRestDto.Scene scene, Job job) {
+    private void addSmartToolInfoToJob(ContentRestDto.Scene scene, Job job, Process newProcess) {
         // Job에 SmartTool 정보 추가
         try {
             if (!scene.getSmartToolObjects().isEmpty()) {
@@ -359,45 +366,41 @@ public class TaskService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("ERROR : ADD SMART-TOOL ON JOB: {}", e.getMessage());
+            rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_SMART_TOOL_REGISTER);
         }
     }
 
-    public ApiResponse<RecentSubProcessResponse> getNewWork(String workerUUID) {
+    public ApiResponse<RecentSubProcessResponse> getNewWork(String workspaceUUID, String workerUUID) {
         // 신규 작업 존재 여부 검사 요청 처리
-        boolean hasNewSubProcess = this.subProcessRepository.existsByIsRecentAndWorkerUUID(YesOrNo.YES, workerUUID);
+        boolean hasNewSubProcess = this.subProcessRepository.existsByIsRecentAndWorkerUUIDAndWorkspaceUUID(YesOrNo.YES, workspaceUUID, workerUUID);
         return new ApiResponse<>(new RecentSubProcessResponse(hasNewSubProcess));
     }
 
     public ApiResponse<ProcessIdRetrieveResponse> getProcessIdOfContent(String contentUUID) {
-        // contentUUID 로부터 aruco id 가져오기
-        Aruco aruco = this.arucoRepository.findByContentUUID(contentUUID)
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_ARUCO));
-        // aruco id 로부터 process id 가져오기
-        List<Long> processeIds = this.processRepository.getProcessIdList(aruco.getId());
-        // 생성된 공정이 없거나, 공정의 상태들을 모두 조회 후 모든 공정이 closed이면 공정생성이 가능
-        boolean canCreate = true;
-        for (Long processId : processeIds) {
-            Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-            // 컨텐츠로 등록된 공정들을 모두 조회하여 state가 CREATED, UPDATED인지 확인하여 하나라도 존재하면 업데이트 할 수 없음.
-            if (process.getState() == State.CREATED || process.getState() == State.UPDATED) {
-                canCreate = false;
+        // 컨텐츠 식별자로 작업 조회
+        List<Process> processList = this.processRepository.findByContentUUID(contentUUID);
+
+        // 반환할 공정 아이디 목록
+        List<Long> processIds = new ArrayList<>();
+        processList.forEach(process -> {
+            // 공정의 상태 필터링
+            if (!(process.getState() == State.CLOSED || process.getState() == State.DELETED)) {
+                processIds.add(process.getId());
             }
-        }
-        if (processeIds.isEmpty() || canCreate) {
-            throw new ProcessServiceException(ErrorCode.ERR_CAN_CREATE_PROCESS);
-        }
-        return new ApiResponse<>(new ProcessIdRetrieveResponse(processeIds));
+        });
+
+        return new ApiResponse<>(new ProcessIdRetrieveResponse(processIds));
     }
 
-    public ApiResponse<ArucoWithContentUUIDResponse> getRelatedInfoOfProcess(Long processId) {
-        // 공정의 ARUCO와 contentUUID 가져오기
-        Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        ArucoWithContentUUIDResponse arucoWithContentUUIDResponse = ArucoWithContentUUIDResponse.builder()
-                .aruco(process.getAruco().getId())
-                .contentUUID(process.getAruco().getContentUUID())
+    public ApiResponse<ProcessContentAndTargetResponse> getRelatedInfoOfProcess(Long processId) {
+        // 공정의 타겟 데이터와 contentUUID 가져오기
+        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        ProcessContentAndTargetResponse processContentAndTargetResponse = ProcessContentAndTargetResponse.builder()
+                .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
+                .contentUUID(process.getContentUUID())
                 .build();
-        return new ApiResponse<>(arucoWithContentUUIDResponse);
+        return new ApiResponse<>(processContentAndTargetResponse);
     }
 
     public ApiResponse<ProcessMetadataResponse.ProcessesMetadata> getMetadataTheProcess(Long[] processesId, String workerUUID) {
@@ -411,6 +414,7 @@ public class TaskService {
             if (Objects.isNull(process)) {
                 log.info("getMetadataTheProcess - getProcessInfo is null");
                 // 조회되는 공정이 없을 경우 예외처리
+                // TODO : 예외로 던질지, 메시지를 남길지 고민되는 부분임. 메시지를 남기는 것이 사용성이 더 좋을 것으로 생각됨. 추후 개선.
                 throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA);
             } else {
                 // 공정을 메타데이터로 전환 후 리스트에 등록
@@ -487,7 +491,7 @@ public class TaskService {
         if (metaSubProcessList.isEmpty()) return null;
         else {
             return ProcessMetadataResponse.Process.builder()
-                    .arucoId(process.getAruco().getId())
+                    .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
                     .processId(process.getId())
                     .processName(process.getName())
                     .managerUUID(null)
@@ -539,6 +543,7 @@ public class TaskService {
                     .endDate(subProcess.getEndDate())
                     .conditions(subProcess.getConditions())
                     .progressRate(subProcess.getProgressRate())
+                    // TODO : user info
                     .workerUUID(workerSourceUUID)
                     .syncDate(subProcess.getUpdatedDate())
                     .syncUserUUID(subProcess.getWorkerUUID())
@@ -662,28 +667,44 @@ public class TaskService {
         return new ApiResponse<>(new HourlyReportCountListResponse(hourlyReportCountOfaDayResponses));
     }
 
-    public ApiResponse<MonthlyStatisticsResponse> getDailyTotalRateAtMonth(String month) {
-        List<DailyTotal> dailyTotals = this.dailyTotalRepository.getDailyTotalRateAtMonth(month);
+    public ApiResponse<MonthlyStatisticsResponse> getDailyTotalRateAtMonth(String workspaceUUID, String month) {
+        if (workspaceUUID.isEmpty()) {
+            List<DailyTotal> dailyTotals = this.dailyTotalRepository.getDailyTotalRateAtMonth(month);
 
-        return new ApiResponse<>(MonthlyStatisticsResponse.builder()
-                .dailyTotal(dailyTotals.stream().map(dailyTotal -> {
-                    return MonthlyStatisticsResponse.DailyTotalResponse.builder()
-                            .id(dailyTotal.getId())
-                            // UTC -> KST 로 9시간을 더해서 날짜산정 해야할 것 같은데 결과는 하지 않아도 KST로 주는 것 같음. 자바로 넘어오면서 KST로 바뀌는 것 같음.
-                            .onDay(dailyTotal.getUpdatedDate().toLocalDate())
-                            .totalRate(dailyTotal.getTotalRate())
-                            .totalProcesses(dailyTotal.getTotalCountProcesses())
-                            .build();
-                }).collect(Collectors.toList()))
-                .build());
+            return new ApiResponse<>(MonthlyStatisticsResponse.builder()
+                    .dailyTotal(dailyTotals.stream().map(dailyTotal -> {
+                        return MonthlyStatisticsResponse.DailyTotalResponse.builder()
+                                .id(dailyTotal.getId())
+                                // UTC -> KST 로 9시간을 더해서 날짜산정 해야할 것 같은데 결과는 하지 않아도 KST로 주는 것 같음. 자바로 넘어오면서 KST로 바뀌는 것 같음.
+                                .onDay(dailyTotal.getUpdatedDate().toLocalDate())
+                                .totalRate(dailyTotal.getTotalRate())
+                                .totalProcesses(dailyTotal.getTotalCountProcesses())
+                                .build();
+                    }).collect(Collectors.toList()))
+                    .build());
+        } else {
+            List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.getDailyTotalRateAtMonthWithWorkspace(workspaceUUID, month);
+
+            return new ApiResponse<>(MonthlyStatisticsResponse.builder()
+                    .dailyTotal(dailyTotalWorkspaceList.stream().map(dailyTotalWorkspace -> {
+                        return MonthlyStatisticsResponse.DailyTotalResponse.builder()
+                                .id(dailyTotalWorkspace.getId())
+                                // UTC -> KST 로 9시간을 더해서 날짜산정 해야할 것 같은데 결과는 하지 않아도 KST로 주는 것 같음. 자바로 넘어오면서 KST로 바뀌는 것 같음.
+                                .onDay(dailyTotalWorkspace.getUpdatedDate().toLocalDate())
+                                .totalRate(dailyTotalWorkspace.getTotalRate())
+                                .totalProcesses(dailyTotalWorkspace.getTotalCountProcesses())
+                                .build();
+                    }).collect(Collectors.toList()))
+                    .build());
+        }
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchUserName(String search, Pageable pageable) {
+    public ApiResponse<IssuesResponse> getIssuesInSearchUserName(String workspaceUUID, String search, Pageable pageable) {
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
         if (userUUIDList.size() == 0) userUUIDList = null;
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchUserName(userUUIDList, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchUserName(workspaceUUID, userUUIDList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -698,18 +719,18 @@ public class TaskService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesAllSearchUserName(String search, Pageable pageable) {
+    public ApiResponse<IssuesResponse> getIssuesAllSearchUserName(String workspaceUUID, String search, Pageable pageable) {
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
         if (userUUIDList.size() == 0) userUUIDList = null;
-        Page<Issue> issuePage = this.issueRepository.getIssuesAllSearchUserName(userUUIDList, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesAllSearchUserName(workspaceUUID, userUUIDList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesIn(Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesIn(pageable);
+    public ApiResponse<IssuesResponse> getIssuesIn(String workspaceUUID, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesIn(workspaceUUID, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -720,26 +741,26 @@ public class TaskService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesAll(Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesAll(pageable);
+    public ApiResponse<IssuesResponse> getIssuesAll(String workspaceUUID, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesAll(workspaceUUID, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchProcessTitle(String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchProcessTitle(title, pageable);
+    public ApiResponse<IssuesResponse> getIssuesInSearchProcessTitle(String workspaceUUID, String title, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchProcessTitle(workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchSubProcessTitle(String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchSubProcessTitle(title, pageable);
+    public ApiResponse<IssuesResponse> getIssuesInSearchSubProcessTitle(String workspaceUUID, String title, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchSubProcessTitle(workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchJobTitle(String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchJobTitle(title, pageable);
+    public ApiResponse<IssuesResponse> getIssuesInSearchJobTitle(String workspaceUUID, String title, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchJobTitle(workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -765,6 +786,7 @@ public class TaskService {
                     .subProcessName(Objects.isNull(subProcess) ? null : subProcess.getName())
                     .jobId(Objects.isNull(job) ? 0 : job.getId())
                     .jobName(Objects.isNull(job) ? null : job.getName())
+                    // TODO : user info
                     .workerUUID(userInfo.getUuid())
                     .workerName(userInfo.getName())
                     .workerProfile(userInfo.getProfile())
@@ -780,9 +802,9 @@ public class TaskService {
         return new ApiResponse<>(new IssuesResponse(issueInfoResponseList, pageMetadataResponse));
     }
 
-    public ApiResponse<ReportsResponse> getReports(Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
+    public ApiResponse<ReportsResponse> getReports(String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
         // 리포트 목록을 category 내에서 조회
-        Page<Report> reportPage = this.reportRepository.getReports(processId, subProcessId/*, search*/, reported, pageable);
+        Page<Report> reportPage = this.reportRepository.getReports(workspaceUUID, processId, subProcessId/*, search*/, reported, pageable);
         List<ReportInfoResponse> reportInfoResponseList = reportPage.stream().map(report -> {
             List<Item> items = Optional.ofNullable(this.itemRepository.findByReport(report)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT_ITEM));
             // 리포트의 아이템
@@ -823,9 +845,9 @@ public class TaskService {
         return new ApiResponse<>(new ReportsResponse(reportInfoResponseList, pageMetadataResponse));
     }
 
-    public ApiResponse<SmartToolsResponse> getSmartToolJobs(Long subProcessId, String search, Boolean reported, Pageable pageable) {
+    public ApiResponse<SmartToolsResponse> getSmartToolJobs(String workspaceUUID, Long subProcessId, String search, Boolean reported, Pageable pageable) {
         // category 범주 내의 스마트툴 작업 목록 조회
-        Page<SmartTool> smartToolPage = this.smartToolRepository.getSmartToolJobs(subProcessId, search, reported, pageable);
+        Page<SmartTool> smartToolPage = this.smartToolRepository.getSmartToolJobs(workspaceUUID, subProcessId, search, reported, pageable);
 //        Page<SmartTool> smartToolPage = this.smartToolRepository.findSmartToolsByJob(processId, subProcessId, pageable);
         List<SmartToolResponse> smartToolResponseList = smartToolPage.stream().map(smartTool -> {
             List<SmartToolItem> smartToolItems = Optional.ofNullable(this.smartToolItemRepository.findBySmartTool(smartTool)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SMART_TOOL_ITEM));
@@ -857,7 +879,6 @@ public class TaskService {
                     .normalToque(smartTool.getNormalToque())
                     // TODO : user info
                     .workerUUID(subProcess.getWorkerUUID())
-                    // TODO : 작업자 이미지 가져오기
                     .smartToolItems(smartToolItemResponseList)
                     .build();
         }).collect(Collectors.toList());
@@ -919,13 +940,16 @@ public class TaskService {
         // 3-2-3. 세부 작업 내용 동기화
         subProcesses.forEach(subProcess -> {
             WorkResultSyncRequest.SubProcessWorkResult subProcessWorkResult = subProcessWorkResultHashMap.get(subProcess.getId());
-            subProcess.setReportedDate(nowTime);
-            subProcessRepository.save(subProcess);
+            // 할당된 작업자와 동기화 작업자 동일 여부 검사 TODO : 검증 필요.
+            if (subProcess.getWorkerUUID().equals(subProcessWorkResult.getSyncUserUUID())) {
+                subProcess.setReportedDate(nowTime);
+                subProcessRepository.save(subProcess);
 
-            updateProcess.set(true);
+                updateProcess.set(true);
 
-            if (subProcessWorkResult.getJobs() != null) {
-                syncJobWork(subProcessWorkResult.getJobs(), subProcessWorkResult.getSyncUserUUID());
+                if (subProcessWorkResult.getJobs() != null) {
+                    syncJobWork(subProcessWorkResult.getJobs(), subProcessWorkResult.getSyncUserUUID());
+                }
             }
         });
 
@@ -1008,6 +1032,7 @@ public class TaskService {
         workIssueResults.forEach(workIssueResult -> {
             Issue issue = Issue.builder()
                     .content(workIssueResult.getCaption())
+                    // TODO : user info
                     .workerUUID(syncUserUUID)
                     .build();
             if (!StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
@@ -1024,6 +1049,7 @@ public class TaskService {
         issueResults.forEach(issueResult -> {
             Issue issue = Issue.globalIssueBuilder()
                     .content(issueResult.getCaption())
+                    // TODO : user info
                     .workerUUID(issueResult.getWorkerUUID())
                     .build();
             if (!StringUtils.isEmpty(issueResult.getPhotoFile())) {
@@ -1036,16 +1062,16 @@ public class TaskService {
         });
     }
 
-    public ResponseMessage getTotalRate() {
+    public ResponseMessage getTotalRate(String workspaceUUID) {
         // 전체 공정 진행률 조회
-        List<Process> processes = this.processRepository.getProcesses();
+        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
         return new ResponseMessage().addParam("totalRate", ProgressManager.getAllProcessesTotalProgressRate(processes));
     }
 
-    public ApiResponse<ProcessesStatisticsResponse> getStatistics() {
+    public ApiResponse<ProcessesStatisticsResponse> getStatistics(String workspaceUUID) {
         // 전체 공정 진행률 및 공정진행상태별 현황 조회
         int totalRate = 0, totalProcesses = 0, categoryWait = 0, categoryStarted = 0, categoryEnded = 0, wait = 0, unprogressing = 0, progressing = 0, completed = 0, incompleted = 0, failed = 0, success = 0, fault = 0;
-        List<Process> processes = this.processRepository.getProcesses();
+        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
         for (Process process : processes) {
             totalRate = totalRate + process.getProgressRate();
             Conditions conditions = process.getConditions();
@@ -1097,7 +1123,7 @@ public class TaskService {
         return new ApiResponse<>(processesStatisticsResponse);
     }
 
-    public ApiResponse<ProcessListResponse> getProcessList(String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
         // 전체 공정의 목록을 조회
         // 사용자 검색
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
@@ -1110,10 +1136,11 @@ public class TaskService {
 
         Page<Process> processPage = null;
         if (filter != null && filter.size() > 0) {
-            List<Process> processList = this.processRepository.getProcessListSearchUser(search, userUUIDList, pageableCustom.getSort());
+            List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
             processPage = filterConditionsProcessPage(processList, filter, pageable);
         } else {
-            processPage = this.processRepository.getProcessPageSearchUser(search, userUUIDList, pageableCustom);
+            // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
@@ -1136,7 +1163,7 @@ public class TaskService {
             return ProcessInfoResponse.builder()
                     .id(process.getId())
                     .name(process.getName())
-                    .contentUUID(process.getAruco().getContentUUID())
+                    .contentUUID(process.getContentUUID())
                     .state(Optional.of(process).map(Process::getState).orElseGet(() -> State.CREATED))
                     .position(process.getPosition())
                     .progressRate(process.getProgressRate())
@@ -1150,7 +1177,6 @@ public class TaskService {
                     .updatedDate(process.getUpdatedDate())
                     .subProcessTotal(Optional.of(process.getSubProcessList().size()).orElse(0))
                     .subProcessAssign(this.getSubProcessesAssign(process))
-                    .aruco_id(process.getAruco().getId())
                     .build();
         }).collect(Collectors.toList());
 
@@ -1165,8 +1191,8 @@ public class TaskService {
 
     @Transactional
     public ApiResponse<ProcessInfoResponse> setClosedProcess(Long processId) {
-        // 공정마감
-        // 공정수행중의 여부와 관계없이 마감됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
+        // 공정종료
+        // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         // 마감 상태로 변경
@@ -1175,7 +1201,7 @@ public class TaskService {
 
         // 컨텐츠의 상태를 대기중으로 변경. 공정 종료된 컨텐츠는 더이상 관리 대상이 아님. 종료공정을 증강하거나, 공정을 다시 시작하지 않기 때문.
         ContentStatusChangeRequest contentStatusChangeRequest = new ContentStatusChangeRequest();
-        contentStatusChangeRequest.setContentUUID(process.getAruco().getContentUUID());
+        contentStatusChangeRequest.setContentUUID(process.getContentUUID());
         contentStatusChangeRequest.setStatus("WAIT");
 
         this.contentRestService.changeContentStatus(contentStatusChangeRequest);
@@ -1190,7 +1216,7 @@ public class TaskService {
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
         // contentUUID 추가
-        processInfoResponse.setContentUUID(process.getAruco().getContentUUID());
+        processInfoResponse.setContentUUID(process.getContentUUID());
         processInfoResponse.setSubProcessTotal(Optional.of(process.getSubProcessList().size()).orElse(0));
         processInfoResponse.setDoneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count());
         processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
@@ -1238,6 +1264,7 @@ public class TaskService {
         // 공정정보
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         String processName = process.getName();
+        State processState = process.getState();
         // 검색어로 사용자 목록 조회
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
@@ -1249,7 +1276,7 @@ public class TaskService {
             List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(processId, search, userUUIDList, pageable.getSort());
             subProcessPage = filterConditionsSubProcessPage(subProcessList, filter, pageable);
         } else {
-            subProcessPage = this.subProcessRepository.selectSubProcesses(processId, search, userUUIDList, pageable);
+            subProcessPage = this.subProcessRepository.selectSubProcesses(null, processId, search, userUUIDList, pageable);
         }
         List<EditSubProcessResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             return EditSubProcessResponse.builder()
@@ -1276,7 +1303,7 @@ public class TaskService {
                 .totalPage(subProcessPage.getTotalPages())
                 .totalElements(subProcessPage.getTotalElements())
                 .build();
-        return new ApiResponse<>(new SubProcessListResponse(processId, processName, editSubProcessResponseList, pageMetadataResponse));
+        return new ApiResponse<>(new SubProcessListResponse(processId, processName, processState, editSubProcessResponseList, pageMetadataResponse));
     }
 
     private Page<SubProcess> filterConditionsSubProcessPage(List<SubProcess> subProcessList, List<Conditions> filter, Pageable pageable) {
@@ -1292,7 +1319,7 @@ public class TaskService {
         return new PageImpl<>(subProcesses.subList(start, end), pageable, subProcesses.size());
     }
 
-    public ApiResponse<SubProcessesResponse> getSubProcesses(Long processId, String search, Pageable pageable) {
+    public ApiResponse<SubProcessesResponse> getSubProcesses(String workspaceUUID, Long processId, String search, Pageable pageable) {
         // 워크스페이스 전체의 세부공정목록조회
         // 검색어로 사용자 목록 조회
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
@@ -1300,7 +1327,7 @@ public class TaskService {
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
         if (userUUIDList.size() == 0) userUUIDList = null;
         // 세부공정 목록
-        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(processId, search, userUUIDList, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             return SubProcessReportedResponse.builder()
                     .processId(subProcess.getProcess().getId())
@@ -1348,10 +1375,9 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<MyWorkListResponse> getMyWorks(String workerUUID, Long processId, String search, Pageable pageable) {
+    public ApiResponse<MyWorkListResponse> getMyWorks(String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable) {
         // 내 작업 조회. 종료된 공정은 제외.
-        // TODO : ARUCO테이블에 process id가 없어도 조회되어야 함. 공정이 마감되면 컨텐츠와 링크는 끊기지만, 공정은 계속 조회할 수 있어야 함.
-        Page<SubProcess> subProcessPage = this.subProcessRepository.getMyWorksInProcess(workerUUID, processId, search, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.getMyWorksInProcess(workspaceUUID, workerUUID, processId, search, pageable);
 //        Page<SubProcess> subProcessPage = this.subProcessRepository.findByWorkerUUID(workerUUID, pageable);
         List<MyWorksResponse> myWorksResponseList = subProcessPage.stream().map(subProcess -> {
             // 신규작업확인 처리
@@ -1363,14 +1389,12 @@ public class TaskService {
             }
 
             Process process = Optional.of(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
-            Aruco aruco = Optional.of(process).map(Process::getAruco).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_ARUCO));
             // 공정이 정상적으로 생성되지 않고, 임의로 데이터를 넣으면 process_id가 null일 수 있음.
             return MyWorksResponse.builder()
                     .processId(process.getId())
                     .processName(process.getName())
-                    .contentUUID(aruco.getContentUUID())
-                    // TODO : 해당 컨텐츠(contentUUID)로 컨텐츠 DB에서 조회하여 경로를 가져와야 정상이지만, 임의로 처리함.
-                    .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH.concat(aruco.getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION))
+                    .contentUUID(process.getContentUUID())
+                    .downloadPath(this.contentRestService.getContentInfo(process.getContentUUID()).getData().getPath())
                     .subProcessId(subProcess.getId())
                     .priority(subProcess.getPriority())
                     .name(subProcess.getName())
@@ -1397,17 +1421,17 @@ public class TaskService {
         return new ApiResponse<>(new MyWorkListResponse(myWorksResponseList, pageMetadataResponse));
     }
 
-    public ApiResponse<SubProcessesOfArucoResponse> getSubProcessesOfAruco(Long arucoId, Pageable pageable) {
-        // ARUCO로 공정을 조회
-        Process process = this.processRepository.getProcessUnClosed(arucoId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_ARUCO));
-        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(process.getId(), null, null, pageable);
-        SubProcessesOfArucoResponse subProcessesOfArucoResponse = SubProcessesOfArucoResponse.builder()
+    public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
+        // 타겟데이터로 공정을 조회
+        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, targetData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_ARUCO));
+        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
+        SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
                 .processId(process.getId())
                 .processName(process.getName())
-                .contentUUID(process.getAruco().getContentUUID())
-                .downloadPath(CONTENT_DOWNLOAD_CONTEXT_PATH.concat(process.getAruco().getId().toString()).concat(CONTENT_DOWNLOAD_CONTEXT_FILE_EXTENSION))
+                .contentUUID(process.getContentUUID())
+                .downloadPath(this.contentRestService.getContentInfo(process.getContentUUID()).getData().getPath())
                 .subProcesses(subProcessPage.getContent().stream().map(subProcess -> {
-                    return SubProcessOfArucoResponse.builder()
+                    return SubProcessOfTargetResponse.builder()
                             .subProcessId(subProcess.getId())
                             .name(subProcess.getName())
                             .priority(subProcess.getPriority())
@@ -1429,7 +1453,7 @@ public class TaskService {
                         .totalElements(subProcessPage.getTotalElements())
                         .build())
                 .build();
-        return new ApiResponse<>(subProcessesOfArucoResponse);
+        return new ApiResponse<>(subProcessesOfTargetResponse);
     }
 
     public ResponseMessage updateSubProcess(Long subProcessId, EditSubProcessRequest subProcessRequest) {
@@ -1542,6 +1566,7 @@ public class TaskService {
                     .issueId(issue.getId())
                     .reportedDate(Optional.of(issue).map(Issue::getUpdatedDate).orElseGet(() -> DEFATUL_LOCAL_DATE_TIME))
                     .photoFilePath(Optional.of(issue).map(Issue::getPath).orElseGet(() -> ""))
+                    // TODO : user info
                     .workerUUID(issue.getWorkerUUID())
                     .caption(Optional.of(issue).map(Issue::getContent).orElseGet(() -> ""))
                     .build();
@@ -1601,17 +1626,18 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(Long processId) {
+    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(Long processId, String workerUUID) {
         // 공정 삭제
         Process process = this.processRepository.findById(processId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
-        // 공정삭제 후 공정과 연결된 컨텐츠의 상태 변경
-        ContentStatusChangeRequest contentStatusChangeRequest = new ContentStatusChangeRequest();
-        contentStatusChangeRequest.setContentUUID(process.getAruco().getContentUUID());
-        contentStatusChangeRequest.setStatus("WAIT");
+        // 권한 체크
+        if (!process.getContentManagerUUID().equals(workerUUID))
+            throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        this.contentRestService.changeContentStatus(contentStatusChangeRequest);
+        // 컨텐츠 삭제
+        String[] processes = {process.getContentUUID()};
+        this.contentRestService.contentDeleteRequestHandler(processes, workerUUID);
 
         // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
         this.processRepository.delete(process);
@@ -1643,8 +1669,8 @@ public class TaskService {
         for (SubProcess subProcess : process.getSubProcessList()) {
             subProcessesAssign.add(SubProcessAssignedResponse.builder()
                     .subProcessId(subProcess.getId())
+                    // TODO : user info
                     .workerUUID(subProcess.getWorkerUUID())
-                    // TODO : 작업자들의 프로필 추가 필요
                     .profile("")
                     .build()
             );
@@ -1660,11 +1686,25 @@ public class TaskService {
     @Scheduled(cron = "55 59 14 * * *")
     public void saveDailyTotal() {
         // 공정목록 조회
-        List<Process> processes = this.processRepository.getProcesses();
+        List<Process> processes = this.processRepository.getProcesses(null);
         int totalRate = 0, totalProcesses = 0;
+        HashMap<String, Integer> workspaceRate = new HashMap<>();
+        HashMap<String, Integer> workspaceCount = new HashMap<>();
         for (Process process : processes) {
-            totalRate = totalRate + process.getProgressRate();
+            int progressRate = process.getProgressRate();
+            totalRate = totalRate + progressRate;
             totalProcesses++;
+
+            // 워크스페이스 통계
+            if (workspaceRate.containsKey(process.getWorkspaceUUID())) {
+                int newRate = Integer.sum(workspaceRate.get(process.getWorkspaceUUID()),progressRate);
+                int current = workspaceRate.get(process.getWorkspaceUUID());
+                workspaceRate.put(process.getWorkspaceUUID(), newRate);
+                workspaceCount.put(process.getWorkspaceUUID(), ++current);
+            } else {
+                workspaceRate.put(process.getWorkspaceUUID(), progressRate);
+                workspaceCount.put(process.getWorkspaceUUID(), 1);
+            }
         }
 
         // 공정률 총계
@@ -1677,10 +1717,26 @@ public class TaskService {
                 .build();
 
         this.dailyTotalRepository.save(dailyTotal);
+
+        // 워크스페이스별 총계
+        workspaceRate.forEach((workspaceUUID, total) -> {
+            int count = workspaceCount.get(workspaceUUID);
+            int rate = count == 0 ? 0 : total / count;
+
+            DailyTotalWorkspace dailyTotalWorkspace = DailyTotalWorkspace.builder()
+                    .totalRate(rate)
+                    .totalCountProcesses(count)
+                    .workspaceUUID(workspaceUUID)
+                    .build();
+
+            this.dailyTotalWorkspaceRepository.save(dailyTotalWorkspace);
+
+            dailyTotal.addDailyTotalWorkspace(dailyTotalWorkspace);
+        });
     }
 
-    public ApiResponse<ProcessTargetInfoResponse> getProcessInfoByTarget(long targetId) {
-        Process process = this.processRepository.findByArucoIdAndState(targetId, State.CREATED)
+    public ApiResponse<ProcessTargetInfoResponse> getProcessInfoByTarget(String targetData) {
+        Process process = this.processRepository.findByTargetDataAndState(targetData, State.CREATED)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         ProcessTargetInfoResponse targetInfoResponse = this.modelMapper.map(process, ProcessTargetInfoResponse.class);
         return new ApiResponse<>(targetInfoResponse);
@@ -1715,20 +1771,44 @@ public class TaskService {
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
     }
 
-    public ApiResponse<CountSubProcessOnWorkerResponse> getCountSubProcessOnWorker(String workerUUID) {
+    public ApiResponse<CountSubProcessOnWorkerResponse> getCountSubProcessOnWorker(String workspaceUUID, String workerUUID) {
         List<SubProcess> subProcesses = this.subProcessRepository.findByWorkerUUID(workerUUID);
         int ing = 0;
         for (SubProcess subProcess : subProcesses) {
-            State state = subProcess.getProcess().getState();
-            // 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때
-            if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT)
+            Process process = subProcess.getProcess();
+            State state = process.getState();
+            String processWorkspaceUUID = process.getWorkspaceUUID();
+            // 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때, 마지막으로 워크스페이스가 동일한 프로세스에 대해 필터
+            if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT && (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID)))
                 ing++;
         }
         CountSubProcessOnWorkerResponse response = CountSubProcessOnWorkerResponse.builder()
+                // TODO : user info
                 .workerUUID(workerUUID)
                 .countAssigned(subProcesses.size())
                 .countProgressing(ing)
                 .build();
         return new ApiResponse<>(response);
+    }
+
+    @Transactional
+    public ApiResponse<ProcessInfoResponse> convertProcess(Long processId, String workerUUID, State state) {
+        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        if (!process.getContentManagerUUID().equals(workerUUID))
+            throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        process.setState(state);
+
+        // 컨텐츠를 작업으로 전환시 컨텐츠의 converted가 YES가 되어 있으므로 NO로 변경하여 작업으로 전환되지 않았암을 저장 요청함.
+        //ApiResponse<ContentInfoResponse> contentInfoResponseApiResponse =
+                this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
+
+        // 작업을 컨텐츠로 전환
+        //ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse =
+                this.contentRestService.taskToContentConvertHandler(processId, workerUUID);
+
+        ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
+
+        return new ApiResponse<>(processInfoResponse);
     }
 }

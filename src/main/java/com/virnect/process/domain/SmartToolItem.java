@@ -2,6 +2,7 @@ package com.virnect.process.domain;
 
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "smart_tool_item")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SmartToolItem extends BaseTimeEntity {

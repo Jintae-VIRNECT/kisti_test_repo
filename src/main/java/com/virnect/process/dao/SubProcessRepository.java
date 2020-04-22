@@ -29,15 +29,15 @@ public interface SubProcessRepository extends JpaRepository<SubProcess, Long>, S
     List<SubProcess> selectSubProcessList(Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Sort sort);
 
     // TODO : jobTotal, status, progressRate 추가 필요
-    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id where 1=1 and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList))"
-            , countQuery = "select count(*) from sub_process s join process p on p.process_id = s.process_id and p.process_id = :processId where 1=1 and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList))"
+    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and p.process_id = :processId and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList))"
+            , countQuery = "select count(*) from sub_process s join process p on p.process_id = s.process_id and p.process_id = :processId and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList))"
             , nativeQuery = true)
-    Page<SubProcess> selectSubProcesses(Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
+    Page<SubProcess> selectSubProcesses(String workspaceUUID, Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Pageable pageable);
 
-    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
-            , countQuery = "select count(*) from sub_process s join process p on p.process_id = s.process_id and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
+    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
+            , countQuery = "select count(*) from sub_process s join process p on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) and strcmp(p.state, 'CLOSED') != 0 and strcmp(p.state, 'DELETED') != 0 where s.worker_uuid = :worker and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and ((:search is null) or (:search is not null and s.name like %:search%))"
             , nativeQuery = true)
-    Page<SubProcess> getMyWorksInProcess(@Param("worker") String workerUUID, Long processId, @Param("search") String search, Pageable pageable);
+    Page<SubProcess> getMyWorksInProcess(String workspaceUUID, @Param("worker") String workerUUID, Long processId, @Param("search") String search, Pageable pageable);
 
     // TODO : process id, search 필터 필요
     Page<SubProcess> findByWorkerUUID(String workerUUID, Pageable pageable);

@@ -18,7 +18,7 @@ public class ProcessesStatisticsResponse {
     private int categoryWait;
     @ApiModelProperty(value = "시작된 공정", notes = "공정이 시작된 상태인 공정의 수", example = "5")
     private int categoryStarted;
-    @ApiModelProperty(value = "마감된 (누적) 공정", notes = "공정이 마감된 상태인 공정의 수", example = "8")
+    @ApiModelProperty(value = "종료된 (누적) 공정", notes = "공정이 종료된 상태인 공정의 수", example = "8")
     private int categoryEnded;
 
     // -- 진행상태별 공정수 --

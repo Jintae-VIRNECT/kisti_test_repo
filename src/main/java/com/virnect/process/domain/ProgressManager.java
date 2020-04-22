@@ -119,6 +119,7 @@ public class ProgressManager {
     };
 
     // TODO : Conditions, State가 UI상으로 유저에게 명확히 명시되어 보여져야 함. 이유는 공정생성과 컨텐츠의 상태가 엮여있기 때문.  공정 종료, 편집의 기능은 state가 closed가 아닐 때만 가능. 추가생성은 언제든 가능.
+
     /**
      * 상태를 룰에 의하여 종합 판단하여 결과를 도출
      * 공정생명주기와 공정률, 일정에 따른 룰을 상수로 정하였고.
@@ -319,7 +320,7 @@ public class ProgressManager {
                 count++;
             }
             // 리포트의 통계
-            rate.set((int) Math.floor((double) ok /(double) count * 100));
+            rate.set((int) Math.floor((double) ok / (double) count * 100));
         }
 
         return rate.get();
@@ -338,7 +339,7 @@ public class ProgressManager {
                 count++;
             }
             // 스마트툴의 통계
-            rate.set((int) Math.floor((double) ok /(double) count * 100));
+            rate.set((int) Math.floor((double) ok / (double) count * 100));
         }
 
         return rate.get();

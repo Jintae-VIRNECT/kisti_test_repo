@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class NewSubProcessRequest {
     @NotBlank
-    @ApiModelProperty(value = "씬그룹 식별자", notes = "씬그룹 식별자", required = true, example = "dc634ea5-b67f-4588-891e-286171271126")
+    @ApiModelProperty(value = "씬그룹 식별자", notes = "씬그룹 식별자", required = true, example = "5f43e519-0f18-46c1-947e-198f801bf3cc")
     private String id;
 
     @NotBlank

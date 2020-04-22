@@ -5,8 +5,11 @@ import com.virnect.process.domain.State;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Project: PF-ProcessManagement
@@ -16,6 +19,8 @@ import java.time.LocalDateTime;
  * DESCRIPTION:
  */
 @Getter
+@Setter
+@ToString
 public class ProcessRegisterResponse {
     @ApiModelProperty(value = "신규 공정 식별자", example = "32")
     private long processId;
@@ -33,9 +38,13 @@ public class ProcessRegisterResponse {
     private Integer progressRate;
     @ApiModelProperty(value = "공정 생명주기 상태", position = 7, example = "CREATED")
     private State state;
+    @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", position = 8, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+    private String workspaceUUID;
+    @ApiModelProperty(value = "공정의 타겟 정보", position = 9)
+    private List<ProcessTargetResponse> target;
 
     @Builder
-    public ProcessRegisterResponse(long processId, String name, long totalSubProcess, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, Integer progressRate, State state) {
+    public ProcessRegisterResponse(long processId, String name, long totalSubProcess, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, Integer progressRate, State state, String workspaceUUID, List<ProcessTargetResponse> target) {
         this.processId = processId;
         this.name = name;
         this.totalSubProcess = totalSubProcess;
@@ -44,16 +53,7 @@ public class ProcessRegisterResponse {
         this.conditions = conditions;
         this.progressRate = progressRate;
         this.state = state;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessRegisterResponse{" +
-                "id=" + processId +
-                ", name='" + name + '\'' +
-                ", totalSubProcess=" + totalSubProcess +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                '}';
+        this.workspaceUUID = workspaceUUID;
+        this.target = target;
     }
 }
