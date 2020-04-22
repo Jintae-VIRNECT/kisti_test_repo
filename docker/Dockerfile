@@ -5,7 +5,7 @@ WORKDIR $APP_HOME
 
 COPY ./build/libs/PF-Workspace-1.0.0.jar ./PF-Workspace-1.0.0.jar
 
-ENV JAVA_OPTS="-XX:PermSize=1024m -XX:MaxPermSize=512m"
+ENV JAVA_OPTS="-XX:MaxMetaspaceSize=512m -XX:MetaspaceSize=256m"
 
 EXPOSE 8082
 
