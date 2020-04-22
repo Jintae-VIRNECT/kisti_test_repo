@@ -471,6 +471,18 @@ public class ContentService {
         return getContentInfoResponseApiResponse(content);
     }
 
+    @Transactional
+    public ApiResponse<ContentInfoResponse> setConverted(final String contentUUID, final YesOrNo converted) {
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        content.setConverted(converted);
+
+        this.contentRepository.save(content);
+
+        return getContentInfoResponseApiResponse(content);
+    }
+
     private ApiResponse<ContentInfoResponse> getContentInfoResponseApiResponse(Content content) {
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()

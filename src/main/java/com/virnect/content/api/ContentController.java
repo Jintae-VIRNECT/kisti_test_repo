@@ -243,11 +243,27 @@ public class ContentController {
             , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
             , @RequestParam(value = "userUUID") String userUUID
     ) {
-        log.info("~~~~ modifyContentInfo ==> shared [{}] contentType [{}] userUUID [{}]", shared, contentType, userUUID);
         if (contentUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, shared, contentType, userUUID);
+        return ResponseEntity.ok(response);
+    }
+
+    @ApiOperation(value = "컨텐츠 전환 수정", tags = "Process Server Only")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "converted", value = "컨텐츠의 공정 전환 여부(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")
+    })
+    @PutMapping("/convert/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentConvertHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "converted", defaultValue = "NO") YesOrNo converted
+    ) {
+        if (contentUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoResponse> response = this.contentService.setConverted(contentUUID, converted);
         return ResponseEntity.ok(response);
     }
 
