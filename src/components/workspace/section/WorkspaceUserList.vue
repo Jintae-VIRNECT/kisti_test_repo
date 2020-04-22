@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div v-if="list.length > 0" class="grid-container">
+    <div
+      v-if="this.$store.state.workspace.memberList.length > 0"
+      class="grid-container"
+    >
       <member-card
-        v-for="(userinfo, index) in list"
-        :key="index"
+        v-for="userinfo in list"
+        :key="userinfo.participantId"
         :name="userinfo.participantName"
         :email="'example@test.com'"
         :role="userinfo.participantRole"
@@ -122,12 +125,11 @@ export default {
   computed: {
     list() {
       if (this.searchFilter === '') {
-        console.log('this.memberList', this.memberList)
-        return this.memberList
+        return this.$store.state.workspace.memberList
       }
 
       const array = []
-      for (const list of this.memberList) {
+      for (const list of this.$store.state.workspace.memberList) {
         if (
           list.participantName
             .toLowerCase()

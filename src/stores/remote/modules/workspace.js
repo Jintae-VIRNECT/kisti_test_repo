@@ -1,4 +1,4 @@
-import { SEARCH_SORT, SEARCH_FILTER } from '../mutation-types'
+import { SEARCH_SORT, SEARCH_FILTER, SET_MEMBER_LIST } from '../mutation-types'
 
 const state = {
   search: {
@@ -6,6 +6,7 @@ const state = {
     filter: '',
   },
   beforeRoute: null,
+  memberList: [],
 }
 
 const mutations = {
@@ -14,6 +15,9 @@ const mutations = {
   },
   [SEARCH_FILTER](state, payload) {
     state.search.filter = payload
+  },
+  [SET_MEMBER_LIST](state, payload) {
+    state.memberList = payload
   },
 }
 

@@ -52,4 +52,12 @@ export default {
   setFilter({ commit }, payload) {
     commit(types.SEARCH_FILTER, payload)
   },
+
+  /**
+   * member list
+   * @param {Object} payload
+   */
+  setMemberList({ commit }, payload) {
+    commit(types.SET_MEMBER_LIST, payload)
+  },
 }
