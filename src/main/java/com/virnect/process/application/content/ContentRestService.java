@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "content-server")
 public interface ContentRestService {
-    @GetMapping("/metadata")
+    @GetMapping("/contents/metadata")
     ApiResponse<ContentRestDto> getContentMetadata(@RequestParam("contentUUID") String contentUUID);
 
-    @PostMapping("/status")
+    @PostMapping("/contents/status")
     ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest);
 }
