@@ -13,10 +13,10 @@ public interface ContentRestService {
     @GetMapping("/contents/metadata")
     ApiResponse<ContentRestDto> getContentMetadata(@RequestParam("contentUUID") String contentUUID);
 
-    @PutMapping("/convert/{contentUUID}")
+    @PutMapping("/contents/convert/{contentUUID}")
     ApiResponse<ContentInfoResponse> contentConvertHandler(@PathVariable("contentUUID") String contentUUID, @RequestParam("converted") YesOrNo converted);
 
-    @GetMapping("/convertTask/{taskId}")
+    @GetMapping("/contents/convertTask/{taskId}")
     ApiResponse<ContentUploadResponse> taskToContentConvertHandler(@PathVariable("taskId") Long taskId, @RequestParam(value = "userUUID") String userUUID);
 
     @DeleteMapping("/contents")
@@ -25,12 +25,12 @@ public interface ContentRestService {
     @PostMapping("/contents/status")
     ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest);
 
-    @PostMapping("/duplicate/{contentUUID}")
+    @PostMapping("/contents/duplicate/{contentUUID}")
     ApiResponse<ContentUploadResponse> contentDuplicate(
             @PathVariable("contentUUID") String contentUUID
             , @RequestParam("workspaceUUID") String workspaceUUID
             , @RequestParam("userUUID") String userUUID);
 
-    @GetMapping("/{contentUUID}")
+    @GetMapping("/contents/{contentUUID}")
     ApiResponse<ContentInfoResponse> getContentInfo(@PathVariable("contentUUID") String contentUUID);
 }
