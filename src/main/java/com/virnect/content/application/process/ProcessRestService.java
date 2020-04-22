@@ -17,6 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "process-server")
 public interface ProcessRestService {
 
-    @GetMapping("/target/{targetId}")
+    @GetMapping("/processes/target/{targetId}")
     ApiResponse<ProcessInfoResponse> getProcessInfo(@PathVariable("taskId") Long taskId);
 }

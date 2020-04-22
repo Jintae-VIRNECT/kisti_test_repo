@@ -87,8 +87,8 @@ public class ContentController {
 
     @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장되며, 컨텐츠 용량은 MB(MegaByte)단위임.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "testUUID"),
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "da67f860-8462-11ea-bc55-0242ac130003"),
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48254844-235e-4421-b713-4ea682994a98"),
             @ApiImplicitParam(name = "content", value = "업로드 콘텐츠 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "contentType", value = "콘텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
             @ApiImplicitParam(name = "name", value = "콘텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "test_content"),
@@ -250,7 +250,7 @@ public class ContentController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "컨텐츠 전환 수정", tags = "Process Server Only")
+    @ApiOperation(value = "컨텐츠 전환 수정", tags = "process server only")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
             @ApiImplicitParam(name = "converted", value = "컨텐츠의 공정 전환 여부(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")

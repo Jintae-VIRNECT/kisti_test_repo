@@ -3,7 +3,6 @@ package com.virnect.content.application.user;
 import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.global.common.ApiResponse;
-import com.virnect.content.global.common.ResponseMessage;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "user-server")
 public interface UserRestService {
 
-    @GetMapping("/{userUUID}")
+    @GetMapping("/users/{userUUID}")
     ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
 
-    @GetMapping
+    @GetMapping("/users")
     ApiResponse<UserInfoListResponse> getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
 }

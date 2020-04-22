@@ -2,12 +2,12 @@ spring:
   application:
     name: content-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/contents
+    url: jdbc:mysql://localhost:3306/contents
     username: virnect-content
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -38,11 +38,11 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://192.168.6.3:${server.port}/contents/"
+  serverUrl: "http://localhost:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
-  serverUrl: "http://192.168.6.3:8079/processes"
+  serverUrl: "http://localhost:8079/processes"
 
 content:
   serverUrl: "http://localhost:${server.port}/contents"
