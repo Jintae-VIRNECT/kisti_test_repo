@@ -87,6 +87,8 @@ public class ContentService {
     public ApiResponse<ContentUploadResponse> contentUpload(final String contentUUID, final ContentUploadRequest uploadRequest) {
         // 1. 콘텐츠 업로드 파일 저장
         try {
+            log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
+
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
 
