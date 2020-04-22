@@ -1,3 +1,9 @@
+export const sideLogo = {
+  path: '@collapseWorkspace',
+  image: require('assets/images/workspace-profile.png'),
+  label: 'Workspaces',
+}
+
 export const sideMenus = [
   {
     path: '/',

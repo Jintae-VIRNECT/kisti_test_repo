@@ -9,9 +9,14 @@
         :content="menu.label"
         placement="right"
       >
-        <router-link :to="menu.path">
+        <!-- 링크 -->
+        <router-link v-if="menu.path[0] === '/'" :to="menu.path">
           <img :src="menu.image" :alt="menu.label" />
         </router-link>
+        <!-- 컴포넌트 -->
+        <a v-if="menu.path[0] === '@'" @click.stop="openCollapse(menu.path)">
+          <img :src="menu.image" :alt="menu.label" />
+        </a>
       </el-tooltip>
     </li>
   </ul>
@@ -21,6 +26,11 @@
 export default {
   props: {
     menus: Array,
+  },
+  methods: {
+    openCollapse(component) {
+      this.emit('openCollapse', component)
+    },
   },
 }
 </script>

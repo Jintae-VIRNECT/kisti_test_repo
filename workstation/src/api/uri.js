@@ -5,6 +5,7 @@ module.exports = {
   // 로그인 API
   USER_LOGIN: ['POST', '/users/login'],
   USER_LOGOUT: ['GET', '/users/logout'],
+  GET_AUTH_INFO: ['GET', '/users/info'],
   /**
    * Workspace
    */

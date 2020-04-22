@@ -1,14 +1,14 @@
 <template>
   <div>
-    <the-sidebar
-      :logo="logo"
-      :menus="sideMenus"
-      :bottomMenus="sideBottomMenus"
-    />
+    <header>
+      <the-header :showSection="showSection" />
+    </header>
     <div>
-      <header>
-        <the-header />
-      </header>
+      <the-sidebar
+        :logo="sideLogo"
+        :menus="sideMenus"
+        :bottomMenus="sideBottomMenus"
+      />
       <main>
         <nuxt />
       </main>
@@ -22,19 +22,20 @@ import { mapGetters } from 'vuex'
 import TheSidebar from '@/components/layout/TheSidebar'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 
-import { sideMenus, sideBottomMenus } from '@/models/layout'
+import { sideLogo, sideMenus, sideBottomMenus } from '@/models/layout'
 
 export default {
+  middleware: 'default',
   components: {
     TheSidebar,
     TheHeader,
   },
   data() {
     return {
-      logo: {
-        image: '',
-        path: '/',
+      showSection: {
+        profile: true,
       },
+      sideLogo,
       sideMenus,
       sideBottomMenus,
     }

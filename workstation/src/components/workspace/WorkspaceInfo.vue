@@ -1,7 +1,7 @@
 <template>
   <div class="workspace-info">
     <div class="title">
-      <img src="~assets/images/temp/workspace-profile.png" />
+      <img src="~assets/images/workspace-profile.png" />
       <h5></h5>
       <span></span>
     </div>

@@ -26,7 +26,7 @@ export default async function api(name, option = {}) {
   if (params && params.filter && params.filter === 'ALL') {
     delete params.filter
   }
-  params = method === 'post' ? params : { params }
+  params = method !== 'get' ? params : { params }
 
   // default header
   const accessToken = process.client
@@ -38,13 +38,23 @@ export default async function api(name, option = {}) {
     }
   }
 
-  const response = await axios[method](uri, params, { headers })
-  const { code, data, message } = response.data
+  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
+  try {
+    const response = await axios[method](uri, params, { headers })
+    const { code, data, message } = response.data
+    if (process.client) $nuxt.$loading.finish()
 
-  if (code === 200) {
-    return data
-  } else {
+    if (code === 200) {
+      return data
+    } else {
+      throw new Error(`${code}: ${message}`)
+    }
+  } catch (e) {
+    if (process.client) {
+      $nuxt.$loading.fail()
+      $nuxt.$loading.finish()
+    }
     console.error(`URL: ${uri}`)
-    throw new Error(`${code}: ${message}`)
+    throw e
   }
 }
