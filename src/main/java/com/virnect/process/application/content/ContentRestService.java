@@ -1,6 +1,5 @@
 package com.virnect.process.application.content;
 
-import com.virnect.process.domain.TargetType;
 import com.virnect.process.domain.YesOrNo;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
 import com.virnect.process.dto.rest.response.content.*;
