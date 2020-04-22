@@ -18,6 +18,10 @@ spring:
     multipart:
       max-file-size: 300MB
       max-request-size: 400MB
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
 
 logging:
   level:
