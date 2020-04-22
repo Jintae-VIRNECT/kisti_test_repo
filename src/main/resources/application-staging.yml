@@ -21,6 +21,11 @@ spring:
     port: 6379
     database: 0
     host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace

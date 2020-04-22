@@ -21,6 +21,11 @@ spring:
     port: 32768
     database: 0
     host: localhost
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
