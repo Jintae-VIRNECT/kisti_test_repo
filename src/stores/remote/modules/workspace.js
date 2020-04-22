@@ -1,14 +1,11 @@
-
 import {
   SEARCH_SORT,
   SEARCH_FILTER,
   SET_HISTORY_LIST,
   DELETE_ALL_HISTORY_LIST,
   DELETE_SINGLE_HISTORY_LIST,
+  SET_MEMBER_LIST,
 } from '../mutation-types'
-
-import { SEARCH_SORT, SEARCH_FILTER, SET_MEMBER_LIST } from '../mutation-types'
-
 
 const state = {
   search: {
@@ -20,7 +17,6 @@ const state = {
   historyList: [],
 
   memberList: [],
-
 }
 
 const mutations = {
@@ -36,20 +32,16 @@ const mutations = {
   },
   [DELETE_SINGLE_HISTORY_LIST](state, payload) {
     const roomId = payload
-    console.log(roomId)
     const pos = state.historyList.findIndex(room => {
       return room.roomId === roomId
     })
-    console.log(pos)
-
     state.historyList.splice(pos, 1)
   },
   [DELETE_ALL_HISTORY_LIST](state) {
     state.historyList = []
-
+  },
   [SET_MEMBER_LIST](state, payload) {
     state.memberList = payload
-
   },
 }
 

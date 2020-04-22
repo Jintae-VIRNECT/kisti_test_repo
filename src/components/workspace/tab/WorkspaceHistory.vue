@@ -37,7 +37,7 @@ export default {
     //이 패턴은 옳은 패턴인가?...
     const _this = this
 
-    this.$eventBus.$on('historyList:delete', async function(payload) {
+    this.$eventBus.$on('dataList:delete', async function(payload) {
       try {
         const result = await deleteAllHistory()
         _this.$store.dispatch('deleteAllHistoryList', '')
@@ -45,7 +45,7 @@ export default {
         console.log(err)
       }
     })
-    this.$eventBus.$on('historyList:refresh', async function(payload) {
+    this.$eventBus.$on('dataList:refresh', async function(payload) {
       try {
         const datas = await getHistoryList()
         _this.$store.dispatch('setHistoryList', datas.data.romms)
@@ -64,8 +64,8 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$eventBus.$off('historyList:delete')
-    this.$eventBus.$off('historyList:refresh')
+    this.$eventBus.$off('dataList:delete')
+    this.$eventBus.$off('dataList:refresh')
   },
 }
 </script>

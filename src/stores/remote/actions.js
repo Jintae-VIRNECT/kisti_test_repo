@@ -66,6 +66,7 @@ export default {
 
   deleteHistorySingleItem({ commit }, payload) {
     commit(types.DELETE_SINGLE_HISTORY_LIST, payload)
+  },
   /*
    * member list
    * @param {Object} payload

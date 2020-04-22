@@ -114,7 +114,7 @@ export default {
       const _this = this
       return Object.assign({}, this.$listeners, {
         click: function(event) {
-          _this.$eventBus.$emit('historyList:delete')
+          _this.$eventBus.$emit('dataList:delete')
         },
       })
     },
@@ -122,7 +122,7 @@ export default {
       const _this = this
       return Object.assign({}, this.$listeners, {
         click: function(event) {
-          _this.$eventBus.$emit('historyList:refresh')
+          _this.$eventBus.$emit('dataList:refresh')
         },
       })
     },
