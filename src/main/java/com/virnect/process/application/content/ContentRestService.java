@@ -8,9 +8,9 @@ import com.virnect.process.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "ContentServerRestClient", url = "${content.serverUrl}")
+@FeignClient(name = "content-server")
 public interface ContentRestService {
-    @GetMapping("/metadata")
+    @GetMapping("/contents/metadata")
     ApiResponse<ContentRestDto> getContentMetadata(@RequestParam("contentUUID") String contentUUID);
 
     @PutMapping("/convert/{contentUUID}")
@@ -19,10 +19,10 @@ public interface ContentRestService {
     @GetMapping("/convertTask/{taskId}")
     ApiResponse<ContentUploadResponse> taskToContentConvertHandler(@PathVariable("taskId") Long taskId, @RequestParam(value = "userUUID") String userUUID);
 
-    @DeleteMapping
+    @DeleteMapping("/contents")
     ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(@RequestParam(value = "contentUUID") String[] contentUUIDs, @RequestParam(value = "workerUUID") String workerUUID);
 
-    @PostMapping("/status")
+    @PostMapping("/contents/status")
     ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest);
 
     @PostMapping("/duplicate/{contentUUID}")

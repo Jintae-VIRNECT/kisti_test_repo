@@ -13,6 +13,10 @@ spring:
     multipart:
       max-file-size: 300MB
       max-request-size: 400MB
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
 
 #logging:
 #  level:
@@ -33,7 +37,7 @@ server:
 upload:
   dir: "upload/"
   serverUrl: "http://192.168.6.3:${server.port}/processes/"
-    allowed-extension: '.jpg'
+  allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 process:
   serverUrl: "http://192.168.6.3:${server.port}/processes"
