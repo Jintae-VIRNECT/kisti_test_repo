@@ -23,13 +23,26 @@
         <!-- 가운데 -->
         <el-col class="container__center">
           <el-card class="main-banner">
-            <h6>{{ $t('main.banner.sub') }}</h6>
-            <h5>{{ $t('main.banner.main') }}</h5>
-            <p>{{ $t('main.banner.desc') }}</p>
+            <h6>{{ $t('home.banner.sub') }}</h6>
+            <h5>{{ $t('home.banner.main') }}</h5>
+            <p>{{ $t('home.banner.desc') }}</p>
           </el-card>
         </el-col>
         <!-- 오른쪽 -->
-        <el-col class="container__right"> <el-card></el-card></el-col>
+        <el-col class="container__right">
+          <link-list-card
+            type="link"
+            icon=""
+            :title="$t('home.install.title')"
+            :links="install"
+          />
+          <link-list-card
+            type="download"
+            icon=""
+            :title="$t('home.guide.title')"
+            :links="guide"
+          />
+        </el-col>
       </el-row>
     </div>
   </div>
@@ -39,20 +52,21 @@
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import WorkspaceStorageInfo from '@/components/workspace/WorkspaceStorageInfo'
 import WorkspaceDownloadInfo from '@/components/workspace/WorkspaceDownloadInfo'
+import LinkListCard from '@/components/common/LinkListCard'
+
+import { install, guide } from '@/models/home'
 
 export default {
   components: {
     WorkspaceInfo,
     WorkspaceStorageInfo,
     WorkspaceDownloadInfo,
+    LinkListCard,
   },
   data() {
     return {
-      nickname: `User's Nickname`,
-      form: {
-        name: '',
-        description: '',
-      },
+      install,
+      guide,
     }
   },
 }

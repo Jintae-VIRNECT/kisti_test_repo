@@ -1,19 +1,19 @@
 <template>
   <el-card class="storage-info">
     <div slot="header">
-      <h3>{{ $t('main.storage.title') }}</h3>
-      <router-link to="/">{{ $t('main.storage.link') }}</router-link>
+      <h3>{{ $t('home.storage.title') }}</h3>
+      <router-link to="/">{{ $t('home.storage.link') }}</router-link>
     </div>
     <div>
       <div class="stats">
-        <span>{{ $t('main.storage.allStorageVolume') }}</span>
-        <span class="count">{{ $t('main.storage.unit') }}</span>
+        <span>{{ $t('home.storage.allStorageVolume') }}</span>
+        <span class="count">{{ $t('home.storage.unit') }}</span>
       </div>
       <div class="detail">
-        <span>{{ $t('main.storage.storageVolume') }}</span>
+        <span>{{ $t('home.storage.storageVolume') }}</span>
         <el-progress :percentage="50" />
-        <span>{{ $t('main.storage.used') }}</span>
-        <span>{{ $t('main.storage.available') }}</span>
+        <span>{{ $t('home.storage.used') }}</span>
+        <span>{{ $t('home.storage.available') }}</span>
       </div>
     </div>
   </el-card>
