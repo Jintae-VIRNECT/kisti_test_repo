@@ -12,7 +12,7 @@
     @refresh="refresh"
   >
     <remote-card
-      v-for="room of rooms"
+      v-for="room of roomList"
       :key="room.roomId"
       :roomInfo="room"
       @refresh="refresh"
@@ -24,53 +24,54 @@
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
 import { getRoomList } from 'api/remote/room'
+import searchMixin from 'mixins/filter'
 export default {
   name: 'WorkspaceRemote',
+  mixins: [searchMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
-      roomList: null,
+      remoteInfo: null,
+      rooms: [],
     }
   },
   computed: {
-    rooms() {
-      if (!this.roomList || !this.roomList.rooms) {
-        return []
-      } else {
-        return this.roomList.rooms
-      }
-    },
+    // rooms() {
+    //   if (!this.remoteInfo || !this.remoteInfo.rooms) {
+    //     return []
+    //   } else {
+    //     return this.remoteInfo.rooms
+    //   }
+    // },
     currentCount() {
-      if (!this.roomList || !this.roomList.currentCount) {
+      if (!this.remoteInfo || !this.remoteInfo.currentCount) {
         return 0
       } else {
-        return this.roomList.currentCount
+        return this.remoteInfo.currentCount
       }
     },
-  },
-  watch: {
-    rooms(val) {
-      console.log(val)
+    roomList() {
+      return this.getFilter(this.rooms, ['title', 'description'], 'room')
     },
   },
+  watch: {},
   methods: {
     async refresh() {
-      this.roomList = await getRoomList({
+      this.remoteInfo = await getRoomList({
         title: '이건 무슨 데이터일까',
         participantName: this.account.userId,
       })
-      console.log(this.roomList)
+      this.rooms = this.remoteInfo.rooms
     },
   },
 
   /* Lifecycles */
   async created() {
-    this.roomList = await getRoomList({
+    this.remoteInfo = await getRoomList({
       title: '이건 무슨 데이터일까',
       participantName: this.account.userId,
     })
-    console.log(this.roomList)
-    console.log(this.roomList.currentCount)
+    this.rooms = this.remoteInfo.rooms
   },
   mounted() {},
 }

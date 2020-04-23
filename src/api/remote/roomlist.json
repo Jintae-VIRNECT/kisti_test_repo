@@ -52,7 +52,7 @@
     {
       "room":{
         "roomId": "room2",
-        "title" : "경아's room",
+        "title" : "김경아방",
         "description" : "",
         "roomLeaderName" : "김경아",
         "roomLeaderId" : "123457",
@@ -142,32 +142,16 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123458",
-            "userName":"박경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123459",
-            "userName":"정경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123450",
-            "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -192,9 +176,9 @@
     {
       "room":{
         "roomId": "room4",
-        "title" : "경아's room",
+        "title" : "보검이랑 통화해요",
         "description" : "일이삼사오육칠팔구영일이삼사오육칠팔구영일이삼사오육칠팔구영",
-        "roomLeaderName" : "정경아",
+        "roomLeaderName" : "박보검",
         "roomLeaderId" : "123459",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -205,32 +189,44 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123451",
             "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -255,9 +251,9 @@
     {
       "room":{
         "roomId": "room5",
-        "title" : "경아's room",
+        "title" : "버넥트신사옥",
         "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "버넥트 우경아",
+        "roomLeaderName" : "버넥트",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -268,32 +264,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -318,9 +319,9 @@
     {
       "room":{
         "roomId": "room6",
-        "title" : "경아's room",
+        "title" : "리모트 화이팅",
         "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "리모트 우경아",
+        "roomLeaderName" : "리모트",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -331,32 +332,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -381,9 +387,9 @@
     {
       "room":{
         "roomId": "room7",
-        "title" : "경아's room",
-        "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "우경아",
+        "title" : "집에가자",
+        "description" : "집에가자",
+        "roomLeaderName" : "집에가자",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -394,32 +400,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -444,9 +455,9 @@
     {
       "room":{
         "roomId": "room8",
-        "title" : "경아's room",
-        "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "우경아",
+        "title" : "핳핳",
+        "description" : "집에가자",
+        "roomLeaderName" : "하하",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -457,32 +468,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -520,32 +536,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[

@@ -126,7 +126,7 @@ export default {
     right: -10px;
     width: 5px;
     height: 5px;
-    background-color: #0f75f5;
+    background-color: $color_primary;
     border-radius: 50%;
     content: '';
   }
@@ -155,7 +155,7 @@ export default {
   }
   &:active,
   &:focus {
-    border: solid 1px #0f75f5;
+    border: solid 1px $color_primary;
   }
   &.textarea {
     height: 60px;

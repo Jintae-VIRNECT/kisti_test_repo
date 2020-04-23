@@ -68,7 +68,7 @@ export default {
     content: '';
   }
   &:focus-within {
-    border: solid 1px #0f75f5;
+    border: solid 1px $color_primary;
   }
 }
 .search__input {
@@ -78,7 +78,7 @@ export default {
   background-color: transparent;
   border: none;
   transition: width 0.25s ease;
-  caret-color: #0f75f5;
+  caret-color: $color_primary;
   &:focus {
     width: 320px;
     transition: width 0.25s ease;

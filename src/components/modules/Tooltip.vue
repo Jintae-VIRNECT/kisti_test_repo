@@ -78,7 +78,7 @@ export default {
 
         // bottom: 100%;
         if (this.placement.indexOf('top') > -1) {
-          tooltip.style.bottom = '100%'
+          tooltip.style.bottom = '120%'
           arrow.style.top = '100%'
           if (this.placement.indexOf('start') > -1) {
             tooltip.style.left = '0'
@@ -92,7 +92,7 @@ export default {
           }
           // top: 100%;
         } else if (this.placement.indexOf('bottom') > -1) {
-          tooltip.style.top = '100%'
+          tooltip.style.top = '120%'
           arrow.style.bottom = '100%'
           if (this.placement.indexOf('start') > -1) {
             tooltip.style.left = '0'
@@ -152,37 +152,70 @@ export default {
   z-index: 3;
   // display: none;
   width: max-content;
-  padding: 10px;
-  font-size: 12px;
+  padding: 10px 20px;
+  font-size: 13px;
   border-radius: 6px;
   .arrow {
     position: absolute;
+    border-color: transparent;
     border-style: solid;
-    border-width: 5px;
+    border-width: 6px;
     content: ' ';
+    &:after {
+      position: absolute;
+      left: 0;
+      width: 0;
+      height: 0;
+      margin-left: -5px;
+      border-color: transparent;
+      border-style: solid;
+      border-width: 5px;
+      content: '';
+    }
   }
   &.black {
     color: #fff;
     background-color: #333;
+    border: solid 1px rgba(#d2d2d2, 0.3);
     &.top .arrow,
     &.top-start .arrow,
     &.top-end .arrow {
-      border-color: #333 transparent transparent transparent;
+      border-top-color: rgba(#d2d2d2, 0.3);
+      &:after {
+        top: 1px;
+        margin-top: -7px;
+        border-top-color: #333;
+      }
     }
     &.bottom .arrow,
     &.bottom-start .arrow,
     &.bottom-end .arrow {
-      border-color: transparent transparent #333 transparent;
+      border-bottom-color: rgba(#d2d2d2, 0.3);
+      &:after {
+        bottom: 1px;
+        margin-bottom: -7px;
+        border-bottom-color: #333;
+      }
     }
     &.left .arrow,
     &.left-start .arrow,
     &.left-end .arrow {
-      border-color: transparent transparent transparent #333;
+      border-left-color: rgba(#d2d2d2, 0.3);
+      &:after {
+        left: 1px;
+        margin-left: -7px;
+        border-left-color: #333;
+      }
     }
     &.right .arrow,
     &.right-start .arrow,
     &.right-end .arrow {
-      border-color: transparent #333 transparent transparent;
+      border-right-color: rgba(#d2d2d2, 0.3);
+      &:after {
+        right: 1px;
+        margin-right: -7px;
+        border-right-color: #333;
+      }
     }
   }
   &.white {
@@ -221,7 +254,7 @@ export default {
     &,
     &-start,
     &-end {
-      bottom: 100%;
+      bottom: 120%;
       margin-bottom: 10px;
       &::before {
         margin-top: 1px;
@@ -231,7 +264,6 @@ export default {
         top: 100%;
         left: 50%;
         margin-left: -5px;
-        // border-color: #000 transparent transparent transparent;
       }
     }
   }
@@ -239,7 +271,7 @@ export default {
     &,
     &-start,
     &-end {
-      top: 100%;
+      top: 120%;
       &::before {
         bottom: 100%;
         left: 50%;

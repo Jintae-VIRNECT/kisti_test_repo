@@ -37,7 +37,7 @@
 }
 
 .header-lnb-selector.popover {
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px #3a3a3a;
   border-radius: 4px;
   transform: translateX(40px);
@@ -69,7 +69,7 @@
   border-radius: 50%;
   transform: translateY(-50%);
   &.active {
-    border-color: #0f75f5;
+    border-color: $color_primary;
     &::after {
       position: absolute;
       top: 3px;
@@ -81,7 +81,7 @@
       height: 8px;
 
       /*Add a white border on the bottom and left, creating that 'L' */
-      border: solid #0f75f5;
+      border: solid $color_primary;
       border-width: 0 2px 2px 0;
 
       /*Rotate the L 45 degrees to turn it into a checkmark*/

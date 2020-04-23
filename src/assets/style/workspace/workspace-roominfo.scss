@@ -68,19 +68,19 @@
   font-size: 15px;
   &.regist {
     margin-right: 16px;
-    color: #0f75f5;
-    border-color: #0f75f5;
+    color: $color_primary;
+    border-color: $color_primary;
     &:focus {
-      color: #0f75f5;
-      border-color: #0f75f5;
+      color: $color_primary;
+      border-color: $color_primary;
     }
     &:hover {
-      color: rgba(#0f75f5, 0.5);
-      border-color: rgba(#0f75f5, 0.5);
+      color: rgba($color_primary, 0.5);
+      border-color: rgba($color_primary, 0.5);
     }
     &:active {
-      color: rgba(#0f75f5, 0.8);
-      border-color: rgba(#0f75f5, 0.8);
+      color: rgba($color_primary, 0.8);
+      border-color: rgba($color_primary, 0.8);
     }
   }
   &.delete {
@@ -113,11 +113,11 @@
 .data-title {
   display: inline-block;
   width: 70px;
-  color: rgba(#d2d2d2, 0.5);
+  color: rgba($color_text_main2, 0.5);
   font-size: 13px;
 }
 .data-value {
-  color: #d2d2d2;
+  color: $color_text_main2;
   font-weight: 500;
   font-size: 13px;
 }
@@ -148,7 +148,7 @@
   margin-top: 25px;
 }
 .roominfo-figure__title {
-  color: rgba(#d2d2d2, 0.5);
+  color: rgba($color_text_main2, 0.5);
   font-size: 13px;
 }
 .roominfo-figure__text {

@@ -133,7 +133,7 @@ export default {
   margin: 0 20px auto 0;
   @include image();
   &.info {
-    background-color: #0f75f5;
+    background-color: $color_primary;
   }
   &.alert {
     background-color: #ffd059;

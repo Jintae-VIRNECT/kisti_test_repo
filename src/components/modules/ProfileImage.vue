@@ -97,7 +97,7 @@ export default {
   @include ir();
   &:hover {
     background: url(~assets/image/ic_trash.svg) 50%/20px no-repeat;
-    background-color: rgba(#000, 0.8);
+    background-color: rgba($color_darkgray_1000, 0.8);
   }
 }
 </style>

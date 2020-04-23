@@ -40,7 +40,7 @@
     }
   }
   &__description {
-    color: rgba($color_text_default, 0.87);
+    color: rgba($color_text_sub, 0.87);
     font-weight: 500;
     font-size: 12px;
   }
@@ -77,7 +77,7 @@
     position: relative;
     align-self: center;
     margin-bottom: 20px;
-    color: rgba($color_text_default, 0.7);
+    color: rgba($color_text_sub, 0.7);
     font-size: 12px;
     > p {
       &::before {
@@ -121,7 +121,7 @@
         background-color: $color_chat_bg_me;
         border-radius: 7px 7px 0 7px;
         .text {
-          color: rgba($color_black, 0.78);
+          color: rgba($color_darkgray_1000, 0.78);
           white-space: pre-wrap;
         }
       }
@@ -159,12 +159,12 @@
         border-radius: 0 7px 7px 7px;
         // width: fit-content;
         .name {
-          color: rgba($color_black, 0.9);
+          color: rgba($color_darkgray_1000, 0.9);
           font-weight: 500;
           font-size: 12px;
         }
         .text {
-          color: rgba($color_black, 0.78);
+          color: rgba($color_darkgray_1000, 0.78);
         }
       }
       .time {
@@ -194,7 +194,7 @@
     }
     .chat-item__body {
       .text {
-        color: rgba($color_text_default, 0.9);
+        color: rgba($color_text_sub, 0.9);
         line-height: 1.57;
         &.alarm {
           transform: translateX(14px);
@@ -240,14 +240,14 @@
   .file {
     white-space: pre-line;
     &__name {
-      color: rgba(#000, 0.78);
+      color: rgba($color_darkgray_1000, 0.78);
       font-weight: 500;
       font-size: 15px;
       background: url() no-repeat;
     }
 
     &__size {
-      color: rgba(#000, 0.78);
+      color: rgba($color_darkgray_1000, 0.78);
       font-size: 12px;
     }
 
@@ -340,7 +340,7 @@
       outline: none;
 
       &::placeholder {
-        color: rgba($color_text_default, 0.42);
+        color: rgba($color_text_sub, 0.42);
       }
     }
 
@@ -348,9 +348,9 @@
       position: absolute;
       right: 18px;
       padding: 5px 12px;
-      color: $color_text_default;
+      color: $color_text_sub;
       font-size: 15px;
-      background-color: $color_remote2;
+      background-color: $color_primary;
       border-radius: 2px;
     }
   }

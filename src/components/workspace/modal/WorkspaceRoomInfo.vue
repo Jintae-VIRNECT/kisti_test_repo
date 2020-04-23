@@ -130,10 +130,6 @@ export default {
   },
 
   /* Lifecycles */
-  async created() {
-    this.room = await getRoomInfo({ roomId: this.roomId })
-    this.image = this.room.path
-  },
   mounted() {},
 }
 </script>
