@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="this.$store.state.workspace.historyList.length > 0"
-    class="list-wrapper"
-  >
+  <div v-if="historyList.length > 0" class="list-wrapper">
     <wide-card-extend
       :menu="true"
       v-for="(history, index) in list"
@@ -19,11 +16,11 @@
         {{ '총 이용시간: ' + history.totalUseTime }}
       </div>
       <div slot="column2" class="label label--date">
-        {{ history.collaborationStartDate }}
+        {{ convertDate(history.collaborationStartDate) }}
       </div>
       <div slot="column3" class="label lable__icon">
         <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
-        <span class="text">{{ history.roomLeaderName }}</span>
+        <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
       </div>
       <button slot="menuPopover"></button>
       <button class="btn" @click="createRoom(history.roomId)" slot="column4">
@@ -73,7 +70,7 @@
 import Profile from 'Profile'
 import WideCardExtend from 'WideCardExtend'
 
-import sort from 'mixins/admin/adminSort'
+import sort from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
@@ -102,11 +99,11 @@ export default {
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.$store.state.workspace.historyList
+        return this.historyList
       }
 
       const array = []
-      for (const list of this.$store.state.workspace.historyList) {
+      for (const list of this.historyList) {
         if (list.title.toLowerCase().match(this.searchFilter.toLowerCase())) {
           array.push(list)
         }
@@ -122,6 +119,10 @@ export default {
       type: String,
       default: '',
     },
+    historyList: {
+      type: Array,
+      default: () => [],
+    },
   },
   methods: {
     //상세보기
@@ -131,14 +132,20 @@ export default {
       this.roomInfo = result.data
     },
     async deleteItem(roomId) {
-      this.$store.dispatch('deleteHistorySingleItem', roomId)
-      let result = await deleteHistorySingleItem({ roomId })
+      const pos = this.historyList.findIndex(room => {
+        return room.roomId === roomId
+      })
+      this.historyList.splice(pos, 1)
+      await deleteHistorySingleItem({ roomId })
     },
 
     //재시작
     async createRoom(roomId) {
-      // let result = await getHistorySingleItem({ roomId })
       this.visible = !this.visible
+    },
+    convertDate(date) {
+      const re = /-/gi
+      return date.replace(re, '.')
     },
   },
   created() {},

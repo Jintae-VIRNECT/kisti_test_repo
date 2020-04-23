@@ -3,11 +3,11 @@
     title="협업 가능 멤버"
     description="협업 가능한 회원을 선택하고 메세지를 보내보세요."
     placeholder="멤버 검색"
-    :listCount="memberListLength"
+    :listCount="memberList.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
-    @refresh="refresh"
-    ><workspace-user-list></workspace-user-list>
+    @refresh="getList"
+    ><workspace-user-list :memberList="memberList"></workspace-user-list>
   </tab-view>
 </template>
 
@@ -15,7 +15,6 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
 import { getMemberList } from 'api/workspace/member'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceUser',
@@ -25,16 +24,13 @@ export default {
       memberList: [],
     }
   },
-  computed: {
-    ...mapGetters(['memberListLength']),
-  },
+  computed: {},
   watch: {},
   methods: {
-    async refresh() {
+    async getList() {
       try {
-        console.log('refresh')
         const datas = await getMemberList()
-        this.$store.dispatch('setHistoryList', datas.data.participants)
+        this.memberList = datas.data.participants
       } catch (err) {
         console.log(err)
       }
@@ -45,12 +41,13 @@ export default {
 
   /* Lifecycles */
   async created() {
-    try {
-      const datas = await getMemberList()
-      this.$store.dispatch('setMemberList', datas.data.participants)
-    } catch (err) {
-      console.log(err)
-    }
+    this.getList()
+    // try {
+    //   const datas = await getMemberList()
+    //   this.memberList = datas.data.participants
+    // } catch (err) {
+    //   console.log(err)
+    // }
   },
   beforeDestroy() {
     this.$eventBus.$off('refresh')

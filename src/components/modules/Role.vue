@@ -35,15 +35,15 @@ export default {
   border-radius: 12px;
 
   &.card {
+    color: #f2f2f2;
     font-family: NotoSansCJKkr-Medium;
-    color: rgb(242, 242, 242);
     background: rgb(56, 56, 58);
     border: 1px solid rgb(204, 204, 204);
   }
 
   &.expired {
+    color: #f2f2f2;
     font-family: NotoSansCJKkr-Medium;
-    color: rgb(242, 242, 242);
     background: rgba(204, 23, 1, 0.3);
     border: 1px solid rgb(204, 23, 1);
     border-radius: 13px;

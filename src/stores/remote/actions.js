@@ -52,26 +52,4 @@ export default {
   setFilter({ commit }, payload) {
     commit(types.SEARCH_FILTER, payload)
   },
-
-  /**
-   * history
-   */
-  setHistoryList({ commit }, payload) {
-    commit(types.SET_HISTORY_LIST, payload)
-  },
-
-  deleteAllHistoryList({ commit }, payload) {
-    commit(types.DELETE_ALL_HISTORY_LIST, payload)
-  },
-
-  deleteHistorySingleItem({ commit }, payload) {
-    commit(types.DELETE_SINGLE_HISTORY_LIST, payload)
-  },
-  /*
-   * member list
-   * @param {Object} payload
-   */
-  setMemberList({ commit }, payload) {
-    commit(types.SET_MEMBER_LIST, payload)
-  },
 }

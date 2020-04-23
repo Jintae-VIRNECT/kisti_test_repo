@@ -26,12 +26,3 @@ export const SET_DEVICE = 'SET_DEVICE'
 //list search
 export const SEARCH_SORT = 'SEARCH_SORT'
 export const SEARCH_FILTER = 'SEARCH_FILTER'
-
-
-//workspace-history
-export const SET_HISTORY_LIST = 'SET_HISTORY_LIST'
-export const DELETE_ALL_HISTORY_LIST = 'DELETE_ALL_HISTORY_LIST'
-export const DELETE_SINGLE_HISTORY_LIST = 'DELETE_SINGLE_HISTORY_LIST'
-
-export const SET_MEMBER_LIST = 'SET_MEMBER_LIST'
-

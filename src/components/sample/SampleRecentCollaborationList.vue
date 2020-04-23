@@ -137,16 +137,12 @@ export default {
   font-weight: normal;
   font-size: 15px;
   font-family: AppleSDGothicNeo-Regular;
-  letter-spacing: 0px;
   text-align: center;
 }
 
 .label--date {
   color: #fafafa;
-  font-weight: normal;
   font-size: 15px;
-  font-family: Roboto-Regular;
-  letter-spacing: 0px;
   text-align: center;
   opacity: 50%;
 }
@@ -164,10 +160,7 @@ export default {
 
   .text {
     color: #fafafa;
-    font-weight: normal;
     font-size: 14px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
   }
 }
 </style>
