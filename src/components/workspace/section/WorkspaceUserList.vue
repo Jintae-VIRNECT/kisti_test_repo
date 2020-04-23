@@ -10,7 +10,7 @@
         :name="userinfo.participantName"
         :email="'example@test.com'"
         :role="userinfo.participantRole"
-        :license="''"
+        :license="userinfo.license"
       >
       </member-card>
     </div>
@@ -171,7 +171,7 @@ export default {
   }
 
   .no-list__title {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
     font-weight: normal;
     font-size: 24px;
     font-family: NotoSansCJKkr-Regular;
@@ -179,7 +179,7 @@ export default {
     text-align: center;
   }
   .no-list__description {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
     font-weight: normal;
     font-size: 18px;
     font-family: NotoSansCJKkr-Regular;

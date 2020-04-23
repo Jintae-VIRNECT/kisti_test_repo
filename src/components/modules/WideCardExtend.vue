@@ -84,6 +84,6 @@ export default {
 .widecard-tools {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 </style>

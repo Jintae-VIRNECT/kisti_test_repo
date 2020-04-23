@@ -112,21 +112,27 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 204px;
   padding-top: 32px;
-
   background-color: #313135e6;
   border: solid 1px #3e3e42;
   border-radius: 2px;
   &.no__button {
     padding-bottom: 20px;
   }
-  max-width: 204px;
+  .role {
+    margin: 8px 0px 8px 0px;
+  }
+
+  &:hover {
+    background-color: #313135;
+  }
 }
 .card-center {
   display: flex;
   flex-direction: column;
-  align-items: center;
   flex-grow: 3;
+  align-items: center;
   min-height: 180px;
   margin-bottom: 10px;
 }
@@ -137,13 +143,13 @@ export default {
   height: 64px;
 
   &.expired {
-    height: 73px;
     width: 73px;
-    border: solid;
-    border-width: 1.4px;
-    border-color: red;
-    border-radius: 50%;
+    height: 73px;
     padding: 3px;
+    border: solid;
+    border-color: red;
+    border-width: 1.4px;
+    border-radius: 50%;
   }
 }
 
@@ -157,25 +163,25 @@ export default {
 }
 
 .card-center-profile--name {
-  color: rgb(255, 255, 255);
-  font-size: 15px;
-  font-family: NotoSansCJKkr-Medium;
-  font-weight: 500;
-  text-align: center;
   margin-top: 17px;
   margin-bottom: 4px;
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  font-size: 15px;
+  font-family: NotoSansCJKkr-Medium;
+  text-align: center;
   &.expired {
     margin-top: 11px;
     margin-bottom: 3px;
   }
 }
 .card-center-profile--email {
+  margin-bottom: 11px;
   color: rgb(152, 160, 166);
+  font-weight: normal;
   font-size: 13px;
   font-family: Roboto-Regular;
-  font-weight: normal;
   text-align: center;
-  margin-bottom: 11px;
 }
 
 .card-center-profile--badge {
@@ -200,20 +206,20 @@ export default {
 }
 
 .card-bottom {
-  border-top-color: rgba(62, 62, 66, 0.92);
-  border-top-style: solid;
-  border-top-width: 1px;
-  text-align: center;
+  flex-grow: 1;
   width: 100%;
+  margin-bottom: 14px;
+  padding-top: 14px;
+  font-weight: normal;
 
   font-size: 13px;
   font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
   letter-spacing: 0px;
-  flex-grow: 1;
-  padding-top: 14px;
-  margin-bottom: 14px;
+  text-align: center;
+  text-align: center;
+  border-top-color: rgba(62, 62, 66, 0.92);
+  border-top-width: 1px;
+  border-top-style: solid;
   > p {
     color: rgb(255, 255, 255);
   }
