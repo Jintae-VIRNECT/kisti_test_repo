@@ -1,0 +1,53 @@
+{
+  "data": {
+    "totalCount": "전체 멤버 수",
+    "currentCount": "현재 멤버수",
+    "participants": [
+      {
+        "participantId": "1",
+        "participantRole": "Master",
+        "participantName": "버넥트 01",
+        "status": "접속 상태",
+        "path": "프로필 경로",
+        "license":false
+      },
+      {
+        "participantId": "2",
+        "participantRole": "Manager",
+        "participantName": "버넥트 02",
+        "status": "접속 상태",
+        "path": "프로필 경로"
+      },
+      {
+        "participantId": "3",
+        "participantRole": "",
+        "participantName": "버넥트 03",
+        "status": "접속 상태",
+        "path": "프로필 경로"
+      },
+      {
+        "participantId": "4",
+        "participantRole": "Master",
+        "participantName": "유저 이름1",
+        "status": "접속 상태",
+        "path": "프로필 경로"
+      },
+      {
+        "participantId": "5",
+        "participantRole": "",
+        "participantName": "유저 이름2",
+        "status": "접속 상태",
+        "path": "프로필 경로"
+      },
+      {
+        "participantId": "6",
+        "participantRole": "",
+        "participantName": "유저 이름3",
+        "status": "접속 상태",
+        "path": "프로필 경로"
+      }
+    ]
+  },
+  "code": 200,
+  "message": "complete"
+}

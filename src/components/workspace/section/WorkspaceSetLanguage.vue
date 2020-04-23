@@ -14,6 +14,9 @@
 <script>
 import RRadio from 'RemoteRadio'
 export default {
+  props: {
+    defaultLanguage: null,
+  },
   data: function() {
     return {
       selectLanguage: 'en',

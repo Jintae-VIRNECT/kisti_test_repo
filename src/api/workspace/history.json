@@ -1,0 +1,316 @@
+{
+  "data": {
+    "totalCount": "20",
+    "currentCount": "10",
+    "romms": [
+      {
+        "roomId": "1",
+        "title": "고리 1호기 용접샵 협업",
+        "description": "더미 1",
+        "memberCount": "3",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-02-10",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Evelyn E. Fitzgerald",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "Dottie D. Renteria",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "sss",
+            "path": "No"
+          },
+          {
+            "participantId": "3",
+            "participantRole": "Manager",
+            "participantName": "ddd ddd",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "2",
+        "title": "한울 3발전소 증기터빈 협업",
+        "description": "더미 2",
+        "memberCount": "2",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"David S. Sims",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "3",
+        "title": "한빛 2발전소 임시변경 관련 협업",
+        "description": "더미 3",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Livia J. Sheldon",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "4444",
+        "title": "신한울 보안 정책 협의 관련 협업",
+        "description": "더미 444",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Beth J. Chavez",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "555",
+        "title": "본사 간사 미팅 협업",
+        "description": "",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Carmen J. Lee",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "6666",
+        "title": "경주 지진 방호 대책 논의 협업",
+        "description": "더미 666",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Reginald M. Stone",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "77777",
+        "title": "비상 디젤 발전기 점검 협업",
+        "description": "더미 777",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Vernon V. Reedy",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      },
+      {
+        "roomId": "888",
+        "title": "경주 방사능 계측기 점검 협업",
+        "description": "더미 888",
+        "memberCount": "5",
+        "totalUseTime": "08분 13초",
+        "collaborationStartDate": "2020-04-20",
+        "roomLeaderId" : "123",
+        "roomLeaderName":"Michael H. Walters",
+        "member": [
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "1",
+            "participantRole": "Master",
+            "participantName": "fff",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          },
+          {
+            "participantId": "2",
+            "participantRole": "",
+            "participantName": "hhhh",
+            "path": "No"
+          }
+        ]
+      }
+    ]
+  },
+  "code": 200,
+  "message": "complete"
+}

@@ -33,6 +33,7 @@ export default {
       this.$emit('selectedVideoDevice', newDevice)
     },
   },
+  created() {},
 }
 </script>
 
