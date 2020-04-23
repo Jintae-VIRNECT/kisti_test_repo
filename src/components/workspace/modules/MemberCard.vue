@@ -114,7 +114,7 @@ export default {
   align-items: center;
   max-width: 204px;
   padding-top: 32px;
-  background-color: #313135e6;
+  background-color: rgba(49, 49, 53, 0.902);
   border: solid 1px #3e3e42;
   border-radius: 2px;
   &.no__button {
@@ -165,10 +165,9 @@ export default {
 .card-center-profile--name {
   margin-top: 17px;
   margin-bottom: 4px;
-  color: rgb(255, 255, 255);
+  color: #ffffff;
   font-weight: 500;
   font-size: 15px;
-  font-family: NotoSansCJKkr-Medium;
   text-align: center;
   &.expired {
     margin-top: 11px;
@@ -178,9 +177,7 @@ export default {
 .card-center-profile--email {
   margin-bottom: 11px;
   color: rgb(152, 160, 166);
-  font-weight: normal;
   font-size: 13px;
-  font-family: Roboto-Regular;
   text-align: center;
 }
 
@@ -210,12 +207,8 @@ export default {
   width: 100%;
   margin-bottom: 14px;
   padding-top: 14px;
-  font-weight: normal;
-
   font-size: 13px;
-  font-family: NotoSansCJKkr-Regular;
-  letter-spacing: 0px;
-  text-align: center;
+
   text-align: center;
   border-top-color: rgba(62, 62, 66, 0.92);
   border-top-width: 1px;
