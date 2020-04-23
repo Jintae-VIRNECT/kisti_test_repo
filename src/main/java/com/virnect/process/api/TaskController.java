@@ -698,11 +698,11 @@ public class TaskController {
             @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/created/target/{targetData}")
-    public ResponseEntity<ApiResponse<ProcessTargetInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
         }
-        ApiResponse<ProcessTargetInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetData);
+        ApiResponse<ProcessInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetData);
         return ResponseEntity.ok(responseMessage);
     }
 

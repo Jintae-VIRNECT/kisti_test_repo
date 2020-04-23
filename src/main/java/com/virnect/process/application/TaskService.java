@@ -1554,11 +1554,11 @@ public class TaskService {
         });
     }
 
-    public ApiResponse<ProcessTargetInfoResponse> getProcessInfoByTarget(String targetData) {
+    public ApiResponse<ProcessInfoResponse> getProcessInfoByTarget(String targetData) {
         Process process = this.processRepository.findByTargetDataAndState(targetData, State.CREATED)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        ProcessTargetInfoResponse targetInfoResponse = this.modelMapper.map(process, ProcessTargetInfoResponse.class);
-        return new ApiResponse<>(targetInfoResponse);
+        ProcessInfoResponse processInfoResponse = this.modelMapper.map(process, ProcessInfoResponse.class);
+        return new ApiResponse<>(processInfoResponse);
     }
 
     /**

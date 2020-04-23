@@ -58,7 +58,7 @@ public class Process extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private State state;
 
-    @Column(name = "content_uuid")
+    @Column(name = "content_uuid", unique = true)
     private String contentUUID;
 
     @Column(name = "content_manager_uuid")
