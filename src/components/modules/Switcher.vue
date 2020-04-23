@@ -72,7 +72,7 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s;
   &.toggle {
-    background-color: #0f75f5;
+    background-color: $color_primary;
   }
 }
 .switcher-toggle__type {

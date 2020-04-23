@@ -49,13 +49,14 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .radio-custom {
   width: 400px;
   padding-top: 10px;
   padding-right: 20px;
   padding-bottom: 10px;
   padding-left: 20px;
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border-radius: 2px;
 
   .radio-option:first-of-type {

@@ -64,8 +64,10 @@ export default {
 }
 </style>
 <style lang="scss">
+@import '~assets/style/vars';
+
 .popover-profile {
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px rgba(#979797, 0.12);
   border-radius: 8px;
   transform: translateY(22px);

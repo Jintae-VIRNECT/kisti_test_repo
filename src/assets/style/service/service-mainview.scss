@@ -44,7 +44,7 @@
       margin: auto 0 auto 8px;
       color: #fff;
       font-weight: 500;
-      text-shadow: 1px 1px 1px $color_black;
+      text-shadow: 1px 1px 1px $color_darkgray_1000;
     }
     .status {
       position: relative;
@@ -67,7 +67,7 @@
     color: rgba($color_text_main, 0.9);
     font-size: 12px;
     background: url(~assets/image/call/ic_setting.svg) 12px center/16px
-      no-repeat rgba(#242427, 0.79);
+      no-repeat rgba($color_bg_sub, 0.79);
     border: 1px solid rgba($color_white, 0.4);
     border-radius: 15px;
   }

@@ -31,9 +31,9 @@
   color: #fff;
   font-weight: 500;
   font-size: 15px;
-  background-color: #0f75f5;
+  background-color: $color_primary;
   border-radius: 2px;
   &:hover {
-    background-color: #0f75f5;
+    background-color: $color_primary;
   }
 }

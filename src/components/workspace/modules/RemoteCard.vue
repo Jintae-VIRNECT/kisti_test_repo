@@ -249,10 +249,12 @@ export default {
 </style>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .popover.group-menu {
   width: 120px;
   min-width: 120px;
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   border-radius: 6px;
   > .popover--body {

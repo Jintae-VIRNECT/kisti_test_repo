@@ -111,9 +111,11 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .popover.popover-notice {
   overflow: hidden;
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px rgba(#979797, 0.12);
   border-radius: 4px;
   transform: translateY(20px);

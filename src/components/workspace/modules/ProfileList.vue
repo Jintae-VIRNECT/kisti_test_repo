@@ -153,9 +153,11 @@ export default {
 </style>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .otheruser-popover {
   min-width: 150px;
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   transform: translateX(10px);
   .popover--body {

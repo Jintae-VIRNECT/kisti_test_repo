@@ -96,7 +96,7 @@ export default {
   border-radius: 50%;
   cursor: pointer;
   &.active {
-    border-color: #0f75f5;
+    border-color: $color_primary;
     &::before {
       position: absolute;
       top: 50%;
@@ -104,7 +104,7 @@ export default {
       width: 12px;
       height: 12px;
       margin: auto;
-      background-color: #0f75f5;
+      background-color: $color_primary;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       content: '';

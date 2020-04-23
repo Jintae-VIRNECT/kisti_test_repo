@@ -264,7 +264,6 @@ export default {
         top: 100%;
         left: 50%;
         margin-left: -5px;
-        // border-color: #000 transparent transparent transparent;
       }
     }
   }

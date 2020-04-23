@@ -153,6 +153,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .modal {
   position: fixed;
   top: 0;
@@ -179,7 +180,8 @@ export default {
     background-color: #1e1e20;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(#000, 0.07), 0 12px 12px 0 rgba(#000, 0.3);
+    box-shadow: 0 0 10px 0 rgba($color_darkgray_1000, 0.07),
+      0 12px 12px 0 rgba($color_darkgray_1000, 0.3);
   }
 
   .modal--header {

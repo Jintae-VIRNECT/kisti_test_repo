@@ -10,7 +10,7 @@
   height: $header_height;
   color: $color_text_main;
   text-align: center;
-  background-color: $color_header_bg_default;
+  background-color: $color_bg_sub;
 
   @include background-border(bottom);
 
