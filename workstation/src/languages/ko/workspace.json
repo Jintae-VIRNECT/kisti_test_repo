@@ -1,5 +1,5 @@
 {
-  "welcome": "{nickname}님,<br> 반갑습니다",
+  "welcome": "{nickname} 님,<br> 반갑습니다",
   "master": "워크스페이스 마스터",
   "manager": "워크스페이스 매니저",
   "member": "워크스페이스 멤버",

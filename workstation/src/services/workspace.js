@@ -54,15 +54,33 @@ export default {
     }
   },
   /**
-   * 워크스페이스 프로필 설정 변경
+   * 워크스페이스 시작
    * @param {FormData} formData
    */
-  async updateWorkspaceInfo(formData) {
-    await api('WORKSPACE_EDIT', {
+  async startWorkspace(formData) {
+    await api('WORKSPACE_START', {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
       params: formData,
+    })
+  },
+  /**
+   * 워크스페이스 프로필 설정 변경
+   * @param {FormData} formData
+   */
+  async updateWorkspaceInfo(formData) {
+    const data = await api('WORKSPACE_EDIT', {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      params: formData,
+    })
+    // 변경된 내용 적용
+    $nuxt.$store.dispatch('workspace/getActiveWorkspaceInfo', {
+      route: {
+        workspaceId: data.uuid,
+      },
     })
   },
 }

@@ -13,6 +13,8 @@ module.exports = {
   WORKSPACES_LIST: ['GET', '/workspaces'],
   // 워크스페이스 홈 - 정보 조회
   WORKSPACE_INFO: ['GET', '/workspaces/home/{workspaceId}'],
+  // 워크스페이스 시작하기
+  WORKSPACE_START: ['POST', '/workspaces'],
   // 워크스페이스 프로필 설정
   WORKSPACE_EDIT: ['PUT', '/workspaces'],
   // 워크스페이스 멤버 검색

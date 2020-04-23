@@ -1,7 +1,12 @@
 <template>
   <div class="workspace-info">
     <div class="info">
-      <img src="~assets/images/workspace-profile.png" />
+      <div class="avatar">
+        <div
+          class="image"
+          :style="`background-image: url(${activeWorkspace.info.profile})`"
+        />
+      </div>
       <h5>{{ activeWorkspace.info.name }}</h5>
       <span>{{
         activeWorkspace.info.description ||
@@ -83,8 +88,9 @@ export default {
     margin-bottom: 40px;
     text-align: center;
 
-    & > img {
+    & > .avatar {
       width: 72px;
+      height: 72px;
       margin: 20px auto 12px;
     }
     & > h5 {

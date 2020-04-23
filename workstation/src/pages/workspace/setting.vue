@@ -162,7 +162,7 @@ export default {
       formData.append('name', this.form.name)
       formData.append('description', this.form.description)
       formData.append(
-        'file',
+        'profile',
         uploadFiles.length ? uploadFiles[uploadFiles.length - 1].raw : null,
       )
       formData.append('userId', this.myProfile.uuid)
