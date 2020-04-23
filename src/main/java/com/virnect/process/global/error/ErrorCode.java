@@ -41,7 +41,8 @@ public enum ErrorCode {
     ERR_SUB_PROCESS_REGISTER(5902, "SubProcess Registration failed."),
     ERR_JOB_REGISTER(5903, "Job Registration failed."),
     ERR_REPORT_REGISTER(5904, "Report Registration failed."),
-    ERR_TARGET_REGISTER(5906, "Target Registration failed."),
+    ERR_TARGET_REGISTER(5905, "Target Registration failed."),
+    ERR_DELETE_PROCES(5906, "Process Deletion failed."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

@@ -1027,13 +1027,6 @@ public class TaskService {
         process.setState(State.CLOSED);
         this.processRepository.save(process);
 
-        // 컨텐츠의 상태를 대기중으로 변경. 공정 종료된 컨텐츠는 더이상 관리 대상이 아님. 종료공정을 증강하거나, 공정을 다시 시작하지 않기 때문.
-        ContentStatusChangeRequest contentStatusChangeRequest = new ContentStatusChangeRequest();
-        contentStatusChangeRequest.setContentUUID(process.getContentUUID());
-        contentStatusChangeRequest.setStatus("WAIT");
-
-        this.contentRestService.changeContentStatus(contentStatusChangeRequest);
-
         // TODO : 다른 서비스를 호출하는 것이 옳은 것인지 확인이 필요. redirect를 해야하나?
         // 공정상세조회하여 반환
         return this.getProcessInfo(process.getId());
@@ -1457,12 +1450,22 @@ public class TaskService {
         if (!process.getContentManagerUUID().equals(workerUUID))
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 컨텐츠 삭제
-        String[] processes = {process.getContentUUID()};
-        this.contentRestService.contentDeleteRequestHandler(processes, workerUUID);
+        // 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
+        this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
 
-        // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
-        this.processRepository.delete(process);
+        try {
+            // 컨텐츠 삭제
+            String[] processes = {process.getContentUUID()};
+            this.contentRestService.contentDeleteRequestHandler(processes, workerUUID);
+
+            // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
+            this.processRepository.delete(process);
+        } catch (Exception e) {
+            this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.YES);
+            log.error(e.getMessage());
+            throw new ProcessServiceException(ErrorCode.ERR_DELETE_PROCES);
+
+        }
         return new ApiResponse<>(new ProcessSimpleResponse(true));
     }
 

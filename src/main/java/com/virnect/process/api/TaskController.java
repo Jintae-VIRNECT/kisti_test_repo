@@ -452,7 +452,7 @@ public class TaskController {
      * @param processId
      * @return
      */
-    @ApiOperation(value = "작업삭제", tags = "dev")
+    @ApiOperation(value = "작업삭제")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "10"),
             @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
