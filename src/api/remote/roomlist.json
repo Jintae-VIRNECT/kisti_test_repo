@@ -142,32 +142,16 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123458",
-            "userName":"박경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123459",
-            "userName":"정경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123450",
-            "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -205,32 +189,44 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123451",
             "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -268,32 +264,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -331,32 +332,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -394,32 +400,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -457,32 +468,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
@@ -520,32 +536,37 @@
           {
             "userId": "123456",
             "userName":"우경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123457",
             "userName":"김경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123458",
             "userName":"박경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123459",
             "userName":"정경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           },
           {
             "userId": "123450",
             "userName":"민경아",
-            "userRole":"master"
-          },
-          {
-            "userId": "123451",
-            "userName":"유경아",
-            "userRole":"master"
+            "userRole":"master",
+            "userEmail": "wooka@virnect.com",
+            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
           }
         ],
       "recordings":[
