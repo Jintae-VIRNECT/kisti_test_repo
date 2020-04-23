@@ -137,8 +137,8 @@ public class ContentController {
     })
     @GetMapping("/download")
     public ResponseEntity<Resource> contentDownloadRequestHandler(
-            @RequestParam(value = "contentUUID") String contentUUID
-            , @RequestParam(value = "targetData") String targetData
+            @RequestParam(value = "contentUUID", required = false) String contentUUID
+            , @RequestParam(value = "targetData", required = false) String targetData
             , @RequestParam(value = "memberUUID") String memberUUID) {
         if ((contentUUID.isEmpty() && targetData.isEmpty()) || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
