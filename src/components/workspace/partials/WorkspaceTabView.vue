@@ -109,24 +109,7 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    deleteListeners: function() {
-      const _this = this
-      return Object.assign({}, this.$listeners, {
-        click: function(event) {
-          _this.$eventBus.$emit('dataList:delete')
-        },
-      })
-    },
-    refreshListeners: function() {
-      const _this = this
-      return Object.assign({}, this.$listeners, {
-        click: function(event) {
-          _this.$eventBus.$emit('dataList:refresh')
-        },
-      })
-    },
-  },
+  computed: {},
   watch: {},
   methods: {
     refresh() {},

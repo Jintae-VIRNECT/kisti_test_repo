@@ -6,6 +6,7 @@
     :listCount="memberListLength"
     :showDeleteButton="false"
     :showRefreshButton="true"
+    @refresh="refresh"
     ><workspace-user-list></workspace-user-list>
   </tab-view>
 </template>
@@ -28,20 +29,19 @@ export default {
     ...mapGetters(['memberListLength']),
   },
   watch: {},
-  methods: {},
-
-  mounted() {
-    const _this = this
-
-    this.$eventBus.$on('dataList:refresh', async function(payload) {
+  methods: {
+    async refresh() {
       try {
+        console.log('refresh')
         const datas = await getMemberList()
-        _this.$store.dispatch('setHistoryList', datas.data.participants)
+        this.$store.dispatch('setHistoryList', datas.data.participants)
       } catch (err) {
         console.log(err)
       }
-    })
+    },
   },
+
+  mounted() {},
 
   /* Lifecycles */
   async created() {
@@ -53,7 +53,7 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$eventBus.$off('dataList:refresh')
+    this.$eventBus.$off('refresh')
   },
 }
 </script>

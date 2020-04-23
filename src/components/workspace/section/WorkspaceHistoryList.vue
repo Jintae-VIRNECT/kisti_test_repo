@@ -58,7 +58,7 @@
     </wide-card-extend>
     <roominfo-modal
       :visible.sync="showRoomInfo"
-      :room="roomInfo"
+      :roomId="roomId"
     ></roominfo-modal>
     <create-room-modal :visible.sync="visible"></create-room-modal>
   </div>
@@ -96,7 +96,7 @@ export default {
     return {
       visible: false,
       showRoomInfo: false,
-      roomInfo: {},
+      roomId: '',
     }
   },
   computed: {
@@ -134,9 +134,10 @@ export default {
       this.$store.dispatch('deleteHistorySingleItem', roomId)
       let result = await deleteHistorySingleItem({ roomId })
     },
+
+    //재시작
     async createRoom(roomId) {
-      let result = await getHistorySingleItem({ roomId })
-      this.room = result.data.collaboration.member
+      // let result = await getHistorySingleItem({ roomId })
       this.visible = !this.visible
     },
   },

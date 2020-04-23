@@ -7,6 +7,8 @@
     :showRefreshButton="true"
     :deleteButtonText="'전체삭제'"
     :listCount="historyListLength"
+    @refresh="refresh"
+    @delete="deleteList"
   >
     <workspace-history-list></workspace-history-list>
   </tab-view>
@@ -30,30 +32,27 @@ export default {
     ...mapGetters(['historyListLength']),
   },
   watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {
-    //이 패턴은 옳은 패턴인가?...
-    const _this = this
-
-    this.$eventBus.$on('dataList:delete', async function(payload) {
-      try {
-        const result = await deleteAllHistory()
-        _this.$store.dispatch('deleteAllHistoryList', '')
-      } catch (err) {
-        console.log(err)
-      }
-    })
-    this.$eventBus.$on('dataList:refresh', async function(payload) {
+  methods: {
+    async refresh() {
       try {
         const datas = await getHistoryList()
-        _this.$store.dispatch('setHistoryList', datas.data.romms)
+        this.$store.dispatch('setHistoryList', datas.data.romms)
       } catch (err) {
         console.log(err)
       }
-    })
+    },
+    async deleteList() {
+      try {
+        await deleteAllHistory()
+        this.$store.dispatch('deleteAllHistoryList', '')
+      } catch (err) {
+        console.log(err)
+      }
+    },
   },
+
+  /* Lifecycles */
+  mounted() {},
   async created() {
     try {
       const datas = await getHistoryList()
@@ -64,8 +63,8 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$eventBus.$off('dataList:delete')
-    this.$eventBus.$off('dataList:refresh')
+    this.$eventBus.$off('delete')
+    this.$eventBus.$off('refresh')
   },
 }
 </script>

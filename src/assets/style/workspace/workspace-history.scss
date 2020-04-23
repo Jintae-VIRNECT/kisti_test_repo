@@ -65,7 +65,6 @@
 .lable__icon {
   display: flex;
   align-items: center;
-  justify-content: center;
   padding-left: 30px;
   opacity: 86%;
 
@@ -76,10 +75,13 @@
   }
 
   .text {
+    overflow: hidden;
     color: #fafafa;
     font-weight: normal;
     font-size: 14px;
     font-family: NotoSansCJKkr-Regular;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 
