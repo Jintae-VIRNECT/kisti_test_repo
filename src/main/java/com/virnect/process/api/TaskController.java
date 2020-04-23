@@ -455,12 +455,15 @@ public class TaskController {
     @ApiOperation(value = "작업삭제", tags = "dev")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "10"),
-            @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
+            @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
     })
     @DeleteMapping("/{processId}")
     public ResponseEntity<ApiResponse<ProcessSimpleResponse>> deleteProcessHandler(
             @PathVariable("processId") Long processId
-            , @PathVariable("workerUUID") String workerUUID) {
+            , @RequestParam(value = "workerUUID") String workerUUID) {
+        if (Objects.isNull(processId) || workerUUID.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(processId, workerUUID);
         return ResponseEntity.ok(processSimpleResponseApiResponse);
     }
