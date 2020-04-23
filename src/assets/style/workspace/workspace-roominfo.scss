@@ -58,6 +58,11 @@
   flex: 1;
   margin-top: 15px;
 }
+.remoteinfo-usercard {
+  &.offline {
+    opacity: 0.5;
+  }
+}
 .imageinput {
   padding: 12px 43px;
   font-size: 15px;
@@ -126,14 +131,26 @@
 
 .roominfo-userinfo {
   display: flex;
+  width: 100%;
 }
 .profile {
   flex: 1;
 }
 .userinfo__image {
   flex: 0;
-  margin-right: 62px;
 }
 .userinfo__button {
   flex: 0;
+  margin-left: 62px;
+}
+
+.roominfo-figure {
+  margin-top: 25px;
+}
+.roominfo-figure__title {
+  color: rgba(#d2d2d2, 0.5);
+  font-size: 13px;
+}
+.roominfo-figure__text {
+  margin-top: 7px;
 }

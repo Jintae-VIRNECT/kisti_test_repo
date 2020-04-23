@@ -50,11 +50,16 @@ export default {
     audioInputDevices: null,
     audioOutputDevices: null,
     selectAudioInput: null,
+    defaultInputAudio: null,
+    defaultOuputAudio: null,
   },
   mounted() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
   },
-  created() {},
+  created() {
+    // console.log('this.audioInputDevices', this.audioInputDevices)
+    // console.log('this.audioOutputDevices', this.audioOutputDevices)
+  },
   components: {
     RSelect,
   },

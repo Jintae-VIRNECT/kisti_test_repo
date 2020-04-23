@@ -31,6 +31,16 @@
 <script>
 import RSelect from 'RemoteSelect'
 export default {
+  props: {
+    defaultRecLength: {
+      type: Number,
+      default: 5,
+    },
+    defaultRecordRec: {
+      type: String,
+      default: '360p',
+    },
+  },
   data: function() {
     return {
       localRecordingTime: '',

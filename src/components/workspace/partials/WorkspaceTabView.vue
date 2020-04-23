@@ -3,8 +3,8 @@
     <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
       <list-badge
-        :listCount="listCount"
         v-if="!(listCount === null)"
+        :listCount="listCount"
       ></list-badge>
     </div>
     <div class="tab-view__sub-header offsetwidth">
@@ -21,13 +21,13 @@
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/back/mdpi_tr.svg')"
           :text="deleteButtonText"
-          v-on="deleteListeners"
+          @click="$emit('delete')"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
           :text="'새로고침'"
-          v-on="refreshListeners"
+          @click="$emit('refresh')"
         ></icon-button>
       </div>
     </div>
@@ -90,7 +90,7 @@ export default {
       default: require('assets/image/img_remote_empty.svg'),
     },
     listCount: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     showRefreshButton: {
@@ -109,26 +109,11 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    deleteListeners: function() {
-      const _this = this
-      return Object.assign({}, this.$listeners, {
-        click: function(event) {
-          _this.$eventBus.$emit('dataList:delete')
-        },
-      })
-    },
-    refreshListeners: function() {
-      const _this = this
-      return Object.assign({}, this.$listeners, {
-        click: function(event) {
-          _this.$eventBus.$emit('dataList:refresh')
-        },
-      })
-    },
-  },
+  computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    refresh() {},
+  },
 
   /* Lifecycles */
   mounted() {},

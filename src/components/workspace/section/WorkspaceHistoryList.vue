@@ -58,7 +58,7 @@
     </wide-card-extend>
     <roominfo-modal
       :visible.sync="showRoomInfo"
-      :room="roomInfo"
+      :roomId="roomId"
     ></roominfo-modal>
     <create-room-modal :visible.sync="visible"></create-room-modal>
   </div>
@@ -96,7 +96,7 @@ export default {
     return {
       visible: false,
       showRoomInfo: false,
-      roomInfo: {},
+      roomId: '',
     }
   },
   computed: {
@@ -134,9 +134,10 @@ export default {
       this.$store.dispatch('deleteHistorySingleItem', roomId)
       let result = await deleteHistorySingleItem({ roomId })
     },
+
+    //재시작
     async createRoom(roomId) {
-      let result = await getHistorySingleItem({ roomId })
-      this.room = result.data.collaboration.member
+      // let result = await getHistorySingleItem({ roomId })
       this.visible = !this.visible
     },
   },
@@ -144,121 +145,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.no-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  background-color: #29292c;
-
-  .no-list__img {
-    width: 191px;
-    height: 233px;
-    margin-bottom: 30px;
-    background-image: url('~assets/image/mdpi_02.svg');
-    background-repeat: no-repeat;
-  }
-
-  .no-list__title {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 24px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-    text-align: center;
-  }
-  .no-list__description {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 18px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-    text-align: center;
-    opacity: 50%;
-  }
-}
-
-.label {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.label--noraml {
-  color: #d2d2d2;
-  font-weight: normal;
-  font-size: 15px;
-  font-family: AppleSDGothicNeo-Regular;
-  letter-spacing: 0px;
-  text-align: center;
-}
-
-.label--date {
-  color: #fafafa;
-  font-weight: normal;
-  font-size: 15px;
-  font-family: Roboto-Regular;
-  letter-spacing: 0px;
-  text-align: center;
-  opacity: 50%;
-}
-
-.lable__icon {
-  display: flex;
-  align-items: center;
-  padding-left: 30px;
-  opacity: 86%;
-  .icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
-  }
-
-  .text {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 14px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-  }
-}
-
-.widecard-tools__menu-button {
-  width: 28px;
-  height: 28px;
-  margin-left: 26px;
-  background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
-  &:hover {
-    background: url(~assets/image/back/mdpi_icn_more.svg) 50% no-repeat;
-  }
-}
-
-.popover.custom-popover {
-  background-color: #242427;
-  border: solid 1px #3a3a3d;
-  > .popover--body {
-    width: 120px;
-    padding: 0px;
-  }
-}
-.groupcard-popover {
-  padding: 4px 0;
-}
-.group-pop__button {
-  width: 100%;
-  padding: 13px 20px;
-  color: #fff;
-  text-align: left;
-  &:focus {
-    background-color: rgba(#4c5259, 0.15);
-  }
-  &:hover {
-    background-color: rgba(#4c5259, 0.3);
-  }
-  &:active {
-    background-color: rgba(#4c5259, 0.5);
-  }
-}
-</style>
+<style lang="scss"></style>

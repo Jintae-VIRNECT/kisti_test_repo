@@ -76,14 +76,21 @@ export default {
   .card-item:first-of-type {
     flex-grow: 0.8;
   }
-  .card-item:last-of-type {
+  .card-item:nth-of-type(2) {
     flex-grow: 0.8;
+  }
+
+  .card-item:nth-last-child(2) {
+    flex-grow: 0.7;
+  }
+  .card-item:last-of-type {
+    flex-grow: 0.6;
   }
 }
 
 .widecard-tools {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 </style>
