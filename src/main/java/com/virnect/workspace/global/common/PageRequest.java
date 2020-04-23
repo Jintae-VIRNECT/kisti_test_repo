@@ -46,11 +46,9 @@ public final class PageRequest {
 
         if(paging) {
             //페이징을 워크스페이스에서 해야 한다면
-            System.out.println("111:"+size);
             return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
         }else{
             //페이징을 타 서비스에서 해야 한다면
-            System.out.println("111:"+size);
             return org.springframework.data.domain.PageRequest.of(page , size, Sort.Direction.valueOf(sort), properties);
 
         }

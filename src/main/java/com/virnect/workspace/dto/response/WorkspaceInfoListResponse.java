@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.response;
 
+import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WorkspaceInfoListResponse {
     private final List<WorkspaceInfo> workspaceList;
+    private final PageMetadataRestResponse pageMeta;
 
     @Getter
     @Setter

@@ -9,7 +9,10 @@ import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.dto.response.MemberListResponse;
+import com.virnect.workspace.dto.response.UsersCreateResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -38,7 +41,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -137,9 +139,10 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId) {
+    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId, Pageable pageable) {
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
-        this.workspaceUserRepository.findByUserId(userId).forEach(workspaceUser -> {
+        Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByUserId(userId, pageable);
+        workspaceUserPage.forEach(workspaceUser -> {
             Workspace workspace = workspaceUser.getWorkspace();
             WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
@@ -152,7 +155,13 @@ public class WorkspaceService {
 
             workspaceList.add(workspaceInfo);
         });
-        return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList));
+        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
+        pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
+        pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
+        pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
+        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
+
+        return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse));
     }
 
     /**
@@ -211,6 +220,7 @@ public class WorkspaceService {
                 SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                 memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
                 memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                memberInfo.setJoinDate(workspaceUser.getCreatedDate());
                 resultMemberInfoList.add(memberInfo);
             }
 
@@ -242,10 +252,14 @@ public class WorkspaceService {
             WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(userInfoRestResponse.getUuid(), workspace);
             if (workspaceUser != null) {
                 MemberInfoDTO memberInfo = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                memberInfo.setRole(this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberInfo.getUuid()).getWorkspaceRole().getRole());
+
+                WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+                WorkspaceRole workspaceRole = workspaceUserPermission.getWorkspaceRole();
+                memberInfo.setRole(workspaceRole.getRole());
                 SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                 memberInfo.setCountAssigned(subProcessCountResponse.getCountAssigned());
                 memberInfo.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                memberInfo.setJoinDate(workspaceUser.getCreatedDate());
 
                 resultMemberList.add(memberInfo);
             }

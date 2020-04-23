@@ -3,6 +3,8 @@ package com.virnect.workspace.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-02-19
@@ -26,6 +28,7 @@ public class MemberInfoDTO {
     private String updatedDate;
     private Integer countProgressing;
     private Integer countAssigned;
+    private LocalDateTime joinDate;
     //사용중인 플랜정보
 
     @Override

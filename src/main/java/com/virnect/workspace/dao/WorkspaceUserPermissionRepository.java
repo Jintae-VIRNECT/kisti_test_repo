@@ -23,6 +23,7 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
 
     WorkspaceUserPermission findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(Workspace workspace, String userId);
 
+
     Page<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(Workspace workspace, List<WorkspaceUser> workspaceUserList, List<WorkspaceRole> workspaceRoleList, Pageable pageable);
 
 

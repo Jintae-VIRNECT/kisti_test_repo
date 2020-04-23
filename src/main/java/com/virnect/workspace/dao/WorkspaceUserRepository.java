@@ -2,6 +2,8 @@ package com.virnect.workspace.dao;
 
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspaceUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
  */
 public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Long>, WorkspaceUserRepositoryCustom{
     List<WorkspaceUser> findByWorkspace_Uuid(String workspaceId);
-    List<WorkspaceUser> findByUserId(String userId);
+    Page<WorkspaceUser> findByUserId(String userId, Pageable pageable);
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
     List<WorkspaceUser> findTop4ByWorkspace_UuidOrderByCreatedDateDesc(String workspaceId);
 }
