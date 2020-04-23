@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="this.$store.state.workspace.memberList.length > 0"
-      class="grid-container"
-    >
+    <div v-if="memberList.length > 0" class="grid-container">
       <member-card
         v-for="userinfo in list"
         :key="userinfo.participantId"
@@ -24,7 +21,8 @@
 
 <script>
 import MemberCard from 'MemberCard'
-import sort from 'mixins/admin/adminSort'
+import sort from 'mixins/filter'
+
 export default {
   name: 'WorkspaceUserList',
   mixins: [sort],
@@ -38,98 +36,16 @@ export default {
     },
   },
   data() {
-    return {
-      //userList: [],
-      // userList: [
-      //   {
-      //     icon: '',
-      //     name: 'Sherry K. Demmer',
-      //     mail: 'SherryKDemmer@armyspy.com',
-      //     role: 'Master',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Samantha J. Fenner',
-      //     mail: 'SamanthaJFenner@armyspy.com',
-      //     role: 'Manager',
-      //     license: false,
-      //     status: 'busy',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: '柳沼 和子',
-      //     mail: 'Tuaid1975@rhyta.com',
-      //     role: '',
-      //     license: false,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: '펭수',
-      //     mail: 'pengsoo@ebs.com',
-      //     status: 'offline',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Hong Chang',
-      //     mail: 'HongChang@armyspy.com',
-      //     role: 'Master',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Sheng Ts ai',
-      //     mail: 'ShengTsai@armyspy.com',
-      //     role: 'Master',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Gang Pai',
-      //     mail: 'GangPai@armyspy.com',
-      //     role: 'Manager',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Clara Almeida Martins',
-      //     mail: 'ClaraAlmeidaMartins@armyspy.com',
-      //     role: 'Manager',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: '모영권',
-      //     mail: 'moyeongkwon@google.com',
-      //     role: 'Manager',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      //   {
-      //     icon: '',
-      //     name: 'Mo Yeong Kwon',
-      //     mail: 'ykmo@virnect.com',
-      //     role: 'Manager',
-      //     license: true,
-      //     status: 'online',
-      //   },
-      // ],
-    }
+    return {}
   },
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.$store.state.workspace.memberList
+        return this.memberList
       }
 
       const array = []
-      for (const list of this.$store.state.workspace.memberList) {
+      for (const list of this.memberList) {
         if (
           list.participantName
             .toLowerCase()
@@ -172,18 +88,12 @@ export default {
 
   .no-list__title {
     color: #fafafa;
-    font-weight: normal;
     font-size: 24px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
     text-align: center;
   }
   .no-list__description {
     color: #fafafa;
-    font-weight: normal;
     font-size: 18px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
     text-align: center;
     opacity: 50%;
   }
