@@ -72,7 +72,15 @@ public class Content extends BaseTimeEntity {
     private Type type;
 
     @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Target> targetList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SceneGroup> sceneGroupList = new ArrayList<>();
+
+    public void addTarget(Target target) {
+        target.setContent(this);
+        this.targetList.add(target);
+    }
 
     public void addSceneGroup(SceneGroup sceneGroup) {
         sceneGroup.setContent(this);
@@ -80,7 +88,7 @@ public class Content extends BaseTimeEntity {
     }
 
     @Builder
-    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, String metadata, String properties, YesOrNo deleted, YesOrNo converted, Type type, List<SceneGroup> sceneGroupList) {
+    public Content(String uuid, String name, String path, Long size, YesOrNo shared, String userUUID, String workspaceUUID, String metadata, String properties, YesOrNo deleted, YesOrNo converted, Type type, List<Target> targetList, List<SceneGroup> sceneGroupList) {
         this.uuid = uuid;
         this.name = name;
         this.path = path;
@@ -93,6 +101,7 @@ public class Content extends BaseTimeEntity {
         this.deleted = deleted;
         this.converted = converted;
         this.type = type;
+        this.targetList = new ArrayList<>();
         this.sceneGroupList = new ArrayList<>();
     }
 }

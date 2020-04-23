@@ -1,6 +1,7 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
+import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
@@ -87,7 +88,8 @@ public class ContentController {
 
     @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장되며, 컨텐츠 용량은 MB(MegaByte)단위임.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "da67f860-8462-11ea-bc55-0242ac130003"),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR)", dataType = "string", paramType = "form", defaultValue = "QR"),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48254844-235e-4421-b713-4ea682994a98"),
             @ApiImplicitParam(name = "content", value = "업로드 콘텐츠 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "contentType", value = "콘텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
@@ -96,15 +98,14 @@ public class ContentController {
             @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
     })
-    @PostMapping(value = "/{contentUUID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
-            @PathVariable("contentUUID") String contentUUID, @ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
-        if (contentUUID.isEmpty() || result.hasErrors()) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(@ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
+        if (result.hasErrors()) {
             log.info("[ContentUploadRequest] => [{}]", uploadRequest);
             log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(contentUUID, uploadRequest);
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
         return ResponseEntity.ok(uploadResponse);
     }
     
@@ -113,33 +114,37 @@ public class ContentController {
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "testUUID"),
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "query", required = true, defaultValue = "QR")
     })
     @PostMapping("/duplicate/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentDuplicateHandler(
             @PathVariable("contentUUID") String contentUUID,
             @RequestParam(value = "workspaceUUID") String workspaceUUID,
-            @RequestParam(value = "userUUID") String userUUID) {
-        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty()) {
+            @RequestParam(value = "userUUID") String userUUID,
+            @RequestParam(value = "targetType") TargetType targetType) {
+        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty() || targetType == null) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID);
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID, targetType);
         return ResponseEntity.ok(uploadResponse);
     }
 
-    @ApiOperation(value = "콘텐츠 다운로드")
+    @ApiOperation(value = "컨텐츠 식별자를 통한 컨텐츠 다운로드")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path"),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping("/downloadFile/{contentUUID}")
-    public ResponseEntity<Resource> contentDownloadRequestHandler(
+    public ResponseEntity<Resource> contentDownloadForUUIDRequestHandler(
             @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "targetData") String targetData
             , @RequestParam(value = "memberUUID") String memberUUID) {
-        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
+        if ((contentUUID.isEmpty() && targetData.isEmpty()) || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
-        Resource resource = this.contentService.contentDownloadhandler(contentUUID, memberUUID);
+        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}], targetData: [{}]", memberUUID, contentUUID, targetData);
+        Resource resource = this.contentService.contentDownloadhandler(contentUUID, targetData, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);

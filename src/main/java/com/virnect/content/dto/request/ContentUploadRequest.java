@@ -1,5 +1,6 @@
 package com.virnect.content.dto.request;
 
+import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,11 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class ContentUploadRequest {
+
+    private String targetData;
+
+    private TargetType targetType;
+
     @NotBlank
     private String workspaceUUID;
 
@@ -44,7 +50,9 @@ public class ContentUploadRequest {
     private String userUUID;
 
     @Builder
-    public ContentUploadRequest(@NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, @NotBlank String metadata, @NotBlank String properties, @NotBlank String userUUID) {
+    public ContentUploadRequest(String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, @NotBlank String metadata, @NotBlank String properties, @NotBlank String userUUID) {
+        this.targetData = targetData;
+        this.targetType = targetType;
         this.workspaceUUID = workspaceUUID;
         this.content = content;
         this.contentType = contentType;

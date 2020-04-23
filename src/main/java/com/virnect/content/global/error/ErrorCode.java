@@ -23,9 +23,10 @@ public enum ErrorCode {
     ERR_CONTENT_MANAGED(4009, "Content deletion failed. Because it is managed. Delete the process created with this content and try again."),
     ERR_CONTENT_DELETE_OWNERSHIP(4010, "Content deletion failed. Because it is NOT ownership."),
     ERR_CONTENT_DELETE_SUCCEED(4011, "Content deletion succeed."),
-    ERR_DELETE_CONTENT(4012, "Content File deletion failed."),
-    ERR_OWNERSHIP(4013, "An error occurred in the request. Because it is NOT ownership."),
-    ERROR_WORKSPACE(4014, "An error occurred in the request. Because Workspace is different."),
+    ERR_MISMATCH_TARGET(4012, "Target data does not match."),
+    ERR_DELETE_CONTENT(4013, "Content File deletion failed."),
+    ERR_OWNERSHIP(4014, "An error occurred in the request. Because it is NOT ownership."),
+    ERROR_WORKSPACE(4015, "An error occurred in the request. Because Workspace is different."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

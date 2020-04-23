@@ -33,11 +33,13 @@ public class ContentInfoResponse {
     private String path;
     @ApiModelProperty(value = "컨텐츠 전환여부", notes = "컨텐츠가 작업으로 전환되었는지 여부", position = 10, example = "YES")
     private YesOrNo converted;
+    @ApiModelProperty(value = "컨텐츠에 사용된 타겟 데이터", notes = "컨텐츠와 맵핑된 타겟에 대한 값입니다", position = 11, example = "1")
+    private ContentTargetResponse target;
     @ApiModelProperty(value = "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 12, example = "2020-02-15 16:32:13")
     private LocalDateTime createdDate;
 
     @Builder
-    public ContentInfoResponse(String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal, long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path, YesOrNo converted, LocalDateTime createdDate) {
+    public ContentInfoResponse(String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal, long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path, YesOrNo converted, ContentTargetResponse target, LocalDateTime createdDate) {
         this.workspaceUUID = workspaceUUID;
         this.contentUUID = contentUUID;
         this.contentName = contentName;
@@ -49,6 +51,7 @@ public class ContentInfoResponse {
         this.uploaderProfile = uploaderProfile;
         this.path = path;
         this.converted = converted;
+        this.target = target;
         this.createdDate = createdDate;
     }
 }

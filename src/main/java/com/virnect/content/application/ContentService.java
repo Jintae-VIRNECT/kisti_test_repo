@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
+import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
@@ -59,6 +60,7 @@ public class ContentService {
     private final FileUploadService fileUploadService;
 
     private final ContentRepository contentRepository;
+    private final TargetRepository targetRepository;
     private final TypeRepository typeRepository;
 
     private final UserRestService userRestService;
@@ -79,14 +81,18 @@ public class ContentService {
 
     /**
      * 콘텐츠 업로드
+     * 컨텐츠UUID는 컨텐츠를 관리하기 위한 서버에서의 식별자이면서 동시에 파일명
+     * 타겟데이터는 컨텐츠를 뷰에서 인식하여 컨텐츠를 다운로드하거나 정보를 가져오기 위한 키.
      *
      * @param uploadRequest - 콘텐츠 업로드 요청 데이터
      * @return - 업로드된 콘텐츠 정보
      */
     @Transactional
-    public ApiResponse<ContentUploadResponse> contentUpload(final String contentUUID, final ContentUploadRequest uploadRequest) {
+    public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
         // 1. 콘텐츠 업로드 파일 저장
         try {
+            String contentUUID = UUID.randomUUID().toString();
+
             log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
 
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
@@ -111,11 +117,16 @@ public class ContentService {
             // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
             addSceneGroupToContent(content, content.getMetadata());
 
+            // 타겟 저장 후 타겟데이터 반환
+            String targetData = addTargetToContent(content, uploadRequest);
+
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
             // 반환할 타겟정보
+            result.setTargetData(targetData);
+            result.setTargetType(uploadRequest.getTargetType());
             result.setContentUUID(contentUUID);
             return new ApiResponse<>(result);
         } catch (IOException e) {
@@ -143,6 +154,22 @@ public class ContentService {
             log.info("SCENEGROUP UPLOAD ERROR: {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
+    }
+
+    private String addTargetToContent(Content content, final ContentUploadRequest contentUploadRequest) {
+        // 타겟데이터
+        String targetData = contentUploadRequest.getTargetData();
+
+        Target target = Target.builder()
+                .type(contentUploadRequest.getTargetType())
+                .content(content)
+                .data(targetData)
+                .build();
+        content.addTarget(target);
+
+        this.targetRepository.save(target);
+
+        return targetData;
     }
 
     /**
@@ -211,13 +238,16 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
-    public Resource contentDownloadhandler(final String contentUUID, final String memberUUID) {
+    public Resource contentDownloadhandler(final String contentUUID, final String targetData, final String memberUUID) {
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         if (!content.getUserUUID().equals(memberUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        if (!targetData.equals(content.getTargetList().get(0).getData()))
+            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);
@@ -499,6 +529,7 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
+                .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
                 .createdDate(content.getUpdatedDate())
                 .build();
         // 공정 정보에 컨텐츠정보를 넣음
@@ -542,9 +573,11 @@ public class ContentService {
                 .name(response.getData().getName())
                 .metadata(content.getMetadata())
                 .userUUID(content.getUserUUID())
+                // 컨텐츠:타겟은 1:1이므로
+                .targetType(content.getTargetList().get(0).getType())
                 .build();
 
-        return contentUpload(UUID.randomUUID().toString(), uploadRequest);
+        return contentUpload(uploadRequest);
     }
 
     private MultipartFile convertFileToMultipart(String fileUrl) {
@@ -564,7 +597,7 @@ public class ContentService {
     }
 
     @Transactional
-    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID) {
+    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID, final TargetType targetType) {
         // 컨텐츠 가져오기
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
@@ -586,9 +619,10 @@ public class ContentService {
                 .metadata(content.getMetadata())
                 .properties(content.getProperties())
                 .userUUID(userUUID)
+                .targetType(targetType)
                 .build();
 
-        return contentUpload(UUID.randomUUID().toString(), uploadRequest);
+        return contentUpload(uploadRequest);
     }
 
     public ApiResponse<ContentPropertiesResponse> getContentPropertiesMetadata(String contentUUID, String userUUID) {
