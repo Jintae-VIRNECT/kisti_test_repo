@@ -1001,24 +1001,11 @@ public class TaskService {
 
     private ApiResponse<ProcessListResponse> getProcessesPageResponseApiResponse(Pageable pageable, Page<Process> processPage) {
         List<ProcessInfoResponse> processInfoResponseList = processPage.stream().map(process -> {
-            return ProcessInfoResponse.builder()
-                    .id(process.getId())
-                    .name(process.getName())
-                    .contentUUID(process.getContentUUID())
-                    .state(Optional.of(process).map(Process::getState).orElseGet(() -> State.CREATED))
-                    .position(process.getPosition())
-                    .progressRate(process.getProgressRate())
-                    .conditions(process.getConditions())
-                    .doneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count())
-                    .issuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()))
-                    .startDate(Optional.of(process).map(Process::getStartDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
-                    .endDate(Optional.of(process).map(Process::getEndDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
-                    .reportedDate(process.getReportedDate())
-                    .createdDate(process.getCreatedDate())
-                    .updatedDate(process.getUpdatedDate())
-                    .subProcessTotal(Optional.of(process.getSubProcessList().size()).orElse(0))
-                    .subProcessAssign(this.getSubProcessesAssign(process))
-                    .build();
+            ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
+            processInfoResponse.setSubProcessAssign(this.getSubProcessesAssign(process));
+            processInfoResponse.setDoneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count());
+            processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
+            return processInfoResponse;
         }).collect(Collectors.toList());
 
         PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
@@ -1264,7 +1251,7 @@ public class TaskService {
 
     public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
         // 타겟데이터로 공정을 조회
-        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, targetData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_ARUCO));
+        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, targetData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
         Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
         SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
                 .processId(process.getId())

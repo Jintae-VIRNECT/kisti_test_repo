@@ -25,8 +25,6 @@ public class MetadataInfoResponse {
     public static class Content {
         @ApiModelProperty(value = "공정(컨텐츠) 식별자", notes = "컨텐츠를 식별하기 위해 사용되는 식별자", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
         private String id;
-        @ApiModelProperty(value = "arcuo 값", position = 1, example = "1")
-        private int aruco;
         @ApiModelProperty(value = "공정(컨텐츠) 이름", position = 2, example = "고길동")
         private String name;
         @ApiModelProperty(value = "공정(컨텐츠) 담당자", position = 3, example = "498b1839dc29ed7bb2ee90ad6985c608")

@@ -695,7 +695,7 @@ public class TaskController {
 
     @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회", tags = "dev")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetData", value = "작업에 할당된 aruco 값", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/created/target/{targetData}")
     public ResponseEntity<ApiResponse<ProcessTargetInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {

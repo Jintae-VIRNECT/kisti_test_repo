@@ -41,8 +41,4 @@ public class ProcessTargetInfoResponse {
 
     @ApiModelProperty(value = "공정 최종 수정일", notes = " 공정 최종 수정일", position = 13, example = "2020-01-16 14:14:02")
     private LocalDateTime updatedDate;
-
-    @NotBlank
-    @ApiModelProperty(value = "ARUCO id", notes = "ARUCO 식별자", position = 15)
-    private long arucoId;
 }

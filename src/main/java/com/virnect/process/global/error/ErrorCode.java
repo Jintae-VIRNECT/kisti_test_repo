@@ -13,12 +13,11 @@ import io.swagger.annotations.ApiModel;
 public enum ErrorCode {
     // 공정 관련
     ERR_OWNERSHIP(5001, "An error occurred in the request. Because it is NOT ownership."),
-    ERR_NOT_FOUND_ARUCO(5002, "Could not found ARUCO for the content."),                // make에서 로직처리 되어 있음. 컨텐츠 업데이트 관련.
     ERR_CAN_CREATE_PROCESS(5003, "The content can create process."),    // make에서 로직처리 되어 있음. 컨텐츠 업데이트가 가능한 메시지
     ERR_NOT_FOUND_PROCESS(5004, "Could not found process."),
     ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA(5005, "The requested process id could not be found."),
     ERR_NOT_FOUND_SUBPROCESS_FOR_PROCESS_METADATA(5006, "The requested sub-process id could not be found."),
-    ERR_NOT_FOUND_PROCESS_OF_ARUCO(5007, "Could not found process of ARUCO. or This process state was CLOSED, DELETED"),
+    ERR_NOT_FOUND_PROCESS_OF_TARGET(5007, "Could not found process of target. or This process state was CLOSED, DELETED"),
     ERR_HAS_ALREADY_PROCESS_OF_THIS_CONTENT(5008, "The content has already been created for the process. Please register new content."),        // 워크스테이션 후처리 있음.
 
     ERR_NOT_FOUND_SUBPROCESS(5011, "Could not found sub-process."),
