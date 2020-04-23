@@ -2,8 +2,10 @@
   <div class="workspace-info">
     <div class="info">
       <img src="~assets/images/workspace-profile.png" />
-      <h5>{{ info.name }}</h5>
-      <span>{{ info.description || $t('workspace.descriptionEmpty') }}</span>
+      <h5>{{ activeWorkspace.info.name }}</h5>
+      <span>{{
+        activeWorkspace.info.description || $t('workspace.descriptionEmpty')
+      }}</span>
     </div>
     <el-divider />
     <div class="members">
@@ -12,18 +14,23 @@
       <span>{{ $t('workspace.master') }}</span>
       <span class="count">1</span>
       <div class="users">
-        <el-tooltip :content="master.name">
+        <el-tooltip :content="activeWorkspace.master.name">
           <div class="avatar">
-            <img :src="master.profile" />
+            <div
+              class="image"
+              :style="
+                `background-image: url(${activeWorkspace.master.profile})`
+              "
+            />
           </div>
         </el-tooltip>
       </div>
       <!-- 매니저 -->
       <span>{{ $t('workspace.manager') }}</span>
-      <span class="count">{{ managers.length }}</span>
+      <span class="count">{{ activeWorkspace.managers.length }}</span>
       <div class="users">
         <el-tooltip
-          v-for="user in managers"
+          v-for="user in activeWorkspace.managers"
           :key="user.uuid"
           :content="user.name"
         >
@@ -34,15 +41,18 @@
       </div>
       <!-- 멤버 -->
       <span>{{ $t('workspace.member') }}</span>
-      <span class="count">{{ members.length }}</span>
+      <span class="count">{{ activeWorkspace.members.length }}</span>
       <div class="users">
         <el-tooltip
-          v-for="user in members"
+          v-for="user in activeWorkspace.members"
           :key="user.uuid"
           :content="user.name"
         >
           <div class="avatar">
-            <img :src="user.profile" />
+            <div
+              class="image"
+              :style="`background-image: url(${user.profile})`"
+            />
           </div>
         </el-tooltip>
       </div>
@@ -53,29 +63,13 @@
 </template>
 
 <script>
-import workspaceService from '@/services/workspace'
+import { mapGetters } from 'vuex'
 
 export default {
-  data() {
-    return {
-      info: {},
-      master: {},
-      managers: [],
-      members: [],
-    }
-  },
-  methods: {
-    async getWorkspaceInfo() {
-      const workspaceInfo = await workspaceService.getWorkspaceInfo()
-      this.info = workspaceInfo.info
-      this.master = workspaceInfo.master
-      this.members = workspaceInfo.managers
-      this.members = workspaceInfo.members
-    },
-  },
-  beforeMount() {
-    this.getWorkspaceInfo()
-    workspaceService.watchActiveWorkspace(this.getWorkspaceInfo)
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'workspace/activeWorkspace',
+    }),
   },
 }
 </script>

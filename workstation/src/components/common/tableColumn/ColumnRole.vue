@@ -7,8 +7,8 @@
     :sortable="sortable"
   >
     <template slot-scope="scope">
-      <div class="column-default">
-        <span>{{ scope.row[prop] }}</span>
+      <div class="column-role">
+        <el-tag :class="scope.row[prop]">{{ scope.row[prop] }}</el-tag>
       </div>
     </template>
   </el-table-column>

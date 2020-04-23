@@ -7,7 +7,13 @@
     :sortable="sortable"
   >
     <template slot-scope="scope">
-      <div class="column-default">
+      <div class="column-user">
+        <div class="avatar">
+          <div
+            class="image"
+            :style="`background-image: url(${scope.row[imageProp]})`"
+          />
+        </div>
         <span>{{ scope.row[prop] }}</span>
       </div>
     </template>
@@ -18,6 +24,7 @@
 export default {
   props: {
     prop: String,
+    imageProp: String,
     label: String,
     width: Number,
     align: String,

@@ -1,10 +1,14 @@
 <template>
-  <el-table-column :label="label" :width="width">
+  <el-table-column
+    :prop="prop"
+    :label="label"
+    :width="width"
+    :align="align"
+    :sortable="sortable"
+  >
     <template slot-scope="scope">
       <div class="column-status">
-        <el-tag :class="statusColor(scope.row[prop])">
-          {{ $t(statusLabel(scope.row[prop])) }}
-        </el-tag>
+        <span :class="scope.row[prop]">{{ codeToWord(scope.row[prop]) }}</span>
       </div>
     </template>
   </el-table-column>
@@ -13,20 +17,19 @@
 <script>
 export default {
   props: {
-    label: String,
     prop: String,
-    width: Number,
+    label: String,
     /**
-     * [{ value, label, color }]
+     * i18n object name
      */
-    statusList: Array,
+    statusList: String,
+    width: Number,
+    align: String,
+    sortable: [Boolean, String],
   },
   methods: {
-    statusLabel(val) {
-      return this.statusList.find(status => status.value === val).label
-    },
-    statusColor(val) {
-      return this.statusList.find(status => status.value === val).color
+    codeToWord(code) {
+      return this.$t(`${this.statusList}.${code}`)
     },
   },
 }
@@ -34,36 +37,16 @@ export default {
 
 <style lang="scss">
 .column-status {
-  .el-tag {
+  & > span {
     display: inline-block;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-
-    &.silver {
-      background-color: $color-silver;
-    }
-    &.gray {
-      background-color: $color-gray;
-    }
-    &.dark-gray {
-      background-color: $color-dark-gray;
-    }
-    &.blue {
-      background-color: $color-blue;
-    }
-    &.dark-blue {
-      background-color: $color-dark-blue;
-    }
-    &.dark-red {
-      background-color: $color-dark-red;
-    }
-    &.orange {
-      background-color: $color-orange;
-    }
-    &.green {
-      background-color: $color-green;
-    }
+    box-sizing: border-box;
+    min-width: 74px;
+    margin: -10px 0;
+    padding: 4px 10px;
+    font-size: 12.6px;
+    text-align: center;
+    border: solid 1px;
+    border-radius: 100px;
   }
 }
 </style>

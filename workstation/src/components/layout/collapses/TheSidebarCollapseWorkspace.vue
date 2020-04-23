@@ -46,8 +46,12 @@ export default {
     }
   },
   methods: {
-    activeWorkspace(uuid) {
-      this.$store.commit('workspace/SET_ACTIVE_WORKSPACE', uuid)
+    async activeWorkspace(uuid) {
+      await this.$store.dispatch('workspace/getActiveWorkspaceInfo', {
+        route: {
+          workspaceId: uuid,
+        },
+      })
       this.$emit('closeCollapse')
     },
   },

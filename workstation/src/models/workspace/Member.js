@@ -10,6 +10,7 @@ export default class Member extends Model {
     this.uuid = json.uuid
     this.email = json.email
     this.name = json.name
+    this.nickname = json.nickName
     this.description = json.description
     this.profile = json.profile
     this.loginLock = json.loginLock

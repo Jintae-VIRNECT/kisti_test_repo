@@ -44,6 +44,7 @@ export default {
 #start {
   max-width: 380px;
   margin: 0 auto;
+  padding-top: 72px;
 
   h3 {
     font-size: 28px;

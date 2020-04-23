@@ -1,0 +1,51 @@
+.column-user {
+  .avatar {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+  }
+  & > span {
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+}
+
+.column-plan {
+  & > .el-tag {
+    height: auto;
+    margin: 0 6px;
+    padding: 4px 6px;
+    font-size: 11px;
+    line-height: 11px;
+
+    &.PRO {
+      color: #0b5bd8;
+      border-color: #0b5bd8;
+    }
+    &.BASIC {
+      color: #828a97;
+      border-color: #828a97;
+    }
+  }
+}
+
+.column-role {
+  & > .el-tag {
+    height: 24px;
+    padding: 0 12px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.9;
+    border: none;
+  }
+  .MASTER {
+    background: #365595;
+  }
+  .MANAGER {
+    background: #1f87e6;
+  }
+  .MEMBER {
+    background: #7ac1fc;
+  }
+}

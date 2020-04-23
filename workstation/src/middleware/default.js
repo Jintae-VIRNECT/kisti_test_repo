@@ -12,10 +12,12 @@ export default async function({ req, store, redirect }) {
     // 토큰으로 내 정보 불러오기
     try {
       await store.dispatch('auth/getAuthInfo', { headers: req.headers })
-      store.commit(
-        'workspace/SET_ACTIVE_WORKSPACE',
-        store.getters['auth/myWorkspaces'][0].uuid,
-      )
+      await store.dispatch('workspace/getActiveWorkspaceInfo', {
+        headers: req.headers,
+        route: {
+          workspaceId: store.getters['auth/myWorkspaces'][0].uuid,
+        },
+      })
     } catch (e) {
       // 토큰 만료됨
       if (/^Error: 8005/.test(e)) {

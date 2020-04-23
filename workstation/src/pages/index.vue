@@ -16,8 +16,8 @@
             </el-card>
           </el-row>
           <el-row>
-            <workspace-storage-info />
-            <workspace-download-info />
+            <!-- <workspace-storage-info />
+            <workspace-download-info /> -->
           </el-row>
         </el-col>
         <!-- 가운데 -->
@@ -27,10 +27,12 @@
             <h5>{{ $t('home.banner.main') }}</h5>
             <p>{{ $t('home.banner.desc') }}</p>
           </el-card>
+          <workspace-member-list />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
-          <link-list-card
+          <user-profile-card />
+          <!-- <link-list-card
             type="link"
             icon=""
             :title="$t('home.install.title')"
@@ -41,7 +43,7 @@
             icon=""
             :title="$t('home.guide.title')"
             :links="guide"
-          />
+          /> -->
         </el-col>
       </el-row>
     </div>
@@ -50,9 +52,11 @@
 
 <script>
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import WorkspaceStorageInfo from '@/components/workspace/WorkspaceStorageInfo'
-import WorkspaceDownloadInfo from '@/components/workspace/WorkspaceDownloadInfo'
-import LinkListCard from '@/components/common/LinkListCard'
+import WorkspaceStorageInfo from '@/components/home/WorkspaceStorageInfo'
+import WorkspaceDownloadInfo from '@/components/home/WorkspaceDownloadInfo'
+import WorkspaceMemberList from '@/components/home/WorkspaceMemberList'
+import UserProfileCard from '@/components/home/UserProfileCard'
+import LinkListCard from '@/components/home/LinkListCard'
 
 import { install, guide } from '@/models/home'
 
@@ -61,6 +65,8 @@ export default {
     WorkspaceInfo,
     WorkspaceStorageInfo,
     WorkspaceDownloadInfo,
+    WorkspaceMemberList,
+    UserProfileCard,
     LinkListCard,
   },
   data() {

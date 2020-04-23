@@ -34,22 +34,23 @@ export default {
     }
   },
   /**
-   * 워크스페이스 정보
-   * @param {String} workspaceId
+   * 멤버 리스트 검색
+   * @param {function} searchParams
    */
-  async getWorkspaceInfo(workspaceId) {
-    workspaceId = workspaceId
-      ? workspaceId
-      : $nuxt.$store.getters['workspace/activeWorkspace']
-    const data = await api('WORKSPACE_INFO', {
-      route: { workspaceId },
+  async searchMembers(searchParams) {
+    const { memberInfoList, pageMeta } = await api('MEMBER_LIST', {
+      route: {
+        workspaceId:
+          $nuxt.$store.getters['workspace/activeWorkspace'].info.uuid,
+      },
+      params: {
+        userId: $nuxt.$store.getters['auth/myProfile'].uuid,
+        ...searchParams,
+      },
     })
-    const members = data.workspaceUserInfo.map(user => new Member(user))
     return {
-      info: new Workspace(data.workspaceInfo),
-      master: members.find(member => member.role === 'MASTER'),
-      managers: members.filter(member => member.role === 'MANAGER'),
-      members: members.filter(member => member.role === 'MEMBER'),
+      list: memberInfoList.map(member => new Member(member)),
+      total: pageMeta.totalElements,
     }
   },
 }
