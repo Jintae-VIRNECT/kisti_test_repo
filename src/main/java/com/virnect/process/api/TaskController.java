@@ -73,7 +73,7 @@ public class TaskController {
      * @param contentUUID 콘텐츠 식별자
      * @return
      */
-    @ApiOperation(value = "컨텐츠 파일의 작업 조회", tags = "dev",
+    @ApiOperation(value = "컨텐츠 파일의 작업 조회",
             notes = "컨텐츠 식별자에 해당하는 작업의 id를 가져옵니다." +
                     "\n컨텐츠가 없다면 5002 반환" +
                     "\n해당 컨텐츠로 만들어진 작업이 없다면 5003 반환" +
@@ -395,17 +395,18 @@ public class TaskController {
      * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "작업종료", tags = "dev", notes = "진행중인 작업을 종료합니다. 더이상 작업 수행을 할 수 없게 됩니다. 또한 활성화된 작업은 하나이기 때문에 작업이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
+    @ApiOperation(value = "작업종료", notes = "진행중인 작업을 종료합니다. 더이상 작업 수행을 할 수 없게 됩니다. 또한 활성화된 작업은 하나이기 때문에 작업이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+            @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
+            @ApiImplicitParam(name = "actorUUID", value = "행위자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496")
     })
     @PutMapping("/closed/{processId}")
-    public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(@PathVariable("processId") Long processId) {
-        if (Objects.isNull(processId)) {
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(@PathVariable("processId") Long processId, @RequestParam(value = "actorUUID") String actorUUID) {
+        if (Objects.isNull(processId) || actorUUID.isEmpty()) {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(processId);
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(processId, actorUUID);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
@@ -452,19 +453,19 @@ public class TaskController {
      * @param processId
      * @return
      */
-    @ApiOperation(value = "작업삭제")
+    @ApiOperation(value = "작업삭제", tags = "dev")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "10"),
-            @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
+            @ApiImplicitParam(name = "actorUUID", value = "행위자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496")
     })
     @DeleteMapping("/{processId}")
     public ResponseEntity<ApiResponse<ProcessSimpleResponse>> deleteProcessHandler(
             @PathVariable("processId") Long processId
-            , @RequestParam(value = "workerUUID") String workerUUID) {
-        if (Objects.isNull(processId) || workerUUID.isEmpty()) {
+            , @RequestParam(value = "actorUUID") String actorUUID) {
+        if (Objects.isNull(processId) || actorUUID.isEmpty()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(processId, workerUUID);
+        ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(processId, actorUUID);
         return ResponseEntity.ok(processSimpleResponseApiResponse);
     }
 

@@ -9,6 +9,7 @@ import com.virnect.process.domain.*;
 import com.virnect.process.dto.request.*;
 import com.virnect.process.dto.response.*;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
+import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
 import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
@@ -1018,12 +1019,16 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long processId) {
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long processId, String actorUUID) {
         // 공정종료
         // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         // 마감 상태로 변경
+
+        if (!process.getContentManagerUUID().equals(actorUUID))
+            throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+
         process.setState(State.CLOSED);
         this.processRepository.save(process);
 
@@ -1441,32 +1446,26 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(Long processId, String workerUUID) {
+    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(Long processId, String actorUUID) {
         // 공정 삭제
         Process process = this.processRepository.findById(processId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
         // 권한 체크
-        if (!process.getContentManagerUUID().equals(workerUUID))
+        if (!process.getContentManagerUUID().equals(actorUUID))
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
         this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
 
-        try {
-            // 컨텐츠 삭제
-            String[] processes = {process.getContentUUID()};
-            this.contentRestService.contentDeleteRequestHandler(processes, workerUUID);
+        // 컨텐츠 삭제
+        String[] processes = {process.getContentUUID()};
+        ApiResponse<ContentDeleteListResponse> apiResponse = this.contentRestService.contentDeleteRequestHandler(processes, actorUUID);
 
-            // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
-            this.processRepository.delete(process);
-        } catch (Exception e) {
-            this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.YES);
-            log.error(e.getMessage());
-            throw new ProcessServiceException(ErrorCode.ERR_DELETE_PROCES);
+        // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
+        this.processRepository.delete(process);
 
-        }
-        return new ApiResponse<>(new ProcessSimpleResponse(true));
+        return new ApiResponse<>(new ProcessSimpleResponse(apiResponse.getData().getDeleteResponseList().get(0).getResult()));
     }
 
     private List<UserInfoResponse> getUserInfoSearch(String search) {
