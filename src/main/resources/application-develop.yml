@@ -26,6 +26,10 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 40MB
 
 logging:
   level:
