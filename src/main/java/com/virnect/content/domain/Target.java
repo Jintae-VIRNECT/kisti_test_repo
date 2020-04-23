@@ -31,7 +31,7 @@ public class Target extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private TargetType type;
 
-    @Column(name = "data")
+    @Column(name = "data", unique = true)
     private String data;
 
     @ManyToOne(fetch = FetchType.LAZY)

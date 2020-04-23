@@ -238,19 +238,26 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
-    public Resource contentDownloadhandler(final String contentUUID, final String targetData, final String memberUUID) {
-        Content content = null;
-        if (contentUUID != null) {
-            // 1. 수정 대상 컨텐츠 데이터 조회
-            content = this.contentRepository.findByUuid(contentUUID)
-                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-        } else {
-            // 수정 대상 컨텐츠 데이터 조회
-            content = this.contentRepository.getContentOfTarget(targetData);
+    public Resource contentDownloadForUUIDhandler(final String contentUUID, final String memberUUID) {
+        // 1. 컨텐츠 데이터 조회
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-            if (content == null)
-                throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
-        }
+        if (!content.getUserUUID().equals(memberUUID))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        String regex = "/";
+        String[] parts = content.getPath().split(regex);
+
+        return loadContentFile(parts[parts.length - 1]);
+    }
+
+    public Resource contentDownloadForTargethandler(final String targetData, final String memberUUID) {
+        // 컨텐츠 데이터 조회
+        Content content = this.contentRepository.getContentOfTarget(targetData);
+
+        if (content == null)
+            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
         if (!content.getUserUUID().equals(memberUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);

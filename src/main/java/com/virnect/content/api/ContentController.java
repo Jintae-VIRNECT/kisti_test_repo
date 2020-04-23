@@ -86,7 +86,7 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장되며, 컨텐츠 용량은 MB(MegaByte)단위임.")
+    @ApiOperation(value = "콘텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
             @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR)", dataType = "string", paramType = "form", defaultValue = "QR"),
@@ -129,22 +129,39 @@ public class ContentController {
         return ResponseEntity.ok(uploadResponse);
     }
 
-    @ApiOperation(value = "컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
+    @ApiOperation(value = "컨텐츠 식별자로 컨텐츠 다운로드", notes = "컨텐츠 식별자를 통해 컨텐츠를 다운로드.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/download")
-    public ResponseEntity<Resource> contentDownloadRequestHandler(
-            @RequestParam(value = "contentUUID", required = false) String contentUUID
-            , @RequestParam(value = "targetData", required = false) String targetData
+    @GetMapping("/download/contentUUID/{contentUUID}")
+    public ResponseEntity<Resource> contentDownloadForUUIDRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
             , @RequestParam(value = "memberUUID") String memberUUID) {
-        if ((contentUUID.isEmpty() && targetData.isEmpty()) || memberUUID.isEmpty()) {
+        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
+        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}], targetData: [{}]", memberUUID, contentUUID, targetData);
-        Resource resource = this.contentService.contentDownloadhandler(contentUUID, targetData, memberUUID);
+        Resource resource = this.contentService.contentDownloadForUUIDhandler(contentUUID, memberUUID);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "path", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
+    })
+    @GetMapping("/download/targetData/{targetData}")
+    public ResponseEntity<Resource> contentDownloadRequestForTargetHandler(
+            @PathVariable("targetData") String targetData
+            , @RequestParam(value = "memberUUID") String memberUUID) {
+        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
+        if (targetData.isEmpty() || memberUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        Resource resource = this.contentService.contentDownloadForTargethandler(targetData, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);

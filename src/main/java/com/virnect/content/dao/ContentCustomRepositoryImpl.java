@@ -72,7 +72,7 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     public Content getContentOfTarget(String targetData) {
         QContent qContent = QContent.content;
         QTarget qTarget = QTarget.target;
-        JPQLQuery<Content> query = from(qContent).join(qTarget).fetchJoin().where(qTarget.data.eq(targetData));
+        JPQLQuery<Content> query = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData));
         return query.fetchOne();
     }
 }
