@@ -3,6 +3,8 @@ ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
+COPY ./upload ./upload
+
 COPY ./build/libs/PF-Workspace-1.0.0.jar ./PF-Workspace-1.0.0.jar
 
 ENV JAVA_OPTS="-XX:MaxMetaspaceSize=512m -XX:MetaspaceSize=256m"
