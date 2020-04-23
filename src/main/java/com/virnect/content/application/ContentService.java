@@ -299,7 +299,7 @@ public class ContentService {
 
 
         // 5 수정 컨텐츠 파일 크기 반영
-        targetContent.setSize(byteToMegaByte(updateRequest.getContent().getSize()));
+        targetContent.setSize(updateRequest.getContent().getSize());
 
         // 6. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
