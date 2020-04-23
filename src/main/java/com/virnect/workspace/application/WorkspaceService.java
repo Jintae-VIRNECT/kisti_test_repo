@@ -70,6 +70,11 @@ public class WorkspaceService {
      * @return - 생성 된 워크스페이스 정보
      */
     public ApiResponse<WorkspaceInfoDTO> createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
+        //필수 값 체크
+        if(!StringUtils.hasText(workspaceCreateRequest.getUserId())||!StringUtils.hasText(workspaceCreateRequest.getName())||!StringUtils.hasText(workspaceCreateRequest.getDescription())){
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
         //User Service 에서 유저 조회
         UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
 
