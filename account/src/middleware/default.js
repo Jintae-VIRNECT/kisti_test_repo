@@ -24,5 +24,10 @@ export default async function({ req, store, redirect }) {
         throw e
       }
     }
+
+    // 홈이 없어서 쿠폰으로 임시 리다이렉트
+    if (req.url === '/') {
+      return redirect('/coupon')
+    }
   }
 }

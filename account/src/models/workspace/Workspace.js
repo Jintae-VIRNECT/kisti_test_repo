@@ -10,6 +10,8 @@ export default class Workspace extends Model {
     this.id = json.id
     this.uuid = json.uuid
     this.masterUserId = json.masterUserId
+    this.masterName = json.masterName
+    this.masterProfile = json.masterProfile
     this.pinNumber = json.pinNumber
     this.name = json.name
     this.description = json.description
@@ -17,5 +19,6 @@ export default class Workspace extends Model {
     this.role = json.role
     this.updatedDate = json.updatedDate
     this.createdDate = json.createdDate
+    this.joinDate = json.joinDate
   }
 }

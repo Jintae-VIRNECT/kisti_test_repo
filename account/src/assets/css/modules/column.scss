@@ -1,3 +1,16 @@
+.column-user {
+  .avatar {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+  }
+  & > span {
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+}
+
 .column-plan {
   & > .el-tag {
     height: auto;
@@ -14,5 +27,25 @@
       color: #828a97;
       border-color: #828a97;
     }
+  }
+}
+
+.column-role {
+  & > .el-tag {
+    height: 24px;
+    padding: 0 12px;
+    color: #fff;
+    font-size: 12px;
+    line-height: inherit;
+    border: none;
+  }
+  .MASTER {
+    background: #365595;
+  }
+  .MANAGER {
+    background: #1f87e6;
+  }
+  .MEMBER {
+    background: #7ac1fc;
   }
 }

@@ -52,7 +52,7 @@ export default {
       form: {
         uuid: profile.uuid,
         email: profile.email,
-        password: 'smic1234',
+        password: '',
       },
       findPasswordUrl: `${process.env.LOGIN_SITE_URL}/find`,
     }

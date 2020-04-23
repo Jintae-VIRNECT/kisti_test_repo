@@ -11,6 +11,8 @@ module.exports = {
   ACCESS_AUTH: ['POST', '/users/{userId}/access'],
   // 사용자 정보 조회(authorization 토큰을 전달할 시 사용)
   GET_AUTH_INFO: ['GET', '/users/info'],
+  // 내가 속한 워크스페이스 목록 조회
+  GET_WORKSPACES: ['GET', '/workspaces'],
   // 내 쿠폰 정보 리스트 조회
   GET_COUPONS: ['GET', '/licenses/coupon/{userId}'],
   // 쿠폰 등록

@@ -1,4 +1,6 @@
+import api from '@/api/gateway'
 import Workspace from '@/models/workspace/Workspace'
+import profileServices from '@/services/profile'
 
 function getMyWorkspaces() {
   return process.client && [...$nuxt.$store.getters['auth/myWorkspaces']]
@@ -6,8 +8,16 @@ function getMyWorkspaces() {
 
 export default {
   getMyWorkspaces,
-  getWorkspaceList() {
-    const data = [0, 1, 2, 3, 4]
-    return data.map(workspace => new Workspace(workspace))
+  async getWorkspaceList(searchParams) {
+    const { workspaceList, pageMeta } = await api('GET_WORKSPACES', {
+      params: {
+        userId: profileServices.getMyProfile().uuid,
+        ...searchParams,
+      },
+    })
+    return {
+      list: workspaceList.map(workspace => new Workspace(workspace)),
+      // total: pageMeta.totalElements,
+    }
   },
 }

@@ -9,11 +9,11 @@ export const sideMenus = [
     image: require('@/assets/images/icon/ic-account-info.svg'),
     label: 'menu.profile',
   },
-  // {
-  //   path: '/workspace',
-  //   image: require('@/assets/images/icon/ic-workspace-info.svg'),
-  //   label: 'menu.workspace',
-  // },
+  {
+    path: '/workspace',
+    image: require('@/assets/images/icon/ic-workspace-info.svg'),
+    label: 'menu.workspace',
+  },
   // {
   //   path: '/security',
   //   image: require('@/assets/images/icon/ic-security.svg'),
