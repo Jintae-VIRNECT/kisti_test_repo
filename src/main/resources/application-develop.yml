@@ -38,8 +38,8 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "workspaces/upload/"
-  url: "http://192.168.6.3:${server.port}/"
+  upload-path: "upload/"
+  url: "http://192.168.6.3:${server.port}/workspaces/"
   allow-extension: "gif,jpg,jpeg,png"
 
 ## Eureka Server Configuration
