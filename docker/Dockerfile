@@ -3,6 +3,7 @@ ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
+COPY ./keystore.p12 ./keystore.p12
 COPY ./build/libs/PF-Login-1.0.0.jar ./PF-Login-1.0.0.jar
 
 EXPOSE 8883

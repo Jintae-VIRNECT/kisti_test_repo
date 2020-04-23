@@ -1,21 +1,31 @@
 <template>
-  <div class="container">
-    <header class="jumbotron">
-      <h3>Home content</h3>
-    </header>
-  </div>
+	<div id="app">
+		<TheHeader :showSection="showSection" />
+		<transition name="app-fade" mode="out-in">
+			<router-view />
+		</transition>
+	</div>
 </template>
 
 <script>
-
+import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
-  name: 'Home',
-  data () {
-    return {
-      content: ''
-    }
-  },
-  mounted () {
-  }
+	data() {
+		return {
+			showSection: {
+				login: false,
+			},
+		}
+	},
+	components: {
+		TheHeader,
+	},
+	computed: {
+		currentUser() {
+			return this.$store.state.user
+		},
+	},
 }
 </script>
+
+<style lang="scss" scoped></style>

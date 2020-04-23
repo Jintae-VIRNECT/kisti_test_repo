@@ -69,6 +69,10 @@
 .container {
     padding-top: 144px;
     padding-bottom: 240px;
+    @media (max-width: $mobile) {
+        padding-top: 120px;
+        padding-bottom: 80px;
+    }
 }
 
 .row-bg {
@@ -76,7 +80,8 @@
     text-align: center;
 
     > div {
-        width: 380px;
+        // width: 380px;
+        @include area-flex(380px);
     }
 }
 

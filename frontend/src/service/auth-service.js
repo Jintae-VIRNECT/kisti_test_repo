@@ -87,6 +87,18 @@ class AuthService {
 		}
 	}
 
+	async qrOtp(code = {}) {
+		try {
+			const response = await axios.post(GATEWAY_API_URL + API.auth.qrOtp, {
+				email: code.email,
+				userId: code.userId,
+			})
+			return response.data
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
 	handleResponse(response) {
 		const { data } = response
 		if (response.status !== 200 || data.code !== 200) {

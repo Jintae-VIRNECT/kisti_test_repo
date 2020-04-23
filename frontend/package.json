@@ -2,11 +2,11 @@
   "name": "frontend",
   "version": "1.0.0",
   "description": "Virnect Platofrm Login FrontEnd",
-  "author": "shkang",
+  "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --config config/webpack.dev.conf.js",
-    "build:develop": "cross-env NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
+    "build:develop": "cross-env NODE_ENV=develop webpack --mode production --progress --config config/webpack.prod.conf.js",
     "build": "cross-env NODE_ENV=$NODE_ENV webpack --mode production --progress --config config/webpack.prod.conf.js",
     "start": "node server.js"
   },
@@ -14,18 +14,20 @@
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "cross-env": "^7.0.2",
-    "dayjs": "^1.8.23",
+    "dayjs": "^1.8.25",
     "dotenv": "^8.2.0",
+    "dotenv-webpack": "^1.7.0",
     "element-ui": "^2.13.0",
     "express": "^4.16.3",
     "js-cookie": "^2.2.1",
+    "lodash.clonedeep": "^4.5.0",
     "vee-validate": "2.2.15",
     "vue": "^2.5.16",
     "vue-i18n": "^8.15.3",
+    "vue-qrcode-reader": "^2.1.1",
     "vue-router": "^3.0.1",
     "vuex": "^3.1.2",
-    "vuex-router-sync": "^5.0.0",
-    "lodash.clonedeep": "^4.5.0"
+    "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",

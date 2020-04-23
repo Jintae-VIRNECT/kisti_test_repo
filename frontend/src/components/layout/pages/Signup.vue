@@ -9,9 +9,9 @@
 					placeholder="이메일을 입력해 주세요"
 					v-model="signup.email"
 					type="email"
-					name="email"
 					clearable
 					:disabled="authLoading"
+					name="email"
 					v-validate="'required|email|max:50'"
 				>
 				</el-input>
@@ -340,6 +340,8 @@ export default {
 		},
 		async sendEmail() {
 			const validEmail = await this.$validator.validate('email')
+			console.log(validEmail)
+			console.log('+++++++++++++++++++++++++++')
 			if (!validEmail) {
 				return this.alertMessage(
 					'이메일 형식 오류',

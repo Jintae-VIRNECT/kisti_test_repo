@@ -1,6 +1,5 @@
 <template>
 	<div id="app">
-		<TheHeader :showSection="showSection" />
 		<transition name="app-fade" mode="out-in">
 			<router-view />
 		</transition>
@@ -8,30 +7,9 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	data() {
-		return {
-			showSection: {
-				login: false,
-			},
-		}
-	},
-	components: {
-		TheHeader,
-	},
-	computed: {
-		currentUser() {
-			return this.$store.state.user
-		},
-	},
-	methods: {
-		logOut() {
-			this.$store.dispatch('auth/logout')
-			this.$route.path = '/'
-		},
+		return {}
 	},
 }
 </script>
-
-<style lang="scss" scoped></style>

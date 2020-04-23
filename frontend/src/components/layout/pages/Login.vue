@@ -44,6 +44,7 @@
 					class="next-btn block-btn"
 					type="info"
 					@click="handleLogin"
+					@keydown.enter="handleLogin"
 					:disabled="loading || login.email == '' || login.password == ''"
 					>로그인</el-button
 				>

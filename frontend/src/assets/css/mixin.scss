@@ -18,14 +18,14 @@ $baseColor: #0d2a58;
 //device
 $fhd: 1600px;
 $desktop: 1200px;
-$tablet: 1200px;
-$mobile: 1200px;
-$Smobile: 360px;
-$short: 568px;
-// $tablet: 768px;
-// $mobile: 480px;
+// $tablet: 1200px;
+// $mobile: 1200px;
 // $Smobile: 360px;
 // $short: 568px;
+$tablet: 768px;
+$mobile: 480px;
+$Smobile: 360px;
+$short: 568px;
 
 // default class
 @mixin cursor() {

@@ -3,10 +3,12 @@
 const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
+const MODE = process.env.NODE_ENV
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
 
 const extractCSS = new ExtractTextPlugin({
 	filename: getPath => {
@@ -70,6 +72,7 @@ const sassOptions = [
 
 const config = {
 	entry: entries,
+	mode: MODE,
 	output: {
 		path: resolve(__dirname, '../../src/main/resources/static'),
 		filename: posix.join('js/[name].js'),
@@ -89,7 +92,7 @@ const config = {
 			mixins: join(__dirname, '../src/mixins'),
 			languages: join(__dirname, '../src/languages'),
 			// config: join(__dirname, '../src/config'),
-			routers: join(__dirname, '../src/routers'),
+			routers: join(__dirname, '../src/router'),
 			stores: join(__dirname, '../src/stores'),
 			element: join(__dirname, '../theme/'),
 		},
@@ -207,6 +210,9 @@ const config = {
 				ignore: ['*.gitkeep'],
 			},
 		),
+		new Dotenv({
+			path: `.env.${process.env.NODE_ENV.trim()}`,
+		}),
 	],
 	node: {
 		net: 'empty',
