@@ -28,7 +28,7 @@ export default {
       default: false,
     },
     customClass: {
-      type: Object,
+      type: [Array, Object],
       default: () => {
         return {}
       },

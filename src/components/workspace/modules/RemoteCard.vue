@@ -7,21 +7,23 @@
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
-      <span class="groupcard__leader" v-if="accountId === reader.ids"
+      <span class="groupcard__leader" v-if="accountId === room.roomLeaderId"
         >Leader</span
       >
       <div class="groupcard-profile">
-        <img class="profile__image" :src="room.image" />
-        <p class="profile__name">{{ room.name }}</p>
+        <img class="profile__image" :src="room.path" />
+        <p class="profile__name">{{ room.title }}</p>
         <p class="profile__description">
           {{ room.description }}
         </p>
-        <p class="profile__leader">리더 : {{ reader.name }}</p>
+        <p class="profile__leader">리더 : {{ room.roomLeaderName }}</p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
-          <p class="info__description">{{ `총 멤버: ${room.all}명` }}</p>
+          <p class="info__description">
+            {{ `총 멤버: ${room.maxParticipantCount}명` }}
+          </p>
         </div>
         <div class="info__section">
           <p class="info__title">접속한 회원</p>
@@ -36,7 +38,7 @@
               'border-width': '1px',
             }"
             :max="5"
-            :users="room.connectedMembers"
+            :users="participants"
           ></profile-list>
         </div>
       </div>
@@ -48,15 +50,16 @@
           상세 보기
         </button>
       </li>
-      <li v-if="accountId === reader.ids">
-        <button class="group-pop__button">
+      <li v-if="accountId === room.roomLeaderId">
+        <button class="group-pop__button" @click="remove(room.roomId)">
           협업 삭제
         </button>
       </li>
       <li v-else><button class="group-pop__button">협업 나가기</button></li>
       <roominfo-modal
         :visible.sync="showRoomInfo"
-        :room="room"
+        :roomId="room.roomId"
+        :leader="leader"
       ></roominfo-modal>
     </ul>
   </card>
@@ -66,6 +69,8 @@
 import Card from 'Card'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
+
+import { deleteRoom } from 'api/remote/room'
 
 export default {
   name: 'RemoteCard',
@@ -77,85 +82,10 @@ export default {
   data() {
     return {
       showRoomInfo: false,
-      accountId: 11,
-      users: [
-        {
-          id: 1,
-          image: require('assets/image/홍길동.png'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 2,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 02',
-          mainText: '버넥트 리모트03',
-          subText: 'example2@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 3,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 4,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 5,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 6,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 7,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 03',
-          mainText: '버넥트 리모트03',
-          subText: 'example3@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-        {
-          id: 8,
-          image: require('assets/image/img_user_profile.svg'),
-          imageAlt: '버넥트 리모트 01',
-          mainText: '버넥트 리모트01',
-          subText: 'example@example.com',
-          status: 'online',
-          role: 'Master',
-        },
-      ],
     }
   },
   props: {
-    room: {
+    roomInfo: {
       type: Object,
       default: () => {
         return {}
@@ -163,30 +93,40 @@ export default {
     },
   },
   computed: {
-    reader() {
-      if (!this.room) return ''
-      if (
-        !this.room.readerId ||
-        !this.room.connectedMembers ||
-        this.room.connectedMembers.length === 0
-      )
-        return ''
-      const idx = this.room.connectedMembers.findIndex(member => {
-        return member.ids === this.room.readerId
-      })
-      if (idx < 0) return ''
-
-      return this.room.connectedMembers[idx]
+    room() {
+      return this.roomInfo.room
+    },
+    participants() {
+      return this.roomInfo.participants
+    },
+    accountId() {
+      return this.account.userId
+    },
+    leader() {
+      if (this.account.userId === this.room.roomLeaderId) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   methods: {
     openRoomInfo() {
       this.showRoomInfo = !this.showRoomInfo
     },
+    async remove(roomId) {
+      const rtn = await deleteRoom({ roomId: roomId })
+      if (rtn) {
+        this.$emit('refresh')
+        this.$eventBus.$emit('popover:close')
+      }
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    // console.log(this.roomInfo)
+  },
 }
 </script>
 

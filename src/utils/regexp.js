@@ -6,7 +6,7 @@ export const email = new RegExp(/[-\d\S.+_]+@[-\d\S.+_]+\.[\S]{2,4}/)
 export const password = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{6,}$/i
 
 // export const name = new RegExp(/^([^\<\>ㄱ-ㅣ]|[\w]){2,20}$/)
-export const name = new RegExp(/^[\w\sㄱ-ㅎㅏ-ㅣ가-힣]{0,20}$/)
+export const name = new RegExp(/^[\w\sㄱ-ㅎㅏ-ㅣ가-힣]{2,20}|^[\w]{0}$/)
 
 export const groupName = new RegExp(/^([^\<\>ㄱ-ㅣ]|[\w]){2,20}$/)
 
