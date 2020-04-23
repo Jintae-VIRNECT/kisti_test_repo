@@ -142,6 +142,8 @@ export default {
 }
 .groupcard-body {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
 }
@@ -160,6 +162,7 @@ export default {
   border-radius: 12px;
 }
 .groupcard-profile {
+  flex: 1;
   padding-top: 20px;
   text-align: center;
 }
@@ -177,23 +180,25 @@ export default {
 .profile__description {
   display: -webkit-box;
   width: 228px;
-  height: 3em;
+  min-height: 1.5rem;
+  max-height: 3em;
   margin-bottom: 5px;
   overflow: hidden;
   color: rgba(#ddd, 0.76);
   font-size: 15px;
-  font-size: 1em;
   line-height: 1.5;
+  white-space: normal;
   text-overflow: ellipsis;
   word-wrap: break-word;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   word-break: break-all;
+  -webkit-line-clamp: 2;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
 }
 .profile__leader {
   position: relative;
   width: fit-content;
-  margin: 14px auto;
+  margin: 5px auto 14px;
   margin-bottom: 9px;
   color: #fafafa;
   &:before {
@@ -208,9 +213,10 @@ export default {
 }
 .groupcard-info {
   display: inline-block;
+  flex: 0;
 }
 .info__section {
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 .info__title {
   margin-bottom: 5px;
@@ -221,10 +227,11 @@ export default {
   font-weight: 500;
 }
 .groupcard-button {
-  position: absolute;
   bottom: 0;
   left: 0;
+  flex: 0;
   width: 100%;
+  margin-top: 20px;
   padding: 10px 40px;
 }
 .groupcard.profilelist {
