@@ -125,8 +125,13 @@ public class ContentService {
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
             // 반환할 타겟정보
-            result.setTargetData(targetData);
-            result.setTargetType(uploadRequest.getTargetType());
+            List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
+            ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                    .type(uploadRequest.getTargetType())
+                    .data(targetData)
+                    .build();
+            contentTargetResponseList.add(contentTargetResponse);
+            result.setTargets(contentTargetResponseList);
             result.setContentUUID(contentUUID);
             return new ApiResponse<>(result);
         } catch (IOException e) {

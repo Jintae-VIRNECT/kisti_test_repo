@@ -1,10 +1,7 @@
 package com.virnect.content.dto.response;
 
 import com.virnect.content.domain.TargetType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author hangkee.min (henry)
@@ -18,7 +15,12 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class ContentTargetResponse {
-    private Long id;
     private TargetType type;
     private String data;
+
+    @Builder
+    public ContentTargetResponse(TargetType type, String data) {
+        this.type = type;
+        this.data = data;
+    }
 }
