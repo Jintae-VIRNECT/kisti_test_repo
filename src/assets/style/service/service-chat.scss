@@ -267,7 +267,7 @@
   bottom: 0;
   flex-shrink: 0;
   width: 100%;
-  background-color: $color_chat_bg_input;
+  background-color: rgba($color_bg_item, 0.3);
 
   &__preview {
     height: 120px;
@@ -307,7 +307,7 @@
       width: 20px;
       height: 20px;
       background: url(~assets/image/call/ic-close-w.svg) center/15px 15px
-        no-repeat rgba(#4c5259, 0.7);
+        no-repeat rgba($color_bg_item, 0.7);
       border-radius: 50%;
 
       @include ir();

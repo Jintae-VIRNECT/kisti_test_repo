@@ -14,21 +14,21 @@
 
 .workspace-welcome__group {
   display: flex;
-  color: rgba(#bfddff, 0.82);
+  color: rgba($color_primary_400, 0.82);
   font-weight: 500;
   font-size: 18px;
 }
 
 .workspace-welcome__name {
   margin: 8px 0 23px;
-  color: #fff;
+  color: $color_text;
   font-weight: 500;
   font-size: 26px;
 }
 
 .workspace-welcome__button {
   padding: 8px 30px;
-  color: #fff;
+  color: $color_text;
   font-weight: 500;
   font-size: 15px;
   background-color: $color_primary;

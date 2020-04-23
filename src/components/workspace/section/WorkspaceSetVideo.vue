@@ -36,5 +36,3 @@ export default {
   created() {},
 }
 </script>
-
-<style scoped lang="scss"></style>

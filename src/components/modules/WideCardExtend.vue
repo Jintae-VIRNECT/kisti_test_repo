@@ -53,6 +53,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .widecard {
   display: flex;
   flex-basis: 0px;
@@ -62,7 +64,7 @@ export default {
   width: 100%;
   margin-bottom: 8px;
   padding: 22px 30px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
   border-radius: 2px;
 
   &:hover {

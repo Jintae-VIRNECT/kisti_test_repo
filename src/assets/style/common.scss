@@ -62,16 +62,16 @@ body.modal-open {
       background-color: $color_primary;
     }
     &.sub {
-      background-color: rgba(#4c5259, 0.15);
-      border-color: #4c5259;
+      background-color: rgba($color_bg_item, 0.15);
+      border-color: $color_bg_item;
       &:focus {
-        background-color: rgba(#4c5259, 0.15);
+        background-color: rgba($color_bg_item, 0.15);
       }
       &:hover {
-        background-color: rgba(#4c5259, 0.3);
+        background-color: rgba($color_bg_item, 0.3);
       }
       &:active {
-        background-color: rgba(#4c5259, 0.5);
+        background-color: rgba($color_bg_item, 0.5);
       }
     }
   }

@@ -54,7 +54,7 @@ export default {
   async created() {
     this.updateAccount({
       userId: '123456',
-      profile: require('assets/image/img_user_profile.svg'),
+      profile: require('assets/image/profile.png'),
       description: null,
       email: 'remote@remote.com',
       name: '리모트',

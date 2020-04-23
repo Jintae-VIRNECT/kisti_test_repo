@@ -20,13 +20,12 @@
         ></profile>
       </div>
       <div class="popover-profile__link">
-        <button>VIRNECT Workstation</button>
+        <button @click="link('https://virnect.com')">
+          VIRNECT Workstation
+        </button>
       </div>
-      <div class="popover-profile__link">
-        <button>QR 로그인</button>
-      </div>
-      <div class="popover-profile__link">
-        <button>Open Source License</button>
+      <div class="popover-profile__link logout">
+        <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>
     </div>
@@ -48,7 +47,20 @@ export default {
   computed: {
     ...mapGetters(['account']),
   },
-  methods: {},
+  methods: {
+    link(url) {
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        window.open(url)
+      })
+    },
+    logout() {
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        console.log('로그아웃')
+      })
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -93,9 +105,23 @@ export default {
   padding: 13px 30px;
   > button {
     color: #fff;
-    font-weight: 500;
+    font-weight: 300;
     font-size: 15px;
     background: transparent;
+    &:hover,
+    &:active {
+      font-weight: 500;
+    }
+  }
+  &.logout {
+    > button {
+      color: $color_red;
+      font-weight: 500;
+      &:hover,
+      &:active {
+        font-weight: 700;
+      }
+    }
   }
 }
 .popover-profile__version {

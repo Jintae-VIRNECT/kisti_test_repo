@@ -39,11 +39,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
+
 .show-empty {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #29292c;
+  background: $color_darkgray_600;
 }
 .show-empty__image {
   position: absolute;
@@ -53,13 +55,13 @@ export default {
 }
 .show-empty__title {
   padding-top: 22%;
-  color: #fafafa;
+  color: $color_text_sub;
   font-size: 24px;
   text-align: center;
 }
 .show-empty__description {
   margin-top: 5px;
-  color: rgba(#fafafa, 0.5);
+  color: rgba($color_text_sub, 0.5);
   font-weight: 300;
   font-size: 18px;
   text-align: center;

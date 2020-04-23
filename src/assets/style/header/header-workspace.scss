@@ -38,7 +38,7 @@
 
 .header-lnb-selector.popover {
   background-color: $color_bg_sub;
-  border: solid 1px #3a3a3a;
+  border: solid 1px $color_darkgray_400;
   border-radius: 4px;
   transform: translateX(40px);
   > .popover--body {
@@ -52,10 +52,10 @@
     width: 100%;
     height: 100%;
     &:hover {
-      background-color: rgba(#4c5259, 0.7);
+      background-color: rgba($color_bg_item, 0.7);
     }
     &.active {
-      background-color: rgba(#4c5259, 0.7);
+      background-color: rgba($color_bg_item, 0.7);
     }
   }
 }
@@ -92,13 +92,13 @@
 }
 .header-lnb-selector__title {
   padding-left: 62px;
-  color: #fff;
+  color: $color_text;
   font-weight: 500;
   text-align: left;
 }
 .header-lnb-selector__description {
   padding-left: 62px;
-  color: rgba(#f0f0f0, 0.76);
+  color: rgba($color_text_sub, 0.76);
   font-size: 12px;
   text-align: left;
 }
@@ -112,26 +112,6 @@
   > .tooltip,
   > .popover--wrapper {
     margin-left: 8px;
-  }
-  &__time {
-    display: inline-flex;
-    min-width: 80px;
-    height: 100%;
-    margin-left: 16px;
-    padding: 5px 20px;
-    font-size: 15px;
-    vertical-align: middle;
-    background-color: #3a3b3f;
-    border-radius: 17px;
-  }
-  &__leave {
-    height: 100%;
-    margin-left: 16px;
-    padding: 6px 14px;
-    color: transparent;
-    background: url(~assets/image/call/gnb_ic_callout.svg) center no-repeat
-      $color_red;
-    border-radius: 17px;
   }
   .notice {
     position: relative;
