@@ -1,0 +1,12 @@
+{
+	"data":{ 
+      "speaker":"블라"
+			,"mic":"마이크"
+			,"resolution":"360p"
+			,"language":"en"
+			,"recordingTime":5
+			,"recordingResolution":"360p"
+   },
+   "code":200,
+   "message":"complete"
+}

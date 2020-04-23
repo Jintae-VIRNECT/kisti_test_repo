@@ -37,6 +37,8 @@
               :audioOutputDevices="audioOutputDevices"
               @selectedAudioInputDevice="setAudioInputDevice"
               @selectedOutputAudioDevice="setAudioOutputDevice"
+              :defaultInputAudio="settings.mic"
+              :defaultOuputAudio="settings.speaker"
             ></workspace-set-audio>
 
             <workspace-mic-test
@@ -58,6 +60,8 @@
               class="setting-section"
               @selectedRecLength="saveRecordLength"
               @selectedResolution="saveRecordRes"
+              :defaultRecLength="settings.recordingTime"
+              :defaultRecordRec="settings.recordingResolution"
             ></workspace-set-record>
           </div>
           <div v-else-if="tabview === 'language'">
@@ -65,6 +69,7 @@
               style="height: 254px;"
               class="setting-section"
               @selectedLanguage="saveLanguage"
+              :defaultLanguage="settings.language"
             ></workspace-set-language>
           </div>
         </div>
@@ -79,8 +84,11 @@ import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
-import { CONFIG_CODE } from 'utils/config-codes'
-import { putLanguage } from 'api/workspace/configuration'
+import {
+  getConfiguration,
+  putLanguage,
+  updateConfiguration,
+} from 'api/workspace/settings'
 
 export default {
   name: 'WorkspaceSetting',
@@ -101,14 +109,32 @@ export default {
       videoDevices: [],
       audioInputDevices: [],
       audioOutputDevices: [],
+
       //audio context
       audioContext: null,
       selectAudioInput: null,
       selectAudioOutput: null,
+      settings: {
+        speaker: '',
+        mic: '',
+        language: '',
+        recordingTime: '', // 최대 녹화 시간
+        recordingResolution: '', // 녹화 영상 해상도
+        device: '',
+      },
     }
   },
+
   computed: {},
-  watch: {},
+  watch: {
+    settings: {
+      deep: true,
+      handler() {
+        console.log('settings 호출')
+        this.updateSetting()
+      },
+    },
+  },
   methods: {
     tabChange(view, headerText) {
       this.tabview = view
@@ -135,78 +161,70 @@ export default {
     setAudioInputDevice(newInputAudioDevice) {
       this.selectAudioInput = newInputAudioDevice
       this.saveAudioInputDevice(newInputAudioDevice)
+      this.settings.mic = newInputAudioDevice.deviceId
     },
     setAudioOutputDevice(newOutputAudioDevice) {
       this.selectAudioOutput = newOutputAudioDevice
       this.saveAudioOutputDevice(newOutputAudioDevice)
+      this.settings.speaker = newOutputAudioDevice.deviceId
     },
     saveVideoDevice(videoDevice) {
       if (videoDevice !== null) {
         this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
-        localStorage.setItem(
-          CONFIG_CODE.VIDEO_DEVICE,
-          JSON.stringify(videoDevice),
-        )
+        this.settings.videoDevice = videoDevice
       }
     },
     saveVideoQuality(videoQuality) {
       if (videoQuality !== null) {
         this.$store.commit('SET_VIDEO_QUALITY', videoQuality)
-        localStorage.setItem(
-          CONFIG_CODE.VIDEO_QUALITY,
-          JSON.stringify(videoQuality),
-        )
       }
     },
     saveAudioInputDevice(audioInputDevice) {
       if (audioInputDevice !== null) {
         this.$store.commit('SET_AUDIO_INPUT_DEVICE', audioInputDevice)
-        localStorage.setItem(
-          CONFIG_CODE.AUDIO_INPUT_DEVICE,
-          JSON.stringify(audioInputDevice),
-        )
       }
     },
     saveAudioOutputDevice(audioOutputDeivce) {
       if (audioOutputDeivce !== null) {
         this.$store.commit('SET_AUDIO_OUTPUT_DEVICE', audioOutputDeivce)
-        localStorage.setItem(
-          CONFIG_CODE.CURRENT_AUDIO_OUTPUT_DEVICE,
-          JSON.stringify(audioOutputDeivce),
-        )
       }
     },
     saveLanguage(language) {
       if (language !== null) {
         putLanguage(language)
         this.$store.commit('SET_LANGUAGE', language)
-        //localStorage.setItem(CONFIG_CODE.LANGUAGE, JSON.stringify(language))
+        this.settings.language = language
       }
     },
     saveRecordLength(recLength) {
       if (recLength !== null) {
         this.$store.commit('SET_LOCAL_RECORD_LENGTH', recLength)
-        localStorage.setItem(
-          CONFIG_CODE.LOCAL_RECORD_LENGTH,
-          JSON.stringify(recLength),
-        )
+        this.settings.recordingTime = recLength
       }
     },
     saveRecordRes(recResolution) {
       if (recResolution !== null) {
         this.$store.commit('SET_RECORD_RESOLUTION', recResolution)
-        localStorage.setItem(
-          CONFIG_CODE.RECORD_RESOLUTION,
-          JSON.stringify(recResolution),
-        )
+        this.settings.recordingResolution = recResolution
       }
+    },
+    async updateSetting() {
+      await updateConfiguration(this.settings)
     },
   },
 
   /* Lifecycles */
-  mounted() {
-    this.getMediaDevice()
+  async created() {
+    try {
+      this.getMediaDevice()
+      const datas = await getConfiguration()
+      this.settings = datas.data
+    } catch (err) {
+      // 에러처리
+      console.error(err)
+    }
   },
+  mounted() {},
 }
 </script>
 <style scoped></style>
