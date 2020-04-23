@@ -27,7 +27,10 @@ body {
   @import "@/assets/css/el-override/dialog.scss";
 
   .virnect-login-form {
-    @import "@/assets/css/el-override/form.scss";
+    @import "@/assets/css/el-override/login-form.scss";
+  }
+  .virnect-workstation-form {
+    @import "@/assets/css/el-override/workstation-form.scss";
   }
 }
 

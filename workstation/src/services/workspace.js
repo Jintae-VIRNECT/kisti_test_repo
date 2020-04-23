@@ -53,4 +53,16 @@ export default {
       total: pageMeta.totalElements,
     }
   },
+  /**
+   * 워크스페이스 프로필 설정 변경
+   * @param {FormData} formData
+   */
+  async updateWorkspaceInfo(formData) {
+    await api('WORKSPACE_EDIT', {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      params: formData,
+    })
+  },
 }

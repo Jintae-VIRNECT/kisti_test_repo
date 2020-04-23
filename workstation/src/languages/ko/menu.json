@@ -1,5 +1,6 @@
 {
   "home": "워크스테이션 홈",
+  "workspaceSetting": "워크스페이스 설정",
   "collapse": {
     "workspace": {
       "title": "워크스페이스 목록",

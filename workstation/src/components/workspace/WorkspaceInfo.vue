@@ -4,12 +4,13 @@
       <img src="~assets/images/workspace-profile.png" />
       <h5>{{ activeWorkspace.info.name }}</h5>
       <span>{{
-        activeWorkspace.info.description || $t('workspace.descriptionEmpty')
+        activeWorkspace.info.description ||
+          $t('workspace.info.descriptionEmpty')
       }}</span>
     </div>
     <el-divider />
     <div class="members">
-      <h6>{{ $t('workspace.info') }}</h6>
+      <h6>{{ $t('workspace.info.title') }}</h6>
       <!-- 마스터 -->
       <span>{{ $t('workspace.master') }}</span>
       <span class="count">1</span>
@@ -93,6 +94,7 @@ export default {
     & > span {
       font-size: 12.6px;
       line-height: 20px;
+      opacity: 0.75;
     }
   }
   .members {

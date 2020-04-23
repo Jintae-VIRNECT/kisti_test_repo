@@ -41,6 +41,7 @@ export default {
         ),
       )
       commit('SET_LOGIN', true)
+      return data
     },
   },
 }

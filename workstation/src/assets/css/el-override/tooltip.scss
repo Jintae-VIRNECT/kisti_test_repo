@@ -1,10 +1,16 @@
 .el-tooltip__popper.is-dark[role="tooltip"] {
-  margin-top: 5px;
   padding: 11px 12px;
   font-size: 12px;
   background: #102b53;
 
   .popper__arrow {
     display: none;
+  }
+
+  &.el-fade-in-linear-enter-active,
+  &.el-fade-in-linear-enter-to,
+  &.el-fade-in-linear-leave-active,
+  &.el-fade-in-linear-leave-to {
+    transition: 0.1s;
   }
 }

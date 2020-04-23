@@ -21,7 +21,7 @@
       />
       <column-date
         :label="$t('home.memberList.column.joinDate')"
-        prop="createdDate"
+        prop="joinDate"
         :width="100"
       />
     </el-table>

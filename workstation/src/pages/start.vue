@@ -1,27 +1,27 @@
 <template>
   <div id="start" class="container">
-    <h3 v-html="$t('start.title', { nickname })" />
+    <h3 v-html="$t('workspace.setting.title', { nickname })" />
     <el-form
       class="virnect-login-form"
       ref="form"
       :model="form"
       @submit.native.prevent="submit"
     >
-      <el-form-item class="horizon" :label="$t('start.workspaceName')">
+      <el-form-item class="horizon" :label="$t('workspace.setting.name')">
         <el-input
           v-model="form.name"
-          :placeholder="$t('start.workspaceNamePlaceholder', { nickname })"
+          :placeholder="$t('workspace.setting.namePlaceholder', { nickname })"
         />
-        <span>{{ $t('start.workspaceNameComment') }}</span>
+        <span>{{ $t('workspace.setting.nameComment') }}</span>
       </el-form-item>
-      <el-form-item class="horizon" :label="$t('start.workspaceDesc')">
+      <el-form-item class="horizon" :label="$t('workspace.setting.desc')">
         <el-input
           v-model="form.description"
-          :placeholder="$t('start.workspaceDescPlaceholder')"
+          :placeholder="$t('workspace.setting.descPlaceholder')"
         />
-        <span>{{ $t('start.workspaceDescComment') }}</span>
+        <span>{{ $t('workspace.setting.descComment') }}</span>
       </el-form-item>
-      <el-button>{{ $t('start.submit') }}</el-button>
+      <el-button>{{ $t('workspace.setting.start') }}</el-button>
     </el-form>
   </div>
 </template>

@@ -18,25 +18,25 @@ export const sideMenus = [
     image: require('assets/images/icon/ic-supervisor-account.svg'),
     label: 'members',
   },
-  {
-    path: '/contents',
-    image: require('assets/images/icon/ic-description.svg'),
-    label: 'contents',
-  },
-  {
-    divider: true,
-  },
-  {
-    path: '/processes',
-    image: require('assets/images/icon/ic-library-books.svg'),
-    label: 'processes',
-  },
+  // {
+  //   path: '/contents',
+  //   image: require('assets/images/icon/ic-description.svg'),
+  //   label: 'contents',
+  // },
+  // {
+  //   divider: true,
+  // },
+  // {
+  //   path: '/processes',
+  //   image: require('assets/images/icon/ic-library-books.svg'),
+  //   label: 'processes',
+  // },
 ]
 
 export const sideBottomMenus = [
   {
-    path: '/',
+    path: '/workspace/setting',
     image: require('assets/images/icon/ic-home.svg'),
-    label: 'home',
+    label: 'setting',
   },
 ]

@@ -1,0 +1,82 @@
+$label-color: #445168;
+$input-color: #5e6b82;
+$content-color: #596881;
+$placeholder-color: #7a869a;
+$input-background-color: #f5f7fa;
+
+.el-form-item__label {
+  margin-bottom: 4px;
+  color: $label-color;
+  font-size: 12.6px;
+  line-height: 20px;
+}
+.el-input__inner,
+.el-textarea__inner {
+  padding: 9px 12px;
+  color: $input-color;
+  font-weight: 500;
+  font-size: 12.6px;
+  background: $input-background-color;
+  border: none;
+  border-radius: 3px;
+
+  &::placeholder {
+    color: $placeholder-color;
+    opacity: 0.8;
+  }
+}
+.el-form-item {
+  margin-bottom: 30px;
+}
+.el-form-item__content {
+  position: relative;
+  line-height: inherit;
+  & > span {
+    color: $content-color;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+}
+.el-upload-dragger {
+  width: 400px;
+  height: 100px;
+  margin: 10px;
+  border: none;
+
+  .avatar {
+    margin: 0;
+    & > i {
+      position: absolute;
+      right: -15px;
+      bottom: -3px;
+      width: 32px;
+      height: 32px;
+      background: #fff;
+      border-radius: 32px;
+      img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+      }
+    }
+  }
+}
+.el-upload__tip {
+  position: absolute;
+  top: 50px;
+  left: 140px;
+  color: $input-color;
+  pointer-events: none;
+
+  li {
+    text-indent: -3px;
+  }
+  li:before {
+    display: inline-block;
+    margin-right: 2px;
+    content: "-";
+  }
+}

@@ -80,8 +80,6 @@ export default {
 
 <style lang="scss">
 #home .container {
-  width: 1752px;
-
   .main-banner {
     height: 190px;
     padding: 10px;
