@@ -52,7 +52,7 @@
     {
       "room":{
         "roomId": "room2",
-        "title" : "경아's room",
+        "title" : "김경아방",
         "description" : "",
         "roomLeaderName" : "김경아",
         "roomLeaderId" : "123457",
@@ -192,9 +192,9 @@
     {
       "room":{
         "roomId": "room4",
-        "title" : "경아's room",
+        "title" : "보검이랑 통화해요",
         "description" : "일이삼사오육칠팔구영일이삼사오육칠팔구영일이삼사오육칠팔구영",
-        "roomLeaderName" : "정경아",
+        "roomLeaderName" : "박보검",
         "roomLeaderId" : "123459",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -255,9 +255,9 @@
     {
       "room":{
         "roomId": "room5",
-        "title" : "경아's room",
+        "title" : "버넥트신사옥",
         "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "버넥트 우경아",
+        "roomLeaderName" : "버넥트",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -318,9 +318,9 @@
     {
       "room":{
         "roomId": "room6",
-        "title" : "경아's room",
+        "title" : "리모트 화이팅",
         "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "리모트 우경아",
+        "roomLeaderName" : "리모트",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -381,9 +381,9 @@
     {
       "room":{
         "roomId": "room7",
-        "title" : "경아's room",
-        "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "우경아",
+        "title" : "집에가자",
+        "description" : "집에가자",
+        "roomLeaderName" : "집에가자",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
@@ -444,9 +444,9 @@
     {
       "room":{
         "roomId": "room8",
-        "title" : "경아's room",
-        "description" : "내방이야 내방임 내방 나방 홓힣홓",
-        "roomLeaderName" : "우경아",
+        "title" : "핳핳",
+        "description" : "집에가자",
+        "roomLeaderName" : "하하",
         "roomLeaderId" : "123456",
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
