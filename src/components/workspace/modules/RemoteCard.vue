@@ -2,7 +2,7 @@
   <card
     class="groupcard"
     :menu="true"
-    :width="290"
+    width="full"
     :height="490"
     popoverClass="group-menu"
   >
@@ -134,8 +134,7 @@ export default {
 @import '~assets/style/vars';
 
 .card.groupcard {
-  width: 290px;
-  max-width: 290px;
+  max-width: 350px;
   height: 490px;
   background-color: $color_darkgray_600;
   &:hover {

@@ -4,12 +4,15 @@
 
 .workspace-welcome__body {
   width: 100%;
-  max-width: $layout_max_width;
   height: 240px;
-  margin: 30px auto 10px;
+  // margin: 30px auto 10px;
   padding: 48px 83px;
   background: url(~assets/image/banner.png) no-repeat;
   border-radius: 8px;
+  &.offsetwidth {
+    max-width: 1440px;
+    margin: 30px auto 10px;
+  }
 }
 
 .workspace-welcome__group {
