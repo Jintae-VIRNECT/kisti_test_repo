@@ -125,7 +125,6 @@ export default {
         this.description = room.description
         this.image = room.path
         this.imageUrl = this.image
-        console.log(this.image)
       },
       deep: true,
     },
