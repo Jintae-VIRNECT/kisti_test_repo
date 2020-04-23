@@ -20,14 +20,13 @@ const URL = {
   PUT_CONFIG: ['PUT', '/api/media/properties/'],
 
   /* Workspace - History */
-  GET_HISTORY_LIST: ['GET', ''],
-  GET_HISTORY_ITEM: ['GET', ''],
-  DELETE_HISTORY_ITEM: ['DELETE', ''],
-  DELETE_HISTORY_ALL: ['DELETE', ''],
-  GET_HISTORY_ROOM_INFO: ['GET'],
+  GET_HISTORY_LIST: ['GET', '/api/media/history'],
+  GET_HISTORY_ITEM: ['GET', '/api/media/history/{roomId}'],
+  DELETE_HISTORY_ITEM: ['DELETE', '/api/media/history/{roomId}'],
+  DELETE_HISTORY_ALL: ['DELETE', '/api/media/history/'],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: ['GET'],
+  GET_MEMBER_LIST: ['GET', '/api/media/member/'],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/api/media/room'],
