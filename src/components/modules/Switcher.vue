@@ -1,13 +1,22 @@
 <template>
-  <div class="switcher" :class="{ toggle: value }" @click="changeToggle">
-    <!-- <div class="switcher-toggle"></div> -->
+  <div class="switcher">
+    <span class="switcher-text" v-if="text && text.length > 0">{{ text }}</span>
+    <div
+      class="switcher-toggle"
+      :class="{ toggle: value }"
+      @click="changeToggle"
+    >
+      <!-- <div class="switcher-toggle"></div> -->
+      <span class="switcher-toggle__type" :class="{ toggle: value }">{{
+        type
+      }}</span>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'Switcher',
-  computed: {},
   data() {
     return {}
   },
@@ -16,10 +25,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    text: {
+      type: String,
+      default: null,
+    },
+  },
+  computed: {
+    type() {
+      if (this.value) {
+        return 'ON'
+      } else {
+        return 'OFF'
+      }
+    },
   },
   methods: {
     changeToggle() {
-      console.log(!this.value)
       this.$emit('update:value', !this.value)
     },
   },
@@ -32,29 +53,42 @@ export default {
 <style lang="scss">
 @import '~assets/style/mixin';
 .switcher {
+  display: flex;
+}
+.switcher-text {
+  margin: auto;
+  color: rgba(#fff, 0.6);
+  font-weight: 500;
+  font-size: 13px;
+}
+.switcher-toggle {
   position: relative;
-  width: 38px;
-  height: 20px;
-  // background-color: #131313;
-  background-color: #0f75f5;
-  border-radius: 10px;
+  width: 32px;
+  height: 14px;
+  margin: auto 0 auto 13px;
+  // background-color: rgb(209, 77, 77);
+  background-color: #131313;
+  border-radius: 8px;
   cursor: pointer;
-  &:before {
-    position: absolute;
-    left: 19px;
-    width: 18px;
-    height: 18px;
-    margin: 1px 0;
-    background-color: #fff;
-    border-radius: 50%;
-    transition: left 0.3s;
-    content: '';
-  }
+  transition: background-color 0.3s;
   &.toggle {
     background-color: #0f75f5;
-    &:before {
-      left: 2px;
-    }
+  }
+}
+.switcher-toggle__type {
+  position: absolute;
+  left: -3px;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0;
+  background-color: #fff;
+  border-radius: 50%;
+  transform: translateY(-3px);
+  transition: left 0.3s;
+  @include ir();
+
+  &.toggle {
+    left: 17px;
   }
 }
 </style>
