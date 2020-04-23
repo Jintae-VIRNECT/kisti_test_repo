@@ -3,6 +3,7 @@ package com.virnect.content.dao;
 import com.querydsl.jpa.JPQLQuery;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
+import com.virnect.content.domain.QTarget;
 import com.virnect.content.domain.YesOrNo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -66,5 +67,12 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         // wrap result as Page Class
         return new PageImpl<>(contentList, pageable, query.fetchCount());
+    }
+
+    public Content getContentOfTarget(String targetData) {
+        QContent qContent = QContent.content;
+        QTarget qTarget = QTarget.target;
+        JPQLQuery<Content> query = from(qContent).join(qTarget).fetchJoin().where(qTarget.data.eq(targetData));
+        return query.fetchOne();
     }
 }

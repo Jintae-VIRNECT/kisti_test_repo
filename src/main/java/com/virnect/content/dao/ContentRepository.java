@@ -21,6 +21,8 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
     @Transactional(readOnly = true)
     Optional<Content> findByUuid(String contentUUID);
 
+    Optional<Content> findByTargetList(String contentUUID);
+
     long countByConverted(YesOrNo yesOrNo);
     long countByShared(YesOrNo yesOrNo);
     long countByDeleted(YesOrNo yesOrNo);

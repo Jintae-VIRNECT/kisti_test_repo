@@ -129,15 +129,15 @@ public class ContentController {
         return ResponseEntity.ok(uploadResponse);
     }
 
-    @ApiOperation(value = "컨텐츠 식별자를 통한 컨텐츠 다운로드")
+    @ApiOperation(value = "컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path"),
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/downloadFile/{contentUUID}")
-    public ResponseEntity<Resource> contentDownloadForUUIDRequestHandler(
-            @PathVariable("contentUUID") String contentUUID
+    @GetMapping("/download")
+    public ResponseEntity<Resource> contentDownloadRequestHandler(
+            @RequestParam(value = "contentUUID") String contentUUID
             , @RequestParam(value = "targetData") String targetData
             , @RequestParam(value = "memberUUID") String memberUUID) {
         if ((contentUUID.isEmpty() && targetData.isEmpty()) || memberUUID.isEmpty()) {

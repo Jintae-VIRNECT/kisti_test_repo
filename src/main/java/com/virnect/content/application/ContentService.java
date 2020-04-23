@@ -239,15 +239,21 @@ public class ContentService {
     }
 
     public Resource contentDownloadhandler(final String contentUUID, final String targetData, final String memberUUID) {
-        // 1. 수정 대상 컨텐츠 데이터 조회
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+        Content content = null;
+        if (contentUUID != null) {
+            // 1. 수정 대상 컨텐츠 데이터 조회
+            content = this.contentRepository.findByUuid(contentUUID)
+                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+        } else {
+            // 수정 대상 컨텐츠 데이터 조회
+            content = this.contentRepository.getContentOfTarget(targetData);
+
+            if (content == null)
+                throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+        }
 
         if (!content.getUserUUID().equals(memberUUID))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-
-        if (!targetData.equals(content.getTargetList().get(0).getData()))
-            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);

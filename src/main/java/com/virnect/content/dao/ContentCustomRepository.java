@@ -15,4 +15,6 @@ import java.util.List;
  */
 public interface ContentCustomRepository {
     Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, List<String> userUUIDList, Pageable pageable);
+
+    Content getContentOfTarget(String targetData);
 }
