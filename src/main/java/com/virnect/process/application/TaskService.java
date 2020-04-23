@@ -1056,12 +1056,15 @@ public class TaskService {
     공정 및 그 하위의 모든(세부공정, 작업 등) 정보를 업데이트함.
      */
     @Transactional
-    public ResponseMessage updateProcess(EditProcessRequest editProcessRequest) {
+    public ResponseMessage updateProcess(String actorUUID, EditProcessRequest editProcessRequest) {
         // 공정편집
         try {
             // 1 공정편집가능여부판단
             // 1-1 공정조회
             Process updateSourceProcess = this.processRepository.getProcessInfo(editProcessRequest.getProcessId()).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
+            if (!updateSourceProcess.getContentManagerUUID().equals(actorUUID))
+                throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 
             // 공정진행중여부확인 - 편집할 수 없는 상태라면 에러
             if (updateSourceProcess.getState() == State.CLOSED || updateSourceProcess.getState() == State.DELETED) {
@@ -1287,7 +1290,7 @@ public class TaskService {
     public ResponseMessage updateSubProcess(Long subProcessId, EditSubProcessRequest subProcessRequest) {
         // 세부공정 조회
         SubProcess subProcess = this.subProcessRepository.findById(subProcessId)
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
         // 데이터 저장
         // 작업자 신규할당여부 확인 후 isRecent flag 설정
         if (subProcess.getWorkerUUID() == null || !subProcess.getWorkerUUID().equals(subProcessRequest.getWorkerUUID())) {
