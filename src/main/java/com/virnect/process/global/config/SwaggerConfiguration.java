@@ -41,7 +41,7 @@ public class SwaggerConfiguration {
     @Bean
     public Docket processApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .contact(new Contact("장정현 / 민항기", "https://virnect.com", "sky456139@vinrect.com / hkmin@virnect.com"))
+                .contact(new Contact("민항기", "https://virnect.com", "hkmin@virnect.com"))
                 .description("공정 서버 API 정보 입니다.")
                 .version("v0.0.1")
                 .title("VIRNECT PRODUCT - Process Service API Document.")
