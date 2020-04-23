@@ -51,7 +51,7 @@
         </button>
       </li>
       <li v-if="accountId === room.roomLeaderId">
-        <button class="group-pop__button">
+        <button class="group-pop__button" @click="remove(room.roomId)">
           협업 삭제
         </button>
       </li>
@@ -69,6 +69,8 @@
 import Card from 'Card'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
+
+import { deleteRoom } from 'api/remote/room'
 
 export default {
   name: 'RemoteCard',
@@ -111,6 +113,13 @@ export default {
   methods: {
     openRoomInfo() {
       this.showRoomInfo = !this.showRoomInfo
+    },
+    async remove(roomId) {
+      const rtn = await deleteRoom({ roomId: roomId })
+      if (rtn) {
+        this.$emit('refresh')
+        this.$eventBus.$emit('popover:close')
+      }
     },
   },
 

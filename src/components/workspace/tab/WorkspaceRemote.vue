@@ -15,6 +15,7 @@
       v-for="room of rooms"
       :key="room.roomId"
       :roomInfo="room"
+      @refresh="refresh"
     ></remote-card>
   </tab-view>
 </template>

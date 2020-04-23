@@ -29,6 +29,8 @@ const URL = {
   ],
   PARTICIPANTS_LIST: ['GET', '/api/media/room/{roomId}/participants'],
   INVITE_PARTICIPANTS_LIST: ['GET', '/api/media/room/participants'],
+  CREATE_ROOM: ['POST', ' /api/media/room'],
+  DELETE_ROOM: ['DELETE', '/api/media/room/{roomId}'],
 }
 
 const axios = Axios.create({

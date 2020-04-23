@@ -14,6 +14,7 @@ export const getRoomList = async function({ title, participantName }) {
   //   title,
   //   participantName,
   // })
+  console.log('ROOM_LIST')
   console.log('param::', title, participantName)
   const returnVal = roomlist
 
@@ -28,6 +29,7 @@ export const getRoomInfo = async function({ roomId }) {
   // const returnVal = await http('ROOM_INFO', {
   //   roomId,
   // })
+  console.log('ROOM_INFO')
   console.log('param::', roomId)
   const returnVal = roomdetail
 
@@ -46,6 +48,7 @@ export const updateRoomInfo = async function({ title, description, image }) {
   //   description,
   //   image,
   // })
+  console.log('UPDATE_ROOM_INFO')
   console.log('param::', title, description, image)
   const returnVal = true
 
@@ -62,6 +65,7 @@ export const leaveRoom = async function({ roomId, participantsId }) {
   //   roomId,
   //   participantsId,
   // })
+  console.log('LEAVE_ROOM')
   console.log('param::', roomId, participantsId)
   const returnVal = true
 
@@ -76,6 +80,7 @@ export const participantsList = async function({ roomId }) {
   // const returnVal = await http('PARTICIPANTS_LIST', {
   //   roomId,
   // })
+  console.log('PARTICIPANTS_LIST')
   console.log('param::', roomId)
   const returnVal = participants
 
@@ -87,7 +92,72 @@ export const participantsList = async function({ roomId }) {
  */
 export const inviteParticipantsList = async function() {
   // const returnVal = await http('INVITE_PARTICIPANTS_LIST')
+  console.log('INVITE_PARTICIPANTS_LIST')
   const returnVal = inviteParticipants
+
+  return returnVal
+}
+
+/**
+ * 원격협업 통화방 생성
+ * @param {String} title
+ * @param {String} description
+ * @param {String} sessionId
+ * >> profile 변경될 예정
+ * @param {Object} profile
+ *  @param {String} path
+ * @param {Array} roomParticipants
+ *  @param {Object} participant
+ *    @param {String} participantId
+ *    @param {String} sessionId
+ */
+export const createRoom = async function({
+  title,
+  description,
+  sessionId,
+  profile,
+  roomParticipants,
+}) {
+  // const returnVal = await http('CREATE_ROOM', {
+  //   title,
+  //   description,
+  //   sessionId,
+  //   profile,
+  //   roomParticipants,
+  // })
+  console.log('CREATE_ROOM')
+  console.log('param::', {
+    title,
+    description,
+    sessionId,
+    profile,
+    roomParticipants,
+  })
+  const returnVal = '방 ID'
+
+  return returnVal
+}
+
+/**
+ * 원격협업 통화방 삭제
+ * @param {String} title
+ * @param {String} description
+ * @param {String} sessionId
+ * >> profile 변경될 예정
+ * @param {Object} profile
+ *  @param {String} path
+ * @param {Array} roomParticipants
+ *  @param {Object} participant
+ *    @param {String} participantId
+ *    @param {String} sessionId
+ */
+export const deleteRoom = async function({ roomId }) {
+  // const returnVal = await http('DELETE_ROOM', {
+  //   roomId,
+  // })
+  console.log('DELETE_ROOM')
+  console.log('param::', { roomId })
+  const returnVal = true
 
   return returnVal
 }
