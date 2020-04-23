@@ -113,19 +113,17 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "testUUID"),
-            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR(default))", dataType = "String", paramType = "query", required = true, defaultValue = "QR")
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
     })
     @PostMapping("/duplicate/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentDuplicateHandler(
             @PathVariable("contentUUID") String contentUUID,
             @RequestParam(value = "workspaceUUID") String workspaceUUID,
-            @RequestParam(value = "userUUID") String userUUID,
-            @RequestParam(value = "targetType") TargetType targetType) {
-        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty() || targetType == null) {
+            @RequestParam(value = "userUUID") String userUUID) {
+        if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID, targetType);
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID);
         return ResponseEntity.ok(uploadResponse);
     }
 

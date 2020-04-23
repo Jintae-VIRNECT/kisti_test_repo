@@ -610,7 +610,7 @@ public class ContentService {
     }
 
     @Transactional
-    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID, final TargetType targetType) {
+    public ApiResponse<ContentUploadResponse> contentDuplicate(final String contentUUID, final String workspaceUUID, final String userUUID) {
         // 컨텐츠 가져오기
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
@@ -632,7 +632,6 @@ public class ContentService {
                 .metadata(content.getMetadata())
                 .properties(content.getProperties())
                 .userUUID(userUUID)
-                .targetType(targetType)
                 .build();
 
         return contentUpload(uploadRequest);
