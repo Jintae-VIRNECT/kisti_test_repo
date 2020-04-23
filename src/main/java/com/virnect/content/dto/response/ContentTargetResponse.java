@@ -15,11 +15,13 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class ContentTargetResponse {
+    private Long id;
     private TargetType type;
     private String data;
 
     @Builder
-    public ContentTargetResponse(TargetType type, String data) {
+    public ContentTargetResponse(Long id, TargetType type, String data) {
+        this.id = id;
         this.type = type;
         this.data = data;
     }

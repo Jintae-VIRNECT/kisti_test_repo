@@ -20,23 +20,13 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-public class ContentUpdateRequest {
+public class ContentTargetRequest {
 
+    @NotBlank
     private String targetData;
 
-    private TargetType targetType;
-
-    @NotNull
-    private MultipartFile content;
-
     @NotBlank
-    private String name;
-
-    @NotBlank
-    private String metadata;
-
-    @NotBlank
-    private String properties;
+    private String targetType;
 
     @NotBlank
     private String userUUID;

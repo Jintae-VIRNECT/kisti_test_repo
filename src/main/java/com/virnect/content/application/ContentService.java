@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.dao.ContentRepository;
+import com.virnect.content.dao.SceneGroupRepository;
 import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
 import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
+import com.virnect.content.dto.request.ContentTargetRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -60,6 +62,7 @@ public class ContentService {
     private final FileUploadService fileUploadService;
 
     private final ContentRepository contentRepository;
+    private final SceneGroupRepository sceneGroupRepository;
     private final TargetRepository targetRepository;
     private final TypeRepository typeRepository;
 
@@ -118,19 +121,19 @@ public class ContentService {
             addSceneGroupToContent(content, content.getMetadata());
 
             // 타겟 저장 후 타겟데이터 반환
-            String targetData = addTargetToContent(content, uploadRequest);
+            String targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
 
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
+
+            List<Target> targets = content.getTargetList();
+            List<ContentTargetResponse> contentTargetResponseList = targets.stream().map(target -> {
+                return this.modelMapper.map(target, ContentTargetResponse.class);
+            }).collect(Collectors.toList());
+
             // 반환할 타겟정보
-            List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
-            ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-                    .type(uploadRequest.getTargetType())
-                    .data(targetData)
-                    .build();
-            contentTargetResponseList.add(contentTargetResponse);
             result.setTargets(contentTargetResponseList);
             result.setContentUUID(contentUUID);
             return new ApiResponse<>(result);
@@ -161,12 +164,9 @@ public class ContentService {
         }
     }
 
-    private String addTargetToContent(Content content, final ContentUploadRequest contentUploadRequest) {
-        // 타겟데이터
-        String targetData = contentUploadRequest.getTargetData();
-
+    private String addTargetToContent(Content content, TargetType targetType, String targetData) {
         Target target = Target.builder()
-                .type(contentUploadRequest.getTargetType())
+                .type(targetType)
                 .content(content)
                 .data(targetData)
                 .build();
@@ -175,6 +175,85 @@ public class ContentService {
         this.targetRepository.save(target);
 
         return targetData;
+    }
+
+    private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
+        Target target = Target.builder()
+                .type(targetType)
+                .content(content)
+                .data(targetData)
+                .build();
+        content.addTarget(target);
+
+        this.targetRepository.save(target);
+
+        return targetData;
+    }
+
+    public ApiResponse<ContentInfoResponse> contentAddTarget(final String contentUUID, final ContentTargetRequest targetRequest) {
+        // 컨텐츠의 타겟을 신규 추가 - 다수 추가 가능
+        // 1. 수정 대상 컨텐츠 데이터 조회
+        Content targetContent = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+
+        // 컨텐츠 소유자 확인
+        if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        // 수정할 수 없는 조건
+        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
+        }
+
+        // 타겟 저장 후 타겟데이터 반환
+        String targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+
+        // 반환할 타겟정보
+        List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
+        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                .type(TargetType.valueOf(targetRequest.getTargetType()))
+                .data(targetData)
+                .build();
+        contentTargetResponseList.add(contentTargetResponse);
+
+        ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
+
+        updateResult.setTargets(contentTargetResponseList);
+
+        return new ApiResponse<>(updateResult);
+    }
+
+    public ApiResponse<ContentInfoResponse> contentUpdateTarget(final String contentUUID, final Long oldTargetId, final ContentTargetRequest targetRequest) {
+        // 컨텐츠의 타겟을 업데이트
+        // 1. 수정 대상 컨텐츠 데이터 조회
+        Content targetContent = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
+
+        // 컨텐츠 소유자 확인
+        if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+
+        // 수정할 수 없는 조건
+        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
+        }
+
+        // 타겟 조회
+        Target target = this.targetRepository.findById(oldTargetId).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
+        // 변경
+        target.setType(TargetType.valueOf(targetRequest.getTargetType()));
+        target.setData(targetRequest.getTargetData());
+        this.targetRepository.save(target);
+
+        ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
+
+        List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
+        ContentTargetResponse contentTargetResponse = this.modelMapper.map(target, ContentTargetResponse.class);
+        contentTargetResponseList.add(contentTargetResponse);
+
+        updateResult.setTargets(contentTargetResponseList);
+
+        return new ApiResponse<>(updateResult);
     }
 
     /**
@@ -235,11 +314,24 @@ public class ContentService {
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, updateRequest.getMetadata());
 
+        // 타겟 저장 후 타겟데이터 반환
+        String targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);
 
+        // 반환할 타겟정보
+        List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
+        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                .type(updateRequest.getTargetType())
+                .data(targetData)
+                .build();
+        contentTargetResponseList.add(contentTargetResponse);
+
         ContentUploadResponse updateResult = this.modelMapper.map(targetContent, ContentUploadResponse.class);
+
+        updateResult.setTargets(contentTargetResponseList);
+
         return new ApiResponse<>(updateResult);
     }
 
@@ -468,6 +560,28 @@ public class ContentService {
         return megaByte == 0 ? 1 : megaByte;
     }
 
+    public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String userUUID, String search, Pageable pageable) {
+        Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, userUUID, search, pageable);
+
+        List<SceneGroupInfoResponse> responseList = sceneGroupPage.stream().map(sceneGroup -> {
+            return SceneGroupInfoResponse.builder()
+                    .id(sceneGroup.getUuid())
+                    .name(sceneGroup.getName())
+                    .jobTotal(sceneGroup.getJobTotal())
+                    .priority(sceneGroup.getPriority())
+                    .build();
+        }).collect(Collectors.toList());
+
+        PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+                .currentPage(pageable.getPageNumber())
+                .currentSize(pageable.getPageSize())
+                .totalPage(sceneGroupPage.getTotalPages())
+                .totalElements(sceneGroupPage.getTotalElements())
+                .build();
+
+        return new ApiResponse<>(new WorkspaceSceneGroupListResponse(responseList, pageMetadataResponse));
+    }
+
     /**
      * 씬그룹 목록 가져오기
      *
@@ -547,11 +661,11 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .target(this.modelMapper.map(content.getTargetList().get(0), ContentTargetResponse.class))
+                .targets(content.getTargetList().stream().map(target -> {
+                    return this.modelMapper.map(target, ContentTargetResponse.class);
+                }).collect(Collectors.toList()))
                 .createdDate(content.getUpdatedDate())
                 .build();
-        // 공정 정보에 컨텐츠정보를 넣음
-//        setContentProcessInfo(content, contentInfoResponse);
         return new ApiResponse<>(contentInfoResponse);
     }
 

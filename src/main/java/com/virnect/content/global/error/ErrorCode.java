@@ -24,7 +24,7 @@ public enum ErrorCode {
     ERR_CONTENT_DELETE_OWNERSHIP(4010, "Content deletion failed. Because it is NOT ownership."),
     ERR_CONTENT_DELETE_SUCCEED(4011, "Content deletion succeed."),
     ERR_MISMATCH_TARGET(4012, "Target data does not match."),
-    ERR_MISMATCH_CONTENTUUID(4012, "Content uuid does not match."),
+    ERR_NOT_FOUND_TARGET(4013, "Target not found."),
     ERR_DELETE_CONTENT(4014, "Content File deletion failed."),
     ERR_OWNERSHIP(4015, "An error occurred in the request. Because it is NOT ownership."),
     ERROR_WORKSPACE(4016, "An error occurred in the request. Because Workspace is different."),

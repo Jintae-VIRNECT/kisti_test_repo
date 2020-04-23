@@ -5,6 +5,7 @@ import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
+import com.virnect.content.dto.request.ContentTargetRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
@@ -165,14 +166,58 @@ public class ContentController {
                 .body(resource);
     }
 
+    @ApiOperation(value = "콘텐츠 타겟 추가")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR)", dataType = "string", paramType = "form", required = true, defaultValue = "QR"),
+            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
+    })
+    @PostMapping("/target/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentTargetRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @ModelAttribute @Valid ContentTargetRequest targetRequestDto, BindingResult result) {
+        if (result.hasErrors() || contentUUID.isEmpty()) {
+            log.info("[ContentTargetRequest] => [{}]", targetRequestDto.toString());
+            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoResponse> responseMessage = this.contentService.contentAddTarget(contentUUID, targetRequestDto);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "콘텐츠 타겟 업데이트")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true, defaultValue = "58d6b7bd-cfc8-4abf-aab8-74b14dbad822"),
+            @ApiImplicitParam(name = "oldTargetId", value = "변경 대상 타겟 아이디", dataType = "string", paramType = "query", required = true, defaultValue = "2"),
+            @ApiImplicitParam(name = "targetData", value = "저장할 타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "targetType", value = "저장할 타겟 종류(QR)", dataType = "string", allowableValues = "QR", paramType = "form", required = true, defaultValue = "QR"),
+            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
+    })
+    @PutMapping("/target/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentTargetRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "oldTargetId") Long oldTargetId
+            , @ModelAttribute @Valid ContentTargetRequest targetRequestDto, BindingResult result) {
+        if (result.hasErrors() || contentUUID.isEmpty()) {
+            log.info("[ContentTargetRequest] => [{}]", targetRequestDto.toString());
+            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoResponse> responseMessage = this.contentService.contentUpdateTarget(contentUUID, oldTargetId, targetRequestDto);
+        return ResponseEntity.ok(responseMessage);
+    }
+
     @ApiOperation(value = "콘텐츠 파일 업데이트")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR)", dataType = "string", paramType = "form", defaultValue = "QR"),
             @ApiImplicitParam(name = "content", value = "수정할 콘텐츠 ares 파일", dataType = "__file", paramType = "form", required = true),
-            @ApiImplicitParam(name = "name", value = "수정할 콘텐츠 명", dataType = "string", paramType = "form", required = true),
-            @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(name = "name", value = "수정할 콘텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "update"),
+            @ApiImplicitParam(name = "metadata", value = "수정할 콘텐츠 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"name\":\"SampleContent\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"5f43e519-0f18-46c1-947e-198f801bf3cc\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"TOGGLE\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"INPUT_FIELD\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"REPORT\",\"title\":\"항목3\"}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]}]}]}}"),
             @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
-            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
+            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
     })
     @PutMapping("/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentUpdateRequestHandler(
@@ -190,7 +235,7 @@ public class ContentController {
     @ApiOperation(value = "콘텐츠 삭제 요청")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 고유 번호 배열(ex : contentUUID=uuid,uuid,uuid,uuid)", allowMultiple = true, dataType = "array", paramType = "query", required = true),
-            @ApiImplicitParam(name = "workerUUID", value = "삭제 요청 사용자 고유 번호", dataType = "string", paramType = "query", required = true)
+            @ApiImplicitParam(name = "workerUUID", value = "삭제 요청 사용자 고유 번호", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
     })
     @DeleteMapping
     public ResponseEntity<ApiResponse<ContentDeleteListResponse>> contentDeleteRequestHandler(
@@ -216,12 +261,34 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "씬그룹 목록 조회")
+    @ApiOperation(value = "워크스페이스 내 씬그룹 목록 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "query", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "testUUID"),
+            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+            @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
     })
-    @GetMapping("/sceneGroups/metadata")
-    public ResponseEntity<ApiResponse<SceneGroupInfoListResponse>> getContentSceneGroupInfoList(@RequestParam(value = "contentUUID") String contentUUID) {
+    @GetMapping("/sceneGroups/workspace/{workspaceUUID}")
+    public ResponseEntity<ApiResponse<WorkspaceSceneGroupListResponse>> getSceneGroupsInWorkspace(
+            @PathVariable("workspaceUUID") String workspaceUUID
+            , @RequestParam(value = "userUUID") String userUUID
+            , @RequestParam(value = "search", required = false) String search
+            , @ApiIgnore PageRequest pageable) {
+        if (workspaceUUID.isEmpty() || userUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<WorkspaceSceneGroupListResponse> responseMessage = this.contentService.getSceneGroupsInWorkspace(workspaceUUID, userUUID, search, pageable.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "컨텐츠 내 씬그룹 목록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
+    })
+    @GetMapping("/sceneGroups/content/{contentUUID}")
+    public ResponseEntity<ApiResponse<SceneGroupInfoListResponse>> getContentSceneGroupInfoList(@PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
