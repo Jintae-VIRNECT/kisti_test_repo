@@ -10,9 +10,8 @@ import { merge } from 'lodash'
 
 const URL = {
   /* Account */
-  LOGIN: ['POST', 'http://192.168.6.3:8321/auth/signin'],
+  LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
   // ACCESS_TOKEN: ['POST', '/api/auth/accessToken'],
-
 
   /* CONFIGURATION */
   //!!!!!!Warning! API Request url is not fixed!!!!!!
@@ -26,6 +25,18 @@ const URL = {
   DELETE_HISTORY_ITEM: ['DELETE', ''],
   DELETE_HISTORY_ALL: ['DELETE'],
 
+  /* Workspace - Room */
+  ROOM_LIST: ['GET', '/api/media/room'],
+  ROOM_INFO: ['GET', '/api/media/room/{roomId}'],
+  UPDATE_ROOM_INFO: ['PUT', '/api/media/room/{roomId}'],
+  LEAVE_ROOM: [
+    'DELETE',
+    '/api/media/room/{roomId}/participants/{participantsId}',
+  ],
+  PARTICIPANTS_LIST: ['GET', '/api/media/room/{roomId}/participants'],
+  INVITE_PARTICIPANTS_LIST: ['GET', '/api/media/room/participants'],
+  CREATE_ROOM: ['POST', ' /api/media/room'],
+  DELETE_ROOM: ['DELETE', '/api/media/room/{roomId}'],
 }
 
 const axios = Axios.create({

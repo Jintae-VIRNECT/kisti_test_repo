@@ -37,6 +37,11 @@
   position: relative;
   width: 100%;
   margin-bottom: 15px;
+  > .icon-button {
+    position: absolute;
+    top: -8px;
+    right: 0;
+  }
 }
 .createroom-user__title {
   color: #d2d2d2;

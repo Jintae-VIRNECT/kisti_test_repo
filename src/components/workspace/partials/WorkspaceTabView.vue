@@ -2,7 +2,10 @@
   <section class="tab-view" :class="[customClass]">
     <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
-      <list-badge v-if="!(listCount === null)"></list-badge>
+      <list-badge
+        v-if="!(listCount === null)"
+        :listCount="listCount"
+      ></list-badge>
     </div>
     <div class="tab-view__sub-header offsetwidth">
       <span class="tab-view__description" v-if="description.length > 0">{{
@@ -18,11 +21,13 @@
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/back/mdpi_tr.svg')"
           :text="deleteButtonText"
+          @click="$emit('delete')"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
           :text="'새로고침'"
+          @click="$emit('refresh')"
         ></icon-button>
       </div>
     </div>
@@ -85,7 +90,7 @@ export default {
       default: require('assets/image/img_remote_empty.svg'),
     },
     listCount: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     showRefreshButton: {
@@ -106,7 +111,9 @@ export default {
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    refresh() {},
+  },
 
   /* Lifecycles */
   mounted() {},

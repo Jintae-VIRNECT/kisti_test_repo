@@ -6,7 +6,11 @@
       v-for="user of showUsers"
       :key="user.id"
     >
-      <img class="profilelist-user__image" :src="user.image" />
+      <img
+        class="profilelist-user__image"
+        @error="onImageError"
+        :src="user.path"
+      />
     </figure>
     <br />
     <popover placement="right" trigger="hover" v-if="otherUsers.length > 0">
@@ -16,7 +20,11 @@
           v-for="user of otherUsers"
           :key="user.id"
         >
-          <img class="profilelist-user__image" :src="user.image" />
+          <img
+            class="profilelist-user__image"
+            :src="user.path"
+            @error="onImageError"
+          />
         </figure>
       </div>
       <p slot="reference" class="profilelist-user__expend" :style="customStyle">
