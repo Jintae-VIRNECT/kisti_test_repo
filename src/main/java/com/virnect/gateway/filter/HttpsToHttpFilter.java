@@ -1,5 +1,6 @@
 package com.virnect.gateway.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +20,7 @@ import java.net.URI;
  * @since 2020.04.24
  */
 
+@Slf4j
 @Profile({"!production"})
 @Component
 public class HttpsToHttpFilter implements GlobalFilter, Ordered {
@@ -30,6 +32,7 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpRequest.Builder mutate = request.mutate();
         String forwardedUri = request.getURI().toString();
+        log.info("[ORIGIN FORWARD URI]: [{}]", forwardedUri);
         if (forwardedUri != null && forwardedUri.startsWith("https")) {
             try {
                 URI mutatedUri = new URI("http",
@@ -45,6 +48,7 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
             }
         }
         ServerHttpRequest build = mutate.build();
+        log.info("[CHANGED FORWARD URI]: [{}]", build.getPath().value());
         return chain.filter(exchange.mutate().request(build).build());
     }
 

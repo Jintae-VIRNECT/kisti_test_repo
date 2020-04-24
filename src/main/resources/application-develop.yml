@@ -95,6 +95,9 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
         prefix-enabled: false
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true
 
 eureka:
   instance:
