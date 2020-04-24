@@ -301,7 +301,7 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
-    @GetMapping("/info/{contentUUID}")
+    @GetMapping("/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> getContentInfo(@PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
