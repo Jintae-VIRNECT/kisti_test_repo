@@ -119,3 +119,8 @@ export default {
   mounted() {},
 }
 </script>
+<style lang="scss">
+.tab-view__search {
+  margin-right: 15px;
+}
+</style>
