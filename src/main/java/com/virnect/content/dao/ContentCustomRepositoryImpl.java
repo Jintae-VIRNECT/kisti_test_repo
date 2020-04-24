@@ -29,13 +29,13 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, String converteds, List<String> userUUDList, Pageable pageable) {
+    public Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, String converteds, List<String> userUUIDList, Pageable pageable) {
         QContent qContent = QContent.content;
         JPQLQuery<Content> query = from(qContent);
 
         // apply search keyword
         if (search != null) {
-            query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUDList)));
+            query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUIDList)));
         }
 
         if (userUUID != null) {
