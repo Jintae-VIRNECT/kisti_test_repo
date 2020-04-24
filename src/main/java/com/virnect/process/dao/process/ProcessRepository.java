@@ -49,8 +49,8 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
             , nativeQuery = true)
     Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 
-    @Query(value = "select * from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID))"
-            , countQuery = "select count(*) from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID))"
+    @Query(value = "select * from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and workspace_uuid like :workspaceUUID))"
+            , countQuery = "select count(*) from process where 1=1 and ((:workspaceUUID is null) or (:workspaceUUID is not null and workspace_uuid like :workspaceUUID))"
             , nativeQuery = true)
     List<Process> getProcesses(String workspaceUUID);
 
