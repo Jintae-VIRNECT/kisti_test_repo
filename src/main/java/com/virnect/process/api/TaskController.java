@@ -697,7 +697,7 @@ public class TaskController {
         return ResponseEntity.ok(reportInfoResponseApiResponse);
     }
 
-    @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회", tags = "dev")
+    @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
     })
