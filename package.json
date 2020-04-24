@@ -9,7 +9,7 @@
     "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
     "start": "node server.js",
     "start:develop": "export NODE_ENV=develop || set NODE_ENV=develop && node server.js",
-    "start:local": "export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
+    "start:local": "export TARGET_ENV=local || set TARGET_ENV=local&& export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
     "test": "jest"
   },
   "dependencies": {
@@ -90,7 +90,9 @@
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "lodash.clonedeep": "^4.5.0",
+    "js-cookie": "^2.2.1"
   },
   "bin": {
     "app": "./server.js"

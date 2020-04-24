@@ -24,7 +24,7 @@
           VIRNECT Workstation
         </button>
       </div>
-      <div class="popover-profile__link logout">
+      <div class="popover-profile__link">
         <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>
@@ -37,7 +37,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import ProfileImage from 'ProfileImage'
-// import auth from 'utils/auth'
+import auth from 'utils/auth'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -58,7 +58,7 @@ export default {
     logout() {
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
-        // auth.logout()
+        auth.logout()
         // auth.login()
       })
     },
