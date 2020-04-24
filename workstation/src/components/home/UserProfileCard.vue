@@ -2,7 +2,9 @@
   <el-card class="user-profile-card">
     <div slot="header">
       <h3>{{ $t('home.profile.title') }}</h3>
-      <router-link to="/">{{ $t('home.profile.link') }}</router-link>
+      <a :href="profileUpdatePage" target="_blank">
+        {{ $t('home.profile.link') }}
+      </a>
     </div>
     <dl>
       <dt>{{ $t('home.profile.usingNickname') }}</dt>
@@ -28,8 +30,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
+  data() {
+    return {
+      profileUpdatePage: `${urls.account[process.env.TARGET_ENV]}/profile`,
+    }
+  },
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
