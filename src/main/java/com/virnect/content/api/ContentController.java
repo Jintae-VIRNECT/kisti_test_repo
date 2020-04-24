@@ -51,14 +51,14 @@ public class ContentController {
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")
+            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
             , @RequestParam(value = "search", required = false) String search
-            , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
-            , @RequestParam(value = "converted", defaultValue = "ALL") String converteds
+            , @RequestParam(value = "shareds", required = false, defaultValue = "ALL") String shareds
+            , @RequestParam(value = "converteds", required = false, defaultValue = "ALL") String converteds
             , @ApiIgnore PageRequest pageable) {
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, null, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
