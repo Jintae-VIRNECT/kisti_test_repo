@@ -71,7 +71,7 @@ public class WorkspaceService {
      */
     public ApiResponse<WorkspaceInfoDTO> createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
         //필수 값 체크
-        if(!StringUtils.hasText(workspaceCreateRequest.getUserId())||!StringUtils.hasText(workspaceCreateRequest.getName())||!StringUtils.hasText(workspaceCreateRequest.getDescription())){
+        if (!StringUtils.hasText(workspaceCreateRequest.getUserId()) || !StringUtils.hasText(workspaceCreateRequest.getName()) || !StringUtils.hasText(workspaceCreateRequest.getDescription())) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -381,7 +381,7 @@ public class WorkspaceService {
         });
 
 
-        //5. 초대 메일 전송
+        //5. 초대 메일 전송(마스터 닉네임, 마스터 계정, 멤버 닉네임, 멤버 계정)
         WorkspaceInviteMailRequest.InviteInfo inviteInfo = new WorkspaceInviteMailRequest.InviteInfo();
         List<WorkspaceInviteMailRequest.InviteInfo> inviteInfoList = new ArrayList<>();
 
@@ -594,6 +594,11 @@ public class WorkspaceService {
     }
 
     public ApiResponse<WorkspaceInfoDTO> setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest) {
+        if (!StringUtils.hasText(workspaceUpdateRequest.getUserId()) || !StringUtils.hasText(workspaceUpdateRequest.getName())
+                || !StringUtils.hasText(workspaceUpdateRequest.getDescription()) || !StringUtils.hasText(workspaceUpdateRequest.getWorkspaceId())) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
         //마스터 유저 체크
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceUpdateRequest.getWorkspaceId());
         if (!workspace.getUserId().equals(workspaceUpdateRequest.getUserId())) {
