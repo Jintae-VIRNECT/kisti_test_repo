@@ -28,6 +28,5 @@ export default {
   color: rgb(224, 224, 224);
   font-weight: 500;
   font-size: 14px;
-  font-family: NotoSansCJKkr-Medium;
 }
 </style>

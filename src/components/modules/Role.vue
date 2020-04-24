@@ -36,14 +36,12 @@ export default {
 
   &.card {
     color: #f2f2f2;
-    font-family: NotoSansCJKkr-Medium;
     background: rgb(56, 56, 58);
     border: 1px solid rgb(204, 204, 204);
   }
 
   &.expired {
     color: #f2f2f2;
-    font-family: NotoSansCJKkr-Medium;
     background: rgba(204, 23, 1, 0.3);
     border: 1px solid rgb(204, 23, 1);
     border-radius: 13px;

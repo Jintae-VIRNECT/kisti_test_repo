@@ -136,7 +136,6 @@ export default {
   color: #d2d2d2;
   font-weight: normal;
   font-size: 15px;
-  font-family: AppleSDGothicNeo-Regular;
   text-align: center;
 }
 
