@@ -77,5 +77,8 @@ export default {
     onImageError(event) {
       event.target.src = require('assets/image/img_user_profile.svg')
     },
+    onImageErrorGroup(event) {
+      event.target.src = require('assets/image/img_default_group.svg')
+    },
   },
 }
