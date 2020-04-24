@@ -19,7 +19,7 @@ import java.net.URI;
  * @since 2020.04.24
  */
 
-@Profile({"production"})
+@Profile({"!production"})
 @Component
 public class HttpsToHttpFilter implements GlobalFilter, Ordered {
     private static final int HTTPS_TO_HTTP_FILTER_ORDER = 10099;
