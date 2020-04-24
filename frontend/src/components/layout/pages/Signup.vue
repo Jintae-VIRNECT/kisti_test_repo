@@ -182,6 +182,8 @@
 				>
 				</el-input>
 
+				<p @click="checkAge">나이</p>
+
 				<el-button
 					class="next-btn block-btn"
 					type="info"
@@ -307,103 +309,129 @@ export default {
 		else return (this.signup.marketInfoReceive = 'REJECT')
 	},
 	methods: {
-		checkSignup() {
+		async checkAge() {
+			let today = dayjs()
+			let userAge = dayjs(this.userBirth)
+			try {
+				let age = (await today.format('YYYY')) - userAge.format('YYYY')
+				if (age > 14) return true
+				else throw false
+			} catch (e) {
+				this.alertMessage(
+					'사용자 연령 제한',
+					'만 14세 미만 사용자는 가입 및 서비스 이용을 할 수 없습니다.',
+					'error',
+				)
+			}
+		},
+		async checkSignup() {
 			// 폼내용전송
-			if (!this.passValidate(this.signup.password)) {
+			try {
+				const userAgeCheck = await this.checkAge()
+				const res = await this.passValidate(this.signup.password)
+				if (res) {
+					this.message = ''
+					this.submitted = true
+					new Signup(
+						this.signup.email,
+						this.signup.password,
+						this.signup.firstName,
+						this.signup.lastName,
+						this.userBirth,
+						this.marketInfoReceive,
+						this.joinInfoComp,
+						this.serviceInfoComp,
+						this.signup.sessionCode,
+					)
+					console.log(this.signup)
+					if (this.signup) {
+						// this.$router.push({
+						// 	name: 'user',
+						// 	params: { signup: this.signup },
+						// })
+					}
+				} else throw res
+			} catch (e) {
 				this.alertMessage(
 					'비밀번호 입력 오류',
 					'비밀번호는 8~20자 이내로 영문 대,소문자/숫자/특수문자( . , !, @, #, $, % )를 3가지 이상 조합하여 입력해 주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다.',
 					'error',
 				)
 			}
-
-			this.message = ''
-			this.submitted = true
-			new Signup(
-				this.signup.email,
-				this.signup.password,
-				this.signup.firstName,
-				this.signup.lastName,
-				this.userBirth,
-				this.marketInfoReceive,
-				this.joinInfoComp,
-				this.serviceInfoComp,
-				this.signup.sessionCode,
-			)
-			console.log(this.signup)
-			if (this.signup) {
-				this.$router.push({
-					name: 'user',
-					params: { signup: this.signup },
-				})
-			}
 		},
 		async sendEmail() {
-			const validEmail = await this.$validator.validate('email')
-			console.log(validEmail)
-			console.log('+++++++++++++++++++++++++++')
-			if (!validEmail) {
-				return this.alertMessage(
-					'이메일 형식 오류',
-					'이메일 형식이 바르지 않습니다. 올바른 이메일 주소를 입력해 주세요.',
-					'error',
-				)
-			} else {
+			try {
+				// const validEmail = await this.$validator.validate('email')
+
 				const email = this.signup.email
-				const result = AuthService.emailAuth(email)
-				this.authLoading = true
-				this.isVeritication = true
-				this.delayResend()
-				return this.alertMessage(
-					'이메일 인증 메일 전송 성공',
-					'입력하신 이메일로 인증 메일을 전송했습니다. 인증 메일의 인증 번호를 확인하여 입력해 주세요.',
-					'success',
-				)
+				const mailAuth = await AuthService.emailAuth(email)
+
+				// console.log(mailAuth)
+				if (mailAuth.code == 200) {
+					this.authLoading = true
+					this.isVeritication = true
+					this.delayResend()
+					this.alertMessage(
+						'이메일 인증 메일 전송 성공',
+						'입력하신 이메일로 인증 메일을 전송했습니다. 인증 메일의 인증 번호를 확인하여 입력해 주세요.',
+						'success',
+					)
+				} else throw mailAuth
+			} catch (e) {
+				if (e.code === 2200)
+					return this.alertMessage(
+						'이메일 인증 메일 전송 실패',
+						'이미 VIRNECT 회원으로 등록된 이메일 주소입니다.',
+						'error',
+					)
+				else
+					return this.alertMessage(
+						'이메일 인증 메일 전송 실패',
+						'인증 메일 전송에 실패하였습니다. 잠시 후 다시 시도해 주세요.',
+						'error',
+					)
 			}
 		},
-		async resendEmail() {
+		resendEmail() {
 			if (this.setCount) {
-				const email = this.signup.email
-				const result = AuthService.emailAuth(email)
-				this.delayResend()
-				return this.alertMessage(
-					'이메일 인증 메일 재전송 성공',
-					'입력하신 이메일로 인증 메일을 재전송했습니다. 인증 메일의 인증 번호를 확인하여 입력해 주세요.',
-					'success',
-				)
+				this.sendEmail()
 			}
 		},
-		checkVerificationCode() {
-			const code = {
-				code: this.verificationCode,
-				email: this.signup.email,
-			}
+		async checkVerificationCode() {
 			if (this.verificationCode) {
-				this.$store.dispatch('auth/verification', code).then(
-					data => {
-						if (data) {
-							this.signup.sessionCode = data.sessionCode
-							this.isVeritication = false
-							this.isValidEmail = false
-							this.verificationText = '인증 완료'
-							this.check.isEmail = true
-							this.alertMessage(
-								'이메일 인증 성공',
-								'이메일 인증이 완료되었습니다.',
-								'success',
-							)
-						}
-					},
-					error => {
-						if (error) {
-							this.alertMessage(
-								'인증 번호 불일치',
-								'인증 번호가 일치하지 않습니다. 다시 확인하여 입력해 주세요.',
-								'error',
-							)
-						}
-					},
-				)
+				const code = {
+					code: this.verificationCode,
+					email: this.signup.email,
+				}
+				try {
+					const res = await AuthService.verification(code)
+					if (res.code === 200) {
+						// console.log(res)
+						this.signup.sessionCode = res.data.sessionCode
+						this.isVeritication = false
+						this.isValidEmail = false
+						this.verificationText = '인증 완료'
+						this.check.isEmail = true
+						this.alertMessage(
+							'이메일 인증 성공',
+							'이메일 인증이 완료되었습니다.',
+							'success',
+						)
+					} else throw res
+				} catch (e) {
+					if (e.code === 2201)
+						return this.alertMessage(
+							'인증 번호 불일치',
+							'인증 번호가 일치하지 않습니다. 다시 확인하여 입력해 주세요.',
+							'error',
+						)
+					else
+						return this.alertMessage(
+							'이메일 인증 실패',
+							'이메일 인증에 실패하였습니다. 잠시 후 다시 시도해 주세요.',
+							'error',
+						)
+				}
 			}
 			this.delayResend()
 		},

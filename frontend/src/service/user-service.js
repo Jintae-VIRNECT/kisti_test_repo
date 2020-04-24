@@ -18,6 +18,7 @@ class UserService {
 		})
 	}
 
+	//가입정보
 	async register(user = {}) {
 		try {
 			const response = await axios.post(GATEWAY_API_URL + API.user.register, {
@@ -37,6 +38,7 @@ class UserService {
 		}
 	}
 
+	//유저 상세정보
 	async userDetail(user = {}) {
 		try {
 			const response = await axios.post(
@@ -54,6 +56,7 @@ class UserService {
 		}
 	}
 
+	// 이메일로 찾기
 	async userFindEmail(user = {}) {
 		try {
 			const response = await axios.post(GATEWAY_API_URL + API.user.findEmail, {
@@ -68,6 +71,7 @@ class UserService {
 		}
 	}
 
+	//비밀번호 재설정 - 이메일 코드 발송
 	async userPass(user = {}) {
 		try {
 			const response = await axios.post(GATEWAY_API_URL + API.user.findPass, {
@@ -79,6 +83,7 @@ class UserService {
 		}
 	}
 
+	//비밀번호 재설정 - 코드 체크
 	async userCodeCheck(user = {}) {
 		try {
 			const response = await axios.post(
@@ -94,6 +99,7 @@ class UserService {
 		}
 	}
 
+	//비밀번호 재설정 - 비번 재설정
 	async userPassChange(user = {}) {
 		try {
 			const response = await axios.put(GATEWAY_API_URL + API.user.changePass, {

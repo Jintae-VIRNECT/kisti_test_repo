@@ -58,16 +58,15 @@ class AuthService {
 			})
 	}
 
-	emailAuth(email) {
-		return axios
-			.post(GATEWAY_API_URL + API.auth.emailAuth, {
+	async emailAuth(email = {}) {
+		try {
+			const response = await axios.post(GATEWAY_API_URL + API.auth.emailAuth, {
 				email,
 			})
-			.then(this.handleResponse)
-			.then(response => {
-				const { data } = response.data
-				return data
-			})
+			return response.data
+		} catch (e) {
+			console.error(e)
+		}
 	}
 
 	async verification(code = {}) {

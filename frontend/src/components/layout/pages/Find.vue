@@ -22,84 +22,96 @@
 					</div>
 					<div class="find-body" v-if="tab == 'email'">
 						<p class="info-text">
-							회원 정보에 등록된 사용자 정보로 이메일을 찾습니다. 원하는 방법을
-							선택해 주세요.
+							{{ mailFindText }}
 						</p>
 
-						<el-radio v-model="tabCategory" label="1"
-							>회원 정보에 등록된 휴대폰 번호로 찾기</el-radio
-						>
-						<template v-if="tabCategory == '1'">
-							<p class="input-title">이름</p>
-							<el-input
-								class="firstname-input"
-								placeholder="성"
-								clearable
-								name="firstname"
-								v-validate="'required'"
-								v-model="fullName.firstName"
-							></el-input>
-							<el-input
-								class="lastname-input"
-								placeholder="이름"
-								clearable
-								name="lastname"
-								v-validate="'required'"
-								v-model="fullName.lastName"
-							></el-input>
-							<p class="input-title">휴대폰 번호</p>
-							<el-input
-								placeholder="휴대폰 번호를 입력해 주세요"
-								clearable
-								name="phoneNumber"
-								v-validate="'required'"
-								v-model="findEmail.phoneNumber"
-							></el-input>
-						</template>
+						<div v-if="isFindEmail === null">
+							<el-radio v-model="tabCategory" label="1"
+								>회원 정보에 등록된 휴대폰 번호로 찾기</el-radio
+							>
+							<template v-if="tabCategory == '1'">
+								<p class="input-title">이름</p>
+								<el-input
+									class="lastname-input"
+									placeholder="성"
+									clearable
+									name="lastname"
+									v-validate="'required'"
+									v-model="fullName.lastName"
+								></el-input>
+								<el-input
+									class="firstname-input"
+									placeholder="이름"
+									clearable
+									name="firstname"
+									v-validate="'required'"
+									v-model="fullName.firstName"
+								></el-input>
+								<p class="input-title">휴대폰 번호</p>
+								<el-input
+									placeholder="휴대폰 번호를 입력해 주세요"
+									clearable
+									name="phoneNumber"
+									v-validate="'required'"
+									v-model="findEmail.phoneNumber"
+								></el-input>
+							</template>
 
-						<el-radio v-model="tabCategory" label="2"
-							>복구 이메일로 찾기</el-radio
-						>
+							<el-radio v-model="tabCategory" label="2"
+								>복구 이메일로 찾기</el-radio
+							>
 
-						<template v-if="tabCategory == '2'">
-							<p class="input-title">이름</p>
-							<el-input
-								class="firstname-input"
-								placeholder="성"
-								clearable
-								name="firstname"
-								v-validate="'required'"
-								v-model="fullName.firstName"
-							></el-input>
-							<el-input
-								class="lastname-input"
-								placeholder="이름"
-								clearable
-								name="lastname"
-								v-validate="'required'"
-								v-model="fullName.lastName"
-							></el-input>
-							<p class="input-title">복구 이메일 주소</p>
-							<el-input
-								placeholder="이메일 주소를 입력해 주세요"
-								clearable
-								name="recoveryEmail"
-								v-validate="'required|email|max:50'"
-								v-model="findEmail.recoveryEmail"
-							></el-input>
-						</template>
-						<el-button
-							class="next-btn block-btn"
-							type="primary"
-							@click="
-								$router.push({
-									name: 'register',
-									params: { marketInfoReceive: marketingAgree },
-								})
-							"
-							:disabled="emailFindActive"
-							>이메일 찾기</el-button
-						>
+							<template v-if="tabCategory == '2'">
+								<p class="input-title">이름</p>
+								<el-input
+									class="lastname-input"
+									placeholder="성"
+									clearable
+									name="lastname"
+									v-validate="'required'"
+									v-model="fullName.lastName"
+								></el-input>
+								<el-input
+									class="firstname-input"
+									placeholder="이름"
+									clearable
+									name="firstname"
+									v-validate="'required'"
+									v-model="fullName.firstName"
+								></el-input>
+								<p class="input-title">복구 이메일 주소</p>
+								<el-input
+									placeholder="이메일 주소를 입력해 주세요"
+									clearable
+									name="recoveryEmail"
+									v-validate="'required|email|max:50'"
+									v-model="findEmail.recoveryEmail"
+								></el-input>
+							</template>
+							<el-button
+								class="next-btn block-btn"
+								type="primary"
+								@click="mailAccountFind"
+								:disabled="emailFindActive"
+								>이메일 찾기</el-button
+							>
+						</div>
+						<div v-else class="mailfind-before">
+							<div class="user-email-holder">
+								<p>
+									<i>이메일:</i> <span>{{ findUserData.email }}</span>
+								</p>
+								<p>
+									<i>가입일:</i> <span>{{ findUserData.signUpDate }}</span>
+								</p>
+							</div>
+							<el-button
+								class="next-btn block-btn"
+								type="primary"
+								@click="$router.push({ name: 'login' })"
+								>로그인</el-button
+							>
+						</div>
 					</div>
 					<div class="find-body" v-if="tab == 'resetPassword'">
 						<div v-if="isCodeAuth === null">
@@ -125,23 +137,60 @@
 						</div>
 						<div v-else class="auth-before">
 							<p class="info-text">
-								보안 코드 6자리를 입력해 주세요.
+								{{ authText }}
 							</p>
-							<p class="user-email-holder">
-								<i>이메일:</i> <span>{{ resetPass.email }}</span>
-							</p>
+							<div class="user-email-holder">
+								<p>
+									<i>이메일:</i> <span>{{ resetPass.email }}</span>
+								</p>
+							</div>
 
 							<el-input
 								placeholder="이메일로 전송된 보안코드 입력"
 								type="text"
 								v-model="resetPass.authCode"
+								maxlength="6"
+								v-if="isCodeAuth === false"
 							></el-input>
+
+							<p class="input-title must-check" v-if="isCodeAuth === true">
+								비밀번호
+							</p>
+							<el-input
+								placeholder="새 비밀번호 입력"
+								type="password"
+								v-model="resetPass.password"
+								v-if="isCodeAuth === true"
+							></el-input>
+							<el-input
+								placeholder="새 비밀번호 재입력"
+								type="password"
+								v-model="resetPass.comfirmPassword"
+								v-if="isCodeAuth === true"
+							></el-input>
+							<p class="restriction-text" v-if="isCodeAuth === true">
+								비밀번호를 영문 대소문자, 숫자, 특수문자(.!@#$%)를 혼합하여
+								8~20자로 입력해 주세요.
+							</p>
+
 							<el-button
 								class="next-btn block-btn"
 								type="primary"
 								:disabled="resetPass.authCode.length < 6"
 								@click="authCodeCheck"
+								v-if="isCodeAuth === false"
 								>보안코드 인증</el-button
+							>
+							<el-button
+								class="next-btn block-btn"
+								type="primary"
+								:disabled="
+									resetPass.password !== resetPass.comfirmPassword ||
+										resetPass.password.length < 8
+								"
+								@click="checkPass"
+								v-if="isCodeAuth === true"
+								>비밀번호 변경</el-button
 							>
 						</div>
 					</div>
@@ -177,13 +226,29 @@ export default {
 			resetPass: {
 				email: '',
 				authCode: '',
+				password: '',
+				comfirmPassword: '',
 			},
+			userId: null,
+			userEmail: null,
+			isFindEmail: null,
 			isCodeAuth: null,
+			findUserData: {
+				email: null,
+				signUpDate: null,
+			},
 		}
 	},
 	mounted() {
-		if (this.findCategory === 'email') return (this.tab = 'email')
+		if (this.findCategory == 'email') return (this.tab = 'email')
 		else return (this.tab = 'resetPassword')
+	},
+	watch: {
+		tabCategory() {
+			// console.log(this.tabCategory)
+			this.findEmail.phoneNumber = ''
+			this.findEmail.recoveryEmail = ''
+		},
 	},
 	computed: {
 		emailFindActive() {
@@ -212,8 +277,78 @@ export default {
 			if (!checkEmail.test(this.resetPass.email)) return false
 			else return true
 		},
+		mailFindText() {
+			if (this.isFindEmail)
+				return '입력하신 정보와 일치하는 회원의 정보입니다. 정보 보호를 위해 앞 4자리만 보여집니다.'
+			else
+				return '회원 정보에 등록된 사용자 정보로 이메일을 찾습니다. 원하는 방법을 선택해 주세요.'
+		},
+		authText() {
+			if (this.isCodeAuth)
+				return '새 비밀번호를 설정합니다. 비밀번호 변경 시, 기존 로그인된 디바이스에서 로그인이 해지됩니다.'
+			else return '보안 코드 6자리를 입력해 주세요.'
+		},
 	},
 	methods: {
+		async mailAccountFind() {
+			try {
+				const res = await UserService.userFindEmail({
+					firstName: this.fullName.firstName,
+					lastName: this.fullName.lastName,
+					mobile: this.findEmail.phoneNumber,
+					recoveryEmail: this.findEmail.recoveryEmail,
+				})
+				if (res.code === 200) {
+					this.isFindEmail = true
+					this.findUserData = res.data
+				} else throw res
+			} catch (e) {
+				// console.log(e)
+				if (e.code === 4002)
+					return this.alertMessage(
+						'계정정보 불일치',
+						'입력하신 정보와 일치하는 VIRNECT 회원이 없습니다.',
+						'error',
+					)
+				else
+					return this.alertMessage(
+						'계정정보 전송 오류',
+						'계정정보 전송에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
+						'error',
+					)
+			}
+		},
+		async changePass() {
+			const userInfo = {
+				uuid: this.userId,
+				email: this.userEmail,
+				password: this.resetPass.password,
+			}
+			try {
+				const res = await UserService.userPassChange(userInfo)
+				console.log(res)
+				if (res.code === 200)
+					return this.confirmWindow(
+						'비밀번호 변경 완료 ',
+						'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
+						'확인',
+					)
+				else throw res
+			} catch (e) {
+				if (e.code === 4009)
+					return this.alertMessage(
+						'비밀번호 재설정 실패',
+						'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',
+						'error',
+					)
+				else
+					return this.alertMessage(
+						'비밀번호 재설정 실패',
+						'비밀번호 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
+						'error',
+					)
+			}
+		},
 		async emailPassCode() {
 			try {
 				let res = await UserService.userPass({ email: this.resetPass.email })
@@ -256,6 +391,8 @@ export default {
 					email: this.resetPass.email,
 				})
 				if (res.code === 200) {
+					this.userId = res.data.uuid
+					this.userEmail = res.data.email
 					this.alertMessage(
 						'보안코드 일치',
 						'보안 코드 인증이 완료되었습니다.',
@@ -266,8 +403,8 @@ export default {
 					throw res
 				}
 			} catch (e) {
-				console.log(e.code)
-				if (e.code === 4002)
+				// console.log(e.code)
+				if (e.code === 4007)
 					return this.alertMessage(
 						'보안코드 불일치 오류',
 						'입력하신 보안 코드가 일치하지 않습니다. 다시 한 번 확인해 주세요.',
@@ -279,6 +416,35 @@ export default {
 						'보안 코드 인증에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
 						'error',
 					)
+			}
+		},
+		passValidate(password) {
+			let typeCount = 0
+			if (/[0-9]/.test(password)) typeCount++
+			if (/[a-z]/.test(password)) typeCount++
+			if (/[A-Z]/.test(password)) typeCount++
+			if (/[$.$,$!$@$#$$$%]/.test(password)) typeCount++
+			if (typeCount < 3) return false
+			if (!/^.{8,20}$/.test(password)) return false
+			if (/(.)\1\1\1/.test(password)) return false
+			if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(password))
+				return false
+			if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(password))
+				return false
+			return true
+		},
+		async checkPass() {
+			try {
+				const res = await this.passValidate(this.resetPass.password)
+				if (res) {
+					this.changePass()
+				} else throw res
+			} catch (e) {
+				this.alertMessage(
+					'비밀번호 입력 오류',
+					'비밀번호는 8~20자 이내로 영문 대,소문자/숫자/특수문자( . , !, @, #, $, % )를 3가지 이상 조합하여 입력해 주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다.',
+					'error',
+				)
 			}
 		},
 	},
@@ -356,15 +522,19 @@ export default {
 	margin-top: 16px;
 }
 
-.auth-before {
+.user-email-holder {
+	position: relative;
+	margin: 32px 0 24px;
+	padding: 26px 28px;
+	background: #f2f4f7;
+	p + p {
+		margin-top: 16px;
+	}
+}
+.auth-before,
+.mailfind-before {
 	.info-text {
 		color: #103573;
-	}
-	.user-email-holder {
-		position: relative;
-		margin: 32px 0 24px;
-		padding: 26px 28px;
-		background: #f2f4f7;
 	}
 	i {
 		position: absolute;
@@ -373,8 +543,8 @@ export default {
 	}
 	span {
 		display: block;
-		padding-left: 60px;
-		text-align: center;
+		padding-left: 100px;
+		// text-align: center;
 	}
 }
 </style>
