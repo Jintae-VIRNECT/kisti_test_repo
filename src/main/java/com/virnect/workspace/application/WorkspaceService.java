@@ -157,7 +157,7 @@ public class WorkspaceService {
             workspaceInfo.setMasterName(userInfoRestResponse.getName());
             workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-
+            workspaceInfo.setMasterNickName(userInfoRestResponse.getNickname());
             workspaceList.add(workspaceInfo);
         });
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
