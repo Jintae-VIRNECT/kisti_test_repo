@@ -1,7 +1,6 @@
 package com.virnect.process.dao.process;
 
 import com.virnect.process.domain.Process;
-import com.virnect.process.domain.State;
 import com.virnect.process.dto.response.ProcessesStatisticsResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +43,8 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
     @Query(value = "SELECT count(NAME) FROM process WHERE conditions = :conditions", nativeQuery = true)
     int getCountConditions(@Param("conditions") String conditions);
 
-    @Query(value = "select * from process p join Target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
-            , countQuery = "select count(*) from process p join Target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
+    @Query(value = "select * from process p join target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
+            , countQuery = "select count(*) from process p join target t on t.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where t.data = :targetData and not (state <=> 'CLOSED') and not (state <=> 'DELETED')"
             , nativeQuery = true)
     Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 

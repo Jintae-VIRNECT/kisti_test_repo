@@ -1460,6 +1460,8 @@ public class TaskService {
         String[] processes = {process.getContentUUID()};
         ApiResponse<ContentDeleteListResponse> apiResponse = this.contentRestService.contentDeleteRequestHandler(processes, actorUUID);
 
+        log.debug("apiResponse : {}", apiResponse.getData().toString());
+
         // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
         this.processRepository.delete(process);
 
@@ -1630,11 +1632,11 @@ public class TaskService {
 
         // 컨텐츠를 작업으로 전환시 컨텐츠의 converted가 YES가 되어 있으므로 NO로 변경하여 작업으로 전환되지 않았암을 저장 요청함.
         //ApiResponse<ContentInfoResponse> contentInfoResponseApiResponse =
-                this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
+        this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
 
         // 작업을 컨텐츠로 전환
         //ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse =
-                this.contentRestService.taskToContentConvertHandler(processId, workerUUID);
+        this.contentRestService.taskToContentConvertHandler(processId, workerUUID);
 
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
 

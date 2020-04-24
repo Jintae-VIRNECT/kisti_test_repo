@@ -2,17 +2,14 @@ package com.virnect.process.dto.rest.response.content;
 
 import com.virnect.process.domain.YesOrNo;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@ToString
 public class ContentDeleteResponse {
     @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     private String workspaceUUID;
@@ -32,17 +29,4 @@ public class ContentDeleteResponse {
     private String msg;
     @ApiModelProperty(value = "삭제 처리 결과", notes = "컨텐츠가 삭제되었으면 true, 아니면 false 값을 리턴합니다", example = "true")
     private Boolean result;
-
-    @Builder
-    public ContentDeleteResponse(String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, String uploaderUUID, YesOrNo converted, LocalDateTime updatedDate, String msg, Boolean result) {
-        this.workspaceUUID = workspaceUUID;
-        this.contentUUID = contentUUID;
-        this.contentName = contentName;
-        this.shared = shared;
-        this.uploaderUUID = uploaderUUID;
-        this.converted = converted;
-        this.updatedDate = updatedDate;
-        this.msg = msg;
-        this.result = result;
-    }
 }

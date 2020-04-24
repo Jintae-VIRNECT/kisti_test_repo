@@ -3,7 +3,10 @@ package com.virnect.process.api;
 import com.virnect.process.application.TaskService;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.State;
-import com.virnect.process.dto.request.*;
+import com.virnect.process.dto.request.EditProcessRequest;
+import com.virnect.process.dto.request.EditSubProcessRequest;
+import com.virnect.process.dto.request.ProcessRegisterRequest;
+import com.virnect.process.dto.request.WorkResultSyncRequest;
 import com.virnect.process.dto.response.*;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
@@ -24,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,6 +94,7 @@ public class TaskController {
     }
 
     // TODO : ARUCO가 아닌 target 가져오기로 변경
+
     /**
      * 작업과 연계된 ContentUUID와 ARUCO 가져오기
      *
@@ -333,7 +336,7 @@ public class TaskController {
      *
      * @return
      */
-    @ApiOperation(value = "전체 작업 진행률 조회", tags = "dev")
+    @ApiOperation(value = "전체 작업 진행률 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query")
     })
@@ -492,7 +495,7 @@ public class TaskController {
      * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "하위작업목록조회", tags = "dev")
+    @ApiOperation(value = "공정 내 하위작업목록조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
@@ -548,11 +551,11 @@ public class TaskController {
      * @param subProcessId 하위작업 식별자
      * @return
      */
-    @ApiOperation(value = "하위작업 상세조회", tags = "dev")
+    @ApiOperation(value = "하위작업 상세조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
     })
-    @GetMapping("/subProcesses/{subProcessId}")
+    @GetMapping("/subProcess/{subProcessId}")
     public ResponseEntity<ApiResponse<SubProcessInfoResponse>> getSubProcess(@PathVariable("subProcessId") Long subProcessId) {
         ApiResponse<SubProcessInfoResponse> subProcessesResponseApiResponse = this.taskService.getSubProcess(subProcessId);
         return ResponseEntity.ok(subProcessesResponseApiResponse);
@@ -589,7 +592,7 @@ public class TaskController {
         return ResponseEntity.ok(myWorkListResponseApiResponse);
     }
 
-    @ApiOperation(value = "타겟 데이터의 하위작업 목록 조회", tags = "dev")
+    @ApiOperation(value = "타겟 데이터의 하위작업 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터 식별자", dataType = "string", required = true, paramType = "path", defaultValue = ""),
@@ -616,7 +619,7 @@ public class TaskController {
      * @param subProcessId
      * @return
      */
-    @ApiOperation(value = "하위작업편집", tags = "dev")
+    @ApiOperation(value = "하위작업편집")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
     })
@@ -637,7 +640,7 @@ public class TaskController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "단계목록조회", tags = "dev")
+    @ApiOperation(value = "단계목록조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "subProcessId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
@@ -709,7 +712,7 @@ public class TaskController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "사용자에게 할당된 하위작업수 및 진행중인 하위작업수 조회", tags = "dev")
+    @ApiOperation(value = "사용자에게 할당된 하위작업수 및 진행중인 하위작업수 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "workerUUID", value = "사용자 uuid", paramType = "path", required = true, example = "449ae69cee53b8a6819053828c94e496")
