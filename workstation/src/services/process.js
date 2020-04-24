@@ -25,6 +25,7 @@ export default {
     const data = await api('PROCESS_LIST', {
       params: {
         size: 10,
+        sort: 'updated_at,desc',
         ...params,
       },
     })

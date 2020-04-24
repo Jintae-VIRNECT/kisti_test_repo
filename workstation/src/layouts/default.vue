@@ -4,11 +4,7 @@
       <the-header :showSection="showSection" />
     </header>
     <div>
-      <the-sidebar
-        :logo="sideLogo"
-        :menus="sideMenus"
-        :bottomMenus="sideBottomMenus"
-      />
+      <the-sidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
       <main>
         <nuxt />
       </main>
@@ -20,7 +16,7 @@
 import TheSidebar from '@/components/layout/TheSidebar'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 
-import { sideLogo, sideMenus, sideBottomMenus } from '@/models/layout'
+import { sideMenus, sideBottomMenus } from '@/models/layout'
 
 export default {
   middleware: 'default',
@@ -33,7 +29,6 @@ export default {
       showSection: {
         profile: true,
       },
-      sideLogo,
       sideMenus,
       sideBottomMenus,
     }

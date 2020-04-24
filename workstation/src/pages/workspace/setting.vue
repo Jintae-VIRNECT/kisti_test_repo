@@ -158,18 +158,17 @@ export default {
     },
     async submit() {
       const { uploadFiles } = this.$refs.upload
-      const formData = new FormData()
-      formData.append('name', this.form.name)
-      formData.append('description', this.form.description)
-      formData.append(
-        'profile',
-        uploadFiles.length ? uploadFiles[uploadFiles.length - 1].raw : null,
-      )
-      formData.append('userId', this.myProfile.uuid)
-      formData.append('workspaceId', this.activeWorkspace.info.uuid)
+      const form = {
+        ...this.form,
+        profile: uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null,
+        userId: this.myProfile.uuid,
+        workspaceId: this.activeWorkspace.info.uuid,
+      }
 
       try {
-        await workspaceService.updateWorkspaceInfo(formData)
+        await workspaceService.updateWorkspaceInfo(form)
         this.$message.success({
           message: 'success',
           showClose: true,

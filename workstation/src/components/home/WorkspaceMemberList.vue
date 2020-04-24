@@ -49,11 +49,7 @@ export default {
   },
   methods: {
     async getMemberList() {
-      this.members = (
-        await workspaceService.searchMembers({
-          size: 4,
-        })
-      ).list
+      this.members = await workspaceService.getNewMembers()
     },
   },
   beforeMount() {
@@ -66,7 +62,7 @@ export default {
 <style lang="scss">
 .workspace-member-list {
   .el-table__body-wrapper {
-    min-height: 256px;
+    min-height: 250px;
   }
 }
 </style>

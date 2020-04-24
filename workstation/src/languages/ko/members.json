@@ -1,0 +1,27 @@
+{
+  "card": {
+    "profile": "프로필",
+    "setting": "멤버 설정",
+    "usingPlans": "사용 중인 플랜 정보",
+    "links": "바로가기",
+    "contents": "콘텐츠",
+    "work": "작업",
+    "report": "리포트"
+  },
+  "allMembers": {
+    "title": "전체 워크스페이스 멤버",
+    "addMember": "워크스페이스 멤버 추가"
+  },
+  "setting": {
+    "title": "워크스페이스 멤버 설정",
+    "info": "멤버 정보",
+    "nickname": "워크스페이스 멤버 닉네임",
+    "email": "워크스페이스 멤버 계정",
+    "setting": "멤버 설정",
+    "role": "워크스페이스 권한",
+    "givePlans": "플랜 할당",
+    "planEmpty": "할당 없음",
+    "kick": "내보내기",
+    "submit": "변경하기"
+  }
+}

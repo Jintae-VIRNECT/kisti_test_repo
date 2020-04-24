@@ -49,3 +49,21 @@
     background: #7ac1fc;
   }
 }
+
+.column-links {
+  & > a {
+    margin-right: 8px;
+    padding: 2px 10px 7px 5px;
+    color: #314366;
+    font-size: 12.6px;
+    line-height: 20px;
+    background-color: #f4f6f8;
+    border-radius: 4px;
+
+    img,
+    span {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

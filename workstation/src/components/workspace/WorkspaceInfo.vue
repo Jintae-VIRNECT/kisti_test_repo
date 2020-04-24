@@ -91,7 +91,7 @@ export default {
     & > .avatar {
       width: 72px;
       height: 72px;
-      margin: 20px auto 12px;
+      margin: 40px auto 12px;
     }
     & > h5 {
       font-size: 18px;

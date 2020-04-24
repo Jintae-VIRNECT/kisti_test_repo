@@ -1,12 +1,12 @@
 <template>
-  <el-card class="member-profile-card">
+  <el-card class="user-profile-card">
     <div slot="header">
       <h3>{{ $t('home.profile.title') }}</h3>
       <router-link to="/">{{ $t('home.profile.link') }}</router-link>
     </div>
-    <div>
-      <span>{{ $t('home.profile.usingNickname') }}</span>
-      <div>
+    <dl>
+      <dt>{{ $t('home.profile.usingNickname') }}</dt>
+      <dd>
         <div class="avatar">
           <div
             class="image"
@@ -15,14 +15,14 @@
         </div>
         <span class="name">{{ myProfile.nickname }}</span>
         <span class="email">{{ myProfile.email }}</span>
-      </div>
-      <span>{{ $t('home.profile.workspaceRole') }}</span>
-      <div class="column-role">
+      </dd>
+      <dt>{{ $t('home.profile.workspaceRole') }}</dt>
+      <dd class="column-role">
         <el-tag :class="myRole">{{ myRole }}</el-tag>
-      </div>
-      <span>{{ $t('home.profile.usingPlans') }}</span>
-      <div></div>
-    </div>
+      </dd>
+      <dt>{{ $t('home.profile.usingPlans') }}</dt>
+      <dd>-</dd>
+    </dl>
   </el-card>
 </template>
 
@@ -46,20 +46,18 @@ export default {
 </script>
 
 <style lang="scss">
-.member-profile-card {
+.user-profile-card {
   a {
     display: block;
   }
-  .el-card__body > div {
-    & > span {
-      display: block;
-      margin: 24px 0 12px;
-      color: #5e6b81;
-      font-size: 12px;
+  dt {
+    display: block;
+    margin: 24px 0 12px;
+    color: #5e6b81;
+    font-size: 12px;
 
-      &:first-child {
-        margin-top: 0;
-      }
+    &:first-child {
+      margin-top: 0;
     }
   }
   .avatar {
@@ -77,6 +75,9 @@ export default {
     color: $font-color-desc;
     font-size: 12px;
     line-height: 20px;
+  }
+  .column-role {
+    margin-bottom: 28px;
   }
 }
 </style>

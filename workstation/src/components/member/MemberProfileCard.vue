@@ -1,37 +1,111 @@
 <template>
   <el-card class="member-profile-card">
-    <div slot="header">
-      <h3>{{ title }}</h3>
-    </div>
-    <!-- 링크 타입 -->
-    <div v-if="type === 'link'">
-      <a v-for="link in links" :href="link.path" :key="link.path">
-        <span>{{ link.label }}</span>
-      </a>
-    </div>
-    <!-- 다운로드 타입 -->
-    <div v-if="type === 'download'">
-      <a v-for="link in links" :href="link.path" :key="link.path" download>
-        <span>{{ link.label }}</span>
-      </a>
-    </div>
+    <dl>
+      <dt>
+        <span>{{ $t('members.card.profile') }}</span>
+        <span class="dropdown" @click="openMemberSettingModal">
+          <img src="~assets/images/icon/ic-more-horiz.svg" />
+        </span>
+      </dt>
+      <dd>
+        <div class="avatar">
+          <div
+            class="image"
+            :style="`background-image: url(${data.profile})`"
+          />
+        </div>
+        <div class="column-role">
+          <el-tag :class="data.role">{{ data.role }}</el-tag>
+        </div>
+        <span class="name">{{ data.nickname }}</span>
+        <span class="email">{{ data.email }}</span>
+      </dd>
+      <el-divider />
+      <dt>{{ $t('members.card.usingPlans') }}</dt>
+      <dd class="plans">-</dd>
+      <dt>{{ $t('members.card.links') }}</dt>
+      <dd class="column-links">
+        <router-link to="/">
+          <img src="~assets/images/icon/ic-contents.svg" />
+          <span>{{ $t('members.card.contents') }}</span>
+        </router-link>
+        <router-link to="/">
+          <img src="~assets/images/icon/ic-work.svg" />
+          <span>{{ $t('members.card.work') }}</span>
+        </router-link>
+        <router-link to="/">
+          <img src="~assets/images/icon/ic-report.svg" />
+          <span>{{ $t('members.card.report') }}</span>
+        </router-link>
+      </dd>
+    </dl>
+    <member-setting-modal :data="data" :visible.sync="showMemberSettingModal" />
   </el-card>
 </template>
 
 <script>
+import MemberSettingModal from '@/components/member/MemberSettingModal'
+
 export default {
+  components: {
+    MemberSettingModal,
+  },
   props: {
-    title: String,
-    type: String,
-    links: Array,
+    data: Object,
+  },
+  data() {
+    return {
+      showMemberSettingModal: false,
+    }
+  },
+  methods: {
+    openMemberSettingModal() {
+      this.showMemberSettingModal = true
+    },
   },
 }
 </script>
 
 <style lang="scss">
-.member-profile-card {
-  a {
+.member-profile-card .el-card__body > dl {
+  dt {
+    margin-bottom: 8px;
+    color: $font-color-desc;
+    font-size: 12px;
+
+    &:first-child {
+      margin-bottom: 12px;
+    }
+  }
+  dd {
+    margin-bottom: 12px;
+  }
+  .dropdown {
+    float: right;
+    cursor: pointer;
+  }
+  .avatar {
+    float: right;
+    width: 70px;
+    height: 70px;
+  }
+  .name {
     display: block;
+    margin: 24px 0 4px;
+    font-size: 20px;
+    line-height: 24px;
+  }
+  .email {
+    display: block;
+    color: $font-color-desc;
+    font-size: 12.6px;
+    line-height: 20px;
+  }
+  .el-divider {
+    margin: 24px 0 12px;
+  }
+  .plans {
+    height: 32px;
   }
 }
 </style>

@@ -86,17 +86,16 @@ export default {
     },
     async submit() {
       const { uploadFiles } = this.$refs.upload
-      const formData = new FormData()
-      formData.append('name', this.form.name)
-      formData.append('description', this.form.description)
-      formData.append(
-        'profile',
-        uploadFiles.length ? uploadFiles[uploadFiles.length - 1].raw : null,
-      )
-      formData.append('userId', this.myProfile.uuid)
+      const form = {
+        ...this.form,
+        profile: uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null,
+        userId: this.myProfile.uuid,
+      }
 
       try {
-        await workspaceSerivce.startWorkspace(formData)
+        await workspaceSerivce.startWorkspace(form)
         location.href = '/'
       } catch (e) {
         this.$message.error({
@@ -111,6 +110,7 @@ export default {
 
 <style lang="scss">
 main {
+  min-width: auto;
   background: #fff;
 }
 

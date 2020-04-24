@@ -1,16 +1,13 @@
 <template>
   <nav class="the-sidebar">
-    <div class="the-sidebar__logo">
-      <!-- 링크 -->
-      <router-link v-if="logo.path[0] === '/'" :to="logo.path">
-        <img :src="logo.image" :alt="logo.label" />
-      </router-link>
-      <!-- 컴포넌트 -->
-      <a v-if="logo.path[0] === '@'" @click.stop="openCollapse(logo.path)">
-        <img :src="logo.image" :alt="logo.label" />
-      </a>
-    </div>
     <div class="the-sidebar__inner">
+      <div class="the-sidebar__logo">
+        <a
+          v-if="logoPath[0] === '@'"
+          @click.stop="openCollapse(logoPath)"
+          :style="`background-image: url(${activeWorkspace.info.profile})`"
+        />
+      </div>
       <div class="the-sidebar__upper">
         <the-sidebar-menu-list :menus="menus" />
       </div>
@@ -18,25 +15,27 @@
         <the-sidebar-menu-list :menus="bottomMenus" />
       </div>
     </div>
-    <div v-if="showCollapse" class="the-sidebar__collapse" @click.stop>
-      <keep-alive>
-        <component :is="collapseComponent" @closeCollapse="closeCollapse" />
-      </keep-alive>
-    </div>
+    <transition name="collapse">
+      <div v-if="showCollapse" class="the-sidebar__collapse" @click.stop>
+        <keep-alive>
+          <component :is="collapseComponent" @closeCollapse="closeCollapse" />
+        </keep-alive>
+      </div>
+    </transition>
   </nav>
 </template>
 
 <script>
 import collapseWorkspace from '@/components/layout/collapses/TheSidebarCollapseWorkspace'
-
 import TheSidebarMenuList from './TheSidebarMenuList.vue'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     TheSidebarMenuList,
     collapseWorkspace,
   },
   props: {
-    logo: Object,
     menus: Array,
     bottomMenus: Array,
   },
@@ -44,7 +43,13 @@ export default {
     return {
       showCollapse: false,
       collapseComponent: null,
+      logoPath: '@collapseWorkspace',
     }
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'workspace/activeWorkspace',
+    }),
   },
   methods: {
     openCollapse(component) {
@@ -74,7 +79,6 @@ $the-sidebar-border: solid 1px #0d1d39;
   width: $the-sidebar-width;
   height: 100vh;
   background-color: $the-sidebar-background;
-  border-right: $the-sidebar-border;
   & + main {
     padding-left: $the-sidebar-width;
   }
@@ -83,29 +87,39 @@ $the-sidebar-border: solid 1px #0d1d39;
   width: 36px;
   height: 36px;
   margin: 12px;
-  border: solid 2px;
-  border-color: rgba(191, 212, 255, 0.4);
+  overflow: hidden;
   border-radius: 50%;
+  cursor: pointer;
 
   & > a {
     display: block;
     width: 100%;
     height: 100%;
+    background-position: center;
+    background-size: cover;
   }
 }
 .the-sidebar__inner {
+  position: relative;
+  z-index: 11;
   height: 100%;
+  background-color: $the-sidebar-background;
+  border-right: $the-sidebar-border;
+}
+.the-sidebar__upper {
   margin-top: 24px;
 }
 .the-sidebar__lower {
   position: absolute;
   bottom: 0;
   width: 100%;
+  margin-bottom: 16px;
 }
 .the-sidebar__collapse {
   position: absolute;
   top: 0;
   left: $the-sidebar-width;
+  z-index: 10;
   width: 240px;
   height: 100%;
   color: #fff;
@@ -119,5 +133,17 @@ $the-sidebar-border: solid 1px #0d1d39;
   &__body {
     margin: 12px;
   }
+}
+
+.collapse-enter {
+  transform: translateX(-100%);
+}
+.collapse-enter-to {
+  transform: translateX(0);
+  transition: transform 0.4s;
+}
+.collapse-leave-active {
+  transform: translateX(-100%);
+  transition: transform 0.4s;
 }
 </style>

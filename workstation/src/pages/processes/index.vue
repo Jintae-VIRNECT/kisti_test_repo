@@ -1,8 +1,8 @@
 <template>
   <div id="processes">
     <h2>Process</h2>
-    <h3>total: {{ processStatistics.totalProcesses }}</h3>
-    <h3>rate: {{ processTotalRate }}%</h3>
+    <!-- <h3>total: {{ processStatistics.totalProcesses }}</h3>
+    <h3>rate: {{ processTotalRate }}%</h3> -->
     <search-tab-nav
       placeholder="process.placeholder"
       :filter="processFilter"
@@ -102,8 +102,8 @@ export default {
     return {
       processList: (await promise.processes).list,
       processTotal: (await promise.processes).total,
-      processStatistics: await promise.processStatistics,
-      processTotalRate: await promise.processTotalRate,
+      // processStatistics: await promise.processStatistics,
+      // processTotalRate: await promise.processTotalRate,
     }
   },
   methods: {

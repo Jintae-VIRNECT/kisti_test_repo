@@ -4,16 +4,20 @@ import api from '@/api/gateway'
 import Workspace from '@/models/workspace/Workspace'
 import Member from '@/models/workspace/Member'
 
+function activeWorkspaceGetter() {
+  return $nuxt.$store.getters['workspace/activeWorkspace']
+}
+function myProfileGetter() {
+  return $nuxt.$store.getters['auth/myProfile']
+}
+
 export default {
   /**
    * 활성 워크스페이스 변경 감시
    * @param {function} func
    */
   watchActiveWorkspace(func) {
-    $nuxt.$store.watch(
-      () => $nuxt.$store.getters['workspace/activeWorkspace'],
-      func,
-    )
+    $nuxt.$store.watch(activeWorkspaceGetter, func)
   },
   /**
    * 내가 속한 워크스페이스 리스트 -> { 마스터, 매니저, 멤버 }
@@ -21,7 +25,7 @@ export default {
   async getMyWorkspaces() {
     const data = await api('WORKSPACES_LIST', {
       params: {
-        userId: $nuxt.$store.getters['auth/myProfile'].uuid,
+        userId: myProfileGetter().uuid,
       },
     })
     const workspaces = data.workspaceList.map(
@@ -34,17 +38,28 @@ export default {
     }
   },
   /**
+   * 신규 참여 멤버
+   * @param {function} searchParams
+   */
+  async getNewMembers() {
+    const data = await api('WORKSPACE_NEW_MEMBERS', {
+      route: {
+        workspaceId: activeWorkspaceGetter().info.uuid,
+      },
+    })
+    return data.map(member => new Member(member))
+  },
+  /**
    * 멤버 리스트 검색
    * @param {function} searchParams
    */
   async searchMembers(searchParams) {
     const { memberInfoList, pageMeta } = await api('MEMBER_LIST', {
       route: {
-        workspaceId:
-          $nuxt.$store.getters['workspace/activeWorkspace'].info.uuid,
+        workspaceId: activeWorkspaceGetter().info.uuid,
       },
       params: {
-        userId: $nuxt.$store.getters['auth/myProfile'].uuid,
+        userId: myProfileGetter().uuid,
         ...searchParams,
       },
     })
@@ -55,27 +70,39 @@ export default {
   },
   /**
    * 워크스페이스 시작
-   * @param {FormData} formData
+   * @param {form} form
    */
-  async startWorkspace(formData) {
-    await api('WORKSPACE_START', {
-      headers: {
+  async startWorkspace(form) {
+    const options = { params: form }
+    if (form.profile) {
+      const formData = new FormData()
+      Object.entries(form).forEach(([key, val]) => {
+        formData.append(key, val)
+      })
+      options.params = formData
+      options.params.headers = {
         'Content-Type': 'multipart/form-data',
-      },
-      params: formData,
-    })
+      }
+    }
+    await api('WORKSPACE_START', options)
   },
   /**
    * 워크스페이스 프로필 설정 변경
-   * @param {FormData} formData
+   * @param {form} form
    */
-  async updateWorkspaceInfo(formData) {
-    const data = await api('WORKSPACE_EDIT', {
-      headers: {
+  async updateWorkspaceInfo(form) {
+    const options = { params: form }
+    if (form.profile) {
+      const formData = new FormData()
+      Object.entries(form).forEach(([key, val]) => {
+        formData.append(key, val)
+      })
+      options.params = formData
+      options.params.headers = {
         'Content-Type': 'multipart/form-data',
-      },
-      params: formData,
-    })
+      }
+    }
+    const data = await api('WORKSPACE_EDIT', options)
     // 변경된 내용 적용
     $nuxt.$store.dispatch('workspace/getActiveWorkspaceInfo', {
       route: {
