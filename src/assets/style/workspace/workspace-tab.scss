@@ -3,6 +3,7 @@
   flex: 1;
   flex-direction: column;
   height: calc(100% - 240px);
+  padding-bottom: 20px;
 }
 
 .workspace-tab__nav {
@@ -28,18 +29,18 @@
   > button {
     min-width: 70px;
     padding: 12px 3px;
-    color: #ffffff;
+    color: $color_text;
     font-size: 15px;
     background-color: transparent;
     border-bottom: solid 2px transparent;
     opacity: 0.25;
     &:hover,
     &:active {
-      // border-bottom: solid 1px #ffffff;
+      // border-bottom: solid 1px $color_text;
       opacity: 1;
     }
     &.active {
-      border-bottom: solid 2px #ffffff;
+      border-bottom: solid 2px $color_text;
       opacity: 1;
     }
   }
@@ -51,7 +52,7 @@
   flex-direction: column;
   width: 100%;
   text-align: left;
-  background-color: #1e1e20;
+  background-color: $color_bg_display;
   &.fix {
     margin-top: 50px;
   }
@@ -74,13 +75,13 @@
 }
 .tab-view__title {
   margin-right: 7px;
-  color: #d2d2d2;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 22px;
 }
 .tab-view__description {
   margin-top: 9px;
-  color: rgba(#fafafa, 0.3);
+  color: rgba($color_text_sub, 0.3);
 }
 
 .tab-view__tools {
@@ -96,7 +97,5 @@
 
 .tab-view__body {
   flex: 1;
-  // height: calc(100% - 109px);
-
   margin-bottom: 20px;
 }

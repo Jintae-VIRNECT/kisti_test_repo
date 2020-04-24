@@ -64,6 +64,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -76,7 +78,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 400px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
 
   .no-list__img {
     width: 191px;
@@ -87,12 +89,12 @@ export default {
   }
 
   .no-list__title {
-    color: #fafafa;
+    color: $color_text_sub;
     font-size: 24px;
     text-align: center;
   }
   .no-list__description {
-    color: #fafafa;
+    color: $color_text_sub;
     font-size: 18px;
     text-align: center;
     opacity: 50%;

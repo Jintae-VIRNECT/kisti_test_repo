@@ -1,10 +1,12 @@
 <template>
   <popover
+    ref="selectPopover"
     placement="bottom"
     trigger="click"
-    :width="300"
     popperClass="select-options"
     :style="style"
+    :fullwidth="true"
+    :scrollHide="true"
     @visible="visible => (show = visible)"
   >
     <button slot="reference" class="select-label" :class="{ active: show }">
@@ -86,13 +88,13 @@ export default {
   position: relative;
   width: 100%;
   min-width: 300px;
-  min-height: 36px;
+  min-height: 40px;
   padding: 9px 20px;
-  color: rgba(#fff, 0.76);
+  color: rgba($color_text, 0.76);
   line-height: 20px;
   text-align: left;
   // background: url(~assets/image/ic-select-collapse.svg) no-repeat 95% 50%;
-  background-color: #111012;
+  background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
   &::after {
@@ -107,6 +109,11 @@ export default {
     transition: transform 0.3s;
     content: '';
   }
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $color_darkgray;
+  }
   &.active {
     outline: none;
     outline-offset: 0;
@@ -118,8 +125,9 @@ export default {
   }
 }
 .popover.select-options {
+  min-height: 30px;
   margin-top: -4px;
-  background-color: #111012;
+  background-color: $color_darkgray;
   border: solid 1px #363638;
   border-top: none;
   border-radius: 3px;
@@ -133,17 +141,17 @@ export default {
 .select-option {
   width: 100%;
   padding: 8px 20px;
-  color: rgba(#fff, 0.5);
+  color: rgba($color_text, 0.5);
   line-height: 20px;
   text-align: left;
   &:last-child {
     padding-bottom: 16px;
   }
   &.active {
-    color: rgba(#fff, 0.76);
+    color: rgba($color_text, 0.76);
   }
   &:hover {
-    color: rgba(#fff, 0.76);
+    color: rgba($color_text, 0.76);
   }
 }
 </style>

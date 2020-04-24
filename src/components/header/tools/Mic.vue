@@ -31,8 +31,9 @@ export default {
     micOnOff() {
       let mic = !this.mic
       this.callMic(mic)
-      // this.onMic = !this.onMic
-      this.$openvidu.micOnOff(mic)
+
+      // TODO: openvidu
+      // this.$openvidu.micOnOff(mic)
     },
   },
 

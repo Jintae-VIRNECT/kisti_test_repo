@@ -1,5 +1,5 @@
 .workspace-history {
-  color: #fff;
+  color: $color_text;
 }
 
 .no-list {
@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   height: 400px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
 
   .no-list__img {
     width: 191px;
@@ -19,12 +19,12 @@
   }
 
   .no-list__title {
-    color: #fafafa;
+    color: $color_text_sub;
     font-size: 24px;
     text-align: center;
   }
   .no-list__description {
-    color: #fafafa;
+    color: $color_text_sub;
     font-size: 18px;
     text-align: center;
     opacity: 50%;
@@ -38,14 +38,13 @@
 }
 
 .label--noraml {
-  color: #d2d2d2;
+  color: $color_text_main;
   font-size: 15px;
-  font-family: AppleSDGothicNeo-Regular;
   text-align: center;
 }
 
 .label--date {
-  color: #fafafa;
+  color: $color_text_sub;
   font-size: 15px;
   text-align: center;
   opacity: 50%;
@@ -65,7 +64,7 @@
 
   .text {
     overflow: hidden;
-    color: #fafafa;
+    color: $color_text_sub;
     font-size: 14px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -73,20 +72,28 @@
 }
 
 .widecard-tools__menu-button {
+  position: relative;
   width: 28px;
   height: 28px;
   margin-left: 26px;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
   &:hover {
-    background: url(~assets/image/back/mdpi_icn_more.svg) 50% no-repeat;
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($color_white, 0.05);
+      border-radius: 50%;
+      content: "";
+    }
   }
-}
-.popover {
-  max-width: 120px;
 }
 .popover.custom-popover {
   min-width: 120px;
-  background-color: #242427;
+  max-width: 120px;
+  background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   > .popover--body {
     padding: 0px;
@@ -98,15 +105,15 @@
 .group-pop__button {
   width: 100%;
   padding: 13px 20px;
-  color: #fff;
+  color: $color_text;
   text-align: left;
   &:focus {
-    background-color: rgba(#4c5259, 0.15);
+    background-color: rgba($color_bg_item, 0.15);
   }
   &:hover {
-    background-color: rgba(#4c5259, 0.3);
+    background-color: rgba($color_bg_item, 0.3);
   }
   &:active {
-    background-color: rgba(#4c5259, 0.5);
+    background-color: rgba($color_bg_item, 0.5);
   }
 }

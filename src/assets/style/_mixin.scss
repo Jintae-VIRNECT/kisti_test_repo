@@ -21,9 +21,9 @@
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: rgba(#fff, 0.04);
+    background-color: rgba($color_text, 0.04);
     @include theme-bright() {
-      background-color: #fff;
+      background-color: $color_text;
     }
     content: "";
     @if $direction == "right" {

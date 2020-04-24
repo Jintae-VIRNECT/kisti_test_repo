@@ -89,6 +89,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fullwidth: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -183,6 +187,17 @@ export default {
         this.$set(this.style, 'top', top + 'px')
         this.$set(this.style, 'left', left + 'px')
         this.$set(this.style, 'width', this.width + 'px')
+
+        if (this.fullwidth) {
+          this.$set(this.style, 'width', reference.offsetWidth + 'px')
+          if (reference.offsetWidth !== popover.offsetWidth) {
+            this.$set(
+              this.style,
+              'left',
+              left - (reference.offsetWidth - this.width) / 2 + 'px',
+            )
+          }
+        }
 
         if (this.show) {
           this.show()

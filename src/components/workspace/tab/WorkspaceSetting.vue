@@ -137,8 +137,12 @@ export default {
   },
   methods: {
     tabChange(view, headerText) {
-      this.tabview = view
-      this.headerText = headerText
+      this.$eventBus.$emit('popover:close')
+      this.$eventBus.$emit('scroll:reset')
+      this.$nextTick(() => {
+        this.tabview = view
+        this.headerText = headerText
+      })
     },
     getMediaDevice() {
       navigator.mediaDevices
@@ -227,4 +231,3 @@ export default {
   mounted() {},
 }
 </script>
-<style scoped></style>

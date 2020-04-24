@@ -2,7 +2,7 @@
   <card
     class="groupcard"
     :menu="true"
-    :width="290"
+    width="full"
     :height="490"
     popoverClass="group-menu"
   >
@@ -131,13 +131,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
+
 .card.groupcard {
-  width: 290px;
-  max-width: 290px;
+  max-width: 350px;
   height: 490px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
   &:hover {
-    background-color: #313135;
+    background-color: $color_darkgray_500;
   }
 }
 .groupcard-body {
@@ -170,7 +171,7 @@ export default {
   width: 72px;
   height: 72px;
   margin-bottom: 5px;
-  background-color: #fff;
+  background-color: $color_white;
   border-radius: 50%;
 }
 .profile__name {
@@ -184,7 +185,7 @@ export default {
   max-height: 3em;
   margin-bottom: 5px;
   overflow: hidden;
-  color: rgba(#ddd, 0.76);
+  color: rgba($color_text_main, 0.76);
   font-size: 15px;
   line-height: 1.5;
   white-space: normal;
@@ -200,7 +201,7 @@ export default {
   width: fit-content;
   margin: 5px auto 14px;
   margin-bottom: 9px;
-  color: #fafafa;
+  color: $color_text_sub;
   &:before {
     position: absolute;
     top: 0;
@@ -220,7 +221,7 @@ export default {
 }
 .info__title {
   margin-bottom: 5px;
-  color: #d2d2d2;
+  color: $color_text_main;
   font-weight: 500;
 }
 .info__description {
@@ -270,13 +271,13 @@ export default {
   color: #fff;
   text-align: left;
   &:focus {
-    background-color: rgba(#4c5259, 0.15);
+    background-color: rgba($color_bg_item, 0.15);
   }
   &:hover {
-    background-color: rgba(#4c5259, 0.3);
+    background-color: rgba($color_bg_item, 0.3);
   }
   &:active {
-    background-color: rgba(#4c5259, 0.5);
+    background-color: rgba($color_bg_item, 0.5);
   }
 }
 </style>
