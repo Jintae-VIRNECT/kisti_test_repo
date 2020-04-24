@@ -48,7 +48,7 @@ public class TaskController {
      * 신규 할당된 하위작업 유무 조회
      *
      * @param workerUUID 사용자 식별자
-     * @return By 민항기
+     * @return
      */
     @ApiOperation(value = "신규 할당된 하위작업 유무 조회", tags = "dev")
     @ApiImplicitParams({
@@ -117,9 +117,9 @@ public class TaskController {
      *
      * @param processesId 작업 식별자 배열
      * @param workerUUID  사용자 식별자
-     * @return By 민항기
+     * @return
      */
-    @ApiOperation(value = "작업들의 메타데이터 가져오기", tags = "dev", notes = "뷰에서 필요한 작업들의 메타데이터를 가져온다. 다수 사용자가 동시 또는 개별 단계수행시 사용자별 단계수행이 저장됨.")
+    @ApiOperation(value = "작업들의 메타데이터 가져오기", notes = "뷰에서 필요한 작업들의 메타데이터를 가져온다. 요청한 사용자가 할당된 작업만 조회됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processesId", value = "콘텐츠 식별자 배열(ex : processesId=3,7,1,10)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1,3,4,5,7,14,16,17,18,19,20,21,22,23"),
             @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
@@ -137,9 +137,9 @@ public class TaskController {
      *
      * @param subProcessesId 하위작업 식별자 배열
      * @param workerUUID     사용자 식별자
-     * @return By 민항기
+     * @return
      */
-    @ApiOperation(value = "하위작업들의 메타데이터 가져오기", tags = "dev")
+    @ApiOperation(value = "하위작업들의 메타데이터 가져오기", notes = "요청한 사용자가 할당된 작업만 조회됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "subProcessesId", value = "하위작업 식별자 배열(ex : subProcessesId=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1"),
             @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4d8d02b431ccbccbae9355324551123e")
@@ -156,11 +156,12 @@ public class TaskController {
      *
      * @param workResultSyncRequest - 업로드 요청 수행 결과 데이터
      * @param result                - 업로드 동기화 여부
-     * @return By 민항기
+     * @return
      */
-    @ApiOperation(value = "수행결과 업로드(동기화)", tags = "dev")
+    @ApiOperation(value = "수행결과 업로드(동기화)", notes = "smic와 변경된 점 없음.")
     @PostMapping("/sync")
-    public ResponseEntity<ApiResponse<WorkResultSyncResponse>> setWorkResult(@RequestBody @Valid WorkResultSyncRequest workResultSyncRequest, BindingResult result) {
+    public ResponseEntity<ApiResponse<WorkResultSyncResponse>> setWorkResult(
+            @RequestBody @Valid WorkResultSyncRequest workResultSyncRequest, BindingResult result) {
         if (result.hasErrors()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -191,14 +192,16 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @ApiOperation(value = "해당월의 일별 통계 조회", tags = "dev")
+    @ApiOperation(value = "해당월의 일별 통계 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "month", value = "연월(YYYY-MM)", dataType = "string", paramType = "query", required = true, example = "2020-03")
     })
     @GetMapping("/dailyTotalRateAtMonth")
-    public ResponseEntity<ApiResponse<MonthlyStatisticsResponse>> getDailyTotalRateAtMonth(@RequestParam(value = "workspaceUUID", required = false) String workspaceUUID, @RequestParam("month") String month) {
-        if (workspaceUUID.isEmpty() || month.isEmpty()) {
+    public ResponseEntity<ApiResponse<MonthlyStatisticsResponse>> getDailyTotalRateAtMonth(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam("month") String month) {
+        if (month.isEmpty()) {
             log.info("[workspaceUUID] => [{}], [month] => [{}]", workspaceUUID, month);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -215,7 +218,7 @@ public class TaskController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "이슈 목록 조회", tags = "dev", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updated_at")
+    @ApiOperation(value = "이슈 목록 조회", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updated_at")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "searchType", value = "검색분류(PROCESS_NAME, SUBPROCESS_NAME, JOB_NAME, USER_NAME, NONE)", dataType = "object", paramType = "query", defaultValue = "NONE"),
@@ -228,17 +231,11 @@ public class TaskController {
     @GetMapping("/issues")
     public ResponseEntity<ApiResponse<IssuesResponse>> getIssues(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @RequestParam(value = "searchType", required = false) SearchType searchType
+            , @RequestParam(value = "searchType", required = false, defaultValue = "NONE") SearchType searchType
             , @RequestParam(value = "search", required = false) String search
-            , @RequestParam(value = "inout", required = false) AllInOut inout
+            , @RequestParam(value = "inout", required = false, defaultValue = "ALL") AllInOut inout
             , @ApiIgnore PageRequest pageable) {
         ApiResponse<IssuesResponse> issuesResponseApiResponse = null;
-        // inout 기본값
-        if (inout == null) inout = AllInOut.ALL;
-        // 검색분류 null 체크.
-        if (searchType == null) {
-            searchType = SearchType.NONE;
-        }
         // 검색어가 없다면 검색분류도 없는 것으로 처리.
         if (search == null || search.isEmpty()) {
             searchType = SearchType.NONE;
@@ -663,7 +660,7 @@ public class TaskController {
      * @param issueId
      * @return
      */
-    @ApiOperation(value = "이슈상세조회", tags = "dev")
+    @ApiOperation(value = "이슈상세조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "issueId", value = "issue 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
