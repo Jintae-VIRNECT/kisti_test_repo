@@ -48,12 +48,12 @@
         </template>
 
         <template v-else-if="tabview === 'video-record'">
-          <workspace-set-video
+          <!-- <workspace-set-video
             class="setting-section"
             :videoDevices="videoDevices"
             @selectedVideoDevice="saveVideoDevice"
             @selectedVideoQuality="saveVideoQuality"
-          ></workspace-set-video>
+          ></workspace-set-video> -->
 
           <workspace-set-record
             class="setting-section"
