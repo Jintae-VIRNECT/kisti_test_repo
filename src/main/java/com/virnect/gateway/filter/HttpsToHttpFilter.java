@@ -43,12 +43,12 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
                         originalUri.getQuery(),
                         originalUri.getFragment());
                 mutate.uri(mutatedUri);
+                log.info("[CHANGED FORWARD URI]: [{}]", mutatedUri.getScheme() + mutatedUri.getPath());
             } catch (Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
         ServerHttpRequest build = mutate.build();
-        log.info("[CHANGED FORWARD URI]: [{}]", build.getPath().value());
         return chain.filter(exchange.mutate().request(build).build());
     }
 
