@@ -29,7 +29,7 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, List<String> userUUDList, Pageable pageable) {
+    public Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, String converteds, List<String> userUUDList, Pageable pageable) {
         QContent qContent = QContent.content;
         JPQLQuery<Content> query = from(qContent);
 
@@ -59,6 +59,19 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
             } else {
                 YesOrNo shared = YesOrNo.valueOf(shareds);
                 query = query.where(qContent.shared.eq(shared));
+            }
+        }
+
+        if (converteds != null) {
+            if (!converteds.equals("ALL")) {
+                String[] arrConverted = converteds.split(FILTER_DELIMITER);
+                if (arrConverted.length > 1) {
+                    List<YesOrNo> convertConverted = Stream.of(arrConverted).map(YesOrNo::valueOf).collect(Collectors.toList());
+                    query = query.where(qContent.converted.in(convertConverted));
+                } else {
+                    YesOrNo converted = YesOrNo.valueOf(converteds);
+                    query = query.where(qContent.converted.eq(converted));
+                }
             }
         }
 

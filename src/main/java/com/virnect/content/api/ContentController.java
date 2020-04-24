@@ -50,15 +50,17 @@ public class ContentController {
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
-            @ApiImplicitParam(name = "shared", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL")
+            @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "shared", defaultValue = "ALL") String shareds,
-            @ApiIgnore PageRequest pageable) {
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, null, search, shareds, pageable.of());
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
+            , @RequestParam(value = "converted", defaultValue = "ALL") String converteds
+            , @ApiIgnore PageRequest pageable) {
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, null, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -74,15 +76,15 @@ public class ContentController {
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
-            @RequestParam(value = "userUUID") String userUUID,
-            @ApiIgnore PageRequest pageable) {
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
+            , @RequestParam(value = "userUUID") String userUUID
+            , @ApiIgnore PageRequest pageable) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, pageable.of());
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, null, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -117,9 +119,9 @@ public class ContentController {
     })
     @PostMapping("/duplicate/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentDuplicateHandler(
-            @PathVariable("contentUUID") String contentUUID,
-            @RequestParam(value = "workspaceUUID") String workspaceUUID,
-            @RequestParam(value = "userUUID") String userUUID) {
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "workspaceUUID") String workspaceUUID
+            , @RequestParam(value = "userUUID") String userUUID) {
         if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
