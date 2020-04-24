@@ -6,7 +6,7 @@
       v-bind:key="index"
     >
       <profile
-        :image="require('assets/image/back/mdpi_lnb_img_user.svg')"
+        :image="require('assets/image/img_default_group.svg')"
         :imageAlt="'profileImg'"
         :mainText="history.title"
         :subText="'참석자 ' + history.memberCount + '명'"
@@ -19,7 +19,7 @@
         {{ convertDate(history.collaborationStartDate) }}
       </div>
       <div slot="column3" class="label lable__icon">
-        <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
+        <img class="icon" :src="require('assets/image/ic_leader.svg')" />
         <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
       </div>
       <button slot="menuPopover"></button>

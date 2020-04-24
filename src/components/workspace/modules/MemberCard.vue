@@ -53,7 +53,7 @@ export default {
     },
     imageUrl: {
       type: String,
-      default: require('assets/image/img-default-user.svg'),
+      default: require('assets/image/img_user_profile.svg'),
     },
     name: {
       type: String,

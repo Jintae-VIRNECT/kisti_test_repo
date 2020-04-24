@@ -7,7 +7,7 @@
       </p>
       <icon-button
         text="새로고침"
-        :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
+        :imgSrc="require('assets/image/ic_renew.svg')"
         @click="refresh"
       ></icon-button>
     </div>

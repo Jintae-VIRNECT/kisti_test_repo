@@ -84,7 +84,7 @@ export default {
     width: 191px;
     height: 233px;
     margin-bottom: 30px;
-    background-image: url('~assets/image/mdpi_02.svg');
+    background-image: url('~assets/image/img_user_empty.svg');
     background-repeat: no-repeat;
   }
 

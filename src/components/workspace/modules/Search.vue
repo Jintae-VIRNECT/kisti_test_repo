@@ -64,7 +64,7 @@ export default {
     right: 10px;
     width: 22px;
     height: 22px;
-    background: url(~assets/image/material_search.png) 50%/22px no-repeat;
+    background: url(~assets/image/ic_search.svg) 50%/22px no-repeat;
     content: '';
   }
   &:focus-within {

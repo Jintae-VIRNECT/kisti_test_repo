@@ -19,8 +19,8 @@
           :description="''"
           :size="24"
           :active="micTestMode"
-          :activeSrc="require('assets/image/setting/mdpi_icn_mic.svg')"
-          :inactiveSrc="require('assets/image/setting/icon_mic_mute.svg')"
+          :activeSrc="require('assets/image/setting/ic_mic.svg')"
+          :inactiveSrc="require('assets/image/setting/ic_mic_mute.svg')"
           @action="micTestMode = !micTestMode"
         ></toggle-button>
       </div>

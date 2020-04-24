@@ -19,13 +19,13 @@
         ></search>
         <icon-button
           v-if="showDeleteButton"
-          :imgSrc="require('assets/image/back/mdpi_tr.svg')"
+          :imgSrc="require('assets/image/ic_trash.svg')"
           :text="deleteButtonText"
           @click="$emit('delete')"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
-          :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
+          :imgSrc="require('assets/image/ic_renew.svg')"
           :text="'새로고침'"
           @click="$emit('refresh')"
         ></icon-button>

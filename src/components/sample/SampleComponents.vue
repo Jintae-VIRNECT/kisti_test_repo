@@ -23,11 +23,11 @@
             <button class="btn small">재시작</button>
             <button class="btn large">시작하기</button>
             <icon-button
-              :imgSrc="require('assets/image/back/mdpi_tr.svg')"
+              :imgSrc="require('assets/image/ic_trash.svg')"
               :text="'삭제하기'"
             ></icon-button>
             <icon-button
-              :imgSrc="require('assets/image/back/mdpi_icn_renew.svg')"
+              :imgSrc="require('assets/image/ic_renew.svg')"
               :text="'새로고침'"
             ></icon-button>
             <button class="btn normal">협업 프로필 등록</button>
@@ -226,7 +226,7 @@
         <div class="component">
           <div>
             <profile
-              :image="require('assets/image/img-default-user.svg')"
+              :image="require('assets/image/img_user_profile.svg')"
               imageAlt="버넥트 리모트01"
               mainText="버넥트 리모트01"
               subText="example@example.com"
@@ -537,19 +537,19 @@ export default {
       },
       listviewSample: [
         {
-          profile: require('assets/image/img-default-user.svg'),
+          profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',
         },
         {
-          profile: require('assets/image/img-default-user.svg'),
+          profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',
         },
         {
-          profile: require('assets/image/img-default-user.svg'),
+          profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',

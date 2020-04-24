@@ -93,7 +93,6 @@ export default {
   color: rgba($color_text, 0.76);
   line-height: 20px;
   text-align: left;
-  // background: url(~assets/image/ic-select-collapse.svg) no-repeat 95% 50%;
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
