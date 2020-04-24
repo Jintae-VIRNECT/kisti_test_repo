@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="{ no__button: !showMessageButton }">
+  <div class="card" :class="{ no__button: !showMessageButton }" width="full">
     <div class="card-center">
       <div class="card-center-profile--thumb" :class="{ expired: !license }">
         <div
@@ -112,7 +112,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 204px;
   padding-top: 32px;
   background-color: rgba(49, 49, 53, 0.902);
   border: solid 1px #3e3e42;
