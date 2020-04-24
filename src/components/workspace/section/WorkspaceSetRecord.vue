@@ -2,8 +2,8 @@
   <section>
     <div class="setting__title">로컬 녹화 설정</div>
     <div class="setting-horizon-wrapper">
-      <div>
-        <div class="setting__label">최대 녹화 시간</div>
+      <figure class="setting__figure">
+        <p class="setting__label">최대 녹화 시간</p>
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="saveRecLength"
@@ -12,10 +12,10 @@
           :text="'text'"
         >
         </r-select>
-      </div>
+      </figure>
 
-      <div>
-        <div class="setting__label">녹화 영상 해상도</div>
+      <figure class="setting__figure">
+        <p class="setting__label">녹화 영상 해상도</p>
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="saveRecResolution"
@@ -24,7 +24,7 @@
           :text="'text'"
         >
         </r-select>
-      </div>
+      </figure>
     </div>
   </section>
 </template>

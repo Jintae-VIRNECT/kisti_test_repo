@@ -7,7 +7,7 @@
         :listCount="listCount"
       ></list-badge>
     </div>
-    <div class="tab-view__sub-header offsetwidth">
+    <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
       <span class="tab-view__description" v-if="description.length > 0">{{
         description
       }}</span>
@@ -104,6 +104,10 @@ export default {
     deleteButtonText: {
       type: String,
       default: '삭제하기',
+    },
+    hideTitle: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

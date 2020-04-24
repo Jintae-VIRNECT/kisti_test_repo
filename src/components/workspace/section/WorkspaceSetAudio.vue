@@ -2,8 +2,8 @@
   <section>
     <div class="setting__title">입출력 장치</div>
     <div class="setting-horizon-wrapper">
-      <div class="setting-vertical-wrapper">
-        <span class="setting__label">입력 장치</span>
+      <figure class="setting__figure">
+        <p class="setting__label">입력 장치</p>
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="setAudioInputDevice"
@@ -12,10 +12,10 @@
           :text="'label'"
         >
         </r-select>
-      </div>
+      </figure>
 
-      <div class="setting-vertical-wrapper">
-        <span class="setting__label">출력 장치</span>
+      <figure class="setting__figure">
+        <p class="setting__label">출력 장치</p>
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="setAudioOutputDevice"
@@ -24,7 +24,7 @@
           :text="'label'"
         >
         </r-select>
-      </div>
+      </figure>
     </div>
   </section>
 </template>

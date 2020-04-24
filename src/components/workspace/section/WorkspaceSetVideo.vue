@@ -2,7 +2,7 @@
   <section>
     <div class="setting__title">영상 설정</div>
     <div class="setting-vertical-wrapper">
-      <div class="setting__label">카메라</div>
+      <p class="setting__label">카메라</p>
       <r-select
         class="setting__r-selecter"
         v-on:changeValue="setVideoDevice"

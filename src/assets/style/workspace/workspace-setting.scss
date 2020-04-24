@@ -1,12 +1,13 @@
 @import "~assets/style/vendors/elements/index";
 .setting-wrapper {
   display: flex;
+  flex: 1;
+  padding-top: 53px;
 }
 
 .setting-nav {
   min-width: 240px;
-  height: 400px;
-  margin-right: 50px;
+  margin-right: 40px;
   padding-top: 35px;
   background: $color_darkgray_600;
   border: 1px solid #2e2e2e;
@@ -36,18 +37,20 @@
 }
 
 .setting-view {
+  display: flex;
+  flex-direction: column;
   flex-grow: 2;
 }
 
 .setting-view__header {
+  flex: 0;
   margin-bottom: 19px;
   color: $color_text;
   font-size: 24px;
 }
 
 .setting-view__body {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
   background-color: $color_darkgray_600;
 }
 
@@ -55,16 +58,12 @@
   color: #fff;
 }
 .setting-section {
-  margin: 48px;
-  padding: 0px 0px 35px 0px;
-}
-
-.setting-section:nth-of-type(1) {
-  margin-top: 40px;
-}
-
-.setting-section:not(:last-child) {
+  margin: 40px 48px 0 48px;
+  padding-bottom: 35px;
   border-bottom: 1px solid rgba(150, 150, 150, 0.2);
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .setting-vertical-wrapper {
@@ -75,14 +74,16 @@
 
 .setting-horizon-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  margin-right: 50px;
 }
 
 .setting__title {
   margin-bottom: 15px;
   color: $color_text;
   font-size: 18px;
+}
+.setting__figure {
+  flex: 1;
+  max-width: 500px;
 }
 
 .setting__label {
@@ -93,6 +94,7 @@
 }
 
 .setting__r-selecter {
-  width: 446px;
-  margin: 0px 60px 5px 0px;
+  width: 100%;
+  max-width: 440px;
+  margin-right: 60px;
 }

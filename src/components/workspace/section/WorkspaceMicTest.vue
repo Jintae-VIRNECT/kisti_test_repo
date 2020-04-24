@@ -1,12 +1,12 @@
 <template>
   <section>
-    <div class="setting__title">
+    <p class="setting__title">
       마이크 테스트
-    </div>
-    <div class="setting__label label-margin-bottom">
+    </p>
+    <p class="setting__label label-margin-bottom">
       마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
       들려드리겠습니다.
-    </div>
+    </p>
     <div class="setting-horizon-wrapper align-center">
       <div class="mic-item">
         <button class="btn" @click="toggleMicTestMode">
@@ -25,7 +25,7 @@
         ></toggle-button>
       </div>
 
-      <div class="mic-item" style="width:755px">
+      <div class="mic-item progress" style="width:755px">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
       <audio
@@ -122,17 +122,21 @@ export default {
   justify-content: start;
 }
 
-.mic-item {
-  margin-right: 10px;
-}
-
-.mic-item:nth-child(2n) {
-  margin-right: 20px;
-}
 .label-margin-bottom {
   margin-bottom: 40px;
 }
 .mic-radius {
   border-radius: 50%;
+}
+
+.mic-item {
+  flex: 0;
+  margin: 0 10px;
+  &:first-child {
+    margin-left: 0;
+  }
+  &.progress {
+    flex: 1;
+  }
 }
 </style>
