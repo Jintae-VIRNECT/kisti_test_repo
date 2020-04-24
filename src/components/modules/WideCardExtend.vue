@@ -61,9 +61,10 @@ export default {
   align-items: center;
   justify-content: flex-start;
 
-  width: 100%;
+  min-width: 768px;
   margin-bottom: 8px;
   padding: 22px 30px;
+  overflow: hidden;
   background-color: $color_darkgray_600;
   border-radius: 2px;
 
@@ -77,6 +78,7 @@ export default {
   }
   .card-item:first-of-type {
     flex-grow: 0.8;
+    min-width: 300px;
   }
   .card-item:nth-of-type(2) {
     flex-grow: 0.8;
