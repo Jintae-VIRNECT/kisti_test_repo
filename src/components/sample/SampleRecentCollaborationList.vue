@@ -146,7 +146,7 @@ export default {
   opacity: 50%;
 }
 
-.lable__icon {
+.label__icon {
   display: flex;
   align-items: center;
   padding-left: 30px;

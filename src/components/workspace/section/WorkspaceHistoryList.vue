@@ -18,7 +18,7 @@
       <div slot="column2" class="label label--date">
         {{ convertDate(history.collaborationStartDate) }}
       </div>
-      <div slot="column3" class="label lable__icon">
+      <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
         <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
       </div>
