@@ -10,7 +10,11 @@
   >
     <div class="roominfo">
       <section class="roominfo-nav">
-        <img class="roominfo-nav__image" :src="image" />
+        <img
+          class="roominfo-nav__image"
+          :src="image"
+          @error="onImageErrorGroup"
+        />
         <button
           class="roominfo-nav__menu"
           :class="{ active: tabview === 'group' }"

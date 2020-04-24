@@ -11,7 +11,11 @@
         >Leader</span
       >
       <div class="groupcard-profile">
-        <img class="profile__image" :src="room.path" />
+        <img
+          class="profile__image"
+          :src="room.path"
+          @error="onImageErrorGroup"
+        />
         <p class="profile__name">{{ room.title }}</p>
         <p class="profile__description">
           {{ room.description }}

@@ -9,7 +9,7 @@
         <p>{{ mainText.slice(0, 1) }}</p>
       </div>
       <p v-else class="profile--image">
-        <img :src="image" :alt="mainText" @error="onError" />
+        <img :src="image" :alt="mainText" @error="onError | onImageError" />
       </p>
       <span v-if="status" class="profile--badge" :class="status">{{
         status
@@ -46,7 +46,7 @@ export default {
     },
     onError: {
       type: Function,
-      default: function() {},
+      default: null,
     },
     mainText: {
       type: String,

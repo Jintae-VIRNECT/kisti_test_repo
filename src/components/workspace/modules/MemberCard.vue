@@ -8,7 +8,7 @@
           :style="{ 'background-color': color }"
         ></div>
         <p v-else class="card-center-profile--image">
-          <img :src="imageUrl" />
+          <img :src="imageUrl" @error="onImageError" />
         </p>
         <span
           v-if="status && license"
