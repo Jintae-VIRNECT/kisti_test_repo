@@ -26,7 +26,10 @@ export default async function api(name, option = {}) {
   if (params && params.filter && params.filter === 'ALL') {
     delete params.filter
   }
-  params = method !== 'get' ? params : { params }
+
+  // GET, DELETE
+  if (method === 'get') params = { params }
+  if (method === 'delete') params = { data: params }
 
   // default header
   const accessToken = process.client

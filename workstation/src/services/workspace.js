@@ -60,6 +60,7 @@ export default {
       },
       params: {
         userId: myProfileGetter().uuid,
+        filter: 'MASTER,MANAGER,MEMBER',
         ...searchParams,
       },
     })
@@ -107,6 +108,36 @@ export default {
     $nuxt.$store.dispatch('workspace/getActiveWorkspaceInfo', {
       route: {
         workspaceId: data.uuid,
+      },
+    })
+  },
+  /**
+   * 멤버 권한 변경
+   * @param {form} form
+   */
+  async updateMembersRole(form) {
+    const data = await api('MEMBER_ROLE_UPDATE', {
+      route: {
+        workspaceId: activeWorkspaceGetter().info.uuid,
+      },
+      params: {
+        ...form,
+        masterUserId: myProfileGetter().uuid,
+      },
+    })
+  },
+  /**
+   * 멤버 추방
+   * @param {string} uuid
+   */
+  async kickMember(uuid) {
+    const workspaceId = activeWorkspaceGetter().info.uuid
+    const data = await api('MEMBER_KICK', {
+      route: { workspaceId },
+      params: {
+        kickedUserId: uuid,
+        userId: myProfileGetter().uuid,
+        workspaceId,
       },
     })
   },

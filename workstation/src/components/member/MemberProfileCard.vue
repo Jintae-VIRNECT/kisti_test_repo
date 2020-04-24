@@ -39,28 +39,58 @@
         </router-link>
       </dd>
     </dl>
-    <member-setting-modal :data="data" :visible.sync="showMemberSettingModal" />
+    <member-setting-modal
+      :data="myInfo"
+      :visible.sync="showMemberSettingModal"
+      @updated="updated"
+      @kick="kick"
+    />
+    <member-kick-modal
+      :data="myInfo"
+      :visible.sync="showMemberKickModal"
+      @back="back"
+      @kicked="kicked"
+    />
   </el-card>
 </template>
 
 <script>
 import MemberSettingModal from '@/components/member/MemberSettingModal'
+import MemberKickModal from '@/components/member/MemberKickModal'
 
 export default {
   components: {
     MemberSettingModal,
+    MemberKickModal,
   },
   props: {
     data: Object,
   },
   data() {
     return {
+      myInfo: this.data,
       showMemberSettingModal: false,
+      showMemberKickModal: false,
     }
   },
   methods: {
     openMemberSettingModal() {
       this.showMemberSettingModal = true
+    },
+    updated(form) {
+      this.myInfo.role = form.role
+      this.showMemberSettingModal = false
+    },
+    kicked() {
+      this.showMemberKickModal = false
+    },
+    kick() {
+      this.showMemberKickModal = true
+      this.showMemberSettingModal = false
+    },
+    back() {
+      this.showMemberSettingModal = true
+      this.showMemberKickModal = false
     },
   },
 }

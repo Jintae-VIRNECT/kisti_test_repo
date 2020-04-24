@@ -21,6 +21,10 @@ module.exports = {
   WORKSPACE_EDIT: ['PUT', '/workspaces'],
   // 워크스페이스 멤버 검색
   MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
+  // 워크스페이스 사용자 - 멤버 권한 설정
+  MEMBER_ROLE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
+  // 워크스페이스 사용자 - 멤버 내보내기
+  MEMBER_KICK: ['DELETE', '/workspaces/{workspaceId}/members/info'],
   /**
    * Contents
    */

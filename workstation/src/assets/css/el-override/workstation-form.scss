@@ -37,6 +37,11 @@ $input-background-color: #f5f7fa;
     opacity: 0.8;
   }
 }
+.el-select .el-input .el-select__caret {
+  color: #000;
+  font-weight: bold;
+}
+
 .el-upload-dragger {
   width: 400px;
   height: 100px;
