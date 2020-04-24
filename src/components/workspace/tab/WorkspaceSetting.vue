@@ -144,8 +144,29 @@ export default {
         this.headerText = headerText
       })
     },
-    getMediaDevice() {
-      navigator.mediaDevices
+    async getPermissionWithDevice() {
+      await navigator.mediaDevices
+        .getUserMedia({ audio: true, video: true })
+        .catch(err => {
+          console.log(err.name + ': ' + err.message)
+        })
+      this.getMediaDevice()
+    },
+    checkPermission() {
+      //Reserved for follow-up code when permission is denied
+      navigator.permissions
+        .query({ name: 'camera' })
+        .then(function(permissionStatus) {
+          console.log('camera : ', permissionStatus.state) // granted, denied, prompt
+        })
+      navigator.permissions
+        .query({ name: 'microphone' })
+        .then(function(permissionStatus) {
+          console.log('microphone : ', permissionStatus.state)
+        })
+    },
+    async getMediaDevice() {
+      await navigator.mediaDevices
         .enumerateDevices()
         .then(devices => {
           devices.forEach(device => {
@@ -162,6 +183,7 @@ export default {
           console.log(err)
         })
     },
+
     setAudioInputDevice(newInputAudioDevice) {
       this.selectAudioInput = newInputAudioDevice
       this.saveAudioInputDevice(newInputAudioDevice)
@@ -220,11 +242,12 @@ export default {
   /* Lifecycles */
   async created() {
     try {
-      this.getMediaDevice()
+      this.getPermissionWithDevice()
+      //this.checkPermission()
       const datas = await getConfiguration()
       this.settings = datas.data
     } catch (err) {
-      // 에러처리
+      // Handle Error
       console.error(err)
     }
   },
