@@ -39,11 +39,39 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
         }
 
         if (workspaceUUID != null) {
-            query = query.join(qProcess).where(qProcess.workspaceUUID.eq(workspaceUUID));
+            query = query.join(qSubProcess.process, qProcess).where(qProcess.workspaceUUID.eq(workspaceUUID));
         }
 
         long totalCount = query.fetchCount();
 
         return totalCount > 0;
     }
+
+    @Override
+    public Page<SubProcess> getSubProcesses(String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable) {
+        QSubProcess qSubProcess = QSubProcess.subProcess;
+        QProcess qProcess = QProcess.process;
+        JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
+
+        if (userUUIDList.size() > 0) {
+            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+        }
+
+        if (search != null) {
+            query = query.where(qSubProcess.name.contains(search));
+        }
+
+        if (processId != null) {
+            query = query.where(qProcess.id.eq(processId));
+        }
+
+        if (workspaceUUID != null) {
+            query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+        }
+
+        final List<SubProcess> subProcessList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+        return new PageImpl<>(subProcessList, pageable, query.fetchCount());
+    }
+
 }

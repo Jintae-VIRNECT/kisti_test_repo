@@ -24,9 +24,9 @@ public interface SubProcessRepository extends JpaRepository<SubProcess, Long>, S
     int getDoneCount(Long id);
 
     // TODO : jobTotal, status, progressRate 추가 필요
-    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id where 1=1 and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList)) #sort"
+    @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and ((:processId is null) or (:processId is not null and s.process_id = :processId)) and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList)) #sort"
             , nativeQuery = true)
-    List<SubProcess> selectSubProcessList(Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Sort sort);
+    List<SubProcess> selectSubProcessList(String workspaceUUID, Long processId, @Param("search") String search, @Param("userUUIDList") List<String> userUUIDList, Sort sort);
 
     // TODO : jobTotal, status, progressRate 추가 필요
     @Query(value = "select * from sub_process s join process p on p.process_id = s.process_id and p.process_id = :processId and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and (((:search is null) or (:search is not null and s.name like %:search%)) or s.worker_uuid in (:userUUIDList))"

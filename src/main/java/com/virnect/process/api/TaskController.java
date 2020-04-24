@@ -50,7 +50,7 @@ public class TaskController {
      * @param workerUUID 사용자 식별자
      * @return
      */
-    @ApiOperation(value = "신규 할당된 하위작업 유무 조회", tags = "dev")
+    @ApiOperation(value = "신규 할당된 하위작업 유무 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
@@ -98,7 +98,7 @@ public class TaskController {
      * @param processId
      * @return
      */
-    @ApiOperation(value = "작업과 연계된 ContentUUID와 작업의 target data 가져오기", tags = "dev")
+    @ApiOperation(value = "작업과 연계된 ContentUUID와 작업의 target data 가져오기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
@@ -177,7 +177,7 @@ public class TaskController {
      * @param status     조회할 상태
      * @return
      */
-    @ApiOperation(value = "해당일의 시간대별 하위작업보고수 조회", tags = "dev")
+    @ApiOperation(value = "해당일의 시간대별 하위작업보고수 조회", tags = "unused")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetDate", value = "조회할 날짜", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "status", value = "조회할 상태", dataType = "string", paramType = "query", required = false)
@@ -305,7 +305,7 @@ public class TaskController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "리포트 목록 조회", tags = "dev")
+    @ApiOperation(value = "리포트 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "processId", value = "작업 식별자 - 작업내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
@@ -349,7 +349,7 @@ public class TaskController {
      *
      * @return
      */
-    @ApiOperation(value = "전체 작업 진행률 및 작업진행상태별 현황 조회", tags = "dev")
+    @ApiOperation(value = "전체 작업 진행률 및 작업진행상태별 현황 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query")
     })
@@ -494,6 +494,7 @@ public class TaskController {
      */
     @ApiOperation(value = "하위작업목록조회", tags = "dev")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
@@ -504,6 +505,7 @@ public class TaskController {
     @GetMapping("/subProcesses/{processId}")
     public ResponseEntity<ApiResponse<SubProcessListResponse>> getSubProcessList(
             @PathVariable("processId") Long processId
+            , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "filter", required = false) List<Conditions> filter
             , @ApiIgnore PageRequest pageable) {
@@ -511,7 +513,7 @@ public class TaskController {
             log.info("[processId] => [{}]", processId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<SubProcessListResponse> subProcessListResponseApiResponse = this.taskService.getSubProcessList(processId, search, filter, pageable.of());
+        ApiResponse<SubProcessListResponse> subProcessListResponseApiResponse = this.taskService.getSubProcessList(processId, workspaceUUID, search, filter, pageable.of());
         return ResponseEntity.ok(subProcessListResponseApiResponse);
     }
 
@@ -521,14 +523,14 @@ public class TaskController {
      * @param processId 작업 식별자
      * @return
      */
-    @ApiOperation(value = "워크스페이스의 전체 하위작업목록조회", tags = "dev")
+    @ApiOperation(value = "워크스페이스의 전체 하위작업목록조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어 - user, name을 검색", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
     })
     @GetMapping("/subProcesses")
     public ResponseEntity<ApiResponse<SubProcessesResponse>> getSubProcesses(
@@ -562,7 +564,7 @@ public class TaskController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "내 하위작업(나에게 할당된 하위작업) 목록 조회", tags = "dev", notes = "파라미터의 작업 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 하위작업 목록 조회만 가능합니다.")
+    @ApiOperation(value = "내 하위작업(나에게 할당된 하위작업) 목록 조회", notes = "파라미터의 작업 식별자, 검색어로의 필터 기능은 아직 제공되지 않습니다.\n담당자의 하위작업 목록 조회만 가능합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),
@@ -680,7 +682,7 @@ public class TaskController {
      * @param reportId
      * @return
      */
-    @ApiOperation(value = "리포트상세조회", tags = "dev")
+    @ApiOperation(value = "리포트상세조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "reportId", value = "report 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
@@ -723,7 +725,7 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @ApiOperation(value = "작업을 컨텐츠로의 전환", tags = "dev", notes = "작업을 삭제 후 컨텐츠로 전환함.\n전환 조건은 서버에서 체크하지 않음. 단, 동일 담당자 확인만 함.\n내부적으로는 컨텐츠 공정 모두 남아있지만, 삭제, 전환 flag로 노출되지 않도록 구현했음.")
+    @ApiOperation(value = "작업을 컨텐츠로의 전환", tags = "next", notes = "작업을 삭제 후 컨텐츠로 전환함.\n전환 조건은 서버에서 체크하지 않음. 단, 동일 담당자 확인만 함.\n내부적으로는 컨텐츠 공정 모두 남아있지만, 삭제, 전환 flag로 노출되지 않도록 구현했음.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
             @ApiImplicitParam(name = "workerUUID", value = "담당자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496"),

@@ -6,11 +6,12 @@ import com.virnect.process.dao.*;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.*;
-import com.virnect.process.dto.request.*;
+import com.virnect.process.dto.request.EditProcessRequest;
+import com.virnect.process.dto.request.EditSubProcessRequest;
+import com.virnect.process.dto.request.ProcessRegisterRequest;
+import com.virnect.process.dto.request.WorkResultSyncRequest;
 import com.virnect.process.dto.response.*;
-import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
 import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
-import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
@@ -1088,7 +1089,7 @@ public class TaskService {
         }
     }
 
-    public ApiResponse<SubProcessListResponse> getSubProcessList(Long processId, String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<SubProcessListResponse> getSubProcessList(Long processId, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
         // 공정내 세부공정목록조회
         // 공정정보
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
@@ -1102,10 +1103,10 @@ public class TaskService {
         // 세부공정 목록
         Page<SubProcess> subProcessPage = null;
         if (filter != null && filter.size() > 0) {
-            List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(processId, search, userUUIDList, pageable.getSort());
+            List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(workspaceUUID, processId, search, userUUIDList, pageable.getSort());
             subProcessPage = filterConditionsSubProcessPage(subProcessList, filter, pageable);
         } else {
-            subProcessPage = this.subProcessRepository.selectSubProcesses(null, processId, search, userUUIDList, pageable);
+            subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         }
         List<EditSubProcessResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             return EditSubProcessResponse.builder()
@@ -1153,10 +1154,7 @@ public class TaskService {
         // 검색어로 사용자 목록 조회
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
-        // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
-        if (userUUIDList.size() == 0) userUUIDList = null;
-        // 세부공정 목록
-        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             return SubProcessReportedResponse.builder()
                     .processId(subProcess.getProcess().getId())
@@ -1512,6 +1510,9 @@ public class TaskService {
         // 공정목록 조회
         List<Process> processes = this.processRepository.getProcesses(null);
         int totalRate = 0, totalProcesses = 0;
+        List<String> workspaces = new ArrayList<>();
+        List<Integer> rates = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
         HashMap<String, Integer> workspaceRate = new HashMap<>();
         HashMap<String, Integer> workspaceCount = new HashMap<>();
         for (Process process : processes) {
@@ -1519,15 +1520,14 @@ public class TaskService {
             totalRate = totalRate + progressRate;
             totalProcesses++;
 
-            // 워크스페이스 통계
-            if (workspaceRate.containsKey(process.getWorkspaceUUID())) {
-                int newRate = Integer.sum(workspaceRate.get(process.getWorkspaceUUID()),progressRate);
-                int current = workspaceRate.get(process.getWorkspaceUUID());
-                workspaceRate.put(process.getWorkspaceUUID(), newRate);
-                workspaceCount.put(process.getWorkspaceUUID(), ++current);
+            if (workspaces.contains(process.getWorkspaceUUID())) {
+                int index = workspaces.indexOf(process.getWorkspaceUUID());
+                rates.set(index, rates.get(index) + progressRate);
+                counts.set(index, counts.get(index) + 1);
             } else {
-                workspaceRate.put(process.getWorkspaceUUID(), progressRate);
-                workspaceCount.put(process.getWorkspaceUUID(), 1);
+                workspaces.add(process.getWorkspaceUUID());
+                rates.add(progressRate);
+                counts.add(1);
             }
         }
 
@@ -1543,20 +1543,21 @@ public class TaskService {
         this.dailyTotalRepository.save(dailyTotal);
 
         // 워크스페이스별 총계
-        workspaceRate.forEach((workspaceUUID, total) -> {
-            int count = workspaceCount.get(workspaceUUID);
-            int rate = count == 0 ? 0 : total / count;
-
-            DailyTotalWorkspace dailyTotalWorkspace = DailyTotalWorkspace.builder()
-                    .totalRate(rate)
-                    .totalCountProcesses(count)
-                    .workspaceUUID(workspaceUUID)
+        DailyTotalWorkspace dailyTotalWorkspace = null;
+        int i = 0;
+        while (i < workspaces.size()) {
+            dailyTotalWorkspace = dailyTotalWorkspace.builder()
+                    .workspaceUUID(workspaces.get(i))
+                    .totalRate(rates.get(i))
+                    .totalCountProcesses(counts.get(i))
                     .build();
 
+            log.debug("IDX : [{}], dailyTotalWorkspace : [{}]", i, dailyTotalWorkspace.toString());
             this.dailyTotalWorkspaceRepository.save(dailyTotalWorkspace);
 
             dailyTotal.addDailyTotalWorkspace(dailyTotalWorkspace);
-        });
+            i++;
+        }
     }
 
     public ApiResponse<ProcessInfoResponse> getProcessInfoByTarget(String targetData) {
