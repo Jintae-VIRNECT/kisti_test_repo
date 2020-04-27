@@ -466,7 +466,7 @@ public class ContentService {
      * @param workspaceUUID - 워크스페이스 식별자
      * @param userUUID      - 사용자 식별자
      * @param search        - 검색어(컨텐츠명 / 사용자명)
-     * @param shared        - 공유여부
+     * @param shareds       - 공유여부
      * @param pageable      - 페이징
      * @return - 컨텐츠 목록
      */
@@ -563,12 +563,29 @@ public class ContentService {
     public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String userUUID, String search, Pageable pageable) {
         Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, userUUID, search, pageable);
 
-        List<SceneGroupInfoResponse> responseList = sceneGroupPage.stream().map(sceneGroup -> {
-            return SceneGroupInfoResponse.builder()
+        List<WorkspaceSceneGroupInfoResponse> responseList = sceneGroupPage.stream().map(sceneGroup -> {
+            String contentUUID = sceneGroup.getContent().getUuid();
+
+            Content content = this.contentRepository.findByUuid(contentUUID)
+                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+            List<ContentTargetResponse> targetList = content.getTargetList().stream().map(target -> {
+                return ContentTargetResponse.builder()
+                        .id(target.getId())
+                        .type(target.getType())
+                        .data(target.getData())
+                        .build();
+            }).collect(Collectors.toList());
+
+            ContentInfoResponse contentInfoResponse = this.modelMapper.map(content, ContentInfoResponse.class);
+            contentInfoResponse.setTargets(targetList);
+
+            return WorkspaceSceneGroupInfoResponse.builder()
                     .id(sceneGroup.getUuid())
                     .name(sceneGroup.getName())
                     .jobTotal(sceneGroup.getJobTotal())
                     .priority(sceneGroup.getPriority())
+                    .content(contentInfoResponse)
                     .build();
         }).collect(Collectors.toList());
 
