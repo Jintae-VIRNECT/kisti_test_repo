@@ -86,11 +86,15 @@ spring:
             - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
 
       globalcors:
-        cors-configurations:
+        corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
@@ -106,4 +110,5 @@ eureka:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
 
-
+jwt:
+  secret: 2020-tcenriv-platform-392
