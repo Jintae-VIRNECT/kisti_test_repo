@@ -4,30 +4,29 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
 @NoArgsConstructor
 public class CountSubProcessOnWorkerResponse {
     @ApiModelProperty(value = "작업자 식별자", notes = "작업자의 식별자", example = "449ae69cee53b8a6819053828c94e496")
     private String workerUUID;
-    @ApiModelProperty(value = "작업 진행중인 세부공정 수", notes = "작업자에게 할당된 세부공정들 중 작업이 진행중인 세부공정의 개수", position = 1, example = "1")
+    @ApiModelProperty(value = "사용자 이름", position = 1, example = "VIRNECT Master")
+    private String workerName;
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 2, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+    @ApiModelProperty(value = "작업 진행중인 세부공정 수", notes = "작업자에게 할당된 세부공정들 중 작업이 진행중인 세부공정의 개수", position = 3, example = "1")
     private Integer countProgressing;
-    @ApiModelProperty(value = "할당된 세부공정 수", notes = "작업자에게 할당된 세부공정의 총 개수", position = 2, example = "5")
+    @ApiModelProperty(value = "할당된 세부공정 수", notes = "작업자에게 할당된 세부공정의 총 개수", position = 4, example = "5")
     private Integer countAssigned;
 
     @Builder
-    public CountSubProcessOnWorkerResponse(String workerUUID, Integer countProgressing, Integer countAssigned) {
+    public CountSubProcessOnWorkerResponse(String workerUUID, String workerName, String workerProfile, Integer countProgressing, Integer countAssigned) {
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
         this.countProgressing = countProgressing;
         this.countAssigned = countAssigned;
-    }
-
-    @Override
-    public String toString() {
-        return "CountSubProcessOnWorkerResponse{" +
-                "workerUUID='" + workerUUID + '\'' +
-                ", countProgressing=" + countProgressing +
-                ", countAssigned=" + countAssigned +
-                '}';
     }
 }

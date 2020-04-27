@@ -1,7 +1,10 @@
 package com.virnect.process.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -42,10 +45,10 @@ public class IssueInfoResponse {
     @ApiModelProperty(value = "작업자 식별자", notes = "작업자 식별자", position = 10, example = "uuid")
     private String workerUUID;
 
-    @ApiModelProperty(value = "작업자 명", notes = "작업자 이름", position = 10, example = "홍길동")
+    @ApiModelProperty(value = "작업자 명", notes = "작업자 이름", position = 11, example = "홍길동")
     private String workerName;
 
-    @ApiModelProperty(value = "작업자 프로필", notes = "작업자 프로필 사진 경로", position = 10, example = "http://~~~")
+    @ApiModelProperty(value = "작업자 프로필", notes = "작업자 프로필 사진 경로", position = 12, example = "http://~~~")
     private String workerProfile;
 
     @Builder

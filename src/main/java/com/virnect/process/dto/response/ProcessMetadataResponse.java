@@ -118,20 +118,26 @@ public class ProcessMetadataResponse {
         @ApiModelProperty(value = "작업자 식별자", notes = "세부공정의 작업자의 식별자", position = 8, example = "uuid")
         private String workerUUID;
 
-        @ApiModelProperty(value = "보고일시", notes = "보고일시", position = 9, example = "2020-02-15T16:32:13.305")
+        @ApiModelProperty(value = "사용자 이름", position = 9, example = "VIRNECT Master")
+        private String workerName;
+
+        @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 10, example = "VIRNECT 워크스페이스 유저")
+        private String workerProfile;
+
+        @ApiModelProperty(value = "보고일시", notes = "보고일시", position = 11, example = "2020-02-15T16:32:13.305")
         private LocalDateTime syncDate;
 
-        @ApiModelProperty(value = "작업자 식별자", notes = "세부공정의 작업자의 식별자", position = 10, example = "uuid")
+        @ApiModelProperty(value = "작업자 식별자", notes = "세부공정의 작업자의 식별자", position = 12, example = "uuid")
         private String syncUserUUID;
 
-        @ApiModelProperty(value = "세부 공정 신규할당 여부", notes = "세부 공정의 신규 작업할당 되었는지의 여부", position = 11, example = "true")
+        @ApiModelProperty(value = "세부 공정 신규할당 여부", notes = "세부 공정의 신규 작업할당 되었는지의 여부", position = 13, example = "true")
         private YesOrNo isRecent;
 
-        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 12)
+        @ApiModelProperty(value = "작업 목록", notes = "세부 공정의 작업 목록", position = 14)
         private List<Job> jobs;
 
         @Builder
-        public SubProcess(long subProcessId, String subProcessName, int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, int progressRate, String workerUUID, LocalDateTime syncDate, String syncUserUUID, YesOrNo isRecent, List<Job> jobs) {
+        public SubProcess(long subProcessId, String subProcessName, int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, Conditions conditions, int progressRate, String workerUUID, String workerName, String workerProfile, LocalDateTime syncDate, String syncUserUUID, YesOrNo isRecent, List<Job> jobs) {
             this.subProcessId = subProcessId;
             this.subProcessName = subProcessName;
             this.priority = priority;
@@ -141,6 +147,8 @@ public class ProcessMetadataResponse {
             this.conditions = conditions;
             this.progressRate = progressRate;
             this.workerUUID = workerUUID;
+            this.workerName = workerName;
+            this.workerProfile = workerProfile;
             this.syncDate = syncDate;
             this.syncUserUUID = syncUserUUID;
             this.isRecent = isRecent;

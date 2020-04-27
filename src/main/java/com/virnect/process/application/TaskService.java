@@ -212,6 +212,7 @@ public class TaskService {
         try {
             registerNewProcess.getSubProcessList().forEach(
                     newSubProcess -> {
+
                         ContentRestDto.SceneGroup sceneGroup = sceneGroupMap.get(newSubProcess.getId());
                         SubProcess subProcess = SubProcess.builder()
                                 .process(newProcess)
@@ -223,7 +224,6 @@ public class TaskService {
                                 .progressRate(INIT_PROGRESS_RATE)
                                 .isRecent(INIT_IS_RECENT)
                                 .reportedDate(null)
-                                // TODO : user info
                                 .workerUUID("")
                                 .jobList(new ArrayList<>())
                                 .build();
@@ -489,6 +489,7 @@ public class TaskService {
         // 권한 확인
         ProcessMetadataResponse.SubProcess build;
         if (workerSourceUUID.equals(workerUUID)) {
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(workerUUID);
             build = ProcessMetadataResponse.SubProcess.builder()
                     .subProcessId(subProcess.getId())
                     .subProcessName(subProcess.getName())
@@ -498,8 +499,9 @@ public class TaskService {
                     .endDate(subProcess.getEndDate())
                     .conditions(subProcess.getConditions())
                     .progressRate(subProcess.getProgressRate())
-                    // TODO : user info
                     .workerUUID(workerSourceUUID)
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .syncDate(subProcess.getUpdatedDate())
                     .syncUserUUID(subProcess.getWorkerUUID())
                     .isRecent(subProcess.getIsRecent())
@@ -700,7 +702,6 @@ public class TaskService {
                     .subProcessName(Objects.isNull(subProcess) ? null : subProcess.getName())
                     .jobId(Objects.isNull(job) ? 0 : job.getId())
                     .jobName(Objects.isNull(job) ? null : job.getName())
-                    // TODO : user info
                     .workerUUID(userInfo.getUuid())
                     .workerName(userInfo.getName())
                     .workerProfile(userInfo.getProfile())
@@ -735,6 +736,7 @@ public class TaskService {
             Job job = Optional.of(report).map(Report::getJob).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
             SubProcess subProcess = Optional.ofNullable(job).map(Job::getSubProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
             Process process = Optional.ofNullable(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return ReportInfoResponse.builder()
                     .processId(process.getId())
                     .subProcessId(subProcess.getId())
@@ -744,8 +746,9 @@ public class TaskService {
                     .processName(process.getName())
                     .subProcessName(subProcess.getName())
                     .jobName(job.getName())
-                    // TODO : user info
-                    .workerUUID(Optional.of(subProcess).map(SubProcess::getWorkerUUID).orElseGet(() -> ""))
+                    .workerUUID(userInfoResponse.getData().getUuid())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .reportItems(itemResponseList)
                     .build();
         }).collect(Collectors.toList());
@@ -875,7 +878,6 @@ public class TaskService {
         workIssueResults.forEach(workIssueResult -> {
             Issue issue = Issue.builder()
                     .content(workIssueResult.getCaption())
-                    // TODO : user info
                     .workerUUID(syncUserUUID)
                     .build();
             if (!StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
@@ -892,7 +894,6 @@ public class TaskService {
         issueResults.forEach(issueResult -> {
             Issue issue = Issue.globalIssueBuilder()
                     .content(issueResult.getCaption())
-                    // TODO : user info
                     .workerUUID(issueResult.getWorkerUUID())
                     .build();
             if (!StringUtils.isEmpty(issueResult.getPhotoFile())) {
@@ -1109,6 +1110,7 @@ public class TaskService {
             subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         }
         List<EditSubProcessResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return EditSubProcessResponse.builder()
                     .subProcessId(subProcess.getId())
                     .priority(subProcess.getPriority())
@@ -1120,8 +1122,9 @@ public class TaskService {
                     .progressRate(Optional.of(subProcess).map(SubProcess::getProgressRate).orElseGet(() -> 0))
                     .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
                     .isRecent(Optional.of(subProcess).map(SubProcess::getIsRecent).orElseGet(() -> YesOrNo.NO))
-                    // TODO : user info
-                    .workerUUID(Optional.of(subProcess).map(SubProcess::getWorkerUUID).orElseGet(() -> ""))
+                    .workerUUID(userInfoResponse.getData().getUuid())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .issuesTotal(this.issueRepository.countIssuesInSubProcess(subProcess.getId()))
                     .doneCount((int) subProcess.getJobList().stream().filter(job -> job.getConditions() == Conditions.COMPLETED || job.getConditions() == Conditions.SUCCESS).count())
                     .build();
@@ -1156,6 +1159,7 @@ public class TaskService {
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return SubProcessReportedResponse.builder()
                     .processId(subProcess.getProcess().getId())
                     .processName(subProcess.getProcess().getName())
@@ -1163,8 +1167,9 @@ public class TaskService {
                     .name(subProcess.getName())
                     .conditions(subProcess.getConditions())
                     .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
-                    // TODO : user info
-                    .workerUUID(Optional.of(subProcess).map(SubProcess::getWorkerUUID).orElseGet(() -> ""))
+                    .workerUUID(userInfoResponse.getData().getUuid())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .build();
         }).collect(Collectors.toList());
 
@@ -1181,6 +1186,7 @@ public class TaskService {
         // 세부공정 상세조회
         SubProcess subProcess = this.subProcessRepository.findById(subProcessId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
+        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
         return new ApiResponse<>(SubProcessInfoResponse.builder()
                 .processId(subProcess.getProcess().getId())
                 .processName(subProcess.getProcess().getName())
@@ -1194,8 +1200,9 @@ public class TaskService {
                 .progressRate(subProcess.getProgressRate())
                 .reportedDate(subProcess.getReportedDate())
                 .isRecent(subProcess.getIsRecent())
-                // TODO : user info
                 .workerUUID(subProcess.getWorkerUUID())
+                .workerName(userInfoResponse.getData().getName())
+                .workerProfile(userInfoResponse.getData().getProfile())
                 .issuesTotal(this.issueRepository.countIssuesInSubProcess(subProcess.getId()))
                 .doneCount((int) subProcess.getJobList().stream().filter(job -> job.getConditions() == Conditions.COMPLETED || job.getConditions() == Conditions.SUCCESS).count())
                 .build());
@@ -1216,6 +1223,7 @@ public class TaskService {
             }
 
             Process process = Optional.of(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             // 공정이 정상적으로 생성되지 않고, 임의로 데이터를 넣으면 process_id가 null일 수 있음.
             return MyWorksResponse.builder()
                     .processId(process.getId())
@@ -1231,8 +1239,9 @@ public class TaskService {
                     .endDate(subProcess.getEndDate())
                     .progressRate(Optional.of(subProcess).map(SubProcess::getProgressRate).orElseGet(() -> 0))
                     .isRecent(Optional.of(subProcess).map(SubProcess::getIsRecent).orElseGet(() -> YesOrNo.NO))
-                    // TODO : user info
                     .workerUUID(subProcess.getWorkerUUID())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
                     .doneCount((int) subProcess.getJobList().stream().filter(job -> job.getConditions() == Conditions.COMPLETED || job.getConditions() == Conditions.SUCCESS).count())
                     .state(process.getState())
@@ -1258,6 +1267,7 @@ public class TaskService {
                 .contentUUID(process.getContentUUID())
                 .downloadPath(this.contentRestService.getContentInfo(process.getContentUUID()).getData().getPath())
                 .subProcesses(subProcessPage.getContent().stream().map(subProcess -> {
+                    ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
                     return SubProcessOfTargetResponse.builder()
                             .subProcessId(subProcess.getId())
                             .name(subProcess.getName())
@@ -1269,8 +1279,9 @@ public class TaskService {
                             .conditions(subProcess.getConditions())
                             .progressRate(subProcess.getProgressRate())
                             .isRecent(subProcess.getIsRecent())
-                            // TODO : user info
                             .workerUUID(subProcess.getWorkerUUID())
+                            .workerName(userInfoResponse.getData().getName())
+                            .workerProfile(userInfoResponse.getData().getProfile())
                             .build();
                 }).collect(Collectors.toList()))
                 .pageMeta(PageMetadataResponse.builder()
@@ -1380,12 +1391,14 @@ public class TaskService {
         if (Objects.isNull(job)) {
             // global issue
             log.debug("JOB is NULL");
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(issue.getWorkerUUID());
             issueInfoResponse = IssueInfoResponse.builder()
                     .issueId(issue.getId())
                     .reportedDate(Optional.of(issue).map(Issue::getUpdatedDate).orElseGet(() -> DEFATUL_LOCAL_DATE_TIME))
                     .photoFilePath(Optional.of(issue).map(Issue::getPath).orElseGet(() -> ""))
-                    // TODO : user info
                     .workerUUID(issue.getWorkerUUID())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .caption(Optional.of(issue).map(Issue::getContent).orElseGet(() -> ""))
                     .build();
         } else {
@@ -1393,6 +1406,7 @@ public class TaskService {
             log.debug("JOB is NOT!! NULL");
             SubProcess subProcess = Optional.ofNullable(job).map(Job::getSubProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
             Process process = Optional.ofNullable(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             issueInfoResponse = IssueInfoResponse.builder()
                     .processId(process.getId())
                     .processName(process.getName())
@@ -1402,8 +1416,9 @@ public class TaskService {
                     .jobName(job.getName())
                     .issueId(issue.getId())
                     .reportedDate(subProcess.getReportedDate())
-                    // TODO : user info
                     .workerUUID(subProcess.getWorkerUUID())
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .photoFilePath(issue.getPath())
                     .caption(issue.getContent())
                     .build();
@@ -1418,6 +1433,7 @@ public class TaskService {
         Job job = Optional.of(report).map(Report::getJob).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
         SubProcess subProcess = Optional.ofNullable(job).map(Job::getSubProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
         Process process = Optional.ofNullable(subProcess).map(SubProcess::getProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
         ReportInfoResponse reportInfoResponse = ReportInfoResponse.builder()
                 .processId(process.getId())
                 .processName(process.getName())
@@ -1427,8 +1443,9 @@ public class TaskService {
                 .jobName(job.getName())
                 .reportId(report.getId())
                 .reportedDate(subProcess.getReportedDate())
-                // TODO : user info
                 .workerUUID(subProcess.getWorkerUUID())
+                .workerName(userInfoResponse.getData().getName())
+                .workerProfile(userInfoResponse.getData().getProfile())
                 .reportItems(report.getItemList().stream().map(item -> {
                     return ItemResponse.builder()
                             .id(item.getId())
@@ -1494,11 +1511,12 @@ public class TaskService {
         // 작업자 목록 조회
         List<SubProcessAssignedResponse> subProcessesAssign = new ArrayList<>();
         for (SubProcess subProcess : process.getSubProcessList()) {
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             subProcessesAssign.add(SubProcessAssignedResponse.builder()
                     .subProcessId(subProcess.getId())
-                    // TODO : user info
                     .workerUUID(subProcess.getWorkerUUID())
-                    .profile("")
+                    .workerName(userInfoResponse.getData().getName())
+                    .workerProfile(userInfoResponse.getData().getProfile())
                     .build()
             );
         }
@@ -1616,9 +1634,11 @@ public class TaskService {
             if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT && (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID)))
                 ing++;
         }
+        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(workerUUID);
         CountSubProcessOnWorkerResponse response = CountSubProcessOnWorkerResponse.builder()
-                // TODO : user info
                 .workerUUID(workerUUID)
+                .workerName(userInfoResponse.getData().getName())
+                .workerProfile(userInfoResponse.getData().getProfile())
                 .countAssigned(subProcesses.size())
                 .countProgressing(ing)
                 .build();

@@ -6,7 +6,6 @@ import com.virnect.process.domain.YesOrNo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -67,14 +66,20 @@ public class MyWorksResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 14, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private final String workerUUID;
 
-    @ApiModelProperty(value = "완료된 작업수", notes = "완료된 작업의 개수", position = 15, example = "1")
+    @ApiModelProperty(value = "사용자 이름", position = 15, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 16, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
+    @ApiModelProperty(value = "완료된 작업수", notes = "완료된 작업의 개수", position = 17, example = "1")
     private final int doneCount;
 
-    @ApiModelProperty(value = "공정 생명주기 상태", notes = "공정 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 16, example = "CREATED")
+    @ApiModelProperty(value = "공정 생명주기 상태", notes = "공정 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 18, example = "CREATED")
     private final State state;
 
     @Builder
-    public MyWorksResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, int doneCount, State state) {
+    public MyWorksResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile, int doneCount, State state) {
         this.processId = processId;
         this.processName = processName;
         this.contentUUID = contentUUID;
@@ -90,6 +95,8 @@ public class MyWorksResponse {
         this.progressRate = progressRate;
         this.isRecent = isRecent;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
         this.doneCount = doneCount;
         this.state = state;
     }

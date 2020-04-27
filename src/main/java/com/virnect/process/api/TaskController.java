@@ -453,7 +453,7 @@ public class TaskController {
      * @param processId
      * @return
      */
-    @ApiOperation(value = "작업삭제")
+    @ApiOperation(value = "작업삭제", notes = "actorUUID는 작업의 contentManagerUUID와 동일해야 함.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "10"),
             @ApiImplicitParam(name = "actorUUID", value = "행위자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "449ae69cee53b8a6819053828c94e496")

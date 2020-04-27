@@ -58,14 +58,20 @@ public class SubProcessInfoResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 12, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private final String workerUUID;
 
-    @ApiModelProperty(value = "하위 이슈의 개수", notes = "세부 공정 하위에 이슈의 개수", position = 13, example = "3")
+    @ApiModelProperty(value = "사용자 이름", position = 13, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 14, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
+    @ApiModelProperty(value = "하위 이슈의 개수", notes = "세부 공정 하위에 이슈의 개수", position = 15, example = "3")
     private final Long issuesTotal;
 
-    @ApiModelProperty(value = "완료된 작업의 수", notes = "완료된 작업의 개수", position = 14, example = "1")
+    @ApiModelProperty(value = "완료된 작업의 수", notes = "완료된 작업의 개수", position = 16, example = "1")
     private int doneCount;
 
     @Builder
-    public SubProcessInfoResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, Conditions conditions, LocalDateTime startDate, LocalDateTime endDate, int progressRate, LocalDateTime reportedDate, YesOrNo isRecent, String workerUUID, Long issuesTotal, int doneCount) {
+    public SubProcessInfoResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, Conditions conditions, LocalDateTime startDate, LocalDateTime endDate, int progressRate, LocalDateTime reportedDate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile, Long issuesTotal, int doneCount) {
         this.processId = processId;
         this.processName = processName;
         this.subProcessId = subProcessId;
@@ -79,6 +85,8 @@ public class SubProcessInfoResponse {
         this.reportedDate = reportedDate;
         this.isRecent = isRecent;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
         this.issuesTotal = issuesTotal;
         this.doneCount = doneCount;
     }

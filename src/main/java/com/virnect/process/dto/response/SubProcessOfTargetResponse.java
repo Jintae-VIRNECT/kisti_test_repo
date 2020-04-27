@@ -50,8 +50,14 @@ public class SubProcessOfTargetResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 10, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private final String workerUUID;
 
+    @ApiModelProperty(value = "사용자 이름", position = 11, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 12, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
     @Builder
-    public SubProcessOfTargetResponse(@NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID) {
+    public SubProcessOfTargetResponse(@NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile) {
         this.subProcessId = subProcessId;
         this.name = name;
         this.priority = priority;
@@ -63,5 +69,7 @@ public class SubProcessOfTargetResponse {
         this.progressRate = progressRate;
         this.isRecent = isRecent;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
     }
 }

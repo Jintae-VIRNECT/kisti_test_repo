@@ -1,7 +1,10 @@
 package com.virnect.process.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,11 +41,17 @@ public class ReportInfoResponse {
     @ApiModelProperty(value = "작업자 식별자", notes = "작업자 식별자", position = 8, example = "uuid")
     private final String workerUUID;
 
-    @ApiModelProperty(value = "리포트 항목", position = 9, notes = "리포트의 항목들")
+    @ApiModelProperty(value = "사용자 이름", position = 9, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 10, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
+    @ApiModelProperty(value = "리포트 항목", position = 11, notes = "리포트의 항목들")
     private List<ItemResponse> reportItems;
 
     @Builder
-    public ReportInfoResponse(Long processId, Long subProcessId, Long jobId, Long reportId, LocalDateTime reportedDate, String processName, String subProcessName, String jobName, String workerUUID, List<ItemResponse> reportItems) {
+    public ReportInfoResponse(long processId, long subProcessId, long jobId, long reportId, LocalDateTime reportedDate, String processName, String subProcessName, String jobName, String workerUUID, String workerName, String workerProfile, List<ItemResponse> reportItems) {
         this.processId = processId;
         this.subProcessId = subProcessId;
         this.jobId = jobId;
@@ -52,6 +61,8 @@ public class ReportInfoResponse {
         this.subProcessName = subProcessName;
         this.jobName = jobName;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
         this.reportItems = reportItems;
     }
 }

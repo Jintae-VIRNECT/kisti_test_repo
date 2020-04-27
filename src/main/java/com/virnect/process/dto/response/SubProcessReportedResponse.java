@@ -37,8 +37,14 @@ public class SubProcessReportedResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 6, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private final String workerUUID;
 
+    @ApiModelProperty(value = "사용자 이름", position = 7, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 8, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
     @Builder
-    public SubProcessReportedResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, Conditions conditions, LocalDateTime reportedDate, String workerUUID) {
+    public SubProcessReportedResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, Conditions conditions, LocalDateTime reportedDate, String workerUUID, String workerName, String workerProfile) {
         this.processId = processId;
         this.processName = processName;
         this.subProcessId = subProcessId;
@@ -46,5 +52,7 @@ public class SubProcessReportedResponse {
         this.conditions = conditions;
         this.reportedDate = reportedDate;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
     }
 }
