@@ -55,7 +55,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute WorkspaceCreateRequest workspaceCreateRequest) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@RequestBody WorkspaceCreateRequest workspaceCreateRequest) {
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
@@ -72,7 +72,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PutMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute WorkspaceUpdateRequest workspaceUpdateRequest) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@RequestBody WorkspaceUpdateRequest workspaceUpdateRequest) {
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }

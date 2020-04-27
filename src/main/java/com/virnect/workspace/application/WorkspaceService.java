@@ -21,7 +21,6 @@ import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.Role;
-import com.virnect.workspace.global.constant.Sort;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
@@ -44,6 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -224,6 +224,7 @@ public class WorkspaceService {
                     MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
+                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                    /* SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());*/
@@ -246,6 +247,7 @@ public class WorkspaceService {
                 if (resultWorkspaceUser.contains(workspaceUserPermission.getWorkspaceUser())) {
                     MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     /*SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
@@ -259,48 +261,48 @@ public class WorkspaceService {
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
         }
         List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
-        System.out.println("!!!:"+pageRequest.of().getSort().toString());
 
         //sort처리
-        if (pageRequest.of().getSort().toString().equals("updatedDate: DESC")) {
-            resultMemberListResponse = Sort.UPDATEDATE_DESC.sorting(memberInfoDTOList);
-        } else {
-            resultMemberListResponse = getSortedMemberList(pageRequest,memberInfoDTOList);
-        }
+        resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
+
 
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
 
-    public List<MemberInfoDTO> getSortedMemberList(com.virnect.workspace.global.common.PageRequest pageRequest,List<MemberInfoDTO> memberInfoDTOList) {
+    public List<MemberInfoDTO> getSortedMemberList(com.virnect.workspace.global.common.PageRequest pageRequest, List<MemberInfoDTO> memberInfoDTOList) {
 
         String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
         String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
 
+
         if (sortName.equalsIgnoreCase("role") && sortDirection.equalsIgnoreCase("asc")) {
-            return Sort.ROLE_ASC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
+            //return Sort.ROLE_ASC.sorting(memberInfoDTOList);
         }
         if (sortName.equalsIgnoreCase("role") && sortDirection.equalsIgnoreCase("desc")) {
-            return Sort.ROLE_DESC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("asc")) {
-            return  Sort.EMAIL_ASC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getEmail, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("desc")) {
-            return Sort.EMAIL_DESC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getEmail, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("joinDate") && sortDirection.equalsIgnoreCase("asc")) {
-            return Sort.JOINDATE_ASC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("joinDate") && sortDirection.equalsIgnoreCase("desc")) {
-            return Sort.JOINDATE_DESC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("asc")) {
-            return Sort.NICKNAME_ASC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getNickName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("desc")) {
-            return Sort.NICKNAME_DESC.sorting(memberInfoDTOList);
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getNickName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
+        } else {
+            return memberInfoDTOList.stream().sorted(Comparator.comparing(MemberInfoDTO::getUpdatedDate, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
+
         }
-        return null;
     }
 
 /*

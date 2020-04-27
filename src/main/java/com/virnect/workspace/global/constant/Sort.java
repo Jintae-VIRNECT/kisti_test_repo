@@ -25,7 +25,7 @@ public enum Sort {
         return memberInfoDTOList;
     }),
     NICKNAME_ASC(memberInfoDTOList -> {
-        Collections.sort(memberInfoDTOList, new CompareNickNamAsc());
+        Collections.sort(memberInfoDTOList, new CompareNickNameAsc());
         return memberInfoDTOList;
     }),
     NICKNAME_DESC(memberInfoDTOList -> {
@@ -112,7 +112,7 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareNickNamAsc implements Comparator<MemberInfoDTO> {
+    static class CompareNickNameAsc implements Comparator<MemberInfoDTO> {
 
         @Override
         public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {

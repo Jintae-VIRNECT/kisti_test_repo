@@ -24,6 +24,7 @@ public class MemberInfoDTO {
     private String userType;
     private String nickName;
     private String role;
+    private Long roleId;
     private String createdDate;
     private String updatedDate;
     private Integer countProgressing;
