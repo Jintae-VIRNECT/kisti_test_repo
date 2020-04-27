@@ -13,10 +13,7 @@ import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.UsersCreateResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
-import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.constant.Permission;
@@ -225,9 +222,9 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-                   /* SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
+                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());*/
+                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
@@ -249,9 +246,9 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-                    /*SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
+                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());*/
+                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
