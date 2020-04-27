@@ -24,7 +24,7 @@ public class SceneGroupCustomRepositoryImpl extends QuerydslRepositorySupport im
     }
 
     @Override
-    public Page<SceneGroup> getSceneGroupInWorkspace(String workspaceUUID, String userUUID, String search, Pageable pageable) {
+    public Page<SceneGroup> getSceneGroupInWorkspace(String workspaceUUID, String search, Pageable pageable) {
         QSceneGroup qSceneGroup = QSceneGroup.sceneGroup;
         QContent qContent = QContent.content;
         JPQLQuery<SceneGroup> query = from(qSceneGroup);

@@ -560,8 +560,8 @@ public class ContentService {
         return megaByte == 0 ? 1 : megaByte;
     }
 
-    public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String userUUID, String search, Pageable pageable) {
-        Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, userUUID, search, pageable);
+    public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String search, Pageable pageable) {
+        Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, search, pageable);
 
         List<WorkspaceSceneGroupInfoResponse> responseList = sceneGroupPage.stream().map(sceneGroup -> {
             String contentUUID = sceneGroup.getContent().getUuid();

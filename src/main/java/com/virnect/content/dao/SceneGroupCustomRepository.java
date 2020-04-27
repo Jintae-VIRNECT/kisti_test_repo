@@ -12,5 +12,5 @@ import org.springframework.data.domain.Pageable;
  * @since 2020.04.23
  */
 public interface SceneGroupCustomRepository {
-    Page<SceneGroup> getSceneGroupInWorkspace(String workspaceUUID, String userUUID, String search, Pageable pageable);
+    Page<SceneGroup> getSceneGroupInWorkspace(String workspaceUUID, String search, Pageable pageable);
 }

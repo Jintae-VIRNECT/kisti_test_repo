@@ -265,7 +265,6 @@ public class ContentController {
     @ApiOperation(value = "워크스페이스 내 씬그룹 목록 조회", notes = "워크스페이스 내 모든 컨텐츠의 씬그룹들의 목록을 조회 - 바닥 인식시 사용된다고 함.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
-            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
             @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
@@ -274,13 +273,12 @@ public class ContentController {
     @GetMapping("/sceneGroups/workspace/{workspaceUUID}")
     public ResponseEntity<ApiResponse<WorkspaceSceneGroupListResponse>> getSceneGroupsInWorkspace(
             @PathVariable("workspaceUUID") String workspaceUUID
-            , @RequestParam(value = "userUUID", required = false) String userUUID
             , @RequestParam(value = "search", required = false) String search
             , @ApiIgnore PageRequest pageable) {
-        if (workspaceUUID.isEmpty() || userUUID.isEmpty()) {
+        if (workspaceUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceSceneGroupListResponse> responseMessage = this.contentService.getSceneGroupsInWorkspace(workspaceUUID, userUUID, search, pageable.of());
+        ApiResponse<WorkspaceSceneGroupListResponse> responseMessage = this.contentService.getSceneGroupsInWorkspace(workspaceUUID, search, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
