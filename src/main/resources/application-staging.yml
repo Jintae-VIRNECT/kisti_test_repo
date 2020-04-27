@@ -106,4 +106,7 @@ eureka:
     service-url:
       defaultZone: http://stgeureka.virnect.com/eureka
 
+jwt:
+  secret: 2020-tcenriv-platform-392
+
 
