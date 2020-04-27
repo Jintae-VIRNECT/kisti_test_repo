@@ -67,16 +67,16 @@ export default {
 
       localRecResOpt: [
         {
-          value: 720,
+          value: '360p',
+          text: '360p',
+        },
+        {
+          value: '480p',
+          text: '480p',
+        },
+        {
+          value: '720p',
           text: '720p',
-        },
-        {
-          value: 1080,
-          text: '1080p',
-        },
-        {
-          value: 2080,
-          text: '2K',
         },
       ],
     }
@@ -86,10 +86,10 @@ export default {
   },
   methods: {
     setRecLength: function(newRecLength) {
-      this.$emit('setRecLength', { rec_length: newRecLength })
+      this.$store.dispatch('setLocalRecordLength', newRecLength.value)
     },
     setRecResolution: function(newResolution) {
-      this.$emit('setRecResolution', { rec_res: newResolution })
+      this.$store.dispatch('setRecordResolution', newResolution.value)
     },
   },
 }

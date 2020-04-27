@@ -30,6 +30,7 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
+import { mapState } from 'vuex'
 export default {
   data: function() {
     return {}
@@ -53,14 +54,17 @@ export default {
         return 0
       }
     },
+    ...mapState({
+      mic: state => state.settings.mic,
+      speaker: state => state.settings.speaker,
+    }),
   },
   methods: {
     setMic(newMic) {
-      this.$emit('selectedMic', newMic)
+      this.$store.dispatch('setMic', newMic.deviceId)
     },
-
     setSpeaker(newSpeaker) {
-      this.$emit('selectedSpeaker', newSpeaker)
+      this.$store.dispatch('setSpeaker', newSpeaker.deviceId)
     },
   },
 }

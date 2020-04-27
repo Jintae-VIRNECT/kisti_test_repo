@@ -52,4 +52,51 @@ export default {
   setFilter({ commit }, payload) {
     commit(types.SEARCH_FILTER, payload)
   },
+
+  /** workspace-settings **/
+
+  /**
+   *
+   * @param {*} param0
+   * @param {String} payload deviceId
+   */
+  setMic({ commit }, payload) {
+    commit(types.SETTINGS.SET_MIC, payload)
+  },
+
+  /**
+   *
+   * @param {*} param0
+   * @param {String} payload deviceId
+   */
+  setSpeaker({ commit }, payload) {
+    commit(types.SETTINGS.SET_SPEAKER, payload)
+  },
+
+  /**
+   *
+   * @param {*} param0
+   * @param {Number} payload record length
+   */
+  setLocalRecordLength({ commit }, payload) {
+    commit(types.SETTINGS.SET_LOCAL_RECORD_LENGTH, payload)
+  },
+
+  /**
+   *
+   * @param {*} param0
+   * @param {String} payload record resolution
+   */
+  setRecordResolution({ commit }, payload) {
+    commit(types.SETTINGS.SET_RECORD_RESOLUTION, payload)
+  },
+
+  /**
+   *
+   * @param {*} param0
+   * @param {String} payload
+   */
+  setNotiFlag({ commit }, payload) {
+    commit(types.SETTINGS.SET_NOTI_FLAG_PC, payload)
+  },
 }

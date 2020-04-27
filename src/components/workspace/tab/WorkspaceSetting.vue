@@ -34,14 +34,11 @@
             class="setting-section"
             :mics="mics"
             :speakers="speakers"
-            @selectedMic="setMic"
-            @selectedSpeaker="setSpeaker"
             :defaultMic="settings.mic"
             :defaultSpeaker="settings.speaker"
           ></workspace-set-audio>
 
-          <workspace-mic-test class="setting-section" :selectMic="selectMic">
-          </workspace-mic-test>
+          <workspace-mic-test class="setting-section"> </workspace-mic-test>
         </template>
 
         <template v-else-if="tabview === 'video-record'">
@@ -53,8 +50,6 @@
 
           <workspace-set-record
             class="setting-section"
-            @setRecLength="setRecLength"
-            @setRecResolution="setRecResolution"
             :defaultRecLength="settings.recordingTime"
             :defaultRecordRec="settings.recordingResolution"
           ></workspace-set-record>
@@ -63,7 +58,6 @@
           <workspace-set-language
             style="height: 254px;"
             class="setting-section"
-            @setLang="setLang"
             :defaultLanguage="settings.language"
           ></workspace-set-language>
         </template>
@@ -77,6 +71,7 @@ import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
+import { mapState } from 'vuex'
 import {
   getConfiguration,
   putLanguage,
@@ -102,11 +97,6 @@ export default {
       mics: [],
       speakers: [],
 
-      //audio context
-      audioContext: null,
-      selectMic: null,
-      selectSpeaker: null,
-
       //settings
       settings: {
         speaker: '',
@@ -119,13 +109,38 @@ export default {
     }
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      mic: state => state.settings.mic,
+      speaker: state => state.settings.speaker,
+      localRecordLength: state => state.settings.localRecordLength,
+      recordResolution: state => state.settings.recordResolution,
+      notiFlagPc: state => state.settings.notiFlagPc,
+    }),
+  },
   watch: {
     settings: {
       deep: true,
       handler() {
+        console.log('called settings handler')
         this.updateSetting()
       },
+    },
+    mic(mic) {
+      this.settings.mic = mic
+    },
+    speaker(speaker) {
+      this.settings.speaker = speaker
+    },
+    localRecordLength(recordingTime) {
+      this.settings.recordingTime = recordingTime
+    },
+    recordResolution(recordResolution) {
+      this.settings.recordingResolution = recordResolution
+    },
+    notiFlagPc(language) {
+      this.settings.language = language
+      putLanguage(language)
     },
   },
   methods: {
@@ -178,46 +193,12 @@ export default {
         console.log(err)
       }
     },
-
-    setMic(newMic) {
-      if (newMic !== null) {
-        this.selectMic = newMic
-        this.settings.mic = newMic.deviceId
-        this.$store.commit('SET_AUDIO_INPUT_DEVICE', newMic)
-      }
-    },
-    setSpeaker(newSpeaker) {
-      if (newSpeaker !== null) {
-        this.selectSpeaker = newSpeaker
-        this.settings.speaker = newSpeaker.deviceId
-        this.$store.commit('SET_AUDIO_OUTPUT_DEVICE', newSpeaker)
-      }
-    },
-    setVideo(videoDevice) {
-      if (videoDevice !== null) {
-        this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
-        this.settings.videoDevice = videoDevice
-      }
-    },
-    setLang(lang) {
-      if (lang !== null) {
-        putLanguage(lang)
-        this.$store.commit('SET_LANGUAGE', lang)
-        this.settings.language = lang
-      }
-    },
-    setRecLength(recLength) {
-      if (recLength !== null) {
-        this.$store.commit('SET_LOCAL_RECORD_LENGTH', recLength)
-        this.settings.recordingTime = recLength
-      }
-    },
-    setRecResolution(recRes) {
-      if (recRes !== null) {
-        this.$store.commit('SET_RECORD_RESOLUTION', recRes)
-        this.settings.recordingResolution = recRes
-      }
-    },
+    // setVideo(videoDevice) {
+    //   if (videoDevice !== null) {
+    //     this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
+    //     this.settings.videoDevice = videoDevice
+    //   }
+    // },
     async updateSetting() {
       await updateConfiguration(this.settings)
     },

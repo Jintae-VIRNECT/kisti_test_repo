@@ -44,8 +44,8 @@ export default {
     RRadio,
   },
   watch: {
-    setLang: function(language) {
-      this.$emit('setLang', { language: language })
+    selectLanguage: function(language) {
+      this.$store.dispatch('setNotiFlag', language)
     },
   },
 }

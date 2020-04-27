@@ -40,6 +40,7 @@
 import SoundMeter from 'plugins/remote/soundmeter'
 import ToggleButton from 'ToggleButton'
 import ProgressBar from 'ProgressBar'
+import { mapState } from 'vuex'
 export default {
   data: function() {
     return {
@@ -54,9 +55,7 @@ export default {
       },
     }
   },
-  props: {
-    selectMic: null,
-  },
+  props: {},
   created() {},
   mounted() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
@@ -74,19 +73,21 @@ export default {
         return 0
       }
     },
+    ...mapState({
+      mic: state => state.settings.mic,
+    }),
   },
   watch: {
-    selectMic: function(newDevice) {
-      this.handleInputAudioStream(newDevice)
+    mic(newMic) {
+      this.handleInputAudioStream(newMic)
     },
   },
   methods: {
     handleInputAudioStream(selectedDevice) {
-      this.selectAudio = selectedDevice.deviceId
       const constraints = {
         video: false,
         audio: {
-          deviceId: this.selectAudio,
+          deviceId: selectedDevice,
         },
       }
 
