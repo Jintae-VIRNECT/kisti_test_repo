@@ -6,8 +6,8 @@
         <p class="setting__label">입력 장치</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setAudioInputDevice"
-          :options="audioInputDevices"
+          v-on:changeValue="setMic"
+          :options="mics"
           :value="'deviceId'"
           :text="'label'"
         >
@@ -18,8 +18,8 @@
         <p class="setting__label">출력 장치</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setAudioOutputDevice"
-          :options="audioOutputDevices"
+          v-on:changeValue="setSpeaker"
+          :options="speakers"
           :value="'deviceId'"
           :text="'label'"
         >
@@ -32,34 +32,16 @@
 import RSelect from 'RemoteSelect'
 export default {
   data: function() {
-    return {
-      videoDevices: [],
-      audioDevices: [],
-
-      audioContext: null,
-      audioSoundMeter: null,
-      audioStream: null,
-      audioSoundVolume: 0,
-
-      selectOutput: null,
-      selectVideo: null,
-      selectAudio: null,
-    }
+    return {}
   },
   props: {
-    audioInputDevices: null,
-    audioOutputDevices: null,
-    selectAudioInput: null,
+    mics: null,
+    speakers: null,
     defaultInputAudio: null,
     defaultOuputAudio: null,
   },
-  mounted() {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-  },
-  created() {
-    // console.log('this.audioInputDevices', this.audioInputDevices)
-    // console.log('this.audioOutputDevices', this.audioOutputDevices)
-  },
+  mounted() {},
+  created() {},
   components: {
     RSelect,
   },
@@ -73,11 +55,11 @@ export default {
     },
   },
   methods: {
-    setAudioInputDevice(newInputAudioDevice) {
+    setMic(newInputAudioDevice) {
       this.$emit('selectedAudioInputDevice', newInputAudioDevice)
     },
 
-    setAudioOutputDevice(newOutputAudioDevice) {
+    setSpeaker(newOutputAudioDevice) {
       this.$emit('selectedOutputAudioDevice', newOutputAudioDevice)
     },
   },

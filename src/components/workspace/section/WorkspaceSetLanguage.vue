@@ -44,8 +44,8 @@ export default {
     RRadio,
   },
   watch: {
-    selectLanguage: function(language) {
-      this.$emit('selectedLanguage', { language: language })
+    setLang: function(language) {
+      this.$emit('setLang', { language: language })
     },
   },
 }

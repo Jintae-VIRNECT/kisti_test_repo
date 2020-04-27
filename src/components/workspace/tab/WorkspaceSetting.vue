@@ -32,33 +32,29 @@
         <template v-if="tabview === 'audio-video'">
           <workspace-set-audio
             class="setting-section"
-            :audioInputDevices="audioInputDevices"
-            :audioOutputDevices="audioOutputDevices"
-            @selectedAudioInputDevice="setAudioInputDevice"
-            @selectedOutputAudioDevice="setAudioOutputDevice"
+            :mics="mics"
+            :speakers="speakers"
+            @selectedAudioInputDevice="setMic"
+            @selectedOutputAudioDevice="setSpeaker"
             :defaultInputAudio="settings.mic"
             :defaultOuputAudio="settings.speaker"
           ></workspace-set-audio>
 
-          <workspace-mic-test
-            class="setting-section"
-            :selectAudioInput="selectAudioInput"
-          >
+          <workspace-mic-test class="setting-section" :selectMic="selectMic">
           </workspace-mic-test>
         </template>
 
         <template v-else-if="tabview === 'video-record'">
           <!-- <workspace-set-video
             class="setting-section"
-            :videoDevices="videoDevices"
-            @selectedVideoDevice="saveVideoDevice"
-            @selectedVideoQuality="saveVideoQuality"
+            :videos="videos"
+            @setVideo="setVideo"
           ></workspace-set-video> -->
 
           <workspace-set-record
             class="setting-section"
-            @selectedRecLength="saveRecordLength"
-            @selectedResolution="saveRecordRes"
+            @setRecLength="setRecLength"
+            @setRecResolution="setRecResolution"
             :defaultRecLength="settings.recordingTime"
             :defaultRecordRec="settings.recordingResolution"
           ></workspace-set-record>
@@ -67,7 +63,7 @@
           <workspace-set-language
             style="height: 254px;"
             class="setting-section"
-            @selectedLanguage="saveLanguage"
+            @setLang="setLang"
             :defaultLanguage="settings.language"
           ></workspace-set-language>
         </template>
@@ -77,7 +73,7 @@
 </template>
 <script>
 import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
-import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
+//import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
@@ -91,7 +87,7 @@ export default {
   name: 'WorkspaceSetting',
   components: {
     WorkspaceSetAudio,
-    WorkspaceSetVideo,
+    //WorkspaceSetVideo,
     WorkspaceSetLanguage,
     WorkspaceSetRecord,
     WorkspaceMicTest,
@@ -102,20 +98,22 @@ export default {
       headerText: '비디오 및 오디오 설정',
 
       //device list
-      videoDevices: [],
-      audioInputDevices: [],
-      audioOutputDevices: [],
+      videos: [],
+      mics: [],
+      speakers: [],
 
       //audio context
       audioContext: null,
-      selectAudioInput: null,
-      selectAudioOutput: null,
+      selectMic: null,
+      selectSpeaker: null,
+
+      //settings
       settings: {
         speaker: '',
         mic: '',
         language: '',
-        recordingTime: '', // 최대 녹화 시간
-        recordingResolution: '', // 녹화 영상 해상도
+        recordingTime: '',
+        recordingResolution: '',
         device: '',
       },
     }
@@ -169,11 +167,11 @@ export default {
 
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
-            this.videoDevices.push(device)
+            this.videos.push(device)
           } else if (device.kind === 'audioinput') {
-            this.audioInputDevices.push(device)
+            this.mics.push(device)
           } else if (device.kind === 'audiooutput') {
-            this.audioOutputDevices.push(device)
+            this.speakers.push(device)
           }
         })
       } catch (err) {
@@ -181,54 +179,43 @@ export default {
       }
     },
 
-    setAudioInputDevice(newInputAudioDevice) {
-      this.selectAudioInput = newInputAudioDevice
-      this.saveAudioInputDevice(newInputAudioDevice)
-      this.settings.mic = newInputAudioDevice.deviceId
+    setMic(newMic) {
+      if (newMic !== null) {
+        this.selectMic = newMic
+        this.settings.mic = newMic.deviceId
+        this.$store.commit('SET_AUDIO_INPUT_DEVICE', newMic)
+      }
     },
-    setAudioOutputDevice(newOutputAudioDevice) {
-      this.selectAudioOutput = newOutputAudioDevice
-      this.saveAudioOutputDevice(newOutputAudioDevice)
-      this.settings.speaker = newOutputAudioDevice.deviceId
+    setSpeaker(newSpeaker) {
+      if (newSpeaker !== null) {
+        this.selectSpeaker = newSpeaker
+        this.settings.speaker = newSpeaker.deviceId
+        this.$store.commit('SET_AUDIO_OUTPUT_DEVICE', newSpeaker)
+      }
     },
-    saveVideoDevice(videoDevice) {
+    setVideo(videoDevice) {
       if (videoDevice !== null) {
         this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
         this.settings.videoDevice = videoDevice
       }
     },
-    saveVideoQuality(videoQuality) {
-      if (videoQuality !== null) {
-        this.$store.commit('SET_VIDEO_QUALITY', videoQuality)
+    setLang(lang) {
+      if (lang !== null) {
+        putLanguage(lang)
+        this.$store.commit('SET_LANGUAGE', lang)
+        this.settings.language = lang
       }
     },
-    saveAudioInputDevice(audioInputDevice) {
-      if (audioInputDevice !== null) {
-        this.$store.commit('SET_AUDIO_INPUT_DEVICE', audioInputDevice)
-      }
-    },
-    saveAudioOutputDevice(audioOutputDeivce) {
-      if (audioOutputDeivce !== null) {
-        this.$store.commit('SET_AUDIO_OUTPUT_DEVICE', audioOutputDeivce)
-      }
-    },
-    saveLanguage(language) {
-      if (language !== null) {
-        putLanguage(language)
-        this.$store.commit('SET_LANGUAGE', language)
-        this.settings.language = language
-      }
-    },
-    saveRecordLength(recLength) {
+    setRecLength(recLength) {
       if (recLength !== null) {
         this.$store.commit('SET_LOCAL_RECORD_LENGTH', recLength)
         this.settings.recordingTime = recLength
       }
     },
-    saveRecordRes(recResolution) {
-      if (recResolution !== null) {
-        this.$store.commit('SET_RECORD_RESOLUTION', recResolution)
-        this.settings.recordingResolution = recResolution
+    setRecResolution(recRes) {
+      if (recRes !== null) {
+        this.$store.commit('SET_RECORD_RESOLUTION', recRes)
+        this.settings.recordingResolution = recRes
       }
     },
     async updateSetting() {

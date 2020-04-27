@@ -6,7 +6,7 @@
         <p class="setting__label">최대 녹화 시간</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="saveRecLength"
+          v-on:changeValue="setRecLength"
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
@@ -18,7 +18,7 @@
         <p class="setting__label">녹화 영상 해상도</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="saveRecResolution"
+          v-on:changeValue="setRecResolution"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
@@ -85,11 +85,11 @@ export default {
     RSelect,
   },
   methods: {
-    saveRecLength: function(newRecLength) {
-      this.$emit('selectedRecLength', { rec_length: newRecLength })
+    setRecLength: function(newRecLength) {
+      this.$emit('setRecLength', { rec_length: newRecLength })
     },
-    saveRecResolution: function(newResolution) {
-      this.$emit('selectedResolution', { rec_res: newResolution })
+    setRecResolution: function(newResolution) {
+      this.$emit('setRecResolution', { rec_res: newResolution })
     },
   },
 }

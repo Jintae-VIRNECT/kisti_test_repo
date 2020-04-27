@@ -23,9 +23,6 @@ const mutations = {
   [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
     state.videoDevice = videoDevice
   },
-  [SETTINGS.SET_VIDEO_QUALITY](state, videoQuality) {
-    state.videoQuality = videoQuality
-  },
   [SETTINGS.SET_LANGUAGE](state, language) {
     state.language = language
   },

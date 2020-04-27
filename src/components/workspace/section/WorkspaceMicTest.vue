@@ -55,7 +55,7 @@ export default {
     }
   },
   props: {
-    selectAudioInput: null,
+    selectMic: null,
   },
   created() {},
   mounted() {
@@ -76,7 +76,7 @@ export default {
     },
   },
   watch: {
-    selectAudioInput: function(newDevice) {
+    selectMic: function(newDevice) {
       this.handleInputAudioStream(newDevice)
     },
   },
