@@ -580,6 +580,11 @@ public class ContentService {
             ContentInfoResponse contentInfoResponse = this.modelMapper.map(content, ContentInfoResponse.class);
             contentInfoResponse.setTargets(targetList);
 
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
+            contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
+            contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+            contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
+
             return WorkspaceSceneGroupInfoResponse.builder()
                     .id(sceneGroup.getUuid())
                     .name(sceneGroup.getName())
