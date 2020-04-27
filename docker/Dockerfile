@@ -3,9 +3,12 @@ ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
-COPY ./build/libs/PF-Eureka-1.0.0.jar ./PF-Eureka-1.0.0.jar
+ARG BUILD=build/unpack
+
+COPY ${BUILD}/app .
+COPY ${BUILD}/lib/ BOOT-INF/lib/
 
 EXPOSE 8761
 
 ## Command executed when container is start up.
-CMD ["java",  "-Xmx200M", "-jar","PF-Eureka-1.0.0.jar"]
+CMD ["java",  "-Xmx200M", "org.springframework.boot.loader.JarLauncher"]
