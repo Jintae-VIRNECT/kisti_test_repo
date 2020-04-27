@@ -6,9 +6,7 @@ import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -47,5 +45,8 @@ public interface UserRestService {
      */
     @GetMapping("/users/invite")
     ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(@RequestParam("email[]") String[] emailList);
+
+    @PostMapping("/users/list")
+    ApiResponse<UserInfoListRestResponse> getUserInfoList(@RequestParam("search") String search, @RequestBody String[] workspaceUserIdList);
 }
 

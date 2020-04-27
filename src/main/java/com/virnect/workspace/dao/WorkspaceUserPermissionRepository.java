@@ -26,7 +26,6 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
 
     Page<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(Workspace workspace, List<WorkspaceUser> workspaceUserList, List<WorkspaceRole> workspaceRoleList, Pageable pageable);
 
-
     @Transactional
     void deleteAllByWorkspaceUser(WorkspaceUser workspaceUser);
 

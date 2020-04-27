@@ -108,10 +108,29 @@ public class WorkspaceController {
         if (!StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest.of(true));
+        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest.of());
         return ResponseEntity.ok(apiResponse);
     }
-
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
+            notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "role,desc"),
+    })
+    @GetMapping("/{workspaceId}/members")
+    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId,  @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
+        if ( !StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, search, filter, pageable);
+        return ResponseEntity.ok(apiResponse);
+    }
+/*
     @ApiOperation(
             value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
             notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
@@ -130,7 +149,7 @@ public class WorkspaceController {
         }
         ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
-    }
+    }*/
 
 
     @ApiOperation(

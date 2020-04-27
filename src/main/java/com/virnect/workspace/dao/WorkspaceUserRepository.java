@@ -20,4 +20,8 @@ public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Lon
     Page<WorkspaceUser> findByUserId(String userId, Pageable pageable);
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
     List<WorkspaceUser> findTop4ByWorkspace_UuidOrderByCreatedDateDesc(String workspaceId);
+    Page<WorkspaceUser> findByWorkspace_UuidAndUserIdIn(String workspaceId, List<String> userIdList,Pageable pageable);
+
+
+
 }
