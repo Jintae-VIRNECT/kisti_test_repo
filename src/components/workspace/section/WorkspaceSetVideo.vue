@@ -1,7 +1,7 @@
 <template>
-  <section>
+  <section class="setting-section">
     <div class="setting__title">영상 설정</div>
-    <div class="setting-vertical-wrapper">
+    <div>
       <p class="setting__label">카메라</p>
       <r-select
         class="setting__r-selecter"

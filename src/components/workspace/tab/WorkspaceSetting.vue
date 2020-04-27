@@ -1,76 +1,74 @@
 <template>
-  <div class="setting-wrapper offsetwidth">
-    <div class="setting-nav">
-      <div class="setting-nav__header">환경설정</div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'audio-video' }"
-        @click="tabChange('audio-video', '비디오 및 오디오 설정')"
-      >
-        비디오 및 오디오 설정
+  <div class="tab-view">
+    <div class="setting-wrapper offsetwidth">
+      <div class="setting-nav">
+        <div class="setting-nav__header">환경설정</div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'audio-video' }"
+          @click="tabChange('audio-video', '비디오 및 오디오 설정')"
+        >
+          비디오 및 오디오 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'video-record' }"
+          @click="tabChange('video-record', '영상 및 녹화 설정')"
+        >
+          영상 및 녹화 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'language' }"
+          @click="tabChange('language', '언어 설정')"
+        >
+          언어 설정
+        </div>
       </div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'video-record' }"
-        @click="tabChange('video-record', '영상 및 녹화 설정')"
-      >
-        영상 및 녹화 설정
-      </div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'language' }"
-        @click="tabChange('language', '언어 설정')"
-      >
-        언어 설정
-      </div>
-    </div>
 
-    <div class="setting-view">
-      <div class="setting-view__header">{{ headerText }}</div>
+      <div class="setting-view">
+        <div class="setting-view__header">{{ headerText }}</div>
 
-      <div class="setting-view__body">
-        <template v-if="tabview === 'audio-video'">
-          <workspace-set-audio
-            class="setting-section"
-            :audioInputDevices="audioInputDevices"
-            :audioOutputDevices="audioOutputDevices"
-            @selectedAudioInputDevice="setAudioInputDevice"
-            @selectedOutputAudioDevice="setAudioOutputDevice"
-            :defaultInputAudio="settings.mic"
-            :defaultOuputAudio="settings.speaker"
-          ></workspace-set-audio>
+        <div class="setting-view__body">
+          <template v-if="tabview === 'audio-video'">
+            <workspace-set-audio
+              :audioInputDevices="audioInputDevices"
+              :audioOutputDevices="audioOutputDevices"
+              @selectedAudioInputDevice="setAudioInputDevice"
+              @selectedOutputAudioDevice="setAudioOutputDevice"
+              :defaultInputAudio="settings.mic"
+              :defaultOuputAudio="settings.speaker"
+            ></workspace-set-audio>
 
-          <workspace-mic-test
-            class="setting-section"
-            :selectAudioInput="selectAudioInput"
-          >
-          </workspace-mic-test>
-        </template>
+            <workspace-mic-test
+              class="setting-section"
+              :selectAudioInput="selectAudioInput"
+            >
+            </workspace-mic-test>
+          </template>
 
-        <template v-else-if="tabview === 'video-record'">
-          <workspace-set-video
-            class="setting-section"
-            :videoDevices="videoDevices"
-            @selectedVideoDevice="saveVideoDevice"
-            @selectedVideoQuality="saveVideoQuality"
-          ></workspace-set-video>
+          <template v-else-if="tabview === 'video-record'">
+            <workspace-set-video
+              :videoDevices="videoDevices"
+              @selectedVideoDevice="saveVideoDevice"
+              @selectedVideoQuality="saveVideoQuality"
+            ></workspace-set-video>
 
-          <workspace-set-record
-            class="setting-section"
-            @selectedRecLength="saveRecordLength"
-            @selectedResolution="saveRecordRes"
-            :defaultRecLength="settings.recordingTime"
-            :defaultRecordRec="settings.recordingResolution"
-          ></workspace-set-record>
-        </template>
-        <template v-else-if="tabview === 'language'">
-          <workspace-set-language
-            style="height: 254px;"
-            class="setting-section"
-            @selectedLanguage="saveLanguage"
-            :defaultLanguage="settings.language"
-          ></workspace-set-language>
-        </template>
+            <workspace-set-record
+              @selectedRecLength="saveRecordLength"
+              @selectedResolution="saveRecordRes"
+              :defaultRecLength="settings.recordingTime"
+              :defaultRecordRec="settings.recordingResolution"
+            ></workspace-set-record>
+          </template>
+          <template v-else-if="tabview === 'language'">
+            <workspace-set-language
+              style="height: 254px;"
+              @selectedLanguage="saveLanguage"
+              :defaultLanguage="settings.language"
+            ></workspace-set-language>
+          </template>
+        </div>
       </div>
     </div>
   </div>

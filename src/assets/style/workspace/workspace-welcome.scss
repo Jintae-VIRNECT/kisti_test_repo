@@ -10,7 +10,7 @@
   background: url(~assets/image/banner.png) center right no-repeat #12233a;
   border-radius: 8px;
   &.offsetwidth {
-    margin: 2.143rem auto 0.714rem;
+    margin: 0 auto 0.714rem;
   }
   @include tablet {
     background: #12233a;

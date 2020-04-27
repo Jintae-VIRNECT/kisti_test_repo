@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <p class="setting__title">
       마이크 테스트
     </p>
@@ -25,7 +25,7 @@
         ></toggle-button>
       </div>
 
-      <div class="mic-item progress" style="width:755px">
+      <div class="mic-item progress">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
       <audio

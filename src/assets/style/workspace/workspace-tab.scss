@@ -2,7 +2,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: calc(100% - $welcome_height);
+  height: calc(100% - #{$welcome_height});
 }
 
 .workspace-tab__nav {
@@ -97,5 +97,5 @@
 
 .tab-view__body {
   flex: 1;
-  margin-bottom: 1.429rem;
+  // margin-bottom: 1.429rem;
 }
