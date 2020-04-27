@@ -1,7 +1,46 @@
 .navbar {
+  $input-background-color: rgba(233, 237, 244, 0.5);
+  $input-color: #5e6b82;
+  $placeholder-color: #7a869a;
+
   margin-bottom: 32px;
 
+  .el-col {
+    width: 50%;
+    & > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    & > span {
+      margin-right: 3px;
+      color: #7a869a;
+      font-size: 12.6px;
+    }
+  }
   .right {
-    float: right;
+    text-align: right;
+  }
+
+  .el-select {
+    padding-right: 13px;
+  }
+  .el-input__inner {
+    padding: 9px 12px;
+    color: $input-color;
+    font-weight: 500;
+    font-size: 12.6px;
+    background: $input-background-color;
+    border: none;
+    border-radius: 3px;
+
+    &::placeholder {
+      color: $placeholder-color;
+      opacity: 0.8;
+    }
+  }
+  .el-input__inner,
+  .el-input__icon {
+    height: 34px;
+    line-height: 34px;
   }
 }

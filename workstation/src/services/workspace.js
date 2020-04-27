@@ -131,14 +131,13 @@ export default {
    * @param {string} uuid
    */
   async kickMember(uuid) {
-    const workspaceId = activeWorkspaceGetter().info.uuid
+    const formData = new FormData()
+    formData.append('kickedUserId', uuid)
+    formData.append('userId', myProfileGetter().uuid)
+
     const data = await api('MEMBER_KICK', {
-      route: { workspaceId },
-      params: {
-        kickedUserId: uuid,
-        userId: myProfileGetter().uuid,
-        workspaceId,
-      },
+      route: { workspaceId: activeWorkspaceGetter().info.uuid },
+      params: formData,
     })
   },
   /**
@@ -146,9 +145,8 @@ export default {
    * @param {[InviteMember]} userInfoList
    */
   async inviteMembers(userInfoList) {
-    const workspaceId = activeWorkspaceGetter().info.uuid
     const data = await api('MEMBERS_INVITE', {
-      route: { workspaceId },
+      route: { workspaceId: activeWorkspaceGetter().info.uuid },
       params: {
         userId: myProfileGetter().uuid,
         userInfoList,

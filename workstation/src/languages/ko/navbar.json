@@ -1,6 +1,7 @@
 
 {
   "filter": {
+    "title": "필터",
     "all": "전체",
     "processPublished": "공정 등록",
     "processUnpublished": "공정 미등록",
@@ -8,6 +9,7 @@
     "workIssue": "작업 이슈"
   },
   "sort": {
+    "title": "정렬",
     "alphabetAsc": "ㄱ-ㅎ순",
     "alphabetDesc": "ㄱ-ㅎ순",
     "createdAsc": "오래된 등록순",

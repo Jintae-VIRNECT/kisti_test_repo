@@ -8,6 +8,6 @@ export default class InviteMember extends Model {
   constructor() {
     super()
     this.email = ''
-    this.role = ''
+    this.role = 'MEMBER'
   }
 }

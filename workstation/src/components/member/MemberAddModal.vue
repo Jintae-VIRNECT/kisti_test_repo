@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import roles from '@/models/workspace/roles'
+import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 
@@ -109,7 +109,7 @@ export default {
   data() {
     return {
       showMe: false,
-      roles: roles,
+      roles: role.options,
       userInfoList: [new InviteMember()],
     }
   },

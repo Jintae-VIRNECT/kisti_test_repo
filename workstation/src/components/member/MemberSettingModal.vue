@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import roles from '@/models/workspace/roles'
+import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -97,7 +97,7 @@ export default {
   data() {
     return {
       showMe: false,
-      roles: roles,
+      roles: role.options,
       form: {
         uuid: this.data.uuid,
         role: this.data.role,

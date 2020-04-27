@@ -83,6 +83,7 @@ export default {
     },
     kicked() {
       this.showMemberKickModal = false
+      this.showMemberSettingModal = false
     },
     kick() {
       this.showMemberKickModal = true

@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import roles from '@/models/workspace/roles'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -32,11 +31,6 @@ export default {
   data() {
     return {
       showMe: false,
-      roles: roles,
-      form: {
-        uuid: this.data.uuid,
-        role: this.data.role,
-      },
     }
   },
   watch: {

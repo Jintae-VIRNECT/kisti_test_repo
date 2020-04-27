@@ -10,11 +10,29 @@
         </el-breadcrumb>
         <h2>{{ $t('members.allMembers.title') }}</h2>
       </div>
+      <!-- 검색 영역 -->
       <el-row class="navbar">
-        <el-button type="primary" class="right" @click="showAddModal = true">
-          {{ $t('members.allMembers.addMember') }}
-        </el-button>
+        <el-col class="left">
+          <span>{{ $t('navbar.sort.title') }}:</span>
+          <navbar-sort
+            ref="sort"
+            :value.sync="memberSort.value"
+            :options="memberSort.options"
+          />
+          <span>{{ $t('navbar.filter.title') }}:</span>
+          <navbar-filter
+            ref="filter"
+            :value.sync="memberFilter.value"
+            :options="memberFilter.options"
+          />
+        </el-col>
+        <el-col class="right">
+          <el-button type="primary" @click="showAddModal = true">
+            {{ $t('members.allMembers.addMember') }}
+          </el-button>
+        </el-col>
       </el-row>
+      <!-- 멤버 목록 -->
       <el-row>
         <el-col class="profile" v-for="member in members" :key="member.uuid">
           <member-profile-card :data="member" />
@@ -30,8 +48,14 @@ import { mapGetters } from 'vuex'
 import MemberProfileCard from '@/components/member/MemberProfileCard'
 import MemberAddModal from '@/components/member/MemberAddModal'
 import workspaceService from '@/services/workspace'
+import searchMixin from '@/mixins/search'
+import {
+  filter as memberFilter,
+  sort as memberSort,
+} from '@/models/workspace/Member'
 
 export default {
+  mixins: [searchMixin],
   components: {
     MemberProfileCard,
     MemberAddModal,
@@ -46,9 +70,14 @@ export default {
     return {
       members: [],
       showAddModal: false,
+      memberFilter,
+      memberSort,
     }
   },
   methods: {
+    changedSearchParams({ filter, sort }) {
+      console.log(filter, sort)
+    },
     async searchMembers() {
       const { list, total } = await workspaceService.searchMembers()
       this.members = list
