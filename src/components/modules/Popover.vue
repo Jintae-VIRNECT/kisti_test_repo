@@ -146,7 +146,6 @@ export default {
     },
     showPopover() {
       this.$eventBus.$emit('popover:close')
-      console.log(this.show)
 
       //Popover 이동
       if (this.$refs['popover']) {
@@ -163,8 +162,6 @@ export default {
         const reference = this.$slots['reference'][0].elm
         let top = calcOffset(reference).top
         let left = calcOffset(reference).left
-
-        console.log(popover)
 
         //Popover 위치 계산 - left
         if (this.placement.indexOf('right') > -1) {
@@ -268,7 +265,7 @@ export default {
   top: 0;
   left: 0;
   z-index: 100;
-  min-width: 240px;
+  min-width: 17.143em;
   overflow: hidden;
   background-color: #fff;
   border-radius: 6px;
@@ -276,20 +273,20 @@ export default {
 
   &--header {
     position: relative;
-    padding: 18px 28px;
+    padding: 1.286em 2em;
     border-bottom: 1px solid #ddd;
   }
 
   &--title {
     color: #333333;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143em;
   }
 
   &--body {
     position: relative;
     max-height: 80vh;
-    padding: 15px 0 15px 24px;
+    padding: 1.071em 0 1.071em 1.714em;
     overflow: hidden;
   }
 }

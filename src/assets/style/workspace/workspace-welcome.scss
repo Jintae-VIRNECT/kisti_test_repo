@@ -7,10 +7,9 @@
   height: 240px;
   // margin: 30px auto 10px;
   padding: 48px 83px;
-  background: url(~assets/image/banner.png) no-repeat;
+  background: url(~assets/image/banner.png) center right no-repeat #12233a;
   border-radius: 8px;
   &.offsetwidth {
-    width: 1440px;
     margin: 30px auto 10px;
   }
 }
