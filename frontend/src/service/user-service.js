@@ -18,26 +18,6 @@ class UserService {
 		})
 	}
 
-	//가입정보
-	async register(user = {}) {
-		try {
-			const response = await axios.post(GATEWAY_API_URL + API.user.register, {
-				email: user.email,
-				password: user.password,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				birth: user.birth,
-				marketInfoReceive: user.marketInfoReceive,
-				joinInfo: user.joinInfo,
-				serviceInfo: user.serviceInfo,
-				sessionCode: user.sessionCode,
-			})
-			return response.data
-		} catch (e) {
-			console.error(e)
-		}
-	}
-
 	//유저 상세정보
 	async userDetail(user = {}) {
 		try {

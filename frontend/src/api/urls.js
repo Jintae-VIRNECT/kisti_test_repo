@@ -6,7 +6,7 @@ export default {
 		production: 'https://api.virnect.com',
 	},
 	www: {
-		local: 'https://localhost:9010',
+		local: 'https://192.168.13.43:9010',
 		develop: 'https://192.168.6.3:3000',
 		staging: 'https://stgwww.virnect.com',
 		production: 'https://virnect.com',

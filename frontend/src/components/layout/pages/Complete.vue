@@ -5,7 +5,10 @@
 				<h2>회원가입 완료</h2>
 				<p>VIRNECT 회원이 되신 것을 환영합니다.</p>
 
-				<el-button class="next-btn block-btn" type="primary"
+				<el-button
+					class="next-btn block-btn"
+					@click="trialCoupon"
+					type="primary"
 					>2주 무료 사용</el-button
 				>
 				<el-button class="next-btn block-btn" type="info">플랜 구매</el-button>
@@ -21,13 +24,20 @@
 		</el-row>
 	</div>
 </template>
-
 <script>
+import urls from 'api/urls'
 export default {
 	data() {
-		return {}
+		return {
+			// couponUrl: urls.api[process.env.TARGET_ENV],
+		}
 	},
-	methods: {},
+	methods: {
+		trialCoupon() {
+			location.replace(`${urls.www[process.env.TARGET_ENV]}/coupon`)
+			console.log(urls.www[process.env.TARGET_ENV])
+		},
+	},
 }
 </script>
 

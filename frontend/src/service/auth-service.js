@@ -3,7 +3,7 @@ import Axios from 'axios'
 import API from './url'
 
 const GATEWAY_API_URL = 'https://192.168.6.3:8073'
-const AUTH_API_URL = 'http://192.168.6.3:8321'
+// const AUTH_API_URL = 'http://192.168.6.3:8321'
 
 const axios = Axios.create({
 	timeout: 10000,
@@ -56,6 +56,24 @@ class AuthService {
 				}
 				return data
 			})
+	}
+
+	//가입정보
+	async signUp(user = {}) {
+		try {
+			const response = await axios.post(
+				GATEWAY_API_URL + API.auth.signup,
+				user,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				},
+			)
+			return response.data
+		} catch (e) {
+			console.error(e)
+		}
 	}
 
 	async emailAuth(email = {}) {

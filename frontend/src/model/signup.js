@@ -9,6 +9,11 @@ export default class Signup {
 		joinInfo,
 		serviceInfo,
 		sessionCode,
+		description,
+		nickname,
+		mobile,
+		profile,
+		recoveryEmail,
 	) {
 		this.email = email
 		this.password = password
@@ -19,5 +24,10 @@ export default class Signup {
 		this.joinInfo = joinInfo
 		this.serviceInfo = serviceInfo
 		this.sessionCode = sessionCode
+		this.description = description
+		this.nickname = nickname
+		this.mobile = mobile
+		this.profile = profile
+		this.recoveryEmail = recoveryEmail
 	}
 }

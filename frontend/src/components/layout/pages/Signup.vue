@@ -181,14 +181,11 @@
 					clearable
 				>
 				</el-input>
-
-				<p @click="checkAge">나이</p>
-
 				<el-button
 					class="next-btn block-btn"
 					type="info"
 					:disabled="!nextBtn"
-					@click="checkSignup()"
+					@click="checkAge()"
 					>다음</el-button
 				>
 			</el-col>
@@ -231,10 +228,6 @@ export default {
 				sessionCode: '',
 			},
 			passwordConfirm: '',
-			fullName: {
-				lastName: '',
-				firstName: '',
-			},
 			birth: {
 				year: '',
 				month: '',
@@ -254,12 +247,6 @@ export default {
 		}
 	},
 	computed: {
-		userName() {
-			let fullName
-			fullName = this.fullName.firstName + this.fullName.lastName
-			this.signup.name = fullName
-			return fullName
-		},
 		userBirth() {
 			let birth,
 				year = dayjs(this.birth.year),
@@ -314,8 +301,10 @@ export default {
 			let userAge = dayjs(this.userBirth)
 			try {
 				let age = (await today.format('YYYY')) - userAge.format('YYYY')
-				if (age > 14) return true
-				else throw false
+				if (age > 14) {
+					this.checkSignup()
+					return true
+				} else throw false
 			} catch (e) {
 				this.alertMessage(
 					'사용자 연령 제한',
@@ -327,7 +316,6 @@ export default {
 		async checkSignup() {
 			// 폼내용전송
 			try {
-				const userAgeCheck = await this.checkAge()
 				const res = await this.passValidate(this.signup.password)
 				if (res) {
 					this.message = ''
@@ -343,12 +331,12 @@ export default {
 						this.serviceInfoComp,
 						this.signup.sessionCode,
 					)
-					console.log(this.signup)
+					// console.log(this.signup)
 					if (this.signup) {
-						// this.$router.push({
-						// 	name: 'user',
-						// 	params: { signup: this.signup },
-						// })
+						this.$router.push({
+							name: 'user',
+							params: { signup: this.signup },
+						})
 					}
 				} else throw res
 			} catch (e) {

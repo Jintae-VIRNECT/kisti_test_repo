@@ -72,23 +72,61 @@ export default {
 	},
 	watch: {
 		allTerms() {
-			if (this.allTerms) {
+			if (
+				this.allTerms &&
+				!this.serviceAgree &&
+				!this.privacyAgree &&
+				!this.marketingAgree
+			) {
 				this.serviceAgree = true
 				this.privacyAgree = true
 				this.marketingAgree = true
-			} else {
+			}
+			if (
+				!this.allTerms &&
+				this.serviceAgree &&
+				this.privacyAgree &&
+				this.marketingAgree
+			) {
 				this.serviceAgree = false
 				this.privacyAgree = false
 				this.marketingAgree = false
 			}
+			if (
+				(this.allTerms && this.serviceAgree) ||
+				this.privacyAgree ||
+				this.marketingAgree
+			) {
+				this.serviceAgree = true
+				this.privacyAgree = true
+				this.marketingAgree = true
+			}
+		},
+		serviceAgree() {
+			if (!this.serviceAgree) return (this.allTerms = false)
+			if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
+				this.allTerms = true
+			}
+		},
+		privacyAgree() {
+			if (!this.privacyAgree) return (this.allTerms = false)
+			if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
+				this.allTerms = true
+			}
+		},
+		marketingAgree() {
+			if (!this.marketingAgree) return (this.allTerms = false)
+			if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
+				this.allTerms = true
+			}
 		},
 	},
-	methods: {
-		// allTerms() {
-		//   console.log(allTerms)
-		//   this.serviceAgree = !this.serviceAgree
-		//   this.privacyAgree = !this.privacyAgree
-		// }
+	computed: {
+		checkAll() {
+			if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
+				return true
+			}
+		},
 	},
 }
 </script>
@@ -102,12 +140,6 @@ p {
 	margin-top: 60px;
 }
 
-.all-terms {
-	font-size: 16px;
-	.el-checkbox__label {
-		font-size: 16px;
-	}
-}
 .terms-body {
 	margin-top: 55px;
 	text-align: left;

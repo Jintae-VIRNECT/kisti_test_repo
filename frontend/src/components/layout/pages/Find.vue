@@ -48,8 +48,24 @@
 									v-model="fullName.firstName"
 								></el-input>
 								<p class="input-title">휴대폰 번호</p>
+								<el-select
+									v-model="findEmail.countryCode"
+									placeholder="+82"
+									v-validate="'required'"
+									class="countrycode-input"
+									name="countryCode"
+								>
+									<el-option
+										v-for="item in countryCodeLists"
+										:key="item.value"
+										:label="item.label"
+										:value="item.value"
+									>
+									</el-option>
+								</el-select>
 								<el-input
 									placeholder="휴대폰 번호를 입력해 주세요"
+									class="phonenumber-input"
 									clearable
 									name="phoneNumber"
 									v-validate="'required'"
@@ -159,14 +175,25 @@
 							<el-input
 								placeholder="새 비밀번호 입력"
 								type="password"
+								name="password"
+								show-password
 								v-model="resetPass.password"
 								v-if="isCodeAuth === true"
+								v-validate="'required|min:6|max:40'"
+								:class="{ 'input-danger': errors.has('password') }"
 							></el-input>
 							<el-input
 								placeholder="새 비밀번호 재입력"
 								type="password"
 								v-model="resetPass.comfirmPassword"
 								v-if="isCodeAuth === true"
+								show-password
+								name="passwordConfirm"
+								v-validate="'required|min:6|max:40'"
+								:class="{
+									'input-danger':
+										resetPass.password !== resetPass.comfirmPassword,
+								}"
 							></el-input>
 							<p class="restriction-text" v-if="isCodeAuth === true">
 								비밀번호를 영문 대소문자, 숫자, 특수문자(.!@#$%)를 혼합하여
@@ -206,6 +233,7 @@
 <script>
 import mixin from 'mixins/mixin'
 import UserService from 'service/user-service'
+import CountryCode from 'model/countryCode'
 export default {
 	mixins: [mixin],
 	props: {
@@ -220,6 +248,7 @@ export default {
 				lastName: '',
 			},
 			findEmail: {
+				countryCode: '',
 				phoneNumber: '',
 				recoveryEmail: '',
 			},
@@ -237,6 +266,7 @@ export default {
 				email: null,
 				signUpDate: null,
 			},
+			countryCodeLists: CountryCode.countryCode,
 		}
 	},
 	mounted() {
@@ -288,6 +318,14 @@ export default {
 				return '새 비밀번호를 설정합니다. 비밀번호 변경 시, 기존 로그인된 디바이스에서 로그인이 해지됩니다.'
 			else return '보안 코드 6자리를 입력해 주세요.'
 		},
+		mobileSet() {
+			if (
+				this.findEmail.countryCode === '' ||
+				this.findEmail.phoneNumber === ''
+			)
+				return ''
+			else return `${this.findEmail.countryCode}-${this.findEmail.phoneNumber}`
+		},
 	},
 	methods: {
 		async mailAccountFind() {
@@ -295,7 +333,7 @@ export default {
 				const res = await UserService.userFindEmail({
 					firstName: this.fullName.firstName,
 					lastName: this.fullName.lastName,
-					mobile: this.findEmail.phoneNumber,
+					mobile: this.mobileSet,
 					recoveryEmail: this.findEmail.recoveryEmail,
 				})
 				if (res.code === 200) {

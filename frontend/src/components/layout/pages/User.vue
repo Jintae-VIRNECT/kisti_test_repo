@@ -11,7 +11,6 @@
 				<p class="input-title">프로필 이미지</p>
 				<article class="profile-image">
 					<div class="image-holder" @click="profilePopup = true">
-						<!-- <img v-if="file" :src="file" /> -->
 						<div
 							class="image"
 							v-if="thumbnail"
@@ -39,7 +38,6 @@
 						<div class="image-holder pop-profile" @click="profilePopup = true">
 							<input type="file" id="profileImage" @change="uploadImage" />
 							<label for="profileImage" class="avatar">
-								<!-- <img v-if="file" :src="file" /> -->
 								<div
 									class="image"
 									v-if="thumbnail"
@@ -55,13 +53,7 @@
 						<el-button type="info" @click="uploadBtn" class="left-btn"
 							>이미지 업로드</el-button
 						>
-						<el-button
-							@click="
-								file = null
-								user.profile = null
-							"
-							>삭제</el-button
-						>
+						<el-button @click="deleteImage">삭제</el-button>
 						<el-button type="primary" @click="profileDone" :disabled="disabled"
 							>이미지 등록</el-button
 						>
@@ -70,10 +62,12 @@
 
 				<p class="input-title">닉네임</p>
 				<el-input
-					placeholder="장선영"
+					:placeholder="nicknameSet"
 					v-model="user.nickname"
 					type="text"
 					name="nickname"
+					v-validate="'min:2|max:20'"
+					:class="{ 'input-danger': errors.has('nickname') }"
 					clearable
 				>
 				</el-input>
@@ -109,6 +103,7 @@
 					placeholder="전화번호를 입력해 주세요"
 					v-model="user.mobile"
 					clearable
+					type="text"
 					name="mobile"
 				></el-input>
 
@@ -120,6 +115,7 @@
 					name="recoveryEmail"
 					clearable
 					v-validate="'email|max:50'"
+					:class="{ 'input-danger': errors.has('recoveryEmail') }"
 				>
 				</el-input>
 
@@ -127,6 +123,11 @@
 					class="next-btn block-btn"
 					type="info"
 					@click="handleRegisterDetail()"
+					:disabled="
+						(user.nickname == '' || user.nickname == null) &&
+							user.mobile == '' &&
+							user.recoveryEmail == ''
+					"
 					>확인</el-button
 				>
 				<el-button class="block-btn" @click="later()">나중에 하기</el-button>
@@ -136,17 +137,14 @@
 </template>
 
 <script>
-import User from 'model/user'
+import Cookies from 'js-cookie'
+import CountryCode from 'model/countryCode'
+import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
 export default {
 	name: 'user',
 	mixins: [mixin],
-	computed: {
-		loggedIn() {
-			return this.$store.state.auth.initial.status.loggedIn
-		},
-	},
 	props: {
 		signup: Object,
 	},
@@ -154,26 +152,13 @@ export default {
 		return {
 			profilePopup: false,
 			user: {
-				profile: null,
+				profile: '',
 				nickname: '',
+				countryCode: '',
 				mobile: '',
 				recoveryEmail: '',
-				uuid: '',
 			},
-			countryCodeLists: [
-				{
-					value: 1,
-					label: '+82',
-				},
-				{
-					value: 2,
-					label: '+1',
-				},
-				{
-					value: 3,
-					label: '+81',
-				},
-			],
+			countryCodeLists: CountryCode.countryCode,
 			submitted: false,
 			successful: false,
 			isSendEmail: false,
@@ -185,9 +170,21 @@ export default {
 			thumbnail: null,
 		}
 	},
+	watch: {
+		signup() {
+			console.log(this.signup)
+		},
+	},
 	computed: {
 		disabled() {
 			return this.file === this.user.profile
+		},
+		nicknameSet() {
+			return `${this.$props.signup.lastName}${this.$props.signup.firstName}`
+		},
+		mobileSet() {
+			if (this.user.countryCode === '' || this.user.mobile === '') return ''
+			else return `${this.user.countryCode}-${this.user.mobile}`
 		},
 	},
 	mounted() {
@@ -197,89 +194,85 @@ export default {
 	},
 	methods: {
 		async handleRegisterDetail() {
-			new User(
-				this.user.profile,
-				this.user.nickname,
-				this.user.mobile,
-				this.user.recoveryEmail,
-				this.user.uuid,
+			this.checkNickName()
+			// 상세정보등록
+
+			this.formData.append('email', this.$props.signup.email)
+			this.formData.append('password', this.$props.signup.password)
+			this.formData.append('firstName', this.$props.signup.firstName)
+			this.formData.append('lastName', this.$props.signup.lastName)
+			this.formData.append('birth', this.$props.signup.birth)
+			this.formData.append(
+				'marketInfoReceive',
+				this.$props.signup.marketInfoReceive,
 			)
-			if (this.user) {
-				let registerData = null
+			this.formData.append('joinInfo', this.$props.signup.joinInfo)
+			this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
+			this.formData.append('sessionCode', this.$props.signup.sessionCode)
 
-				// 회원가입
-				try {
-					registerData = await this.$store.dispatch(
-						'auth/register',
-						this.$props.signup,
-					)
-				} catch (error) {
-					if (error) {
-						this.alertMessage(
-							'기타 오류',
-							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
-							'error',
-						)
-					}
-					return false
-				}
-				if (!registerData.uuid) return false
+			this.formData.append('profile', this.user.profile)
+			this.formData.append('nickname', this.user.nickname)
+			this.formData.append('mobile', this.mobileSet)
+			this.formData.append('recoveryEmail', this.user.recoveryEmail)
 
-				// 상세정보등록
-				this.user.uuid = registerData.uuid
-				// this.user.uuid = '4d2fce6e509452d6a1e675a50e16e8f0'
-				this.formData.append('profile', this.user.profile)
-				this.formData.append('nickname', this.user.nickname)
-				this.formData.append('mobile', this.user.mobile)
-				this.formData.append('recoveryEmail', this.user.recoveryEmail)
-				this.formData.append('uuid', this.user.uuid)
-				try {
-					const detailData = await this.$store.dispatch(
-						'auth/userDetail',
-						this.formData,
-					)
-					if (detailData) {
-						this.$router.push({
-							name: 'complete',
-						})
-					}
-				} catch (error) {
-					if (error) {
-						this.alertMessage(
-							'기타 오류',
-							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
-							'error',
-						)
-					}
-				}
+			let registerData = null
+
+			// 회원가입
+			try {
+				registerData = await AuthService.signUp(this.formData)
+				if (registerData.code === 200) {
+					console.log(registerData)
+					this.$router.push({
+						name: 'complete',
+					})
+				} else throw registerData
+			} catch (error) {
+				this.alertMessage(
+					'기타 오류',
+					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+					'error',
+				)
 			}
 		},
-		later() {
-			// if (this.$props.signup) {
-			this.$store.dispatch('auth/register', this.$props.signup).then(
-				data => {
-					if (data) {
-						// console.log(data.uuid)
-						this.$router.push({
-							name: 'complete',
-						})
-						// this.$router.push({
-						// 	name: 'user',
-						// 	params: { signup: this.signup, uuid: data.uuid },
-						// })
+		async later() {
+			try {
+				this.formData.append('email', this.$props.signup.email)
+				this.formData.append('password', this.$props.signup.password)
+				this.formData.append('firstName', this.$props.signup.firstName)
+				this.formData.append('lastName', this.$props.signup.lastName)
+				this.formData.append('birth', this.$props.signup.birth)
+				this.formData.append(
+					'marketInfoReceive',
+					this.$props.signup.marketInfoReceive,
+				)
+				this.formData.append('joinInfo', this.$props.signup.joinInfo)
+				this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
+				this.formData.append('sessionCode', this.$props.signup.sessionCode)
+
+				let res = await AuthService.signUp(this.formData)
+				// console.log(res)
+				if (res.code === 200) {
+					this.$router.push({
+						name: 'complete',
+					})
+					const cookieOption = {
+						expires: res.data.expireIn / 3600000,
+						domain:
+							location.hostname.split('.').length === 3
+								? location.hostname.replace(/.*?\./, '')
+								: location.hostname,
 					}
-				},
-				error => {
-					if (error) {
-						this.alertMessage(
-							'기타 오류',
-							`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
-							'error',
-						)
-					}
-				},
-			)
-			// }
+					Cookies.set('accessToken', res.data.accessToken, cookieOption)
+					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
+					// localStorage.setItem('user', JSON.stringify(res.data))
+				} else throw res
+			} catch (e) {
+				this.alertMessage(
+					'기타 오류',
+					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+					'error',
+				)
+			}
 		},
 		handleClose(done) {
 			done()
@@ -291,7 +284,7 @@ export default {
 			this.formData.delete('profile') // profile는 컨텐츠 내의 이미지 리소스
 			this.validImage(event)
 				.then(imageData => {
-					console.log(files[files.length - 1])
+					// console.log(files[files.length - 1])
 					this.file = files[files.length - 1]
 					this.thumbnail = imageData
 				})
@@ -308,9 +301,10 @@ export default {
 			this.user.profile = this.file
 		},
 		deleteImage() {
-			this.$refs.upload.clearFiles()
+			// this.$refs.upload.clearFiles()
 			this.user.profile = null
 			this.file = null
+			this.thumbnail = null
 		},
 		validImage(event) {
 			const files = event.target.files
@@ -347,6 +341,24 @@ export default {
 					oReader.readAsDataURL(files[0])
 				}
 			})
+		},
+		async checkNickName() {
+			try {
+				let res = this.nickNameValidate(this.user.nickname)
+				if (res === false) throw res
+			} catch (e) {
+				// console.log(e)
+				this.alertMessage(
+					'닉네임 설정 오류',
+					`닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.`,
+					'error',
+				)
+			}
+		},
+		nickNameValidate(nickName) {
+			if (/\s/.test(nickName)) return false
+			if (/[`~!@#$%^&*|\\\'\";:\/?]/gi.test(nickName)) return false
+			return true
 		},
 	},
 }

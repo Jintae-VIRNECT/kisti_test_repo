@@ -15,6 +15,13 @@
     }
 }
 
+.all-terms {
+    font-size: 16px;
+    .el-checkbox__label {
+        font-size: 16px;
+    }
+}
+
 .lastname-input {
     width: calc(42% - 20px);
     margin-right: 16px;
@@ -111,7 +118,7 @@
     width: 84px;
 }
 .phonenumber-input {
-    width: 280px;
+    width: calc(100% - 100px);
     margin-left: 12px;
 }
 
