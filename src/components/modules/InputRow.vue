@@ -114,20 +114,20 @@ export default {
 .inputrow {
   position: relative;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 2.143em;
 }
 .inputrow-title {
   position: relative;
   width: fit-content;
-  margin-bottom: 8px;
+  margin-bottom: 0.571em;
   color: rgba(#d2d2d2, 0.5);
-  font-size: 13px;
+  font-size: 0.929em;
   &.required::after {
     position: absolute;
     top: 0px;
-    right: -10px;
-    width: 5px;
-    height: 5px;
+    right: -0.714em;
+    width: 0.357em;
+    height: 0.357em;
     background-color: $color_primary;
     border-radius: 50%;
     content: '';
@@ -141,11 +141,12 @@ export default {
 }
 
 .inputrow-input {
-  width: calc(100% - 40px);
-  min-height: 20px;
-  padding: 8px;
-  padding: 14px 18px;
+  width: calc(100% - 2.857em);
+  min-height: 1.429em;
+  padding: 0.571em;
+  padding: 1em 1.286em;
   color: #fff;
+  font-size: 1em;
   background-color: #1a1a1b;
   border: solid 1px #303030;
   border-radius: 3px;
@@ -160,7 +161,7 @@ export default {
     border: solid 1px $color_primary;
   }
   &.textarea {
-    height: 60px;
+    height: 4.286em;
     overflow-y: hidden;
     resize: none;
   }
@@ -168,8 +169,8 @@ export default {
 .inputrow-length {
   position: absolute;
   right: 0;
-  bottom: -22px;
+  bottom: -1.571em;
   color: rgba(#979fb0, 0.7);
-  font-size: 12px;
+  font-size: 0.857em;
 }
 </style>

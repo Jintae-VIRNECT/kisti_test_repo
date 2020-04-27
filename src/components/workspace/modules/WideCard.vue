@@ -1,5 +1,5 @@
 <template>
-  <div class="widecard" :style="{ height: height + 'px' }" :class="customClass">
+  <div class="widecard" :style="{ height: viewHeight }" :class="customClass">
     <popover v-if="menu" trigger="click" placement="bottom-start">
       <button slot="reference" class="widecard__button"></button>
       <slot name="menuPopover"></slot>
@@ -20,7 +20,7 @@ export default {
   },
   props: {
     height: {
-      type: Number,
+      type: [Number, String],
       default: 86,
     },
     menu: {
@@ -37,7 +37,15 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    viewHeight() {
+      if (typeof this.height === 'string') {
+        return this.height
+      } else {
+        return `${this.height}px`
+      }
+    },
+  },
   methods: {},
 
   /* Lifecycles */
@@ -49,21 +57,21 @@ export default {
 .widecard {
   position: relative;
   width: 100%;
-  margin-bottom: 8px;
-  padding: 22px 30px;
+  margin-bottom: 0.571em;
+  padding: 1.571em 2.143em;
   background-color: #313135;
   // border: solid 1px #3e3e42;
   border-radius: 2px;
 
   > .popover--wrapper {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 1.143em;
+    right: 1.143em;
   }
 }
 .widecard__button {
-  width: 28px;
-  height: 28px;
+  width: 2em;
+  height: 2em;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
 }
 </style>

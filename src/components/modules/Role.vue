@@ -24,15 +24,15 @@ export default {
 @import '~assets/style/vars';
 .role {
   height: fit-content;
-  margin: auto 0 auto 12px;
-  padding: 5px 10px;
+  margin: auto 0 auto 0.857em;
+  padding: 0.357em 0.714em;
   color: #bfddff;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 0.857em;
   font-family: 'roboto';
-  line-height: 12px;
+  line-height: 0.857em;
   border: solid 1px #bfddff;
-  border-radius: 12px;
+  border-radius: 0.857em;
 
   &.card {
     color: #f2f2f2;

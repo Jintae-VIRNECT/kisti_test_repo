@@ -1,0 +1,30 @@
+@import "~assets/style/vars";
+
+.createroom-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 19em;
+  max-height: 45.357em;
+  margin: 3.571em 4.286em 2.143em 4em;
+}
+.createroom-info_regist-image {
+  width: fit-content;
+  margin: 1.429em auto 0.714em;
+  font-size: 1.071em;
+  line-height: 1.571em;
+}
+.createroom-info__add-member {
+  font-size: 0.929em;
+  opacity: 0.7;
+}
+.createroom-info__button {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.createroom-info {
+  .inputrow {
+    margin-top: 2.143em;
+  }
+}

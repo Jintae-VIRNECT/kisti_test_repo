@@ -11,25 +11,25 @@
   display: flex;
   flex: 0;
   flex-direction: column;
-  width: 220px;
-  min-width: 220px;
+  width: 15.714em;
+  min-width: 15.714em;
   // height: 100%;
-  padding: 42px;
+  padding: 3em;
   background-color: $color_darkgray_600;
 }
 
 .roominfo-nav__image {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 35px;
+  width: 5.143em;
+  height: 5.143em;
+  margin: 0 auto 2.5em;
   background-color: #fff;
   border-radius: 50%;
 }
 .roominfo-nav__menu {
-  margin-bottom: 16px;
-  margin-left: 30px;
+  margin-bottom: 1.143em;
+  margin-left: 2.143em;
   color: rgba(#dedede, 0.5);
-  font-size: 16px;
+  font-size: 1.143em;
   text-align: left;
   &:focus {
     color: rgba(#dedede, 0.5);
@@ -50,15 +50,15 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 40px;
+  padding: 2.857em;
 }
 .roominfo-view__title {
   flex: 0;
-  font-size: 24px;
+  font-size: 1.714em;
 }
 .roominfo-view__body {
   flex: 1;
-  margin-top: 15px;
+  margin-top: 1.071em;
 }
 .remoteinfo-usercard {
   &.offline {
@@ -66,10 +66,10 @@
   }
 }
 .imageinput {
-  padding: 12px 43px;
-  font-size: 15px;
+  padding: 0.857em 3.071em;
+  font-size: 1.071em;
   &.regist {
-    margin-right: 16px;
+    margin-right: 1.143em;
     color: $color_primary;
     border-color: $color_primary;
     &:focus {
@@ -104,30 +104,30 @@
 }
 .roominfo-view__footer {
   flex: 0;
-  margin-top: 40px;
-  padding-top: 20px;
+  margin-top: 2.857em;
+  padding-top: 1.429em;
   border-top: solid 1px rgba(#7f7f7f, 0.1);
 }
 
 .roominfo-view__data {
-  margin-top: 15px;
+  margin-top: 1.071em;
 }
 .data-title {
   display: inline-block;
-  width: 70px;
+  width: 5em;
   color: rgba($color_text_main, 0.5);
-  font-size: 13px;
+  font-size: 0.929em;
 }
 .data-value {
   color: $color_text_main;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 0.929em;
 }
 .roominfo-view__button {
   text-align: center;
   > button {
-    margin-top: 60px;
-    padding: 10px 85px;
+    margin-top: 4.286em;
+    padding: 0.714em 6.071em;
   }
 }
 
@@ -143,16 +143,16 @@
 }
 .userinfo__button {
   flex: 0;
-  margin-left: 62px;
+  margin-left: 4.429em;
 }
 
 .roominfo-figure {
-  margin-top: 25px;
+  margin-top: 1.786em;
 }
 .roominfo-figure__title {
   color: rgba($color_text_main, 0.5);
-  font-size: 13px;
+  font-size: 0.929em;
 }
 .roominfo-figure__text {
-  margin-top: 7px;
+  margin-top: 0.5em;
 }

@@ -2,7 +2,7 @@
   <div
     class="profile-image"
     :class="customClass"
-    :style="{ width: `${size}px`, height: `${size}px` }"
+    :style="{ width: `${imageSize}`, height: `${imageSize}` }"
   >
     <img class="profile-image__image" :src="showImage" />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
@@ -17,7 +17,7 @@ export default {
   components: {},
   props: {
     size: {
-      type: Number,
+      type: [Number, String],
       default: 120,
     },
     defaultImage: {
@@ -41,6 +41,13 @@ export default {
     return {}
   },
   computed: {
+    imageSize() {
+      if (typeof this.size === 'string') {
+        return this.size
+      } else {
+        return this.size + 'px'
+      }
+    },
     showImage() {
       if (this.image && this.image.length > 0) {
         return this.image

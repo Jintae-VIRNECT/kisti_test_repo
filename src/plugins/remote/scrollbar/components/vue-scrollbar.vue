@@ -318,13 +318,19 @@ export default {
           (this.scrollWrapperWidth = elementSize.scrollWrapperWidth),
           // Make sure The wrapper is Ready, then render the scrollbar
           (this.ready = true)
-
         return cb ? cb() : false
-      } else return cb ? cb() : false
+      } else {
+        return cb ? cb() : false
+      }
     },
     reset() {
       this.scrollToY(0)
       this.scrollToX(0)
+    },
+    windowResize() {
+      this.calculateSize(() => {
+        this.reset()
+      })
     },
   },
 
@@ -335,13 +341,13 @@ export default {
     this.$eventBus.$on('scroll:reset', this.reset)
 
     // Attach The Event for Responsive View~
-    window.addEventListener('resize', this.calculateSize)
+    window.addEventListener('resize', this.windowResize)
   },
 
   beforeDestroy() {
     // Remove Event
     this.$eventBus.$off('scroll:reset', this.reset)
-    window.removeEventListener('resize', this.calculateSize)
+    window.removeEventListener('resize', this.windowResize)
   },
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <modal
     title="원격협업 상세보기"
-    :width="900"
-    :height="790"
+    width="64.286em"
+    height="56.429em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -149,6 +149,9 @@ export default {
   .modal--inner {
     display: flex;
     flex-direction: column;
+    @media screen and (max-width: 900px), (max-height: 790px) {
+      font-size: 12px;
+    }
   }
   .modal--header {
     flex: 0;

@@ -4,6 +4,7 @@
       :image="imageURL"
       :deleteBtn="!!imageURL"
       @delete="imageRemove"
+      size="8.571em"
     ></profile-image>
     <input
       ref="inputImage"
@@ -143,3 +144,20 @@ export default {
   },
 }
 </script>
+
+<style
+  lang="scss"
+  scoped
+  src="assets/style/workspace/workspace-createroom-info.scss"
+></style>
+<style lang="scss">
+// .otheruser-popover {
+//   min-width: 150px;
+//   background-color: $color_bg_sub;
+//   border: solid 1px #3a3a3d;
+//   transform: translateX(10px);
+//   .popover--body {
+//     padding: 15px;
+//   }
+// }
+</style>
