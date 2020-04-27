@@ -19,7 +19,7 @@
         ></search>
         <icon-button
           v-if="showDeleteButton"
-          :imgSrc="require('assets/image/ic_trash.svg')"
+          :imgSrc="require('assets/image/ic_delete.svg')"
           :text="deleteButtonText"
           @click="$emit('delete')"
         ></icon-button>

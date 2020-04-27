@@ -7,7 +7,7 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        :class="popperClass"
+        :class="[popperClass, { reverse: reverse }]"
         class="popover"
         @click.stop
       >
@@ -93,6 +93,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    placementReverse: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -102,6 +106,7 @@ export default {
         left: 0,
         width: this.width + 'px',
       },
+      reverse: false,
     }
   },
   watch: {
@@ -141,6 +146,7 @@ export default {
     },
     showPopover() {
       this.$eventBus.$emit('popover:close')
+      console.log(this.show)
 
       //Popover 이동
       if (this.$refs['popover']) {
@@ -150,10 +156,15 @@ export default {
       this.visible = true
 
       this.$nextTick(() => {
+        if (this.show) {
+          this.show()
+        }
         const popover = this.$refs['popover']
         const reference = this.$slots['reference'][0].elm
         let top = calcOffset(reference).top
         let left = calcOffset(reference).left
+
+        console.log(popover)
 
         //Popover 위치 계산 - left
         if (this.placement.indexOf('right') > -1) {
@@ -175,6 +186,15 @@ export default {
           top -= popover.offsetHeight
         } else if (this.placement.indexOf('bottom') > -1) {
           top += reference.offsetHeight
+
+          if (
+            this.placementReverse &&
+            top + popover.offsetHeight > document.body.clientHeight
+          ) {
+            this.reverse = true
+
+            top -= popover.offsetHeight + reference.offsetHeight
+          }
         } else {
           if (this.placement.indexOf('start') > -1) {
             //nothing
@@ -197,10 +217,6 @@ export default {
               left - (reference.offsetWidth - this.width) / 2 + 'px',
             )
           }
-        }
-
-        if (this.show) {
-          this.show()
         }
       })
     },

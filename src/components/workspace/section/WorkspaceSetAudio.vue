@@ -17,6 +17,7 @@
       <figure class="setting__figure">
         <p class="setting__label">출력 장치</p>
         <r-select
+          ref="settingOutput"
           class="setting__r-selecter"
           v-on:changeValue="setAudioOutputDevice"
           :options="audioOutputDevices"
@@ -31,7 +32,7 @@
 <script>
 import RSelect from 'RemoteSelect'
 export default {
-  data: function() {
+  data() {
     return {
       videoDevices: [],
       audioDevices: [],
@@ -53,13 +54,6 @@ export default {
     defaultInputAudio: null,
     defaultOuputAudio: null,
   },
-  mounted() {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-  },
-  created() {
-    // console.log('this.audioInputDevices', this.audioInputDevices)
-    // console.log('this.audioOutputDevices', this.audioOutputDevices)
-  },
   components: {
     RSelect,
   },
@@ -80,6 +74,9 @@ export default {
     setAudioOutputDevice(newOutputAudioDevice) {
       this.$emit('selectedOutputAudioDevice', newOutputAudioDevice)
     },
+  },
+  mounted() {
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
   },
 }
 </script>
