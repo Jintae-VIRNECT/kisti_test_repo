@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class ContentDeleteResponse {
     @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스를 구별합니다.", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     private String workspaceUUID;

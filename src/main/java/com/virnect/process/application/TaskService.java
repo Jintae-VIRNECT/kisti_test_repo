@@ -1462,6 +1462,9 @@ public class TaskService {
 
         log.debug("apiResponse : {}", apiResponse.getData().toString());
 
+        // TODO : 컨텐츠 삭제 실패시 롤백 구현 안됨
+
+
         // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
         this.processRepository.delete(process);
 
