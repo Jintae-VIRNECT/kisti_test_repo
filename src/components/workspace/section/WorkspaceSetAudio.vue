@@ -37,8 +37,8 @@ export default {
   props: {
     mics: null,
     speakers: null,
-    defaultInputAudio: null,
-    defaultOuputAudio: null,
+    defaultMic: null,
+    defaultSpeaker: null,
   },
   mounted() {},
   created() {},
@@ -55,12 +55,12 @@ export default {
     },
   },
   methods: {
-    setMic(newInputAudioDevice) {
-      this.$emit('selectedAudioInputDevice', newInputAudioDevice)
+    setMic(newMic) {
+      this.$emit('selectedMic', newMic)
     },
 
-    setSpeaker(newOutputAudioDevice) {
-      this.$emit('selectedOutputAudioDevice', newOutputAudioDevice)
+    setSpeaker(newSpeaker) {
+      this.$emit('selectedSpeaker', newSpeaker)
     },
   },
 }

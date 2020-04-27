@@ -34,10 +34,10 @@
             class="setting-section"
             :mics="mics"
             :speakers="speakers"
-            @selectedAudioInputDevice="setMic"
-            @selectedOutputAudioDevice="setSpeaker"
-            :defaultInputAudio="settings.mic"
-            :defaultOuputAudio="settings.speaker"
+            @selectedMic="setMic"
+            @selectedSpeaker="setSpeaker"
+            :defaultMic="settings.mic"
+            :defaultSpeaker="settings.speaker"
           ></workspace-set-audio>
 
           <workspace-mic-test class="setting-section" :selectMic="selectMic">
