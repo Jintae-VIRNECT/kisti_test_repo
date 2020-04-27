@@ -37,10 +37,6 @@ public class SceneGroupCustomRepositoryImpl extends QuerydslRepositorySupport im
             query = query.join(qSceneGroup.content, qContent).where(qContent.workspaceUUID.eq(workspaceUUID));
         }
 
-        if (userUUID != null) {
-            query = query.where(qContent.userUUID.eq(userUUID));
-        }
-
         long totalCount = query.fetchCount();
 
         List<SceneGroup> sceneGroupList = getQuerydsl().applyPagination(pageable, query).fetch();
