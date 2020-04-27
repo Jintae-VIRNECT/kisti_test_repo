@@ -94,9 +94,9 @@ export default {
   /**
    *
    * @param {*} param0
-   * @param {String} payload
+   * @param {*} payload language
    */
-  setNotiFlag({ commit }, payload) {
-    commit(types.SETTINGS.SET_NOTI_FLAG_PC, payload)
+  setLanguage({ commit }, payload) {
+    commit(types.SETTINGS.SET_LANGUAGE, payload)
   },
 }

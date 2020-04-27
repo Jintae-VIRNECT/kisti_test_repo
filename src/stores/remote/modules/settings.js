@@ -8,7 +8,6 @@ const state = {
   language: null,
   localRecordLength: null,
   recordResolution: null,
-  notiFlagPc: false,
 }
 
 const mutations = {
@@ -29,9 +28,6 @@ const mutations = {
   },
   [SETTINGS.SET_RECORD_RESOLUTION](state, recordResolution) {
     state.recordResolution = recordResolution
-  },
-  [SETTINGS.SET_NOTI_FLAG_PC](state, notiFlagPc) {
-    state.notiFlagPc = notiFlagPc
   },
 }
 export default {

@@ -45,7 +45,7 @@ export default {
   },
   watch: {
     selectLanguage: function(language) {
-      this.$store.dispatch('setNotiFlag', language)
+      this.$store.dispatch('setLanguage', language)
     },
   },
 }

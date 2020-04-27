@@ -115,7 +115,7 @@ export default {
       speaker: state => state.settings.speaker,
       localRecordLength: state => state.settings.localRecordLength,
       recordResolution: state => state.settings.recordResolution,
-      notiFlagPc: state => state.settings.notiFlagPc,
+      language: state => state.settings.language,
     }),
   },
   watch: {
@@ -138,7 +138,7 @@ export default {
     recordResolution(recordResolution) {
       this.settings.recordingResolution = recordResolution
     },
-    notiFlagPc(language) {
+    language(language) {
       this.settings.language = language
       putLanguage(language)
     },
