@@ -10,6 +10,7 @@
           :options="mics"
           :value="'deviceId'"
           :text="'label'"
+          :defaultValue="defaultMic"
         >
         </r-select>
       </figure>
@@ -22,6 +23,7 @@
           :options="speakers"
           :value="'deviceId'"
           :text="'label'"
+          :defaultValue="defaultSpeaker"
         >
         </r-select>
       </figure>

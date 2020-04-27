@@ -67,10 +67,10 @@
 </template>
 <script>
 import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
-//import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
+//import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
 import { mapState } from 'vuex'
 import {
   getConfiguration,
@@ -82,10 +82,10 @@ export default {
   name: 'WorkspaceSetting',
   components: {
     WorkspaceSetAudio,
-    //WorkspaceSetVideo,
     WorkspaceSetLanguage,
     WorkspaceSetRecord,
     WorkspaceMicTest,
+    //WorkspaceSetVideo,
   },
   data() {
     return {

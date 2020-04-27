@@ -10,6 +10,7 @@
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="defaultRecLength"
         >
         </r-select>
       </figure>
@@ -22,6 +23,7 @@
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="defaultRecordRec"
         >
         </r-select>
       </figure>
@@ -33,8 +35,8 @@ import RSelect from 'RemoteSelect'
 export default {
   props: {
     defaultRecLength: {
-      type: Number,
-      default: 5,
+      type: String,
+      default: '5',
     },
     defaultRecordRec: {
       type: String,
@@ -48,19 +50,19 @@ export default {
 
       localRecTimeOpt: [
         {
-          value: 5,
+          value: '5',
           text: '5분',
         },
         {
-          value: 10,
+          value: '10',
           text: '10분',
         },
         {
-          value: 15,
+          value: '15',
           text: '15분',
         },
         {
-          value: 30,
+          value: '30',
           text: '30분',
         },
       ],
