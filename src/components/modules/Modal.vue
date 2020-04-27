@@ -170,7 +170,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background-color: rgba(18, 21, 23, 0.5);
+  background-color: rgba(#121517, 0.5);
 
   .modal--dimmed {
     position: absolute;
@@ -194,7 +194,7 @@ export default {
     position: relative;
     height: 5em;
     padding: 1.571em 2.143em;
-    background-color: #313135;
+    background-color: $color_darkgray_500;
     border-bottom: 1px solid rgba(#7f7f7f, 0.2);
     border-radius: 0.714em 0.714em 0 0;
   }

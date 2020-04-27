@@ -70,11 +70,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .card {
   position: relative;
   padding: 30px;
-  background-color: #313135;
-  border: solid 1px #3e3e42;
+  background-color: $color_darkgray_500;
+  border: solid 1px $color_darkgray_500;
   border-radius: 2px;
   > .popover--wrapper {
     position: absolute;

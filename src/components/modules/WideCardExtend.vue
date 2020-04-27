@@ -68,7 +68,7 @@ export default {
   border-radius: 2px;
 
   &:hover {
-    background-color: #313135;
+    background-color: $color_darkgray_500;
   }
   .card-item {
     flex-basis: 0;

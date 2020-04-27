@@ -1,26 +1,19 @@
 <template>
-  <div class="card" :class="{ no__button: !showMessageButton }" width="100%">
+  <div class="card" :class="{ no__button: !showMessageButton }">
     <div class="card-center">
-      <div class="card-center-profile--thumb" :class="{ expired: !license }">
-        <div
-          v-if="color.length > 0"
-          class="card-center-profile--image"
-          :style="{ 'background-color': color }"
-        ></div>
-        <p v-else class="card-center-profile--image">
-          <img :src="imageUrl" @error="onImageError" />
-        </p>
+      <div class="card-profile--thumb" :class="{ expired: !license }">
+        <profile :image="imageUrl" size="4.571rem"></profile>
         <span
           v-if="status && license"
-          class="card-center-profile--badge"
+          class="card-profile--badge"
           :class="status"
           >{{ status }}</span
         >
       </div>
-      <div class="card-center-profile--name" :class="{ expired: !license }">
+      <div class="card-profile--name">
         {{ name }}
       </div>
-      <div class="card-center-profile--email">{{ email }}</div>
+      <div class="card-profile--email">{{ email }}</div>
 
       <role v-if="role && license" :role="role" :opt="opt"></role>
       <role
@@ -36,10 +29,12 @@
 </template>
 
 <script>
+import ProfileImage from 'ProfileImage'
 import Role from 'Role'
 export default {
   name: 'Card',
   components: {
+    Profile: ProfileImage,
     Role,
   },
 
@@ -47,9 +42,6 @@ export default {
     status: {
       type: String,
       validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
-    },
-    color: {
-      default: '',
     },
     imageUrl: {
       type: String,
@@ -93,7 +85,7 @@ export default {
     },
     opt() {
       if (this.license) {
-        return 'card'
+        return ''
       } else {
         return 'expired'
       }
@@ -106,25 +98,22 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~assets/style/vars';
 .card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 32px;
-  background-color: rgba(49, 49, 53, 0.902);
+  padding-top: 2.286rem;
+  background-color: rgba($color_darkgray_500, 0.9);
   border: solid 1px #3e3e42;
   border-radius: 2px;
   &.no__button {
     padding-bottom: 20px;
   }
-  .role {
-    margin: 8px 0px 8px 0px;
-  }
 
   &:hover {
-    background-color: #313135;
+    background-color: $color_darkgray_500;
   }
 }
 .card-center {
@@ -132,55 +121,34 @@ export default {
   flex-direction: column;
   flex-grow: 3;
   align-items: center;
-  min-height: 180px;
-  margin-bottom: 10px;
+  // min-height: 180px;
+  margin-bottom: 0.714rem;
 }
 
-.card-center-profile--thumb {
+.card-profile--thumb {
   position: relative;
-  width: 64px;
-  height: 64px;
+  padding: 0.214rem;
+  border: 1.4px solid transparent;
 
   &.expired {
-    width: 73px;
-    height: 73px;
-    padding: 3px;
-    border: solid;
-    border-color: red;
-    border-width: 1.4px;
+    border-color: #c51803;
     border-radius: 50%;
   }
 }
 
-.card-center-profile--image {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  line-height: 0;
-  background-color: #fff;
-  border-radius: 50%;
-}
-
-.card-center-profile--name {
-  margin-top: 17px;
-  margin-bottom: 4px;
-  color: #ffffff;
+.card-profile--name {
+  margin-top: 1.214rem;
+  margin-bottom: 0.286rem;
   font-weight: 500;
-  font-size: 15px;
-  text-align: center;
-  &.expired {
-    margin-top: 11px;
-    margin-bottom: 3px;
-  }
+  font-size: 1.071rem;
 }
-.card-center-profile--email {
-  margin-bottom: 11px;
-  color: rgb(152, 160, 166);
-  font-size: 13px;
-  text-align: center;
+.card-profile--email {
+  margin-bottom: 0.786rem;
+  color: #98a0a6;
+  font-size: 0.929rem;
 }
 
-.card-center-profile--badge {
+.card-profile--badge {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -204,16 +172,19 @@ export default {
 .card-bottom {
   flex-grow: 1;
   width: 100%;
-  margin-bottom: 14px;
-  padding-top: 14px;
-  font-size: 13px;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  font-size: 0.929rem;
 
   text-align: center;
-  border-top-color: rgba(62, 62, 66, 0.92);
-  border-top-width: 1px;
-  border-top-style: solid;
-  > p {
-    color: rgb(255, 255, 255);
+  border-top: solid 1px rgba(#3e3e42, 0.92);
+}
+</style>
+
+<style lang="scss">
+.card {
+  .role {
+    margin: 0.571rem 0;
   }
 }
 </style>

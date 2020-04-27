@@ -93,11 +93,11 @@ body.modal-open {
     padding: 0.714em 1.571em;
     color: rgba(#fff, 0.6);
     font-weight: 300;
-    background-color: #313135;
+    background-color: $color_darkgray_500;
 
     &:focus {
       color: rgba(#fff, 0.6);
-      background-color: #313135;
+      background-color: $color_darkgray_500;
     }
     &:hover,
     &:active {
