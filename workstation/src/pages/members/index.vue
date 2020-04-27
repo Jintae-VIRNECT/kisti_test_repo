@@ -10,24 +10,31 @@
         </el-breadcrumb>
         <h2>{{ $t('members.allMembers.title') }}</h2>
       </div>
-      <el-row> </el-row>
+      <el-row class="navbar">
+        <el-button type="primary" class="right" @click="showAddModal = true">
+          {{ $t('members.allMembers.addMember') }}
+        </el-button>
+      </el-row>
       <el-row>
         <el-col class="profile" v-for="member in members" :key="member.uuid">
           <member-profile-card :data="member" />
         </el-col>
       </el-row>
     </div>
+    <member-add-modal :visible.sync="showAddModal" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import MemberProfileCard from '@/components/member/MemberProfileCard'
+import MemberAddModal from '@/components/member/MemberAddModal'
 import workspaceService from '@/services/workspace'
 
 export default {
   components: {
     MemberProfileCard,
+    MemberAddModal,
   },
   computed: {
     ...mapGetters({
@@ -38,6 +45,7 @@ export default {
   data() {
     return {
       members: [],
+      showAddModal: false,
     }
   },
   methods: {
@@ -55,6 +63,9 @@ export default {
 
 <style lang="scss">
 #members {
+  .title {
+    margin-bottom: 20px;
+  }
   .el-col.el-col-24.profile {
     width: 320px;
     margin-right: 28px;

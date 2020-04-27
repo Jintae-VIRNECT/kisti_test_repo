@@ -141,4 +141,18 @@ export default {
       },
     })
   },
+  /**
+   * 멤버 초대
+   * @param {[InviteMember]} userInfoList
+   */
+  async inviteMembers(userInfoList) {
+    const workspaceId = activeWorkspaceGetter().info.uuid
+    const data = await api('MEMBERS_INVITE', {
+      route: { workspaceId },
+      params: {
+        userId: myProfileGetter().uuid,
+        userInfoList,
+      },
+    })
+  },
 }

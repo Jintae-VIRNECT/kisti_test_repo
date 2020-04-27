@@ -25,6 +25,8 @@ module.exports = {
   MEMBER_ROLE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
   // 워크스페이스 사용자 - 멤버 내보내기
   MEMBER_KICK: ['DELETE', '/workspaces/{workspaceId}/members/info'],
+  // 워크스페이스 사용자 - 멤버 초대하기
+  MEMBERS_INVITE: ['POST', '/workspaces/{workspaceId}/invite'],
   /**
    * Contents
    */

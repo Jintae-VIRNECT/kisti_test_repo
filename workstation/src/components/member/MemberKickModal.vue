@@ -4,6 +4,7 @@
     :visible.sync="showMe"
     :title="$t('members.kick.title')"
     width="440px"
+    top="11vh"
   >
     <div>
       {{ $t('members.kick.desc') }}

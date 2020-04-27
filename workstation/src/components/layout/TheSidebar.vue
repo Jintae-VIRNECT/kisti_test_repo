@@ -95,6 +95,7 @@ $the-sidebar-border: solid 1px #0d1d39;
     display: block;
     width: 100%;
     height: 100%;
+    background-color: #e2e7ed;
     background-position: center;
     background-size: cover;
   }
@@ -140,10 +141,10 @@ $the-sidebar-border: solid 1px #0d1d39;
 }
 .collapse-enter-to {
   transform: translateX(0);
-  transition: transform 0.4s;
+  transition: transform 0.3s;
 }
 .collapse-leave-active {
   transform: translateX(-100%);
-  transition: transform 0.4s;
+  transition: transform 0.3s;
 }
 </style>

@@ -21,6 +21,7 @@ body {
   font-weight: 500;
 
   @import "@/assets/css/modules/title.scss";
+  @import "@/assets/css/modules/navbar.scss";
 
   @import "@/assets/css/el-override/button.scss";
   @import "@/assets/css/el-override/card.scss";
