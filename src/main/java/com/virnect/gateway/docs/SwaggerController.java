@@ -2,6 +2,7 @@ package com.virnect.gateway.docs;
 
 import io.swagger.models.Swagger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ import java.util.List;
  * @description
  * @since 2020.04.10
  */
-
+@Profile({"local", "develop"})
 @Controller
 @RequiredArgsConstructor
 public class SwaggerController {
