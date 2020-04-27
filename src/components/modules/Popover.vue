@@ -79,7 +79,7 @@ export default {
       },
     },
     width: {
-      type: Number,
+      type: [Number, String],
       default: 240,
     },
     popperClass: String,
@@ -104,7 +104,7 @@ export default {
       style: {
         top: 0,
         left: 0,
-        width: this.width + 'px',
+        width: typeof this.width === 'string' ? this.width : this.width + 'px',
       },
       reverse: false,
     }

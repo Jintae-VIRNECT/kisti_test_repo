@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="{ no__button: !showMessageButton }" width="full">
+  <div class="card" :class="{ no__button: !showMessageButton }" width="100%">
     <div class="card-center">
       <div class="card-center-profile--thumb" :class="{ expired: !license }">
         <div

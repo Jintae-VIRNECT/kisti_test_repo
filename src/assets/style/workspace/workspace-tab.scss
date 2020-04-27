@@ -2,7 +2,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: calc(100% - 240px);
+  height: calc(100% - $welcome_height);
 }
 
 .workspace-tab__nav {
@@ -13,7 +13,7 @@
     position: absolute;
     top: 0;
     z-index: 1;
-    width: calc(100% - 10px);
+    width: calc(100% - 0.714rem);
   }
 }
 
@@ -24,12 +24,12 @@
 }
 
 .workspace-tab__button {
-  margin-right: 20px;
+  margin-right: 1.429rem;
   > button {
-    min-width: 70px;
-    padding: 12px 3px;
+    min-width: 5rem;
+    padding: 0.857rem 0.214rem;
     color: $color_text;
-    font-size: 15px;
+    font-size: 1.071rem;
     background-color: transparent;
     border-bottom: solid 2px transparent;
     opacity: 0.25;
@@ -50,19 +50,19 @@
   flex: 1;
   flex-direction: column;
   width: 100%;
-  padding-bottom: 20px;
+  padding-bottom: 1.429rem;
   text-align: left;
   background-color: $color_bg_display;
   &.fix {
-    margin-top: 50px;
+    margin-top: 3.571rem;
   }
   &.remote .tab-view__body {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    -webkit-column-gap: 8px;
-    -moz-column-gap: 8px;
-    column-gap: 8px;
-    row-gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    -webkit-column-gap: 0.571rem;
+    -moz-column-gap: 0.571rem;
+    column-gap: 0.571rem;
+    row-gap: 0.571rem;
   }
 }
 .tab-view__header {
@@ -71,16 +71,16 @@
   flex: 0;
   //flex-direction: column;
   align-items: center;
-  padding: 51px 0 0px;
+  padding: 3.643rem 0 0px;
 }
 .tab-view__title {
-  margin-right: 7px;
+  margin-right: 0.5rem;
   color: $color_text_main;
   font-weight: 500;
-  font-size: 22px;
+  font-size: 1.571rem;
 }
 .tab-view__description {
-  margin-top: 9px;
+  margin-top: 0.643rem;
   color: rgba($color_text_sub, 0.3);
 }
 
@@ -92,10 +92,10 @@
 .tab-view__sub-header {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 23px;
+  padding-bottom: 1.643rem;
 }
 
 .tab-view__body {
   flex: 1;
-  margin-bottom: 20px;
+  margin-bottom: 1.429rem;
 }

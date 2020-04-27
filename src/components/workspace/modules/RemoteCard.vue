@@ -2,8 +2,8 @@
   <card
     class="groupcard"
     :menu="true"
-    width="full"
-    :height="490"
+    width="100%"
+    height="35rem"
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
@@ -134,131 +134,18 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import '~assets/style/vars';
-
-.card.groupcard {
-  max-width: 350px;
-  height: 490px;
-  background-color: $color_darkgray_600;
-  &:hover {
-    background-color: $color_darkgray_500;
-  }
-}
-.groupcard-body {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
-
-.groupcard__leader {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  padding: 4px 12px;
-  font-weight: 500;
-  font-size: 12px;
-  font-family: roboto;
-  line-height: 12px;
-  background-color: #18497c;
-  border: solid 1px #0261c6;
-  border-radius: 12px;
-}
-.groupcard-profile {
-  flex: 1;
-  padding-top: 20px;
-  text-align: center;
-}
-.profile__image {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 5px;
-  background-color: $color_white;
-  border-radius: 50%;
-}
-.profile__name {
-  font-weight: 500;
-  font-size: 18px;
-}
-.profile__description {
-  display: -webkit-box;
-  width: 228px;
-  min-height: 1.5rem;
-  max-height: 3em;
-  margin-bottom: 5px;
-  overflow: hidden;
-  color: rgba($color_text_main, 0.76);
-  font-size: 15px;
-  line-height: 1.5;
-  white-space: normal;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  word-break: break-all;
-  -webkit-line-clamp: 2;
-  /* autoprefixer: off */
-  -webkit-box-orient: vertical;
-}
-.profile__leader {
-  position: relative;
-  width: fit-content;
-  margin: 5px auto 14px;
-  margin-bottom: 9px;
-  color: $color_text_sub;
-  &:before {
-    position: absolute;
-    top: 0;
-    right: 105%;
-    width: 20px;
-    height: 20px;
-    background: url(~assets/image/ic_leader.svg) 50%/20px no-repeat;
-    content: '';
-  }
-}
-.groupcard-info {
-  display: inline-block;
-  flex: 0;
-}
-.info__section {
-  margin-bottom: 20px;
-}
-.info__title {
-  margin-bottom: 5px;
-  color: $color_text_main;
-  font-weight: 500;
-}
-.info__description {
-  font-weight: 500;
-}
-.groupcard-button {
-  bottom: 0;
-  left: 0;
-  flex: 0;
-  width: 100%;
-  margin-top: 20px;
-  padding: 10px 40px;
-}
-.groupcard.profilelist {
-  > .profilelist-user {
-    width: 28px;
-    height: 28px;
-    margin-left: 4px;
-  }
-  > .profilelist-user__expend {
-    width: 28px;
-    height: 28px;
-    margin-left: 4px;
-  }
-}
-</style>
+<style
+  lang="scss"
+  scoped
+  src="assets/style/workspace/workspace-remotecard.scss"
+></style>
 
 <style lang="scss">
 @import '~assets/style/vars';
 
 .popover.group-menu {
-  width: 120px;
-  min-width: 120px;
+  width: 8.571em;
+  min-width: 8.571em;
   background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   border-radius: 6px;
@@ -267,21 +154,21 @@ export default {
   }
 }
 .groupcard-popover {
-  padding: 4px 0;
-}
-.group-pop__button {
-  width: 100%;
-  padding: 13px 20px;
-  color: #fff;
-  text-align: left;
-  &:focus {
-    background-color: rgba($color_bg_item, 0.15);
-  }
-  &:hover {
-    background-color: rgba($color_bg_item, 0.3);
-  }
-  &:active {
-    background-color: rgba($color_bg_item, 0.5);
+  padding: 0.286em 0;
+  .group-pop__button {
+    width: 100%;
+    padding: 0.929em 1.429em;
+    color: #fff;
+    text-align: left;
+    &:focus {
+      background-color: rgba($color_bg_item, 0.15);
+    }
+    &:hover {
+      background-color: rgba($color_bg_item, 0.3);
+    }
+    &:active {
+      background-color: rgba($color_bg_item, 0.5);
+    }
   }
 }
 </style>

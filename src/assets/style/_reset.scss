@@ -87,12 +87,6 @@ body {
   height: 100%;
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
-  @media screen and (max-width: $size_tab_max) {
-    font-size: 12px;
-  }
-  @media screen and (max-width: $size_m_max) {
-    font-size: 10px;
-  }
 }
 
 button {

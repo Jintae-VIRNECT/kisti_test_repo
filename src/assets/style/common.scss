@@ -4,6 +4,19 @@
 @import "font";
 @import "reset";
 
+html,
+body {
+  @include desktop {
+    font-size: 14px;
+  }
+  @include tablet {
+    font-size: 12px;
+  }
+  @include mobile {
+    font-size: 10px;
+  }
+}
+
 @include desktop {
   body {
     min-width: $size_tab_max;

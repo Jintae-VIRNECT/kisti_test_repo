@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :style="{ width: cardWidth, height: height + 'px' }">
+  <div class="card" :style="{ width: cardWidth, height: cardHeight }">
     <popover
       v-if="menu"
       trigger="click"
@@ -31,7 +31,7 @@ export default {
       default: 204,
     },
     height: {
-      type: Number,
+      type: [Number, String],
       default: 244,
     },
     menu: {
@@ -48,10 +48,17 @@ export default {
   },
   computed: {
     cardWidth() {
-      if (this.width === 'full') {
-        return '100%'
+      if (typeof this.width === 'string') {
+        return this.width
       } else {
         return this.width + 'px'
+      }
+    },
+    cardHeight() {
+      if (typeof this.height === 'string') {
+        return this.height
+      } else {
+        return this.height + 'px'
       }
     },
   },

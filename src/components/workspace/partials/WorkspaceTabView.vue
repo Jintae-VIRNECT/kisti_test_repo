@@ -125,6 +125,6 @@ export default {
 </script>
 <style lang="scss">
 .tab-view__search {
-  margin-right: 15px;
+  margin-right: 1.071em;
 }
 </style>

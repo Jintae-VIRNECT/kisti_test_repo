@@ -21,8 +21,9 @@
       v-if="otherUsers.length > 0"
       placement="right"
       trigger="hover"
-      :width="150"
+      width="10.714em"
       popperClass="otheruser-popover"
+      :scrollHide="true"
     >
       <div>
         <figure
@@ -114,6 +115,9 @@ export default {
     &:last-child {
       margin-bottom: 0;
     }
+  }
+  &:first-child {
+    margin-left: 0;
   }
 }
 .profilelist-user__image {

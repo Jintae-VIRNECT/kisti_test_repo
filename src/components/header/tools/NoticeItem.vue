@@ -143,7 +143,7 @@ export default {
 }
 .notice-item__info {
   color: #f55560;
-  font-size: 12px;
+  font-size: 0.857em;
   &.message,
   &.invite,
   &.file {
@@ -159,7 +159,7 @@ export default {
 }
 .notice-item__date {
   color: #98a0a6;
-  font-size: 12px;
+  font-size: 0.857em;
 }
 .notice-item__buttons {
   margin-top: 10px;

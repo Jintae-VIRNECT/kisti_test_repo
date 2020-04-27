@@ -130,7 +130,7 @@ export default {
   margin: 6px 0 3px;
   padding: 10px;
   color: #bfddff;
-  font-size: 12px;
+  font-size: 0.857em;
   text-align: center;
   border-top: solid 1px rgba(#eaeeee, 0.06);
 }

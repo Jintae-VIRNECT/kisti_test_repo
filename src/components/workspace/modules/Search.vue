@@ -53,18 +53,18 @@ export default {
 .search {
   position: relative;
   width: fit-content;
-  height: 36px;
-  padding: 0 36px 0 16px;
+  height: 2.571rem;
+  padding: 0 2.571rem 0 1.143rem;
   background-color: transparent;
   border: solid 1px rgba(#b3b3b3, 0.2);
-  border-radius: 18px;
+  border-radius: 1.286rem;
   &:before {
     position: absolute;
-    top: 6px;
-    right: 10px;
-    width: 22px;
-    height: 22px;
-    background: url(~assets/image/ic_search.svg) 50%/22px no-repeat;
+    top: 0.429rem;
+    right: 0.714rem;
+    width: 1.571rem;
+    height: 1.571rem;
+    background: url(~assets/image/ic_search.svg) 50%/1.571rem no-repeat;
     content: '';
   }
   &:focus-within {
@@ -72,15 +72,16 @@ export default {
   }
 }
 .search__input {
-  width: 186px;
+  width: 13.286rem;
   height: 100%;
   color: #fff;
+  font-size: 1rem;
   background-color: transparent;
   border: none;
   transition: width 0.25s ease;
   caret-color: $color_primary;
   &:focus {
-    width: 320px;
+    width: 22.857rem;
     transition: width 0.25s ease;
   }
   &::placeholder {

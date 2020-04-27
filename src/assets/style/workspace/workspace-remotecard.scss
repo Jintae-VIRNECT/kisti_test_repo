@@ -1,0 +1,115 @@
+@import "~assets/style/vars";
+
+.card.groupcard {
+  max-width: 25rem;
+  height: 35rem;
+  background-color: $color_darkgray_600;
+  &:hover {
+    background-color: $color_darkgray_500;
+  }
+}
+.groupcard-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.groupcard__leader {
+  position: absolute;
+  top: -0.714rem;
+  left: -0.714rem;
+  padding: 0.286rem 0.857rem;
+  font-weight: 500;
+  font-size: 0.857rem;
+  font-family: roboto;
+  line-height: 0.857rem;
+  background-color: #18497c;
+  border: solid 1px #0261c6;
+  border-radius: 0.857rem;
+}
+.groupcard-profile {
+  flex: 1;
+  padding-top: 1.429rem;
+  text-align: center;
+}
+.profile__image {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 0.357em;
+  background-color: $color_white;
+  border-radius: 50%;
+}
+.profile__name {
+  font-weight: 500;
+  font-size: 1.286rem;
+}
+.profile__description {
+  display: -webkit-box;
+  min-height: 1.5rem;
+  max-height: 3rem;
+  margin-bottom: 0.357em;
+  overflow: hidden;
+  color: rgba($color_text_main, 0.76);
+  font-size: 1.071rem;
+  line-height: 1.5;
+  white-space: normal;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  word-break: break-all;
+  -webkit-line-clamp: 2;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
+}
+.profile__leader {
+  position: relative;
+  width: fit-content;
+  margin: 0.357em auto 1rem;
+  margin-bottom: 0.643rem;
+  color: $color_text_sub;
+  &:before {
+    position: absolute;
+    top: 0;
+    right: 105%;
+    width: 1.429rem;
+    height: 1.429rem;
+    background: url(~assets/image/ic_leader.svg) 50%/1.429rem no-repeat;
+    content: "";
+  }
+}
+.groupcard-info {
+  display: inline-block;
+  flex: 0;
+}
+.info__section {
+  margin-bottom: 1.429rem;
+}
+.info__title {
+  margin-bottom: 0.357rem;
+  color: $color_text_main;
+  font-weight: 500;
+}
+.info__description {
+  font-weight: 500;
+}
+.groupcard-button {
+  bottom: 0;
+  left: 0;
+  flex: 0;
+  width: 100%;
+  // margin-top: 1.429rem;
+  padding: 0.714rem 2.857rem;
+}
+.groupcard.profilelist {
+  > .profilelist-user {
+    width: 2rem;
+    height: 2rem;
+    margin-left: 0.857rem;
+  }
+  > .profilelist-user__expend {
+    width: 2rem;
+    height: 2rem;
+    margin-left: 0.857rem;
+  }
+}
