@@ -75,17 +75,19 @@ export default {
     }
   },
   methods: {
-    changedSearchParams({ filter, sort }) {
-      console.log(filter, sort)
+    changedSearchParams(searchParams) {
+      this.searchMembers(searchParams)
     },
-    async searchMembers() {
-      const { list, total } = await workspaceService.searchMembers()
+    async searchMembers(searchParams) {
+      const { list, total } = await workspaceService.searchMembers(searchParams)
       this.members = list
     },
   },
   beforeMount() {
     this.searchMembers()
-    workspaceService.watchActiveWorkspace(this.searchMembers)
+    workspaceService.watchActiveWorkspace(() =>
+      this.searchMembers(this.searchParams),
+    )
   },
 }
 </script>

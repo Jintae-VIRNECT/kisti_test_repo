@@ -1,4 +1,9 @@
 {
+  "role": {
+    "master": "MASTER",
+    "manager": "MANAGER",
+    "member": "MEMBER"
+  },
   "card": {
     "profile": "프로필",
     "setting": "멤버 설정",

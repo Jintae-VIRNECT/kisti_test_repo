@@ -6,22 +6,37 @@ export default {
     NavbarFilter,
     NavbarSort,
   },
+  data() {
+    return {
+      searchParams: {},
+    }
+  },
   mounted() {
     const { filter, sort } = this.$refs
 
     const emitChangedSearchParams = () => {
       if (this.changedSearchParams) {
-        this.changedSearchParams({
-          filter: filter.value,
-          sort: sort.value,
+        this.$nextTick(() => {
+          this.searchParams = {
+            filter: filter.value.join(','),
+            sort: sort.value,
+          }
+          this.changedSearchParams(this.searchParams)
         })
       }
     }
 
-    filter.$on('change', () => {
+    sort.$on('change', () => {
       emitChangedSearchParams()
     })
-    sort.$on('change', () => {
+
+    filter.$on('change', () => {
+      const last = filter.myValue[filter.myValue.length - 1]
+      if (last === 'ALL' || !filter.myValue.length) {
+        filter.myValue = ['ALL']
+      } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
+        filter.myValue.shift()
+      }
       emitChangedSearchParams()
     })
   },

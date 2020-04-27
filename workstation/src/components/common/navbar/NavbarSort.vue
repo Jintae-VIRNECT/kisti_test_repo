@@ -5,9 +5,8 @@
         v-for="option in options"
         :key="option.value"
         :value="option.value"
-      >
-        {{ option.label }}
-      </el-option>
+        :label="$t(option.label)"
+      />
     </el-select>
   </div>
 </template>

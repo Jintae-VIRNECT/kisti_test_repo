@@ -58,7 +58,7 @@
               :key="role.value"
               :value="role.value"
             >
-              <el-tag :class="role.value">{{ role.label }}</el-tag>
+              <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
             </el-option>
           </el-select>
         </el-form-item>

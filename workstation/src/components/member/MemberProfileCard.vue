@@ -98,6 +98,9 @@ export default {
 </script>
 
 <style lang="scss">
+.member-profile-card {
+  height: 336px;
+}
 .member-profile-card .el-card__body > dl {
   dt {
     margin-bottom: 8px;

@@ -10,8 +10,9 @@
   },
   "sort": {
     "title": "정렬",
+    "role": "권한 순",
     "alphabetAsc": "ㄱ-ㅎ순",
-    "alphabetDesc": "ㄱ-ㅎ순",
+    "alphabetDesc": "ㄱ-ㅎ역순",
     "createdAsc": "오래된 등록순",
     "createdDesc": "최신 등록순",
     "updatedAsc": "오래된 보고순",

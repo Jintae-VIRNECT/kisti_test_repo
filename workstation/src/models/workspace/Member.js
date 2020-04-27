@@ -30,15 +30,15 @@ export const role = {
   options: [
     {
       value: 'MASTER',
-      label: 'MASTER',
+      label: 'members.role.master',
     },
     {
       value: 'MANAGER',
-      label: 'MANAGER',
+      label: 'members.role.manager',
     },
     {
       value: 'MEMBER',
-      label: 'MEMBER',
+      label: 'members.role.member',
     },
   ],
 }
@@ -48,33 +48,26 @@ export const role = {
  */
 export const filter = {
   value: ['ALL'],
-  options: [
-    { value: 'ALL', label: 'SearchTabNav.filter.all' },
-    ...role.options,
-  ],
+  options: [{ value: 'ALL', label: 'navbar.filter.all' }, ...role.options],
 }
 
 /**
  * 공정 검색 정렬설정
  */
 export const sort = {
-  value: 'updated_at,desc',
+  value: 'role,asc',
   options: [
     {
-      value: 'name,asc',
-      label: 'SearchTabNav.sort.alphabetAsc',
+      value: 'role,asc',
+      label: 'navbar.sort.role',
     },
     {
-      value: 'name,desc',
-      label: 'SearchTabNav.sort.alphabetDesc',
+      value: 'nickname,asc',
+      label: 'navbar.sort.alphabetAsc',
     },
     {
-      value: 'updated_at,desc',
-      label: 'SearchTabNav.sort.updatedDesc',
-    },
-    {
-      value: 'updated_at,asc',
-      label: 'SearchTabNav.sort.updatedAsc',
+      value: 'nickname,desc',
+      label: 'navbar.sort.alphabetDesc',
     },
   ],
 }

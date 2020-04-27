@@ -53,14 +53,14 @@ export default {
    * 멤버 리스트 검색
    * @param {function} searchParams
    */
-  async searchMembers(searchParams) {
+  async searchMembers(searchParams = {}) {
     const { memberInfoList, pageMeta } = await api('MEMBER_LIST', {
       route: {
         workspaceId: activeWorkspaceGetter().info.uuid,
       },
       params: {
         userId: myProfileGetter().uuid,
-        filter: 'MASTER,MANAGER,MEMBER',
+        sort: 'role,asc',
         ...searchParams,
       },
     })
@@ -75,15 +75,15 @@ export default {
    */
   async startWorkspace(form) {
     const options = { params: form }
-    if (form.profile) {
-      const formData = new FormData()
-      Object.entries(form).forEach(([key, val]) => {
+    const formData = new FormData()
+    Object.entries(form)
+      .filter(([key, val]) => val)
+      .forEach(([key, val]) => {
         formData.append(key, val)
       })
-      options.params = formData
-      options.params.headers = {
-        'Content-Type': 'multipart/form-data',
-      }
+    options.params = formData
+    options.params.headers = {
+      'Content-Type': 'multipart/form-data',
     }
     await api('WORKSPACE_START', options)
   },
@@ -93,15 +93,15 @@ export default {
    */
   async updateWorkspaceInfo(form) {
     const options = { params: form }
-    if (form.profile) {
-      const formData = new FormData()
-      Object.entries(form).forEach(([key, val]) => {
+    const formData = new FormData()
+    Object.entries(form)
+      .filter(([key, val]) => val)
+      .forEach(([key, val]) => {
         formData.append(key, val)
       })
-      options.params = formData
-      options.params.headers = {
-        'Content-Type': 'multipart/form-data',
-      }
+    options.params = formData
+    options.params.headers = {
+      'Content-Type': 'multipart/form-data',
     }
     const data = await api('WORKSPACE_EDIT', options)
     // 변경된 내용 적용
