@@ -47,6 +47,10 @@ public enum Sort {
     JOINDATE_DESC(memberInfoDTOList -> {
         Collections.sort(memberInfoDTOList, new CompareJoinDateDesc());
         return memberInfoDTOList;
+    }),
+    UPDATEDATE_DESC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareUpdatedDateDesc());
+        return memberInfoDTOList;
     });
 
 
@@ -168,6 +172,19 @@ public enum Sort {
         public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
             // TODO Auto-generated method stub
             return o1.getJoinDate().compareTo(o2.getJoinDate());
+        }
+    }
+    /**
+     * updatedDate 으로 MemberInfoDto 내림차순(Desc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareUpdatedDateDesc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o2.getUpdatedDate().compareTo(o1.getUpdatedDate());
         }
     }
 }
