@@ -11,6 +11,7 @@ import org.springframework.util.StopWatch;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -40,14 +41,19 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
                 stopWatch.start();
                 String uri = request.getURI().toString();
                 String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
+                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
                 log.info("[REQUEST] [{}] [{}] [{}] {}", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
+                request.getHeaders().entrySet().forEach((entry -> log.info("[HEADER] [{}] => {} ", entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
+                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 stopWatch.stop();
                 if (config.isPostLogger()) {
                     String uri = request.getURI().toString();
                     String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
+                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
                     log.info("[RESPONSE] [{}] [{}] [{}] [{}] {} [{} ms]", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, String.format("%d %s", response.getRawStatusCode(), HttpStatus.valueOf(response.getRawStatusCode()).name()), response.getHeaders().get("Content-Type"), stopWatch.getTotalTimeMillis());
+                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
                 }
             }));
         };
