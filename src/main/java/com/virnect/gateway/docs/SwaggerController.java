@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,27 +29,26 @@ public class SwaggerController {
     private final JsonSerializer jsonSerializer;
     private final SwaggerResourcesProvider swaggerResources;
 
-    @RequestMapping({"/swagger-resources/configuration/security"})
+    @GetMapping({"/swagger-resources/configuration/security"})
     @ResponseBody
     public ResponseEntity<SecurityConfiguration> securityConfiguration() {
         return ResponseEntity.ok(SecurityConfigurationBuilder.builder().build());
     }
 
-    @RequestMapping({"/swagger-resources/configuration/ui"})
+    @GetMapping({"/swagger-resources/configuration/ui"})
     @ResponseBody
     public ResponseEntity<UiConfiguration> uiConfiguration() {
         return ResponseEntity.ok(UiConfigurationBuilder.builder().build());
     }
 
-    @RequestMapping({"/swagger-resources"})
+    @GetMapping({"/swagger-resources"})
     @ResponseBody
     public ResponseEntity<List<SwaggerResource>> swaggerResources() {
         return ResponseEntity.ok(this.swaggerResources.get());
     }
 
-    @RequestMapping(
+    @GetMapping(
             value = {"/v2/api-docs"},
-            method = {RequestMethod.GET},
             produces = {"application/json", "application/hal+json"}
     )
     @ResponseBody
