@@ -12,6 +12,7 @@
         @tabChange="tabChange"
       ></workspace-tab>
     </div>
+    <cookie-policy v-if="showCookie" :visible.sync="showCookie"></cookie-policy>
   </vue2-scrollbar>
 </template>
 
@@ -25,11 +26,17 @@ export default {
   components: {
     WorkspaceWelcome,
     WorkspaceTab,
+    CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
+    const cookie = Number.parseInt(
+      localStorage.getItem('ServiceCookiesAgree'),
+      10,
+    )
     return {
       tabFix: false,
       tabTop: 0,
+      showCookie: !cookie,
     }
   },
   computed: {

@@ -75,7 +75,7 @@ export default {
       }
     } else {
       this.selected = this.options.find(
-        option => option.value === this.defaultValue,
+        option => option[this.value] === this.defaultValue,
       )
     }
   },

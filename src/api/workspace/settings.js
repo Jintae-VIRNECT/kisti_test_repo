@@ -14,6 +14,7 @@ export const getConfiguration = async function(param) {
 
 export const updateConfiguration = async function(param) {
   //const returnVal = await http('UPDATE_CONFIG', param)
+  console.log('updateConfiguration::', param)
   const returnVal = {
     code: 200,
     message: 'complete',

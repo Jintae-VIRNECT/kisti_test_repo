@@ -6,10 +6,11 @@
         <p class="setting__label">최대 녹화 시간</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="saveRecLength"
+          v-on:changeValue="setRecLength"
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="defaultRecLength"
         >
         </r-select>
       </figure>
@@ -18,10 +19,11 @@
         <p class="setting__label">녹화 영상 해상도</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="saveRecResolution"
+          v-on:changeValue="setRecResolution"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="defaultRecordRec"
         >
         </r-select>
       </figure>
@@ -33,8 +35,8 @@ import RSelect from 'RemoteSelect'
 export default {
   props: {
     defaultRecLength: {
-      type: Number,
-      default: 5,
+      type: String,
+      default: '5',
     },
     defaultRecordRec: {
       type: String,
@@ -48,35 +50,35 @@ export default {
 
       localRecTimeOpt: [
         {
-          value: 5,
+          value: '5',
           text: '5분',
         },
         {
-          value: 10,
+          value: '10',
           text: '10분',
         },
         {
-          value: 15,
+          value: '15',
           text: '15분',
         },
         {
-          value: 30,
+          value: '30',
           text: '30분',
         },
       ],
 
       localRecResOpt: [
         {
-          value: 720,
+          value: '360p',
+          text: '360p',
+        },
+        {
+          value: '480p',
+          text: '480p',
+        },
+        {
+          value: '720p',
           text: '720p',
-        },
-        {
-          value: 1080,
-          text: '1080p',
-        },
-        {
-          value: 2080,
-          text: '2K',
         },
       ],
     }
@@ -85,11 +87,11 @@ export default {
     RSelect,
   },
   methods: {
-    saveRecLength: function(newRecLength) {
-      this.$emit('selectedRecLength', { rec_length: newRecLength })
+    setRecLength: function(newRecLength) {
+      this.$store.dispatch('setLocalRecordLength', newRecLength.value)
     },
-    saveRecResolution: function(newResolution) {
-      this.$emit('selectedResolution', { rec_res: newResolution })
+    setRecResolution: function(newResolution) {
+      this.$store.dispatch('setRecordResolution', newResolution.value)
     },
   },
 }
