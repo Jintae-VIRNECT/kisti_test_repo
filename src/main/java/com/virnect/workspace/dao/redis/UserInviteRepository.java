@@ -11,5 +11,4 @@ import org.springframework.data.repository.CrudRepository;
  * DESCRIPTION:
  */
 public interface UserInviteRepository extends CrudRepository<UserInvite, String> {
-    UserInvite findByJoinUserIdAndAndCode(String joinUserId, String code);
 }

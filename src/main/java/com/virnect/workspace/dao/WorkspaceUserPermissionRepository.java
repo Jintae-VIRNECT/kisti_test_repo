@@ -31,4 +31,5 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
 
     long countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String WorkspaceRole);
 
+    List<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String role);
 }

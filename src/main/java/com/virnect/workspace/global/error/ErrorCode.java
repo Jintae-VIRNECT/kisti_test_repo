@@ -10,7 +10,10 @@ package com.virnect.workspace.global.error;
 public enum ErrorCode {
     // 워크스페이스 에러
     ERR_MASTER_WORKSPACE_ALREADY_EXIST(1001, "User already have master workspace."),
-
+    ERR_WORKSPACE_USER_ALREADY_EXIST(1002, "Workspace User already exist."),
+    ERR_WORKSPACE_UNAUTHORIAED(1003, "Do not have Permission to the Workspace."),
+    ERR_NOT_FOUND_INVITE_WORKSPACE_INFO(1004, "Not found Wokrspace Invite Code."),
+    ERR_INCORRECT_INVITE_WORKSPACE_CODE(1005,"Incorrect Workspace Invite Code."),
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),

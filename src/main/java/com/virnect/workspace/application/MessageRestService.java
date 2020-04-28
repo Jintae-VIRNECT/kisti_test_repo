@@ -1,7 +1,6 @@
 package com.virnect.workspace.application;
 
-import com.virnect.workspace.dto.request.WorkspaceInviteMailRequest;
-import com.virnect.workspace.dto.rest.WorkspaceInviteRestResponse;
+import com.virnect.workspace.dto.rest.MailRequest;
 import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @FeignClient(name = "message-server")
 public interface MessageRestService {
-    @PostMapping("workspace/invite")
-    ApiResponse<WorkspaceInviteRestResponse> sendMail(@RequestBody WorkspaceInviteMailRequest workspaceInviteMailRequest);
+    @PostMapping(value = "/messages/mail")
+    ApiResponse sendMail(@RequestBody MailRequest mailSendRequest);
 }

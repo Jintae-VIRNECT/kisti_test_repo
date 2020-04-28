@@ -14,17 +14,23 @@ import java.util.List;
  */
 @Getter
 public class InviteUserInfoRestResponse {
-    private  List<InviteUserResponse> inviteUserInfoList;
+    private List<InviteUserResponse> inviteUserInfoList;
 
     @Getter
     public static class InviteUserResponse {
         @ApiModelProperty(value = "사용자 식별자", position = 0, example = "498b1839dc29ed7bb2ee90ad6985c608")
-        private  String userUUID;
+        private String userUUID;
 
         @ApiModelProperty(value = "사용자 이메일", position = 1, example = "test@test.com")
-        private  String email;
+        private String email;
 
         @ApiModelProperty(value = "사용자 이름", position = 2, example = "홍길동")
-        private  String name;
+        private String name;
+
+        @ApiModelProperty(value = "사용자 닉네임", position = 3, example = "홍길동")
+        private String nickName;
+
+        @ApiModelProperty(value = "유저 타입", position = 4, example = "USER")
+        private String userType;
     }
 }
