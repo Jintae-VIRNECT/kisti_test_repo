@@ -15,11 +15,14 @@
 import RRadio from 'RemoteRadio'
 export default {
   props: {
-    defaultLanguage: null,
+    defaultLanguage: {
+      type: String,
+      default: 'en',
+    },
   },
   data: function() {
     return {
-      selectLanguage: 'en',
+      selectLanguage: this.defaultLanguage,
       picked: '',
       radioOption: {
         options: [
@@ -45,7 +48,7 @@ export default {
   },
   watch: {
     selectLanguage: function(language) {
-      this.$emit('selectedLanguage', { language: language })
+      this.$store.dispatch('setLanguage', language)
     },
   },
 }
@@ -55,10 +58,7 @@ export default {
 @import '~assets/style/vars';
 .radio-custom {
   width: 400px;
-  padding-top: 10px;
-  padding-right: 20px;
-  padding-bottom: 10px;
-  padding-left: 20px;
+  padding: 10px 20px 10px 20px;
   background-color: $color_bg_sub;
   border-radius: 2px;
 

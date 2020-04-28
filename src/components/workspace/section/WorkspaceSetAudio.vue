@@ -6,10 +6,11 @@
         <p class="setting__label">입력 장치</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setAudioInputDevice"
-          :options="audioInputDevices"
+          v-on:changeValue="setMic"
+          :options="mics"
           :value="'deviceId'"
           :text="'label'"
+          :defaultValue="defaultMic"
         >
         </r-select>
       </figure>
@@ -18,10 +19,11 @@
         <p class="setting__label">출력 장치</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setAudioOutputDevice"
-          :options="audioOutputDevices"
+          v-on:changeValue="setSpeaker"
+          :options="speakers"
           :value="'deviceId'"
           :text="'label'"
+          :defaultValue="defaultSpeaker"
         >
         </r-select>
       </figure>
@@ -30,36 +32,19 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
+import { mapState } from 'vuex'
 export default {
   data: function() {
-    return {
-      videoDevices: [],
-      audioDevices: [],
-
-      audioContext: null,
-      audioSoundMeter: null,
-      audioStream: null,
-      audioSoundVolume: 0,
-
-      selectOutput: null,
-      selectVideo: null,
-      selectAudio: null,
-    }
+    return {}
   },
   props: {
-    audioInputDevices: null,
-    audioOutputDevices: null,
-    selectAudioInput: null,
-    defaultInputAudio: null,
-    defaultOuputAudio: null,
+    mics: null,
+    speakers: null,
+    defaultMic: null,
+    defaultSpeaker: null,
   },
-  mounted() {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-  },
-  created() {
-    // console.log('this.audioInputDevices', this.audioInputDevices)
-    // console.log('this.audioOutputDevices', this.audioOutputDevices)
-  },
+  mounted() {},
+  created() {},
   components: {
     RSelect,
   },
@@ -71,14 +56,17 @@ export default {
         return 0
       }
     },
+    ...mapState({
+      mic: state => state.settings.mic,
+      speaker: state => state.settings.speaker,
+    }),
   },
   methods: {
-    setAudioInputDevice(newInputAudioDevice) {
-      this.$emit('selectedAudioInputDevice', newInputAudioDevice)
+    setMic(newMic) {
+      this.$store.dispatch('setMic', newMic.deviceId)
     },
-
-    setAudioOutputDevice(newOutputAudioDevice) {
-      this.$emit('selectedOutputAudioDevice', newOutputAudioDevice)
+    setSpeaker(newSpeaker) {
+      this.$store.dispatch('setSpeaker', newSpeaker.deviceId)
     },
   },
 }

@@ -5,8 +5,8 @@
       <p class="setting__label">카메라</p>
       <r-select
         class="setting__r-selecter"
-        v-on:changeValue="setVideoDevice"
-        :options="videoDevices"
+        v-on:changeValue="setVideo"
+        :options="videos"
         :value="'deviceId'"
         :text="'label'"
       ></r-select>
@@ -22,15 +22,15 @@ export default {
     }
   },
   props: {
-    videoDevices: null,
+    videos: null,
   },
   components: {
     RSelect,
   },
   methods: {
-    setVideoDevice: function(newDevice) {
+    setVideo: function(newDevice) {
       this.selectVideo = newDevice.deviceId
-      this.$emit('selectedVideoDevice', newDevice)
+      this.$emit('setVideo', newDevice)
     },
   },
   created() {},
