@@ -1,0 +1,11 @@
+{
+  "name": "virnect-web-download",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "download",
+    "WC-Modules/**/*"
+  ],
+  "scripts": {},
+  "license": "ISC"
+}
