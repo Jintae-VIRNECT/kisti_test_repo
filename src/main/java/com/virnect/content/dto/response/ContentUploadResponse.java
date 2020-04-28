@@ -1,6 +1,5 @@
 package com.virnect.content.dto.response;
 
-import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import io.swagger.annotations.ApiModelProperty;
@@ -39,4 +38,23 @@ public class ContentUploadResponse {
     private String contentUUID;
     @ApiModelProperty(value = "타겟", notes = "컨텐츠의 타겟", position = 13)
     private List<ContentTargetResponse> targets;
+
+
+    @Override
+    public String toString() {
+        return "ContentUploadResponse{" +
+                "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", size=" + size +
+                ", shared=" + shared +
+                ", types=" + types +
+                ", converted=" + converted +
+                ", createdDate=" + createdDate +
+                ", updatedDate=" + updatedDate +
+                ", workspaceUUID='" + workspaceUUID + '\'' +
+                ", contentUUID='" + contentUUID + '\'' +
+                ", targets=" + targets +
+                '}';
+    }
 }

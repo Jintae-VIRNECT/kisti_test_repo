@@ -129,13 +129,13 @@ public class ContentService {
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
 
             List<Target> targets = content.getTargetList();
-            List<ContentTargetResponse> contentTargetResponseList = targets.stream().map(target -> {
-                return this.modelMapper.map(target, ContentTargetResponse.class);
-            }).collect(Collectors.toList());
+            List<ContentTargetResponse> contentTargetResponseList = targets.stream().map(target -> this.modelMapper.map(target, ContentTargetResponse.class)).collect(Collectors.toList());
 
             // 반환할 타겟정보
             result.setTargets(contentTargetResponseList);
             result.setContentUUID(contentUUID);
+
+            log.info("[RESPONSE LOGGER] :: [{}]", result.toString());
             return new ApiResponse<>(result);
         } catch (IOException e) {
             log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());

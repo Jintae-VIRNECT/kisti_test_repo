@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 /**
  * Project: PF-ContentManagement
@@ -137,7 +138,7 @@ public class ContentController {
     @GetMapping("/download/contentUUID/{contentUUID}")
     public ResponseEntity<Resource> contentDownloadForUUIDRequestHandler(
             @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "memberUUID") String memberUUID) {
+            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
         log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
         if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -145,6 +146,8 @@ public class ContentController {
         Resource resource = this.contentService.contentDownloadForUUIDhandler(contentUUID, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentLength(resource.getFile().length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
 
@@ -156,7 +159,7 @@ public class ContentController {
     @GetMapping("/download/targetData/{targetData}")
     public ResponseEntity<Resource> contentDownloadRequestForTargetHandler(
             @PathVariable("targetData") String targetData
-            , @RequestParam(value = "memberUUID") String memberUUID) {
+            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
         log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
         if (targetData.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -164,6 +167,8 @@ public class ContentController {
         Resource resource = this.contentService.contentDownloadForTargethandler(targetData, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentLength(resource.getFile().length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
 

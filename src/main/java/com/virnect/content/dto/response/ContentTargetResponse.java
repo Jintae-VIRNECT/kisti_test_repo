@@ -12,7 +12,6 @@ import lombok.*;
  */
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class ContentTargetResponse {
     private Long id;
@@ -24,5 +23,14 @@ public class ContentTargetResponse {
         this.id = id;
         this.type = type;
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "ContentTargetResponse{" +
+                "id=" + id +
+                ", type=" + type +
+                ", data='" + data + '\'' +
+                '}';
     }
 }

@@ -28,6 +28,7 @@ public enum ErrorCode {
     ERR_DELETE_CONTENT(4014, "Content File deletion failed."),
     ERR_OWNERSHIP(4015, "An error occurred in the request. Because it is NOT ownership."),
     ERROR_WORKSPACE(4016, "An error occurred in the request. Because Workspace is different."),
+    ERR_CONTENT_DOWNLOAD(4017,"Content Download fail."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
