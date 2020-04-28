@@ -130,7 +130,9 @@ section {
   display: block;
 }
 
-body {
+body,
+ul,
+span {
   height: 100%;
   color: #fff;
   font-weight: 300;
