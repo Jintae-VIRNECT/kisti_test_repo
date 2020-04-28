@@ -1,11 +1,5 @@
 server:
   port: 8073
-  ssl:
-    enabled: true
-    key-store: keystore.p12
-    key-store-password: 1234
-    key-store-type: PKCS12
-    key-alias: bns-ssl
 
 spring:
   application:
@@ -14,76 +8,76 @@ spring:
     gateway:
       routes:
         - id: auth-server
-          uri: lb:http://auth-server
+          uri: lb://auth-server
           predicates:
             - Path=/auth/**
           filters:
             - StripPrefix=0
-            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: user-server
-          uri: lb:http://user-server
+          uri: lb://user-server
           predicates:
             - Path=/users/**
           filters:
             - StripPrefix=0
-            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: workspace-server
-          uri: lb:http://workspace-server
+          uri: lb://workspace-server
           predicates:
             - Path=/workspaces/**
           filters:
             - StripPrefix=0
-            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: amdin-server
-          uri: lb:http://admin-server
+          uri: lb://admin-server
           predicates:
             - Path=/admin/**
           filters:
             - StripPrefix=0
-            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: content-server
-          uri: lb:http://content-server
+          uri: lb://content-server
           predicates:
             - Path=/contents/**
           filters:
             - StripPrefix=0
-            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: process-server
-          uri: lb:http://process-server
+          uri: lb://process-server
           predicates:
             - Path=/processes/**
           filters:
             - StripPrefix=0
-            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: license-server
-          uri: lb:http://license-server
+          uri: lb://license-server
           predicates:
             - Path=/licenses/**
           filters:
             - StripPrefix=0
-            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: message-server
-          uri: lb:http://message-server
+          uri: lb://message-server
           predicates:
             - Path=/message/**
           filters:
             - StripPrefix=0
-            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: download-server
-          uri: lb:http://download-server
+          uri: lb://download-server
           predicates:
             - Path=/download/**
           filters:
             - StripPrefix=0
-            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+#            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
 
       globalcors:
         cors-configurations:
@@ -95,9 +89,6 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
         prefix-enabled: false
-      httpclient:
-        ssl:
-          use-insecure-trust-manager: true
 
 eureka:
   instance:
