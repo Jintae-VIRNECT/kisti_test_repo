@@ -2,6 +2,7 @@
   <popover
     ref="selectPopover"
     placement="bottom"
+    :placementReverse="true"
     trigger="click"
     popperClass="select-options"
     :style="style"
@@ -132,6 +133,19 @@ export default {
   border-radius: 3px;
   > .popover--body {
     padding: 0;
+  }
+  &.reverse {
+    margin-top: 4px;
+    border-top: solid 1px #363638;
+    border-bottom: none;
+    > .popover--body .select-optionbox .select-option {
+      &:first-child {
+        padding-top: 16px;
+      }
+      &:last-child {
+        padding-bottom: 8px;
+      }
+    }
   }
 }
 .select-optionbox {
