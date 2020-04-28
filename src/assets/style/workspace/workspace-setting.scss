@@ -1,27 +1,25 @@
-@import "~assets/style/vendors/elements/index";
 .setting-wrapper {
   display: flex;
   flex: 1;
-  padding-top: 53px;
+  padding-top: 3.786rem;
 }
 
 .setting-nav {
-  min-width: 240px;
-  margin-right: 40px;
-  padding-top: 35px;
+  min-width: 17.143rem;
+  margin-right: 2.857rem;
+  padding-top: 2.5rem;
   background: $color_darkgray_600;
   border: 1px solid #2e2e2e;
   border-radius: 2px;
 }
 
 .setting-nav__header {
-  margin-left: 29px;
-  font-size: 20px;
+  margin-left: 2.071rem;
+  font-size: 1.429rem;
 }
 
 .setting-nav__menu {
-  margin: 18px 0px 0px 48px;
-  font-size: 14px;
+  margin: 1.286rem 0 0 3.429rem;
   opacity: 0.5;
 
   &:hover {
@@ -31,7 +29,6 @@
   &.active {
     color: $color_text;
     font-weight: 500;
-    font-size: 14px;
     opacity: 1;
   }
 }
@@ -44,9 +41,9 @@
 
 .setting-view__header {
   flex: 0;
-  margin-bottom: 19px;
+  margin-bottom: 1.357em;
   color: $color_text;
-  font-size: 24px;
+  font-size: 1.714em;
 }
 
 .setting-view__body {
@@ -58,43 +55,41 @@
   color: #fff;
 }
 .setting-section {
-  margin: 40px 48px 0 48px;
-  padding-bottom: 35px;
+  margin: 2.857rem 3.429rem 0;
+  padding-bottom: 2.5rem;
   border-bottom: 1px solid rgba(150, 150, 150, 0.2);
   &:last-child {
     border-bottom: none;
   }
 }
 
-.setting-vertical-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 500px;
-}
-
 .setting-horizon-wrapper {
   display: flex;
+  flex-wrap: wrap;
+  margin-top: -1.071rem;
 }
 
 .setting__title {
-  margin-bottom: 15px;
+  margin-bottom: 1.071rem;
   color: $color_text;
-  font-size: 18px;
+  font-size: 1.286rem;
 }
 .setting__figure {
-  flex: 1;
-  max-width: 500px;
+  // flex: 1;
+  max-width: 35.714rem;
+  margin-top: 1.071rem;
+  margin-right: 2.286rem;
+  &:last-child {
+    margin-right: 0;
+  }
 }
 
 .setting__label {
-  margin: 5px 5px 12px 0px;
-  color: $color_text_main;
-  font-size: 14px;
-  opacity: 0.62;
+  margin: 0.357rem 0.357rem 0.857rem 0px;
+  color: rgba($color_text_main, 0.62);
+  font-size: 1rem;
 }
 
 .setting__r-selecter {
-  width: 100%;
-  max-width: 440px;
-  margin-right: 60px;
+  width: 28.571rem;
 }

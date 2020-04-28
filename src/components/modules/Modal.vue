@@ -75,7 +75,7 @@ export default {
     },
     beforeClose: Function,
     width: {
-      type: Number,
+      type: [Number, String],
       default: 360,
     },
     height: {
@@ -99,14 +99,20 @@ export default {
   },
   computed: {
     innerWidth() {
-      return {
-        width: this.width + 'px',
+      if (typeof this.width === 'string') {
+        return {
+          width: this.width,
+        }
+      } else {
+        return {
+          width: this.width + 'px',
+        }
       }
     },
     innerHeight() {
-      if (this.height === 'auto') {
+      if (typeof this.height === 'string') {
         return {
-          height: 'auto',
+          height: this.height,
         }
       } else {
         return {
@@ -164,7 +170,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background-color: rgba(18, 21, 23, 0.5);
+  background-color: rgba(#121517, 0.5);
 
   .modal--dimmed {
     position: absolute;
@@ -176,37 +182,38 @@ export default {
 
   .modal--inner {
     position: relative;
-    min-width: 360px;
+    min-width: 25.714em;
     background-color: #1e1e20;
     border: 1px solid rgba(#a9a9a9, 0.08);
-    border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba($color_darkgray_1000, 0.07),
-      0 12px 12px 0 rgba($color_darkgray_1000, 0.3);
+    border-radius: 0.714em;
+    box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
+      0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
   }
 
   .modal--header {
     position: relative;
-    padding: 22px 30px;
-    background-color: #313135;
+    height: 5em;
+    padding: 1.571em 2.143em;
+    background-color: $color_darkgray_500;
     border-bottom: 1px solid rgba(#7f7f7f, 0.2);
-    border-radius: 10px 10px 0 0;
+    border-radius: 0.714em 0.714em 0 0;
   }
 
   .modal--title {
     color: #dedede;
     // font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143em;
   }
 
   .modal--close {
     position: absolute;
-    top: 24px;
-    right: 26px;
-    width: 24px;
-    height: 24px;
+    top: 1.714em;
+    right: 1.857em;
+    width: 1.714em;
+    height: 1.714em;
     overflow: hidden;
     text-indent: -99px;
-    background: url(~assets/image/call/ic-close-w.svg) 50%/28px no-repeat;
+    background: url(~assets/image/call/ic-close-w.svg) 50%/2em no-repeat;
     opacity: 0.5;
 
     &:hover {
@@ -216,13 +223,14 @@ export default {
 
   .modal--body {
     position: relative;
-    max-height: 80vh;
-    padding: 24px 28px;
+    height: calc(100% - 5em);
+    // max-height: 80vh;
+    padding: 1.714em 2em;
     overflow: hidden;
   }
 
   .modal--footer {
-    padding: 24px 28px 34px;
+    padding: 1.714em 2em 2.429em;
     // border-top: 1px solid #7f7f7f;
   }
 }

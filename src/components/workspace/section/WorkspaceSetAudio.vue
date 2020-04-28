@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <div class="setting__title">입출력 장치</div>
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">

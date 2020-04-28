@@ -61,15 +61,14 @@ export default {
   align-items: center;
   justify-content: flex-start;
 
-  min-width: 768px;
-  margin-bottom: 8px;
-  padding: 22px 30px;
-  overflow: hidden;
+  width: 100%;
+  margin-bottom: 0.571em;
+  padding: 1.571em 2.143em;
   background-color: $color_darkgray_600;
   border-radius: 2px;
 
   &:hover {
-    background-color: #313135;
+    background-color: $color_darkgray_500;
   }
   .card-item {
     flex-basis: 0;

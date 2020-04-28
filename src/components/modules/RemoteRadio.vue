@@ -76,7 +76,7 @@ export default {
 .radio-option {
   position: relative;
   display: flex;
-  padding: 12px 0;
+  padding: 0.857rem 0;
   color: rgba(#fff, 0.8);
   cursor: pointer;
   &.active,
@@ -89,9 +89,9 @@ export default {
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  width: 20px;
-  height: 20px;
-  margin-right: 13px;
+  width: 1.429rem;
+  height: 1.429rem;
+  margin-right: 0.929rem;
   border: solid 1px #979797;
   border-radius: 50%;
   cursor: pointer;
@@ -101,8 +101,8 @@ export default {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 12px;
-      height: 12px;
+      width: 0.857rem;
+      height: 0.857rem;
       margin: auto;
       background-color: $color_primary;
       border-radius: 50%;
@@ -112,7 +112,7 @@ export default {
   }
 }
 .radio-option__label {
-  line-height: 20px;
+  line-height: 1.429rem;
 }
 .radio-option__image {
   position: absolute;

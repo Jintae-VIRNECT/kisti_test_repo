@@ -127,9 +127,12 @@ export default {
   methods: {
     //상세보기
     async openRoomInfo(roomId) {
-      this.showRoomInfo = !this.showRoomInfo
       let result = await getHistorySingleItem({ roomId })
       this.roomInfo = result.data
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.showRoomInfo = !this.showRoomInfo
+      })
     },
     async deleteItem(roomId) {
       const pos = this.historyList.findIndex(room => {
@@ -141,6 +144,7 @@ export default {
 
     //재시작
     async createRoom(roomId) {
+      this.roomId = roomId
       this.visible = !this.visible
     },
     convertDate(date) {

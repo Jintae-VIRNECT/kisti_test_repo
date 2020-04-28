@@ -2,7 +2,7 @@
   <div
     class="profile-image"
     :class="customClass"
-    :style="{ width: `${size}px`, height: `${size}px` }"
+    :style="{ width: `${imageSize}`, height: `${imageSize}` }"
   >
     <img class="profile-image__image" :src="showImage" />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
@@ -17,7 +17,7 @@ export default {
   components: {},
   props: {
     size: {
-      type: Number,
+      type: [Number, String],
       default: 120,
     },
     defaultImage: {
@@ -41,6 +41,13 @@ export default {
     return {}
   },
   computed: {
+    imageSize() {
+      if (typeof this.size === 'string') {
+        return this.size
+      } else {
+        return this.size + 'px'
+      }
+    },
     showImage() {
       if (this.image && this.image.length > 0) {
         return this.image
@@ -67,19 +74,6 @@ export default {
   margin: 0 auto;
   @include image();
 }
-.profile-image__color {
-  width: 100%;
-  height: 100%;
-  > p {
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    color: rgba(#fdfdfd, 0.7);
-    font-size: 52px;
-    line-height: 120px;
-    text-align: center;
-  }
-}
 .profile-image__image {
   width: 100%;
   height: 100%;
@@ -96,7 +90,7 @@ export default {
   background-color: transparent;
   @include ir();
   &:hover {
-    background: url(~assets/image/ic_trash.svg) 50%/20px no-repeat;
+    background: url(~assets/image/ic_trash.svg) 50%/1.429em no-repeat;
     background-color: rgba($color_darkgray_1000, 0.8);
   }
 }

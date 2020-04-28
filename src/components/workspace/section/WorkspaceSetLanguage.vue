@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <div class="setting__title">언어 선택</div>
     <div class="radio-custom">
       <r-radio
@@ -57,15 +57,13 @@ export default {
 <style lang="scss">
 @import '~assets/style/vars';
 .radio-custom {
-  width: 400px;
-  padding: 10px 20px 10px 20px;
+  max-width: 28.571rem;
+  padding: 0.714rem 1.429rem;
   background-color: $color_bg_sub;
   border-radius: 2px;
 
   .radio-option:first-of-type {
-    border-bottom-color: rgba(61, 61, 61, 0.5);
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+    border-bottom: solid 1px rgba(#3d3d3d, 0.5);
   }
 }
 </style>

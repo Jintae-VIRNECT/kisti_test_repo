@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <p class="setting__title">
       마이크 테스트
     </p>
@@ -25,7 +25,7 @@
         ></toggle-button>
       </div>
 
-      <div class="mic-item progress" style="width:755px">
+      <div class="mic-item progress">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
       <audio
@@ -124,7 +124,7 @@ export default {
 }
 
 .label-margin-bottom {
-  margin-bottom: 40px;
+  margin-bottom: 2.857rem;
 }
 .mic-radius {
   border-radius: 50%;
@@ -132,7 +132,7 @@ export default {
 
 .mic-item {
   flex: 0;
-  margin: 0 10px;
+  margin: 0 0.714rem;
   &:first-child {
     margin-left: 0;
   }

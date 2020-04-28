@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <div class="setting__title">로컬 녹화 설정</div>
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">

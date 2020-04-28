@@ -23,6 +23,7 @@
                 selection.findIndex(select => select.userId === user.userId) >
                 -1,
             }"
+            height="6.143em"
             @click.native="selectUser(user)"
           >
             <profile
@@ -31,6 +32,7 @@
               :subText="user.userEmail"
               :status="user.status"
               :role="user.userRole"
+              :thumbStyle="{ width: '3em', height: '3em' }"
             ></profile
           ></wide-card>
         </div>
@@ -99,5 +101,5 @@ export default {
 <style
   lang="scss"
   scoped
-  src="assets/style/workspace/workspace-createroom.scss"
+  src="assets/style/workspace/workspace-createroom-invite.scss"
 ></style>

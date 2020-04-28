@@ -24,7 +24,7 @@
           VIRNECT Workstation
         </button>
       </div>
-      <div class="popover-profile__link logout">
+      <div class="popover-profile__link">
         <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>
@@ -130,7 +130,7 @@ export default {
   margin: 6px 0 3px;
   padding: 10px;
   color: #bfddff;
-  font-size: 12px;
+  font-size: 0.857em;
   text-align: center;
   border-top: solid 1px rgba(#eaeeee, 0.06);
 }
