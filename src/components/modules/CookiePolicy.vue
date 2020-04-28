@@ -40,17 +40,16 @@ export default {
   bottom: 0;
   left: 0;
   z-index: 9999;
-  background-color: #292a2b;
-  box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.09);
+  background: #265da1;
 
   .cookie-policy-wrapper__text {
-    color: #fff;
-    font-size: 13px;
-    line-height: 23px;
-    opacity: 0.88;
+    color: #ffffff;
+    font-size: 14px;
 
     a {
+      color: #fff;
       text-decoration: underline;
+      text-decoration-color: #ffffff;
     }
   }
 
@@ -82,11 +81,27 @@ export default {
 }
 
 .cookie-policy-wrapper__submit-button {
-  width: 120px;
+  width: 132px;
   height: 42px;
-  color: #fff;
+  color: #265da1;
+  font-weight: 500;
+  font-size: 15px;
   text-align: center;
-  background-color: #0054f7;
-  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #ccd1d7;
+  border-radius: 2px;
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05);
+  &:hover {
+    background-color: #c3c6ca;
+    border: none;
+  }
+  &:active {
+    background-color: #c4c6ca;
+    border: none;
+  }
+  &:focus {
+    background-color: #a4a8ae;
+    border: none;
+  }
 }
 </style>
