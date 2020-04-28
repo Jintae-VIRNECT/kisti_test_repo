@@ -10,14 +10,26 @@ function activeWorkspaceGetter() {
 function myProfileGetter() {
   return $nuxt.$store.getters['auth/myProfile']
 }
+const watches = new Map()
 
 export default {
   /**
-   * 활성 워크스페이스 변경 감시
+   * 활성 워크스페이스 변경 감시 (이름이 같으면 무시됨)
+   * @param {string} name
    * @param {function} func
    */
-  watchActiveWorkspace(func) {
-    $nuxt.$store.watch(activeWorkspaceGetter, func)
+  watchActiveWorkspace(name, func) {
+    if (!watches.has(name)) {
+      watches.set(name, $nuxt.$store.watch(activeWorkspaceGetter, func))
+    }
+  },
+  /**
+   * 활성 워크스페이스 변경 감시 해제
+   * @param {*} name
+   */
+  unwatchActiveWorkspace(name) {
+    watches.get(name)()
+    watches.delete(name)
   },
   /**
    * 내가 속한 워크스페이스 리스트 -> { 마스터, 매니저, 멤버 }

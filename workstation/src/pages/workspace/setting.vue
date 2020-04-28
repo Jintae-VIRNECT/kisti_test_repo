@@ -188,7 +188,13 @@ export default {
   },
   beforeMount() {
     this.setWorkspaceInfo()
-    workspaceService.watchActiveWorkspace(this.setWorkspaceInfo)
+    workspaceService.watchActiveWorkspace(
+      '/workspace/setting',
+      this.setWorkspaceInfo,
+    )
+  },
+  beforeDestroy() {
+    workspaceService.unwatchActiveWorkspace('/workspace/setting')
   },
 }
 </script>
@@ -225,6 +231,12 @@ export default {
   }
   .el-button {
     margin: 42px 0 12px;
+  }
+  .el-input__inner {
+    height: 38px;
+  }
+  .el-textarea__inner {
+    height: 80px;
   }
 }
 </style>

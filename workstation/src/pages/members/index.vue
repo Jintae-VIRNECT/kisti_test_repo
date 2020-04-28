@@ -85,9 +85,12 @@ export default {
   },
   beforeMount() {
     this.searchMembers()
-    workspaceService.watchActiveWorkspace(() =>
+    workspaceService.watchActiveWorkspace('/members', () =>
       this.searchMembers(this.searchParams),
     )
+  },
+  beforeDestroy() {
+    workspaceService.unwatchActiveWorkspace('/members')
   },
 }
 </script>
