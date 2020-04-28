@@ -13,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
 /**
  * Project: PF-Message
  * DATE: 2020-02-13
@@ -41,15 +37,15 @@ public class MessageService {
                     .subject(mailSendRequest.getSubject())
                     .resultCode(HttpStatus.OK.value())
                     .build();
-
+/*
             if (!MailSender.MASTER.getSender().equals(mailSendRequest.getSender())) {
                 mailHistory.setResultCode(ErrorCode.ERR_NOT_SUPPORTED_MAIL_SENDER.getCode());
                 this.mailHistoryRepository.save(mailHistory);
                 throw new MessageException(ErrorCode.ERR_NOT_SUPPORTED_MAIL_SENDER);
-            }
+            }*/
             mailService.sendMail(receiver, mailSendRequest.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml());
 
-            log.info("[메일 전송 완료] - [이메일 - " + mailSendRequest.getSender() + "]");
+            log.info("[메일 전송 완료] - 보내는 사람 - " + mailSendRequest.getSender() + "]");
 
             this.mailHistoryRepository.save(mailHistory);
         }

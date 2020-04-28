@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: message-server
+  datasource:
+    url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/messages?serverTimezone=UTC
+    username: virnect-message
+    password: qjsprxm2020!#@$
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibnerate:
+        format_sql: true
+  mail:
+    host: email-smtp.us-west-2.amazonaws.com
+    port: 587
+    username: AKIARQGLJD3UHE5MGO5U
+    password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  mustache:
+    enabled: true
+    suffix: .html
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
+    com.virnect.message.application.*: DEBUG
+
+## Server Configuration
+server:
+  port: 8084
+
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka.virnect.com/eureka
+
+## Aws credentials
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
