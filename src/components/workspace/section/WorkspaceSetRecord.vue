@@ -10,7 +10,7 @@
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="defaultRecLength"
+          :defaultValue="this.localRecordLength"
         >
         </r-select>
       </figure>
@@ -23,7 +23,7 @@
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="defaultRecordRec"
+          :defaultValue="this.recordResolution"
         >
         </r-select>
       </figure>
@@ -32,17 +32,9 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
+import { mapState } from 'vuex'
 export default {
-  props: {
-    defaultRecLength: {
-      type: String,
-      default: '5',
-    },
-    defaultRecordRec: {
-      type: String,
-      default: '360p',
-    },
-  },
+  props: {},
   data: function() {
     return {
       localRecordingTime: '',
@@ -85,6 +77,12 @@ export default {
   },
   components: {
     RSelect,
+  },
+  computed: {
+    ...mapState({
+      localRecordLength: state => state.settings.localRecordLength,
+      recordResolution: state => state.settings.recordResolution,
+    }),
   },
   methods: {
     setRecLength: function(newRecLength) {

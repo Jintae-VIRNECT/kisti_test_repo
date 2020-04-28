@@ -34,8 +34,6 @@
             class="setting-section"
             :mics="mics"
             :speakers="speakers"
-            :defaultMic="settings.mic"
-            :defaultSpeaker="settings.speaker"
           ></workspace-set-audio>
 
           <workspace-mic-test class="setting-section"> </workspace-mic-test>
@@ -48,17 +46,12 @@
             @setVideo="setVideo"
           ></workspace-set-video> -->
 
-          <workspace-set-record
-            class="setting-section"
-            :defaultRecLength="settings.recordingTime"
-            :defaultRecordRec="settings.recordingResolution"
-          ></workspace-set-record>
+          <workspace-set-record class="setting-section"></workspace-set-record>
         </template>
         <template v-else-if="tabview === 'language'">
           <workspace-set-language
             style="height: 254px;"
             class="setting-section"
-            :defaultLanguage="settings.language"
           ></workspace-set-language>
         </template>
       </div>
@@ -210,7 +203,14 @@ export default {
       this.getPermissionWithDevice()
       //this.checkPermission()
       const datas = await getConfiguration()
-      this.settings = datas.data
+      this.$store.dispatch('setLanguage', datas.data.language)
+      this.$store.dispatch('setMic', datas.data.mic)
+      this.$store.dispatch('setSpeaker', datas.data.speaker)
+      this.$store.dispatch('setLocalRecordLength', datas.data.recordingTime)
+      this.$store.dispatch(
+        'setRecordResolution',
+        datas.data.recordingResolution,
+      )
     } catch (err) {
       // Handle Error
       console.error(err)

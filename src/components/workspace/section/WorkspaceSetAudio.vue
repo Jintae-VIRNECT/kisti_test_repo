@@ -10,7 +10,7 @@
           :options="mics"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="defaultMic"
+          :defaultValue="this.mic"
         >
         </r-select>
       </figure>
@@ -23,7 +23,7 @@
           :options="speakers"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="defaultSpeaker"
+          :defaultValue="this.speaker"
         >
         </r-select>
       </figure>
@@ -38,10 +38,9 @@ export default {
     return {}
   },
   props: {
+    //device list
     mics: null,
     speakers: null,
-    defaultMic: null,
-    defaultSpeaker: null,
   },
   mounted() {},
   created() {},
@@ -49,6 +48,10 @@ export default {
     RSelect,
   },
   computed: {
+    ...mapState({
+      mic: state => state.settings.mic,
+      speaker: state => state.settings.speaker,
+    }),
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
