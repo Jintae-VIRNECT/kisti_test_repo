@@ -61,6 +61,7 @@ spring:
             - Path=/contents/**
           filters:
             - StripPrefix=0
+            - RemoveRequestHeader=Expect
             - name: Logging
               args:
                 preLogger: true

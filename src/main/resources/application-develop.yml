@@ -67,6 +67,7 @@ spring:
             - Path=/contents/**
           filters:
             - StripPrefix=0
+            - RemoveRequestHeader=Expect
             - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
