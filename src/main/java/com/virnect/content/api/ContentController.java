@@ -109,7 +109,7 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
-        log.info("[UPLOAD RESPONSE] :: {}", uploadResponse);
+        log.info("[UPLOAD RESPONSE] :: {}", uploadResponse.getData());
         return ResponseEntity.ok(uploadResponse);
     }
 
