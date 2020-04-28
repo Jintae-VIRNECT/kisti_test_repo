@@ -39,7 +39,7 @@ logging:
 ## Server Configuration
 server:
   port: 8082
-  address: 192.168.6.3
+#  address: 192.168.6.3
 
 ## Project Configuration
 file:
