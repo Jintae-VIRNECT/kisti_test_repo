@@ -6,16 +6,16 @@
         v-else
         class="item"
         effect="dark"
-        :content="menu.label"
+        :content="$t(menu.label)"
         placement="right"
       >
         <!-- 링크 -->
         <router-link v-if="menu.path[0] === '/'" :to="menu.path">
-          <img :src="menu.image" :alt="menu.label" />
+          <img :src="menu.image" :alt="$t(menu.label)" />
         </router-link>
         <!-- 컴포넌트 -->
         <a v-if="menu.path[0] === '@'" @click.stop="openCollapse(menu.path)">
-          <img :src="menu.image" :alt="menu.label" />
+          <img :src="menu.image" :alt="$t(menu.label)" />
         </a>
       </el-tooltip>
     </li>

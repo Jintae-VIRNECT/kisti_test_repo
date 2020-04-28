@@ -1,5 +1,6 @@
 $label-color: #445168;
 $input-color: #5e6b82;
+$input-hover-color: #e6e9ee;
 $content-color: #596881;
 $placeholder-color: #7a869a;
 $input-background-color: rgba(233, 237, 244, 0.5);
@@ -18,12 +19,14 @@ $input-background-color: rgba(233, 237, 244, 0.5);
 }
 .el-input__inner,
 .el-textarea__inner {
+  box-sizing: border-box;
+  height: 38px;
   padding: 9px 12px;
   color: $input-color;
   font-weight: 500;
   font-size: 12.6px;
   background: $input-background-color;
-  border: none;
+  border: solid 2px rgba(0, 0, 0, 0);
   border-radius: 3px;
 
   &::placeholder {
@@ -89,5 +92,32 @@ $input-background-color: rgba(233, 237, 244, 0.5);
     display: inline-block;
     margin-right: 2px;
     content: "-";
+  }
+}
+
+// interaction
+.el-input,
+.el-select {
+  &:hover .el-input__inner {
+    background: $input-hover-color;
+    border-color: transparent;
+    transition: 0s;
+  }
+  &:focus-within .el-input__inner {
+    background: #fff;
+    border-color: $color-primary;
+    transition: border-color 0.3s, background 0.3s;
+  }
+}
+.el-textarea {
+  &:hover .el-textarea__inner {
+    background: $input-hover-color;
+    border-color: transparent;
+    transition: 0s;
+  }
+  &:focus-within .el-textarea__inner {
+    background: #fff;
+    border-color: $color-primary;
+    transition: border-color 0.3s, background 0.3s;
   }
 }

@@ -8,7 +8,7 @@ export const sideMenus = [
   {
     path: '/',
     image: require('assets/images/icon/ic-home.svg'),
-    label: 'home',
+    label: 'menu.home',
   },
   {
     divider: true,
@@ -16,7 +16,7 @@ export const sideMenus = [
   {
     path: '/members',
     image: require('assets/images/icon/ic-supervisor-account.svg'),
-    label: 'members',
+    label: 'menu.members',
   },
   // {
   //   path: '/contents',
@@ -36,7 +36,7 @@ export const sideMenus = [
 export const sideBottomMenus = [
   {
     path: '/workspace/setting',
-    image: require('assets/images/icon/ic-home.svg'),
-    label: 'setting',
+    image: require('assets/images/icon/ic-setting.svg'),
+    label: 'menu.workspaceSetting',
   },
 ]
