@@ -1,3 +1,5 @@
+@import "~assets/style/vars";
+
 .roominfo {
   position: relative;
   display: flex;
@@ -13,7 +15,7 @@
   min-width: 220px;
   // height: 100%;
   padding: 42px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
 }
 
 .roominfo-nav__image {
@@ -58,24 +60,29 @@
   flex: 1;
   margin-top: 15px;
 }
+.remoteinfo-usercard {
+  &.offline {
+    opacity: 0.5;
+  }
+}
 .imageinput {
   padding: 12px 43px;
   font-size: 15px;
   &.regist {
     margin-right: 16px;
-    color: #0f75f5;
-    border-color: #0f75f5;
+    color: $color_primary;
+    border-color: $color_primary;
     &:focus {
-      color: #0f75f5;
-      border-color: #0f75f5;
+      color: $color_primary;
+      border-color: $color_primary;
     }
     &:hover {
-      color: rgba(#0f75f5, 0.5);
-      border-color: rgba(#0f75f5, 0.5);
+      color: rgba($color_primary, 0.5);
+      border-color: rgba($color_primary, 0.5);
     }
     &:active {
-      color: rgba(#0f75f5, 0.8);
-      border-color: rgba(#0f75f5, 0.8);
+      color: rgba($color_primary, 0.8);
+      border-color: rgba($color_primary, 0.8);
     }
   }
   &.delete {
@@ -108,11 +115,11 @@
 .data-title {
   display: inline-block;
   width: 70px;
-  color: rgba(#d2d2d2, 0.5);
+  color: rgba($color_text_main, 0.5);
   font-size: 13px;
 }
 .data-value {
-  color: #d2d2d2;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 13px;
 }
@@ -126,14 +133,26 @@
 
 .roominfo-userinfo {
   display: flex;
+  width: 100%;
 }
 .profile {
   flex: 1;
 }
 .userinfo__image {
   flex: 0;
-  margin-right: 62px;
 }
 .userinfo__button {
   flex: 0;
+  margin-left: 62px;
+}
+
+.roominfo-figure {
+  margin-top: 25px;
+}
+.roominfo-figure__title {
+  color: rgba($color_text_main, 0.5);
+  font-size: 13px;
+}
+.roominfo-figure__text {
+  margin-top: 7px;
 }

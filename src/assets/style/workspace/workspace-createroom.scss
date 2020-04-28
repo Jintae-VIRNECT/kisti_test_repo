@@ -1,3 +1,5 @@
+@import "~assets/style/vars";
+
 .createroom {
   position: relative;
   display: flex;
@@ -37,25 +39,30 @@
   position: relative;
   width: 100%;
   margin-bottom: 15px;
+  > .icon-button {
+    position: absolute;
+    top: -8px;
+    right: 0;
+  }
 }
 .createroom-user__title {
-  color: #d2d2d2;
+  color: $color_text_main;
 }
 .createroom-user__number {
   display: inline-block;
   margin-left: 9px;
   padding: 1px 12px;
-  color: #e0e0e0;
+  color: $color_text_main;
   font-size: 13px;
   line-height: 19px;
-  background-color: rgba(#000, 0.8);
+  background-color: rgba($color_darkgray_1000, 0.8);
   border-radius: 12px;
 }
 .createroom-user__button {
   position: absolute;
   top: 0;
   right: 0;
-  color: #d2d2d2;
+  color: $color_text_main;
   font-size: 13px;
   opacity: 0.72;
   &::before {
@@ -79,31 +86,32 @@
 }
 
 .widecard.choice {
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
   border: solid 2px transparent;
   cursor: pointer;
   &:hover,
   &:active {
-    background-color: #313135;
+    background-color: $color_darkgray_500;
   }
   &.selected {
-    border-color: #0f75f5;
+    border-color: $color_primary;
   }
 }
 
 .createroom-user__empty {
   width: 100%;
   height: 100%;
-  background: url(~assets/image/img_user_empty.svg) 50% 35% #29292c no-repeat;
+  background: url(~assets/image/img_user_empty.svg) 50% 35% $color_darkgray_600
+    no-repeat;
 }
 .createroom-user__empty-title {
   padding-top: 400px;
-  color: #fafafa;
+  color: $color_text_sub;
   font-size: 24px;
   text-align: center;
 }
 .createroom-user__empty-description {
-  color: rgba(#fafafa, 0.5);
+  color: rgba($color_text_sub, 0.5);
   font-weight: 300;
   font-size: 20px;
   text-align: center;

@@ -1,3 +1,119 @@
 .workspace-history {
-  color: #fff;
+  color: $color_text;
+}
+
+.no-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: $color_darkgray_600;
+
+  .no-list__img {
+    width: 191px;
+    height: 233px;
+    margin-bottom: 30px;
+    background-image: url("~assets/image/mdpi_02.svg");
+    background-repeat: no-repeat;
+  }
+
+  .no-list__title {
+    color: $color_text_sub;
+    font-size: 24px;
+    text-align: center;
+  }
+  .no-list__description {
+    color: $color_text_sub;
+    font-size: 18px;
+    text-align: center;
+    opacity: 50%;
+  }
+}
+
+.label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label--noraml {
+  color: $color_text_main;
+  font-size: 15px;
+  text-align: center;
+}
+
+.label--date {
+  color: $color_text_sub;
+  font-size: 15px;
+  text-align: center;
+  opacity: 50%;
+}
+
+.label__icon {
+  display: flex;
+  align-items: center;
+  min-width: 170px;
+  padding-left: 30px;
+  opacity: 86%;
+  .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+  }
+
+  .text {
+    overflow: hidden;
+    color: $color_text_sub;
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.widecard-tools__menu-button {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  margin-left: 26px;
+  background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
+  &:hover {
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($color_white, 0.05);
+      border-radius: 50%;
+      content: "";
+    }
+  }
+}
+.popover.custom-popover {
+  min-width: 120px;
+  max-width: 120px;
+  background-color: $color_bg_sub;
+  border: solid 1px #3a3a3d;
+  > .popover--body {
+    padding: 0px;
+  }
+}
+.groupcard-popover {
+  padding: 4px 0;
+}
+.group-pop__button {
+  width: 100%;
+  padding: 13px 20px;
+  color: $color_text;
+  text-align: left;
+  &:focus {
+    background-color: rgba($color_bg_item, 0.15);
+  }
+  &:hover {
+    background-color: rgba($color_bg_item, 0.3);
+  }
+  &:active {
+    background-color: rgba($color_bg_item, 0.5);
+  }
 }

@@ -3,27 +3,54 @@
     title="협업 가능 멤버"
     description="협업 가능한 회원을 선택하고 메세지를 보내보세요."
     placeholder="멤버 검색"
-    :listCount="0"
+    :listCount="memberList.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
-    ><workspace-user-list></workspace-user-list>
+    @refresh="getList"
+    ><workspace-user-list :memberList="memberList"></workspace-user-list>
   </tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceUserList from '../section/WorkspaceUserList'
+import { getMemberList } from 'api/workspace/member'
+
 export default {
   name: 'WorkspaceUser',
   components: { TabView, WorkspaceUserList },
   data() {
-    return {}
+    return {
+      memberList: [],
+    }
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    async getList() {
+      try {
+        const datas = await getMemberList()
+        this.memberList = datas.data.participants
+      } catch (err) {
+        console.log(err)
+      }
+    },
+  },
+
+  mounted() {},
 
   /* Lifecycles */
-  mounted() {},
+  async created() {
+    this.getList()
+    // try {
+    //   const datas = await getMemberList()
+    //   this.memberList = datas.data.participants
+    // } catch (err) {
+    //   console.log(err)
+    // }
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('refresh')
+  },
 }
 </script>

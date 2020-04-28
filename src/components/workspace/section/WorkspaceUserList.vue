@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="list.length > 0" class="grid-container">
+    <div v-if="memberList.length > 0" class="grid-container">
       <member-card
-        v-for="(userinfo, index) in list"
-        :key="index"
-        :name="userinfo.name"
-        :email="userinfo.mail"
-        :role="userinfo.role"
+        v-for="userinfo in list"
+        :key="userinfo.participantId"
+        :name="userinfo.participantName"
+        :email="'example@test.com'"
+        :role="userinfo.participantRole"
         :license="userinfo.license"
       >
       </member-card>
@@ -21,107 +21,36 @@
 
 <script>
 import MemberCard from 'MemberCard'
-import sort from 'mixins/admin/adminSort'
+import sort from 'mixins/filter'
+
 export default {
   name: 'WorkspaceUserList',
   mixins: [sort],
   components: {
     MemberCard,
   },
+  props: {
+    memberList: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
-    return {
-      //userList: [],
-      userList: [
-        {
-          icon: '',
-          name: 'Sherry K. Demmer',
-          mail: 'SherryKDemmer@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Samantha J. Fenner',
-          mail: 'SamanthaJFenner@armyspy.com',
-          role: 'Manager',
-          license: false,
-          status: 'busy',
-        },
-        {
-          icon: '',
-          name: '柳沼 和子',
-          mail: 'Tuaid1975@rhyta.com',
-          role: '',
-          license: false,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: '펭수',
-          mail: 'pengsoo@ebs.com',
-          status: 'offline',
-        },
-        {
-          icon: '',
-          name: 'Hong Chang',
-          mail: 'HongChang@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Sheng Ts ai',
-          mail: 'ShengTsai@armyspy.com',
-          role: 'Master',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Gang Pai',
-          mail: 'GangPai@armyspy.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Clara Almeida Martins',
-          mail: 'ClaraAlmeidaMartins@armyspy.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: '모영권',
-          mail: 'moyeongkwon@google.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-        {
-          icon: '',
-          name: 'Mo Yeong Kwon',
-          mail: 'ykmo@virnect.com',
-          role: 'Manager',
-          license: true,
-          status: 'online',
-        },
-      ],
-    }
+    return {}
   },
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.userList
+        return this.memberList
       }
 
       const array = []
-      for (const list of this.userList) {
-        if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+      for (const list of this.memberList) {
+        if (
+          list.participantName
+            .toLowerCase()
+            .match(this.searchFilter.toLowerCase())
+        ) {
           array.push(list)
         }
       }
@@ -135,6 +64,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -147,7 +78,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 400px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
 
   .no-list__img {
     width: 191px;
@@ -158,19 +89,13 @@ export default {
   }
 
   .no-list__title {
-    color: rgb(250, 250, 250);
-    font-weight: normal;
+    color: $color_text_sub;
     font-size: 24px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
     text-align: center;
   }
   .no-list__description {
-    color: rgb(250, 250, 250);
-    font-weight: normal;
+    color: $color_text_sub;
     font-size: 18px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
     text-align: center;
     opacity: 50%;
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="{ no__button: !showMessageButton }">
+  <div class="card" :class="{ no__button: !showMessageButton }" width="full">
     <div class="card-center">
       <div class="card-center-profile--thumb" :class="{ expired: !license }">
         <div
@@ -8,7 +8,7 @@
           :style="{ 'background-color': color }"
         ></div>
         <p v-else class="card-center-profile--image">
-          <img :src="imageUrl" />
+          <img :src="imageUrl" @error="onImageError" />
         </p>
         <span
           v-if="status && license"
@@ -113,20 +113,25 @@ export default {
   flex-direction: column;
   align-items: center;
   padding-top: 32px;
-
-  background-color: #313135e6;
+  background-color: rgba(49, 49, 53, 0.902);
   border: solid 1px #3e3e42;
   border-radius: 2px;
   &.no__button {
     padding-bottom: 20px;
   }
-  max-width: 204px;
+  .role {
+    margin: 8px 0px 8px 0px;
+  }
+
+  &:hover {
+    background-color: #313135;
+  }
 }
 .card-center {
   display: flex;
   flex-direction: column;
-  align-items: center;
   flex-grow: 3;
+  align-items: center;
   min-height: 180px;
   margin-bottom: 10px;
 }
@@ -137,13 +142,13 @@ export default {
   height: 64px;
 
   &.expired {
-    height: 73px;
     width: 73px;
-    border: solid;
-    border-width: 1.4px;
-    border-color: red;
-    border-radius: 50%;
+    height: 73px;
     padding: 3px;
+    border: solid;
+    border-color: red;
+    border-width: 1.4px;
+    border-radius: 50%;
   }
 }
 
@@ -157,25 +162,22 @@ export default {
 }
 
 .card-center-profile--name {
-  color: rgb(255, 255, 255);
-  font-size: 15px;
-  font-family: NotoSansCJKkr-Medium;
-  font-weight: 500;
-  text-align: center;
   margin-top: 17px;
   margin-bottom: 4px;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
   &.expired {
     margin-top: 11px;
     margin-bottom: 3px;
   }
 }
 .card-center-profile--email {
+  margin-bottom: 11px;
   color: rgb(152, 160, 166);
   font-size: 13px;
-  font-family: Roboto-Regular;
-  font-weight: normal;
   text-align: center;
-  margin-bottom: 11px;
 }
 
 .card-center-profile--badge {
@@ -200,20 +202,16 @@ export default {
 }
 
 .card-bottom {
-  border-top-color: rgba(62, 62, 66, 0.92);
-  border-top-style: solid;
-  border-top-width: 1px;
-  text-align: center;
-  width: 100%;
-
-  font-size: 13px;
-  font-family: NotoSansCJKkr-Regular;
-  font-weight: normal;
-  text-align: center;
-  letter-spacing: 0px;
   flex-grow: 1;
-  padding-top: 14px;
+  width: 100%;
   margin-bottom: 14px;
+  padding-top: 14px;
+  font-size: 13px;
+
+  text-align: center;
+  border-top-color: rgba(62, 62, 66, 0.92);
+  border-top-width: 1px;
+  border-top-style: solid;
   > p {
     color: rgb(255, 255, 255);
   }

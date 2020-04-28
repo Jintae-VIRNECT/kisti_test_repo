@@ -18,7 +18,7 @@
     <div>
       <div class="popover-notice__header">
         <span>알림</span>
-        <span>Push</span>
+        <switcher text="Push" :value.sync="push">Push</switcher>
       </div>
       <div class="popover-notice__body">
         <scroller :height="400">
@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import Switcher from 'Switcher'
 import Popover from 'Popover'
 import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
@@ -83,13 +84,16 @@ import NoticeItem from './NoticeItem'
 export default {
   name: 'Notice',
   components: {
+    Switcher,
     Popover,
     ToggleButton,
     Scroller,
     NoticeItem,
   },
   data() {
-    return {}
+    return {
+      push: false,
+    }
   },
   watch: {},
   methods: {
@@ -107,9 +111,11 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .popover.popover-notice {
   overflow: hidden;
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px rgba(#979797, 0.12);
   border-radius: 4px;
   transform: translateY(20px);
@@ -118,12 +124,20 @@ export default {
   }
 }
 .popover-notice__header {
+  position: relative;
+  display: flex;
   padding: 11px 16px;
   border-bottom: solid 1px rgba(#eaeeee, 0.06);
   > span {
-    padding: 11px 12px;
+    // padding: 11px 12px;
     color: #fff;
     font-size: 16px;
+  }
+  & > .switcher {
+    position: absolute;
+    top: 50%;
+    right: 19px;
+    transform: translateY(-50%);
   }
 }
 .popover-notice__body {

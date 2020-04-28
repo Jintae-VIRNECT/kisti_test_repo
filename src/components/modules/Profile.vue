@@ -9,7 +9,7 @@
         <p>{{ mainText.slice(0, 1) }}</p>
       </div>
       <p v-else class="profile--image">
-        <img :src="image" :alt="mainText" @error="onError" />
+        <img :src="image" :alt="mainText" @error="onError | onImageError" />
       </p>
       <span v-if="status" class="profile--badge" :class="status">{{
         status
@@ -19,7 +19,9 @@
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="role" :role="role">{{ role }}</role>
+    <role v-if="role && role.toLowerCase() === 'master'" :role="role">{{
+      'Master'
+    }}</role>
   </figure>
 </template>
 
@@ -44,7 +46,7 @@ export default {
     },
     onError: {
       type: Function,
-      default: function() {},
+      default: null,
     },
     mainText: {
       type: String,

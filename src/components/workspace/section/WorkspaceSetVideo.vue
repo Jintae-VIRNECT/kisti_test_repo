@@ -2,11 +2,11 @@
   <section>
     <div class="setting__title">영상 설정</div>
     <div class="setting-vertical-wrapper">
-      <div class="setting__label">카메라</div>
+      <p class="setting__label">카메라</p>
       <r-select
         class="setting__r-selecter"
-        v-on:changeValue="setVideoDevice"
-        :options="videoDevices"
+        v-on:changeValue="setVideo"
+        :options="videos"
         :value="'deviceId'"
         :text="'label'"
       ></r-select>
@@ -22,18 +22,17 @@ export default {
     }
   },
   props: {
-    videoDevices: null,
+    videos: null,
   },
   components: {
     RSelect,
   },
   methods: {
-    setVideoDevice: function(newDevice) {
+    setVideo: function(newDevice) {
       this.selectVideo = newDevice.deviceId
-      this.$emit('selectedVideoDevice', newDevice)
+      this.$emit('setVideo', newDevice)
     },
   },
+  created() {},
 }
 </script>
-
-<style scoped lang="scss"></style>

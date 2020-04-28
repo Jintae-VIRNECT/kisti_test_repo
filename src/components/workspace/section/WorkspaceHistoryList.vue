@@ -1,32 +1,62 @@
 <template>
-  <div v-if="testdata.length > 0" class="list-wrapper">
+  <div v-if="historyList.length > 0" class="list-wrapper">
     <wide-card-extend
       :menu="true"
-      v-for="(item, index) in historyList"
+      v-for="(history, index) in list"
       v-bind:key="index"
     >
       <profile
         :image="require('assets/image/back/mdpi_lnb_img_user.svg')"
         :imageAlt="'profileImg'"
-        :mainText="item.title"
-        :subText="item.description"
+        :mainText="history.title"
+        :subText="'참석자 ' + history.memberCount + '명'"
       ></profile>
 
       <div slot="column1" class="label label--noraml">
-        {{ item.totalUseTime }}
+        {{ '총 이용시간: ' + history.totalUseTime }}
       </div>
       <div slot="column2" class="label label--date">
-        {{ item.collaborationStartDate }}
+        {{ convertDate(history.collaborationStartDate) }}
       </div>
-      <div slot="column3" class="label lable__icon">
+      <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
-        <span class="text">{{ item.leaderName }}</span>
+        <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
       </div>
       <button slot="menuPopover"></button>
-      <button class="btn" @click="createRoom" slot="column4">
+      <button class="btn" @click="createRoom(history.roomId)" slot="column4">
         재시작
       </button>
+      <popover
+        slot="column5"
+        trigger="click"
+        placement="bottom-start"
+        popperClass="custom-popover"
+      >
+        <button slot="reference" class="widecard-tools__menu-button"></button>
+        <ul class="groupcard-popover">
+          <li>
+            <button
+              class="group-pop__button"
+              @click="openRoomInfo(history.roomId)"
+            >
+              상세 보기
+            </button>
+          </li>
+          <li>
+            <button
+              class="group-pop__button"
+              @click="deleteItem(history.roomId)"
+            >
+              목록삭제
+            </button>
+          </li>
+        </ul>
+      </popover>
     </wide-card-extend>
+    <roominfo-modal
+      :visible.sync="showRoomInfo"
+      :roomId="roomId"
+    ></roominfo-modal>
     <create-room-modal :visible.sync="visible"></create-room-modal>
   </div>
   <div v-else class="no-list">
@@ -40,138 +70,41 @@
 import Profile from 'Profile'
 import WideCardExtend from 'WideCardExtend'
 
-import sort from 'mixins/admin/adminSort'
+import sort from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import { getHistoryList } from 'api/workspace/history'
+import Popover from 'Popover'
+import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
+import {
+  getHistorySingleItem,
+  deleteHistorySingleItem,
+} from 'api/workspace/history'
+
 export default {
   name: 'WorkspaceHistoryList',
   mixins: [sort],
-  components: { Profile, WideCardExtend, CreateRoomModal },
+  components: {
+    Profile,
+    WideCardExtend,
+    CreateRoomModal,
+    Popover,
+    RoominfoModal,
+  },
   data() {
     return {
       visible: false,
-      historyList: [],
-      testdata: [
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 01',
-          subText: '참석자 0명',
-          entireTime: '총 이용 시간: 08분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kim',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 02',
-          subText: '참석자 2명',
-          entireTime: '총 이용 시간: 10분 21초',
-          lastTime: 'Today',
-          leaderName: '리더 : Nari K',
-          leaderIcon: '',
-        },
-        {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
-          mainText: '버넥트 리모트 03',
-          subText: '참석자 4명',
-          entireTime: '총 이용 시간: 33분 21초',
-          lastTime: '2020.02.10',
-          leaderName: '리더 : Nari Kasdfs',
-          leaderIcon: '',
-        },
-      ],
+      showRoomInfo: false,
+      roomId: '',
     }
   },
   computed: {
     list() {
       if (this.searchFilter === '') {
-        return this.userList
+        return this.historyList
       }
 
       const array = []
-      for (const list of this.userList) {
-        if (list.name.toLowerCase().match(this.searchFilter.toLowerCase())) {
+      for (const list of this.historyList) {
+        if (list.title.toLowerCase().match(this.searchFilter.toLowerCase())) {
           array.push(list)
         }
       }
@@ -181,108 +114,40 @@ export default {
   watch: {
     searchFilter() {},
   },
-  methods: {
-    createRoom() {
-      this.visible = !this.visible
+  props: {
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    historyList: {
+      type: Array,
+      default: () => [],
     },
   },
-  async created() {
-    try {
-      const datas = await getHistoryList()
-      this.historyList = datas.data.romms
-      console.log(datas)
+  methods: {
+    //상세보기
+    async openRoomInfo(roomId) {
+      this.showRoomInfo = !this.showRoomInfo
+      let result = await getHistorySingleItem({ roomId })
+      this.roomInfo = result.data
+    },
+    async deleteItem(roomId) {
+      const pos = this.historyList.findIndex(room => {
+        return room.roomId === roomId
+      })
+      this.historyList.splice(pos, 1)
+      await deleteHistorySingleItem({ roomId })
+    },
 
-      //전체 방수
-      console.log(datas.data.totalCount)
-
-      //검색결과로 인한 방수? 아닐까..?
-      console.log(datas.data.currentCount)
-    } catch (err) {
-      // 에러처리
-      console.error(err)
-    }
+    //재시작
+    async createRoom(roomId) {
+      this.visible = !this.visible
+    },
+    convertDate(date) {
+      const re = /-/gi
+      return date.replace(re, '.')
+    },
   },
+  created() {},
 }
 </script>
-
-<style lang="scss">
-.no-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  background-color: #29292c;
-
-  .no-list__img {
-    width: 191px;
-    height: 233px;
-    margin-bottom: 30px;
-    background-image: url('~assets/image/mdpi_02.svg');
-    background-repeat: no-repeat;
-  }
-
-  .no-list__title {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 24px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-    text-align: center;
-  }
-  .no-list__description {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 18px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-    text-align: center;
-    opacity: 50%;
-  }
-}
-
-.label {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.label--noraml {
-  color: #d2d2d2;
-  font-weight: normal;
-  font-size: 15px;
-  font-family: AppleSDGothicNeo-Regular;
-  letter-spacing: 0px;
-  text-align: center;
-}
-
-.label--date {
-  color: #fafafa;
-  font-weight: normal;
-  font-size: 15px;
-  font-family: Roboto-Regular;
-  letter-spacing: 0px;
-  text-align: center;
-  opacity: 50%;
-}
-
-.lable__icon {
-  display: flex;
-  align-items: center;
-  padding-left: 30px;
-  opacity: 86%;
-  .icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
-  }
-
-  .text {
-    color: #fafafa;
-    font-weight: normal;
-    font-size: 14px;
-    font-family: NotoSansCJKkr-Regular;
-    letter-spacing: 0px;
-  }
-}
-</style>

@@ -1,6 +1,6 @@
 <template>
   <section class="workspace-welcome">
-    <div class="workspace-welcome__body">
+    <div class="workspace-welcome__body offsetwidth">
       <p class="workspace-welcome__group">
         리모트원격솔루션 <role :role="'Manager'"></role>
       </p>

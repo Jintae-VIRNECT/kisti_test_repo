@@ -39,7 +39,7 @@ export default {
     opacity: 0.8;
   }
   &:active {
-    opacity: 0.8;
+    opacity: 1;
   }
 }
 </style>

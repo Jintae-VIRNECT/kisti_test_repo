@@ -128,46 +128,38 @@ export default {
 
 .label {
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .label--noraml {
   color: #d2d2d2;
-  font-size: 15px;
-  font-family: AppleSDGothicNeo-Regular;
   font-weight: normal;
+  font-size: 15px;
   text-align: center;
-  letter-spacing: 0px;
 }
 
 .label--date {
   color: #fafafa;
   font-size: 15px;
-  font-family: Roboto-Regular;
-  font-weight: normal;
   text-align: center;
-  letter-spacing: 0px;
   opacity: 50%;
 }
 
-.lable__icon {
-  opacity: 86%;
+.label__icon {
   display: flex;
   align-items: center;
   padding-left: 30px;
+  opacity: 86%;
   .icon {
-    height: 24px;
     width: 24px;
+    height: 24px;
     margin-right: 5px;
   }
 
   .text {
     color: #fafafa;
     font-size: 14px;
-    font-family: NotoSansCJKkr-Regular;
-    font-weight: normal;
-    letter-spacing: 0px;
   }
 }
 </style>

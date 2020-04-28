@@ -322,12 +322,17 @@ export default {
         return cb ? cb() : false
       } else return cb ? cb() : false
     },
+    reset() {
+      this.scrollToY(0)
+      this.scrollToX(0)
+    },
   },
 
   mounted() {
     this.$nextTick(() => {
       this.calculateSize()
     })
+    this.$eventBus.$on('scroll:reset', this.reset)
 
     // Attach The Event for Responsive View~
     window.addEventListener('resize', this.calculateSize)
@@ -335,6 +340,7 @@ export default {
 
   beforeDestroy() {
     // Remove Event
+    this.$eventBus.$off('scroll:reset', this.reset)
     window.removeEventListener('resize', this.calculateSize)
   },
 }

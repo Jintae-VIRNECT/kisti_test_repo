@@ -1,5 +1,5 @@
 <template>
-  <div class="progress">
+  <div class="progress" :class="customClass">
     <div class="progress-front" :style="{ width: `${percentage}%` }"></div>
   </div>
 </template>
@@ -26,6 +26,10 @@ export default {
     max: {
       type: Number,
       default: 100,
+    },
+    customClass: {
+      type: String,
+      default: '',
     },
   },
   methods: {},

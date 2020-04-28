@@ -21,23 +21,23 @@
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: rgba(#fff, 0.04);
+    background-color: rgba($color_text, 0.04);
     @include theme-bright() {
-      background-color: #fff;
+      background-color: $color_text;
     }
     content: "";
     @if $direction == "right" {
       // border-right: $color_bg_shadow_border;
-      bottom: 0;
       right: 0;
-      height: 100%;
+      bottom: 0;
       width: 1px;
+      height: 100%;
     } @else if $direction == "left" {
       // border-left: $color_bg_shadow_border;
       bottom: 0;
       left: 0;
-      height: 100%;
       width: 1px;
+      height: 100%;
     } @else if $direction == "top" {
       // border-top: $color_bg_shadow_border;
       top: 0;
@@ -112,28 +112,6 @@
   }
 }
 
-@function gradient($start_color, $end_color) {
-  @return linear-gradient(to right, $start_color, $end_color);
-}
-
-@mixin background-gradient(
-  $start_color: $color_remote,
-  $end_color: $color_virnect
-) {
-  color: #fff;
-  background-image: gradient(
-    $start_color: $color_remote,
-    $end_color: $color_virnect
-  );
-
-  &:hover {
-    background-image: gradient(
-      darken($start_color, 5%),
-      darken($end_color, 5%)
-    );
-  }
-}
-
 @mixin border-gradient($start_color, $end_color) {
   border-image: gradient($start_color, $end_color);
 }
@@ -154,18 +132,6 @@
     display: block;
     clear: both;
     content: "";
-  }
-}
-
-$colors: (
-  remote: $color_remote,
-  virnect: $color_virnect,
-  warning: $color_warning,
-  gray: $color_text_gray
-);
-@each $key, $value in $colors {
-  .c-#{$key} {
-    color: $value;
   }
 }
 

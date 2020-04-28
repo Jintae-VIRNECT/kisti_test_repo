@@ -11,6 +11,7 @@
       :placeholder="placeholder"
       v-model="inputText"
       :maxlength="count"
+      @focusout="$emit('focusOut')"
     />
     <textarea
       v-else-if="type === 'textarea'"
@@ -35,7 +36,6 @@ export default {
   data() {
     return {
       inputText: '',
-      valid: false,
     }
   },
   props: {
@@ -75,6 +75,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    valid: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {},
   watch: {
@@ -82,9 +86,9 @@ export default {
       if (this.validate) {
         const invalid = regexp[this.validate](text)
         if (!invalid) {
-          this.valid = true
+          this.$emit('update:valid', true)
         } else {
-          this.valid = false
+          this.$emit('update:valid', false)
         }
       }
       this.$emit('update:value', text)
@@ -105,6 +109,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '~assets/style/vars';
+
 .inputrow {
   position: relative;
   width: 100%;
@@ -122,7 +128,7 @@ export default {
     right: -10px;
     width: 5px;
     height: 5px;
-    background-color: #0f75f5;
+    background-color: $color_primary;
     border-radius: 50%;
     content: '';
   }
@@ -151,7 +157,7 @@ export default {
   }
   &:active,
   &:focus {
-    border: solid 1px #0f75f5;
+    border: solid 1px $color_primary;
   }
   &.textarea {
     height: 60px;

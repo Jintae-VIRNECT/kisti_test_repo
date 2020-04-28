@@ -1,0 +1,12 @@
+{
+	"data":{ 
+      "speaker":""
+			,"mic":""
+			,"resolution":"360p"
+			,"language":"en"
+			,"recordingTime":"5"
+			,"recordingResolution":"360p"
+   },
+   "code":200,
+   "message":"complete"
+}

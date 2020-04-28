@@ -44,7 +44,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['deviceType']),
+    ...mapGetters(['account', 'deviceType']),
     isMobileChrome() {
       const userAgent = navigator.userAgent
       const isChromeMobile =
@@ -75,7 +75,10 @@ export default {
       return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
-      event.target.src = require('assets/image/img-default-user.svg')
+      event.target.src = require('assets/image/img_user_profile.svg')
+    },
+    onImageErrorGroup(event) {
+      event.target.src = require('assets/image/img_default_group.svg')
     },
   },
 }

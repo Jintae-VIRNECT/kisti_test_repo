@@ -20,13 +20,12 @@
         ></profile>
       </div>
       <div class="popover-profile__link">
-        <button>VIRNECT Workstation</button>
+        <button @click="link('https://virnect.com')">
+          VIRNECT Workstation
+        </button>
       </div>
-      <div class="popover-profile__link">
-        <button>QR 로그인</button>
-      </div>
-      <div class="popover-profile__link">
-        <button>Open Source License</button>
+      <div class="popover-profile__link logout">
+        <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>
     </div>
@@ -38,6 +37,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import ProfileImage from 'ProfileImage'
+// import auth from 'utils/auth'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -48,7 +48,21 @@ export default {
   computed: {
     ...mapGetters(['account']),
   },
-  methods: {},
+  methods: {
+    link(url) {
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        window.open(url)
+      })
+    },
+    logout() {
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        // auth.logout()
+        // auth.login()
+      })
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -64,8 +78,10 @@ export default {
 }
 </style>
 <style lang="scss">
+@import '~assets/style/vars';
+
 .popover-profile {
-  background-color: #242427;
+  background-color: $color_bg_sub;
   border: solid 1px rgba(#979797, 0.12);
   border-radius: 8px;
   transform: translateY(22px);
@@ -91,9 +107,23 @@ export default {
   padding: 13px 30px;
   > button {
     color: #fff;
-    font-weight: 500;
+    font-weight: 300;
     font-size: 15px;
     background: transparent;
+    &:hover,
+    &:active {
+      font-weight: 500;
+    }
+  }
+  &.logout {
+    > button {
+      color: $color_red;
+      font-weight: 500;
+      &:hover,
+      &:active {
+        font-weight: 700;
+      }
+    }
   }
 }
 .popover-profile__version {

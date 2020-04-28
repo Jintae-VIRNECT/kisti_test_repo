@@ -24,7 +24,7 @@
     border: solid 1px $color_videolist_border;
     border-radius: 2px;
     &.current {
-      border: solid 2px $color_remote2;
+      border: solid 2px $color_primary;
     }
     > video {
       max-width: 100%;
@@ -60,7 +60,7 @@
       font-size: 13px;
       line-height: 30px;
       text-align: center;
-      background-color: rgba($color_black, 0.39);
+      background-color: rgba($color_darkgray_1000, 0.39);
 
       > .active {
         position: relative;
@@ -70,7 +70,7 @@
           left: -10px;
           width: 5px;
           height: 5px;
-          background-color: $color_remote2;
+          background-color: $color_primary;
           border-radius: 50%;
           transform: translateY(-50%);
           content: "";
@@ -80,13 +80,12 @@
 
     &.more {
       background: url(~assets/image/call/smvideo_ic_addppl@2x.png) center 21px/36px
-        no-repeat #242427;
+        no-repeat $color_bg_sub;
       cursor: pointer;
       > p {
         margin-top: 62px;
-        color: $color_text_default;
+        color: $color_text_sub;
         font-weight: 500;
-        letter-spacing: 0;
         text-align: center;
       }
     }
