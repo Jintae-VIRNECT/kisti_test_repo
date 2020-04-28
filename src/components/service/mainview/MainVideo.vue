@@ -128,9 +128,9 @@ export default {
       nickName: nickName,
     })
 
-    this.$openvidu.join(sessionName, nickName).then(session => {
-      console.log(session.connection)
-    })
+    // this.$openvidu.join(sessionName, nickName).then(session => {
+    //   console.log(session.connection)
+    // })
   },
 }
 </script>

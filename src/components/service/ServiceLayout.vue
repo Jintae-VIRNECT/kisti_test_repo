@@ -46,9 +46,9 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    this.$openvidu.getDevices().then(res => {
-      console.log(res)
-    })
+    // this.$openvidu.getDevices().then(res => {
+    //   console.log(res)
+    // })
   },
 }
 </script>

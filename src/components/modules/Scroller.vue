@@ -76,7 +76,9 @@ export default {
   },
   watch: {
     $route: function() {
-      this.$refs['contentScrollbar'].scrollReset()
+      if (this.$refs['contentScrollbar']) {
+        this.$refs['contentScrollbar'].reset()
+      }
     },
   },
   methods: {
@@ -118,7 +120,7 @@ export default {
     },
     reset() {
       if (this.$refs['contentScrollbar']) {
-        this.$refs['contentScrollbar'].scrollReset()
+        this.$refs['contentScrollbar'].reset()
         this.isScrolled = false
       }
     },
