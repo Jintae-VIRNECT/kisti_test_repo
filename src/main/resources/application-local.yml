@@ -21,6 +21,10 @@ spring:
             - StripPrefix=0
             - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
             - RewritePath=/users/users/(?<segment>.*), /users/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 
         - id: workspace-server
           uri: lb:http://workspace-server
@@ -48,6 +52,11 @@ spring:
             - StripPrefix=0
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
             - RewritePath=/auth/auth/(?<segment>.*), /auth/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
       globalcors:
         corsConfigurations:
           '[/**]':

@@ -13,6 +13,10 @@ spring:
             - Path=/auth/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: user-server
@@ -21,6 +25,10 @@ spring:
             - Path=/users/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: workspace-server
@@ -29,6 +37,10 @@ spring:
             - Path=/workspaces/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: amdin-server
@@ -37,6 +49,10 @@ spring:
             - Path=/admin/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: content-server
@@ -45,6 +61,10 @@ spring:
             - Path=/contents/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: process-server
@@ -53,6 +73,10 @@ spring:
             - Path=/processes/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: license-server
@@ -61,6 +85,10 @@ spring:
             - Path=/licenses/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: message-server
@@ -69,6 +97,10 @@ spring:
             - Path=/message/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: download-server
@@ -77,6 +109,10 @@ spring:
             - Path=/download/**
           filters:
             - StripPrefix=0
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
 #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
 
       globalcors:
