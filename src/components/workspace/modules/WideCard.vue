@@ -54,6 +54,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
+
 .widecard {
   position: relative;
   width: 100%;

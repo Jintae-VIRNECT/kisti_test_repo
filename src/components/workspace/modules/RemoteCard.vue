@@ -60,12 +60,12 @@
         </button>
       </li>
       <li v-else><button class="group-pop__button">협업 나가기</button></li>
-      <roominfo-modal
-        :visible.sync="showRoomInfo"
-        :roomId="room.roomId"
-        :leader="leader"
-      ></roominfo-modal>
     </ul>
+    <roominfo-modal
+      :visible.sync="showRoomInfo"
+      :roomId="room.roomId"
+      :leader="leader"
+    ></roominfo-modal>
   </card>
 </template>
 
@@ -116,7 +116,10 @@ export default {
   },
   methods: {
     openRoomInfo() {
-      this.showRoomInfo = !this.showRoomInfo
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.showRoomInfo = !this.showRoomInfo
+      })
     },
     async remove(roomId) {
       const rtn = await deleteRoom({ roomId: roomId })

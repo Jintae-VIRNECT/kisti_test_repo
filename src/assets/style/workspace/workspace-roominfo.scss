@@ -22,26 +22,26 @@
   width: 5.143em;
   height: 5.143em;
   margin: 0 auto 2.5em;
-  background-color: #fff;
+  background-color: $color_white;
   border-radius: 50%;
 }
 .roominfo-nav__menu {
   margin-bottom: 1.143em;
   margin-left: 2.143em;
-  color: rgba(#dedede, 0.5);
+  color: rgba($color_text_main, 0.5);
   font-size: 1.143em;
   text-align: left;
   &:focus {
-    color: rgba(#dedede, 0.5);
+    color: rgba($color_text_main, 0.5);
   }
   &:hover {
-    color: rgba(#dedede, 0.9);
+    color: rgba($color_text_main, 0.9);
   }
   &:active {
-    color: rgba(#dedede, 0.7);
+    color: rgba($color_text_main, 0.7);
   }
   &.active {
-    color: #fff;
+    color: $color_text;
     font-weight: 500;
   }
 }
@@ -66,11 +66,11 @@
   }
 }
 .imageinput {
-  padding: 0.857em 3.071em;
-  font-size: 1.071em;
   &.regist {
     margin-right: 1.143em;
+    padding: 0.857em 3.071em;
     color: $color_primary;
+    font-size: 1.071em;
     border-color: $color_primary;
     &:focus {
       color: $color_primary;
@@ -86,7 +86,9 @@
     }
   }
   &.delete {
+    padding: 0.857em 3.071em;
     color: rgba(#979797, 0.5);
+    font-size: 1.071em;
     border-color: rgba(#979797, 0.5);
     &:focus {
       color: rgba(#979797, 0.5);

@@ -74,19 +74,6 @@ export default {
   margin: 0 auto;
   @include image();
 }
-.profile-image__color {
-  width: 100%;
-  height: 100%;
-  > p {
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    color: rgba(#fdfdfd, 0.7);
-    font-size: 52px;
-    line-height: 120px;
-    text-align: center;
-  }
-}
 .profile-image__image {
   width: 100%;
   height: 100%;
@@ -103,7 +90,7 @@ export default {
   background-color: transparent;
   @include ir();
   &:hover {
-    background: url(~assets/image/ic_trash.svg) 50%/20px no-repeat;
+    background: url(~assets/image/ic_trash.svg) 50%/1.429em no-repeat;
     background-color: rgba($color_darkgray_1000, 0.8);
   }
 }

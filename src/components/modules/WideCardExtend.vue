@@ -62,8 +62,8 @@ export default {
   justify-content: flex-start;
 
   width: 100%;
-  margin-bottom: 8px;
-  padding: 22px 30px;
+  margin-bottom: 0.571em;
+  padding: 1.571em 2.143em;
   background-color: $color_darkgray_600;
   border-radius: 2px;
 

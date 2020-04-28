@@ -24,7 +24,7 @@
           VIRNECT Workstation
         </button>
       </div>
-      <div class="popover-profile__link logout">
+      <div class="popover-profile__link">
         <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>

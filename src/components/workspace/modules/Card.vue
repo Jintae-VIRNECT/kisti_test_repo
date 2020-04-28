@@ -73,20 +73,20 @@ export default {
 @import '~assets/style/vars';
 .card {
   position: relative;
-  padding: 30px;
+  padding: 2.143em;
   background-color: $color_darkgray_500;
   border: solid 1px $color_darkgray_500;
   border-radius: 2px;
   > .popover--wrapper {
     position: absolute;
-    top: 16px;
-    right: 8px;
+    top: 1.143em;
+    right: 0.571em;
   }
 }
 .card__button {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
   &:hover {
     &:before {

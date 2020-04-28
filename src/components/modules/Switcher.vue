@@ -57,18 +57,18 @@ export default {
 }
 .switcher-text {
   margin: auto;
-  color: rgba(#fff, 0.6);
+  color: rgba($color_white, 0.6);
   font-weight: 500;
-  font-size: 13px;
+  font-size: 0.929rem;
 }
 .switcher-toggle {
   position: relative;
-  width: 32px;
-  height: 14px;
-  margin: auto 0 auto 13px;
+  width: 2.286rem;
+  height: 1rem;
+  margin: auto 0 auto 0.929rem;
   // background-color: rgb(209, 77, 77);
   background-color: #131313;
-  border-radius: 8px;
+  border-radius: 0.571rem;
   cursor: pointer;
   transition: background-color 0.3s;
   &.toggle {
@@ -77,18 +77,18 @@ export default {
 }
 .switcher-toggle__type {
   position: absolute;
-  left: -3px;
-  width: 18px;
-  height: 18px;
+  left: -0.214rem;
+  width: 1.286rem;
+  height: 1.286rem;
   margin: 1px 0;
   background-color: #fff;
   border-radius: 50%;
-  transform: translateY(-3px);
+  transform: translateY(-0.214rem);
   transition: left 0.3s;
   @include ir();
 
   &.toggle {
-    left: 17px;
+    left: 1.214rem;
   }
 }
 </style>

@@ -109,7 +109,7 @@ export default {
   border: solid 1px #3e3e42;
   border-radius: 2px;
   &.no__button {
-    padding-bottom: 20px;
+    padding-bottom: 1.429rem;
   }
 
   &:hover {

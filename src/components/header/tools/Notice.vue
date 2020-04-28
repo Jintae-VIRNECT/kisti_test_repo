@@ -3,7 +3,7 @@
     trigger="click"
     placement="bottom-end"
     popperClass="popover-notice"
-    :width="414"
+    width="29.571rem"
   >
     <toggle-button
       customClass="header-tools__notice"
@@ -21,7 +21,7 @@
         <switcher text="Push" :value.sync="push">Push</switcher>
       </div>
       <div class="popover-notice__body">
-        <scroller :height="400">
+        <scroller height="28.571rem">
           <notice-item
             section="file"
             :info="'Harry Ha 님'"
@@ -118,7 +118,7 @@ export default {
   background-color: $color_bg_sub;
   border: solid 1px rgba(#979797, 0.12);
   border-radius: 4px;
-  transform: translateY(20px);
+  transform: translateY(1.429rem);
   > .popover--body {
     padding: 0;
   }
@@ -126,34 +126,34 @@ export default {
 .popover-notice__header {
   position: relative;
   display: flex;
-  padding: 11px 16px;
+  padding: 0.786rem 1.143rem;
   border-bottom: solid 1px rgba(#eaeeee, 0.06);
   > span {
     // padding: 11px 12px;
-    color: #fff;
-    font-size: 16px;
+    color: $color_text;
+    font-size: 1.143rem;
   }
   & > .switcher {
     position: absolute;
     top: 50%;
-    right: 19px;
+    right: 1.357rem;
     transform: translateY(-50%);
   }
 }
 .popover-notice__body {
-  height: 400px;
-  padding-right: 10px;
-  border-bottom: solid 1px rgba(#fff, 0.09);
+  height: 28.571rem;
+  padding-right: 0.714rem;
+  border-bottom: solid 1px rgba($color_white, 0.09);
   > .vue-scrollbar__wrapper.popover-notice__scroller {
-    height: 400px;
+    height: 28.571rem;
   }
 }
 .popover-notice__footer {
-  padding: 11px 14px;
+  padding: 0.786rem 1rem;
   background-color: #313134;
   > span {
-    color: rgba(#fff, 0.74);
-    font-size: 13px;
+    color: rgba($color_text, 0.74);
+    font-size: 0.929rem;
   }
 }
 </style>

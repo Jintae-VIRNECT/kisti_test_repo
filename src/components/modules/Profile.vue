@@ -66,8 +66,8 @@ export default {
 }
 .profile--thumb {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 3em;
+  height: 3em;
 }
 
 .profile--image {
@@ -85,7 +85,7 @@ export default {
 }
 
 .profile--text {
-  margin: 0 10px 0 18px;
+  margin: 0 0.714em 0 1.286em;
 }
 .profile--maintext {
   color: #fafafa;

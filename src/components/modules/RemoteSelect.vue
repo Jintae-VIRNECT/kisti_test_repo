@@ -88,22 +88,22 @@ export default {
 .select-label {
   position: relative;
   width: 100%;
-  min-width: 300px;
-  min-height: 40px;
-  padding: 9px 20px;
+  min-width: 21.429rem;
+  min-height: 2.857rem;
+  padding: 0.643em 1.429rem;
   color: rgba($color_text, 0.76);
-  line-height: 20px;
+  line-height: 1.429rem;
   text-align: left;
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
   &::after {
     position: absolute;
-    top: 6px;
-    right: 15px;
-    width: 24px;
-    height: 24px;
-    margin-right: 2px;
+    top: 0.429rem;
+    right: 1.071rem;
+    width: 1.714rem;
+    height: 1.714rem;
+    margin-right: 0.143rem;
     background: url(~assets/image/ic-select-dropdown.svg) no-repeat 50%;
     transform: rotate(0deg);
     transition: transform 0.3s;
@@ -125,8 +125,8 @@ export default {
   }
 }
 .popover.select-options {
-  min-height: 30px;
-  margin-top: -4px;
+  min-height: 2.143rem;
+  margin-top: -0.286rem;
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-top: none;
@@ -135,15 +135,15 @@ export default {
     padding: 0;
   }
   &.reverse {
-    margin-top: 4px;
+    margin-top: 0.286rem;
     border-top: solid 1px #363638;
     border-bottom: none;
     > .popover--body .select-optionbox .select-option {
       &:first-child {
-        padding-top: 16px;
+        padding-top: 1.143rem;
       }
       &:last-child {
-        padding-bottom: 8px;
+        padding-bottom: 0.571rem;
       }
     }
   }
@@ -153,12 +153,12 @@ export default {
 }
 .select-option {
   width: 100%;
-  padding: 8px 20px;
+  padding: 0.571em 1.429rem;
   color: rgba($color_text, 0.5);
-  line-height: 20px;
+  line-height: 1.429rem;
   text-align: left;
   &:last-child {
-    padding-bottom: 16px;
+    padding-bottom: 1.143rem;
   }
   &.active {
     color: rgba($color_text, 0.76);

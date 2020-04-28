@@ -123,7 +123,7 @@ export default {
 }
 
 .label-margin-bottom {
-  margin-bottom: 40px;
+  margin-bottom: 2.857rem;
 }
 .mic-radius {
   border-radius: 50%;
@@ -131,7 +131,7 @@ export default {
 
 .mic-item {
   flex: 0;
-  margin: 0 10px;
+  margin: 0 0.714rem;
   &:first-child {
     margin-left: 0;
   }

@@ -44,7 +44,7 @@ export default {
     color: #f2f2f2;
     background: rgba(204, 23, 1, 0.3);
     border: 1px solid rgb(204, 23, 1);
-    border-radius: 13px;
+    border-radius: 0.929em;
   }
 }
 </style>

@@ -56,14 +56,14 @@ export default {
 .show-empty__title {
   padding-top: 22%;
   color: $color_text_sub;
-  font-size: 24px;
+  font-size: 1.714rem;
   text-align: center;
 }
 .show-empty__description {
-  margin-top: 5px;
+  margin-top: 0.357rem;
   color: rgba($color_text_sub, 0.5);
   font-weight: 300;
-  font-size: 18px;
+  font-size: 1.286rem;
   text-align: center;
 }
 </style>

@@ -44,7 +44,7 @@ export default {
 .progress {
   position: relative;
   width: 100%;
-  height: 8px;
+  height: 0.571rem;
   background-color: rgba(#d8d8d8, 0.17);
   border-radius: 4px;
 }
