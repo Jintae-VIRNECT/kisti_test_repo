@@ -10,7 +10,7 @@ export default {
     // }
   },
   methods: {
-    getFilter(list, [...params], depth) {
+    getFilter(list, [...params], depth = null) {
       if (this.searchFilter === '') {
         return list
       }
@@ -20,7 +20,7 @@ export default {
       for (const object of list) {
         let addObject = null
         for (const param of [...params]) {
-          if (depth !== undefined) {
+          if (depth !== null) {
             if (object[depth][param].toLowerCase().match(filteringValue)) {
               // filterList.push(object)
               addObject = object

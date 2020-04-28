@@ -56,7 +56,7 @@
   &.fix {
     margin-top: 3.571rem;
   }
-  &.remote .tab-view__body {
+  .groupcard-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     -webkit-column-gap: 0.571rem;
@@ -97,5 +97,6 @@
 
 .tab-view__body {
   flex: 1;
+  min-height: 28.571rem;
   // margin-bottom: 1.429rem;
 }
