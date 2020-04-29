@@ -23,7 +23,11 @@
         <span class="text">{{ `리더 : ${history.roomLeaderName}` }}</span>
       </div>
       <button slot="menuPopover"></button>
-      <button class="btn" @click="createRoom(history.roomId)" slot="column4">
+      <button
+        class="btn small"
+        @click="createRoom(history.roomId)"
+        slot="column4"
+      >
         재시작
       </button>
       <popover
