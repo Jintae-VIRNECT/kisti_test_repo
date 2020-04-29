@@ -136,13 +136,13 @@ export default {
     background-color: $color_primary;
   }
   &.alert {
-    background-color: #ffd059;
+    background-color: $color_yellow;
   }
 }
 .notice-item__body {
 }
 .notice-item__info {
-  color: #f55560;
+  color: $color_text_red;
   font-size: 0.857em;
   &.message,
   &.invite,
@@ -154,7 +154,7 @@ export default {
   color: #fff;
   font-size: 16px;
   > em {
-    color: #6bb4f9;
+    color: $color_primary_500;
   }
 }
 .notice-item__date {
@@ -168,9 +168,9 @@ export default {
     &.filelink {
       position: relative;
       padding-left: 40px;
-      color: #bfddff;
-      background-color: rgba(#bfddff, 0.12);
-      border: solid 1px rgba(#bfddff, 0.4);
+      color: $color_link;
+      background-color: rgba($color_link, 0.12);
+      border: solid 1px rgba($color_link, 0.4);
       &:before {
         position: absolute;
         top: 5px;

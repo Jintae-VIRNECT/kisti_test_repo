@@ -116,7 +116,7 @@ export default {
 .popover.popover-notice {
   overflow: hidden;
   background-color: $color_bg_sub;
-  border: solid 1px rgba(#979797, 0.12);
+  border: solid 1px rgba($color_sub_border, 0.12);
   border-radius: 4px;
   transform: translateY(1.429rem);
   > .popover--body {
@@ -127,7 +127,7 @@ export default {
   position: relative;
   display: flex;
   padding: 0.786rem 1.143rem;
-  border-bottom: solid 1px rgba(#eaeeee, 0.06);
+  border-bottom: solid 1px rgba($color_line_border, 0.06);
   > span {
     // padding: 11px 12px;
     color: $color_text;
@@ -150,7 +150,7 @@ export default {
 }
 .popover-notice__footer {
   padding: 0.786rem 1rem;
-  background-color: #313134;
+  background-color: $color_darkgray_500;
   > span {
     color: rgba($color_text, 0.74);
     font-size: 0.929rem;

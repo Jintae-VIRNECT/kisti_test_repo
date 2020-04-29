@@ -36,20 +36,25 @@ $color_busy: #ef3e33;
 $color_text: #fff;
 $color_text_main: #d2d2d2;
 $color_text_sub: #fafafa;
+$color_text_red: #f55560;
 
 /* Background Color */
 $color_bg: #181819;
 $color_bg_sub: #242427;
 $color_bg_item: #4c5259;
 
+/* Other Color */
 $color_white: #ffffff;
 $color_red: #eb001d;
+$color_yellow: #ffd059;
+$color_link: $color_primary_400;
 
 /* Border Color */
 $color_sub_border: #979797;
+$color_line_border: #eaeeee;
 
 /* Color - background, border */
-$color_bg_default: #181819;
+$color_bg_default: $color_bg;
 $color_bg_display: #1e1e20;
 $color_bg_border: #434346;
 $color_bg_shadow: rgba(16, 16, 17, 0.2);
