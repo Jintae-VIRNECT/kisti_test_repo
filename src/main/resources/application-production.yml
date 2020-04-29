@@ -64,4 +64,4 @@ cloud:
         resource: "workspace/profile"
 
 ## server url (use send workspace invite mail)
-serverUrl: "https://workstation.virnect.com"
+serverUrl: "https://api.virnect.com"
