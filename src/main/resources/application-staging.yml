@@ -120,7 +120,10 @@ spring:
         cors-configurations:
           '[/**]':
             allowedOrigins:
+              - "https://stgworkstation.virnect.com"
               - "https://stgwww.virnect.com"
+              - "https://stgconsole.virnect.com"
+              - "https://stgaccount.virnect.com"
               - "https://stgadmin.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
