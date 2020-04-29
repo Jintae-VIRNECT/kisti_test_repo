@@ -729,10 +729,10 @@ public class WorkspaceService {
         context.setVariable("responseUserEmail", user.getEmail());
         context.setVariable("role", workspaceRole.getRole());
 
-        // String html = springTemplateEngine.process("workspace_invite", context);
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
-        //this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
+        String html = springTemplateEngine.process("workspace_info_update", context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
 
         return new ApiResponse<>(true);
     }
@@ -921,8 +921,8 @@ public class WorkspaceService {
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
 
-        // String html = springTemplateEngine.process("workspace_invite", context);
-        //this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
+         String html = springTemplateEngine.process("workspace_kickout", context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
 
         return new ApiResponse<>(true);
     }
