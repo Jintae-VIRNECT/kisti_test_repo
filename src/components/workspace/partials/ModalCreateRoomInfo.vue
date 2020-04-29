@@ -130,6 +130,10 @@ export default {
         roomParticipants: this.selection,
       })
       console.log(roomId)
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.$router.push({ name: 'service' })
+      })
     },
     checkEmpty() {
       if (this.title === '') {

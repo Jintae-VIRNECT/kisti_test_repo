@@ -19,7 +19,7 @@
     <vue2-scrollbar ref="chatListScrollbar">
       <ol class="chat-list">
         <li class="chat-item date">
-          <p>{{ $moment().format('LL') }}</p>
+          <p>{{ $dayjs().format('LL') }}</p>
         </li>
         <chat-item
           v-for="(chat, idx) of chatList"
