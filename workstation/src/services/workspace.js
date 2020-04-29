@@ -28,8 +28,10 @@ export default {
    * @param {*} name
    */
   unwatchActiveWorkspace(name) {
-    watches.get(name)()
-    watches.delete(name)
+    if (watches.get(name)) {
+      watches.get(name)()
+      watches.delete(name)
+    }
   },
   /**
    * 내가 속한 워크스페이스 리스트 -> { 마스터, 매니저, 멤버 }

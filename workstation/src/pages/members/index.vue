@@ -89,6 +89,14 @@ export default {
       this.searchMembers(this.searchParams),
     )
   },
+  mounted() {
+    // modal query
+    const { path, query } = this.$router.currentRoute
+    if (query.modal && query.modal === 'memberAdd') {
+      this.showAddModal = true
+      this.$router.replace(path)
+    }
+  },
   beforeDestroy() {
     workspaceService.unwatchActiveWorkspace('/members')
   },

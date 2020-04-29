@@ -58,14 +58,16 @@
     padding-right: 14px;
   }
   .el-table__empty-block {
-    min-height: 480px;
     .el-table__empty-text {
-      margin-bottom: 100px;
-      line-height: 2;
-      & > span {
+      margin-top: 30px;
+      margin-bottom: 62px;
+      line-height: 1.6;
+      & > p {
+        margin-top: 10px;
         color: $font-color-content;
+        font-weight: 500;
         font-size: 12.6px;
-        opacity: 0.55;
+        opacity: 0.7;
       }
     }
   }
@@ -78,22 +80,5 @@
   }
   .el-table .descending .sort-caret.descending {
     border-top-color: $color-primary;
-  }
-  // 리스트 스타일
-  .el-table--list {
-    td,
-    th.is-leaf {
-      border-bottom: none;
-    }
-    &::before {
-      display: none;
-    }
-    td {
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-    td:last-child {
-      color: $font-color-desc;
-    }
   }
 }

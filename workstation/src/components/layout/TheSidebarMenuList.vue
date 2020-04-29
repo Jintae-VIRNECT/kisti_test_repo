@@ -10,9 +10,9 @@
         placement="right"
       >
         <!-- 링크 -->
-        <router-link v-if="menu.path[0] === '/'" :to="menu.path">
+        <nuxt-link v-if="menu.path[0] === '/'" :to="menu.path">
           <img :src="menu.image" :alt="$t(menu.label)" />
-        </router-link>
+        </nuxt-link>
         <!-- 컴포넌트 -->
         <a v-if="menu.path[0] === '@'" @click.stop="openCollapse(menu.path)">
           <img :src="menu.image" :alt="$t(menu.label)" />
@@ -62,6 +62,7 @@ export default {
         opacity: 0.9;
       }
     }
+    &.nuxt-link-active:not([href='/']),
     &.nuxt-link-exact-active {
       background: #465875;
       & > img {

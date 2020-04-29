@@ -48,23 +48,12 @@
       <!-- 멤버 -->
       <span>{{ $t('workspace.member') }}</span>
       <span class="count">{{ activeWorkspace.members.length }}</span>
-      <div class="users">
-        <el-tooltip
-          v-for="user in activeWorkspace.members"
-          :key="user.uuid"
-          :content="user.name"
-        >
-          <div class="avatar">
-            <div
-              class="image"
-              :style="`background-image: url(${user.profile})`"
-            />
-          </div>
-        </el-tooltip>
-      </div>
     </div>
     <el-divider />
     <div class="plans"></div>
+    <el-button @click="addMember">
+      {{ $t('workspace.info.addMember') }}
+    </el-button>
   </div>
 </template>
 
@@ -76,6 +65,14 @@ export default {
     ...mapGetters({
       activeWorkspace: 'workspace/activeWorkspace',
     }),
+  },
+  methods: {
+    addMember() {
+      this.$router.push({
+        path: '/members',
+        query: { modal: 'memberAdd' },
+      })
+    },
   },
 }
 </script>
@@ -128,5 +125,9 @@ export default {
       }
     }
   }
+}
+#__nuxt .workspace-info .el-button {
+  width: 100%;
+  padding: 12px;
 }
 </style>

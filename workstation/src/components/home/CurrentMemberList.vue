@@ -1,5 +1,5 @@
 <template>
-  <el-card class="workspace-member-list el-card--table">
+  <el-card class="current-member-list el-card--table">
     <div slot="header">
       <h3>{{ $t('home.memberList.title') }}</h3>
     </div>
@@ -24,6 +24,10 @@
         prop="joinDate"
         :width="100"
       />
+      <template slot="empty">
+        <img src="~assets/images/empty/img-member-empty.jpg" />
+        <p>{{ $t('home.memberList.empty') }}</p>
+      </template>
     </el-table>
   </el-card>
 </template>
@@ -66,10 +70,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.workspace-member-list {
-  .el-table__body-wrapper {
-    min-height: 250px;
-  }
-}
-</style>
+<style lang="scss"></style>

@@ -4,7 +4,7 @@
     </defs>
     <g fill="none" fill-rule="evenodd">
         <path d="M18 36c13.617 0 18-4.383 18-18S31.617 0 18 0 0 4.383 0 18s4.383 18 18 18z" transform="translate(-6 -6)"/>
-        <g opacity=".65" transform="translate(-6 -6) translate(7 7)">
+        <g opacity="1" transform="translate(-6 -6) translate(7 7)">
             <use fill="#FFF" xlink:href="#prefix__a"/>
         </g>
     </g>

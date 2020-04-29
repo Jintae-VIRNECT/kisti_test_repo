@@ -40,7 +40,7 @@
               <img src="~assets/images/icon/ic-error.svg" />
             </el-tooltip>
           </template>
-          <el-select v-model="form.role">
+          <el-select v-model="form.role" :disabled="form.role === 'MASTER'">
             <el-option
               class="column-role"
               v-for="role in roles"
@@ -97,7 +97,7 @@ export default {
   data() {
     return {
       showMe: false,
-      roles: role.options,
+      roles: role.options.filter(({ value }) => value !== 'MASTER'),
       form: {
         uuid: this.data.uuid,
         role: this.data.role,

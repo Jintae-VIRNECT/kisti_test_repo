@@ -109,7 +109,7 @@ export default {
   data() {
     return {
       showMe: false,
-      roles: role.options,
+      roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new InviteMember()],
     }
   },

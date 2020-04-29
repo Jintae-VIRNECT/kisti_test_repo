@@ -27,7 +27,9 @@
             <h5>{{ $t('home.banner.main') }}</h5>
             <p>{{ $t('home.banner.desc') }}</p>
           </el-card>
-          <workspace-member-list />
+          <current-member-list />
+          <current-contents-list />
+          <current-report-list />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
@@ -54,7 +56,9 @@
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import WorkspaceStorageInfo from '@/components/home/WorkspaceStorageInfo'
 import WorkspaceDownloadInfo from '@/components/home/WorkspaceDownloadInfo'
-import WorkspaceMemberList from '@/components/home/WorkspaceMemberList'
+import CurrentMemberList from '@/components/home/CurrentMemberList'
+import CurrentContentsList from '@/components/home/CurrentContentsList'
+import CurrentReportList from '@/components/home/CurrentReportList'
 import UserProfileCard from '@/components/home/UserProfileCard'
 import LinkListCard from '@/components/home/LinkListCard'
 
@@ -65,7 +69,9 @@ export default {
     WorkspaceInfo,
     WorkspaceStorageInfo,
     WorkspaceDownloadInfo,
-    WorkspaceMemberList,
+    CurrentMemberList,
+    CurrentContentsList,
+    CurrentReportList,
     UserProfileCard,
     LinkListCard,
   },
@@ -102,6 +108,9 @@ export default {
       font-size: 20px;
       opacity: 0.9;
     }
+  }
+  .el-card--table .el-table__body-wrapper {
+    min-height: 250px;
   }
 }
 </style>
