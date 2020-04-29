@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :style="{ width: cardWidth, height: height + 'px' }">
+  <div class="card" :style="{ width: cardWidth, height: cardHeight }">
     <popover
       v-if="menu"
       trigger="click"
@@ -31,7 +31,7 @@ export default {
       default: 204,
     },
     height: {
-      type: Number,
+      type: [Number, String],
       default: 244,
     },
     menu: {
@@ -48,10 +48,17 @@ export default {
   },
   computed: {
     cardWidth() {
-      if (this.width === 'full') {
-        return '100%'
+      if (typeof this.width === 'string') {
+        return this.width
       } else {
         return this.width + 'px'
+      }
+    },
+    cardHeight() {
+      if (typeof this.height === 'string') {
+        return this.height
+      } else {
+        return this.height + 'px'
       }
     },
   },
@@ -63,22 +70,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .card {
   position: relative;
-  padding: 30px;
-  background-color: #313135;
-  border: solid 1px #3e3e42;
+  padding: 2.143em;
+  background-color: $color_darkgray_500;
+  border: solid 1px $color_darkgray_500;
   border-radius: 2px;
   > .popover--wrapper {
     position: absolute;
-    top: 16px;
-    right: 8px;
+    top: 1.143em;
+    right: 0.571em;
   }
 }
 .card__button {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
   &:hover {
     &:before {

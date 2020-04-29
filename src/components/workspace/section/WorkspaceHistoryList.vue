@@ -6,7 +6,7 @@
       v-bind:key="index"
     >
       <profile
-        :image="require('assets/image/back/mdpi_lnb_img_user.svg')"
+        :image="require('assets/image/img_default_group.svg')"
         :imageAlt="'profileImg'"
         :mainText="history.title"
         :subText="'참석자 ' + history.memberCount + '명'"
@@ -18,8 +18,8 @@
       <div slot="column2" class="label label--date">
         {{ convertDate(history.collaborationStartDate) }}
       </div>
-      <div slot="column3" class="label label__icon">
-        <img class="icon" :src="require('assets/image/back/mdpi_icon.svg')" />
+      <div slot="column3" class="label lable__icon">
+        <img class="icon" :src="require('assets/image/ic_leader.svg')" />
         <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
       </div>
       <button slot="menuPopover"></button>
@@ -127,9 +127,12 @@ export default {
   methods: {
     //상세보기
     async openRoomInfo(roomId) {
-      this.showRoomInfo = !this.showRoomInfo
       let result = await getHistorySingleItem({ roomId })
       this.roomInfo = result.data
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.showRoomInfo = !this.showRoomInfo
+      })
     },
     async deleteItem(roomId) {
       const pos = this.historyList.findIndex(room => {
@@ -141,6 +144,7 @@ export default {
 
     //재시작
     async createRoom(roomId) {
+      this.roomId = roomId
       this.visible = !this.visible
     },
     convertDate(date) {

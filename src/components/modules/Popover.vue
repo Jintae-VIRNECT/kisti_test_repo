@@ -7,7 +7,7 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        :class="popperClass"
+        :class="[popperClass, { reverse: reverse }]"
         class="popover"
         @click.stop
       >
@@ -79,7 +79,7 @@ export default {
       },
     },
     width: {
-      type: Number,
+      type: [Number, String],
       default: 240,
     },
     popperClass: String,
@@ -93,6 +93,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    placementReverse: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -100,8 +104,9 @@ export default {
       style: {
         top: 0,
         left: 0,
-        width: this.width + 'px',
+        width: typeof this.width === 'string' ? this.width : this.width + 'px',
       },
+      reverse: false,
     }
   },
   watch: {
@@ -150,6 +155,9 @@ export default {
       this.visible = true
 
       this.$nextTick(() => {
+        if (this.show) {
+          this.show()
+        }
         const popover = this.$refs['popover']
         const reference = this.$slots['reference'][0].elm
         let top = calcOffset(reference).top
@@ -175,6 +183,15 @@ export default {
           top -= popover.offsetHeight
         } else if (this.placement.indexOf('bottom') > -1) {
           top += reference.offsetHeight
+
+          if (
+            this.placementReverse &&
+            top + popover.offsetHeight > document.body.clientHeight
+          ) {
+            this.reverse = true
+
+            top -= popover.offsetHeight + reference.offsetHeight
+          }
         } else {
           if (this.placement.indexOf('start') > -1) {
             //nothing
@@ -197,10 +214,6 @@ export default {
               left - (reference.offsetWidth - this.width) / 2 + 'px',
             )
           }
-        }
-
-        if (this.show) {
-          this.show()
         }
       })
     },
@@ -252,7 +265,7 @@ export default {
   top: 0;
   left: 0;
   z-index: 100;
-  min-width: 240px;
+  min-width: 17.143em;
   overflow: hidden;
   background-color: #fff;
   border-radius: 6px;
@@ -260,20 +273,20 @@ export default {
 
   &--header {
     position: relative;
-    padding: 18px 28px;
+    padding: 1.286em 2em;
     border-bottom: 1px solid #ddd;
   }
 
   &--title {
     color: #333333;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143em;
   }
 
   &--body {
     position: relative;
     max-height: 80vh;
-    padding: 15px 0 15px 24px;
+    padding: 1.071em 0 1.071em 1.714em;
     overflow: hidden;
   }
 }

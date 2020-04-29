@@ -68,34 +68,34 @@ export default {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  column-gap: 8px;
-  row-gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(14.286rem, 1fr));
+  column-gap: 0.571rem;
+  row-gap: 0.571rem;
 }
 .no-list {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  height: 28.571rem;
   background-color: $color_darkgray_600;
 
   .no-list__img {
-    width: 191px;
-    height: 233px;
-    margin-bottom: 30px;
-    background-image: url('~assets/image/mdpi_02.svg');
+    width: 13.643rem;
+    height: 16.643rem;
+    margin-bottom: 2.143rem;
+    background-image: url('~assets/image/img_user_empty.svg');
     background-repeat: no-repeat;
   }
 
   .no-list__title {
     color: $color_text_sub;
-    font-size: 24px;
+    font-size: 1.714rem;
     text-align: center;
   }
   .no-list__description {
     color: $color_text_sub;
-    font-size: 18px;
+    font-size: 1.286rem;
     text-align: center;
     opacity: 50%;
   }

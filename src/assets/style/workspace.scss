@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 @import "common";
-@import "./plugin/material-icons";
 
 @import "./workspace/workspace-layout";
 @import "./workspace/workspace-welcome";
@@ -16,5 +15,6 @@
   position: relative;
   width: 100%;
   max-width: 80vw;
-  margin: 0 auto;
+  margin-right: auto;
+  margin-left: auto;
 }

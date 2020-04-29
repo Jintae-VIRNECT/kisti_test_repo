@@ -1,14 +1,7 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
-    <div class="profile--thumb">
-      <div
-        v-if="color.length > 0"
-        class="profile--image"
-        :style="{ 'background-color': color }"
-      >
-        <p>{{ mainText.slice(0, 1) }}</p>
-      </div>
-      <p v-else class="profile--image">
+    <div class="profile--thumb" :style="thumbStyle">
+      <p class="profile--image">
         <img :src="image" :alt="mainText" @error="onError | onImageError" />
       </p>
       <span v-if="status" class="profile--badge" :class="status">{{
@@ -33,17 +26,13 @@ export default {
     Role,
   },
   props: {
-    image: String,
-    imageAlt: {
-      type: String,
-      default: function() {
-        return 'thumbnail image'
+    thumbStyle: {
+      type: Object,
+      default: () => {
+        return {}
       },
     },
-    color: {
-      type: String,
-      default: '',
-    },
+    image: String,
     onError: {
       type: Function,
       default: null,
@@ -77,8 +66,8 @@ export default {
 }
 .profile--thumb {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 3em;
+  height: 3em;
 }
 
 .profile--image {
@@ -93,23 +82,16 @@ export default {
     object-fit: cover;
     @include image();
   }
-  > p {
-    width: fit-content;
-    margin: auto;
-    color: #fff;
-    font-size: 16px;
-    line-height: 42px;
-  }
 }
 
 .profile--text {
-  margin: 0 10px 0 18px;
+  margin: 0 0.714em 0 1.286em;
 }
 .profile--maintext {
   color: #fafafa;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 1.071em;
+  line-height: 1.429em;
 }
 .profile--subtext {
   color: #b7b7b7;

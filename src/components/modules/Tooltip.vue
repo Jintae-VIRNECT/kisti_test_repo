@@ -152,8 +152,8 @@ export default {
   z-index: 3;
   // display: none;
   width: max-content;
-  padding: 10px 20px;
-  font-size: 13px;
+  padding: 0.714em 1.429em;
+  font-size: 0.929em;
   border-radius: 6px;
   .arrow {
     position: absolute;

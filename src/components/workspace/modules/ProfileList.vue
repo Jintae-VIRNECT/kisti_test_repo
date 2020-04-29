@@ -21,8 +21,9 @@
       v-if="otherUsers.length > 0"
       placement="right"
       trigger="hover"
-      :width="150"
+      width="10.714em"
       popperClass="otheruser-popover"
+      :scrollHide="true"
     >
       <div>
         <figure
@@ -97,23 +98,26 @@ export default {
 
 .profilelist {
   display: flex;
-  min-height: 38px;
+  min-height: 2.714em;
 }
 .profilelist-user {
-  width: 38px;
-  height: 38px;
-  margin-left: 6px;
+  width: 2.714em;
+  height: 2.714em;
+  margin-left: 0.429em;
   border: solid 1px transparent;
   border-radius: 50%;
   &.otheruser {
     display: flex;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 0.714em;
     margin-left: 0;
     overflow: unset;
     &:last-child {
       margin-bottom: 0;
     }
+  }
+  &:first-child {
+    margin-left: 0;
   }
 }
 .profilelist-user__image {
@@ -121,29 +125,28 @@ export default {
   height: 100%;
   @include image();
   &.otheruser {
-    width: 36px;
-    height: 36px;
+    width: 2.571em;
+    height: 2.571em;
   }
 }
 .profilelist-user__name {
   display: inline-block;
   flex: 1;
-  max-width: 70px;
-  margin-left: 10px;
+  max-width: 5em;
+  margin-left: 0.714em;
   overflow: hidden;
   color: #fff;
-  line-height: 38px;
+  line-height: 2.714em;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .profilelist-user__expend {
-  width: 38px;
-  height: 38px;
-  margin-left: 6px;
+  width: 2.714em;
+  height: 2.714em;
+  margin-left: 0.429em;
   color: #fff;
-  font-size: 17px;
-  line-height: 38px;
+  line-height: 2.714em;
   text-align: center;
   background-color: #3e3e44;
   border: solid 2px #979fb0;
@@ -156,12 +159,12 @@ export default {
 @import '~assets/style/vars';
 
 .otheruser-popover {
-  min-width: 150px;
+  min-width: 10.714em;
   background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
-  transform: translateX(10px);
+  transform: translateX(0.714em);
   .popover--body {
-    padding: 15px;
+    padding: 1.071em;
   }
 }
 </style>

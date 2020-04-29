@@ -15,18 +15,20 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '~assets/style/vars';
+
 .badge-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 22px;
-  background-color: black;
-  border-radius: 12px;
+  width: 2.286rem;
+  height: 1.571rem;
+  background-color: $color_darkgray_1000;
+  border-radius: 0.857rem;
 }
 .badge-container__text {
-  color: rgb(224, 224, 224);
+  color: $color_text_sub;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 1rem;
 }
 </style>

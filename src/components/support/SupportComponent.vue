@@ -3,7 +3,7 @@
     <div class="body">
       <div class="body__graphic">
         <img
-          src="~assets/image/support/mdpi_404.svg"
+          src="~assets/image/support/img_support_404.svg"
           alt="Browser is not supported"
         />
       </div>

@@ -1,8 +1,9 @@
 .share-list {
-  position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
-  width: 156px;
+  width: $share_width;
+  height: 100%;
   background-color: $color_bg_sub;
   border-right: solid 1px rgba(#fff, 0.09);
 

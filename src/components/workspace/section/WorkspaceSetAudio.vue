@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="setting-section">
     <div class="setting__title">입출력 장치</div>
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">
@@ -18,6 +18,7 @@
       <figure class="setting__figure">
         <p class="setting__label">출력 장치</p>
         <r-select
+          ref="settingOutput"
           class="setting__r-selecter"
           v-on:changeValue="setSpeaker"
           :options="speakers"
@@ -34,16 +35,11 @@
 import RSelect from 'RemoteSelect'
 import { mapState } from 'vuex'
 export default {
-  data: function() {
-    return {}
-  },
   props: {
     //device list
     mics: null,
     speakers: null,
   },
-  mounted() {},
-  created() {},
   components: {
     RSelect,
   },

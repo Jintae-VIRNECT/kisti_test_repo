@@ -38,7 +38,7 @@ export default {
       default: () => false,
     },
     height: {
-      type: Number,
+      type: [Number, String],
       deafult: 0,
     },
   },
@@ -63,14 +63,22 @@ export default {
       return classname
     },
     scrollerStyle() {
-      return {
-        height: `${this.scrollH}px`,
+      if (typeof this.scrollH === 'string') {
+        return {
+          height: this.scrollH,
+        }
+      } else {
+        return {
+          height: `${this.scrollH}px`,
+        }
       }
     },
   },
   watch: {
     $route: function() {
-      this.$refs['contentScrollbar'].scrollReset()
+      if (this.$refs['contentScrollbar']) {
+        this.$refs['contentScrollbar'].reset()
+      }
     },
   },
   methods: {
@@ -86,7 +94,11 @@ export default {
       }
     },
     getScrollH(target) {
-      if (this.height > 0) {
+      if (typeof this.height === 'number' && this.height > 0) {
+        this.scrollH = this.height + 'px'
+        return this.height
+      }
+      if (typeof this.height === 'string') {
         this.scrollH = this.height
         return this.height
       }
@@ -108,7 +120,7 @@ export default {
     },
     reset() {
       if (this.$refs['contentScrollbar']) {
-        this.$refs['contentScrollbar'].scrollReset()
+        this.$refs['contentScrollbar'].reset()
         this.isScrolled = false
       }
     },

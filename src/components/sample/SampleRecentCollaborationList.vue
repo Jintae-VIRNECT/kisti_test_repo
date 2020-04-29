@@ -25,7 +25,7 @@
                 {{ item.lastTime }}
               </div>
               <div slot="column3" class="label lable__icon">
-                <img class="icon" src="~assets/image/back/mdpi_icon.svg" />
+                <img class="icon" src="~assets/image/ic_leader.svg" />
                 <span class="text">{{ item.leaderName }}</span>
               </div>
               <button slot="menuPopover"></button>
@@ -45,7 +45,7 @@ export default {
     return {
       testdata: [
         {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
+          profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 01',
           subText: '참석자 0명',
           entireTime: '총 이용 시간: 08분 21초',
@@ -54,7 +54,7 @@ export default {
           leaderIcon: '',
         },
         {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
+          profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 02',
           subText: '참석자 2명',
           entireTime: '총 이용 시간: 10분 21초',
@@ -63,7 +63,7 @@ export default {
           leaderIcon: '',
         },
         {
-          profileImg: require('assets/image/back/mdpi_lnb_img_user.svg'),
+          profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 03',
           subText: '참석자 4명',
           entireTime: '총 이용 시간: 33분 21초',

@@ -2,12 +2,12 @@
 $header_height: 56px;
 
 /* Layout - Workspace */
-$welcome_height: 284px; //156px + 64px + 64px
-$layout_max_width: 1480px;
+$welcome_height: 17.143rem; //156px + 64px + 64px
 
 /* Layout - Service */
 $subview_width: 360px;
 $videos_height: 100px;
+$share_width: 156px;
 
 /* Primary Color */
 $color_primary_700: #145fc6;
@@ -28,6 +28,9 @@ $color_darkgray_400: #38383a;
 $color_state_good: #3ce900;
 $color_state_normal: #4bc6ff;
 $color_state_bad: #eb001d;
+$color_online: #7ed321;
+$color_offline: #cccccc;
+$color_busy: #ef3e33;
 
 /* Text Color */
 $color_text: #fff;
@@ -41,6 +44,9 @@ $color_bg_item: #4c5259;
 
 $color_white: #ffffff;
 $color_red: #eb001d;
+
+/* Border Color */
+$color_sub_border: #979797;
 
 /* Color - background, border */
 $color_bg_default: #181819;
@@ -59,38 +65,6 @@ $color_videolist_border: rgba(151, 151, 151, 0.21);
 $color_state_good_bg: rgba(#0e2805, 0.6);
 $color_state_normal_bg: rgba(#1a1e00, 0.6);
 $color_state_bad_bg: rgba(#2c070c, 0.72);
-
-/**
- * backup!!! Remote 1.x version
- */
-/* Color */
-// $color_remote: #0064ff;
-$color_remote_text: #ffffff;
-$color_remote_dark: #004ec6;
-$color_virnect: #6700ff;
-$color_virnect_text: #ffffff;
-$color_virnect_dark: #5600ee;
-$color_warning: #d50000;
-$color_division: #dddddd;
-$color_border: #e2e2e2;
-
-/* Color - text */
-$color_dark: #222222;
-$color_dark_blur: rgba(34, 34, 34, 0.5);
-$color_text_gray: #545658;
-$color_text_red: #d30a0a;
-
-/* Color - bg */
-// $color_bg_default: #262a31;
-$color_bg_gray: #898f98;
-$color_bg_input: #f4f5f6;
-
-/* Color -status */
-$color_online: #7ed321;
-$color_offline: #cccccc;
-$color_busy: #ef3e33;
-
-$color_white_hover: #eff3fb;
 
 /* Screen Size */
 $size_pc_max: 1920px;

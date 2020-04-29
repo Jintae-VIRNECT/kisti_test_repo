@@ -1,32 +1,33 @@
 <template>
-  <div class="setting-wrapper offsetwidth">
-    <div class="setting-nav">
-      <div class="setting-nav__header">환경설정</div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'audio-video' }"
-        @click="tabChange('audio-video', '비디오 및 오디오 설정')"
-      >
-        비디오 및 오디오 설정
+  <div class="tab-view">
+    <div class="setting-wrapper offsetwidth">
+      <div class="setting-nav">
+        <div class="setting-nav__header">환경설정</div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'audio-video' }"
+          @click="tabChange('audio-video', '비디오 및 오디오 설정')"
+        >
+          비디오 및 오디오 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'video-record' }"
+          @click="tabChange('video-record', '영상 및 녹화 설정')"
+        >
+          영상 및 녹화 설정
+        </div>
+        <div
+          class="setting-nav__menu"
+          :class="{ active: tabview === 'language' }"
+          @click="tabChange('language', '언어 설정')"
+        >
+          언어 설정
+        </div>
       </div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'video-record' }"
-        @click="tabChange('video-record', '영상 및 녹화 설정')"
-      >
-        영상 및 녹화 설정
-      </div>
-      <div
-        class="setting-nav__menu"
-        :class="{ active: tabview === 'language' }"
-        @click="tabChange('language', '언어 설정')"
-      >
-        언어 설정
-      </div>
-    </div>
 
-    <div class="setting-view">
-      <div class="setting-view__header">{{ headerText }}</div>
+      <div class="setting-view">
+        <div class="setting-view__header">{{ headerText }}</div>
 
       <div class="setting-view__body">
         <template v-if="tabview === 'audio-video'">
@@ -36,11 +37,11 @@
             :speakers="speakers"
           ></workspace-set-audio>
 
-          <workspace-mic-test class="setting-section"> </workspace-mic-test>
-        </template>
+            <workspace-mic-test class="setting-section"> </workspace-mic-test>
+          </template>
 
-        <template v-else-if="tabview === 'video-record'">
-          <!-- <workspace-set-video
+          <template v-else-if="tabview === 'video-record'">
+            <!-- <workspace-set-video
             class="setting-section"
             :videos="videos"
             @setVideo="setVideo"

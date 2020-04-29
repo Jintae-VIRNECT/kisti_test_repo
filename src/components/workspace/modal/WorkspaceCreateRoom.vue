@@ -1,11 +1,12 @@
 <template>
   <modal
     title="원격 협업 생성하기"
-    :width="1098"
-    :height="850"
+    width="78.429em"
+    height="60.714em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
+    customClass="createroom-modal"
   >
     <div class="createroom">
       <create-room-info
