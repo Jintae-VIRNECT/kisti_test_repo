@@ -121,7 +121,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "https://stgwww.virnect.com"
-              - "http://stgadmin.virnect.com"
+              - "https://stgadmin.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
