@@ -14,10 +14,20 @@ spring:
         hibernate:
           envers:
             audit_table_suffix: _history
+    open-in-view: false
   redis:
     port: 6379
     database: 0
     host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 40MB
+
 logging:
   level:
     com.virnect.workspace.application.*: DEBUG
@@ -28,8 +38,8 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
-  url: "https://image.virnect.com:${server.port}/"
+  upload-path: "workspace/profile/"
+  url: "https://virnect-platform.s3.ap-northeast-2.amazonaws.com/"
   allow-extension: "gif,jpg,jpeg,png"
 
 ## Eureka Server Configuration
@@ -50,5 +60,8 @@ cloud:
       auto: true
     s3:
       bucket:
-        name: "virnect-admin"
-        resource: "resource"
+        name: "virnect-platform"
+        resource: "workspace/profile"
+
+## server url (use send workspace invite mail)
+serverUrl: "https://workstation.virnect.com"

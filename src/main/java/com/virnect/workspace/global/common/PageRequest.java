@@ -29,7 +29,7 @@ public final class PageRequest {
         this.sort = sort;
     }
 
-    public org.springframework.data.domain.PageRequest of(Boolean paging) {
+    public org.springframework.data.domain.PageRequest of() {
         // sort nullable
         String sortStr = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate,DESC" : this.sort;
         String[] sortQuery = sortStr.split(",");
@@ -44,16 +44,8 @@ public final class PageRequest {
             properties = "createdDate";
         }
 
-        if(paging) {
-            //페이징을 워크스페이스에서 해야 한다면
-            System.out.println("111:"+size);
-            return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
-        }else{
-            //페이징을 타 서비스에서 해야 한다면
-            System.out.println("111:"+size);
-            return org.springframework.data.domain.PageRequest.of(page , size, Sort.Direction.valueOf(sort), properties);
+        return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
 
-        }
     }
 
 

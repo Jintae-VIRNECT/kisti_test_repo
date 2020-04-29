@@ -7,7 +7,7 @@ plugins {
 }
 
 ext {
-    springCloudVersion = 'Greenwich.SR2'
+    springCloudVersion = 'Hoxton.SR1'
 }
 
 group = 'com.virnect'

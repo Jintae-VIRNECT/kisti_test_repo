@@ -32,7 +32,6 @@ public class WorkspaceUserPermission extends TimeEntity {
     @JoinColumn(name = "workspace_permission_id")
     private WorkspacePermission workspacePermission;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_user")
     private WorkspaceUser workspaceUser;

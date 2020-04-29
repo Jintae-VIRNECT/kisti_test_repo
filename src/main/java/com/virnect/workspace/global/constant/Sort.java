@@ -24,12 +24,32 @@ public enum Sort {
         Collections.sort(memberInfoDTOList, new CompareEmailDesc());
         return memberInfoDTOList;
     }),
-    NAME_ASC(memberInfoDTOList -> {
-        Collections.sort(memberInfoDTOList, new CompareNameAsc());
+    NICKNAME_ASC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareNickNameAsc());
         return memberInfoDTOList;
     }),
-    NAME_DESC(memberInfoDTOList -> {
-        Collections.sort(memberInfoDTOList, new CompareNameDesc());
+    NICKNAME_DESC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareNickNameDesc());
+        return memberInfoDTOList;
+    }),
+    ROLE_ASC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareRoleAsc());
+        return memberInfoDTOList;
+    }),
+    ROLE_DESC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareRoleDesc());
+        return memberInfoDTOList;
+    }),
+    JOINDATE_ASC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareJoinDateAsc());
+        return memberInfoDTOList;
+    }),
+    JOINDATE_DESC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareJoinDateDesc());
+        return memberInfoDTOList;
+    }),
+    UPDATEDATE_DESC(memberInfoDTOList -> {
+        Collections.sort(memberInfoDTOList, new CompareUpdatedDateDesc());
         return memberInfoDTOList;
     });
 
@@ -78,12 +98,12 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareNameDesc implements Comparator<MemberInfoDTO> {
+    static class CompareNickNameDesc implements Comparator<MemberInfoDTO> {
 
         @Override
         public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
             // TODO Auto-generated method stub
-            return o2.getName().compareTo(o1.getName());
+            return o2.getNickName().compareTo(o1.getNickName());
         }
     }
 
@@ -92,14 +112,80 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareNameAsc implements Comparator<MemberInfoDTO> {
+    static class CompareNickNameAsc implements Comparator<MemberInfoDTO> {
 
         @Override
         public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
             // TODO Auto-generated method stub
-            return o1.getName().compareTo(o2.getName());
+            return o1.getNickName().compareTo(o2.getNickName());
+        }
+    }
+    /**
+     * workspace user role으로 MemberInfoDto 내림차순(Desc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareRoleDesc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o2.getRole().compareTo(o1.getRole());
         }
     }
 
+    /**
+     * workspace user role으로 오름차순(Asc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareRoleAsc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o1.getRole().compareTo(o2.getRole());
+        }
+    }
+    /**
+     * joinDate 으로 MemberInfoDto 내림차순(Desc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareJoinDateDesc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o2.getJoinDate().compareTo(o1.getJoinDate());
+        }
+    }
+
+    /**
+     * joinDate 으로 오름차순(Asc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareJoinDateAsc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o1.getJoinDate().compareTo(o2.getJoinDate());
+        }
+    }
+    /**
+     * updatedDate 으로 MemberInfoDto 내림차순(Desc) 정렬
+     *
+     * @author Administrator
+     */
+    static class CompareUpdatedDateDesc implements Comparator<MemberInfoDTO> {
+
+        @Override
+        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+            // TODO Auto-generated method stub
+            return o2.getUpdatedDate().compareTo(o1.getUpdatedDate());
+        }
+    }
 }
 

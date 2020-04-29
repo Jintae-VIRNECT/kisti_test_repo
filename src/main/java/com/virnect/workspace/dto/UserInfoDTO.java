@@ -23,6 +23,7 @@ public class UserInfoDTO {
     private String role;
     private String createdDate;
     private String updatedDate;
+    private String nickName;
 
     @Override
     public String toString() {

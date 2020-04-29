@@ -27,7 +27,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -56,10 +55,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute WorkspaceCreateRequest workspaceCreateRequest) {
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
@@ -71,15 +67,12 @@ public class WorkspaceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", paramType = "form", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", required = true),
             @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", paramType = "form", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
-            @ApiImplicitParam(name = "name", value = "워크스페이스 이름(빈값 일 경우 닉네임's Workspace로 저장됩니다.)", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
+            @ApiImplicitParam(name = "name", value = "워크스페이스 이름", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PutMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute WorkspaceUpdateRequest workspaceUpdateRequest) {
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }
@@ -104,15 +97,40 @@ public class WorkspaceController {
             value = "내가 속한 워크스페이스 목록 조회",
             notes = "사용자가 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 정보를 조회합니다."
     )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "유저 uuid",  defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+    })
     @GetMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getUserWorkspaces(@RequestParam("userId") String userId, @ApiIgnore PageRequest pageRequest) {
         if (!StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId);
+        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest.of());
         return ResponseEntity.ok(apiResponse);
     }
-
+    @ApiOperation(
+            value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
+            notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "role,desc"),
+    })
+    @GetMapping("/{workspaceId}/members")
+    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId,  @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
+        if ( !StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, search, filter, pageable);
+        return ResponseEntity.ok(apiResponse);
+    }
+/*
     @ApiOperation(
             value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
             notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
@@ -131,7 +149,7 @@ public class WorkspaceController {
         }
         ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, userId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
-    }
+    }*/
 
 
     @ApiOperation(
@@ -162,7 +180,7 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 사용자 - 멤버 권한 설정",
-            notes = "워크스페이스 사용자에서 멤버의 권한, 플랜할당을 설정합니다."
+            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능합니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
