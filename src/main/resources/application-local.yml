@@ -73,6 +73,5 @@ serverUrl: "http://192.168.6.3:8085"
 feign:
   hystrix:
     enabled: true
-hystrix:
 
 

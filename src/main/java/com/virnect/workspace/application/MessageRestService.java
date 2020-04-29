@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "message-server")
+@FeignClient(name = "message-server", fallbackFactory = MessageRestFallbackFactory.class)
 public interface MessageRestService {
     @PostMapping(value = "/messages/mail")
     ApiResponse sendMail(@RequestBody MailRequest mailSendRequest);
