@@ -44,7 +44,7 @@ public class JwtAuthenticate implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String requestUriPath = exchange.getRequest().getURI().getPath();
-        if (requestUriPath.startsWith("/auth")) {
+        if (requestUriPath.startsWith("/auth") || requestUriPath.startsWith("/admin")) {
             return chain.filter(exchange);
         }
         String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
