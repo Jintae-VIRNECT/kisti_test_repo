@@ -10,13 +10,12 @@ import org.springframework.stereotype.Component;
  * AUTHOR: jkleee (Jukyoung Lee)
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
-         */
+ */
 @Slf4j
 @Component
-public class UserRestFallbackFactory implements FallbackFactory<UserRestService> {
-
+public class ProcessRestFallbackFactory implements FallbackFactory<ProcessRestService> {
     @Override
-    public UserRestService create(Throwable cause) {
+    public ProcessRestService create(Throwable cause) {
         log.error(cause.getMessage(), cause);
         return null;
     }

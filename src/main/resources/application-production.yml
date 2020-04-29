@@ -65,3 +65,8 @@ cloud:
 
 ## server url (use send workspace invite mail)
 serverUrl: "https://api.virnect.com"
+
+## Feign
+feign:
+  hystrix:
+    enabled: true

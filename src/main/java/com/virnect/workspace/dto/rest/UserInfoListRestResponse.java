@@ -1,8 +1,9 @@
 package com.virnect.workspace.dto.rest;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,8 +14,9 @@ import java.util.List;
  * DESCRIPTION:
  */
 @Getter
-@RequiredArgsConstructor
+@Setter
 public class UserInfoListRestResponse {
-    private final List<UserInfoRestResponse> userInfoList;
-    private final PageMetadataRestResponse pageMeta;
+    private  List<UserInfoRestResponse> userInfoList;
+    private  PageMetadataRestResponse pageMeta;
+    public static List<UserInfoRestResponse> EMPTY = new ArrayList<>();
 }

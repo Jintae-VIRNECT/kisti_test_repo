@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.FeignClient;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "license-server")
+@FeignClient(name = "license-server", fallbackFactory = LicenseRestFallbackFactory.class)
 public interface LicenseRestService {
-
 }

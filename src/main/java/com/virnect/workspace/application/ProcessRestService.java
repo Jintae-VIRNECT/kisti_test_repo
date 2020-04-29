@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "process-server")
+@FeignClient(name = "process-server", fallbackFactory = ProcessRestFallbackFactory.class)
 public interface ProcessRestService {
     @GetMapping("/processes/subProcesses/count/onWorker/{workerUUID}")
     ApiResponse<SubProcessCountResponse> getSubProcessCount(@PathVariable("workerUUID") String workerUUID);
