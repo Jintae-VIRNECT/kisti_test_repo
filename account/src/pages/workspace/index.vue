@@ -38,12 +38,12 @@
             :width="150"
             sortable
           />
-          <column-plan
+          <!-- <column-plan
             :label="$t('workspace.column.plan')"
             nameProp="planName"
             gradeProp="planGrade"
             :width="170"
-          />
+          /> -->
         </el-table>
         <el-row type="flex" justify="center">
           <el-pagination

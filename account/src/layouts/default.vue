@@ -1,7 +1,9 @@
 <template>
   <div>
     <header>
-      <the-header :subTitle="$t('menu.account')" :showSection="showSection" />
+      <the-header :showSection="showSection">
+        <template slot="subTitle">{{ $t('menu.account') }}</template>
+      </the-header>
     </header>
     <the-sidebar :menus="sideMenus" />
     <main>
@@ -34,3 +36,9 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#headerSection .sub-title {
+  font-size: 18px;
+}
+</style>

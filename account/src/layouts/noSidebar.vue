@@ -1,7 +1,9 @@
 <template>
   <div>
     <header>
-      <the-header :subTitle="$t('menu.account')" :showSection="showSection" />
+      <the-header :showSection="showSection">
+        <template slot="subTitle">{{ $t('menu.account') }}</template>
+      </the-header>
     </header>
     <main>
       <nuxt />
