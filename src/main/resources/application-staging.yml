@@ -3,7 +3,7 @@ spring:
     name: process-server
   datasource:
     url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/processes
-    username: virnect-process
+    username: virnect-processes
     password: virnect1234
   jpa:
     hibernate:
@@ -27,7 +27,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://stgeureka.virnect.com/eureka
 
 ## Server Configuration
 server:
