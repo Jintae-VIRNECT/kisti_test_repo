@@ -54,7 +54,7 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/vars';
-
+@import '~assets/style/_mixin';
 .widecard {
   display: flex;
   flex-basis: 0px;
@@ -74,17 +74,22 @@ export default {
     flex-basis: 0;
     flex-grow: 1;
     flex-shrink: 1;
+    @include tablet {
+      flex-grow: 0.5;
+    }
   }
   .card-item:first-of-type {
     flex-grow: 0.8;
-    min-width: 300px;
+    min-width: 20rem;
+    padding-right: 10px;
   }
   .card-item:nth-of-type(2) {
     flex-grow: 0.8;
+    padding-right: 10px;
   }
-
   .card-item:nth-last-child(2) {
     flex-grow: 0.7;
+    padding-right: 10px;
   }
   .card-item:last-of-type {
     flex-grow: 0.6;

@@ -1,6 +1,9 @@
 .workspace-history {
   color: $color_text;
 }
+.list-wrapper {
+  min-width: 1024px;
+}
 
 .no-list {
   display: flex;
@@ -39,13 +42,13 @@
 
 .label--noraml {
   color: $color_text_main;
-  font-size: 15px;
+  font-size: 1.063rem;
   text-align: center;
 }
 
 .label--date {
   color: $color_text_sub;
-  font-size: 15px;
+  font-size: 1.063rem;
   text-align: center;
   opacity: 50%;
 }
@@ -65,7 +68,7 @@
   .text {
     overflow: hidden;
     color: $color_text_sub;
-    font-size: 14px;
+    font-size: 0.938rem;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
