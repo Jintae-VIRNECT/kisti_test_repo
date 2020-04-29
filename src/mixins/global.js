@@ -1,8 +1,19 @@
 import { mapGetters } from 'vuex'
+import dayjs from 'dayjs'
 
 export default {
   components: {},
   filters: {
+    timeFilter(time) {
+      if (!time) {
+        return null
+      }
+      if (time > 60 * 60 * 1000) {
+        return dayjs(time).format('hh:mm:ss')
+      } else {
+        return dayjs(time).format('mm:ss')
+      }
+    },
     call_status: function(value) {
       if (value == 1) {
         return 'online'
@@ -72,7 +83,7 @@ export default {
   },
   methods: {
     setTimeZone(time) {
-      return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
+      // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
       event.target.src = require('assets/image/img_user_profile.svg')

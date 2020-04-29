@@ -3,8 +3,6 @@ import 'babel-polyfill'
 
 import Vue from 'vue'
 import ElementUI from 'element-ui'
-import moment from 'moment'
-import VueMoment from 'vue-moment'
 import Router from 'routers/remote'
 import Store from 'stores/remote/store'
 
@@ -15,12 +13,12 @@ import Vue2Scrollbar from 'plugins/remote/scrollbar'
 
 import openvidu from 'plugins/remote/openvidu'
 
+import DayJS from 'plugins/remote/dayjs'
+
+Vue.use(DayJS)
+
 Vue.use(ElementUI, {
   i18n: (key, value) => i18n.t(key, value),
-})
-
-Vue.use(VueMoment, {
-  moment,
 })
 
 Vue.mixin(globalMixin)

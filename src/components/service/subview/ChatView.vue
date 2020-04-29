@@ -19,7 +19,7 @@
     <vue2-scrollbar ref="chatListScrollbar">
       <ol class="chat-list">
         <li class="chat-item date">
-          <p>{{ $moment().format('LL') }}</p>
+          <p>{{ $dayjs().format('LL') }}</p>
         </li>
         <chat-item
           v-for="(chat, idx) of chatList"
@@ -53,35 +53,43 @@ export default {
   },
   data() {
     return {
-      // chatList: [{
-      //   type: 'me',
-      //   name: '참여자1',
-      //   text: '하이염^^',
-      //   date: new Date()
-      // },{
-      //   type: 'opponent',
-      //   name: '참여자2',
-      //   text: '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
-      //   date: new Date()
-      // }, {
-      //   type: 'opponent',
-      //   name: '참여자2',
-      //   text: '하이하이',
-      //   date: new Date()
-      // }, {
-      //   type: 'opponent',
-      //   name: '참여자3',
-      //   text: '파일 전달합니다.',
-      //   file: [{
-      //     filename: 'Webex.png',
-      //     filesize: '10MB'
-      //   }],
-      //   date: new Date()
-      // }]
+      chatList: [
+        {
+          type: 'me',
+          name: '참여자1',
+          text: '하이염^^',
+          date: new Date(),
+        },
+        {
+          type: 'opponent',
+          name: '참여자2',
+          text:
+            '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
+          date: new Date(),
+        },
+        {
+          type: 'opponent',
+          name: '참여자2',
+          text: '하이하이',
+          date: new Date(),
+        },
+        {
+          type: 'opponent',
+          name: '참여자3',
+          text: '파일 전달합니다.',
+          file: [
+            {
+              filename: 'Webex.png',
+              filesize: '10MB',
+            },
+          ],
+          date: new Date(),
+        },
+      ],
     }
   },
   computed: {
-    ...mapGetters(['chatList']),
+    // ...mapGetters(['chatList']),
   },
   watch: {
     chatList: {

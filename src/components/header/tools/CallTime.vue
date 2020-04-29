@@ -1,7 +1,6 @@
 <template>
   <div class="header-tools__calltime">
-    <!-- <span>{{ callTime | moment('mm:ss') }}</span> -->
-    <span>{{ callTime }}</span>
+    <span>{{ callTime | timeFilter }}</span>
   </div>
 </template>
 
@@ -19,23 +18,16 @@ export default {
     timeRunner() {
       clearInterval(this.runnerID)
       this.runnerID = setInterval(() => {
-        const diff = this.$moment().unix() - this.callStartTime
+        const diff = this.$dayjs().unix() - this.callStartTime
 
-        const time = this.$moment.utc(
-          this.$moment.duration(diff, 'seconds').as('milliseconds'),
-        )
-        if (time > 60 * 60 * 1000) {
-          this.callTime = this.$moment(time).format('hh:mm:ss')
-        } else {
-          this.callTime = this.$moment(time).format('mm:ss')
-        }
+        this.callTime = this.$dayjs.duration(diff, 'seconds').as('milliseconds')
       }, 1000)
     },
   },
 
   /* Lifecycles */
   mounted() {
-    this.callStartTime = this.currentTime = this.$moment().unix()
+    this.callStartTime = this.currentTime = this.$dayjs().unix()
     this.timeRunner()
   },
   beforeDestroy() {

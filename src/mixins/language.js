@@ -55,7 +55,7 @@ export default {
 
       this.$i18n.locale = locale
       document.documentElement.lang = locale
-      this.$moment && this.$moment.locale('zh' === locale ? 'zh-cn' : locale)
+      // this.$moment && this.$moment.locale('zh' === locale ? 'zh-cn' : locale)
       if (!this.account || !this.account.sId) return
       let params = {
         sId: this.account.sId,
