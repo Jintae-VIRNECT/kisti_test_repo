@@ -144,7 +144,7 @@ public class ContentController {
         if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        Resource resource = this.contentService.contentDownloadForUUIDhandler(contentUUID, memberUUID);
+        Resource resource = this.contentService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .contentLength(resource.getFile().length())
@@ -165,7 +165,7 @@ public class ContentController {
         if (targetData.isEmpty() || memberUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        Resource resource = this.contentService.contentDownloadForTargethandler(targetData, memberUUID);
+        Resource resource = this.contentService.contentDownloadForTargetHandler(targetData, memberUUID);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .contentLength(resource.getFile().length())

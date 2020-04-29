@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
+import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.ContentRepository;
 import com.virnect.content.dao.SceneGroupRepository;
 import com.virnect.content.dao.TargetRepository;
@@ -15,9 +16,7 @@ import com.virnect.content.dto.request.ContentTargetRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
-import com.virnect.content.dto.rest.ProcessInfoResponse;
-import com.virnect.content.dto.rest.UserInfoListResponse;
-import com.virnect.content.dto.rest.UserInfoResponse;
+import com.virnect.content.dto.rest.*;
 import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -68,6 +67,7 @@ public class ContentService {
 
     private final UserRestService userRestService;
     private final ProcessRestService processRestService;
+    private final WorkspaceRestService workspaceRestService;
 
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -335,13 +335,12 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
-    public Resource contentDownloadForUUIDhandler(final String contentUUID, final String memberUUID) {
+    public Resource contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
         // 1. 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!content.getUserUUID().equals(memberUUID))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);
@@ -349,15 +348,15 @@ public class ContentService {
         return loadContentFile(parts[parts.length - 1]);
     }
 
-    public Resource contentDownloadForTargethandler(final String targetData, final String memberUUID) {
+
+    public Resource contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
         // 컨텐츠 데이터 조회
         Content content = this.contentRepository.getContentOfTarget(targetData);
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
-        if (!content.getUserUUID().equals(memberUUID))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);
@@ -840,5 +839,15 @@ public class ContentService {
                 .createdDate(returnContent.getUpdatedDate())
                 .propertiesMetadata(returnContent.getProperties())
                 .build());
+    }
+
+
+    private void workspaceMemberCheck(String memberUUID, String contentWorkspaceUUID) {
+        ApiResponse<WorkspaceInfoListResponse> workspaceInfoResponse = this.workspaceRestService.getMyWorkspaceInfoList(memberUUID);
+        List<WorkspaceInfoResponse> workspaceInfoList = workspaceInfoResponse.getData().getWorkspaceList();
+        boolean isWorkspaceMember = workspaceInfoList.stream().anyMatch(workspaceInfo -> workspaceInfo.getUuid().equals(contentWorkspaceUUID));
+        if (!isWorkspaceMember) {
+            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        }
     }
 }
