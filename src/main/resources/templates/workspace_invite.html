@@ -3,7 +3,14 @@
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap"
     />
-
+    <style>
+    .info-table a:link, span.MsoHyperlink {
+        mso-style-priority:100 !important;
+        color:#333333 !important;
+        color:#333333;
+        text-decoration:none !important;
+    }
+    </style>
     <div align="center">
         <table
                 width="680"
@@ -43,10 +50,11 @@
                             cellpadding="0"
                             cellspacing="0"
                             style="margin:0 0 8px;padding:0;"
+                            class="info-table"
                     >
                         <tr>
                             <td style="padding-top: 44px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;font-weight:bold;text-align:left;">워크스페이스 정보</td>
-                            <td style="padding-top: 44px;text-align: right;font-size:14px;color:#0054f7;font-weight:bold;text-decoration:underline;"><a href="http://stgworkstation.virnect.com/">워크스테이션 홈 바로가기</a></td>
+                            <td style="padding-top: 44px;text-align: right;font-size:14px;color:#0054f7;font-weight:bold;text-decoration:underline;"><a th:href="@{${workstationHomeUrl}}">워크스테이션 홈 바로가기</a></td>
                         </tr>
                     </table>
                     <table
@@ -147,7 +155,7 @@
                                 <img th:if="${role}=='MANAGER'"
                                      th:src="'http://image.virnect.com/images/mailling_service/manager.png'"/>
                                 <img th:if="${role}=='MEMBER'"
-                                     th:src="'http://image.virnect.com/images/mailling_service/virnect_logo.png'"/>
+                                     th:src="'http://image.virnect.com/images/mailling_service/member.png'"/>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">

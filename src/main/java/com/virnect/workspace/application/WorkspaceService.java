@@ -602,8 +602,8 @@ public class WorkspaceService {
             context.setVariable("rejectUserEmail", userInvite.getResponseUserEmail());
             context.setVariable("workspaceName", workspace.getName());
 
-            // String html = springTemplateEngine.process("workspace_invite", context);
-            //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
+            String html = springTemplateEngine.process("workspace_invite_reject", context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
 
         } else {
             //초대 코드 대조
@@ -622,9 +622,6 @@ public class WorkspaceService {
                     .workspaceRole(workspaceRole)
                     .build();
             this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-            // String html = springTemplateEngine.process("workspace_invite", context);
-
-            //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
 
             //TODO: 라이선스 플랜 부여하기
 
@@ -637,8 +634,8 @@ public class WorkspaceService {
             context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
             context.setVariable("role", userInvite.getRole());
 
-            // String html = springTemplateEngine.process("workspace_invite", context);
-            //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
+             String html = springTemplateEngine.process("workspace_invite_accept", context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
             //redis 에서 삭제
             this.userInviteRepository.deleteById(userId);
         }
