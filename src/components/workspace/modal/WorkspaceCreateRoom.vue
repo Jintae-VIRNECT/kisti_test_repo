@@ -29,9 +29,11 @@ import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
 import { inviteParticipantsList } from 'api/remote/room'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'WorkspaceCreateRoom',
+  mixins: [toastMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -42,6 +44,7 @@ export default {
       selection: [],
       visibleFlag: false,
       users: [],
+      maxSelect: 2,
     }
   },
   props: {
@@ -54,7 +57,6 @@ export default {
     visible(flag) {
       if (flag) {
         this.reset()
-        this.name = '우경아의 원격 협업협업'
       }
       this.visibleFlag = flag
     },
@@ -67,6 +69,10 @@ export default {
       this.$emit('update:visible', false)
     },
     selectUser(user) {
+      if (this.selection.length >= this.maxSelect) {
+        this.toastError('선택가능 멤버를 초과했습니다.')
+        return
+      }
       const idx = this.selection.findIndex(
         select => user.userId === select.userId,
       )

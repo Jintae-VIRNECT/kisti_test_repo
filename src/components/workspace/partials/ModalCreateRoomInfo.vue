@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     btnDisabled() {
-      if (this.selection.length < 2) {
+      if (this.selection.length < 1) {
         return true
       } else if (this.titleValid) {
         return true
@@ -116,7 +116,7 @@ export default {
   },
   methods: {
     reset() {
-      this.title = `${this.account.name}의 원격협업`
+      this.title = `${this.account.name}'s Room`
       this.description = ''
     },
     async start() {
@@ -137,7 +137,7 @@ export default {
     },
     checkEmpty() {
       if (this.title === '') {
-        this.title = `${this.account.name}의 원격협업`
+        this.title = `${this.account.name}'s Room`
       }
     },
   },
