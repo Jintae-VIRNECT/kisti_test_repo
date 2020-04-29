@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "user-server")
+@FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
     /**
      * 유저 정보 조회

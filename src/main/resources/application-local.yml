@@ -68,3 +68,11 @@ cloud:
 
 ## server url (use send workspace invite mail)
 serverUrl: "http://192.168.6.3:8085"
+
+## Feign
+feign:
+  hystrix:
+    enabled: true
+hystrix:
+
+
