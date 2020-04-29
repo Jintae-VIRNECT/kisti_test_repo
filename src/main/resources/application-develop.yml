@@ -55,18 +55,5 @@ eureka:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
 
-## AWS Storage
-cloud:
-  aws:
-    credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
-    region:
-      auto: true
-    s3:
-      bucket:
-        name: "virnect-admin"
-        resource: "resource"
-
 ## server url (use send workspace invite mail)
 serverUrl: "http://192.168.6.3:8085"

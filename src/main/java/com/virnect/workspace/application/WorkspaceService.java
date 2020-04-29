@@ -448,7 +448,7 @@ public class WorkspaceService {
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, workspaceInviteRequest.getUserId());
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_UNAUTHORIAED);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
         //TODO: 라이선스 체크 - 최대 멤버 수(9명) 체크하기
@@ -521,19 +521,19 @@ public class WorkspaceService {
                     //메일은 이미 초대한 것 여부와 관계없이 발송한다.
                     String rejectUrl = serverUrl + "/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=reject";
                     String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=" + inviteCode;
-                    context.setVariable("rejectUrl",rejectUrl);
-                    context.setVariable("acceptUrl",acceptUrl);
-                    context.setVariable("responseUserName",inviteUserResponse.getName());
-                    context.setVariable("responseUserEmail",inviteUserResponse.getEmail());
-                    context.setVariable("responseUserNickName",inviteUserResponse.getNickName());
-                    context.setVariable("role",userInfo.getRole());
+                    context.setVariable("rejectUrl", rejectUrl);
+                    context.setVariable("acceptUrl", acceptUrl);
+                    context.setVariable("responseUserName", inviteUserResponse.getName());
+                    context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
+                    context.setVariable("responseUserNickName", inviteUserResponse.getNickName());
+                    context.setVariable("role", userInfo.getRole());
                     emailReceiverList.add(inviteUserResponse.getEmail());
                 }
             });
         });
 
-       // String html = springTemplateEngine.process("workspace_invite", context);
-        if(emailReceiverList.size()>0){
+        // String html = springTemplateEngine.process("workspace_invite", context);
+        if (emailReceiverList.size() > 0) {
             //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE);
         }
 
@@ -542,6 +542,7 @@ public class WorkspaceService {
 
     /**
      * message 서비스로 메일 발송 요청
+     *
      * @param html
      * @param receivers
      * @param mailSender
@@ -580,9 +581,9 @@ public class WorkspaceService {
         List<String> emailReceiverList = new ArrayList<>();
         UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
         emailReceiverList.add(masterUser.getEmail());
-        List<WorkspaceUserPermission> workspaceUserPermissionList = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace,"MANAGER");
+        List<WorkspaceUserPermission> workspaceUserPermissionList = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
 
-        if(workspaceUserPermissionList!=null){
+        if (workspaceUserPermissionList != null) {
             workspaceUserPermissionList.stream().forEach(workspaceUserPermission -> {
                 UserInfoRestResponse managerUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
                 emailReceiverList.add(managerUser.getEmail());
@@ -622,12 +623,12 @@ public class WorkspaceService {
 
             //MAIL 발송
             Context context = new Context();
-            context.setVariable("workspaceName",workspace.getName());
-            context.setVariable("workspaceMasterNickName",masterUser.getNickname());
-            context.setVariable("workspaceMasterEmail",masterUser.getEmail());
-            context.setVariable("acceptUserNickName",userInvite.getResponseUserNickName());
-            context.setVariable("acceptUserEmail",userInvite.getResponseUserEmail());
-            context.setVariable("role",userInvite.getRole());
+            context.setVariable("workspaceName", workspace.getName());
+            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+            context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
+            context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
+            context.setVariable("role", userInvite.getRole());
 
             // String html = springTemplateEngine.process("workspace_invite", context);
             //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
@@ -692,26 +693,42 @@ public class WorkspaceService {
     }
 
     public ApiResponse<Boolean> reviseMemberInfo(String workspaceId, MemberUpdateRequest memberUpdateRequest) {
-        //1. 요청자 권한 확인(마스터, 매니저 권한만 가능)
+        //1. 요청자 권한 확인(마스터만 가능)
         Workspace workspace = workspaceRepository.findByUuid(workspaceId);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getMasterUserId());
         String role = workspaceUserPermission.getWorkspaceRole().getRole();
-        if (role == null || role.equalsIgnoreCase("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        if (role == null || !role.equalsIgnoreCase("MASTER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
         //2. 대상자 권한 확인(매니저, 멤버 권한만 가능)
         WorkspaceUserPermission userPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getUuid());
         String userRole = userPermission.getWorkspaceRole().getRole();
         if (userRole == null || userRole.equalsIgnoreCase("MASTER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //2. 권한 변경
+        //3. 권한 변경
         WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(memberUpdateRequest.getRole().toUpperCase());
         userPermission.setWorkspaceRole(workspaceRole);
 
         this.workspaceUserPermissionRepository.save(userPermission);
+
+        //4. 메일 발송
+        UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+        UserInfoRestResponse user = this.userRestService.getUserInfoByUserId(memberUpdateRequest.getUuid()).getData();
+        Context context = new Context();
+        context.setVariable("workspaceName", workspace.getName());
+        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+        context.setVariable("responseUserNickName", user.getNickname());
+        context.setVariable("responseUserEmail", user.getEmail());
+        context.setVariable("role", workspaceRole.getRole());
+
+        // String html = springTemplateEngine.process("workspace_invite", context);
+        List<String> receiverEmailList = new ArrayList<>();
+        receiverEmailList.add(user.getEmail());
+        //this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
 
         return new ApiResponse<>(true);
     }
@@ -813,19 +830,20 @@ public class WorkspaceService {
         workspace.setName(workspaceUpdateRequest.getName());
         workspace.setDescription(workspaceUpdateRequest.getDescription());
 
-        String profile = workspace.getProfile();
         if (workspaceUpdateRequest.getProfile() != null) {
-            //기존꺼 삭제
-            if (StringUtils.hasText(profile)) {
-                this.fileUploadService.delete(profile.substring(profile.lastIndexOf("/") + 1));
+            String oldProfile = workspace.getProfile();
+            //기존 프로필 이미지 삭제
+            if (StringUtils.hasText(oldProfile)) {
+                this.fileUploadService.delete(oldProfile.substring(oldProfile.lastIndexOf("/") + 1));
             }
+            //새 프로필 이미지 등록
             try {
-                profile = this.fileUploadService.upload(workspaceUpdateRequest.getProfile());
+                workspace.setProfile(this.fileUploadService.upload(workspaceUpdateRequest.getProfile()));
             } catch (Exception e) {
                 throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }
+
         }
-        workspace.setProfile(profile);
 
         this.workspaceRepository.save(workspace);
 
@@ -835,20 +853,20 @@ public class WorkspaceService {
         //메일 발송
         List<String> receiverEmailList = new ArrayList<>();
         Context context = new Context();
-        context.setVariable("beforeWorkspaceName",oldWorkspaceName);
-        context.setVariable("afterWorkspaceName",workspaceUpdateRequest.getName());
+        context.setVariable("beforeWorkspaceName", oldWorkspaceName);
+        context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid());
         workspaceUserList.stream().forEach(workspaceUser -> {
             UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
             receiverEmailList.add(userInfoRestResponse.getEmail());
-            if (userInfoRestResponse.getUuid().equals(workspace.getUserId())){
-                context.setVariable("workspaceMasterNickName",userInfoRestResponse.getNickname());
+            if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
+                context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
 
             }
         });
 
         // String html = springTemplateEngine.process("workspace_invite", context);
-       // this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_REVISE);
+        // this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_REVISE);
 
         return new ApiResponse<>(workspaceInfoDTO);
     }
@@ -890,9 +908,9 @@ public class WorkspaceService {
 
         //메일 발송
         Context context = new Context();
-        context.setVariable("workspaceName",workspace.getName());
-        context.setVariable("workspaceMasterNickName",userInfoRestResponse.getNickname());
-        context.setVariable("workspaceMasterEmail",userInfoRestResponse.getEmail());
+        context.setVariable("workspaceName", workspace.getName());
+        context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+        context.setVariable("workspaceMasterEmail", userInfoRestResponse.getEmail());
 
         UserInfoRestResponse kickedUser = this.userRestService.getUserInfoByUserId(memberKickOutRequest.getUserId()).getData();
 
