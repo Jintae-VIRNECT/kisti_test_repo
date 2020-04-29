@@ -2,7 +2,7 @@
   <tab-view
     title="진행중인 원격협업"
     description="진행중인 협업참여 요청 대기 목록을 보여줍니다."
-    placeholder="원격 협업 검색"
+    placeholder="협업, 멤버 검색"
     emptyTitle="원격 협업 목록이 없습니다."
     emptyDescription="원격 협업을 시작해보세요."
     :listCount="currentCount"

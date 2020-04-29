@@ -6,17 +6,17 @@
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'audio-video' }"
-          @click="tabChange('audio-video', '비디오 및 오디오 설정')"
+          @click="tabChange('audio-video', '오디오 설정')"
         >
-          비디오 및 오디오 설정
+          오디오 설정
         </div>
 
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'video-record' }"
-          @click="tabChange('video-record', '영상 및 녹화 설정')"
+          @click="tabChange('video-record', '녹화 설정')"
         >
-          영상 및 녹화 설정
+          녹화 설정
         </div>
 
         <div
@@ -31,7 +31,7 @@
       <div class="setting-view">
         <div class="setting-view__header">{{ headerText }}</div>
 
-        <div class="setting-view__body">
+        <div v-if="dataReady" class="setting-view__body">
           <template v-if="tabview === 'audio-video'">
             <workspace-set-audio
               class="setting-section"
@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       tabview: 'audio-video',
-      headerText: '비디오 및 오디오 설정',
+      headerText: '오디오 설정',
 
       //device list
       videos: [],
@@ -105,6 +105,8 @@ export default {
         recordingResolution: '',
         device: '',
       },
+
+      dataReady: false,
     }
   },
 
@@ -157,7 +159,7 @@ export default {
           audio: true,
           video: true,
         })
-        this.getMediaDevice()
+        await this.getMediaDevice()
       } catch (err) {
         console.log(err.name + ': ' + err.message)
       }
@@ -178,7 +180,6 @@ export default {
     async getMediaDevice() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices()
-
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
             this.videos.push(device)
@@ -206,8 +207,7 @@ export default {
   /* Lifecycles */
   async created() {
     try {
-      this.getPermissionWithDevice()
-      //this.checkPermission()
+      await this.getPermissionWithDevice()
       const datas = await getConfiguration()
       this.$store.dispatch('setLanguage', datas.data.language)
       this.$store.dispatch('setMic', datas.data.mic)
@@ -217,11 +217,14 @@ export default {
         'setRecordResolution',
         datas.data.recordingResolution,
       )
+      this.dataReady = true
     } catch (err) {
       // Handle Error
       console.error(err)
     }
   },
-  mounted() {},
+  mounted() {
+    console.log('mounted')
+  },
 }
 </script>

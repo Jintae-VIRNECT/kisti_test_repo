@@ -9,7 +9,14 @@ import dummyJsonSetting from './ws_setting.json'
 export const getConfiguration = async function(param) {
   // const returnVal = await http('GET_CONFIG', param)
   const returnVal = dummyJsonSetting
-  console.log(returnVal)
+
+  if (returnVal.data.mic === '') {
+    returnVal.data.mic = 'default'
+  }
+
+  if (returnVal.data.speaker === '') {
+    returnVal.data.speaker = 'default'
+  }
   return returnVal
 }
 
