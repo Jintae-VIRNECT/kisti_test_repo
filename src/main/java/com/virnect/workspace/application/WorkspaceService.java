@@ -901,7 +901,7 @@ public class WorkspaceService {
 
         //내쫓기는 자의 권한 확인
         WorkspaceUserPermission kickedUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberKickOutRequest.getKickedUserId());
-        if (kickedUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+        if (!kickedUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
