@@ -10,6 +10,7 @@
         >
           비디오 및 오디오 설정
         </div>
+
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'video-record' }"
@@ -17,6 +18,7 @@
         >
           영상 및 녹화 설정
         </div>
+
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'language' }"
@@ -29,13 +31,13 @@
       <div class="setting-view">
         <div class="setting-view__header">{{ headerText }}</div>
 
-      <div class="setting-view__body">
-        <template v-if="tabview === 'audio-video'">
-          <workspace-set-audio
-            class="setting-section"
-            :mics="mics"
-            :speakers="speakers"
-          ></workspace-set-audio>
+        <div class="setting-view__body">
+          <template v-if="tabview === 'audio-video'">
+            <workspace-set-audio
+              class="setting-section"
+              :mics="mics"
+              :speakers="speakers"
+            ></workspace-set-audio>
 
             <workspace-mic-test class="setting-section"> </workspace-mic-test>
           </template>
@@ -47,14 +49,17 @@
             @setVideo="setVideo"
           ></workspace-set-video> -->
 
-          <workspace-set-record class="setting-section"></workspace-set-record>
-        </template>
-        <template v-else-if="tabview === 'language'">
-          <workspace-set-language
-            style="height: 254px;"
-            class="setting-section"
-          ></workspace-set-language>
-        </template>
+            <workspace-set-record
+              class="setting-section"
+            ></workspace-set-record>
+          </template>
+          <template v-else-if="tabview === 'language'">
+            <workspace-set-language
+              style="height: 254px;"
+              class="setting-section"
+            ></workspace-set-language>
+          </template>
+        </div>
       </div>
     </div>
   </div>
