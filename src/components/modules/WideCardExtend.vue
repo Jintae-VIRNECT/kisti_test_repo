@@ -66,6 +66,7 @@ export default {
   padding: 1.571em 2.143em;
   background-color: $color_darkgray_600;
   border-radius: 2px;
+  transition: background-color 0.3s;
 
   &:hover {
     background-color: $color_darkgray_500;

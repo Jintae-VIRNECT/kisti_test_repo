@@ -77,6 +77,7 @@ export default {
   background-color: $color_darkgray_500;
   border: solid 1px $color_darkgray_500;
   border-radius: 2px;
+  transition: background-color 0.3s;
   > .popover--wrapper {
     position: absolute;
     top: 1.143em;

@@ -33,6 +33,7 @@
 
 .workspace-tab__button {
   > button {
+    position: relative;
     width: 7.714rem;
     padding: 1.571rem 0;
     color: $color_text;
@@ -40,16 +41,30 @@
     font-size: 1.143rem;
     line-height: 1.714rem;
     background-color: transparent;
-    border-bottom: solid 2px transparent;
+    // border-bottom: solid 2px transparent;
     opacity: 0.25;
+    transition: opacity 0.3s;
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: $color_text;
+      transition: width 0.3s;
+      content: "";
+    }
     &:hover,
     &:active {
       // border-bottom: solid 1px $color_text;
       opacity: 1;
     }
     &.active {
-      border-bottom: solid 2px $color_text;
+      // border-bottom: solid 2px $color_text;
       opacity: 1;
+      &:after {
+        width: 100%;
+      }
     }
   }
 }

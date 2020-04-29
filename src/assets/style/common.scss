@@ -42,6 +42,7 @@ body.modal-open {
   white-space: nowrap;
   background-color: $color_primary;
   border-radius: 2px;
+  transition: background-color 0.2s;
 
   &:focus {
     background-color: $color_primary;

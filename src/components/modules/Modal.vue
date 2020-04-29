@@ -1,9 +1,8 @@
 <template>
-  <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
-    <div class="modal--dimmed" @click.stop="doClose($event)"></div>
-    <transition name="modal">
+  <transition name="modal">
+    <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
+      <div class="modal--dimmed" @click.stop="doClose($event)"></div>
       <div
-        v-show="_isMounted"
         class="modal--inner"
         :style="[innerWidth, innerHeight]"
         @click="clickHander"
@@ -56,8 +55,8 @@
           </div>
         </div>
       </div>
-    </transition>
-  </div>
+    </div>
+  </transition>
 </template>
 
 <script>
