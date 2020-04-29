@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @since 2020.03.25
  */
 @Slf4j
-@Profile({"test"})
+@Profile({"test", "local"})
 @Component
 public class ConsoleEmailService implements EmailService {
     @Override
