@@ -26,7 +26,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'NODE_ENV=develop yarn workspace download build'
                         sh 'docker build -t pf-webdownload .'
                     }
                 }
@@ -36,7 +36,7 @@ pipeline {
                         branch 'staging'
                     }
                     steps {
-                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'NODE_ENV=staging yarn workspace download build'
                         sh 'docker build -t pf-webdownload .'
                     }
                 }
@@ -46,7 +46,7 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'NODE_ENV=production yarn workspace download build'
                         sh 'docker build -t pf-webdownload .'
                     }
                 }
@@ -167,7 +167,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=master' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=production' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -f'
