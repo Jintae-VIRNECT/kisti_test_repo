@@ -4,7 +4,7 @@
       :image="imageURL"
       :deleteBtn="!!imageURL"
       @delete="imageRemove"
-      size="8.571em"
+      size="6.143em"
     ></profile-image>
     <input
       ref="inputImage"

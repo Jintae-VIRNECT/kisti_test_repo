@@ -2,7 +2,7 @@
   <modal
     title="원격 협업 생성하기"
     width="78.429em"
-    height="60.714em"
+    height="54.286em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -69,14 +69,14 @@ export default {
       this.$emit('update:visible', false)
     },
     selectUser(user) {
-      if (this.selection.length >= this.maxSelect) {
-        this.toastError('선택가능 멤버를 초과했습니다.')
-        return
-      }
       const idx = this.selection.findIndex(
         select => user.userId === select.userId,
       )
       if (idx < 0) {
+        if (this.selection.length >= this.maxSelect) {
+          this.toastNotify('선택 가능 멤버를 초과했습니다.')
+          return
+        }
         this.selection.push(user)
       } else {
         this.selection.splice(idx, 1)

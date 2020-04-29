@@ -37,6 +37,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  beforeDestroy() {
+    this.$eventBus.$off('openCreateRoom')
+  },
+  created() {
+    this.$eventBus.$on('openCreateRoom', this.createRoom)
+  },
 }
 </script>
