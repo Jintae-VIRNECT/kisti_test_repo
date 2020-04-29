@@ -2,8 +2,7 @@ import Cookies from 'js-cookie'
 import Axios from 'axios'
 import API from './url'
 
-const GATEWAY_API_URL = 'https://192.168.6.3:8073'
-// const AUTH_API_URL = 'http://192.168.6.3:8321'
+const GATEWAY_API_URL = process.env.API_GATEWAY_URL
 
 const axios = Axios.create({
 	timeout: 10000,

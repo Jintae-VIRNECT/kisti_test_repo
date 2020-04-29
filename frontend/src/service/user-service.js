@@ -2,7 +2,7 @@ import Axios from 'axios'
 import authHeader from './auth-header'
 import API from './url'
 
-const GATEWAY_API_URL = 'https://192.168.6.3:8073'
+const GATEWAY_API_URL = process.env.API_GATEWAY_URL
 
 const axios = Axios.create({
 	timeout: 10000,
