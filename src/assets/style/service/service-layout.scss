@@ -28,8 +28,12 @@
 .main-wrapper {
   position: relative;
   width: calc(100% - #{$subview_width});
-  height: 100%;
+  height: calc(100% - #{$videolist_height});
   color: $color_text_main;
+  &.drawing {
+    width: calc(100% - #{$subview_width + $share_width});
+    margin-left: $share_width;
+  }
 }
 
 .drawing-wrapper {
