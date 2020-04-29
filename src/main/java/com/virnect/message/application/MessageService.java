@@ -40,12 +40,13 @@ public class MessageService {
 /*
             if (!MailSender.MASTER.getSender().equals(mailSendRequest.getSender())) {
                 mailHistory.setResultCode(ErrorCode.ERR_NOT_SUPPORTED_MAIL_SENDER.getCode());
+
                 this.mailHistoryRepository.save(mailHistory);
                 throw new MessageException(ErrorCode.ERR_NOT_SUPPORTED_MAIL_SENDER);
             }*/
             mailService.sendMail(receiver, mailSendRequest.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml());
 
-            log.info("[메일 전송 완료] - 보내는 사람 - " + mailSendRequest.getSender() + "]");
+            log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
 
             this.mailHistoryRepository.save(mailHistory);
         }
