@@ -72,7 +72,7 @@ module.exports = {
   server: {
     port: env.NUXT_PORT, // default: 3000
     host: env.NUXT_HOST, // default: localhost
-    https: {
+    https: env.TARGET_ENV === 'develop' && {
       key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
     },
