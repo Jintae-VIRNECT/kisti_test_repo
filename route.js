@@ -54,7 +54,7 @@ router.get('/support', function(req, res) {
 })
 
 router.get('/*', function(req, res) {
-  res.redirect('/remote')
+  res.redirect('/workspace')
 })
 
 module.exports = router
