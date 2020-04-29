@@ -1,0 +1,198 @@
+pipeline {
+    agent any
+    stages {
+        stage('Pre-Build') {
+            steps {
+                echo 'Pre-Build Stage'
+                catchError() {
+                    sh 'yarn cache clean'
+                    sh '"echo <password> | sudo -S rm yarn.lock" || true'
+                    sh 'yarn install'
+                    sh 'cp docker/Dockerfile ./'
+                }
+            }
+        }
+
+        stage('Build') {
+            parallel {
+                stage('Build') {
+                    steps {
+                        echo 'Build Stage'
+                    }
+                }
+
+                stage('Develop Branch') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'docker build -t pf-webdownload .'
+                    }
+                }
+
+                stage('Staging Branch') {
+                    when {
+                        branch 'staging'
+                    }
+                    steps {
+                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'docker build -t pf-webdownload .'
+                    }
+                }
+
+                stage('Master Branch') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        sh 'cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server'
+                        sh 'docker build -t pf-webdownload .'
+                    }
+                }
+
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Test Stage'
+            }
+        }
+
+        stage('Tunneling') {
+            steps {
+                echo 'SSH Check'
+                catchError() {
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
+                    sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            parallel {
+                stage('Deploy') {
+                    steps {
+                        echo 'Deploy Stage'
+                    }
+                }
+
+                stage('Develop Branch') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                        sh 'count=`docker ps -a | grep pf-webdownload | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 8833:8833 --restart=always -e "NODE_ENV=develop" -d --name=pf-webdownload pf-webdownload'
+                        sh 'docker image prune -f'
+                    }
+                }
+
+                stage('Staging Branch') {
+                    when {
+                        branch 'staging'
+                    }
+
+                    steps {
+                        catchError() {
+                            script {
+                                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                                    docker.image("pf-webdownload").push("$GIT_COMMIT")
+                                }
+                            }
+
+                            script {
+                                sshPublisher(
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-qa',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                )
+                            }
+
+                        }
+
+                    }
+                }
+
+                stage('Master Branch') {
+                    when {
+                        branch 'master'
+                    }
+
+                    steps {
+                        catchError() {
+                            script {
+                                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                                    docker.image("pf-webdownload").push("$GIT_COMMIT")
+                                }
+                            }
+
+                            script {
+                                sshPublisher(
+                                    continueOnError: false, failOnError: true,
+                                    publishers: [
+                                        sshPublisherDesc(
+                                            configName: 'aws-bastion-deploy-prod',
+                                            verbose: true,
+                                            transfers: [
+                                                sshTransfer(
+                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=master' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                ),
+                                                sshTransfer(
+                                                    execCommand: 'docker image prune -f'
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                )
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+    }
+    post {
+        always {
+            emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+            office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
+        }
+    }
+
+}
