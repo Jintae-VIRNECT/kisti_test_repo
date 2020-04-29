@@ -1,4 +1,4 @@
-package com.virnect.workspace.global.common;
+package com.virnect.workspace.global.config;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Project: PF-Admin
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
+@Profile({"staging","production"})
 @Configuration
 public class AWSConfiguration {
 
