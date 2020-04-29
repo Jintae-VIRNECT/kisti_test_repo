@@ -1,0 +1,128 @@
+@charset "utf-8";
+@import "../mixin.scss";
+
+/* privacyPolicy */
+
+#policyViewSection,
+#serviceTermsSection {
+    text-align: left;
+    background-color: #202937;
+}
+
+/* serviceTerms */
+
+.policy-style {
+    @include area-flex(1200px);
+    padding: 150px 0;
+    color: #fff;
+    font-family: $noto;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: 14px;
+    font-family: $noto;
+    & + p {
+        margin-top: 8px;
+        font-size: 13px;
+        font-family: $noto;
+    }
+}
+
+.policy-head {
+    margin-top: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    p {
+        font-size: 13px;
+    }
+    ul {
+        padding: 20px;
+    }
+    li {
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+}
+
+.policy-body {
+    margin-top: 8px;
+    font-size: 13px;
+    h4 {
+        margin-top: 8px;
+        font-weight: bold;
+        font-size: 12px;
+        & + p {
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+    }
+    p {
+        font-size: 12px;
+    }
+    .depth {
+        padding: 4px 0;
+        p {
+            position: relative;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            padding-left: 16px;
+        }
+        span {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+
+    .depth-inner {
+        padding-left: 20px;
+        p {
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            position: relative;
+            padding-left: 12px;
+        }
+        > li:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: "-";
+        }
+    }
+    .dot-list {
+        position: relative;
+        padding-top: 8px;
+        &:before {
+            position: absolute;
+            top: 6px;
+            left: 0;
+            content: "•";
+        }
+        li:before {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: $mobile) {
+    h3 {
+        font-size: 40px;
+        & + p {
+            font-size: 15px;
+        }
+    }
+    .policy-head {
+        p {
+            font-size: 16px;
+        }
+        li {
+            font-size: 14px;
+        }
+    }
+    .policy-body {
+        font-size: 14px;
+    }
+}

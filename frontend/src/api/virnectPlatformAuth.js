@@ -27,6 +27,9 @@ async function getMyInfo() {
 		Authorization: `Bearer ${accessToken}`,
 	}
 	const res = await api('/users/info')
+	const { code, message } = res.data
+	if (code !== 200) throw new Error(`${code}: ${message}`)
+
 	const { data } = res.data
 	myInfo = data.userInfo
 	myWorkspaces = data.workspaceInfoList.workspaceList
@@ -71,7 +74,6 @@ class Auth {
 				isLogin = true
 			} catch (e) {
 				console.error(e)
-				console.error('Token is expired')
 				isLogin = false
 			}
 		}
