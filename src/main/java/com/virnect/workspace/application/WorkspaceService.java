@@ -634,7 +634,7 @@ public class WorkspaceService {
             context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
             context.setVariable("role", userInvite.getRole());
 
-             String html = springTemplateEngine.process("workspace_invite_accept", context);
+            String html = springTemplateEngine.process("workspace_invite_accept", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
             //redis 에서 삭제
             this.userInviteRepository.deleteById(userId);
@@ -731,8 +731,8 @@ public class WorkspaceService {
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
-        String html = springTemplateEngine.process("workspace_info_update", context);
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
+        String html = springTemplateEngine.process("workspace_permission_update", context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_PERMISSION_UPDATE);
 
         return new ApiResponse<>(true);
     }
@@ -869,8 +869,8 @@ public class WorkspaceService {
             }
         });
 
-        // String html = springTemplateEngine.process("workspace_invite", context);
-        // this.sendMailRequest("<html> aaa </html>", receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_REVISE);
+        String html = springTemplateEngine.process("workspace_info_update", context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
 
         return new ApiResponse<>(workspaceInfoDTO);
     }
@@ -921,9 +921,8 @@ public class WorkspaceService {
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
 
-         String html = springTemplateEngine.process("workspace_kickout", context);
+        String html = springTemplateEngine.process("workspace_kickout", context);
         this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
-
         return new ApiResponse<>(true);
     }
 

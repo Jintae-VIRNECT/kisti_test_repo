@@ -41,7 +41,7 @@
 								<p
 									style="margin:0;padding:0;color:#333;font-size:15px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;line-height:1.6"
 								>
-									[[${rejectUserNickname}]] 님이 [[${workspaceName}]] 참여 요청을 거절했습니다.
+									워크스페이스 사용자 권한이 변경되었습니다.
 								</p>
 
 								<table
@@ -49,9 +49,11 @@
 									cellpadding="0"
 									cellspacing="0"
 									style="margin:0 0 8px;padding:0;"
+                                    class="info-table"
 									   >
 									<tr>
-										<td style="padding-top: 44px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;font-weight:bold;text-align:left;">사용자 정보</td>
+										<td style="padding-top: 44px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;font-weight:bold;text-align:left;">워크스페이스 정보</td>
+										<td style="padding-top: 44px;text-align: right;font-size:14px;color:#0054f7;font-weight:bold;text-decoration:underline;">워크스테이션 홈 바로가기</td>
 									</tr>
 								</table>
 								<table
@@ -59,6 +61,7 @@
 									cellpadding="0"
 									cellspacing="0"
 									style="margin:0 0;padding:0;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;text-align:left;border-top:2px solid #1a1c1d;"
+                                    class="info-table"
 								>
 									<tbody>
 										<tr style="margin:0;padding:0;">
@@ -68,28 +71,93 @@
 											<th
 												colspan="1"
 												rowspan="1"
-												style="width:120px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
 											>
-												사용자 닉네임:
+												워크스페이스 이름:
 											</th>
 											<td
 												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
 											>
-												<p>[[${rejectUserNickname}]]</p>
+												<p>[[${workspaceName}]]</p>
 											</td>
 										</tr>
 										<tr style="margin:0;padding:0;">
 											<th
 												colspan="1"
 												rowspan="1"
-												style="width:120px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+											>
+												마스터 닉네임:
+											</th>
+											<td
+												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+											>
+												<p>[[${workspaceMasterNickName}]]</p>
+											</td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<th
+												colspan="1"
+												rowspan="1"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+											>
+												마스터 계정:
+											</th>
+											<td
+												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+											>
+												<p>[[${workspaceMasterEmail}]]</p>
+											</td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<td colspan="2" style="margin:0;padding:8px 0;"></td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<td colspan="2" style="margin:0;padding:8px 0;border-top: 1px solid #e2e7ed;"></td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<th
+												colspan="1"
+												rowspan="1"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+											>
+												사용자 닉네임::
+											</th>
+											<td
+												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+											>
+												<p>[[${responseUserNickName}]]</p>
+											</td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<th
+												colspan="1"
+												rowspan="1"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
 											>
 												사용자 계정:
 											</th>
 											<td
 												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
 											>
-												<p>[[${rejectUserEmail}]]</p>
+												<p>[[${responseUserEmail}]]</p>
+											</td>
+										</tr>
+										<tr style="margin:0;padding:0;">
+											<th
+												colspan="1"
+												rowspan="1"
+												style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+											>
+												워크스페이스 권한:
+											</th>
+											<td
+												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+											>
+                                                <img th:if="${role}=='MANAGER'"
+                                                     th:src="'http://image.virnect.com/images/mailling_service/manager.png'"/>
+                                                <img th:if="${role}=='MEMBER'"
+                                                     th:src="'http://image.virnect.com/images/mailling_service/member.png'"/>
 											</td>
 										</tr>
 										<tr style="margin:0;padding:0;">
@@ -110,12 +178,10 @@
 									</tbody>
 								</table>
 
-								<a href="{{accoutService}}" style="color:#ffffff;"><img src="http://image.virnect.com/images/mailling_service/account_service_btn.png"></a>
-
 							</td>
 						</tr>
 						<tr style="margin:0;padding:0;">
-							<td height="100" style="height:140px;margin:0;padding:0;">&nbsp;
+							<td height="100" style="height:20px;margin:0;padding:0;">&nbsp;
 
 							</td>
 						</tr>

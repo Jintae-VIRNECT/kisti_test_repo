@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 public class WorkspaceInviteRequest {
     @ApiModelProperty(value = "userId", example = "498b1839dc29ed7bb2ee90ad6985c608")
+    @NotBlank(message = "초대하는 유저의 UUID는 필수 값입니다.")
     private String userId;
     private List<UserInfo> userInfoList;
 
