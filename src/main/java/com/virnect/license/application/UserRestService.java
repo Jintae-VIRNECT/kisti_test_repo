@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "UserServer", url = "${user.serverUrl}")
+@FeignClient(name = "user-server")
 public interface UserRestService {
     /**
      * 유저 정보 조회
@@ -22,7 +22,7 @@ public interface UserRestService {
      * @param userId - 유저 고유 아이디
      * @return - 유저 정보
      */
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     ApiResponse<UserInfoRestResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
 }
 
