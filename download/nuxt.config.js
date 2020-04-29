@@ -35,9 +35,15 @@ module.exports = {
    ** Customize style
    */
   styleResources: {
-    scss: [resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss')],
+    scss: [
+      resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
+      resolve(__dirname, 'src/assets/css/common.scss'),
+    ],
   },
-  css: [resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss')],
+  css: [
+    resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
+    resolve(__dirname, 'src/assets/css/common.scss'),
+  ],
   loading: { color: '#1468e2' },
   /**
    * dir

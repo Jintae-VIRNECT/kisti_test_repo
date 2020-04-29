@@ -1,0 +1,41 @@
+$font-color-content: #0b1e42;
+$color-primary: #1468e2;
+$color-primary-hover: #2c82ff;
+$color-primary-active: #0a51b7;
+
+.el-button {
+  &--primary {
+    background-color: $color-primary;
+    border: none;
+    &:hover,
+    &:focus {
+      background-color: $color-primary-hover;
+    }
+    &:active {
+      background-color: $color-primary-active;
+    }
+  }
+  &--text {
+    color: #0b1e42;
+    &:hover,
+    &:focus {
+      color: $color-primary-hover;
+    }
+    &:active {
+      color: $color-primary-active;
+    }
+  }
+}
+
+.el-tabs [role="tab"] {
+  &.is-active,
+  &:hover:not(.is-disabled) {
+    color: $color-primary;
+  }
+  &.is-disabled {
+    color: #979fae;
+  }
+}
+.el-tabs__active-bar {
+  background-color: $color-primary;
+}

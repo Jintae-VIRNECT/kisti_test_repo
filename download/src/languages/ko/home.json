@@ -1,0 +1,16 @@
+{
+  "title": "다운로드 센터",
+  "needPlan": "제품 이용을 위해서는 제품 사용 플랜이 필요합니다. ",
+  "visual": {
+    "title": "산업 현장을 위해 최적화된 <br>VIRNECT 제품을 만나보세요",
+    "desc": "VIRNECT의 제품을 다운로드하여 설치 방법을 <br>참고하여 디바이스에 설치해 주세요."
+  },
+  "make": "VIRNECT Make",
+  "view": "VIRNECT View",
+  "remote": "VIRNECT Remote",
+  "pc": "PC",
+  "windowsInstall": "<span>Windows</span>용 설치 파일",
+  "release": "Release",
+  "installFileDownload": "설치 파일 다운로드",
+  "guideDownload": "설치 가이드 다운로드"
+}
