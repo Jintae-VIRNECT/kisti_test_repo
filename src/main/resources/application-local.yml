@@ -67,7 +67,10 @@ cloud:
         resource: "workspace/profile"
 
 ## server url (use send workspace invite mail)
-serverUrl: "http://192.168.6.3:8085"
+serverUrl: "http://localhost:8082"
+
+## client url (use send workspace invite mail)
+clientUrl: "https://localhost:8878"
 
 ## Feign
 feign:

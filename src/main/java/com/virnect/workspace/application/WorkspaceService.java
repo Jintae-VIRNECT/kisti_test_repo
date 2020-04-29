@@ -70,6 +70,9 @@ public class WorkspaceService {
     @Value("${serverUrl}")
     private String serverUrl;
 
+    @Value("${clientUrl}")
+    private String clientUrl;
+
     /**
      * 워크스페이스 생성
      *
@@ -476,18 +479,22 @@ public class WorkspaceService {
 
         //메일 form set
         Context context = new Context();
-        context.setVariable("requestUserNickName", materUser.getNickname());
-        context.setVariable("requestUserEmail", materUser.getEmail());
+        context.setVariable("workspaceMasterNickName", materUser.getNickname());
+        context.setVariable("workspaceMasterEmail", materUser.getEmail());
         context.setVariable("workspaceName", workspace.getName());
+        context.setVariable("workstationHomeUrl", clientUrl);
 
         Long duration = Duration.ofDays(7).getSeconds();
-        List<String> emailReceiverList = new ArrayList<>();
         inviteUserInfoRestResponse.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
             //이미 이 워크스페이스에 소속되어 있는 경우
             if (this.workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace) != null) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
             }
             workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
+                //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크
+                if (userInfo.getRole().equals("MASTER")) {
+                    throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+                }
                 if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
                     //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간만 갱신.
                     UserInvite userInvite = this.userInviteRepository.findById(inviteUserResponse.getUserUUID()).orElse(null);
@@ -519,23 +526,22 @@ public class WorkspaceService {
                         log.info("REDIS SET - {}", newUserInvite.toString());
                     }
                     //메일은 이미 초대한 것 여부와 관계없이 발송한다.
-                    String rejectUrl = serverUrl + "/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=reject";
-                    String acceptUrl = serverUrl + "/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=" + inviteCode;
+                    String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=reject";
+                    String acceptUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID() + "&code=" + inviteCode;
                     context.setVariable("rejectUrl", rejectUrl);
                     context.setVariable("acceptUrl", acceptUrl);
                     context.setVariable("responseUserName", inviteUserResponse.getName());
                     context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
                     context.setVariable("responseUserNickName", inviteUserResponse.getNickName());
                     context.setVariable("role", userInfo.getRole());
+
+                    String html = springTemplateEngine.process("workspace_invite", context);
+                    List<String> emailReceiverList = new ArrayList<>();
                     emailReceiverList.add(inviteUserResponse.getEmail());
+                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE);
                 }
             });
         });
-
-        // String html = springTemplateEngine.process("workspace_invite", context);
-        if (emailReceiverList.size() > 0) {
-            //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE);
-        }
 
         return new ApiResponse<>(true);
     }
@@ -571,10 +577,6 @@ public class WorkspaceService {
         if (userInvite == null) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO);
         }
-        if (!userInvite.getCode().equals(code)) {
-            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_INVITE_WORKSPACE_CODE);
-        }
-
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
 
         //초대 또는 수락 결과에 대한 메일을 받을 사용자 LIST
@@ -604,6 +606,11 @@ public class WorkspaceService {
             //this.sendMailRequest("<html> aaa </html>", emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
 
         } else {
+            //초대 코드 대조
+            if (!userInvite.getCode().equals(code)) {
+                throw new WorkspaceException(ErrorCode.ERR_INCORRECT_INVITE_WORKSPACE_CODE);
+            }
+
             //워크스페이스 소속 넣기 (workspace_user)
             WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
 
