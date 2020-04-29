@@ -28,7 +28,7 @@
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
-        $moment(chat.date).format('A hh:mm')
+        $dayjs(chat.date).format('A hh:mm')
       }}</span>
       <!-- <span v-if="!hideTime" class="time">{{ chat.date }}</span> -->
     </div>
@@ -67,8 +67,8 @@ export default {
       }
 
       if (
-        this.$moment(this.afterChat.date).format('A hh:mm') !==
-        this.$moment(this.chat.date).format('A hh:mm')
+        this.$dayjs(this.afterChat.date).format('A hh:mm') !==
+        this.$dayjs(this.chat.date).format('A hh:mm')
       ) {
         return false
       }

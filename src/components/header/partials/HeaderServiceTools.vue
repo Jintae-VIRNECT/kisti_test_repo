@@ -54,7 +54,9 @@ export default {
   methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
-      this.$openvidu.leave()
+      // this.$openvidu.leave()
+
+      this.$router.push({ name: 'workspace' })
     },
   },
 

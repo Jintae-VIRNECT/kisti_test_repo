@@ -14,8 +14,11 @@
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'WorkspaceWelcome',
+  mixins: [toastMixin, confirmMixin],
   components: {
     Role,
     CreateRoomModal,
@@ -34,6 +37,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  beforeDestroy() {
+    this.$eventBus.$off('openCreateRoom')
+  },
+  created() {
+    this.$eventBus.$on('openCreateRoom', this.createRoom)
+  },
 }
 </script>

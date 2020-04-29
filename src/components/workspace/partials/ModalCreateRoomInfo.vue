@@ -4,7 +4,7 @@
       :image="imageURL"
       :deleteBtn="!!imageURL"
       @delete="imageRemove"
-      size="8.571em"
+      size="6.143em"
     ></profile-image>
     <input
       ref="inputImage"
@@ -65,12 +65,12 @@ import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
-import mixinImage from 'mixins/uploadImage'
+import imageMixin from 'mixins/uploadImage'
 import { createRoom } from 'api/remote/room'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [mixinImage],
+  mixins: [imageMixin],
   components: {
     ProfileImage,
     InputRow,
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     btnDisabled() {
-      if (this.selection.length < 2) {
+      if (this.selection.length < 1) {
         return true
       } else if (this.titleValid) {
         return true
@@ -116,7 +116,7 @@ export default {
   },
   methods: {
     reset() {
-      this.title = `${this.account.name}의 원격협업`
+      this.title = `${this.account.name}'s Room`
       this.description = ''
     },
     async start() {
@@ -130,10 +130,14 @@ export default {
         roomParticipants: this.selection,
       })
       console.log(roomId)
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.$router.push({ name: 'service' })
+      })
     },
     checkEmpty() {
       if (this.title === '') {
-        this.title = `${this.account.name}의 원격협업`
+        this.title = `${this.account.name}'s Room`
       }
     },
   },

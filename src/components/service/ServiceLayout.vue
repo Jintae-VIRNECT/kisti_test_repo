@@ -6,17 +6,13 @@
       <share-list v-if="view === 'drawing'"></share-list>
     </transition>
 
-    <transition>
-      <main-view v-show="view === 'stream'"></main-view>
+    <transition name="main" mode="out-in">
+      <main-view v-if="view === 'stream'"></main-view>
+      <drawing-view v-if="view === 'drawing'"></drawing-view>
+      <ar-view v-if="view === 'ar'"></ar-view>
     </transition>
 
-    <transition>
-      <drawing-view v-show="view === 'drawing'"></drawing-view>
-    </transition>
-
-    <transition>
-      <ar-view v-show="view === 'ar'"></ar-view>
-    </transition>
+    <video-list :class="{ draw: view === 'drawing' }"></video-list>
 
     <!-- <component :is="viewComponent"></component> -->
   </div>
@@ -25,6 +21,8 @@
 <script>
 import ShareList from './drawing/ShareList'
 import SubView from './subview/SubView'
+import VideoList from './mainview/VideoList'
+
 import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
@@ -34,6 +32,7 @@ export default {
     MainView: () => import('./mainview/MainView'),
     DrawingView: () => import('./drawing/Drawing'),
     ArView: () => import('./ar/Ar'),
+    VideoList,
   },
   data() {
     return {}
@@ -57,8 +56,9 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/vars';
-.share-enter-active {
-  transition: transform ease 0.4s;
+.share-enter-active,
+.share-leave-active {
+  transition: transform ease 0.3s;
 }
 .share-enter {
   transform: translateX(-#{$share_width});
@@ -66,13 +66,27 @@ export default {
 .share-enter-to {
   transform: translateX(0);
 }
-.share-leave-active {
-  transition: transform ease 0.4s;
-}
 .share-leave {
   transform: translateX(0);
 }
 .share-leave-to {
   transform: translateX(-#{$share_width});
+}
+
+.main-enter-active,
+.main-leave-active {
+  transition: opacity ease 0.2s;
+}
+.main-enter {
+  opacity: 0;
+}
+.main-enter-to {
+  opacity: 1;
+}
+.main-leave {
+  opacity: 1;
+}
+.main-leave-to {
+  opacity: 0;
 }
 </style>

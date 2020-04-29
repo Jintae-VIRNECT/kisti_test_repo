@@ -22,9 +22,7 @@ export default {
   methods: {},
 
   /* Lifecycles */
-  mounted() {
-    this.$moment.locale('ko')
-  },
+  mounted() {},
 }
 </script>
 

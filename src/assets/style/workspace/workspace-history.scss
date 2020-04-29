@@ -5,32 +5,10 @@
   min-width: 1024px;
 }
 
-.no-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  background-color: $color_darkgray_600;
-
-  .no-list__img {
-    width: 191px;
-    height: 233px;
-    margin-bottom: 30px;
-    background-image: url("~assets/image/img_user_empty.svg");
-    background-repeat: no-repeat;
-  }
-
-  .no-list__title {
-    color: $color_text_sub;
-    font-size: 24px;
-    text-align: center;
-  }
-  .no-list__description {
-    color: $color_text_sub;
-    font-size: 18px;
-    text-align: center;
-    opacity: 50%;
+.history {
+  .show-empty__image {
+    top: 0 !important;
+    height: 20rem;
   }
 }
 
@@ -42,13 +20,13 @@
 
 .label--noraml {
   color: $color_text_main;
-  font-size: 1.063rem;
+  font-size: 1.071rem;
   text-align: center;
 }
 
 .label--date {
   color: $color_text_sub;
-  font-size: 1.063rem;
+  font-size: 1.071rem;
   text-align: center;
   opacity: 50%;
 }
@@ -56,19 +34,18 @@
 .label__icon {
   display: flex;
   align-items: center;
-  min-width: 170px;
-  padding-left: 30px;
+  min-width: 12.143rem;
+  padding-left: 2.143rem;
   opacity: 86%;
   .icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
+    width: 1.714rem;
+    height: 1.714rem;
+    margin-right: 0.357rem;
   }
 
   .text {
     overflow: hidden;
     color: $color_text_sub;
-    font-size: 0.938rem;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -76,9 +53,9 @@
 
 .widecard-tools__menu-button {
   position: relative;
-  width: 28px;
-  height: 28px;
-  margin-left: 26px;
+  width: 2rem;
+  height: 2rem;
+  margin-left: 1.857rem;
   background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
   &:hover {
     &:before {
@@ -94,8 +71,8 @@
   }
 }
 .popover.custom-popover {
-  min-width: 120px;
-  max-width: 120px;
+  min-width: 8.571em;
+  max-width: 8.571em;
   background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   > .popover--body {
@@ -107,7 +84,7 @@
 }
 .group-pop__button {
   width: 100%;
-  padding: 13px 20px;
+  padding: 0.929rem 1.429rem;
   color: $color_text;
   text-align: left;
   &:focus {

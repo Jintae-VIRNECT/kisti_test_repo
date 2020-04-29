@@ -9,6 +9,13 @@
           :text="tab.text"
           @click.native="tabChange(tab.name)"
         ></tab-button>
+        <transition name="opacity">
+          <li class="workspace-tab__side" v-if="fix">
+            <button class="btn" @click="createRoom">
+              원격 협업 생성
+            </button>
+          </li>
+        </transition>
       </ul>
     </nav>
     <component :is="component" :class="{ fix: fix }"></component>
@@ -68,6 +75,9 @@ export default {
         this.component = tabName
         this.$emit('tabChange')
       })
+    },
+    createRoom() {
+      this.$eventBus.$emit('openCreateRoom')
     },
   },
 

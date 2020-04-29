@@ -2,7 +2,7 @@
   <modal
     title="원격 협업 생성하기"
     width="78.429em"
-    height="60.714em"
+    height="54.286em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -29,9 +29,11 @@ import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
 import { inviteParticipantsList } from 'api/remote/room'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'WorkspaceCreateRoom',
+  mixins: [toastMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -42,6 +44,7 @@ export default {
       selection: [],
       visibleFlag: false,
       users: [],
+      maxSelect: 2,
     }
   },
   props: {
@@ -54,7 +57,6 @@ export default {
     visible(flag) {
       if (flag) {
         this.reset()
-        this.name = '우경아의 원격 협업협업'
       }
       this.visibleFlag = flag
     },
@@ -71,6 +73,10 @@ export default {
         select => user.userId === select.userId,
       )
       if (idx < 0) {
+        if (this.selection.length >= this.maxSelect) {
+          this.toastNotify('선택 가능 멤버를 초과했습니다.')
+          return
+        }
         this.selection.push(user)
       } else {
         this.selection.splice(idx, 1)

@@ -3,20 +3,22 @@
     title="진행중인 원격협업"
     description="진행중인 협업참여 요청 대기 목록을 보여줍니다."
     placeholder="협업, 멤버 검색"
+    :emptyImage="require('assets/image/img_remote_empty.svg')"
     emptyTitle="원격 협업 목록이 없습니다."
     emptyDescription="원격 협업을 시작해보세요."
     :listCount="currentCount"
     :empty="rooms.length === 0"
-    customClass="remote"
     :showRefreshButton="true"
     @refresh="refresh"
   >
-    <remote-card
-      v-for="room of roomList"
-      :key="room.roomId"
-      :roomInfo="room"
-      @refresh="refresh"
-    ></remote-card>
+    <div class="groupcard-list">
+      <remote-card
+        v-for="room of roomList"
+        :key="room.roomId"
+        :roomInfo="room"
+        @refresh="refresh"
+      ></remote-card>
+    </div>
   </tab-view>
 </template>
 
@@ -62,6 +64,7 @@ export default {
         participantName: this.account.userId,
       })
       this.rooms = this.remoteInfo.rooms
+      this.rooms = []
     },
   },
 

@@ -70,7 +70,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .header-tools__profile.profile-image {
-  margin: 2px 2px 2px 13px;
+  margin: 0.143rem 0.143rem 0.143rem 0.929rem;
   cursor: pointer;
   &:hover {
     opacity: 0.8;
@@ -82,56 +82,46 @@ export default {
 
 .popover-profile {
   background-color: $color_bg_sub;
-  border: solid 1px rgba(#979797, 0.12);
+  border: solid 1px rgba($color_sub_border, 0.12);
   border-radius: 8px;
-  transform: translateY(22px);
+  transform: translateY(1.571rem);
   > .popover--body {
     padding: 0;
   }
 }
 .popover-profile__myinfo {
-  margin-bottom: 6px;
-  padding: 30px;
-  border-bottom: solid 1px rgba(#eaeeee, 0.06);
+  margin-bottom: 0.429rem;
+  padding: 2.143rem;
+  border-bottom: solid 1px rgba($color_line_border, 0.06);
   > .profile .profile--thumb {
-    width: 56px;
-    height: 56px;
+    width: 4rem;
+    height: 4rem;
   }
   > .profile .profile--text .profile--maintext {
-    margin: 7px 0 4px;
-    font-size: 17px;
+    margin: 0.5rem 0 0.286rem;
+    font-size: 1.214rem;
   }
 }
 .popover-profile__link {
-  margin: 2px 0;
-  padding: 13px 30px;
+  margin: 0.143rem 0;
+  padding: 0.929rem 2.143rem;
   > button {
-    color: #fff;
+    color: $color_text;
     font-weight: 300;
-    font-size: 15px;
+    font-size: 1.071rem;
     background: transparent;
     &:hover,
     &:active {
       font-weight: 500;
     }
   }
-  &.logout {
-    > button {
-      color: $color_red;
-      font-weight: 500;
-      &:hover,
-      &:active {
-        font-weight: 700;
-      }
-    }
-  }
 }
 .popover-profile__version {
-  margin: 6px 0 3px;
-  padding: 10px;
+  margin: 0.429rem 0 0.214rem;
+  padding: 0.714rem;
   color: #bfddff;
-  font-size: 0.857em;
+  font-size: 0.857rem;
   text-align: center;
-  border-top: solid 1px rgba(#eaeeee, 0.06);
+  border-top: solid 1px rgba($color_line_border, 0.06);
 }
 </style>

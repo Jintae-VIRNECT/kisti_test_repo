@@ -14,7 +14,15 @@
     top: 0;
     z-index: 1;
     width: calc(100% - 0.714rem);
+    background-color: #0c0c0c;
   }
+}
+.workspace-tab__side {
+  position: absolute;
+  top: 0;
+  top: 50%;
+  right: 2.429rem;
+  transform: translateY(-50%);
 }
 
 .vue-scrollbar__wrapper.workspace-scroller {
@@ -24,23 +32,39 @@
 }
 
 .workspace-tab__button {
-  margin-right: 1.429rem;
   > button {
-    min-width: 5rem;
-    padding: 0.857rem 0.214rem;
+    position: relative;
+    width: 7.714rem;
+    padding: 1.571rem 0;
     color: $color_text;
-    font-size: 1.071rem;
+    font-weight: 500;
+    font-size: 1.143rem;
+    line-height: 1.714rem;
     background-color: transparent;
-    border-bottom: solid 2px transparent;
+    // border-bottom: solid 2px transparent;
     opacity: 0.25;
+    transition: opacity 0.3s;
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: $color_text;
+      transition: width 0.3s;
+      content: "";
+    }
     &:hover,
     &:active {
       // border-bottom: solid 1px $color_text;
       opacity: 1;
     }
     &.active {
-      border-bottom: solid 2px $color_text;
+      // border-bottom: solid 2px $color_text;
       opacity: 1;
+      &:after {
+        width: 100%;
+      }
     }
   }
 }
@@ -56,7 +80,7 @@
   &.fix {
     margin-top: 3.571rem;
   }
-  &.remote .tab-view__body {
+  .groupcard-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     -webkit-column-gap: 0.571rem;
@@ -97,5 +121,6 @@
 
 .tab-view__body {
   flex: 1;
+  min-height: 28.571rem;
   // margin-bottom: 1.429rem;
 }

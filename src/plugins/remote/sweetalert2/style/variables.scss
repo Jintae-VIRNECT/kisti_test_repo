@@ -1,0 +1,164 @@
+$swal2-white: #fff !default;
+$swal2-black: #121517 !default;
+
+// CONTAINER
+$swal2-container-padding: 60px !default;
+
+// BOX MODEL
+$swal2-width: 32em !default;
+$swal2-padding: 0 !default;
+$swal2-border-radius: 10px !default;
+$swal2-border: 1px solid #3d4147;
+$swal2-box-shadow: rgba(16, 16, 17, 0.25) !default;
+
+// BACKGROUND
+$swal2-background: $swal2-white !default;
+
+// TYPOGRAPHY
+$swal2-font: inherit !default;
+$swal2-font-size: 1rem !default;
+
+// BACKDROP
+$swal2-backdrop: rgba($swal2-black, 0.5) !default;
+
+// IMAGE
+$swal2-image-margin: 1.25em auto !default;
+
+// TITLE
+// $swal2-title-margin: 24px auto 24px 28px !default;
+$swal2-title-margin: 0 !default;
+$swal2-title-color: #333 !default;
+$swal2-title-font-size: 1.15em !default;
+
+// CONTENT
+$swal2-content-color: #545658 !default;
+$swal2-content-font-size: 15px !default;
+
+// INPUT
+$swal2-input-margin: 1em auto !default;
+$swal2-input-height: 2.625em !default;
+$swal2-input-padding: 0 0.75em !default;
+$swal2-input-border: lighten($swal2-black, 85) !default;
+$swal2-input-border-radius: 0.1875em !default;
+$swal2-input-border-focus: #b4dbed !default;
+$swal2-input-box-shadow: rgba($swal2-black, 0.06) !default;
+$swal2-input-box-shadow-focus: #c4e6f5 !default;
+$swal2-input-font-size: 1.125em !default;
+$swal2-input-background: inherit !default;
+
+// TEXTAREA SPECIFIC VARIABLES
+$swal2-textarea-height: 6.75em !default;
+$swal2-textarea-padding: 0.75em !default;
+
+// VALIDATION MESSAGE
+$swal2-validation-message-justify-content: center !default;
+$swal2-validation-message-padding: 0.625em !default;
+$swal2-validation-message-background: lighten($swal2-black, 94) !default;
+$swal2-validation-message-color: lighten($swal2-black, 40) !default;
+$swal2-validation-message-font-size: 1em !default;
+$swal2-validation-message-font-weight: 300 !default;
+
+// PROGRESS STEPS
+$swal2-progress-steps-background: inherit !default;
+$swal2-progress-steps-margin: 0 0 1.25em !default;
+$swal2-progress-steps-padding: 0 !default;
+$swal2-progress-steps-font-weight: 600 !default;
+$swal2-progress-steps-distance: 2.5em !default;
+$swal2-progress-step-width: 2em;
+$swal2-progress-step-height: 2em;
+$swal2-progress-step-border-radius: 2em;
+$swal2-progress-step-background: #add8e6 !default;
+$swal2-progress-step-color: $swal2-white !default;
+$swal2-active-step-background: #3085d6 !default;
+$swal2-active-step-color: $swal2-white !default;
+
+// FOOTER
+$swal2-footer-margin: 1.25em 0 0 !default;
+$swal2-footer-padding: 1em 0 0 !default;
+$swal2-footer-border-color: #eee !default;
+$swal2-footer-color: lighten($swal2-black, 33) !default;
+$swal2-footer-font-size: 1em !default;
+
+// ANIMATIONS
+$swal2-show-animation: swal2-show 0.3s !default;
+$swal2-hide-animation: swal2-hide 0.15s forwards !default;
+
+// CLOSE BUTTON
+$swal2-close-button-width: 24px !default;
+$swal2-close-button-height: 24px !default;
+$swal2-close-button-line-height: 1.2 !default;
+$swal2-close-button-position: absolute !default;
+$swal2-close-button-gap: 25px !default;
+$swal2-close-button-transition: color 0.1s ease-out !default;
+$swal2-close-button-border: none !default;
+$swal2-close-button-border-radius: 0 !default;
+$swal2-close-button-outline: initial !default;
+$swal2-close-button-background: url(~assets/image/ic_close.svg) 50%/28px
+  no-repeat !default;
+$swal2-close-button-color: lighten($swal2-black, 80) !default;
+$swal2-close-button-font-size: 1em !default;
+
+// CLOSE BUTTON:HOVER
+$swal2-close-button-hover-transform: none !default;
+$swal2-close-button-hover-color: #000 !default;
+
+// ACTIONS
+$swal2-actions-margin: 24px 28px 32px !default;
+
+// CONFIRM BUTTON
+$swal2-confirm-button-border: 0 !default;
+$swal2-confirm-button-border-radius: 4px !default;
+$swal2-confirm-button-background-color: linear-gradient(
+  to right,
+  #0054f7,
+  #6700ff
+) !default;
+$swal2-confirm-button-color: #fff !default;
+$swal2-confirm-button-font-size: 1em !default;
+$swal2-confirm-button-hover: linear-gradient(
+  to right,
+  darken(#0054f7, 5%),
+  darken(#6700ff, 5%)
+) !default;
+$swal2-confirm-button-active: linear-gradient(
+  to right,
+  darken(#0054f7, 5%),
+  darken(#6700ff, 5%)
+) !default;
+
+// CANCEL BUTTON
+$swal2-cancel-button-border: 1px solid transparent !default;
+$swal2-cancel-button-border-radius: 4px !default;
+$swal2-cancel-button-background-color: transparent !default;
+$swal2-cancel-button-color: rgba(#545658, 0.7) !default;
+$swal2-cancel-button-font-size: 1em !default;
+$swal2-cancel-button-hover: rgba(0, 0, 0, 0.2) !default;
+$swal2-cancel-button-active: rgba(0, 0, 0, 0.2) !default;
+
+// COMMON VARIABLES FOR CONFIRM AND CANCEL BUTTONS
+$swal2-button-darken-hover: linear-gradient(
+  to right,
+  darken(#0054f7, 5%),
+  darken(#6700ff, 5%)
+) !default;
+$swal2-button-darken-active: linear-gradient(
+  to right,
+  darken(#0054f7, 5%),
+  darken(#6700ff, 5%)
+) !default;
+$swal2-button-focus-outline: transparent !default;
+
+// TOASTS
+$swal2-toast-close-button-width: 0.8em !default;
+$swal2-toast-close-button-height: 0.8em !default;
+$swal2-toast-close-button-line-height: 0.8 !default;
+$swal2-toast-width: auto !default;
+$swal2-toast-padding: 0.625em !default;
+$swal2-toast-title-font-size: 1em !default;
+$swal2-toast-content-font-size: 1em !default;
+$swal2-toast-input-font-size: 1em !default;
+$swal2-toast-validation-font-size: 1em !default;
+$swal2-toast-buttons-font-size: 1em !default;
+$swal2-toast-footer-margin: 0.5em 0 0 !default;
+$swal2-toast-footer-padding: 0.5em 0 0 !default;
+$swal2-toast-footer-font-size: 0.8em !default;

@@ -49,18 +49,18 @@ export default {
 }
 .show-empty__image {
   position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  top: 2.143rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .show-empty__title {
-  padding-top: 22%;
+  padding-top: 21.429rem;
   color: $color_text_sub;
   font-size: 1.714rem;
   text-align: center;
 }
 .show-empty__description {
-  margin-top: 0.357rem;
+  padding: 0.357rem 0 2rem;
   color: rgba($color_text_sub, 0.5);
   font-weight: 300;
   font-size: 1.286rem;

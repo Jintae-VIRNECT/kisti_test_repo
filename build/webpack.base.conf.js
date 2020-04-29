@@ -2,6 +2,7 @@
 
 const { join, resolve } = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const autoprefixer = require('autoprefixer')
 
 const config = mode => {
   const isProduction = mode === 'production'
@@ -55,6 +56,7 @@ const config = mode => {
               loader: 'css-loader',
               options: {
                 sourceMap: !isProduction,
+                plugins: () => [autoprefixer()],
               },
             },
           ],
@@ -67,6 +69,7 @@ const config = mode => {
               loader: 'css-loader',
               options: {
                 sourceMap: !isProduction,
+                plugins: () => [autoprefixer()],
               },
             },
             {

@@ -7,11 +7,6 @@ const fs = require('fs')
 const host = '0.0.0.0'
 const port = process.env.port
 const logger = require('../server/logger')
-// const translate = require('../translate')
-// const stt = require('../stt')
-// const tts = require('../tts')
-// const multer = require('multer') // express에 multer모듈 적용 (for 파일업로드)
-// const upload = multer({ dest: 'uploads/' })
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'

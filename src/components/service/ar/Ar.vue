@@ -1,5 +1,5 @@
 <template>
-  <main class="ar-wrapper"></main>
+  <main class="main-wrapper ar"></main>
 </template>
 
 <script>

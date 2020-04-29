@@ -123,10 +123,14 @@ export default {
     },
     async remove(roomId) {
       const rtn = await deleteRoom({ roomId: roomId })
-      if (rtn) {
-        this.$emit('refresh')
-        this.$eventBus.$emit('popover:close')
-      }
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        if (rtn) {
+          this.$emit('refresh')
+          this.$eventBus.$emit('popover:close')
+        }
+      })
     },
   },
 

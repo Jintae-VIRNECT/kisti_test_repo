@@ -1,5 +1,5 @@
 <template>
-  <div v-if="historyList.length > 0" class="list-wrapper">
+  <div class="list-wrapper">
     <wide-card-extend
       :menu="true"
       v-for="(history, index) in list"
@@ -9,18 +9,18 @@
         :image="require('assets/image/img_default_group.svg')"
         :imageAlt="'profileImg'"
         :mainText="history.title"
-        :subText="'참석자 ' + history.memberCount + '명'"
+        :subText="`참석자 ${history.memberCount}명`"
       ></profile>
 
       <div slot="column1" class="label label--noraml">
-        {{ '총 이용시간: ' + history.totalUseTime }}
+        {{ `총 이용시간: ${history.totalUseTime}` }}
       </div>
       <div slot="column2" class="label label--date">
         {{ convertDate(history.collaborationStartDate) }}
       </div>
       <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ '리더 : ' + history.roomLeaderName }}</span>
+        <span class="text">{{ `리더 : ${history.roomLeaderName}` }}</span>
       </div>
       <button slot="menuPopover"></button>
       <button class="btn" @click="createRoom(history.roomId)" slot="column4">
@@ -57,12 +57,10 @@
       :visible.sync="showRoomInfo"
       :roomId="roomId"
     ></roominfo-modal>
-    <create-room-modal :visible.sync="visible"></create-room-modal>
-  </div>
-  <div v-else class="no-list">
-    <div class="no-list__img"></div>
-    <div class="no-list__title">협업 가능 멤버가 없습니다.</div>
-    <div class="no-list__description">협업 멤버를 추가해주세요.</div>
+    <create-room-modal
+      :visible.sync="visible"
+      :roomId="roomId"
+    ></create-room-modal>
   </div>
 </template>
 
@@ -135,10 +133,13 @@ export default {
       })
     },
     async deleteItem(roomId) {
-      const pos = this.historyList.findIndex(room => {
-        return room.roomId === roomId
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        const pos = this.historyList.findIndex(room => {
+          return room.roomId === roomId
+        })
+        this.historyList.splice(pos, 1)
       })
-      this.historyList.splice(pos, 1)
       await deleteHistorySingleItem({ roomId })
     },
 
