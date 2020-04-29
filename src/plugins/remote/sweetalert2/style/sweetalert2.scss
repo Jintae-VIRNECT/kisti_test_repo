@@ -1,0 +1,754 @@
+// SweetAlert2
+// github.com/sweetalert2/sweetalert2
+
+@import "variables";
+@import "animations";
+@import "mixins";
+@import "toasts";
+
+body {
+  &.swal2-shown {
+    @include not(".swal2-no-backdrop", ".swal2-toast-shown") {
+      overflow: hidden; // not overflow-y because of Sarari, #1253
+    }
+  }
+
+  &.swal2-height-auto {
+    height: auto !important; // #781 #1107
+  }
+
+  &.swal2-no-backdrop {
+    .swal2-shown {
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+      max-width: calc(100% - #{$swal2-container-padding} * 2);
+      background-color: transparent;
+
+      & > .swal2-modal {
+        border: $swal2-border;
+        box-shadow: 0 2px 5px 0 $swal2-box-shadow;
+      }
+
+      &.swal2-top {
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      &.swal2-top-start,
+      &.swal2-top-left {
+        top: 0;
+        left: 0;
+      }
+
+      &.swal2-top-end,
+      &.swal2-top-right {
+        top: 0;
+        right: 0;
+      }
+
+      &.swal2-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      &.swal2-center-start,
+      &.swal2-center-left {
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+      }
+
+      &.swal2-center-end,
+      &.swal2-center-right {
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+      }
+
+      &.swal2-bottom {
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      &.swal2-bottom-start,
+      &.swal2-bottom-left {
+        bottom: 0;
+        left: 0;
+      }
+
+      &.swal2-bottom-end,
+      &.swal2-bottom-right {
+        right: 0;
+        bottom: 0;
+      }
+    }
+  }
+}
+
+.swal2-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  z-index: 1060;
+  // centering
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: $swal2-container-padding;
+  overflow-x: hidden;
+
+  // backdrop
+  background-color: transparent;
+
+  // sweetalert2/issues/905
+  -webkit-overflow-scrolling: touch;
+
+  &.swal2-top {
+    align-items: flex-start;
+  }
+
+  &.swal2-top-start,
+  &.swal2-top-left {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  &.swal2-top-end,
+  &.swal2-top-right {
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  &.swal2-center {
+    align-items: center;
+  }
+
+  &.swal2-center-start,
+  &.swal2-center-left {
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &.swal2-center-end,
+  &.swal2-center-right {
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &.swal2-bottom {
+    align-items: flex-end;
+  }
+
+  &.swal2-bottom-start,
+  &.swal2-bottom-left {
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  &.swal2-bottom-end,
+  &.swal2-bottom-right {
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  &.swal2-bottom > :first-child,
+  &.swal2-bottom-start > :first-child,
+  &.swal2-bottom-left > :first-child,
+  &.swal2-bottom-end > :first-child,
+  &.swal2-bottom-right > :first-child {
+    margin-top: auto;
+  }
+
+  &.swal2-grow-fullscreen > .swal2-modal {
+    display: flex !important;
+    flex: 1;
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  &.swal2-grow-row > .swal2-modal {
+    display: flex !important;
+    flex: 1;
+    align-content: center;
+    justify-content: center;
+  }
+
+  &.swal2-grow-column {
+    flex: 1;
+    flex-direction: column;
+
+    &.swal2-top,
+    &.swal2-center,
+    &.swal2-bottom {
+      align-items: center;
+    }
+
+    &.swal2-top-start,
+    &.swal2-center-start,
+    &.swal2-bottom-start,
+    &.swal2-top-left,
+    &.swal2-center-left,
+    &.swal2-bottom-left {
+      align-items: flex-start;
+    }
+
+    &.swal2-top-end,
+    &.swal2-center-end,
+    &.swal2-bottom-end,
+    &.swal2-top-right,
+    &.swal2-center-right,
+    &.swal2-bottom-right {
+      align-items: flex-end;
+    }
+
+    & > .swal2-modal {
+      display: flex !important;
+      flex: 1;
+      align-content: center;
+      justify-content: center;
+    }
+  }
+
+  @include not(
+    ".swal2-top",
+    ".swal2-top-start",
+    ".swal2-top-end",
+    ".swal2-top-left",
+    ".swal2-top-right",
+    ".swal2-center-start",
+    ".swal2-center-end",
+    ".swal2-center-left",
+    ".swal2-center-right",
+    ".swal2-bottom",
+    ".swal2-bottom-start",
+    ".swal2-bottom-end",
+    ".swal2-bottom-left",
+    ".swal2-bottom-right",
+    ".swal2-grow-fullscreen"
+  ) {
+    & > .swal2-modal {
+      margin: auto;
+    }
+  }
+
+  @include ie {
+    .swal2-modal {
+      margin: 0 !important;
+    }
+  }
+
+  &.swal2-fade {
+    transition: background-color 0.1s;
+  }
+
+  &.swal2-shown {
+    background-color: $swal2-backdrop;
+  }
+}
+
+.swal2-popup {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  width: $swal2-width;
+  max-width: 100%;
+  padding: $swal2-padding;
+  font-size: $swal2-font-size;
+  font-family: $swal2-font;
+  background: $swal2-background;
+  border-radius: $swal2-border-radius;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.swal2-loading {
+    overflow-y: hidden;
+  }
+
+  .swal2-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .swal2-title {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: $swal2-title-margin;
+    padding: 24px 28px;
+    color: $swal2-title-color;
+    font-weight: 600;
+    font-size: $swal2-title-font-size;
+    text-transform: none;
+    word-wrap: break-word;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .swal2-actions {
+    z-index: 1; // prevent sucess icon overlapping buttons
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    margin: $swal2-actions-margin;
+    text-align: right;
+
+    &:not(.swal2-loading) {
+      .swal2-styled {
+        &[disabled] {
+          opacity: 0.4;
+        }
+
+        &.transparent {
+          background-image: none;
+        }
+
+        &:hover {
+          background: $swal2-button-darken-hover;
+
+          &.transparent:hover {
+            background-image: none;
+          }
+        }
+        &.swal2-confirm:hover {
+          background: $swal2-confirm-button-hover;
+
+          &.transparent:hover {
+            background-image: none;
+          }
+        }
+        &.swal2-cancel:hover {
+          background: none;
+          border-color: $swal2-cancel-button-hover;
+          // background: $swal2-cancel-button-hover
+        }
+
+        &:active {
+          background: $swal2-button-darken-active;
+
+          &.transparent:active {
+            background-image: none;
+          }
+        }
+        &.swal2-confirm:active {
+          background: $swal2-confirm-button-active;
+
+          &.transparent:active {
+            background-image: none;
+          }
+        }
+        &.swal2-cancel:active {
+          background: none;
+          border-color: $swal2-cancel-button-hover;
+          // background: $swal2-cancel-button-hover
+        }
+      }
+    }
+
+    &.swal2-loading {
+      .swal2-styled {
+        &.swal2-confirm {
+          box-sizing: border-box;
+          width: 2.5em;
+          height: 2.5em;
+          padding: 0;
+          color: transparent;
+          background-color: transparent !important;
+          border: 0.25em solid transparent;
+          border-color: transparent;
+          border-radius: 100%;
+          cursor: default;
+          animation: swal2-rotate-loading 1.5s linear 0s infinite normal;
+          user-select: none;
+        }
+
+        &.swal2-cancel {
+          margin-right: 30px;
+          margin-left: 30px;
+        }
+      }
+
+      :not(.swal2-styled) {
+        &.swal2-confirm {
+          &::after {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-left: 5px;
+            border: 3px solid lighten($swal2-black, 60);
+            border-right-color: transparent;
+            border-radius: 50%;
+            box-shadow: 1px 1px 1px $swal2-white;
+            animation: swal2-rotate-loading 1.5s linear 0s infinite normal;
+            content: "";
+          }
+        }
+      }
+    }
+  }
+
+  .swal2-styled {
+    margin: 0;
+    padding: 0.625em 2em;
+    font-weight: 500;
+    box-shadow: none;
+
+    &:not([disabled]) {
+      cursor: pointer;
+    }
+
+    &.swal2-confirm {
+      min-width: 120px;
+      margin: 0 3px;
+      color: $swal2-confirm-button-color;
+      font-size: $swal2-confirm-button-font-size;
+      background: $swal2-confirm-button-background-color;
+      border: $swal2-confirm-button-border;
+      border-radius: $swal2-confirm-button-border-radius;
+
+      &.red {
+        background: #eb001d;
+
+        &:hover {
+          background: darken(#eb001d, 5%) !important;
+        }
+      }
+    }
+
+    &.swal2-cancel {
+      min-width: 120px;
+      margin: 0 3px;
+      color: $swal2-cancel-button-color;
+      font-size: $swal2-cancel-button-font-size;
+      background: $swal2-cancel-button-background-color;
+      border: $swal2-cancel-button-border;
+      border-radius: $swal2-cancel-button-border-radius;
+    }
+
+    &:focus {
+      outline: none;
+      // box-shadow: 0 0 0 2px $swal2-white, 0 0 0 4px $swal2-button-focus-outline;
+    }
+
+    &::-moz-focus-inner {
+      border: 0;
+    }
+  }
+
+  .swal2-footer {
+    justify-content: center;
+    margin: $swal2-footer-margin;
+    padding: $swal2-footer-padding;
+    color: $swal2-footer-color;
+    font-size: $swal2-footer-font-size;
+    border-top: 1px solid $swal2-footer-border-color;
+  }
+
+  .swal2-image {
+    max-width: 100%;
+    margin: $swal2-image-margin;
+  }
+
+  .swal2-close {
+    position: $swal2-close-button-position;
+    top: $swal2-close-button-gap;
+    right: $swal2-close-button-gap;
+    justify-content: center;
+    width: $swal2-close-button-width;
+    height: $swal2-close-button-height;
+    padding: 0;
+    overflow: hidden;
+    color: $swal2-close-button-color;
+    font-size: $swal2-close-button-font-size;
+    font-family: serif;
+    line-height: $swal2-close-button-line-height;
+    text-indent: -999px;
+    background: $swal2-close-button-background;
+    border: $swal2-close-button-border;
+    border-radius: $swal2-close-button-border-radius;
+    outline: $swal2-close-button-outline;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: $swal2-close-button-transition;
+
+    &:hover {
+      color: $swal2-close-button-hover-color;
+      transform: $swal2-close-button-hover-transform;
+      opacity: 1;
+    }
+  }
+
+  > .swal2-input,
+  > .swal2-file,
+  > .swal2-textarea,
+  > .swal2-select,
+  > .swal2-radio,
+  > .swal2-checkbox {
+    display: none;
+  }
+
+  .swal2-content {
+    z-index: 1; // prevent sucess icon overlapping the content
+    justify-content: center;
+    margin: 0;
+    padding: 24px 28px 0;
+    color: $swal2-content-color;
+    font-weight: 500;
+    font-size: $swal2-content-font-size;
+    line-height: 1.6;
+    word-wrap: break-word;
+  }
+
+  #swal2-content {
+    // text-align: center;
+  }
+
+  .swal2-input,
+  .swal2-file,
+  .swal2-textarea,
+  .swal2-select,
+  .swal2-radio,
+  .swal2-checkbox {
+    margin: $swal2-input-margin;
+  }
+
+  .swal2-input,
+  .swal2-file,
+  .swal2-textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: $swal2-input-font-size;
+    background: $swal2-input-background;
+    border: 1px solid $swal2-input-border;
+    border-radius: $swal2-input-border-radius;
+    box-shadow: inset 0 1px 1px $swal2-input-box-shadow;
+    transition: border-color 0.3s, box-shadow 0.3s;
+
+    &:focus {
+      border: 1px solid $swal2-input-border-focus;
+      outline: none;
+      box-shadow: 0 0 3px $swal2-input-box-shadow-focus;
+    }
+
+    &::placeholder {
+      color: lighten($swal2-black, 80);
+    }
+  }
+
+  .swal2-range {
+    margin: $swal2-input-margin;
+    background: $swal2-input-background;
+
+    input {
+      width: 80%;
+    }
+
+    output {
+      width: 20%;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    input,
+    output {
+      height: $swal2-input-height;
+      padding: 0;
+      font-size: $swal2-input-font-size;
+      line-height: $swal2-input-height;
+    }
+  }
+
+  .swal2-input {
+    height: $swal2-input-height;
+    padding: $swal2-input-padding;
+
+    &[type="number"] {
+      max-width: 10em;
+    }
+  }
+
+  .swal2-file {
+    font-size: $swal2-input-font-size;
+    background: $swal2-input-background;
+  }
+
+  .swal2-textarea {
+    height: $swal2-textarea-height;
+    padding: $swal2-textarea-padding;
+  }
+
+  .swal2-select {
+    min-width: 50%;
+    max-width: 100%;
+    padding: 0.375em 0.625em;
+    color: lighten($swal2-black, 33);
+    font-size: $swal2-input-font-size;
+    background: $swal2-input-background;
+  }
+
+  .swal2-radio,
+  .swal2-checkbox {
+    align-items: center;
+    justify-content: center;
+    background: $swal2-input-background;
+
+    label {
+      margin: 0 0.6em;
+      font-size: $swal2-input-font-size;
+    }
+
+    input {
+      margin: 0 0.4em;
+    }
+  }
+}
+
+// Microsoft Edge
+@supports (-ms-accelerator: true) {
+  .swal2-range {
+    input {
+      width: 100% !important;
+    }
+
+    output {
+      display: none;
+    }
+  }
+}
+
+// IE11
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .swal2-range {
+    input {
+      width: 100% !important;
+    }
+
+    output {
+      display: none;
+    }
+  }
+}
+
+// Firefox
+@-moz-document url-prefix() {
+  .swal2-close {
+    &:focus {
+      outline: 2px solid $swal2-button-focus-outline;
+    }
+  }
+}
+
+.swal2-progress-steps {
+  align-items: center;
+  margin: $swal2-progress-steps-margin;
+  padding: $swal2-progress-steps-padding;
+  font-weight: $swal2-progress-steps-font-weight;
+  background: $swal2-progress-steps-background;
+
+  li {
+    position: relative;
+    display: inline-block;
+  }
+
+  .swal2-progress-step {
+    z-index: 20;
+    width: $swal2-progress-step-width;
+    height: $swal2-progress-step-height;
+    color: $swal2-active-step-color;
+    line-height: $swal2-progress-step-height;
+    text-align: center;
+    background: $swal2-active-step-background;
+    border-radius: $swal2-progress-step-border-radius;
+
+    &.swal2-active-progress-step {
+      background: $swal2-active-step-background;
+
+      ~ .swal2-progress-step {
+        color: $swal2-progress-step-color;
+        background: $swal2-progress-step-background;
+      }
+
+      ~ .swal2-progress-step-line {
+        background: $swal2-progress-step-background;
+      }
+    }
+  }
+
+  .swal2-progress-step-line {
+    z-index: 10;
+    width: $swal2-progress-steps-distance;
+    height: 0.4em;
+    margin: 0 -1px;
+    background: $swal2-active-step-background;
+  }
+}
+
+// github.com/sweetalert2/sweetalert2/issues/268
+[class^="swal2"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.swal2-show {
+  animation: $swal2-show-animation;
+
+  &.swal2-noanimation {
+    animation: none;
+  }
+}
+
+.swal2-hide {
+  animation: $swal2-hide-animation;
+
+  &.swal2-noanimation {
+    animation: none;
+  }
+}
+
+// Right-to-left support
+.swal2-rtl {
+  .swal2-close {
+    right: auto;
+    left: $swal2-close-button-gap;
+  }
+}
+
+@keyframes swal2-rotate-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media print {
+  body {
+    &.swal2-shown {
+      @include not(".swal2-no-backdrop", ".swal2-toast-shown") {
+        overflow-y: scroll !important;
+
+        > [aria-hidden="true"] {
+          display: none;
+        }
+
+        .swal2-container {
+          position: initial !important;
+        }
+      }
+    }
+  }
+}

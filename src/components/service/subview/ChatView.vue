@@ -54,37 +54,37 @@ export default {
   data() {
     return {
       chatList: [
-        {
-          type: 'me',
-          name: '참여자1',
-          text: '하이염^^',
-          date: new Date(),
-        },
-        {
-          type: 'opponent',
-          name: '참여자2',
-          text:
-            '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
-          date: new Date(),
-        },
-        {
-          type: 'opponent',
-          name: '참여자2',
-          text: '하이하이',
-          date: new Date(),
-        },
-        {
-          type: 'opponent',
-          name: '참여자3',
-          text: '파일 전달합니다.',
-          file: [
-            {
-              filename: 'Webex.png',
-              filesize: '10MB',
-            },
-          ],
-          date: new Date(),
-        },
+        // {
+        //   type: 'me',
+        //   name: '참여자1',
+        //   text: '하이염^^',
+        //   date: new Date(),
+        // },
+        // {
+        //   type: 'opponent',
+        //   name: '참여자2',
+        //   text:
+        //     '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
+        //   date: new Date(),
+        // },
+        // {
+        //   type: 'opponent',
+        //   name: '참여자2',
+        //   text: '하이하이',
+        //   date: new Date(),
+        // },
+        // {
+        //   type: 'opponent',
+        //   name: '참여자3',
+        //   text: '파일 전달합니다.',
+        //   file: [
+        //     {
+        //       filename: 'Webex.png',
+        //       filesize: '10MB',
+        //     },
+        //   ],
+        //   date: new Date(),
+        // },
       ],
     }
   },

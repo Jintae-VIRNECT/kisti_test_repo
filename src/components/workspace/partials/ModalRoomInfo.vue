@@ -76,10 +76,10 @@
 
 <script>
 import InputRow from 'InputRow'
-import mixinImage from 'mixins/uploadImage'
+import imageMixin from 'mixins/uploadImage'
 export default {
   name: 'ModalRoomInfo',
-  mixins: [mixinImage],
+  mixins: [imageMixin],
   components: {
     InputRow,
   },

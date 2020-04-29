@@ -65,12 +65,12 @@ import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
-import mixinImage from 'mixins/uploadImage'
+import imageMixin from 'mixins/uploadImage'
 import { createRoom } from 'api/remote/room'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [mixinImage],
+  mixins: [imageMixin],
   components: {
     ProfileImage,
     InputRow,

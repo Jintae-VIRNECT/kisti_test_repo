@@ -86,7 +86,9 @@
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
     "webpack-merge": "^4.2.2",
-    "dayjs": "^1.8.25"
+    "dayjs": "^1.8.25",
+    "sweetalert2": "^8.13.0",
+    "vue-toasted": "^1.1.28"
   },
   "bin": {
     "app": "./server.js"

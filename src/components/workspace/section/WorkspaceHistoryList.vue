@@ -133,10 +133,13 @@ export default {
       })
     },
     async deleteItem(roomId) {
-      const pos = this.historyList.findIndex(room => {
-        return room.roomId === roomId
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        const pos = this.historyList.findIndex(room => {
+          return room.roomId === roomId
+        })
+        this.historyList.splice(pos, 1)
       })
-      this.historyList.splice(pos, 1)
       await deleteHistorySingleItem({ roomId })
     },
 

@@ -1,3 +1,5 @@
+@import "~assets/style/plugin/material-icons";
+
 .toasted {
   padding: 3px 20px;
 }
@@ -24,11 +26,22 @@
 .toasted.toasted-primary.error {
   background: #f44336;
 }
-.toasted .primary.info,
-.toasted.toasted-primary.info {
+.toasted .primary.notice,
+.toasted.toasted-primary.notice {
   background-color: #2f343d;
   border: solid 1px #3d4147;
   border-radius: 4px;
+  box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
+    0 1px 3px 0 rgba(16, 16, 17, 0.14);
+}
+.toasted .primary.info,
+.toasted.toasted-primary.info {
+  padding: 10px 30px;
+  font-size: 14px;
+  line-height: 20px;
+  // border: solid 1px #3d4147;
+  background-color: rgba(#121517, 0.5);
+  border-radius: 3px;
   box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
     0 1px 3px 0 rgba(16, 16, 17, 0.14);
 }
