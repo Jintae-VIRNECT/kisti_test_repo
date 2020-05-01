@@ -4,10 +4,9 @@ pipeline {
     stage('Pre-Build') {
       steps {
         echo 'Pre-Build Stage'
-        catchError() {          
+        catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
-          sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
 
@@ -27,6 +26,7 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh './gradlew build -x test -Pprofile=develop'
             sh 'docker build -t pf-login .'
           }
         }
@@ -36,6 +36,7 @@ pipeline {
             branch 'staging'
           }
           steps {
+            sh './gradlew build -x test -Pprofile=staging'
             sh 'docker build -t pf-login .'
           }
         }
@@ -45,6 +46,7 @@ pipeline {
             branch 'master'
           }
           steps {
+            sh './gradlew build -x test -Pprofile=production'
             sh 'docker build -t pf-login .'
           }
         }
