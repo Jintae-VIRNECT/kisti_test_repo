@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
-@RequestMapping("/download")
+@RequestMapping("/downloads")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DownloadController {
     private final DownloadService downloadService;
@@ -49,7 +50,7 @@ public class DownloadController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "productName", value = "제품명", dataType = "string", defaultValue = "make", required = true)
     })
-    @PutMapping("/{productName}")
+    @GetMapping("/{productName}")
     public ResponseEntity<ApiResponse<String>> downloadFile(@PathVariable("productName") String productName) {
         ApiResponse<String> apiResponse = this.downloadService.downloadFile(productName);
         return ResponseEntity.ok(apiResponse);
@@ -62,7 +63,7 @@ public class DownloadController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "productName", value = "제품명", dataType = "string", defaultValue = "make", required = true)
     })
-    @GetMapping("/{productName}")
+    @GetMapping("/list/{productName}")
     public ResponseEntity<ApiResponse<AppResponse>> findFile(@PathVariable("productName") String productName) {
         ApiResponse<AppResponse> apiResponse = this.downloadService.findFile(productName);
         return ResponseEntity.ok(apiResponse);
