@@ -1,21 +1,19 @@
 package com.virnect.download.api;
 
 import com.virnect.download.application.DownloadService;
-import com.virnect.download.dto.response.AppResponse;
-import com.virnect.download.dto.response.AppUploadResponse;
+import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.global.common.ApiResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Project: base
@@ -64,8 +62,8 @@ public class DownloadController {
             @ApiImplicitParam(name = "productName", value = "제품명", dataType = "string", defaultValue = "make", required = true)
     })
     @GetMapping("/list/{productName}")
-    public ResponseEntity<ApiResponse<AppResponse>> findFile(@PathVariable("productName") String productName) {
-        ApiResponse<AppResponse> apiResponse = this.downloadService.findFile(productName);
+    public ResponseEntity<ApiResponse<AppInfoResponse>> findFile(@PathVariable("productName") String productName) {
+        ApiResponse<AppInfoResponse> apiResponse = this.downloadService.findFile(productName);
         return ResponseEntity.ok(apiResponse);
     }
 }

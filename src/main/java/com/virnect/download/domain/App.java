@@ -35,7 +35,13 @@ public class App extends TimeEntity {
     @Column(name = "version", nullable = false)
     private String version;
 
-    @Column(name = "download_count",precision = 0)
+    @Column(name = "os", nullable = false)
+    private String os;
+
+    @Column(name = "device", nullable = false)
+    private String device;
+
+    @Column(name = "download_count", precision = 0)
     private Long downloadCount;
 
 }

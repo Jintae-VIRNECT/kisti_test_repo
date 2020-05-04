@@ -14,9 +14,11 @@ import java.time.LocalDateTime;
  */
 @Setter
 @Getter
-public class AppResponse {
+public class AppInfoResponse {
     private LocalDateTime releaseTime;
     private String version;
     private String productName;
     private Long downloadCount;
+    private String os;
+    private String device;
 }

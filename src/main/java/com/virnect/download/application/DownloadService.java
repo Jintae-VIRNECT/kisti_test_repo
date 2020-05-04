@@ -2,7 +2,7 @@ package com.virnect.download.application;
 
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
-import com.virnect.download.dto.response.AppResponse;
+import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
@@ -67,19 +67,20 @@ public class DownloadService {
 
     }
 
-    public ApiResponse<AppResponse> findFile(String productName) {
+    public ApiResponse<AppInfoResponse> findFile(String productName) {
         App app = this.appRepository.findFirstByProduct_NameOrderByCreatedDateDesc(productName);
         //db 체크
         if (app == null) {
             throw new DownloadException(ErrorCode.ERR_NOT_UPLOADED_FILE);
         }
 
-        AppResponse appResponse = new AppResponse();
-        appResponse.setProductName(app.getProduct().getName());
-        appResponse.setReleaseTime(app.getCreatedDate());
-        appResponse.setVersion("v."+app.getVersion());
-        appResponse.setDownloadCount(app.getDownloadCount());
-
-        return new ApiResponse<>(appResponse);
+        AppInfoResponse appInfoResponse = new AppInfoResponse();
+        appInfoResponse.setProductName(app.getProduct().getName());
+        appInfoResponse.setReleaseTime(app.getCreatedDate());
+        appInfoResponse.setVersion("v." + app.getVersion());
+        appInfoResponse.setDownloadCount(app.getDownloadCount());
+        appInfoResponse.setOs(app.getOs());
+        appInfoResponse.setOs(app.getDevice());
+        return new ApiResponse<>(appInfoResponse);
     }
 }
