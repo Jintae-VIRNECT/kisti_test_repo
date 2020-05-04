@@ -61,6 +61,7 @@ export default {
    * @param {String} payload deviceId
    */
   setMic({ commit }, payload) {
+    localStorage.setItem('mic', payload)
     commit(types.SETTINGS.SET_MIC, payload)
   },
 
@@ -70,6 +71,7 @@ export default {
    * @param {String} payload deviceId
    */
   setSpeaker({ commit }, payload) {
+    localStorage.setItem('speaker', payload)
     commit(types.SETTINGS.SET_SPEAKER, payload)
   },
 
@@ -79,6 +81,7 @@ export default {
    * @param {Number} payload record length
    */
   setLocalRecordLength({ commit }, payload) {
+    localStorage.setItem('recordingTime', payload)
     commit(types.SETTINGS.SET_LOCAL_RECORD_LENGTH, payload)
   },
 
@@ -88,6 +91,7 @@ export default {
    * @param {String} payload record resolution
    */
   setRecordResolution({ commit }, payload) {
+    localStorage.setItem('recordingResolution', payload)
     commit(types.SETTINGS.SET_RECORD_RESOLUTION, payload)
   },
 
@@ -97,6 +101,7 @@ export default {
    * @param {*} payload language
    */
   setLanguage({ commit }, payload) {
+    localStorage.setItem('language', payload)
     commit(types.SETTINGS.SET_LANGUAGE, payload)
   },
 }
