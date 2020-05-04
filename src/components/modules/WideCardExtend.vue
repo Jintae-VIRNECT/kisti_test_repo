@@ -78,6 +78,9 @@ export default {
     @include tablet {
       flex-grow: 0.5;
     }
+    > .btn.small {
+      padding: 0.5em 2.143em;
+    }
   }
   .card-item:first-of-type {
     flex-grow: 0.8;
