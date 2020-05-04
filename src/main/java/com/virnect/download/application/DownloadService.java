@@ -80,7 +80,7 @@ public class DownloadService {
         appInfoResponse.setVersion("v." + app.getVersion());
         appInfoResponse.setDownloadCount(app.getDownloadCount());
         appInfoResponse.setOs(app.getOs());
-        appInfoResponse.setOs(app.getDevice());
+        appInfoResponse.setDevice(app.getDevice());
         return new ApiResponse<>(appInfoResponse);
     }
 }
