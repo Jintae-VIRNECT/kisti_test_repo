@@ -10,7 +10,7 @@
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="this.localRecordLength"
+          :defaultValue="localRecordLength"
         >
         </r-select>
       </figure>
@@ -23,7 +23,7 @@
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="this.recordResolution"
+          :defaultValue="recordResolution"
         >
         </r-select>
       </figure>

@@ -229,8 +229,6 @@ export default {
       console.error(err)
     }
   },
-  mounted() {
-    console.log('mounted')
-  },
+  mounted() {},
 }
 </script>

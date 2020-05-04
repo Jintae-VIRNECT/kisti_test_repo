@@ -1,8 +1,10 @@
+@import "_vars";
+
 .workspace-history {
   color: $color_text;
 }
 .list-wrapper {
-  min-width: 1024px;
+  min-width: $size_tab_max;
 }
 
 .history {
