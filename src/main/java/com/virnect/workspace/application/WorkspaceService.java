@@ -638,6 +638,7 @@ public class WorkspaceService {
             context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
             context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
             context.setVariable("role", userInvite.getRole());
+            context.setVariable("workstationHomeUrl",redirectUrl);
 
             String html = springTemplateEngine.process("workspace_invite_accept", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
@@ -736,10 +737,12 @@ public class WorkspaceService {
         context.setVariable("responseUserNickName", user.getNickname());
         context.setVariable("responseUserEmail", user.getEmail());
         context.setVariable("role", workspaceRole.getRole());
+        context.setVariable("workstationHomeUrl",redirectUrl);
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
         String html = springTemplateEngine.process("workspace_permission_update", context);
+
         this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_PERMISSION_UPDATE);
 
         return new ApiResponse<>(true);
@@ -898,16 +901,16 @@ public class WorkspaceService {
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
 
-        //내쫓는 자의 권한 확인
+        //내쫓는 자의 권한 확인(마스터, 매니저만 가능)
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberKickOutRequest.getUserId());
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //내쫓기는 자의 권한 확인
+        //내쫓기는 자의 권한 확인(매니저, 멤버? 아니면 멤버만?)
         WorkspaceUserPermission kickedUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberKickOutRequest.getKickedUserId());
         if (!kickedUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
         //라이선스 삭제 처리
@@ -924,7 +927,7 @@ public class WorkspaceService {
         context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
         context.setVariable("workspaceMasterEmail", userInfoRestResponse.getEmail());
 
-        UserInfoRestResponse kickedUser = this.userRestService.getUserInfoByUserId(memberKickOutRequest.getUserId()).getData();
+        UserInfoRestResponse kickedUser = this.userRestService.getUserInfoByUserId(memberKickOutRequest.getKickedUserId()).getData();
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
