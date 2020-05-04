@@ -1,34 +1,32 @@
 @import "~assets/style/mixin";
 @import "~vue2-scrollbar/dist/style/vue2-scrollbar.css";
 
-.vue-scrollbar {
-  &__scrollbar-vertical,
-  &__scrollbar-horizontal {
-    // height: 7px;
-    opacity: 0;
+.vue-scrollbar__scrollbar-vertical,
+.vue-scrollbar__scrollbar-horizontal {
+  // height: 7px;
+  opacity: 0;
 
-    .scrollbar {
-      height: 7px;
-      background: #98a0a6;
-      border-radius: 4px;
-    }
+  .scrollbar {
+    height: 7px;
+    background: #98a0a6;
+    border-radius: 4px;
   }
+}
 
-  &__scrollbar-vertical {
+.vue-scrollbar__scrollbar-vertical {
+  width: 6px;
+  margin: 0 2px;
+
+  .scrollbar {
     width: 6px;
-    margin: 0 2px;
-
-    .scrollbar {
-      width: 6px;
-      overflow: hidden;
-      border-radius: 4px;
-    }
+    overflow: hidden;
+    border-radius: 4px;
   }
-  &__wrapper {
-    margin-right: -10px;
-    margin-bottom: -10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    background: none !important;
-  }
+}
+.vue-scrollbar__wrapper {
+  margin-right: -10px;
+  margin-bottom: -10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  background: transparent !important;
 }

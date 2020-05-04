@@ -55,11 +55,15 @@
         </button>
       </li>
       <li v-if="accountId === room.roomLeaderId">
-        <button class="group-pop__button" @click="remove(room.roomId)">
+        <button class="group-pop__button" @click="removeRoom(room.roomId)">
           협업 삭제
         </button>
       </li>
-      <li v-else><button class="group-pop__button">협업 나가기</button></li>
+      <li v-else>
+        <button class="group-pop__button" @click="leaveRoom(room.roomId)">
+          협업 나가기
+        </button>
+      </li>
     </ul>
     <roominfo-modal
       :visible.sync="showRoomInfo"
@@ -74,10 +78,12 @@ import Card from 'Card'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
-import { deleteRoom } from 'api/remote/room'
+import { deleteRoom } from 'api/workspace/room'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'RemoteCard',
+  mixins: [confirmMixin],
   components: {
     Card,
     ProfileList,
@@ -120,6 +126,30 @@ export default {
       this.$nextTick(() => {
         this.showRoomInfo = !this.showRoomInfo
       })
+    },
+    leaveRoom(roomId) {
+      this.confirmCancel(
+        '협업에서 나가시겠습니까?',
+        {
+          text: '나가기',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
+    },
+    removeRoom(roomId) {
+      this.confirmCancel(
+        '협업을 삭제 하시겠습니까?',
+        {
+          text: '내보내기',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
     },
     async remove(roomId) {
       const rtn = await deleteRoom({ roomId: roomId })

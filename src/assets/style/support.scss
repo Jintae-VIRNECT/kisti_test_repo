@@ -50,6 +50,10 @@
         border: none;
       }
 
+      > span {
+        color: $color_primary;
+      }
+
       @include tablet {
         width: 200px;
         padding: 15px 20px;

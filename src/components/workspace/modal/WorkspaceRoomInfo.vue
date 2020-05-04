@@ -50,7 +50,7 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/remote/room'
+import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 

@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { leaveRoom, participantsList } from 'api/remote/room'
+import { leaveRoom, participantsList } from 'api/workspace/room'
 import WideCard from 'WideCard'
 import Scroller from 'Scroller'
 import Profile from 'Profile'

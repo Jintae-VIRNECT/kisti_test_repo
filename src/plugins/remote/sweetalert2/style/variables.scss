@@ -1,3 +1,5 @@
+@import "~assets/style/vars";
+
 $swal2-white: #fff !default;
 $swal2-black: #121517 !default;
 
@@ -5,18 +7,18 @@ $swal2-black: #121517 !default;
 $swal2-container-padding: 60px !default;
 
 // BOX MODEL
-$swal2-width: 32em !default;
+$swal2-width: 31.429em !default;
 $swal2-padding: 0 !default;
-$swal2-border-radius: 10px !default;
-$swal2-border: 1px solid #3d4147;
+$swal2-border-radius: 4px !default;
+$swal2-border: 1px solid #e8edf1;
 $swal2-box-shadow: rgba(16, 16, 17, 0.25) !default;
 
 // BACKGROUND
 $swal2-background: $swal2-white !default;
 
 // TYPOGRAPHY
-$swal2-font: inherit !default;
-$swal2-font-size: 1rem !default;
+// $swal2-font: inherit !default;
+$swal2-font-size: 1.25rem !default;
 
 // BACKDROP
 $swal2-backdrop: rgba($swal2-black, 0.5) !default;
@@ -103,36 +105,24 @@ $swal2-close-button-hover-transform: none !default;
 $swal2-close-button-hover-color: #000 !default;
 
 // ACTIONS
-$swal2-actions-margin: 24px 28px 32px !default;
+$swal2-actions-margin: 2.143em !default;
 
 // CONFIRM BUTTON
-$swal2-confirm-button-border: 0 !default;
-$swal2-confirm-button-border-radius: 4px !default;
-$swal2-confirm-button-background-color: linear-gradient(
-  to right,
-  #0054f7,
-  #6700ff
-) !default;
+$swal2-confirm-button-border: solid 1 #206ccc !default;
+$swal2-confirm-button-border-radius: 2px !default;
+$swal2-confirm-button-background-color: $color_primary !default;
 $swal2-confirm-button-color: #fff !default;
 $swal2-confirm-button-font-size: 1em !default;
-$swal2-confirm-button-hover: linear-gradient(
-  to right,
-  darken(#0054f7, 5%),
-  darken(#6700ff, 5%)
-) !default;
-$swal2-confirm-button-active: linear-gradient(
-  to right,
-  darken(#0054f7, 5%),
-  darken(#6700ff, 5%)
-) !default;
+$swal2-confirm-button-hover: $color_primary_700 !default;
+$swal2-confirm-button-active: $color_primary_dark !default;
 
 // CANCEL BUTTON
-$swal2-cancel-button-border: 1px solid transparent !default;
-$swal2-cancel-button-border-radius: 4px !default;
+$swal2-cancel-button-border: 1px solid #ccd1d7 !default;
+$swal2-cancel-button-border-radius: 2px !default;
 $swal2-cancel-button-background-color: transparent !default;
-$swal2-cancel-button-color: rgba(#545658, 0.7) !default;
+$swal2-cancel-button-color: #646d80 !default;
 $swal2-cancel-button-font-size: 1em !default;
-$swal2-cancel-button-hover: rgba(0, 0, 0, 0.2) !default;
+$swal2-cancel-button-hover: rgba(0, 0, 0, 0.3) !default;
 $swal2-cancel-button-active: rgba(0, 0, 0, 0.2) !default;
 
 // COMMON VARIABLES FOR CONFIRM AND CANCEL BUTTONS

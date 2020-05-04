@@ -34,30 +34,23 @@
         <div class="setting-view__body">
           <template v-if="tabview === 'audio-video'">
             <workspace-set-audio
-              class="setting-section"
               :mics="mics"
               :speakers="speakers"
             ></workspace-set-audio>
 
-            <workspace-mic-test class="setting-section"> </workspace-mic-test>
+            <workspace-mic-test> </workspace-mic-test>
           </template>
 
           <template v-else-if="tabview === 'video-record'">
             <!-- <workspace-set-video
-            class="setting-section"
             :videos="videos"
             @setVideo="setVideo"
           ></workspace-set-video> -->
 
-            <workspace-set-record
-              class="setting-section"
-            ></workspace-set-record>
+            <workspace-set-record></workspace-set-record>
           </template>
           <template v-else-if="tabview === 'language'">
-            <workspace-set-language
-              style="height: 254px;"
-              class="setting-section"
-            ></workspace-set-language>
+            <workspace-set-language></workspace-set-language>
           </template>
         </div>
       </div>
