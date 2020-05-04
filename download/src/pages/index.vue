@@ -17,7 +17,7 @@
             {{ `${$t('home.release')}: ${make.release}` }}
           </span>
           <span class="version">{{ make.version }}</span>
-          <el-button type="primary">
+          <el-button type="primary" @click="download(make.productName)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <el-button type="text">{{ $t('home.guideDownload') }}</el-button>
@@ -30,16 +30,27 @@
 </template>
 
 <script>
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import api from '@/api/gateway'
+
 export default {
   data() {
     return {
       make: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        installUrl: '',
+        productName: 'make',
         guideUrl: '',
       },
     }
+  },
+  methods: {
+    async download(productName) {
+      const data = await api('DOWNLOAD', {
+        route: { productName },
+      })
+      window.open(data)
+    },
   },
 }
 </script>
