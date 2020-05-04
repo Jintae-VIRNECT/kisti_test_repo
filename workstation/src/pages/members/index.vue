@@ -27,6 +27,7 @@
           />
         </el-col>
         <el-col class="right">
+          <navbar-search ref="search" :value.sync="memberSearch" />
           <el-button type="primary" @click="showAddModal = true">
             {{ $t('members.allMembers.addMember') }}
           </el-button>
@@ -72,6 +73,7 @@ export default {
       showAddModal: false,
       memberFilter,
       memberSort,
+      memberSearch: '',
     }
   },
   methods: {

@@ -17,5 +17,8 @@
     "createdDesc": "최신 등록순",
     "updatedAsc": "오래된 보고순",
     "updatedDesc": "최신 보고순"
+  },
+  "search": {
+    "title": "검색"
   }
 }

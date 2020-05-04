@@ -22,11 +22,13 @@
     text-align: right;
   }
 
-  .el-select {
+  .el-select,
+  .right .el-input {
     padding-right: 13px;
     cursor: pointer;
   }
   .el-input__inner {
+    width: 140px;
     padding: 9px 12px;
     color: $input-color;
     font-weight: 500;

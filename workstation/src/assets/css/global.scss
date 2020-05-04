@@ -20,7 +20,6 @@ body {
 
 #__nuxt {
   @import "@/assets/css/modules/title.scss";
-  @import "@/assets/css/modules/navbar.scss";
 
   @import "@/assets/css/el-override/button.scss";
   @import "@/assets/css/el-override/card.scss";
@@ -36,6 +35,7 @@ body {
 
 @import "@/assets/css/modules/common.scss";
 @import "@/assets/css/modules/column.scss";
+@import "@/assets/css/modules/navbar.scss";
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
 @import "@/assets/css/el-override/tooltip.scss";
