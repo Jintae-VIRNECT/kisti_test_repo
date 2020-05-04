@@ -76,6 +76,8 @@ dependencies {
 
     //Spring data Envers
     implementation 'org.springframework.data:spring-data-envers'
+    compile 'org.springframework.boot:spring-boot-starter-mustache'
+
 }
 
 test {

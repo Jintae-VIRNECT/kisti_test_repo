@@ -57,7 +57,7 @@ eureka:
 serverUrl: "http://localhost:8082"
 
 ## client url (use send workspace invite mail)
-clientUrl: "https://localhost:8878"
+redirectUrl: "https://localhost:8878"
 
 ## Feign
 feign:

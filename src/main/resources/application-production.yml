@@ -67,7 +67,7 @@ cloud:
 serverUrl: "https://api.virnect.com"
 
 ## client url (use send workspace invite mail)
-clientUrl: "http://workstation.virnect.com"
+redirectUrl: "http://workstation.virnect.com"
 
 ## Feign
 feign:

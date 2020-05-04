@@ -71,7 +71,7 @@ cloud:
 serverUrl: "https://stgapi.virnect.com"
 
 ## client url (use send workspace invite mail)
-clientUrl: "https://stgworkstation.virnect.com"
+redirectUrl: "https://stgworkstation.virnect.com"
 
 ## Feign
 feign:

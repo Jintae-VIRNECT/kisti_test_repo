@@ -32,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -70,8 +71,8 @@ public class WorkspaceService {
     @Value("${serverUrl}")
     private String serverUrl;
 
-    @Value("${clientUrl}")
-    private String clientUrl;
+    @Value("${redirectUrl}")
+    private String redirectUrl;
 
     /**
      * 워크스페이스 생성
@@ -459,10 +460,10 @@ public class WorkspaceService {
         //2. 계정 유효성 체크(user 서비스)
         List<String> emailList = new ArrayList<>();
         workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> emailList.add(userInfo.getEmail()));
-        InviteUserInfoRestResponse inviteUserInfoRestResponse = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
+        InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
 
         // 유효하지 않은 이메일을 가진 사용자가 포함되어 있는 경우.
-        if (emailList.size() != inviteUserInfoRestResponse.getInviteUserInfoList().size()) {
+        if (emailList.size() != responseUserList.getInviteUserInfoList().size()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
         //서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
@@ -482,10 +483,10 @@ public class WorkspaceService {
         context.setVariable("workspaceMasterNickName", materUser.getNickname());
         context.setVariable("workspaceMasterEmail", materUser.getEmail());
         context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workstationHomeUrl", clientUrl);
+        context.setVariable("workstationHomeUrl", redirectUrl);
 
         Long duration = Duration.ofDays(7).getSeconds();
-        inviteUserInfoRestResponse.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
+        responseUserList.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
             //이미 이 워크스페이스에 소속되어 있는 경우
             if (this.workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace) != null) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
@@ -571,7 +572,7 @@ public class WorkspaceService {
      * @param code        - 초대 시 받은 코드
      * @return
      */
-    public ApiResponse<Boolean> inviteWorkspaceAccept(String workspaceId, String userId, String code) {
+    public RedirectView inviteWorkspaceAccept(String workspaceId, String userId, String code) {
         //REDIS 에서 초대정보 조회
         UserInvite userInvite = this.userInviteRepository.findById(userId).orElse(null);
         if (userInvite == null) {
@@ -605,6 +606,10 @@ public class WorkspaceService {
             String html = springTemplateEngine.process("workspace_invite_reject", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
 
+            //거절 응답
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl);
+            return redirectView;
         } else {
             //초대 코드 대조
             if (!userInvite.getCode().equals(code)) {
@@ -638,9 +643,12 @@ public class WorkspaceService {
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
             //redis 에서 삭제
             this.userInviteRepository.deleteById(userId);
-        }
 
-        return new ApiResponse<>(true);
+            //수락 응답
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl);
+            return redirectView;
+        }
     }
 
     /**
