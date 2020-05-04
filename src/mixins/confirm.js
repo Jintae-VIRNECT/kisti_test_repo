@@ -6,7 +6,7 @@ export default {
     /**
      * 확인
      * @param {String} text
-     * @param {Object} confirm { text, function }
+     * @param {Object} confirm { text, action }
      */
     confirmDefault(text, confirm = { text: '확인' }) {
       Alert.fire({
@@ -27,8 +27,8 @@ export default {
     /**
      * 취소, 확인
      * @param {String} text
-     * @param {Object} confirm { text, function }
-     * @param {Object} cancel { text, function }
+     * @param {Object} confirm { text, action }
+     * @param {Object} cancel { text, action }
      */
     confirmCancel(text, confirm = { text: '확인' }, cancel = { text: '취소' }) {
       Alert.fire({
