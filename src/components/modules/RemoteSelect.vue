@@ -61,24 +61,38 @@ export default {
     },
   },
   methods: {
+    init() {
+      if (!this.defaultValue || this.defaultValue.length < 1) {
+        if (this.options.length > 0) {
+          this.selected = this.options[0]
+        }
+      } else {
+        const selectVal = this.options.find(
+          option => option[this.value] === this.defaultValue,
+        )
+
+        if (selectVal !== undefined) {
+          this.selected = selectVal
+        }
+      }
+    },
     select(option) {
       this.selected = option
       this.$emit('changeValue', option)
       this.$eventBus.$emit('popover:close')
     },
   },
-
+  watch: {
+    options: {
+      handler() {
+        this.init()
+      },
+      deep: true,
+    },
+  },
   /* Lifecycles */
   mounted() {
-    if (!this.defaultValue || this.defaultValue.length < 1) {
-      if (this.options.length > 0) {
-        this.selected = this.options[0]
-      }
-    } else {
-      this.selected = this.options.find(
-        option => option[this.value] === this.defaultValue,
-      )
-    }
+    this.init()
   },
 }
 </script>

@@ -31,7 +31,7 @@
       <div class="setting-view">
         <div class="setting-view__header">{{ headerText }}</div>
 
-        <div v-if="dataReady" class="setting-view__body">
+        <div class="setting-view__body">
           <template v-if="tabview === 'audio-video'">
             <workspace-set-audio
               class="setting-section"
@@ -123,7 +123,6 @@ export default {
     settings: {
       deep: true,
       handler() {
-        console.log('called settings handler')
         this.updateSetting()
       },
     },
@@ -217,7 +216,6 @@ export default {
         'setRecordResolution',
         datas.data.recordingResolution,
       )
-      this.dataReady = true
     } catch (err) {
       // Handle Error
       console.error(err)

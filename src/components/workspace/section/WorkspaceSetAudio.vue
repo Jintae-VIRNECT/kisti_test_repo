@@ -37,8 +37,14 @@ import { mapState } from 'vuex'
 export default {
   props: {
     //device list
-    mics: null,
-    speakers: null,
+    mics: {
+      type: Array,
+      default: () => [],
+    },
+    speakers: {
+      type: Array,
+      default: () => [],
+    },
   },
   components: {
     RSelect,
