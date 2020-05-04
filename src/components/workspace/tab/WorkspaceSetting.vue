@@ -178,6 +178,14 @@ export default {
     },
     async getMediaDevice() {
       try {
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.enumerateDevices
+        ) {
+          console.log('enumerateDevices() is not supported')
+          return
+        }
+
         const devices = await navigator.mediaDevices.enumerateDevices()
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
