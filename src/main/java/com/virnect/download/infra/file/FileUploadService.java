@@ -3,6 +3,7 @@ package com.virnect.download.infra.file;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: service-server
@@ -38,4 +39,7 @@ public interface FileUploadService {
      * @return - 허용 여부
      */
     boolean isAllowFileExtension(String fileExtension);
+
+    boolean doesFileExist(String fileName);
+
 }

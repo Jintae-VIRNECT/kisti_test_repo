@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: PF-Admin
@@ -75,4 +76,10 @@ public class LocalFileUploadService implements FileUploadService {
     public boolean isAllowFileExtension(String fileExtension) {
         return false;
     }
+
+    @Override
+    public boolean doesFileExist(String fileName) {
+        return false;
+    }
+
 }

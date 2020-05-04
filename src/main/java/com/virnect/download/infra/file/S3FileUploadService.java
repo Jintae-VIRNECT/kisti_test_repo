@@ -35,8 +35,6 @@ public class S3FileUploadService implements FileUploadService {
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
 
-    @Value("${cloud.aws.s3.bucket.resource}")
-    private String bucketResource;
 
     @Value("${file.allow-extension}")
     private String allowExtension;
@@ -60,7 +58,7 @@ public class S3FileUploadService implements FileUploadService {
 
         String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
 
-        String fileName = bucketResource + "/" + uniqueFileName + getFileExtension(multipartFile.getOriginalFilename());
+        String fileName =  uniqueFileName + getFileExtension(multipartFile.getOriginalFilename());
 
         String uploadImageUrl = putS3(uploadFile, fileName);
 
@@ -91,12 +89,9 @@ public class S3FileUploadService implements FileUploadService {
     }
 
     @Override
-    public void delete(String fileName) {//버킷안에 디렉토리가 두개인데, 이걸 어떻게 분리해서 삭제, 조회, 생성해야 하나...
-        //생성 -> 무조건 resouce 안에
-        //조회 -> db 긁기 때문에 상관 없음
-        //삭제 -> 이게 좀..거시기한데...
+    public void delete(String fileName) {
 
-        String endPoint = bucketName + "/" + bucketResource;
+        String endPoint = bucketName ;
         amazonS3Client.deleteObject(endPoint, fileName);
         log.info(fileName + " 파일이 AWS S3(" + endPoint + ")에서 삭제되었습니다.");
 
@@ -127,5 +122,9 @@ public class S3FileUploadService implements FileUploadService {
         }
 
         return Optional.empty();
+    }
+    @Override
+    public boolean doesFileExist(String fileName){
+        return amazonS3Client.doesObjectExist(bucketName,fileName);
     }
 }

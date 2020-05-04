@@ -2,21 +2,17 @@ spring:
   application:
     name: download-server
   datasource:
-    url: jdbc:mysql://localhost:3306/admin?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/download?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: root
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
         format_sql: true
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
 logging:
   level:
     com.virnect.download.application.*: DEBUG
@@ -28,7 +24,7 @@ server:
 ## Project Configuration
 file:
   upload-path: "upload/"
-  url: "http://localhost:${server.port}/admin/news/"
+  url: "http://localhost:${server.port}/"
   allow-extension: "exe,apk"
 
 ## Eureka Server Configuration
@@ -50,4 +46,3 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
-        resource: "EXE"
