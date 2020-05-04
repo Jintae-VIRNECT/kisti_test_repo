@@ -25,8 +25,8 @@ public class App extends TimeEntity {
     @Column(name = "app_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @Column(name = "product", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Product product;
 
     @Column(name = "url", nullable = false, unique = true)
@@ -36,10 +36,12 @@ public class App extends TimeEntity {
     private String version;
 
     @Column(name = "os", nullable = false)
-    private String os;
+    @Enumerated(EnumType.STRING)
+    private Os os;
 
-    @Column(name = "device", nullable = false)
-    private String device;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_id", nullable = false)
+    private Device device;
 
     @Column(name = "download_count", precision = 0)
     private Long downloadCount;

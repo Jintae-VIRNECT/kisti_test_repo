@@ -1,6 +1,7 @@
 package com.virnect.download.dao;
 
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,6 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface AppRepository extends JpaRepository<App,Long> {
     App findByUrlEquals(String url);
-    App findFirstByProduct_NameOrderByCreatedDateDesc(String productName);
+    App findFirstByProductEqualsOrderByCreatedDateDesc(Product product);
 
 }

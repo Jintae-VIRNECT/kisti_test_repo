@@ -2,6 +2,7 @@ package com.virnect.download.application;
 
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
@@ -11,6 +12,8 @@ import com.virnect.download.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oracle.jrockit.jfr.openmbean.ProducerDescriptorType;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,7 @@ import java.io.IOException;
 public class DownloadService {
     private final FileUploadService fileUploadService;
     private final AppRepository appRepository;
+    private final ModelMapper modelMapper;
 
     public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
         this.fileUploadService.upload(file);
@@ -52,7 +56,8 @@ public class DownloadService {
 
 
     public ApiResponse<String> downloadFile(String productName) {
-        App app = this.appRepository.findFirstByProduct_NameOrderByCreatedDateDesc(productName);
+        Product product = Product.valueOf(productName.toUpperCase());
+        App app = this.appRepository.findFirstByProductEqualsOrderByCreatedDateDesc(product);
 
         //db 체크
         if (app == null) {
@@ -68,19 +73,21 @@ public class DownloadService {
     }
 
     public ApiResponse<AppInfoResponse> findFile(String productName) {
-        App app = this.appRepository.findFirstByProduct_NameOrderByCreatedDateDesc(productName);
+        Product product = Product.valueOf(productName.toUpperCase());
+        App app = this.appRepository.findFirstByProductEqualsOrderByCreatedDateDesc(product);
         //db 체크
         if (app == null) {
             throw new DownloadException(ErrorCode.ERR_NOT_UPLOADED_FILE);
         }
 
         AppInfoResponse appInfoResponse = new AppInfoResponse();
-        appInfoResponse.setProductName(app.getProduct().getName());
+        appInfoResponse.setProductName(app.getProduct().name());
         appInfoResponse.setReleaseTime(app.getCreatedDate());
         appInfoResponse.setVersion("v." + app.getVersion());
         appInfoResponse.setDownloadCount(app.getDownloadCount());
-        appInfoResponse.setOs(app.getOs());
-        appInfoResponse.setDevice(app.getDevice());
+        appInfoResponse.setOs(app.getOs().name());
+        appInfoResponse.setDevice(app.getDevice().getName());
+
         return new ApiResponse<>(appInfoResponse);
     }
 }
