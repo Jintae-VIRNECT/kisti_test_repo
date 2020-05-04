@@ -16,3 +16,6 @@ eureka:
 logging:
   level:
     com.virnect.login.service: DEBUG
+
+server:
+  port: 8883
