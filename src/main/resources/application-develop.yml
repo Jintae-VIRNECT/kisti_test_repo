@@ -2,8 +2,8 @@ spring:
   application:
     name: download-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/admin?characterEncoding=UTF-8&serverTimezone=UTC
-    username: virnect-admin-service
+    url: jdbc:mysql://192.168.6.3:4336/downloads?characterEncoding=UTF-8&serverTimezone=UTC
+    username: virnect-donwloads
     password: virnect1234
   jpa:
     hibernate:
@@ -50,4 +50,3 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
-        resource: "EXE"
