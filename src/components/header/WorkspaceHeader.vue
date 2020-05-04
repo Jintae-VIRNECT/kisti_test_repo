@@ -1,10 +1,13 @@
 <template>
-  <div class="header-workspace">
-    <!-- <div class="header-divider"></div>
+  <header class="header">
+    <div class="header-workspace">
+      <img class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <!-- <div class="header-divider"></div>
     <header-nav></header-nav> -->
 
-    <header-tools></header-tools>
-  </div>
+      <header-tools></header-tools>
+    </div>
+  </header>
 </template>
 
 <script>

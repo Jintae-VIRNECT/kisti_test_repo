@@ -31,14 +31,14 @@ const URL = {
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/api/media/room'],
   ROOM_INFO: ['GET', '/api/media/room/{roomId}'],
-  UPDATE_ROOM_INFO: ['PUT', '/api/media/room/{roomId}'],
+  UPDATE_ROOM_INFO: ['PUT', '/api/media/room/{roomId}', { type: 'form' }],
   LEAVE_ROOM: [
     'DELETE',
     '/api/media/room/{roomId}/participants/{participantsId}',
   ],
   PARTICIPANTS_LIST: ['GET', '/api/media/room/{roomId}/participants'],
   INVITE_PARTICIPANTS_LIST: ['GET', '/api/media/room/participants'],
-  CREATE_ROOM: ['POST', ' /api/media/room'],
+  CREATE_ROOM: ['POST', ' /api/media/room', { type: 'form' }],
   DELETE_ROOM: ['DELETE', '/api/media/room/{roomId}'],
 }
 
@@ -134,19 +134,6 @@ const sender = async function(constant, params, custom) {
   } catch (error) {
     throw error
   }
-
-  // return new Promise(function(resolve, reject) {
-  //   // log(url, parameter, option.headers);
-  //   log(url, parameter)
-
-  //   axios[method](url, parameter, option)
-  //     .then(function(res) {
-  //       receiver(res, resolve)
-  //     })
-  //     .catch(function(err) {
-  //       errorHandler(err, reject)
-  //     })
-  // })
 }
 
 /**
@@ -157,8 +144,11 @@ const receiver = function(res) {
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {
-      const data = res.data['data']
-      return data
+      if ('data' in res.data) {
+        return res.data['data']
+      } else {
+        return true
+      }
     } else {
       errorHandler(code)
     }

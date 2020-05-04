@@ -75,6 +75,6 @@ export default {
 .widecard__button {
   width: 2em;
   height: 2em;
-  background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
+  background: url(~assets/image/ic_more.svg) 50% no-repeat;
 }
 </style>
