@@ -7,7 +7,7 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -15,8 +15,8 @@ spring:
         format_sql: true
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 10MB
+      max-request-size: 10MB
 logging:
   level:
     com.virnect.download.application.*: DEBUG
