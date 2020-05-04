@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
-@RequestMapping("/downloads")
+@RequestMapping("/download")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DownloadController {
     private final DownloadService downloadService;
