@@ -11,7 +11,6 @@ import globalMixin from 'mixins/global'
 import ElementUI from 'element-ui'
 import i18n from 'plugins/remote/i18n'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
-import SweetAlert from 'plugins/remote/sweetalert2'
 import VueToasted from 'plugins/remote/toasted'
 import DayJS from 'plugins/remote/dayjs'
 
@@ -19,7 +18,6 @@ import openvidu from 'plugins/remote/openvidu'
 
 Vue.use(DayJS)
 Vue.use(VueToasted)
-Vue.use(SweetAlert)
 
 Vue.use(ElementUI, {
   i18n: (key, value) => i18n.t(key, value),

@@ -264,8 +264,7 @@ body {
   width: $swal2-width;
   max-width: 100%;
   padding: $swal2-padding;
-  font-size: $swal2-font-size;
-  font-family: $swal2-font;
+  // font-size: $swal2-font-size;
   background: $swal2-background;
   border-radius: $swal2-border-radius;
 
@@ -304,7 +303,7 @@ body {
     align-items: center;
     justify-content: flex-end;
     margin: $swal2-actions-margin;
-    text-align: right;
+    text-align: center;
 
     &:not(.swal2-loading) {
       .swal2-styled {
@@ -331,7 +330,7 @@ body {
           }
         }
         &.swal2-cancel:hover {
-          background: none;
+          background: rgba(#d2d2d2, 0.3);
           border-color: $swal2-cancel-button-hover;
           // background: $swal2-cancel-button-hover
         }
@@ -351,7 +350,7 @@ body {
           }
         }
         &.swal2-cancel:active {
-          background: none;
+          background: rgba(#d2d2d2, 0.1);
           border-color: $swal2-cancel-button-hover;
           // background: $swal2-cancel-button-hover
         }
@@ -411,8 +410,8 @@ body {
     }
 
     &.swal2-confirm {
-      min-width: 120px;
-      margin: 0 3px;
+      min-width: 8.571em;
+      margin: 0 0.625em;
       color: $swal2-confirm-button-color;
       font-size: $swal2-confirm-button-font-size;
       background: $swal2-confirm-button-background-color;
@@ -429,8 +428,8 @@ body {
     }
 
     &.swal2-cancel {
-      min-width: 120px;
-      margin: 0 3px;
+      min-width: 8.571em;
+      margin: 0 0.625em;
       color: $swal2-cancel-button-color;
       font-size: $swal2-cancel-button-font-size;
       background: $swal2-cancel-button-background-color;
@@ -504,12 +503,18 @@ body {
     z-index: 1; // prevent sucess icon overlapping the content
     justify-content: center;
     margin: 0;
-    padding: 24px 28px 0;
+    padding: 3.857em 0 1em;
     color: $swal2-content-color;
     font-weight: 500;
     font-size: $swal2-content-font-size;
     line-height: 1.6;
     word-wrap: break-word;
+    > div {
+      color: $swal2-content-color;
+      font-weight: 500;
+      font-size: 1.25em;
+      text-align: center;
+    }
   }
 
   #swal2-content {

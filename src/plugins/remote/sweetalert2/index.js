@@ -1,3 +1,3 @@
-import Sweetalert2 from './Sweetalert2'
+import { Alert, CANCEL, BACKDROP } from './Sweetalert2'
 
-export default Sweetalert2
+export { Alert, CANCEL, BACKDROP }
