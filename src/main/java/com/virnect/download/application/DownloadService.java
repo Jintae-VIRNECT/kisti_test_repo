@@ -78,6 +78,7 @@ public class DownloadService {
         appResponse.setProductName(app.getProduct().getName());
         appResponse.setReleaseTime(app.getCreatedDate());
         appResponse.setVersion("v."+app.getVersion());
+        appResponse.setDownloadCount(app.getDownloadCount());
 
         return new ApiResponse<>(appResponse);
     }

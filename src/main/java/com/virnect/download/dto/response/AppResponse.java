@@ -18,4 +18,5 @@ public class AppResponse {
     private LocalDateTime releaseTime;
     private String version;
     private String productName;
+    private Long downloadCount;
 }
