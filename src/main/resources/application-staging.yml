@@ -5,6 +5,8 @@ spring:
     url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/messages?serverTimezone=UTC
     username: virnect-messages
     password: virnect1234
+    hikari:
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate

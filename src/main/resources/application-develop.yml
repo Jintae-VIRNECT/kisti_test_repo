@@ -5,6 +5,8 @@ spring:
     url: jdbc:mysql://192.168.6.3:4336/messages?serverTimezone=UTC
     username: virnect-message
     password: virnect1234
+    hikari:
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate
