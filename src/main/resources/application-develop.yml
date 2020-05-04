@@ -3,7 +3,7 @@ spring:
     name: download-server
   datasource:
     url: jdbc:mysql://192.168.6.3:4336/downloads?characterEncoding=UTF-8&serverTimezone=UTC
-    username: virnect-donwloads
+    username: virnect-downloads
     password: virnect1234
   jpa:
     hibernate:
