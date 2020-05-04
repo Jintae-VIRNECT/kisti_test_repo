@@ -10,7 +10,7 @@
           :options="mics"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="defaultMic"
+          :defaultValue="mic"
         >
         </r-select>
       </figure>
@@ -24,7 +24,7 @@
           :options="speakers"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="defaultSpeaker"
+          :defaultValue="speaker"
         >
         </r-select>
       </figure>
@@ -36,15 +36,24 @@ import RSelect from 'RemoteSelect'
 import { mapState } from 'vuex'
 export default {
   props: {
-    mics: null,
-    speakers: null,
-    defaultMic: null,
-    defaultSpeaker: null,
+    //device list
+    mics: {
+      type: Array,
+      default: () => [],
+    },
+    speakers: {
+      type: Array,
+      default: () => [],
+    },
   },
   components: {
     RSelect,
   },
   computed: {
+    ...mapState({
+      mic: state => state.settings.mic,
+      speaker: state => state.settings.speaker,
+    }),
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)

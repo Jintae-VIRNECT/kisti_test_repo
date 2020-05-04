@@ -13,16 +13,14 @@
 </template>
 <script>
 import RRadio from 'RemoteRadio'
+
 export default {
-  props: {
-    defaultLanguage: {
-      type: String,
-      default: 'en',
-    },
-  },
+  props: {},
   data: function() {
+    const defaultLanguage = this.$store.state.settings.language
+
     return {
-      selectLanguage: this.defaultLanguage,
+      selectLanguage: defaultLanguage,
       picked: '',
       radioOption: {
         options: [
@@ -51,6 +49,7 @@ export default {
       this.$store.dispatch('setLanguage', language)
     },
   },
+  mounted() {},
 }
 </script>
 

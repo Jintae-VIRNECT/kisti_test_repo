@@ -6,17 +6,19 @@
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'audio-video' }"
-          @click="tabChange('audio-video', '비디오 및 오디오 설정')"
+          @click="tabChange('audio-video', '오디오 설정')"
         >
-          비디오 및 오디오 설정
+          오디오 설정
         </div>
+
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'video-record' }"
-          @click="tabChange('video-record', '영상 및 녹화 설정')"
+          @click="tabChange('video-record', '녹화 설정')"
         >
-          영상 및 녹화 설정
+          녹화 설정
         </div>
+
         <div
           class="setting-nav__menu"
           :class="{ active: tabview === 'language' }"
@@ -35,8 +37,6 @@
               class="setting-section"
               :mics="mics"
               :speakers="speakers"
-              :defaultMic="settings.mic"
-              :defaultSpeaker="settings.speaker"
             ></workspace-set-audio>
 
             <workspace-mic-test class="setting-section"> </workspace-mic-test>
@@ -51,15 +51,12 @@
 
             <workspace-set-record
               class="setting-section"
-              :defaultRecLength="settings.recordingTime"
-              :defaultRecordRec="settings.recordingResolution"
             ></workspace-set-record>
           </template>
           <template v-else-if="tabview === 'language'">
             <workspace-set-language
               style="height: 254px;"
               class="setting-section"
-              :defaultLanguage="settings.language"
             ></workspace-set-language>
           </template>
         </div>
@@ -92,7 +89,7 @@ export default {
   data() {
     return {
       tabview: 'audio-video',
-      headerText: '비디오 및 오디오 설정',
+      headerText: '오디오 설정',
 
       //device list
       videos: [],
@@ -108,6 +105,8 @@ export default {
         recordingResolution: '',
         device: '',
       },
+
+      dataReady: false,
     }
   },
 
@@ -124,7 +123,6 @@ export default {
     settings: {
       deep: true,
       handler() {
-        console.log('called settings handler')
         this.updateSetting()
       },
     },
@@ -160,7 +158,7 @@ export default {
           audio: true,
           video: true,
         })
-        this.getMediaDevice()
+        await this.getMediaDevice()
       } catch (err) {
         console.log(err.name + ': ' + err.message)
       }
@@ -180,8 +178,15 @@ export default {
     },
     async getMediaDevice() {
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices()
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.enumerateDevices
+        ) {
+          console.log('enumerateDevices() is not supported')
+          return
+        }
 
+        const devices = await navigator.mediaDevices.enumerateDevices()
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
             this.videos.push(device)
@@ -209,10 +214,16 @@ export default {
   /* Lifecycles */
   async created() {
     try {
-      this.getPermissionWithDevice()
-      //this.checkPermission()
+      await this.getPermissionWithDevice()
       const datas = await getConfiguration()
-      this.settings = datas.data
+      this.$store.dispatch('setLanguage', datas.data.language)
+      this.$store.dispatch('setMic', datas.data.mic)
+      this.$store.dispatch('setSpeaker', datas.data.speaker)
+      this.$store.dispatch('setLocalRecordLength', datas.data.recordingTime)
+      this.$store.dispatch(
+        'setRecordResolution',
+        datas.data.recordingResolution,
+      )
     } catch (err) {
       // Handle Error
       console.error(err)
