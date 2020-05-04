@@ -13,12 +13,14 @@
 </template>
 <script>
 import RRadio from 'RemoteRadio'
-import { mapState } from 'vuex'
+
 export default {
   props: {},
   data: function() {
+    const defaultLanguage = this.$store.state.settings.language
+
     return {
-      selectLanguage: '',
+      selectLanguage: defaultLanguage,
       picked: '',
       radioOption: {
         options: [
@@ -46,14 +48,6 @@ export default {
     selectLanguage: function(language) {
       this.$store.dispatch('setLanguage', language)
     },
-  },
-  computed: {
-    ...mapState({
-      language: state => state.settings.language,
-    }),
-  },
-  beforeMount() {
-    this.selectLanguage = this.language
   },
   mounted() {},
 }
