@@ -22,9 +22,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
@@ -98,7 +100,7 @@ public class WorkspaceController {
             notes = "사용자가 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 정보를 조회합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "유저 uuid",  defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
+            @ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
@@ -111,6 +113,7 @@ public class WorkspaceController {
         ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest.of());
         return ResponseEntity.ok(apiResponse);
     }
+
     @ApiOperation(
             value = "워크스페이스 사용자 - 멤버 검색(워크스페이스 멤버 목록 조회)",
             notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
@@ -123,8 +126,8 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "role,desc"),
     })
     @GetMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId,  @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
-        if ( !StringUtils.hasText(workspaceId)) {
+    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(@PathVariable("workspaceId") String workspaceId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable) {
+        if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(workspaceId, search, filter, pageable);
@@ -255,12 +258,12 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "code", value = "워크스페이스 초대 코드", dataType = "string", defaultValue = "123456", paramType = "query", required = true)
     })
     @GetMapping("/{workspaceId}/invite/accept")
-    public ResponseEntity<ApiResponse<Boolean>> inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code) {
+    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code, ModelMap modelMap) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(code)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
         }
-        ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
-        return ResponseEntity.ok(apiResponse);
+        RedirectView redirectView = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code);
+        return redirectView;
     }
  /*
 
