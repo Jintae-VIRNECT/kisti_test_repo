@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: login-service
+  thymeleaf:
+    cache: false
+    mode: HTML
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+logging:
+  level:
+    com.virnect.login.service: DEBUG
+
+server:
+  port: 8883

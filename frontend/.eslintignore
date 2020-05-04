@@ -1,5 +1,6 @@
-/build/
-/config/
-/dist/
-/*.js
-/test/unit/coverage/
+.eslintrc.js
+server.js
+postcss.config.js
+webpack.base.config.js
+webpack.dev.config.js
+webpack.prod.config.js

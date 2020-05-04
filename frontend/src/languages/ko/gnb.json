@@ -1,0 +1,153 @@
+{
+    "gnb": {
+        "solutions": {
+            "idx": "1",
+            "text": "Solutions",
+            "page": "energy_resource",
+            "to": "/solutions/energy_resource",
+            "array": [
+                {
+                    "text": "에너지/자원",
+                    "page": "energy_resource",
+                    "to": "/solutions/energy_resource"
+                }, {
+                    "text": "EPC",
+                    "page": "epc",
+                    "to": "/solutions/epc"
+                }, {
+                    "text": "자동차/부품",
+                    "page": "motor_parts",
+                    "to": "/solutions/motor_parts"
+                }, {
+                    "text": "항공/철도",
+                    "page": "airline_railroad",
+                    "to": "/solutions/airline_railroad"
+                }, {
+                    "text": "정유/석유화학/배터리",
+                    "page": "oil_chemical_battery",
+                    "to": "/solutions/oil_chemical_battery"
+                }
+            ]
+        },
+        "products": {
+            "idx": "2",
+            "text": "Products",
+            "page": "remote",
+            "to": "/products/remote",
+            "array": [
+                {
+                  "text": "REMOTE",
+                  "page": "remote",
+                  "to": "/products/remote"
+                }, {
+                  "text": "MAKE",
+                  "page": "make",
+                  "to": "/products/make"
+                }, {
+                  "text": "VIEW",
+                  "page": "view",
+                  "to": "/products/view"
+                }, {
+                  "text": "TWIN",
+                  "page": "twin",
+                  "to": "/products/twin"
+                }, {
+                  "text": "AR SDK",
+                  "page": "arsdk",
+                  "to": "/products/arsdk"
+                }
+              ]
+        },
+        "pricing": {
+            "idx": "3",
+            "text": "Pricing",
+            "page": "pricing",
+            "to": "/pricing/remote",
+            "array": [{
+                "text": "가격안내",
+                "page": "pricing",
+                "to": "/pricing/remote",
+                "depth": [{
+                    "text": "REMOTE",
+                  "page": "pricing_remote",
+                  "to": "/pricing/remote"
+                }, {
+                  "text": "MAKE",
+                  "page": "pricing_make",
+                  "to": "/pricing/make"
+                }, {
+                  "text": "VIEW",
+                  "page": "pricing_view",
+                  "to": "/pricing/view"
+                }]
+            }]
+        },
+        "company": {
+            "idx": "4",
+            "text": "Company",
+            "page": "summary",
+            "to": "/company/summary",
+            "array": [{
+                "text": "버넥트 소개",
+                "page": "summary",
+                "to": "/company/summary",
+                "depth": [{
+                    "text": "기업 개요",
+                    "page": "summary",
+                    "to": "/company/summary"
+                }, {
+                    "text": "브랜드",
+                    "page": "brand",
+                    "to": "/company/brand"
+                }, {
+                    "text": "연혁",
+                    "page": "history",
+                    "to": "/company/history"
+                }]
+            }, {
+                "text": "뉴스 센터",
+                "page": "pr",
+                "to": "/media/pr",
+                "depth": [{
+                    "text": "PR",
+                    "page": "pr",
+                    "to": "/media/pr"
+                }, {
+                    "text": "IR",
+                    "page": "ir",
+                    "to": "/media/ir"
+                }]
+            }, {
+                "text": "인재 채용",
+                "page": "system",
+                "to": "/company/system",
+                "depth": [{
+                    "text": "인사제도",
+                    "page": "system",
+                    "to": "/company/system"
+                }, {
+                    "text": "채용공고",
+                    "page": "recruitment",
+                    "to": "/company/recruitment"
+                }]
+            }
+        ]},
+        "contact": {
+            "idx": "5",
+            "text": "Contact",
+            "page": "inquiry",
+            "to": "/contact/inquiry",
+            "array": [
+                {
+                    "text": "문의",
+                    "page": "inquiry",
+                    "to": "/contact/inquiry"
+                }, {
+                    "text": "찾아오는 길",
+                    "page": "location",
+                    "to": "/contact/location"
+                } 
+            ]
+        }
+    }
+}

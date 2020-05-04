@@ -1,0 +1,11 @@
+{
+  "name": "virnect-web-login",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "WC-Modules"
+  ],
+  "scripts": {},
+  "license": "ISC"
+}

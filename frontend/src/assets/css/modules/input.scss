@@ -1,0 +1,173 @@
+@charset "utf-8";
+@import "./mixin.scss";
+
+.input-title {
+    margin-top: 40px;
+    font-weight: 500;
+    font-size: 14px;
+    text-align: left;
+    &.must-check {
+        &:after {
+            padding-left: 2px;
+            color: $danger;
+            content: "*";
+        }
+    }
+}
+
+.all-terms {
+    font-size: 16px;
+    .el-checkbox__label {
+        font-size: 16px;
+    }
+}
+
+.lastname-input {
+    width: calc(42% - 20px);
+    margin-right: 16px;
+}
+
+.firstname-input {
+    width: 58%;
+}
+.el-date-editor {
+    .el-input__icon.el-icon-date {
+        display: none;
+    }
+}
+.birth-input,
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+    width: 104px;
+    margin-left: 12px;
+    .el-input__inner {
+        padding-left: 0;
+        // text-align: right;
+    }
+    &.year-input {
+        width: 140px;
+        margin-left: 0;
+    }
+}
+
+.el-input {
+    &.input-danger {
+        .el-input__inner {
+            border-bottom-color: $danger;
+        }
+    }
+    .el-input__clear {
+        color: #d8dde5;
+        font-size: 22px;
+    }
+}
+
+.el-input__inner {
+    padding: 0;
+    color: $baseColor;
+    font-weight: 500;
+    font-size: 16px;
+    border: 0;
+    border-bottom: 2px solid #e6e9ee;
+    border-radius: 0;
+    &::placeholder {
+        font-weight: normal;
+    }
+}
+
+.el-input--suffix {
+    + .el-input--suffix {
+        margin-top: 12px;
+    }
+}
+.checkbox-wrap {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.el-checkbox {
+    margin-right: 12px;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+    &:after {
+        left: 5px;
+        height: 9px;
+        border-width: 2px;
+    }
+}
+
+.must-check {
+    .el-checkbox__label {
+        &:after {
+            padding-left: 2px;
+            color: $danger;
+            content: "*";
+        }
+    }
+}
+
+.el-select {
+    width: 100%;
+    + .el-input--suffix {
+        margin-top: 12px;
+    }
+}
+.countrycode-input {
+    width: 84px;
+}
+.phonenumber-input {
+    width: calc(100% - 100px);
+    margin-left: 12px;
+}
+
+.el-select-dropdown__item {
+    padding: 0 15px;
+}
+
+// radio box
+.el-radio__input.is-checked {
+    .el-radio__inner:after {
+        -webkit-transform: rotate(45deg) scaleY(1);
+        transform: rotate(45deg) scaleY(1);
+    }
+}
+.el-radio__inner,
+.el-checkbox__inner {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    background: #e6e9ee;
+    border: 2px solid #dcdfe6;
+    -webkit-transition: border-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46),
+        background-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46);
+    transition: border-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46),
+        background-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46);
+    &:after {
+        position: absolute;
+        top: 1px;
+        left: 5px;
+        -webkit-box-sizing: content-box;
+        box-sizing: content-box;
+        width: 3px;
+        height: 9px;
+        background: none;
+        border: 1px solid #ffffff;
+        border-width: 2px;
+        border-top: 0;
+        border-left: 0;
+        border-radius: 0;
+        -webkit-transform: rotate(45deg) scaleY(1);
+        transform: rotate(45deg) scaleY(1);
+        content: "";
+    }
+}
+
+.el-popper[x-placement^="bottom"] .popper__arrow {
+    display: none;
+}
