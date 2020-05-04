@@ -19,7 +19,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "device")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Device {
+public class Device extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "device_id")
