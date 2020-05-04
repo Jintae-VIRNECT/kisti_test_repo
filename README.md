@@ -21,7 +21,7 @@ Yarn workspace
 
 ```
 $ yarn
-$ yarn worskapce smic build
+$ yarn workspace smic build
 ```
 
 ## Running the application
@@ -30,18 +30,30 @@ $ yarn worskapce smic build
 # 로컬에서 개발모드로 실행
 $ yarn workspace smic local
 
-# production 모드로 실행 -> https://localhost:8887 에 띄움
-$ yarn workspace smic start
+# production 모드로 실행
+$ yarn workspace smic start:production
 
 # 빌드 & production 모드로 실행 
 $ yarn workspace smic deploy
 
 ```
 
-## 추가 설명
+## 배포
 
-- Yarn workspace 적용
-- eslint & prettier 적용
+```
+# yarn이 없을 경우
+$ npm install -g yarn
+
+# 환경설정 확인
+$ vim projects/smic/.env.production
+
+# 빌드 및 실행
+$ yarn
+$ yarn workspace smic deploy
+
+```
+
+## 추가 설명
 
 ### Yarn workspace 적용
 
@@ -73,4 +85,3 @@ vscode의 settings.json 아래 내용 추가
       "source.fixAll.eslint": true
   }
 ```
-

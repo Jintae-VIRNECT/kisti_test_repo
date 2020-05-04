@@ -1,0 +1,43 @@
+/* 페이지 진입, 진출 중인 상태일 때 */
+.page-enter-active,
+.page-leave-active {
+  transition: 0.1s;
+}
+
+/* 페이지 진입 전, 진출 후 상태일 때 */
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+}
+
+body {
+  overflow-y: scroll;
+  font-weight: 500;
+  .v-modal {
+    background: #020a17;
+  }
+}
+
+#__nuxt {
+  @import "@/assets/css/modules/title.scss";
+
+  @import "@/assets/css/el-override/button.scss";
+  @import "@/assets/css/el-override/card.scss";
+  @import "@/assets/css/el-override/dialog.scss";
+
+  .virnect-login-form {
+    @import "@/assets/css/el-override/login-form.scss";
+  }
+  .virnect-workstation-form {
+    @import "@/assets/css/el-override/workstation-form.scss";
+  }
+}
+
+@import "@/assets/css/modules/common.scss";
+@import "@/assets/css/modules/column.scss";
+@import "@/assets/css/modules/navbar.scss";
+@import "@/assets/css/el-override/messagebox.scss";
+@import "@/assets/css/el-override/notify.scss";
+@import "@/assets/css/el-override/tooltip.scss";
+@import "@/assets/css/el-override/datepicker.scss";
+@import "@/assets/css/el-override/dropdown.scss";

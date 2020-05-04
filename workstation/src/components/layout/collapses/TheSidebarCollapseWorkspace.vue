@@ -1,0 +1,119 @@
+<template>
+  <div class="the-sidebar__collapse--workspace">
+    <div class="the-sidebar__collapse__header">
+      <h5>{{ $t('menu.collapse.workspace.title') }}</h5>
+    </div>
+    <div class="the-sidebar__collapse__body">
+      <div v-for="(group, role) in workspaces" :key="role">
+        <span>{{ $t(`menu.collapse.workspace.${role}`) }}</span>
+        <button
+          v-for="workspace in workspaces[role]"
+          :class="isActive(workspace.uuid) ? 'selected' : ''"
+          :key="workspace.uuid"
+          @click="workspaceActive(workspace.uuid)"
+        >
+          <div class="avatar">
+            <div
+              class="image"
+              :style="`background-image: url(${workspace.profile})`"
+            />
+          </div>
+          <span>{{ workspace.name }}</span>
+          <img
+            v-if="isActive(workspace.uuid)"
+            src="~assets/images/icon/ic-check-circle.svg"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+
+export default {
+  data() {
+    return {
+      workspaces: {
+        master: [],
+        manager: [],
+        member: [],
+      },
+    }
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'workspace/activeWorkspace',
+      myWorkspaces: 'workspace/myWorkspaces',
+    }),
+  },
+  methods: {
+    workspaceActive(uuid) {
+      this.$store.commit('workspace/SET_ACTIVE_WORKSPACE', uuid)
+      this.$emit('closeCollapse')
+    },
+    isActive(uuid) {
+      return this.activeWorkspace.uuid === uuid
+    },
+  },
+  beforeMount() {
+    this.myWorkspaces.forEach(workspace => {
+      const { role } = workspace
+      if (role === 'MASTER') this.workspaces.master.push(workspace)
+      if (role === 'MANAGER') this.workspaces.manager.push(workspace)
+      if (role === 'MEMBER') this.workspaces.member.push(workspace)
+    })
+  },
+}
+</script>
+
+<style lang="scss">
+.the-sidebar__collapse--workspace .the-sidebar__collapse__body > div {
+  & > span {
+    display: block;
+    margin: 8px 0;
+    font-size: 12px;
+    opacity: 0.6;
+  }
+  & > button {
+    display: block;
+    width: 100%;
+    height: 38px;
+    margin: 4px 0;
+    overflow: hidden;
+    color: #fff;
+    text-align: left;
+    border-radius: 4px;
+
+    .avatar {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin: 7px 8px;
+      vertical-align: middle;
+    }
+    & > span {
+      display: inline-block;
+      width: 144px;
+      overflow: hidden;
+      line-height: 1.5;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+    & > img {
+      float: right;
+      margin: 11px 9px 11px 0;
+    }
+
+    &:hover {
+      background: rgba(44, 62, 93, 0.6);
+    }
+    &:active,
+    &.selected {
+      background: #324461;
+    }
+  }
+}
+</style>

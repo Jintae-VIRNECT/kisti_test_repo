@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
+.nuxt
 dist
+WC-Modules
 
 # # local env files
 # .env.local

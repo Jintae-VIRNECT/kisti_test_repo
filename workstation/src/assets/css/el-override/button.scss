@@ -1,0 +1,83 @@
+.el-button {
+  padding: 10px 16px;
+  font-weight: 500;
+  font-size: 13.5px;
+  line-height: 1em;
+  background: rgba(237, 240, 244, 0.6);
+  border: none;
+
+  &:hover,
+  &:focus {
+    color: inherit;
+  }
+}
+.el-button--simple {
+  padding: 8px 14px;
+  color: $font-color-content;
+
+  & > span {
+    font-size: 12.6px;
+  }
+}
+.el-button--info {
+  font-weight: 300;
+  background: $color-info;
+  &:hover {
+    color: #fff;
+    background: $color-info-hover;
+  }
+  &:active {
+    color: #fff;
+    background: $color-info-active;
+  }
+  &:focus {
+    color: #fff;
+  }
+}
+.el-button--primary {
+  color: #fff;
+  font-weight: 300;
+  background: $color-primary;
+  &:hover {
+    color: #fff;
+    background: $color-primary-hover;
+  }
+  &:active {
+    color: #fff;
+    background: $color-primary-active;
+  }
+  &:focus {
+    color: #fff;
+  }
+}
+.el-button--danger {
+  color: #fff;
+  font-weight: 300;
+  background: $color-danger;
+
+  &:hover {
+    color: #fff;
+  }
+  &:active {
+    color: #fff;
+  }
+  &:focus {
+    color: #fff;
+  }
+}
+
+.el-button.is-disabled,
+.el-button.is-disabled:hover,
+.el-button.is-disabled:focus,
+.el-button.is-disabled:active {
+  color: #8d939c;
+  background-color: #edf0f4;
+  border-color: #edf0f4;
+  opacity: 0.6;
+}
+.el-button--text.is-disabled,
+.el-button--text.is-disabled:hover,
+.el-button--text.is-disabled:focus,
+.el-button--text.is-disabled:active {
+  background: none;
+}
