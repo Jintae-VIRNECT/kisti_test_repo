@@ -88,7 +88,7 @@ export default {
   position: relative;
   width: 2rem;
   height: 2rem;
-  background: url(~assets/image/ic-more-horiz-light.svg) 50% no-repeat;
+  background: url(~assets/image/ic_more.svg) 50% no-repeat;
   &:hover {
     &:before {
       position: absolute;

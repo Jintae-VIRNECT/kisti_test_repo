@@ -270,6 +270,15 @@ export default {
           this.normalizeVertical(next * this.scrollAreaHeight)
         if (orientation == 'horizontal')
           this.normalizeHorizontal(next * this.scrollAreaWidth)
+
+        let canScrollY = this.scrollAreaHeight > this.scrollWrapperHeight
+        let canScrollX = this.scrollAreaWidth > this.scrollWrapperWidth
+        if (this.$listeners['onScroll']) {
+          this.$listeners['onScroll'](
+            canScrollX ? next * this.scrollAreaWidth : 0,
+            canScrollY ? next * this.scrollAreaHeight : 0,
+          )
+        }
       })
     },
 

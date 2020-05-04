@@ -25,7 +25,7 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList } from 'api/remote/room'
+import { getRoomList } from 'api/workspace/room'
 import searchMixin from 'mixins/filter'
 export default {
   name: 'WorkspaceRemote',

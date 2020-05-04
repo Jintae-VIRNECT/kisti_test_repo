@@ -28,7 +28,7 @@ import Modal from 'Modal'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { inviteParticipantsList } from 'api/remote/room'
+import { inviteParticipantsList } from 'api/workspace/room'
 import toastMixin from 'mixins/toast'
 
 export default {

@@ -66,7 +66,7 @@ import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
 import imageMixin from 'mixins/uploadImage'
-import { createRoom } from 'api/remote/room'
+import { createRoom } from 'api/workspace/room'
 
 export default {
   name: 'ModalCreateRoomInfo',

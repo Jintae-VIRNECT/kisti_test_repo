@@ -74,7 +74,7 @@ import Card from 'Card'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
-import { deleteRoom } from 'api/remote/room'
+import { deleteRoom } from 'api/workspace/room'
 
 export default {
   name: 'RemoteCard',

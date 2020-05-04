@@ -104,7 +104,7 @@ export default {
     width: 1.714rem;
     height: 1.714rem;
     margin-right: 0.143rem;
-    background: url(~assets/image/ic-select-dropdown.svg) no-repeat 50%;
+    background: url(~assets/image/ic_dropdown.svg) no-repeat 50%;
     transform: rotate(0deg);
     transition: transform 0.3s;
     content: '';
@@ -118,7 +118,7 @@ export default {
     outline: none;
     outline-offset: 0;
     &::after {
-      background: url(~assets/image/ic-select-dropdown.svg) no-repeat 50%;
+      background: url(~assets/image/ic_dropdown.svg) no-repeat 50%;
       transform: rotate(-180deg);
       content: '';
     }
