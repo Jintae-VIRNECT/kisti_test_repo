@@ -13,7 +13,7 @@
     :deleteButtonText="'전체삭제'"
     :listCount="historyList.length"
     @refresh="refresh"
-    @delete="deleteList"
+    @delete="showDeleteDialog"
   >
     <workspace-history-list :historyList="historyList"></workspace-history-list>
   </tab-view>
@@ -23,8 +23,11 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
 import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
+
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'WorkspaceHistory',
+  mixins: [confirmMixin],
   components: {
     TabView,
     WorkspaceHistoryList,
@@ -43,6 +46,18 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    showDeleteDialog() {
+      this.confirmCancel(
+        '모든 목록을 삭제하시겠습니까?',
+        {
+          text: '삭제하기',
+          action: () => {
+            this.deleteList()
+          },
+        },
+        { text: '취소' },
+      )
     },
     async deleteList() {
       try {
