@@ -12,17 +12,15 @@ export default async function({ req, store, redirect }) {
     // 토큰으로 내 정보 불러오기
     try {
       await store.dispatch('auth/getAuthInfo', { headers: req.headers })
+      const myProfile = store.getters['auth/myProfile']
       const myWorkspaces = store.getters['auth/myWorkspaces']
-      if (!myWorkspaces.length) {
+      if (myWorkspaces.length) {
+        await store.dispatch('workspace/getMyWorkspaces', myProfile.uuid)
+        const myWorkspaces = store.getters['workspace/myWorkspaces']
+        store.commit('workspace/SET_ACTIVE_WORKSPACE', myWorkspaces[0].uuid)
+      } else {
         // 워크스페이스가 없는 경우
         return redirect('/start')
-      } else {
-        await store.dispatch('workspace/getActiveWorkspaceInfo', {
-          headers: req.headers,
-          route: {
-            workspaceId: myWorkspaces[0].uuid,
-          },
-        })
       }
     } catch (e) {
       // 토큰 만료됨

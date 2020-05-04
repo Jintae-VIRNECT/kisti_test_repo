@@ -46,7 +46,7 @@ export default {
     }),
     myRole() {
       return this.myWorkspaces.find(
-        workspace => workspace.uuid === this.activeWorkspace.info.uuid,
+        workspace => workspace.uuid === this.activeWorkspace.uuid,
       ).role
     },
   },

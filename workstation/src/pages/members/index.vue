@@ -85,7 +85,7 @@ export default {
   },
   beforeMount() {
     this.searchMembers()
-    workspaceService.watchActiveWorkspace('/members', () =>
+    workspaceService.watchActiveWorkspace(this, () =>
       this.searchMembers(this.searchParams),
     )
   },
@@ -96,9 +96,6 @@ export default {
       this.showAddModal = true
       this.$router.replace(path)
     }
-  },
-  beforeDestroy() {
-    workspaceService.unwatchActiveWorkspace('/members')
   },
 }
 </script>

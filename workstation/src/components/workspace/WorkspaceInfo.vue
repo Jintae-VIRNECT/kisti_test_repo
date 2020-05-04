@@ -4,13 +4,12 @@
       <div class="avatar">
         <div
           class="image"
-          :style="`background-image: url(${activeWorkspace.info.profile})`"
+          :style="`background-image: url(${workspaceInfo.info.profile})`"
         />
       </div>
-      <h5>{{ activeWorkspace.info.name }}</h5>
+      <h5>{{ workspaceInfo.info.name }}</h5>
       <span>{{
-        activeWorkspace.info.description ||
-          $t('workspace.info.descriptionEmpty')
+        workspaceInfo.info.description || $t('workspace.info.descriptionEmpty')
       }}</span>
     </div>
     <el-divider />
@@ -20,23 +19,21 @@
       <span>{{ $t('workspace.master') }}</span>
       <span class="count">1</span>
       <div class="users">
-        <el-tooltip :content="activeWorkspace.master.name">
+        <el-tooltip :content="workspaceInfo.master.name">
           <div class="avatar">
             <div
               class="image"
-              :style="
-                `background-image: url(${activeWorkspace.master.profile})`
-              "
+              :style="`background-image: url(${workspaceInfo.master.profile})`"
             />
           </div>
         </el-tooltip>
       </div>
       <!-- 매니저 -->
       <span>{{ $t('workspace.manager') }}</span>
-      <span class="count">{{ activeWorkspace.managers.length }}</span>
+      <span class="count">{{ workspaceInfo.managers.length }}</span>
       <div class="users">
         <el-tooltip
-          v-for="user in activeWorkspace.managers"
+          v-for="user in workspaceInfo.managers"
           :key="user.uuid"
           :content="user.name"
         >
@@ -47,7 +44,7 @@
       </div>
       <!-- 멤버 -->
       <span>{{ $t('workspace.member') }}</span>
-      <span class="count">{{ activeWorkspace.members.length }}</span>
+      <span class="count">{{ workspaceInfo.members.length }}</span>
     </div>
     <el-divider />
     <div class="plans"></div>
@@ -59,12 +56,23 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import workspaceService from '@/services/workspace'
 
 export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'workspace/activeWorkspace',
     }),
+  },
+  data() {
+    return {
+      workspaceInfo: {
+        info: {},
+        master: [],
+        managers: [],
+        members: [],
+      },
+    }
   },
   methods: {
     addMember() {
@@ -73,6 +81,15 @@ export default {
         query: { modal: 'memberAdd' },
       })
     },
+    async getWorkspaceInfo() {
+      this.workspaceInfo = await workspaceService.getWorkspaceInfo(
+        this.activeWorkspace.uuid,
+      )
+    },
+  },
+  async beforeMount() {
+    this.getWorkspaceInfo()
+    workspaceService.watchActiveWorkspace(this, this.getWorkspaceInfo)
   },
 }
 </script>

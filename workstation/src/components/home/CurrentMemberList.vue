@@ -58,14 +58,7 @@ export default {
   },
   beforeMount() {
     this.getMemberList()
-    workspaceService.watchActiveWorkspace(
-      'workspaceMemberList',
-      this.getMemberList,
-    )
-  },
-  beforeDestroy() {
-    console.log('destroy')
-    workspaceService.unwatchActiveWorkspace('workspaceMemberList')
+    workspaceService.watchActiveWorkspace(this, this.getMemberList)
   },
 }
 </script>

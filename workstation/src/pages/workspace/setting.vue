@@ -30,18 +30,18 @@
                 <el-col class="left">
                   <dl>
                     <dt>{{ $t('workspace.setting.createdDate') }}</dt>
-                    <dd>{{ activeWorkspace.info.createdDate | dateFormat }}</dd>
+                    <dd>{{ activeWorkspace.createdDate | dateFormat }}</dd>
                     <dt>{{ $t('workspace.master') }}</dt>
                     <dd class="column-user">
                       <div class="avatar">
                         <div
                           class="image"
                           :style="
-                            `background-image: url(${activeWorkspace.master.profile})`
+                            `background-image: url(${activeWorkspace.masterProfile})`
                           "
                         />
                       </div>
-                      <span>{{ activeWorkspace.master.name }}</span>
+                      <span>{{ activeWorkspace.masterName }}</span>
                     </dd>
                   </dl>
                 </el-col>
@@ -164,7 +164,7 @@ export default {
           ? uploadFiles[uploadFiles.length - 1].raw
           : null,
         userId: this.myProfile.uuid,
-        workspaceId: this.activeWorkspace.info.uuid,
+        workspaceId: this.activeWorkspace.uuid,
       }
 
       try {
@@ -181,20 +181,14 @@ export default {
       }
     },
     setWorkspaceInfo() {
-      this.form.name = this.activeWorkspace.info.name
-      this.form.description = this.activeWorkspace.info.description
-      this.file = this.activeWorkspace.info.profile
+      this.form.name = this.activeWorkspace.name
+      this.form.description = this.activeWorkspace.description
+      this.file = this.activeWorkspace.profile
     },
   },
   beforeMount() {
     this.setWorkspaceInfo()
-    workspaceService.watchActiveWorkspace(
-      '/workspace/setting',
-      this.setWorkspaceInfo,
-    )
-  },
-  beforeDestroy() {
-    workspaceService.unwatchActiveWorkspace('/workspace/setting')
+    workspaceService.watchActiveWorkspace(this, this.setWorkspaceInfo)
   },
 }
 </script>

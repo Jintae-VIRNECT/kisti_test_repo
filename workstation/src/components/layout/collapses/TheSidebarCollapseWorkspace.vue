@@ -31,7 +31,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import workspaceService from '@/services/workspace'
 
 export default {
   data() {
@@ -46,23 +45,25 @@ export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'workspace/activeWorkspace',
+      myWorkspaces: 'workspace/myWorkspaces',
     }),
   },
   methods: {
-    async workspaceActive(uuid) {
-      await this.$store.dispatch('workspace/getActiveWorkspaceInfo', {
-        route: {
-          workspaceId: uuid,
-        },
-      })
+    workspaceActive(uuid) {
+      this.$store.commit('workspace/SET_ACTIVE_WORKSPACE', uuid)
       this.$emit('closeCollapse')
     },
     isActive(uuid) {
-      return this.activeWorkspace.info.uuid === uuid
+      return this.activeWorkspace.uuid === uuid
     },
   },
-  async beforeCreate() {
-    this.workspaces = await workspaceService.getMyWorkspaces()
+  beforeMount() {
+    this.myWorkspaces.forEach(workspace => {
+      const { role } = workspace
+      if (role === 'MASTER') this.workspaces.master.push(workspace)
+      if (role === 'MANAGER') this.workspaces.manager.push(workspace)
+      if (role === 'MEMBER') this.workspaces.member.push(workspace)
+    })
   },
 }
 </script>

@@ -4,51 +4,42 @@ import api from '@/api/gateway'
 import Workspace from '@/models/workspace/Workspace'
 import Member from '@/models/workspace/Member'
 
+function myWorkspacesGetter() {
+  return $nuxt.$store.getters['workspace/myWorkspaces']
+}
 function activeWorkspaceGetter() {
   return $nuxt.$store.getters['workspace/activeWorkspace']
 }
 function myProfileGetter() {
   return $nuxt.$store.getters['auth/myProfile']
 }
-const watches = new Map()
 
 export default {
   /**
-   * 활성 워크스페이스 변경 감시 (이름이 같으면 무시됨)
-   * @param {string} name
+   * 활성 워크스페이스 변경 감시
+   * @param {component} that
    * @param {function} func
    */
-  watchActiveWorkspace(name, func) {
-    if (!watches.has(name)) {
-      watches.set(name, $nuxt.$store.watch(activeWorkspaceGetter, func))
-    }
+  watchActiveWorkspace(that, func) {
+    const watch = $nuxt.$store.watch(activeWorkspaceGetter, func)
+    that.$on('hook:beforeDestroy', watch)
   },
   /**
-   * 활성 워크스페이스 변경 감시 해제
-   * @param {*} name
+   * 내가 속한 워크스페이스 리스트
    */
-  unwatchActiveWorkspace(name) {
-    if (watches.get(name)) {
-      watches.get(name)()
-      watches.delete(name)
-    }
+  getMyWorkspaces() {
+    return myWorkspacesGetter()
   },
-  /**
-   * 내가 속한 워크스페이스 리스트 -> { 마스터, 매니저, 멤버 }
-   */
-  async getMyWorkspaces() {
-    const data = await api('WORKSPACES_LIST', {
-      params: {
-        userId: myProfileGetter().uuid,
-      },
+  async getWorkspaceInfo(workspaceId) {
+    const data = await api('WORKSPACE_INFO', {
+      route: { workspaceId },
     })
-    const workspaces = data.workspaceList.map(
-      workspace => new Workspace(workspace),
-    )
+    const members = data.workspaceUserInfo.map(user => new Member(user))
     return {
-      master: workspaces.filter(workspace => workspace.role === 'MASTER'),
-      manager: workspaces.filter(workspace => workspace.role === 'MANAGER'),
-      member: workspaces.filter(workspace => workspace.role === 'MEMBER'),
+      info: new Workspace(data.workspaceInfo),
+      master: members.find(member => member.role === 'MASTER'),
+      managers: members.filter(member => member.role === 'MANAGER'),
+      members: members.filter(member => member.role === 'MEMBER'),
     }
   },
   /**
@@ -58,7 +49,7 @@ export default {
   async getNewMembers() {
     const data = await api('WORKSPACE_NEW_MEMBERS', {
       route: {
-        workspaceId: activeWorkspaceGetter().info.uuid,
+        workspaceId: activeWorkspaceGetter().uuid,
       },
     })
     return data.map(member => new Member(member))
@@ -70,7 +61,7 @@ export default {
   async searchMembers(searchParams = {}) {
     const { memberInfoList, pageMeta } = await api('MEMBER_LIST', {
       route: {
-        workspaceId: activeWorkspaceGetter().info.uuid,
+        workspaceId: activeWorkspaceGetter().uuid,
       },
       params: {
         userId: myProfileGetter().uuid,
@@ -119,11 +110,11 @@ export default {
     }
     const data = await api('WORKSPACE_EDIT', options)
     // 변경된 내용 적용
-    $nuxt.$store.dispatch('workspace/getActiveWorkspaceInfo', {
-      route: {
-        workspaceId: data.uuid,
-      },
-    })
+    await $nuxt.$store.dispatch(
+      'workspace/getMyWorkspaces',
+      myProfileGetter().uuid,
+    )
+    $nuxt.$store.commit('workspace/SET_ACTIVE_WORKSPACE', data.uuid)
   },
   /**
    * 멤버 권한 변경
@@ -132,7 +123,7 @@ export default {
   async updateMembersRole(form) {
     const data = await api('MEMBER_ROLE_UPDATE', {
       route: {
-        workspaceId: activeWorkspaceGetter().info.uuid,
+        workspaceId: activeWorkspaceGetter().uuid,
       },
       params: {
         ...form,
@@ -150,7 +141,7 @@ export default {
     formData.append('userId', myProfileGetter().uuid)
 
     const data = await api('MEMBER_KICK', {
-      route: { workspaceId: activeWorkspaceGetter().info.uuid },
+      route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })
   },
@@ -160,7 +151,7 @@ export default {
    */
   async inviteMembers(userInfoList) {
     const data = await api('MEMBERS_INVITE', {
-      route: { workspaceId: activeWorkspaceGetter().info.uuid },
+      route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
         userId: myProfileGetter().uuid,
         userInfoList,

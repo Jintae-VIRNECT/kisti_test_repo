@@ -5,7 +5,7 @@
         <a
           v-if="logoPath[0] === '@'"
           @click.stop="openCollapse(logoPath)"
-          :style="`background-image: url(${activeWorkspace.info.profile})`"
+          :style="`background-image: url(${activeWorkspace.profile})`"
         />
       </div>
       <div class="the-sidebar__upper">

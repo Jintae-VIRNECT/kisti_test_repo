@@ -134,6 +134,7 @@ export default {
           showClose: true,
         })
         this.$emit('updated', this.form)
+        this.showMe = false
       } catch (e) {
         this.$message.error({
           message: this.$t('members.add.message.inviteFail'),
