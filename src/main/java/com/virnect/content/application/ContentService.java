@@ -465,12 +465,12 @@ public class ContentService {
      * @param workspaceUUID - 워크스페이스 식별자
      * @param userUUID      - 사용자 식별자
      * @param search        - 검색어(컨텐츠명 / 사용자명)
-     * @param shareds       - 공유여부
+     * @param shared       - 공유여부
      * @param pageable      - 페이징
      * @return - 컨텐츠 목록
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String userUUID, String search, String shareds, String converteds, Pageable pageable) {
+    public ApiResponse<ContentInfoListResponse> getContentList(String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
         List<String> userUUIDList = new ArrayList<>();
@@ -490,7 +490,7 @@ public class ContentService {
 
 
         // 2. 콘텐츠 조회
-        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shareds, converteds, userUUIDList, pageable);
+        Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
@@ -554,11 +554,6 @@ public class ContentService {
         return rootLocation.resolve(fileName);
     }
 
-    private long byteToMegaByte(long size) {
-        long megaByte = size / (1024L * 1024L);
-        return megaByte == 0 ? 1 : megaByte;
-    }
-
     public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String search, Pageable pageable) {
         Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, search, pageable);
 
@@ -568,13 +563,11 @@ public class ContentService {
             Content content = this.contentRepository.findByUuid(contentUUID)
                     .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-            List<ContentTargetResponse> targetList = content.getTargetList().stream().map(target -> {
-                return ContentTargetResponse.builder()
-                        .id(target.getId())
-                        .type(target.getType())
-                        .data(target.getData())
-                        .build();
-            }).collect(Collectors.toList());
+            List<ContentTargetResponse> targetList = content.getTargetList().stream().map(target -> ContentTargetResponse.builder()
+                    .id(target.getId())
+                    .type(target.getType())
+                    .data(target.getData())
+                    .build()).collect(Collectors.toList());
 
             ContentInfoResponse contentInfoResponse = this.modelMapper.map(content, ContentInfoResponse.class);
             contentInfoResponse.setTargets(targetList);
@@ -670,6 +663,11 @@ public class ContentService {
 
     private ApiResponse<ContentInfoResponse> getContentInfoResponseApiResponse(Content content) {
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
+        List<ContentTargetResponse> targetResponseList = new ArrayList<>();
+        for (Target target : content.getTargetList()) {
+            ContentTargetResponse map = this.modelMapper.map(target, ContentTargetResponse.class);
+            targetResponseList.add(map);
+        }
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                 .workspaceUUID(content.getWorkspaceUUID())
                 .contentUUID(content.getUuid())
@@ -682,9 +680,7 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .targets(content.getTargetList().stream().map(target -> {
-                    return this.modelMapper.map(target, ContentTargetResponse.class);
-                }).collect(Collectors.toList()))
+                .targets(targetResponseList)
                 .createdDate(content.getUpdatedDate())
                 .build();
         return new ApiResponse<>(contentInfoResponse);
@@ -738,12 +734,12 @@ public class ContentService {
         log.debug("MULTIPART FILE SOURCE - fileUrl: {}, path: {}", fileUrl, file.getPath());
         try {
             FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
-            InputStream inputStream = new FileInputStream(file);
-            OutputStream outputStream = fileItem.getOutputStream();
-            IOUtils.copy(inputStream, outputStream);
+            try (InputStream inputStream = new FileInputStream(file)) {
+                OutputStream outputStream = fileItem.getOutputStream();
+                IOUtils.copy(inputStream, outputStream);
+            }
             return new CommonsMultipartFile(fileItem);
         } catch (IOException e) {
-            e.printStackTrace();
             log.error("ERROR!! CONVERT FILE TO MULTIPARTFILE : {}", e.getMessage());
         }
         return null;
