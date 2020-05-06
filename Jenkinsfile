@@ -46,7 +46,7 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        sh("git tag -a ${env.BUILD_TAG} -m '${repositoryCommiterMessage}'")
+                        sh("git tag -a ${env.BUILD_TAG}")
                         sh 'docker build -t pf-workspace .'
                     }
                 }
