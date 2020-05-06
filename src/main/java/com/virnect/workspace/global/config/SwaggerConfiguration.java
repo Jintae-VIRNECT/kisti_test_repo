@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile("!production")
+@Profile({"local","develop"})
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
