@@ -1,10 +1,10 @@
 <template>
-  <div class="drawing-tools"></div>
+  <main class="main-wrapper ar"></main>
 </template>
 
 <script>
 export default {
-  name: 'DrawingTools',
+  name: 'ServiceAr',
   components: {},
   data() {
     return {}

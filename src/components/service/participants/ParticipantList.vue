@@ -1,14 +1,14 @@
 <template>
-  <div class="video-list" id="video-list">
+  <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
-      <div class="video-list__view">
-        <list-video
+      <div class="participants__view">
+        <participant-video
           v-for="session of sessions"
           :key="session.nodeId"
           :session="session"
-        ></list-video>
+        ></participant-video>
         <article>
-          <div class="list-video more" @click="more">
+          <div class="participant-video more" @click="more">
             <p>추가 초대하기</p>
           </div>
         </article>
@@ -19,11 +19,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import ListVideo from './partials/ListVideo'
+import ParticipantVideo from './ParticipantVideo'
 export default {
-  name: 'VideoList',
+  name: 'ParticipantList',
   components: {
-    ListVideo,
+    ParticipantVideo,
   },
   data() {
     return {

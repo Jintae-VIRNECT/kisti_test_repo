@@ -3,6 +3,7 @@ export default {
 
   // oncall
   view: state => state.oncall.view,
+  tool: state => state.oncall.tool,
   action: state => state.oncall.action,
   stream: state => state.oncall.stream,
   mic: state => state.oncall.mic,

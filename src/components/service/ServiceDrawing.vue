@@ -1,17 +1,20 @@
 <template>
   <main class="main-wrapper drawing">
     <div class="drawing-body">
+      <drawing-tools></drawing-tools>
       <drawing-canvas></drawing-canvas>
     </div>
   </main>
 </template>
 
 <script>
-import DrawingCanvas from './DrawingCanvas'
+import DrawingTools from './tools/DrawingTools'
+import DrawingCanvas from './drawing/DrawingCanvas'
 
 export default {
-  name: 'Drawing',
+  name: 'ServiceDrawing',
   components: {
+    DrawingTools,
     DrawingCanvas,
   },
   data() {

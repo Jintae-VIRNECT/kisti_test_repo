@@ -1,5 +1,6 @@
 import {
   CALL_MODE_SET,
+  CALL_TOOL_SET,
   CALL_ACTION_SET,
   CALL_STREAM,
   CALL_SPEAKER,
@@ -9,6 +10,7 @@ import {
 
 const state = {
   view: 'stream', // stream, sharing, ar
+  tool: 'pointing',
   action: 'pointing', // pointing, drawing
   stream: true,
   mic: true,
@@ -19,6 +21,9 @@ const state = {
 const mutations = {
   [CALL_MODE_SET](state, mode) {
     state.view = mode
+  },
+  [CALL_TOOL_SET](state, mode) {
+    state.tool = mode
   },
   [CALL_ACTION_SET](state, mode) {
     state.action = mode

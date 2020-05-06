@@ -4,6 +4,7 @@ export const ACCOUNT_CLEAR = 'ACCOUNT_CLEAR'
 
 // oncall
 export const CALL_MODE_SET = 'CALL_MODE_SET'
+export const CALL_TOOL_SET = 'CALL_TOOL_SET'
 export const CALL_ACTION_SET = 'CALL_ACTION_SET'
 export const CALL_STREAM = 'CALL_STREAM'
 export const CALL_SPEAKER = 'CALL_SPEAKER'

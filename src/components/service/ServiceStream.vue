@@ -1,19 +1,19 @@
 <template>
-  <main class="main-wrapper mainview">
-    <div class="mainview-body">
-      <main-tools></main-tools>
+  <main class="main-wrapper stream">
+    <div class="stream-body">
+      <stream-tools></stream-tools>
       <main-video></main-video>
     </div>
   </main>
 </template>
 
 <script>
-import MainTools from './partials/MainTools'
-import MainVideo from './MainVideo'
+import StreamTools from './tools/StreamTools'
+import MainVideo from './stream/MainVideo'
 export default {
-  name: 'MainView',
+  name: 'ServiceStream',
   components: {
-    MainTools,
+    StreamTools,
     MainVideo,
   },
   data() {

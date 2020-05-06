@@ -1,4 +1,4 @@
-.share-list {
+.share {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -8,7 +8,7 @@
   border-right: solid 1px rgba(#fff, 0.09);
 }
 
-.share-list__title {
+.share__title {
   flex-shrink: 0;
   width: 100%;
   height: 38px;
@@ -20,11 +20,11 @@
   }
 }
 
-.share-list__body {
+.share__body {
   height: 100%;
 }
 
-.share-list__save {
+.share__save {
   flex-shrink: 0;
   width: 100%;
   height: 38px;

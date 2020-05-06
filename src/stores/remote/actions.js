@@ -13,8 +13,15 @@ export default {
    * Change Call Mode
    * @param {String} state : stream, sharing, ar
    */
-  changeCallMode({ commit }, state) {
+  setView({ commit }, state) {
     commit(types.CALL_MODE_SET, state)
+  },
+  /**
+   * Change Tool Mode
+   * @param {String} state : pointing, capture, record
+   */
+  setTool({ commit }, state) {
+    commit(types.CALL_TOOL_SET, state)
   },
   /**
    * Change Call Action
