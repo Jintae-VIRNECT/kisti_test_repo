@@ -16,7 +16,9 @@
         v-for="room of roomList"
         :key="room.roomId"
         :roomInfo="room"
-        @refresh="refresh"
+        @join="joinRoom"
+        @leave="leaveRoom"
+        @remove="removeRoom"
       ></remote-card>
     </div>
   </tab-view>
@@ -25,11 +27,13 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList } from 'api/workspace/room'
+
+import { getRoomList, deleteRoom } from 'api/workspace/room'
+import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 export default {
   name: 'WorkspaceRemote',
-  mixins: [searchMixin],
+  mixins: [searchMixin, confirmMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
@@ -65,6 +69,46 @@ export default {
       })
       this.rooms = this.remoteInfo.rooms
       this.rooms = []
+    },
+    async remove(roomId) {
+      const rtn = await deleteRoom({ roomId: roomId })
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        if (rtn) {
+          this.refresh()
+          this.$eventBus.$emit('popover:close')
+        }
+      })
+    },
+    joinRoom(roomId) {
+      console.log('참가하기::' + roomId)
+      this.confirmDefault('이미 삭제된 협업입니다.')
+      this.confirmDefault('협업에 참가가 불가능합니다.')
+    },
+    leaveRoom(roomId) {
+      this.confirmCancel(
+        '협업에서 나가시겠습니까?',
+        {
+          text: '나가기',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
+    },
+    removeRoom(roomId) {
+      this.confirmCancel(
+        '협업을 삭제 하시겠습니까?',
+        {
+          text: '확인',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
     },
   },
 
