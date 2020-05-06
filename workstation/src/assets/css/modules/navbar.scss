@@ -22,10 +22,12 @@
     text-align: right;
   }
 
-  .el-select,
-  .right .el-input {
-    padding-right: 13px;
+  .el-select {
+    margin-right: 13px;
     cursor: pointer;
+  }
+  .right .el-button {
+    margin-left: 13px;
   }
   .el-input__inner {
     width: 140px;

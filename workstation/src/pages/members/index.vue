@@ -34,7 +34,7 @@
         </el-col>
       </el-row>
       <!-- 멤버 목록 -->
-      <el-row>
+      <el-row v-loading="membersLoading">
         <el-col class="profile" v-for="member in members" :key="member.uuid">
           <member-profile-card :data="member" />
         </el-col>
@@ -74,6 +74,7 @@ export default {
       memberFilter,
       memberSort,
       memberSearch: '',
+      membersLoading: false,
     }
   },
   methods: {
@@ -81,8 +82,10 @@ export default {
       this.searchMembers(searchParams)
     },
     async searchMembers(searchParams) {
+      this.membersLoading = true
       const { list, total } = await workspaceService.searchMembers(searchParams)
       this.members = list
+      this.membersLoading = false
     },
   },
   beforeMount() {

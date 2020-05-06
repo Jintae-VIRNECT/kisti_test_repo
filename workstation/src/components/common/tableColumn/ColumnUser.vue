@@ -14,7 +14,7 @@
             :style="`background-image: url(${scope.row[imageProp]})`"
           />
         </div>
-        <span>{{ scope.row[prop] }}</span>
+        <span>{{ scope.row[nameProp] }}</span>
       </div>
     </template>
   </el-table-column>
@@ -24,6 +24,7 @@
 export default {
   props: {
     prop: String,
+    nameProp: String,
     imageProp: String,
     label: String,
     width: Number,

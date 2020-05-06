@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace-info">
+  <div class="workspace-info" v-loading="loading">
     <div class="info">
       <div class="avatar">
         <div
@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       workspaceInfo: {
         info: {},
         master: [],
@@ -82,9 +83,11 @@ export default {
       })
     },
     async getWorkspaceInfo() {
+      this.loading = true
       this.workspaceInfo = await workspaceService.getWorkspaceInfo(
         this.activeWorkspace.uuid,
       )
+      this.loading = false
     },
   },
   async beforeMount() {
