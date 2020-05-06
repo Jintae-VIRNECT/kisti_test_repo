@@ -256,8 +256,10 @@ public class WorkspaceService {
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
-                    memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                    if(subProcessCountResponse!=null){
+                        memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                        memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
+                    }
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
