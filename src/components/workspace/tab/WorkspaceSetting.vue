@@ -98,8 +98,6 @@ export default {
         recordingResolution: '',
         device: '',
       },
-
-      dataReady: false,
     }
   },
 
