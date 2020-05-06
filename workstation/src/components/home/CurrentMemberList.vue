@@ -6,7 +6,8 @@
     <el-table :data="members" v-loading="loading">
       <column-user
         :label="$t('home.memberList.column.nickname')"
-        prop="nickname"
+        prop="uuid"
+        nameProp="nickname"
         imageProp="profile"
         :width="170"
       />

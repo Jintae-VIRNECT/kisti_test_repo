@@ -1,5 +1,7 @@
 
 {
+  "all": "전체",
+  "delete": "삭제",
   "filter": {
     "title": "필터",
     "all": "전체",

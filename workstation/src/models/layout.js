@@ -21,7 +21,7 @@ export const sideMenus = [
   // {
   //   path: '/contents',
   //   image: require('assets/images/icon/ic-description.svg'),
-  //   label: 'contents',
+  //   label: 'menu.contents',
   // },
   // {
   //   divider: true,

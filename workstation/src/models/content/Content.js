@@ -7,12 +7,18 @@ export default class Content extends Model {
    */
   constructor(json) {
     super()
-    this.id = json.contentUUID
-    this.name = json.contentName
+    this.workspaceUUID = json.workspaceUUID
+    this.contentUUID = json.contentUUID
+    this.contentName = json.contentName
+    this.shared = json.shared
     this.sceneGroupTotal = json.sceneGroupTotal
+    this.contentSize = json.contentSize
     this.uploaderUUID = json.uploaderUUID
-    this.status = json.status
-    this.processId = json.processId
+    this.uploaderName = json.uploaderName
+    this.uploaderProfile = json.uploaderProfile
+    this.path = json.path
+    this.converted = json.converted
+    this.targets = json.targets
     this.createdDate = json.createdDate
   }
 }
@@ -25,15 +31,15 @@ export const filter = {
   options: [
     {
       value: 'ALL',
-      label: 'SearchTabNav.filter.all',
+      label: 'navbar.filter.all',
     },
     {
       value: 'MANAGED',
-      label: 'SearchTabNav.filter.processPublished',
+      label: 'navbar.filter.processPublished',
     },
     {
       value: 'WAIT',
-      label: 'SearchTabNav.filter.processUnpublished',
+      label: 'navbar.filter.processUnpublished',
     },
   ],
 }
@@ -46,11 +52,11 @@ export const sort = {
   options: [
     {
       value: 'createdDate,desc',
-      label: 'SearchTabNav.sort.createdDesc',
+      label: 'navbar.sort.createdDesc',
     },
     {
       value: 'createdDate,asc',
-      label: 'SearchTabNav.sort.createdAsc',
+      label: 'navbar.sort.createdAsc',
     },
   ],
 }
