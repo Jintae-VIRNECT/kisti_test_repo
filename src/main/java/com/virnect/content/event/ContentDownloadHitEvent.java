@@ -3,7 +3,6 @@ package com.virnect.content.event;
 import com.virnect.content.domain.Content;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author jeonghyeon.chang (johnmark)

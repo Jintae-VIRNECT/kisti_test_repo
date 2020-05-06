@@ -1,5 +1,6 @@
 package com.virnect.content.event;
 
+import com.virnect.content.dao.ContentRepository;
 import com.virnect.content.domain.Content;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.io.FileOutputStream;
 @RequiredArgsConstructor
 @Slf4j
 public class ContentEventListener {
+    private final ContentRepository contentRepository;
 
     @EventListener
     public void contentUpdateRollback(ContentUpdateFileRollbackEvent event) {
@@ -40,6 +42,7 @@ public class ContentEventListener {
         Content content = event.getContent();
         log.info("CURRENT => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
         content.setDownloadHits(content.getDownloadHits() + 1);
+        contentRepository.save(content);
         log.info("UPDATE => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
     }
 }
