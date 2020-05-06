@@ -1,5 +1,6 @@
 package com.virnect.content.event;
 
+import com.virnect.content.domain.Content;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -31,5 +32,14 @@ public class ContentEventListener {
             log.error("File Recover Event Fail => {}", e);
         }
         log.info("FileName: {} , Path: {} is Restored.", file.getName(), file.getPath());
+    }
+
+
+    @EventListener
+    public void ContentDownloadHit(ContentDownloadHitEvent event) {
+        Content content = event.getContent();
+        log.info("CURRENT => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
+        content.setDownloadHits(content.getDownloadHits() + 1);
+        log.info("UPDATE => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
     }
 }

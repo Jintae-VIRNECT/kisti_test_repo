@@ -17,6 +17,7 @@ import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
+import com.virnect.content.event.ContentDownloadHitEvent;
 import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -340,11 +341,12 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
+//        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
 
         String regex = "/";
         String[] parts = content.getPath().split(regex);
 
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return loadContentFile(parts[parts.length - 1]);
     }
 
@@ -361,6 +363,7 @@ public class ContentService {
         String regex = "/";
         String[] parts = content.getPath().split(regex);
 
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return loadContentFile(parts[parts.length - 1]);
     }
 
