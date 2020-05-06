@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: download-server
+  datasource:
+    url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/downloads
+    username: virnect-donwloads
+    password: qjsprxm2020!#@$
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+logging:
+  level:
+    com.virnect.download.application.*: DEBUG
+
+## Server Configuration
+server:
+  port: 8086
+
+## Project Configuration
+file:
+  upload-path: "/"
+  url: "https://file.virnect.com"
+  allow-extension: "exe,apk"
+
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-download"
