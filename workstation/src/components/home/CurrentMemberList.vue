@@ -3,7 +3,7 @@
     <div slot="header">
       <h3>{{ $t('home.memberList.title') }}</h3>
     </div>
-    <el-table :data="members">
+    <el-table :data="members" v-loading="loading">
       <column-user
         :label="$t('home.memberList.column.nickname')"
         prop="nickname"
@@ -49,11 +49,14 @@ export default {
   data() {
     return {
       members: [],
+      loading: false,
     }
   },
   methods: {
     async getMemberList() {
+      this.loading = true
       this.members = await workspaceService.getNewMembers()
+      this.loading = false
     },
   },
   beforeMount() {
