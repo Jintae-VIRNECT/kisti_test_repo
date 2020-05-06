@@ -3,7 +3,7 @@
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
 				<h2>회원 정보 등록</h2>
-				<p>하나의 계정으로 VIRNECT 정체 제품을 이용할 수 있습니다.</p>
+				<p>하나의 계정으로 VIRNECT 전체 제품을 이용할 수 있습니다.</p>
 				<p class="input-title must-check">계정 이메일</p>
 				<el-input
 					placeholder="이메일을 입력해 주세요"
@@ -137,7 +137,7 @@
 					v-model="joinInfo"
 					placeholder="가입 경로 선택"
 					name="joinInfo"
-					@change="resetJoinInfo()"
+					@change="resetJoinInfo"
 				>
 					<el-option
 						v-for="item in $t('signup.subscriptionPathLists')"
@@ -162,7 +162,7 @@
 					v-model="serviceInfo"
 					placeholder="서비스 분야 선택"
 					name="serviceInfo"
-					@change="resetServiceInfo()"
+					@change="resetServiceInfo"
 				>
 					<el-option
 						v-for="item in $t('signup.serviceInfoLists')"

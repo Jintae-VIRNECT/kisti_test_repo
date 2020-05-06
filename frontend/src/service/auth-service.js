@@ -126,7 +126,7 @@ class AuthService {
 			const error = data.message
 			// alert(data)
 			// console.log(Promise.reject(error))
-			return Promise.reject(error)
+			return Promise.reject(data)
 		}
 		return Promise.resolve(data)
 	}

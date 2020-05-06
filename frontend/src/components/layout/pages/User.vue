@@ -36,7 +36,12 @@
 							프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다.
 						</p>
 						<div class="image-holder pop-profile" @click="profilePopup = true">
-							<input type="file" id="profileImage" @change="uploadImage" />
+							<input
+								type="file"
+								id="profileImage"
+								@change="uploadImage"
+								ref="imgUpload"
+							/>
 							<label for="profileImage" class="avatar">
 								<div
 									class="image"
@@ -50,7 +55,7 @@
 						</div>
 					</div>
 					<span slot="footer" class="dialog-footer">
-						<el-button type="info" @click="uploadBtn" class="left-btn"
+						<el-button type="info" @click.native="uploadBtn" class="left-btn"
 							>이미지 업로드</el-button
 						>
 						<el-button @click="deleteImage">삭제</el-button>
@@ -293,8 +298,7 @@ export default {
 				})
 		},
 		uploadBtn() {
-			console.log('asdf')
-			this.$el.querySelector('#profileImage').dispatchEvent(new Event('click'))
+			this.$refs.imgUpload.click()
 		},
 		profileDone() {
 			this.profilePopup = false
