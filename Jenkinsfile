@@ -46,7 +46,6 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        sh("git tag -a ${env.BUILD_TAG}")
                         sh 'docker build -t pf-workspace .'
                     }
                 }
@@ -143,7 +142,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-workspace").push("${env.BUILD_TAG}")
+                                    docker.image("pf-workspace").push("${GIT_TAG_NAME}")
                                 }
                             }
 
@@ -159,13 +158,13 @@ pipeline {
                                                                         execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                                                 ),
                                                                 sshTransfer(
-                                                                        execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${env.BUILD_TAG}"
+                                                                        execCommand: "docker pull $aws_ecr_address/pf-workspace:\\${GIT_TAG_NAME}"
                                                                 ),
                                                                 sshTransfer(
                                                                         execCommand: 'count=`docker ps -a | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
                                                                 ),
                                                                 sshTransfer(
-                                                                        execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${env.BUILD_TAG}"
+                                                                        execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG_NAME}"
                                                                 ),
                                                                 sshTransfer(
                                                                         execCommand: 'docker image prune -f'
