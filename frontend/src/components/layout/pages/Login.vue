@@ -22,7 +22,7 @@
 					name="password"
 					:class="{ 'input-danger': message }"
 					v-validate="'required'"
-					@keydown="handleLogin"
+					@keyup.enter.native="handleLogin"
 				></el-input>
 
 				<p class="warning-msg danger-color" v-if="message">{{ message }}</p>
@@ -44,7 +44,6 @@
 					class="next-btn block-btn"
 					type="info"
 					@click="handleLogin"
-					@keyup.enter="handleLogin"
 					:disabled="loading || login.email == '' || login.password == ''"
 					>로그인</el-button
 				>
@@ -66,6 +65,7 @@
 
 <script>
 import Login from 'model/login'
+import AuthService from 'service/auth-service'
 
 import footerSection from '../common/Footer'
 
@@ -120,12 +120,12 @@ export default {
 				localStorage.removeItem('auto')
 			}
 		},
-		alertWindow(msg) {
-			this.$alert(msg, '계정 정보 입력 오류', {
-				confirmButtonText: '확인',
+		alertWindow(title, msg, btn) {
+			this.$alert(msg, title, {
+				confirmButtonText: btn,
 			})
 		},
-		handleLogin() {
+		async handleLogin() {
 			this.loading = true
 			this.$validator.validateAll()
 			if (this.errors.any()) {
@@ -134,23 +134,28 @@ export default {
 			}
 			if (this.login.email && this.login.password) {
 				new Login(this.login.email, this.login.password)
-				this.$store.dispatch('auth/login', this.login).then(
-					() => {
-						let redirectTarget = this.$route.query.continue
-						if (redirectTarget) {
-							location.href = /^https?:/.test(redirectTarget)
-								? redirectTarget
-								: `//${redirectTarget}`
-						} else {
-							location.href = '//virnect.com'
-						}
-					},
-					error => {
-						this.loading = false
-						this.message = error
-						this.alertWindow(error)
-					},
-				)
+				try {
+					const res = await AuthService.login(this.login)
+					let redirectTarget = this.$route.query.continue
+					if (redirectTarget) {
+						location.href = /^https?:/.test(redirectTarget)
+							? redirectTarget
+							: `//${redirectTarget}`
+					} else {
+						location.href = '//virnect.com'
+					}
+				} catch (e) {
+					// console.log(e)
+					if (e.code === 2000) {
+						console.log('asdf')
+						this.alertWindow(
+							'계정 정보 입력 오류',
+							'등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.',
+							'확인',
+						)
+						this.message = e.message
+					}
+				}
 			}
 		},
 	},

@@ -3,9 +3,11 @@
 		<el-col>
 			<h2>footer</h2>
 			<div class="privacy-wrap">
-				<router-link to="/find">이용약관</router-link>
-				<router-link to="/find">개인정보처리방침</router-link>
-				<router-link to="/register">도움말</router-link>
+				<a href="https://virnect.com/terms" target="_blank">이용약관</a>
+				<a href="https://virnect.com/policy" target="_blank"
+					>개인정보처리방침</a
+				>
+				<!-- <router-link to="/register">도움말</router-link> -->
 			</div>
 			<p>Copyright© <strong>VIRNECT INC.</strong> All Rights Reserved.</p>
 		</el-col>

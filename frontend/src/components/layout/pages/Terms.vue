@@ -156,13 +156,20 @@ export default {
 				this.marketingAgree = false
 			}
 			if (
-				(this.allTerms && this.serviceAgree) ||
-				this.privacyAgree ||
-				this.marketingAgree
+				this.allTerms &&
+				(this.serviceAgree || this.privacyAgree || this.marketingAgree)
 			) {
 				this.serviceAgree = true
 				this.privacyAgree = true
 				this.marketingAgree = true
+			}
+			if (
+				!this.allTerms ||
+				!this.serviceAgree ||
+				!this.privacyAgree ||
+				!this.marketingAgree
+			) {
+				this.allTerms = false
 			}
 		},
 		serviceAgree() {
