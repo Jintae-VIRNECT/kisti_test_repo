@@ -34,7 +34,7 @@
         </el-col>
       </el-row>
       <!-- 멤버 목록 -->
-      <el-row v-loading="membersLoading">
+      <el-row class="members-list" v-loading="membersLoading">
         <el-col class="profile" v-for="member in members" :key="member.uuid">
           <member-profile-card :data="member" />
         </el-col>
@@ -110,13 +110,12 @@ export default {
   .title {
     margin-bottom: 20px;
   }
+  .members-list {
+    margin-right: -28px;
+  }
   .el-col.el-col-24.profile {
     width: 320px;
     margin-right: 28px;
-
-    &:nth-child(5) {
-      margin-right: 0;
-    }
   }
 }
 </style>

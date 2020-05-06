@@ -18,11 +18,11 @@ export const sideMenus = [
     image: require('assets/images/icon/ic-supervisor-account.svg'),
     label: 'menu.members',
   },
-  // {
-  //   path: '/contents',
-  //   image: require('assets/images/icon/ic-description.svg'),
-  //   label: 'menu.contents',
-  // },
+  {
+    path: '/contents',
+    image: require('assets/images/icon/ic-description.svg'),
+    label: 'menu.contents',
+  },
   // {
   //   divider: true,
   // },
