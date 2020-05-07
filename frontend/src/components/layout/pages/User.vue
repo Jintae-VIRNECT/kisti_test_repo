@@ -130,8 +130,8 @@
 					@click="handleRegisterDetail()"
 					:disabled="
 						(user.nickname == '' || user.nickname == null) &&
-							user.mobile == '' &&
-							user.recoveryEmail == ''
+							user.mobile == null &&
+							user.recoveryEmail == null
 					"
 					>확인</el-button
 				>
@@ -157,11 +157,11 @@ export default {
 		return {
 			profilePopup: false,
 			user: {
-				profile: '',
-				nickname: '',
-				countryCode: '',
-				mobile: '',
-				recoveryEmail: '',
+				profile: null,
+				nickname: null,
+				countryCode: null,
+				mobile: null,
+				recoveryEmail: null,
 			},
 			countryCodeLists: CountryCode.countryCode,
 			submitted: false,
@@ -169,7 +169,7 @@ export default {
 			isSendEmail: false,
 			isValidEmail: false,
 			isShow: false,
-			message: '',
+			message: null,
 			formData: new FormData(),
 			file: null,
 			thumbnail: null,
@@ -188,7 +188,7 @@ export default {
 			return `${this.$props.signup.lastName}${this.$props.signup.firstName}`
 		},
 		mobileSet() {
-			if (this.user.countryCode === '' || this.user.mobile === '') return ''
+			if (this.user.countryCode === null || this.user.mobile === null) return ''
 			else return `${this.user.countryCode}-${this.user.mobile}`
 		},
 	},
@@ -199,6 +199,7 @@ export default {
 	},
 	methods: {
 		async handleRegisterDetail() {
+			this.formData = new FormData()
 			this.checkNickName()
 			// 상세정보등록
 
@@ -240,6 +241,7 @@ export default {
 			}
 		},
 		async later() {
+			this.formData = new FormData()
 			try {
 				this.formData.append('email', this.$props.signup.email)
 				this.formData.append('password', this.$props.signup.password)

@@ -99,35 +99,37 @@
 				<p class="input-title must-check">생년월일</p>
 				<el-date-picker
 					class="birth-input year-input"
-					placeholder="년"
 					v-model="birth.year"
 					type="year"
 					name="birtnY"
 					maxlength="4"
+					data-placeholder="년"
 					v-validate="'required'"
 					:clearable="false"
+					@change="birth.month = birth.year"
 				></el-date-picker>
 
 				<el-date-picker
-					class="birth-input"
-					placeholder="월"
+					class="birth-input month-input"
 					v-model="birth.month"
 					type="month"
 					name="birthM"
 					format="MM"
 					maxlength="2"
+					data-placeholder="월"
 					v-validate="'required'"
 					:clearable="false"
+					@change="birth.date = birth.month"
 				></el-date-picker>
 
 				<el-date-picker
-					class="birth-input"
-					placeholder="일"
+					class="birth-input date-input"
 					v-model="birth.date"
 					type="date"
 					name="birthD"
 					format="dd"
 					maxlength="2"
+					data-placeholder="일"
 					v-validate="'required'"
 					:clearable="false"
 				></el-date-picker>
@@ -184,7 +186,7 @@
 				<el-button
 					class="next-btn block-btn"
 					type="info"
-					:disabled="!nextBtn"
+					:disabled="nextBtn"
 					@click="checkAge()"
 					>다음</el-button
 				>
@@ -333,6 +335,12 @@ export default {
 					)
 					// console.log(this.signup)
 					if (this.signup) {
+						setTimeout(() => {
+							window.scrollTo({
+								left: 0,
+								top: 0,
+							})
+						}, 400)
 						this.$router.push({
 							name: 'user',
 							params: { signup: this.signup },
