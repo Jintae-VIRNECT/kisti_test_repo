@@ -142,7 +142,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-workspace").push("${params.BRANCH_TAG}"."${params.PT_BRANCH_TAG}")
+                                    docker.image("pf-workspace").push(tag "release-*" )
                                 }
                             }
 
