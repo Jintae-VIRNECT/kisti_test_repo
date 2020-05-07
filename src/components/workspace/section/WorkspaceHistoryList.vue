@@ -146,6 +146,7 @@ export default {
           text: '삭제하기',
           action: () => {
             this.delete(roomId)
+            this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
           },
         },
         { text: '취소' },
