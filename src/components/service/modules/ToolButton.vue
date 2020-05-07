@@ -1,7 +1,8 @@
 <template>
-  <button class="tool" :class="{ active: active }" @click="$emit('action')">
+  <button class="tool" :class="{ active: active }" v-on="$listeners">
     <img v-if="onActive" :src="activeSrc" />
-    <img v-else :src="src" />
+    <img v-else-if="src" :src="src" />
+    <slot v-else></slot>
     <span>{{ text }}</span>
   </button>
 </template>

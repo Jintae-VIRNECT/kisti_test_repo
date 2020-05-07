@@ -26,10 +26,10 @@ export default {
       console.log('recording!!!')
       // this.active = 'recording'
       if (!this.isRecording) {
-        this.setTool('record')
+        this.setAction('record')
         this.record()
       } else {
-        this.setTool('pointing')
+        this.setAction('pointing')
         this.stop()
       }
     },

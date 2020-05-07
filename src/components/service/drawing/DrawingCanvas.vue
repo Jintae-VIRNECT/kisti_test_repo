@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="drawing-canvas">
     <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
     <canvas id="cursorCanvas"></canvas>
   </div>
@@ -44,25 +44,15 @@ export default {
       isInit: false,
       canvas: null,
       cursor: null,
-      canDrag: true,
       drawingMode: 'line', // ('line' / 'text' / false)
       editingMode: false, // check text in editing (true / false)
       undoList: [],
       redoList: [],
       history: [],
-      zoomPointer: [],
     }
   },
   computed: {
-    ...mapGetters([
-      'canUseChannel',
-      'shareDocList',
-      'shareDocListLen',
-      'shareDocSelect',
-      'shareDocIndex',
-      'tools',
-      'remote',
-    ]),
+    ...mapGetters(['tools']),
   },
   methods: {
     /**

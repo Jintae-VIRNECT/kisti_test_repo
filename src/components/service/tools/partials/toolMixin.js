@@ -9,9 +9,9 @@ export default {
   },
   filters: {},
   computed: {
-    ...mapGetters(['tool']),
+    ...mapGetters(['action', 'tools']),
   },
   methods: {
-    ...mapActions(['setTool']),
+    ...mapActions(['setAction', 'setTool']),
   },
 }

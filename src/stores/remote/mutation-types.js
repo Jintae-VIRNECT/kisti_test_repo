@@ -4,12 +4,17 @@ export const ACCOUNT_CLEAR = 'ACCOUNT_CLEAR'
 
 // oncall
 export const CALL_MODE_SET = 'CALL_MODE_SET'
-export const CALL_TOOL_SET = 'CALL_TOOL_SET'
 export const CALL_ACTION_SET = 'CALL_ACTION_SET'
 export const CALL_STREAM = 'CALL_STREAM'
 export const CALL_SPEAKER = 'CALL_SPEAKER'
 export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
+
+// tools
+export const TOOL_DRAWING_COLOR = 'TOOL_DRAWING_COLOR'
+export const TOOL_DRAWING_OPACITY = 'TOOL_DRAWING_OPACITY'
+export const TOOL_TEXT_SIZE = 'TOOL_TEXT_SIZE'
+export const TOOL_LINE_WIDTH = 'TOOL_LINE_WIDTH'
 
 //workspace-settings
 export const SETTINGS = {

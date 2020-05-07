@@ -1,9 +1,9 @@
 <template>
   <tool-button
     text="캡쳐 후 공유"
-    :active="tool === 'capture'"
+    :active="action === 'capture'"
     :src="require('assets/image/call/icn_capture.png')"
-    @action="capture"
+    @click="capture"
   ></tool-button>
 </template>
 
@@ -19,7 +19,7 @@ export default {
   watch: {},
   methods: {
     capture() {
-      this.setTool('capture')
+      this.setAction('capture')
     },
   },
 

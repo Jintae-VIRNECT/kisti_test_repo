@@ -17,17 +17,35 @@ export default {
     commit(types.CALL_MODE_SET, state)
   },
   /**
-   * Change Tool Mode
-   * @param {String} state : pointing, capture, record
+   * Change Tool Status
+   * @param {Object} state { key: value }
    */
-  setTool({ commit }, state) {
-    commit(types.CALL_TOOL_SET, state)
+  setTool({ commit }, payload) {
+    if (payload && payload.target) {
+      let type = ''
+
+      switch (payload.target) {
+        case 'drawColor':
+          type = types.TOOL_DRAWING_COLOR
+          break
+        case 'drawOpacity':
+          type = types.TOOL_DRAWING_OPACITY
+          break
+        case 'textSize':
+          type = types.TOOL_TEXT_SIZE
+          break
+        case 'lineWidth':
+          type = types.TOOL_LINE_WIDTH
+      }
+
+      commit(type, payload.value)
+    }
   },
   /**
    * Change Call Action
    * @param {String} state : pointing, drawing
    */
-  changeAction({ commit }, state) {
+  setAction({ commit }, state) {
     commit(types.CALL_ACTION_SET, state)
   },
 

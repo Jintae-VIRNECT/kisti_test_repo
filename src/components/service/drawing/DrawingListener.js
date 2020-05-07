@@ -232,30 +232,6 @@ export default {
         ) {
           event.e.preventDefault()
           this.addTextObject(mouse.x, mouse.y)
-        } else if (this.drawingMode === 'zoom') {
-          var zoom = canvas.getZoom()
-
-          if (event.e.shiftKey) {
-            // zoom out
-            if (this.zoomPointer.length === 0) return
-
-            zoom -= 1
-            let pointer = this.zoomPointer.pop()
-            canvas.zoomToPoint(pointer, zoom)
-          } else {
-            // zoom in
-            if (this.zoomPointer.length > 3) return
-
-            zoom += 1
-            canvas.zoomToPoint(event.pointer, zoom)
-            this.zoomPointer.push(event.pointer)
-          }
-
-          // canvas.zoomToPoint(event.pointer, zoom);
-          cursor.set('scaleX', zoom)
-          cursor.set('scaleY', zoom)
-          event.e.preventDefault()
-          event.e.stopPropagation()
         }
       })
 

@@ -3,7 +3,14 @@ export default {
 
   // oncall
   view: state => state.oncall.view,
-  tool: state => state.oncall.tool,
+  tools: state => {
+    return {
+      color: state.oncall.drawColor,
+      opacity: state.oncall.drawOpacity,
+      width: state.oncall.lineWidth,
+      size: state.oncall.fontSize,
+    }
+  },
   action: state => state.oncall.action,
   stream: state => state.oncall.stream,
   mic: state => state.oncall.mic,

@@ -1,26 +1,27 @@
 <template>
   <div class="drawing-tools tools">
-    <pointing></pointing>
-    <capture></capture>
-    <record></record>
+    <line-mode></line-mode>
+    <text-mode></text-mode>
+    <line-color></line-color>
+    <line-width></line-width>
+    <text-size></text-size>
   </div>
 </template>
 
 <script>
-import { Pointing, Capture, Record } from './partials'
+import { LineMode, TextMode, LineColor, LineWidth, TextSize } from './partials'
 
 export default {
   name: 'DrawingTools',
   components: {
-    Pointing,
-    Capture,
-    Record,
+    LineMode,
+    TextMode,
+    LineColor,
+    LineWidth,
+    TextSize,
   },
   data() {
-    return {
-      active: 'pointing',
-      isRecording: false,
-    }
+    return {}
   },
   computed: {},
   watch: {},

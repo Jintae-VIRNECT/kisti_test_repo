@@ -1,9 +1,9 @@
 <template>
   <tool-button
     text="포인팅"
-    :active="tool === 'pointing'"
+    :active="action === 'pointing'"
     :src="require('assets/image/call/ic_pointing.png')"
-    @action="pointing"
+    @click="pointing"
   ></tool-button>
 </template>
 
@@ -19,7 +19,7 @@ export default {
   watch: {},
   methods: {
     pointing() {
-      this.setTool('pointing')
+      this.setAction('pointing')
     },
   },
 
