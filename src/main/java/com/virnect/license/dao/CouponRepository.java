@@ -3,6 +3,7 @@ package com.virnect.license.dao;
 import com.virnect.license.domain.Coupon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -22,4 +23,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long>, CouponCus
     Page<Coupon> findByUserId(String userId, Pageable pageable);
 
     Page<Coupon> findByUserIdAndRegisterDateIsNotNull(String userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = "couponProductList", type = EntityGraph.EntityGraphType.LOAD)
+    Page<Coupon> findAll(Pageable pageable);
 }

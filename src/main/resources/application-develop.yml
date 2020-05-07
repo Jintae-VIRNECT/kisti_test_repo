@@ -10,6 +10,8 @@ spring:
       ddl-auto: validate
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
+    properties:
+      format_sql: true
   mail:
     host: email-smtp.us-west-2.amazonaws.com
     port: 587

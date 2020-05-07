@@ -6,6 +6,8 @@ import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
+import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
+import com.virnect.license.dto.response.admin.AdminCouponInfoResponse;
 import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
@@ -15,11 +17,11 @@ import com.virnect.license.infra.mail.EmailMessage;
 import com.virnect.license.infra.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.IThrottledTemplateProcessor;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -47,6 +49,7 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
     private final UserRestService userRestService;
     private final EmailService emailService;
+    private final ModelMapper modelMapper;
 
 
     /**
@@ -316,12 +319,13 @@ public class LicenseService {
      * @return - 시리얼 코드
      */
     private String generateCouponSerialKey() {
-        return UUID.randomUUID().toString().replaceAll("0", "O").replaceAll("1", "I");
+        return UUID.randomUUID().toString().replace("0", "O").replace("1", "I");
     }
 
     /**
      * 내 라이선스 플랜 정보 조회
-     * @param userId - 사용자 식별자
+     *
+     * @param userId      - 사용자 식별자
      * @param workspaceId - 워크스페이스 식별자
      * @return - 내 라이선스 플랜 정보
      */
@@ -335,9 +339,10 @@ public class LicenseService {
 
     /**
      * 내 라이선스 플랜의 라이선스 정보 목록 가져오기
-     * @param userId - 사용자 식별자
+     *
+     * @param userId      - 사용자 식별자
      * @param workspaceId - 워크스페이스 식별자
-     * @param status - 라이선스 상태 (ALL, USE, UNUSE)
+     * @param status      - 라이선스 상태 (ALL, USE, UNUSE)
      * @return - 라이선스 정보 목록
      */
     public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId, String status) {
@@ -349,14 +354,35 @@ public class LicenseService {
         } else {
             // QueryParameter Validator 구현 필요
             try {
-                    LicenseStatus licenseStatus = LicenseStatus.valueOf(status);
+                LicenseStatus licenseStatus = LicenseStatus.valueOf(status);
 
-                }catch (Exception e){
-                    e.printStackTrace();;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }
 
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<AdminCouponInfoListResponse> getAllCouponInfo(Pageable pageable) {
+        Page<Coupon> couponList = couponRepository.findAll(pageable);
+        List<AdminCouponInfoResponse> adminCouponInfoList = couponList.stream()
+                .map(c -> {
+                    AdminCouponInfoResponse adminCouponInfoResponse = modelMapper.map(c, AdminCouponInfoResponse.class);
+                    adminCouponInfoResponse.setProducts(c.getCouponProductList().stream().distinct().map(cp -> cp.getProduct().getName()).toArray(String[]::new));
+                    return adminCouponInfoResponse;
+                })
+                .collect(Collectors.toList());
+
+        PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+                .currentPage(pageable.getPageNumber())
+                .currentSize(pageable.getPageSize())
+                .totalPage(couponList.getTotalPages())
+                .totalElements(couponList.getTotalElements())
+                .build();
+
+        return new ApiResponse<>(new AdminCouponInfoListResponse(adminCouponInfoList, pageMetadataResponse));
     }
 }

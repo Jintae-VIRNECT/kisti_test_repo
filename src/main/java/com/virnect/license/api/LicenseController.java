@@ -5,6 +5,7 @@ import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
+import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageRequest;
@@ -95,7 +96,7 @@ public class LicenseController {
     @GetMapping("/{userId}/{workspaceId}")
     public ResponseEntity<ApiResponse<MyLicenseInfoListResponse>> getMyLicenseInfoRequestHandler(@PathVariable("userId") @NotBlank String userId, @PathVariable("workspaceId")
     @NotBlank String workspaceId, @RequestParam(value = "status", defaultValue = "ALL") String status, BindingResult result) {
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<MyLicenseInfoListResponse> responseMessage = this.licenseService.getMyLicenseInfoList(userId, workspaceId, status);
@@ -110,6 +111,18 @@ public class LicenseController {
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<MyLicensePlanInfoResponse> responseMessage = this.licenseService.getMyLicensePlanInfo(userId, workspaceId);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "전체 쿠폰 정보 조회", tags = "ADMIN")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(0부터 시작)", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+    })
+    @GetMapping("/coupons")
+    public ResponseEntity<ApiResponse<AdminCouponInfoListResponse>> getAllCouponInfoRequestHandler(@ApiIgnore PageRequest pageRequest) {
+        ApiResponse<AdminCouponInfoListResponse> responseMessage = this.licenseService.getAllCouponInfo(pageRequest.of());
         return ResponseEntity.ok(responseMessage);
     }
 }
