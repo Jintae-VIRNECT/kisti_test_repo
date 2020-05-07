@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar__sort">
+  <div class="searchbar__sort">
     <el-select v-model="myValue" @change="change">
       <el-option
         v-for="option in options"

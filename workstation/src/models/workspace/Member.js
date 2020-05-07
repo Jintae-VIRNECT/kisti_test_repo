@@ -48,7 +48,7 @@ export const role = {
  */
 export const filter = {
   value: ['ALL'],
-  options: [{ value: 'ALL', label: 'navbar.filter.all' }, ...role.options],
+  options: [{ value: 'ALL', label: 'searchbar.filter.all' }, ...role.options],
 }
 
 /**
@@ -59,15 +59,15 @@ export const sort = {
   options: [
     {
       value: 'role,asc',
-      label: 'navbar.sort.role',
+      label: 'searchbar.sort.role',
     },
     {
       value: 'nickname,asc',
-      label: 'navbar.sort.alphabetAsc',
+      label: 'searchbar.sort.alphabetAsc',
     },
     {
       value: 'nickname,desc',
-      label: 'navbar.sort.alphabetDesc',
+      label: 'searchbar.sort.alphabetDesc',
     },
   ],
 }

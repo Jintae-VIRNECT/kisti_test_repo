@@ -1,8 +1,8 @@
 <template>
-  <div class="navbar__search">
+  <div class="searchbar__keyword">
     <el-input
       v-model="myValue"
-      :placeholder="$t('navbar.search.title')"
+      :placeholder="$t('searchbar.keyword.title')"
       @change="change"
     />
     <img src="~assets/images/icon/ic-search.svg" />
@@ -37,7 +37,7 @@ export default {
 </script>
 
 <style lang="scss">
-.navbar__search {
+.searchbar__keyword {
   position: relative;
   img {
     position: absolute;
@@ -50,7 +50,7 @@ export default {
     text-indent: 18px;
   }
 }
-.navbar__search__popper .el-select-dropdown__list {
+.searchbar__keyword__popper .el-select-dropdown__list {
   padding: 0;
 
   & > li {

@@ -11,23 +11,23 @@
         <h2>{{ $t('contents.allContents.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
-      <el-row class="navbar">
+      <el-row class="searchbar">
         <el-col class="left">
-          <span>{{ $t('navbar.sort.title') }}:</span>
-          <navbar-sort
+          <span>{{ $t('searchbar.sort.title') }}:</span>
+          <searchbar-sort
             ref="sort"
             :value.sync="contentsSort.value"
             :options="contentsSort.options"
           />
-          <span>{{ $t('navbar.filter.title') }}:</span>
-          <navbar-filter
+          <span>{{ $t('searchbar.filter.title') }}:</span>
+          <searchbar-filter
             ref="filter"
             :value.sync="contentsFilter.value"
             :options="contentsFilter.options"
           />
         </el-col>
         <el-col class="right">
-          <navbar-search ref="search" :value.sync="contentsSearch" />
+          <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
         </el-col>
       </el-row>
       <!-- 리스트 -->
@@ -75,19 +75,17 @@
           </el-table>
         </el-card>
       </el-row>
-      <el-row type="flex" justify="center">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="contentsTotal"
-          @current-change="contentsPageChange"
-        />
-      </el-row>
+      <searchbar-page
+        ref="page"
+        :value.sync="contentsPage"
+        :total="contentsTotal"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import workspaceService from '@/services/workspace'
 import contentService from '@/services/content'
 import searchMixin from '@/mixins/search'
 import {
@@ -109,30 +107,29 @@ export default {
   data() {
     return {
       loading: false,
+      contentsList: [],
+      contentsTotal: 0,
       contentsFilter,
       contentsSort,
       contentsSearch: '',
-      contentsSearchParams: {},
-      contentsList: [],
-      contentsTotal: 0,
-      contentStatistics: {},
+      contentsPage: 1,
     }
   },
   methods: {
-    async searchContents(params) {
-      const contents = await contentService.searchContents(params)
-      this.contentsList = contents.list
-      this.contentsTotal = contents.total
-      this.contentsSearchParams = params
+    changedSearchParams(searchParams) {
+      this.searchContents(searchParams)
     },
-    async contentsPageChange(page) {
-      const params = { page, ...this.contentsSearchParams }
-      const contents = await contentService.searchContents(params)
-      this.contentsList = contents.list
+    async searchContents(params) {
+      const { list, total } = await contentService.searchContents(params)
+      this.contentsList = list
+      this.contentsTotal = total
     },
   },
   beforeMount() {
     this.searchContents()
+    workspaceService.watchActiveWorkspace(this, () =>
+      this.searchContents(this.searchParams),
+    )
   },
 }
 </script>

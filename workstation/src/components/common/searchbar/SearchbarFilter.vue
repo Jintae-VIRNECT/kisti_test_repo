@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar__filter">
+  <div class="searchbar__filter">
     <el-select
       v-bind:class="filterSelected"
       v-model="myValue"
@@ -50,7 +50,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .navbar .navbar__filter {
+#__nuxt .searchbar .searchbar__filter {
   .el-select .el-tag {
     background: none;
     border: none;

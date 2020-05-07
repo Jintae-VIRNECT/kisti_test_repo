@@ -18,9 +18,14 @@ export default {
    * 컨텐츠 검색
    * @param {Object} params
    */
-  async searchContents(params) {
+  async searchContents(params = {}) {
+    if (params.filter) {
+      params.shareds = params.filter
+      delete params.filter
+    }
     const data = await api('CONTENTS_LIST', {
       params: {
+        workspaceUUID: $nuxt.$store.getters['workspace/activeWorkspace'].uuid,
         size: 10,
         ...params,
       },

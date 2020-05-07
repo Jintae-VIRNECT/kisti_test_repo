@@ -31,15 +31,15 @@ export const filter = {
   options: [
     {
       value: 'ALL',
-      label: 'navbar.filter.all',
+      label: 'searchbar.filter.all',
     },
     {
-      value: 'MANAGED',
-      label: 'navbar.filter.processPublished',
+      value: 'YES',
+      label: 'searchbar.filter.processPublished',
     },
     {
-      value: 'WAIT',
-      label: 'navbar.filter.processUnpublished',
+      value: 'NO',
+      label: 'searchbar.filter.processUnpublished',
     },
   ],
 }
@@ -52,11 +52,11 @@ export const sort = {
   options: [
     {
       value: 'createdDate,desc',
-      label: 'navbar.sort.createdDesc',
+      label: 'searchbar.sort.createdDesc',
     },
     {
       value: 'createdDate,asc',
-      label: 'navbar.sort.createdAsc',
+      label: 'searchbar.sort.createdAsc',
     },
   ],
 }

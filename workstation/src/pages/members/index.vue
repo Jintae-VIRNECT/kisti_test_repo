@@ -11,34 +11,39 @@
         <h2>{{ $t('members.allMembers.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
-      <el-row class="navbar">
+      <el-row class="searchbar">
         <el-col class="left">
-          <span>{{ $t('navbar.sort.title') }}:</span>
-          <navbar-sort
+          <span>{{ $t('searchbar.sort.title') }}:</span>
+          <searchbar-sort
             ref="sort"
             :value.sync="memberSort.value"
             :options="memberSort.options"
           />
-          <span>{{ $t('navbar.filter.title') }}:</span>
-          <navbar-filter
+          <span>{{ $t('searchbar.filter.title') }}:</span>
+          <searchbar-filter
             ref="filter"
             :value.sync="memberFilter.value"
             :options="memberFilter.options"
           />
         </el-col>
         <el-col class="right">
-          <navbar-search ref="search" :value.sync="memberSearch" />
+          <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
           <el-button type="primary" @click="showAddModal = true">
             {{ $t('members.allMembers.addMember') }}
           </el-button>
         </el-col>
       </el-row>
       <!-- 멤버 목록 -->
-      <el-row class="members-list" v-loading="membersLoading">
-        <el-col class="profile" v-for="member in members" :key="member.uuid">
+      <el-row class="members-list" v-loading="loading">
+        <el-col
+          class="profile"
+          v-for="member in membersList"
+          :key="member.uuid"
+        >
           <member-profile-card :data="member" />
         </el-col>
       </el-row>
+      <searchbar-page :value.sync="membersPage" :total="membersTotal" />
     </div>
     <member-add-modal :visible.sync="showAddModal" />
   </div>
@@ -69,12 +74,14 @@ export default {
   },
   data() {
     return {
-      members: [],
+      membersList: [],
+      membersPage: 1,
+      membersTotal: 0,
       showAddModal: false,
       memberFilter,
       memberSort,
       memberSearch: '',
-      membersLoading: false,
+      loading: false,
     }
   },
   methods: {
@@ -82,10 +89,11 @@ export default {
       this.searchMembers(searchParams)
     },
     async searchMembers(searchParams) {
-      this.membersLoading = true
+      this.loading = true
       const { list, total } = await workspaceService.searchMembers(searchParams)
-      this.members = list
-      this.membersLoading = false
+      this.membersList = list
+      this.membersTotal = total
+      this.loading = false
     },
   },
   beforeMount() {
