@@ -35,18 +35,10 @@
 
 <script>
 import workspaceService from '@/services/workspace'
-import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
-import ColumnUser from '@/components/common/tableColumn/ColumnUser'
-import ColumnRole from '@/components/common/tableColumn/ColumnRole'
-import ColumnDate from '@/components/common/tableColumn/ColumnDate'
+import columnsMixin from '@/mixins/columns'
 
 export default {
-  components: {
-    ColumnDefault,
-    ColumnUser,
-    ColumnRole,
-    ColumnDate,
-  },
+  mixins: [columnsMixin],
   data() {
     return {
       members: [],

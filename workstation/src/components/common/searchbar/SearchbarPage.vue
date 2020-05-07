@@ -1,7 +1,6 @@
 <template>
   <el-row class="searchbar__page" type="flex" justify="center">
     <el-pagination
-      background
       layout="prev, pager, next"
       :current-page.sync="myPage"
       :total="myTotal"

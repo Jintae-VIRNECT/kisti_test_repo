@@ -3,6 +3,9 @@ import SearchbarSort from '@/components/common/searchbar/SearchbarSort'
 import SearchbarKeyword from '@/components/common/searchbar/SearchbarKeyword'
 import SearchbarPage from '@/components/common/searchbar/SearchbarPage'
 
+/**
+ *
+ */
 export default {
   components: {
     SearchbarFilter,
@@ -16,15 +19,15 @@ export default {
     }
   },
   mounted() {
-    const { filter, sort, keyword, page } = this.$refs
+    const { filter, sort, keyword, page, table } = this.$refs
 
-    const emitChangedSearchParams = () => {
+    const emitChangedSearchParams = customParams => {
       if (this.changedSearchParams) {
         this.$nextTick(() => {
           this.searchParams = {
             search: keyword && keyword.value,
             filter: filter && filter.value.join(','),
-            sort: sort && sort.value,
+            sort: (customParams && customParams.sort) || (sort && sort.value),
             page: page && page.value,
           }
           this.changedSearchParams(this.searchParams)
@@ -44,6 +47,14 @@ export default {
           filter.myValue.shift()
         }
         emitChangedSearchParams()
+      })
+    if (table)
+      table.$on('sort-change', ({ prop, order }) => {
+        if (!order) emitChangedSearchParams()
+        else {
+          const sort = `${prop},${order.replace('ending', '')}`
+          emitChangedSearchParams({ sort })
+        }
       })
   },
 }

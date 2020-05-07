@@ -10,6 +10,8 @@
       "uploader": "업로드 멤버",
       "createdDate": "콘텐츠 등록일",
       "shareStatus": "공유 상태"
-    }
+    },
+    "shared": "활성화",
+    "noShared": "비활성화"
   }
 }

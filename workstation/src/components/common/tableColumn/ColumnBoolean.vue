@@ -1,5 +1,10 @@
 <template>
-  <el-table-column :label="label" :width="width">
+  <el-table-column
+    :prop="prop"
+    :label="label"
+    :width="width"
+    :sortable="sortable"
+  >
     <template slot-scope="scope">
       <div class="column-boolean">
         <span :class="booleanClass(scope.row[prop])">
@@ -11,6 +16,10 @@
 </template>
 
 <script>
+function check(bool) {
+  return bool && bool.toLowerCase() !== 'no'
+}
+
 export default {
   props: {
     label: String,
@@ -18,13 +27,14 @@ export default {
     width: Number,
     trueText: String,
     falseText: String,
+    sortable: [Boolean, String],
   },
   methods: {
     booleanText(bool) {
-      return bool ? this.trueText : this.falseText
+      return check(bool) ? this.trueText : this.falseText
     },
     booleanClass(bool) {
-      return bool ? 'true' : 'false'
+      return check(bool) ? 'true' : 'false'
     },
   },
 }
@@ -32,20 +42,25 @@ export default {
 
 <style lang="scss">
 .column-boolean {
+  & > span {
+    color: #566173;
+  }
   & > span:before {
     display: inline-block;
-    width: 0.4em;
-    height: 0.4em;
+    width: 6px;
+    height: 6px;
     margin-right: 0.3em;
     vertical-align: middle;
-    border-radius: 50%;
+    background: #566173;
+    border-radius: 1em;
     content: '';
   }
-  & > span.true:before {
-    background: #ee5c57;
+  // true
+  & > span.true {
+    color: #186ae2;
   }
-  & > span.false:before {
-    background: #aabbce;
+  & > span.true:before {
+    background: #186ae2;
   }
 }
 </style>

@@ -8,6 +8,7 @@
 
   .el-col {
     width: 50%;
+    min-height: 34px;
     & > * {
       display: inline-block;
       vertical-align: middle;

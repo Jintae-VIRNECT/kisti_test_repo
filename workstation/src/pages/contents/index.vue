@@ -12,20 +12,7 @@
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
-        <el-col class="left">
-          <span>{{ $t('searchbar.sort.title') }}:</span>
-          <searchbar-sort
-            ref="sort"
-            :value.sync="contentsSort.value"
-            :options="contentsSort.options"
-          />
-          <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
-            ref="filter"
-            :value.sync="contentsFilter.value"
-            :options="contentsFilter.options"
-          />
-        </el-col>
+        <el-col class="left"> </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
         </el-col>
@@ -36,37 +23,43 @@
           <div slot="header">
             <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
           </div>
-          <el-table :data="contentsList" v-loading="loading">
+          <el-table ref="table" :data="contentsList" v-loading="loading">
             <el-table-column type="selection" width="55" />
             <column-default
               :label="$t('contents.allContents.column.id')"
               prop="contentUUID"
-              :width="120"
+              :width="140"
             />
             <column-default
               :label="$t('contents.allContents.column.name')"
               prop="contentName"
+              sortable="custom"
             />
             <column-default
               :label="$t('contents.allContents.column.targetType')"
               prop="targets"
-              :width="100"
+              sortable="custom"
+              :width="120"
             />
             <column-user
               :label="$t('contents.allContents.column.uploader')"
               prop="uploaderUUID"
               nameProp="uploaderName"
               imageProp="uploaderProfile"
-              :width="140"
+              :width="160"
             />
             <column-date
               :label="$t('contents.allContents.column.createdDate')"
               prop="createdDate"
-              :width="100"
+              sortable="custom"
+              :width="140"
             />
-            <column-default
+            <column-boolean
               :label="$t('contents.allContents.column.shareStatus')"
               prop="shared"
+              :trueText="$t('contents.allContents.shared')"
+              :falseText="$t('contents.allContents.noShared')"
+              sortable="custom"
               :width="120"
             />
             <template slot="empty">
@@ -88,22 +81,14 @@
 import workspaceService from '@/services/workspace'
 import contentService from '@/services/content'
 import searchMixin from '@/mixins/search'
+import columnsMixin from '@/mixins/columns'
 import {
   filter as contentsFilter,
   sort as contentsSort,
 } from '@/models/content/Content'
 
-import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
-import ColumnUser from '@/components/common/tableColumn/ColumnUser'
-import ColumnDate from '@/components/common/tableColumn/ColumnDate'
-
 export default {
-  mixins: [searchMixin],
-  components: {
-    ColumnDefault,
-    ColumnUser,
-    ColumnDate,
-  },
+  mixins: [searchMixin, columnsMixin],
   data() {
     return {
       loading: false,
