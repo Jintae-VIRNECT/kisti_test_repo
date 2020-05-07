@@ -444,6 +444,20 @@
         </div>
       </div>
     </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">setting modal</h2>
+      <div class="action-box">
+        <div class="component">
+          <button @click="toggleModal" style="color: #fff;">
+            모달 테스트
+          </button>
+
+          <local-record-setting
+            :visible.sync="customModal.visible"
+          ></local-record-setting>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 <script>
@@ -467,6 +481,7 @@ import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
 import Search from 'components/workspace/modules/Search'
 import IconButton from 'components/workspace/modules/IconButton'
+import LocalRecordSetting from 'components/workspace/modal/LocalRecordSetting'
 export default {
   components: {
     CreateRoom,
@@ -489,6 +504,7 @@ export default {
     ToggleButton,
     Search,
     IconButton,
+    LocalRecordSetting,
   },
   data() {
     return {
@@ -500,6 +516,9 @@ export default {
         value2: '',
       },
       modalOption: {
+        visible: false,
+      },
+      customModal: {
         visible: false,
       },
       radioOption: {
@@ -628,6 +647,9 @@ export default {
     },
     selectOptionValue(option) {
       this.selectOptions.selection = option[this.selectOptions.text]
+    },
+    toggleModal() {
+      this.customModal.visible = !this.customModal.visible
     },
   },
 }
