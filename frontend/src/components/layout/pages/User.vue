@@ -127,7 +127,7 @@
 				<el-button
 					class="next-btn block-btn"
 					type="info"
-					@click="handleRegisterDetail()"
+					@click="checkNickName()"
 					:disabled="
 						(user.nickname == '' || user.nickname == null) &&
 							user.mobile == null &&
@@ -135,7 +135,7 @@
 					"
 					>확인</el-button
 				>
-				<el-button class="block-btn" @click="later()">나중에 하기</el-button>
+				<el-button class="block-btn" @click="later">나중에 하기</el-button>
 			</el-col>
 		</el-row>
 	</div>
@@ -200,7 +200,6 @@ export default {
 	methods: {
 		async handleRegisterDetail() {
 			this.formData = new FormData()
-			this.checkNickName()
 			// 상세정보등록
 
 			this.formData.append('email', this.$props.signup.email)
@@ -227,7 +226,13 @@ export default {
 			try {
 				registerData = await AuthService.signUp(this.formData)
 				if (registerData.code === 200) {
-					console.log(registerData)
+					// console.log(registerData)
+					setTimeout(() => {
+						window.scrollTo({
+							left: 0,
+							top: 0,
+						})
+					}, 400)
 					this.$router.push({
 						name: 'complete',
 					})
@@ -351,9 +356,10 @@ export default {
 		async checkNickName() {
 			try {
 				let res = this.nickNameValidate(this.user.nickname)
-				if (res === false) throw res
+				if (res === true) {
+					this.handleRegisterDetail()
+				} else throw res
 			} catch (e) {
-				// console.log(e)
 				this.alertMessage(
 					'닉네임 설정 오류',
 					`닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.`,

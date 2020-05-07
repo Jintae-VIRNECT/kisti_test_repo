@@ -186,7 +186,7 @@
 				<el-button
 					class="next-btn block-btn"
 					type="info"
-					:disabled="nextBtn"
+					:disabled="!nextBtn"
 					@click="checkAge()"
 					>다음</el-button
 				>
