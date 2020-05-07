@@ -136,7 +136,6 @@ pipeline {
 
                 stage('Master Branch') {
                     when { 
-                        tag "*"
                         branch 'master'
                     }
                     steps {
