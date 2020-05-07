@@ -1,7 +1,8 @@
 pipeline {
     agent any
         environment {
-        GIT_TAG = sh(returnStdout: true, script: 'git describe --always').trim()
+        
+        GIT_TAG = sh('git tag -l --points-at HEAD')
     }
     stages {
         stage('Pre-Build') {
