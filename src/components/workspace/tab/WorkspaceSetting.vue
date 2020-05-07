@@ -98,8 +98,6 @@ export default {
         recordingResolution: '',
         device: '',
       },
-
-      dataReady: false,
     }
   },
 
@@ -145,29 +143,30 @@ export default {
         this.headerText = headerText
       })
     },
-    async getPermissionWithDevice() {
+    async getPermission() {
       try {
-        await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: true,
-        })
-        await this.getMediaDevice()
+        const result = await Promise.all([
+          navigator.permissions.query({ name: 'camera' }),
+          navigator.permissions.query({ name: 'microphone' }),
+        ])
+
+        const [cameraState, micState] = result
+
+        if (cameraState.state === 'denied' || micState.state === 'denied') {
+          console.log('device access deined')
+          return false
+        }
+
+        if (cameraState.state === 'prompt' || micState.state === 'prompt') {
+          await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+          })
+        }
+        return true
       } catch (err) {
-        console.log(err.name + ': ' + err.message)
+        console.log(err)
       }
-    },
-    checkPermission() {
-      //Reserved for follow-up code when permission is denied
-      navigator.permissions
-        .query({ name: 'camera' })
-        .then(function(permissionStatus) {
-          console.log('camera : ', permissionStatus.state) // granted, denied, prompt
-        })
-      navigator.permissions
-        .query({ name: 'microphone' })
-        .then(function(permissionStatus) {
-          console.log('microphone : ', permissionStatus.state)
-        })
     },
     async getMediaDevice() {
       try {
@@ -193,12 +192,6 @@ export default {
         console.log(err)
       }
     },
-    // setVideo(videoDevice) {
-    //   if (videoDevice !== null) {
-    //     this.$store.commit('SET_VIDEO_DEVICE', videoDevice)
-    //     this.settings.videoDevice = videoDevice
-    //   }
-    // },
     async updateSetting() {
       await updateConfiguration(this.settings)
     },
@@ -207,7 +200,14 @@ export default {
   /* Lifecycles */
   async created() {
     try {
-      await this.getPermissionWithDevice()
+      const permission = await this.getPermission()
+
+      if (permission) {
+        await this.getMediaDevice()
+      } else {
+        //Show deined status and guide modal
+      }
+
       const datas = await getConfiguration()
       this.$store.dispatch('setLanguage', datas.data.language)
       this.$store.dispatch('setMic', datas.data.mic)

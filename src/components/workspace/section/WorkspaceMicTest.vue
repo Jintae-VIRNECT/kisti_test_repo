@@ -108,6 +108,7 @@ export default {
         navigator.mediaDevices
           .getUserMedia(constraints)
           .then(stream => connectSoundMeter(stream))
+          .catch(err => console.error(err))
       }
     },
     toggleMicTestMode() {

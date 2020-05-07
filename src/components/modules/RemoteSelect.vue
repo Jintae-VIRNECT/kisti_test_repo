@@ -105,9 +105,12 @@ export default {
   min-width: 21.429rem;
   min-height: 2.857rem;
   padding: 0.643em 1.429rem;
+  overflow: hidden;
   color: rgba($color_text, 0.76);
   line-height: 1.429rem;
+  white-space: nowrap;
   text-align: left;
+  text-overflow: ellipsis;
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
