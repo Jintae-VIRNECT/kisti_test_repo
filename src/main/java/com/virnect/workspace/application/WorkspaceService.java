@@ -68,6 +68,9 @@ public class WorkspaceService {
     @Value("${file.upload-path}")
     private String fileUploadPath;
 
+    @Value("${file.url}")
+    private String fileUrl;
+
     @Value("${serverUrl}")
     private String serverUrl;
 
@@ -113,8 +116,8 @@ public class WorkspaceService {
                 throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }
         } else {
-            profile = null;//디폴트 이미지 경로.
-        }
+            profile = fileUrl+fileUploadPath+"workspace-profile.png";//디폴트 이미지 경로.
+    }
 
         Workspace newWorkspace = Workspace.builder()
                 .uuid(uuid)
@@ -848,7 +851,7 @@ public class WorkspaceService {
         if (workspaceUpdateRequest.getProfile() != null) {
             String oldProfile = workspace.getProfile();
             //기존 프로필 이미지 삭제
-            if (StringUtils.hasText(oldProfile)) {
+            if (StringUtils.hasText(oldProfile) && !oldProfile.contains("workspace-profile.png")) {
                 this.fileUploadService.delete(oldProfile.substring(oldProfile.lastIndexOf("/") + 1));
             }
             //새 프로필 이미지 등록
@@ -937,4 +940,21 @@ public class WorkspaceService {
         return new ApiResponse<>(true);
     }
 
+    public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+
+        if (workspace.getUserId().equals(userId)){
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId,workspace);
+        WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
+
+        //라이선스 지우기
+
+        this.workspaceUserPermissionRepository.delete(workspaceUserPermission);
+        this.workspaceUserRepository.delete(workspaceUser);
+
+        return new ApiResponse<>(true);
+    }
 }
