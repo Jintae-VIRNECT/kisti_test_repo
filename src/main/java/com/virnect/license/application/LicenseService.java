@@ -367,7 +367,7 @@ public class LicenseService {
 
     @Transactional(readOnly = true)
     public ApiResponse<AdminCouponInfoListResponse> getAllCouponInfo(Pageable pageable) {
-        Page<Coupon> couponList = couponRepository.findAll(pageable);
+        Page<Coupon> couponList = couponRepository.findAllCouponInfo(pageable);
         List<AdminCouponInfoResponse> adminCouponInfoList = couponList.stream()
                 .map(c -> {
                     AdminCouponInfoResponse adminCouponInfoResponse = modelMapper.map(c, AdminCouponInfoResponse.class);

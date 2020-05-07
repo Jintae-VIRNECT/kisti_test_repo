@@ -99,7 +99,7 @@ public class Coupon extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CouponStatus status = CouponStatus.UNUSE;
 
-    @OneToMany(mappedBy = "coupon")
+    @OneToMany(mappedBy = "coupon", fetch = FetchType.LAZY)
     List<CouponProduct> couponProductList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
