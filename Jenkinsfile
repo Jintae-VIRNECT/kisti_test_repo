@@ -135,14 +135,15 @@ pipeline {
                 }
 
                 stage('Master Branch') {
-                    when {
+                    when { 
+                        tag "*"
                         branch 'master'
                     }
                     steps {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-workspace").push("${tag}" )
+                                    docker.image("pf-workspace").push("*" )
                                 }
                             }
 
