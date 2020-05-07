@@ -256,10 +256,8 @@ public class WorkspaceService {
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
-                    if(subProcessCountResponse!=null){
-                        memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                        memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
-                    }
+                    memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
+                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
@@ -640,7 +638,7 @@ public class WorkspaceService {
             context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
             context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
             context.setVariable("role", userInvite.getRole());
-            context.setVariable("workstationHomeUrl",redirectUrl);
+            context.setVariable("workstationHomeUrl", redirectUrl);
 
             String html = springTemplateEngine.process("workspace_invite_accept", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
@@ -739,7 +737,7 @@ public class WorkspaceService {
         context.setVariable("responseUserNickName", user.getNickname());
         context.setVariable("responseUserEmail", user.getEmail());
         context.setVariable("role", workspaceRole.getRole());
-        context.setVariable("workstationHomeUrl",redirectUrl);
+        context.setVariable("workstationHomeUrl", redirectUrl);
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
