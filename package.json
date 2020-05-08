@@ -7,9 +7,9 @@
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",
-    "build:local": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
+    "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
     "start:develop": "export PORT=8885 || set PORT=8885&& export NODE_ENV=develop || set NODE_ENV=develop && node server.js",
-    "start:local": "export TARGET_ENV=local || set TARGET_ENV=local&& export PORT=8886 || set PORT=8886&& export NODE_ENV=local || set NODE_ENV=local&& export SSL_ENV=private || set SSL_ENV=private&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
+    "start:local": "set NODE_ENV=local && webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
     "test": "jest"
   },
   "dependencies": {
@@ -17,7 +17,9 @@
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
     "copy-webpack-plugin": "^4.6.0",
+    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
+    "dotenv-webpack": "^1.7.0",
     "element-ui": "^2.13.0",
     "express": "^4.17.1",
     "log4js": "^6.1.0",

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
-import urls from './urls'
+import urls from '@/server/urls'
 
 /**
  * 상태
@@ -71,7 +71,7 @@ class Auth {
         ? options.API_GATEWAY_URL
         : urls.api[env],
     })
-    console.log(getTokensFromCookies())
+
     if (getTokensFromCookies()) {
       try {
         await getMyInfo(api)

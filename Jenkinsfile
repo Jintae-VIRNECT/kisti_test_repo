@@ -26,10 +26,9 @@ pipeline {
           }
           environment {
             NODE_ENV='develop'
-            TARGET_ENV='develop'
           }
           steps {            
-            sh 'npm run build'
+            sh 'npm run build:develop'
             sh 'docker build -t rm-web .'
           }
         }
@@ -40,7 +39,6 @@ pipeline {
           }
           environment {
             NODE_ENV='develop'
-            TARGET_ENV='develop'
           }
           steps {         
             sh 'npm run build'   
@@ -54,7 +52,6 @@ pipeline {
           }
           environment {
             NODE_ENV='production'
-            TARGET_ENV='production'
           }
           steps {           
             sh 'npm run build' 

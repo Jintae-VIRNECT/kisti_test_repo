@@ -3,7 +3,7 @@
  * sender() -> Axios -> receiver()/errorHandler()
  */
 
-import Axios from 'axios'
+import axios from 'api/axios'
 import ErrorList from './gateway.error.json'
 import { merge } from 'lodash'
 // import { log } from 'utils/log'
@@ -42,15 +42,7 @@ const URL = {
   DELETE_ROOM: ['DELETE', '/api/media/room/{roomId}'],
 }
 
-const axios = Axios.create({
-  timeout: 10000,
-  withCredentials: false,
-  headers: {
-    // 'Access-Control-Allow-Origin': 'https://virnectremote.com',
-    'Content-Type': 'application/json',
-    client: 'web',
-  },
-})
+console.log(`ENV: ${process.env.TARGET_ENV}`)
 
 /**
  * Common request handler

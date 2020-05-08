@@ -7,6 +7,7 @@ const fs = require('fs')
 const host = 'local.virnect.com'
 const port = '8886'
 const logger = require('../server/logger')
+const Dotenv = require('dotenv-webpack')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'
@@ -100,6 +101,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/sample/app.html',
       filename: 'sample/index.html',
       chunks: ['sample'],
+    }),
+
+    new Dotenv({
+      path: `.env.${process.env.NODE_ENV.trim()}`,
     }),
 
     // new BundleAnalyzerPlugin({
