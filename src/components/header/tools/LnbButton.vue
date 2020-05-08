@@ -3,7 +3,7 @@
     <button
       class="header-lnb__button"
       :class="{ active: view === keyvalue }"
-      @click="changeCallMode(keyvalue)"
+      @click="setView(keyvalue)"
     >
       <img class="header-lnb__image" :src="image" />
       <span class="header-lnb__text">{{ text }}</span>
@@ -25,7 +25,7 @@ export default {
   },
   watch: {},
   methods: {
-    ...mapActions(['changeCallMode']),
+    ...mapActions(['setView']),
   },
 
   /* Lifecycles */
