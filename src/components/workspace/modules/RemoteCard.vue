@@ -46,12 +46,7 @@
           ></profile-list>
         </div>
       </div>
-      <button
-        class="groupcard-button btn small"
-        @click="$emit('join', room.roomId)"
-      >
-        참가하기
-      </button>
+      <button class="groupcard-button btn small">참가하기</button>
     </div>
     <ul slot="menuPopover" class="groupcard-popover">
       <li>
@@ -60,12 +55,12 @@
         </button>
       </li>
       <li v-if="accountId === room.roomLeaderId">
-        <button class="group-pop__button" @click="$emit('remove', room.roomId)">
+        <button class="group-pop__button" @click="removeRoom(room.roomId)">
           협업 삭제
         </button>
       </li>
       <li v-else>
-        <button class="group-pop__button" @click="$emit('leave', room.roomId)">
+        <button class="group-pop__button" @click="leaveRoom(room.roomId)">
           협업 나가기
         </button>
       </li>
@@ -83,8 +78,12 @@ import Card from 'Card'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
+import { deleteRoom } from 'api/workspace/room'
+import confirmMixin from 'mixins/confirm'
+
 export default {
   name: 'RemoteCard',
+  mixins: [confirmMixin],
   components: {
     Card,
     ProfileList,
@@ -126,6 +125,41 @@ export default {
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
         this.showRoomInfo = !this.showRoomInfo
+      })
+    },
+    leaveRoom(roomId) {
+      this.confirmCancel(
+        '협업에서 나가시겠습니까?',
+        {
+          text: '나가기',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
+    },
+    removeRoom(roomId) {
+      this.confirmCancel(
+        '협업을 삭제 하시겠습니까?',
+        {
+          text: '내보내기',
+          action: () => {
+            this.remove(roomId)
+          },
+        },
+        { text: '취소' },
+      )
+    },
+    async remove(roomId) {
+      const rtn = await deleteRoom({ roomId: roomId })
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        if (rtn) {
+          this.$emit('refresh')
+          this.$eventBus.$emit('popover:close')
+        }
       })
     },
   },

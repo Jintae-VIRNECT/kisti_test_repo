@@ -6,9 +6,10 @@
 @import "./service/service-layout";
 @import "./service/service-subview";
 @import "./service/service-chat";
-@import "./service/service-stream";
-@import "./service/service-participants";
-@import "./service/service-tools";
+@import "./service/service-mainview";
+@import "./service/service-videolist";
+@import "./service/service-maintools";
 
 @import "./service/service-drawing";
-@import "./service/service-share";
+@import "./service/service-drawingtools";
+@import "./service/service-sharelist";

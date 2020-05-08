@@ -52,7 +52,7 @@
     </input-row>
     <button
       class="btn large createroom-info__button"
-      :class="{ disabled: btnDisabled }"
+      :disabled="btnDisabled"
       @click="start"
     >
       시작하기
@@ -65,13 +65,12 @@ import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
-import { createRoom } from 'api/workspace/room'
 import imageMixin from 'mixins/uploadImage'
-import confirmMixin from 'mixins/confirm'
+import { createRoom } from 'api/workspace/room'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [imageMixin, confirmMixin],
+  mixins: [imageMixin],
   components: {
     ProfileImage,
     InputRow,
@@ -121,12 +120,6 @@ export default {
       this.description = ''
     },
     async start() {
-      if (this.btnDisabled) {
-        this.confirmDefault(
-          '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
-        )
-        return
-      }
       console.log('원격 협업 생성')
       // TODO: 이미지는 어떻게 처리??
       const roomId = await createRoom({

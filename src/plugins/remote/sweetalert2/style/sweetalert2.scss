@@ -330,9 +330,9 @@ body {
           }
         }
         &.swal2-cancel:hover {
-          // background: $swal2-cancel-button-hover;
-          background: transparent;
-          border-color: #fff;
+          background: rgba(#d2d2d2, 0.3);
+          border-color: $swal2-cancel-button-hover;
+          // background: $swal2-cancel-button-hover
         }
 
         &:active {
@@ -350,9 +350,8 @@ body {
           }
         }
         &.swal2-cancel:active {
-          color: $color_primary;
-          background: transparent;
-          border-color: $color_primary;
+          background: rgba(#d2d2d2, 0.1);
+          border-color: $swal2-cancel-button-hover;
           // background: $swal2-cancel-button-hover
         }
       }
@@ -507,13 +506,13 @@ body {
     padding: 3.857em 0 1em;
     color: $swal2-content-color;
     font-weight: 500;
+    font-size: $swal2-content-font-size;
     line-height: 1.6;
     word-wrap: break-word;
     > div {
       color: $swal2-content-color;
       font-weight: 500;
-      font-size: 1.286em;
-      white-space: pre;
+      font-size: 1.25em;
       text-align: center;
     }
   }

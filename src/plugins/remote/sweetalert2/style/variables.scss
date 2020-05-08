@@ -14,7 +14,7 @@ $swal2-border: 1px solid #e8edf1;
 $swal2-box-shadow: rgba(16, 16, 17, 0.25) !default;
 
 // BACKGROUND
-$swal2-background: $color_darkgray_500 !default;
+$swal2-background: $swal2-white !default;
 
 // TYPOGRAPHY
 // $swal2-font: inherit !default;
@@ -33,7 +33,7 @@ $swal2-title-color: #333 !default;
 $swal2-title-font-size: 1.15em !default;
 
 // CONTENT
-$swal2-content-color: #fff !default;
+$swal2-content-color: #545658 !default;
 $swal2-content-font-size: 15px !default;
 
 // INPUT
@@ -105,7 +105,7 @@ $swal2-close-button-hover-transform: none !default;
 $swal2-close-button-hover-color: #000 !default;
 
 // ACTIONS
-$swal2-actions-margin: 1.429em auto 2.714em !default;
+$swal2-actions-margin: 2.143em !default;
 
 // CONFIRM BUTTON
 $swal2-confirm-button-border: solid 1 #206ccc !default;
@@ -120,7 +120,7 @@ $swal2-confirm-button-active: $color_primary_dark !default;
 $swal2-cancel-button-border: 1px solid #ccd1d7 !default;
 $swal2-cancel-button-border-radius: 2px !default;
 $swal2-cancel-button-background-color: transparent !default;
-$swal2-cancel-button-color: #fff !default;
+$swal2-cancel-button-color: #646d80 !default;
 $swal2-cancel-button-font-size: 1em !default;
 $swal2-cancel-button-hover: rgba(0, 0, 0, 0.3) !default;
 $swal2-cancel-button-active: rgba(0, 0, 0, 0.2) !default;

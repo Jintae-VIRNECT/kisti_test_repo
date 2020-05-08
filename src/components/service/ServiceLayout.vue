@@ -3,35 +3,36 @@
     <sub-view></sub-view>
 
     <transition name="share" mode="out-in">
-      <share v-if="view === 'drawing'"></share>
+      <share-list v-if="view === 'drawing'"></share-list>
     </transition>
 
     <transition name="main" mode="out-in">
-      <stream-view v-if="view === 'stream'"></stream-view>
+      <main-view v-if="view === 'stream'"></main-view>
       <drawing-view v-if="view === 'drawing'"></drawing-view>
       <ar-view v-if="view === 'ar'"></ar-view>
     </transition>
 
-    <user-list :class="{ draw: view === 'drawing' }"></user-list>
+    <video-list :class="{ draw: view === 'drawing' }"></video-list>
 
     <!-- <component :is="viewComponent"></component> -->
   </div>
 </template>
 
 <script>
+import ShareList from './drawing/ShareList'
 import SubView from './subview/SubView'
-import UserList from './participants/ParticipantList'
+import VideoList from './mainview/VideoList'
 
 import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
   components: {
+    ShareList,
     SubView,
-    UserList,
-    StreamView: () => import('./ServiceStream'),
-    DrawingView: () => import('./ServiceDrawing'),
-    ArView: () => import('./ServiceAr'),
-    Share: () => import('./share/Share'),
+    MainView: () => import('./mainview/MainView'),
+    DrawingView: () => import('./drawing/Drawing'),
+    ArView: () => import('./ar/Ar'),
+    VideoList,
   },
   data() {
     return {}
