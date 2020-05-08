@@ -23,45 +23,42 @@
       <div class="popover-notice__body">
         <scroller height="28.571rem">
           <notice-item
-            section="file"
+            type="file"
             :info="'Harry Ha 님'"
             :description="'파일 링크 전달드립니다.'"
             :date="'2020.01.20 오전 11:00'"
             :filename="'VIRNECT Remote WEB 2.0'"
             :filelink="'https://virnect.com'"
             :image="require('assets/image/img_user_profile.svg')"
-            btnType="file"
           ></notice-item>
           <notice-item
-            section="message"
+            type="message"
             :info="'Harry Ha 님'"
             :description="'통화요청 부탁드립니다.'"
             :date="'2020.01.20 오전 11:00'"
             :image="require('assets/image/img_user_profile.svg')"
           ></notice-item>
           <notice-item
-            section="invite"
+            type="invite"
             :info="'Harry Ha 님'"
             :description="'참가자로 협업을 요청하였습니다.'"
             :date="'2020.01.20 오전 11:00'"
-            btnType="invite"
             :image="require('assets/image/img_user_profile.svg')"
           ></notice-item>
           <notice-item
-            section="alert"
+            type="fail"
             :info="'[협업 참가 실패]'"
             :description="'최대 참가인원이 초과하였습니다.'"
             :date="'2020.01.20 오전 11:00'"
           ></notice-item>
           <notice-item
-            section="info"
+            type="license"
             :info="'[만료 안내]'"
             :description="'라이선스가 만료 되었습니다.'"
             :date="'2020.01.20 오전 11:00'"
-            btnType="license"
           ></notice-item>
           <notice-item
-            section="info"
+            type="info"
             :info="'[만료 안내]'"
             :description="'라이선스 만료 <em>[60분]</em> 남았습니다.'"
             :date="'2020.01.20 오전 11:00'"

@@ -12,13 +12,6 @@ export default {
         },
       })
     },
-    toastCallNotify() {
-      this.$toasted.global.callNotify({
-        userName: '이름',
-        message: 'message',
-        dateTime: 'dateTime',
-      })
-    },
     toastNotify(message) {
       this.$toasted.show(message, {
         position: 'bottom-center',
