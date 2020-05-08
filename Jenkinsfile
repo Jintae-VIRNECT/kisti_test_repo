@@ -29,7 +29,7 @@ pipeline {
             TARGET_ENV='develop'
           }
           steps {            
-            sh 'npm run build:develop'
+            sh 'npm run build'
             sh 'docker build -t rm-web .'
           }
         }
@@ -43,7 +43,7 @@ pipeline {
             TARGET_ENV='develop'
           }
           steps {         
-            sh 'npm run build:develop'   
+            sh 'npm run build'   
             sh 'docker build -t rm-web .'
           }
         }
