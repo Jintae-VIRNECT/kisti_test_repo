@@ -23,7 +23,7 @@ const config = mode => {
       modules: ['node_modules', 'modules'],
       alias: {
         vue$: 'vue/dist/vue.esm.js',
-        '@': join(__dirname, '../src'),
+        '@': join(__dirname, '../'),
         apps: join(__dirname, '../src/apps'),
         assets: join(__dirname, '../src/assets'),
         components: join(__dirname, '../src/components'),
