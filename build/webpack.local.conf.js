@@ -4,8 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const path = require('path')
 const fs = require('fs')
-const host = '0.0.0.0'
-const port = process.env.port
+const host = 'local.virnect.com'
+const port = '8886'
 const logger = require('../server/logger')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -42,17 +42,19 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       ],
     },
     proxy: {
-      '/admin': {
-        target: 'http://192.168.6.3:8081',
+      '/api': {
+        target: 'https://192.168.6.3:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
       },
-      '/auth': {
-        target: 'http://192.168.6.3:8321',
+      '/users': {
+        target: 'https://192.168.6.3:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
+        // secure: false,
+        // changeOrigin: true,
       },
     },
     noInfo: true,

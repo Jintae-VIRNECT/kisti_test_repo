@@ -37,7 +37,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import ProfileImage from 'ProfileImage'
-// import auth from 'utils/auth'
+import auth from 'utils/auth'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -58,7 +58,7 @@ export default {
     logout() {
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
-        // auth.logout()
+        auth.logout()
         // auth.login()
       })
     },

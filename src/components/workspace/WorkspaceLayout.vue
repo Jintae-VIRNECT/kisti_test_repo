@@ -20,9 +20,17 @@
 import { mapGetters, mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import { getAccount } from 'api/common/account'
+// import { getAccount } from 'api/common/account'
+import auth from 'utils/auth'
+
 export default {
   name: 'WorkspaceLayout',
+  async beforeMount() {
+    await auth.init()
+    if (!auth.isLogin) {
+      auth.login()
+    }
+  },
   components: {
     WorkspaceWelcome,
     WorkspaceTab,
