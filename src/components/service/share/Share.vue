@@ -1,9 +1,9 @@
 <template>
-  <div class="share-list">
-    <div class="share-list__title">
+  <div class="share">
+    <div class="share__title">
       <p>공유 목록</p>
     </div>
-    <div class="share-list__body">
+    <div class="share__body">
       <vue2-scrollbar>
         <ol class="upload-list">
           <li><button class="upload-list__button">파일추가</button></li>
@@ -14,14 +14,14 @@
         </ol>
       </vue2-scrollbar>
     </div>
-    <button class="share-list__save">저장하기</button>
+    <button class="share__save">저장하기</button>
   </div>
 </template>
 
 <script>
 import SharingImage from './partials/SharingImage'
 export default {
-  name: 'ShareList',
+  name: 'Share',
   components: {
     SharingImage,
   },

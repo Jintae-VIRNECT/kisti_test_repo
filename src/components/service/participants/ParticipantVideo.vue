@@ -1,14 +1,14 @@
 <template>
   <article>
     <div
-      class="list-video"
+      class="participant-video"
       :class="{ current: isCurrent }"
       :id="'video-view__' + session.nodeId"
       @click="changeMain"
     >
       <img
         v-if="!isMain"
-        class="list-video__speaker"
+        class="participant-video__speaker"
         :src="
           session.audio
             ? require('assets/image/call/gnb_ic_voice_on.svg')
@@ -16,10 +16,10 @@
         "
       />
 
-      <div v-if="!isMain" class="list-video__status good">
+      <div v-if="!isMain" class="participant-video__status good">
         <span>우수</span>
       </div>
-      <div class="list-video__name">
+      <div class="participant-video__name">
         <span :class="{ active: isMain }">{{ session.nickName }}</span>
       </div>
     </div>
@@ -30,7 +30,7 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'ListVideo',
+  name: 'ParticipantVideo',
   components: {},
   data() {
     return {

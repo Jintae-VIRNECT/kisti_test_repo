@@ -1,4 +1,4 @@
-.video-list {
+.participants {
   position: absolute;
   bottom: 2.143rem;
   width: calc(100% - #{$subview_width});
@@ -11,7 +11,7 @@
   }
 }
 
-.video-list__view {
+.participants__view {
   position: relative;
   display: flex;
   width: fit-content;
@@ -20,7 +20,7 @@
   }
 }
 
-.list-video {
+.participant-video {
   position: relative;
   width: 22.857rem;
   max-width: 12.714rem;
@@ -50,13 +50,13 @@
   }
 }
 
-.list-video__speaker {
+.participant-video__speaker {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-.list-video__status {
+.participant-video__status {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -70,7 +70,7 @@
   @include status-color();
 }
 
-.list-video__name {
+.participant-video__name {
   position: absolute;
   bottom: 0;
   width: 100%;

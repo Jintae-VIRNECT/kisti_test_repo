@@ -31,7 +31,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 
-import Pointing from './partials/Pointing'
+import Pointing from './StreamPointing'
 export default {
   name: 'MainVideo',
   components: {
@@ -110,7 +110,7 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    this.$openvidu.leave()
+    // this.$openvidu.leave()
     this.$eventBus.$off('capture', this.capture)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
