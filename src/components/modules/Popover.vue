@@ -37,9 +37,6 @@ function calcOffset(element) {
   //   top += element.offsetTop || 0
   //   left += element.offsetLeft || 0
   //   element = element.offsetParent
-  //   console.log(top)
-  //   console.log(left)
-  //   console.log(element)
   // } while (element)
 
   top = window.pageYOffset + element.getBoundingClientRect().top
