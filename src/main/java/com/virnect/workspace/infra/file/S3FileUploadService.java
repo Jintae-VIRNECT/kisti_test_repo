@@ -71,7 +71,7 @@ public class S3FileUploadService implements FileUploadService {
 
     private String putS3(File uploadFile, String fileName) {
         try {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.BucketOwnerRead));
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
             log.info(fileName + " 파일이 AWS S3(" + bucketName +"/"+bucketResource + ")에 업로드 되었습니다.");
 
         } catch (Exception e) {

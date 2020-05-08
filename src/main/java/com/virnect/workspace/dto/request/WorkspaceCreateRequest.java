@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-02-18
@@ -14,9 +16,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class WorkspaceCreateRequest {
+    @NotBlank
     private String userId;
+
+    @NotBlank
     private String name;
+
     private MultipartFile profile;
+
+    @NotBlank
     private String description;
 
     @Override

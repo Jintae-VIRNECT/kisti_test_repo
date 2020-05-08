@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class WorkspaceInviteRequest {
     @ApiModelProperty(value = "userId", example = "498b1839dc29ed7bb2ee90ad6985c608")
     @NotBlank(message = "초대하는 유저의 UUID는 필수 값입니다.")
     private String userId;
+
+    @Valid
     private List<UserInfo> userInfoList;
 
     @Getter

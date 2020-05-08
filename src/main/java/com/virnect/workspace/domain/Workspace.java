@@ -36,7 +36,7 @@ public class Workspace extends TimeEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "profile")
+    @Column(name = "profile", nullable = false)
     private String profile;
 
     @Column(name = "description", nullable = false)
