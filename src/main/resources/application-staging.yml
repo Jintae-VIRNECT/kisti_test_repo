@@ -40,7 +40,7 @@ server:
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://192.168.6.3:${server.port}/contents/"
+  serverUrl: "https://stgapi.virnect.com/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 ## FEIGN Configuration
