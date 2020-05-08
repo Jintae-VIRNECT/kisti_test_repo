@@ -49,7 +49,7 @@
           <li>
             <button
               class="group-pop__button"
-              @click="deleteItem(history.roomId)"
+              @click="showDeleteDialog(history.roomId)"
             >
               목록삭제
             </button>
@@ -80,10 +80,11 @@ import {
   getHistorySingleItem,
   deleteHistorySingleItem,
 } from 'api/workspace/history'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceHistoryList',
-  mixins: [sort],
+  mixins: [sort, confirmMixin],
   components: {
     Profile,
     WideCardExtend,
@@ -136,8 +137,21 @@ export default {
         this.showRoomInfo = !this.showRoomInfo
       })
     },
-    async deleteItem(roomId) {
+    async showDeleteDialog(roomId) {
       this.$eventBus.$emit('popover:close')
+
+      this.confirmCancel(
+        '협업을 삭제 하시겠습니까?',
+        {
+          text: '삭제하기',
+          action: () => {
+            this.delete(roomId)
+          },
+        },
+        { text: '취소' },
+      )
+    },
+    async delete(roomId) {
       this.$nextTick(() => {
         const pos = this.historyList.findIndex(room => {
           return room.roomId === roomId
