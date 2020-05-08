@@ -33,11 +33,17 @@ function calcOffset(element) {
   let top = 0
   let left = 0
 
-  do {
-    top += element.offsetTop || 0
-    left += element.offsetLeft || 0
-    element = element.offsetParent
-  } while (element)
+  // do {
+  //   top += element.offsetTop || 0
+  //   left += element.offsetLeft || 0
+  //   element = element.offsetParent
+  //   console.log(top)
+  //   console.log(left)
+  //   console.log(element)
+  // } while (element)
+
+  top = window.pageYOffset + element.getBoundingClientRect().top
+  left = window.pageXOffset + element.getBoundingClientRect().left
 
   return {
     top: top,
@@ -119,6 +125,7 @@ export default {
   },
   methods: {
     changeTrigger() {
+      console.log('changeTrigger')
       window.removeEventListener('click', this.windowClickHandler)
       this.$el.removeEventListener('mouseenter', this.showPopover)
       this.$el.removeEventListener('mouseleave', this.hidePopover)
@@ -128,6 +135,7 @@ export default {
 
       switch (this.trigger) {
         case 'click':
+          console.log(this.$el)
           this.$el.addEventListener('click', this.togglePopover)
           window.addEventListener('click', this.windowClickHandler)
           break
