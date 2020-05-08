@@ -33,7 +33,7 @@
         :srcObject.prop="audioStream"
         autoplay
       ></audio>
-      <!-- for camera permission. temp code -->
+      <!-- for camera permission -->
       <video
         autoplay
         :srcObject.prop="videoStream"
@@ -52,7 +52,7 @@ export default {
     return {
       audioStream: null,
 
-      //for camera permission. temp code
+      //for camera permission.
       videoStream: null,
       audioSoundVolume: 0,
 
@@ -94,7 +94,6 @@ export default {
   methods: {
     handleInputAudioStream(selectedDevice) {
       const constraints = {
-        //video: false,
         video: true,
         audio: {
           deviceId: selectedDevice,
@@ -119,7 +118,7 @@ export default {
           .getUserMedia(constraints)
           .then(stream => {
             connectSoundMeter(stream)
-            //for camera permission. temp code
+            //for camera permission.
             this.videoStream = stream
           })
           .catch(err => console.error(err))
