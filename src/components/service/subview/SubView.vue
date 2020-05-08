@@ -1,18 +1,18 @@
 <template>
   <div class="subview-wrapper">
     <!-- <sub-video></sub-video> -->
-    <chat-section></chat-section>
+    <chat></chat>
   </div>
 </template>
 
 <script>
 import SubVideo from './SubVideo'
-import ChatSection from './ChatView'
+import Chat from './Chat'
 export default {
   name: 'SubViewLayout',
   components: {
     SubVideo,
-    ChatSection,
+    Chat,
   },
   data() {
     return {}

@@ -30,10 +30,11 @@ import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
 import { inviteParticipantsList } from 'api/workspace/room'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -74,7 +75,7 @@ export default {
       )
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify('선택 가능 멤버를 초과했습니다.')
+          this.toastNotify('최대 2명까지 선택이 가능합니다.')
           return
         }
         this.selection.push(user)

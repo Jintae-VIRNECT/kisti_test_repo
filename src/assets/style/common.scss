@@ -53,7 +53,8 @@ body.modal-open {
   &:active {
     background-color: #003986;
   }
-  &:disabled {
+  &:disabled,
+  &.disabled {
     background-color: #213d62;
     cursor: default;
   }

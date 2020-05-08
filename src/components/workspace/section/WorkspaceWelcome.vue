@@ -14,10 +14,8 @@
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import toastMixin from 'mixins/toast'
 export default {
   name: 'WorkspaceWelcome',
-  mixins: [toastMixin],
   components: {
     Role,
     CreateRoomModal,
