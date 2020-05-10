@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LicenseService {
     private final CouponRepository couponRepository;
-    private final CouponProductRepository couponProductRepository;
     private final ProductRepository productRepository;
     private final LicenseTypeRepository licenseTypeRepository;
     private final LicensePlanRepository licensePlanRepository;
@@ -72,7 +71,7 @@ public class LicenseService {
         String serialKey = this.generateCouponSerialKey();
 
 //         Check Duplicate Register Request
-        boolean isAlreadyRegisterEventCoupon = this.couponProductRepository.existsByLicenseType_NameAndAndCoupon_UserId(LICENSE_TYPE_OF_2WEEK_FREE_COUPON, eventCouponRequest.getUserId());
+        boolean isAlreadyRegisterEventCoupon = this.licenseProductRepository.existsByLicenseType_NameAndAndCoupon_UserId(LICENSE_TYPE_OF_2WEEK_FREE_COUPON, eventCouponRequest.getUserId());
 
         if (isAlreadyRegisterEventCoupon) {
             throw new LicenseServiceException(ErrorCode.ERR_ALREADY_REGISTER_EVENT_COUPON);
@@ -127,12 +126,20 @@ public class LicenseService {
         Product product = this.productRepository.findByProductType_NameAndName("BASIC", "MAKE")
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 
-        CouponProduct couponProduct = CouponProduct.builder()
+        LicenseProduct licenseProduct = LicenseProduct.builder()
                 .product(product)
-                .coupon(coupon)
                 .licenseType(licenseType)
+                .coupon(coupon)
+                .quantity(1)
                 .build();
-        this.couponProductRepository.save(couponProduct);
+
+//        CouponProduct couponProduct = CouponProduct.builder()
+//                .product(product)
+//                .coupon(coupon)
+//                .licenseType(licenseType)
+//                .build();
+//        this.couponProductRepository.save(couponProduct);
+        this.licenseProductRepository.save(licenseProduct);
 
         UserInfoRestResponse userInfoRestResponse = userInfoApiResponse.getData();
         EmailMessage message = new EmailMessage();
@@ -282,31 +289,31 @@ public class LicenseService {
      * @param licensePlan - 신규 라이선스 플랜 정보
      */
     private void licenseRegisterByCouponProduct(Coupon coupon, LicensePlan licensePlan) {
-        List<CouponProduct> couponProductList = coupon.getCouponProductList();
+        List<LicenseProduct> couponProductList = coupon.getCouponProductList();
 
         // 2. 쿠폰 기반으로 쿠폰에 관련된 상품 정보 입력
-        for (CouponProduct couponProduct : couponProductList) {
-            // 2-1. 쿠폰 상품 조회
-            Product product = couponProduct.getProduct();
-            // 2-2. 쿠폰에 부여된 라이선스 타입 조회
-            LicenseType licenseType = couponProduct.getLicenseType();
-            // 2-3. 라이선스 타입에 맞는 상품 등록
-            LicenseProduct licenseProduct = LicenseProduct.builder()
-                    .product(product)
-                    .licenseType(licenseType)
-                    .price(product.getPrice())
-                    .quantity(1)
-                    .licensePlan(licensePlan)
-                    .build();
-
-            this.licenseProductRepository.save(licenseProduct);
-
+        for (LicenseProduct couponProduct : couponProductList) {
+//            // 2-1. 쿠폰 상품 조회
+//            Product product = couponProduct.getProduct();
+//            // 2-2. 쿠폰에 부여된 라이선스 타입 조회
+//            LicenseType licenseType = couponProduct.getLicenseType();
+//            // 2-3. 라이선스 타입에 맞는 상품 등록
+//            LicenseProduct licenseProduct = LicenseProduct.builder()
+//                    .product(product)
+//                    .licenseType(licenseType)
+//                    .price(product.getPrice())
+//                    .quantity(1)
+//                    .licensePlan(licensePlan)
+//                    .build();
+//
+//            this.licenseProductRepository.save(licenseProduct);
+            couponProduct.setLicensePlan(licensePlan);
             // 2-4. 라이선스 상품별 사용가능한 라이선스 생성
-            for (int i = 0; i < licenseProduct.getQuantity(); i++) {
+            for (int i = 0; i < couponProduct.getQuantity(); i++) {
                 License license = License.builder()
                         .status(LicenseStatus.UNUSE)
                         .serialKey(UUID.randomUUID().toString().toUpperCase())
-                        .licenseProduct(licenseProduct)
+                        .licenseProduct(couponProduct)
                         .build();
                 this.licenseRepository.save(license);
             }

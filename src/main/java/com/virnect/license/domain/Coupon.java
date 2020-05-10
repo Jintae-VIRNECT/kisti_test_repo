@@ -100,7 +100,7 @@ public class Coupon extends BaseTimeEntity {
     private CouponStatus status = CouponStatus.UNUSE;
 
     @OneToMany(mappedBy = "coupon", fetch = FetchType.LAZY)
-    List<CouponProduct> couponProductList = new ArrayList<>();
+    List<LicenseProduct> couponProductList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "license_plan_id")

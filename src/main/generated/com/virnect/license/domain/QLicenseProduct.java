@@ -24,6 +24,8 @@ public class QLicenseProduct extends EntityPathBase<LicenseProduct> {
 
     public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
 
+    public final QCoupon coupon;
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
@@ -62,6 +64,7 @@ public class QLicenseProduct extends EntityPathBase<LicenseProduct> {
 
     public QLicenseProduct(Class<? extends LicenseProduct> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.coupon = inits.isInitialized("coupon") ? new QCoupon(forProperty("coupon"), inits.get("coupon")) : null;
         this.licensePlan = inits.isInitialized("licensePlan") ? new QLicensePlan(forProperty("licensePlan"), inits.get("licensePlan")) : null;
         this.licenseType = inits.isInitialized("licenseType") ? new QLicenseType(forProperty("licenseType")) : null;
         this.product = inits.isInitialized("product") ? new QProduct(forProperty("product"), inits.get("product")) : null;

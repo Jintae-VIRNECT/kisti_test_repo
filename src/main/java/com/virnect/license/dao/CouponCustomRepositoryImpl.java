@@ -33,12 +33,12 @@ public class CouponCustomRepositoryImpl extends QuerydslRepositorySupport implem
     @Override
     public Page<Coupon> findAllCouponInfo(Pageable pageable) {
         QCoupon qCoupon = QCoupon.coupon;
-        QCouponProduct qCouponProduct = QCouponProduct.couponProduct;
+        QLicenseProduct qLicenseProduct = QLicenseProduct.licenseProduct;
         QProduct qProduct = QProduct.product;
         JPQLQuery<Coupon> query = from(qCoupon)
-                .innerJoin(qCoupon.couponProductList, qCouponProduct)
+                .innerJoin(qCoupon.couponProductList, qLicenseProduct)
                 .fetchJoin()
-                .innerJoin(qCouponProduct.product, qProduct)
+                .innerJoin(qLicenseProduct.product, qProduct)
                 .fetchJoin();
         final List<Coupon> couponList = getQuerydsl().applyPagination(pageable, query).fetch();
         return new PageImpl<>(couponList, pageable, query.fetchCount());
