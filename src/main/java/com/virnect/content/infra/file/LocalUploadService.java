@@ -6,6 +6,7 @@ import com.virnect.content.global.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Local Directory File Upload Service
  */
+@Profile("develop")
 @Slf4j
 @Service
 public class LocalUploadService implements FileUploadService {

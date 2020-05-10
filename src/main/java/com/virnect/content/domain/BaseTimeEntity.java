@@ -1,4 +1,4 @@
-package com.virnect.content.model;
+package com.virnect.content.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

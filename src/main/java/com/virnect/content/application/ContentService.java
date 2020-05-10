@@ -23,6 +23,7 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.infra.file.FileDownloadService;
 import com.virnect.content.infra.file.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +62,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContentService {
     private final FileUploadService fileUploadService;
+    private final FileDownloadService fileDownloadService;
 
     private final ContentRepository contentRepository;
     private final SceneGroupRepository sceneGroupRepository;
@@ -336,35 +339,27 @@ public class ContentService {
         return new ApiResponse<>(updateResult);
     }
 
-    public Resource contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
         // 1. 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-//        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
-
-        String regex = "/";
-        String[] parts = content.getPath().split(regex);
-
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
-        return loadContentFile(parts[parts.length - 1]);
+        return responseEntity;
     }
 
 
-    public Resource contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
         // 컨텐츠 데이터 조회
         Content content = this.contentRepository.getContentOfTarget(targetData);
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
-        workspaceMemberCheck(memberUUID, content.getWorkspaceUUID());
-
-        String regex = "/";
-        String[] parts = content.getPath().split(regex);
-
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
-        return loadContentFile(parts[parts.length - 1]);
+        return responseEntity;
     }
 
     /**

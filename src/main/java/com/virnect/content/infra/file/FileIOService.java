@@ -34,7 +34,7 @@ public interface FileIOService {
      * sourceUrl 파일을 destinationUrl 파일명으로 이름 변경
      *
      * @param sourceUrl      - 원본파일의 경로
-     * @param destinationUrl - 변경할 파일의 경로
+     *AmazonS3UploadService @param destinationUrl - 변경할 파일의 경로
      * @return
      */
     boolean rename(final String sourceUrl, final String destinationUrl) throws IOException;

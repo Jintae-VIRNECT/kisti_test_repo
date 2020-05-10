@@ -1,6 +1,5 @@
 package com.virnect.content.domain;
 
-import com.virnect.content.model.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
