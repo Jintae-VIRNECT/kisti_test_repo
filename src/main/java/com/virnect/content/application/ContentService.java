@@ -246,7 +246,7 @@ public class ContentService {
         Target target = this.targetRepository.findById(oldTargetId).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
         // 변경
         target.setType(TargetType.valueOf(targetRequest.getTargetType()));
-        target.setData(targetRequest.getTargetData());
+//        target.setData(targetRequest.getTargetData());
         this.targetRepository.save(target);
 
         ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
