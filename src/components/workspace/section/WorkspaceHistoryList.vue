@@ -6,10 +6,11 @@
       v-bind:key="index"
     >
       <profile
-        :image="require('assets/image/img_default_group.svg')"
+        :image="''"
         :imageAlt="'profileImg'"
         :mainText="history.title"
         :subText="`참석자 ${history.memberCount}명`"
+        :group="true"
       ></profile>
 
       <div slot="column1" class="label label--noraml">

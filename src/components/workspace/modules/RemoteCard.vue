@@ -11,11 +11,18 @@
         >Leader</span
       >
       <div class="groupcard-profile">
-        <img
+        <div class="profile__image">
+          <profile
+            :group="true"
+            :image="room.path"
+            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+          ></profile>
+        </div>
+        <!-- <img
           class="profile__image"
           :src="room.path"
           @error="onImageErrorGroup"
-        />
+        /> -->
         <p class="profile__name">{{ room.title }}</p>
         <p class="profile__description">
           {{ room.description }}
@@ -32,15 +39,14 @@
         <div class="info__section">
           <p class="info__title">접속한 회원</p>
           <profile-list
-            :size="28"
             :customStyle="{
-              width: '28px',
-              height: '28px',
+              width: '2rem',
+              height: '2rem',
               'font-size': '12px',
-              'margin-left': '4px',
-              'line-height': '25px',
-              'border-width': '1px',
+              'margin-left': '0.286rem',
+              'line-height': '2rem',
             }"
+            size="2rem"
             :max="5"
             :users="participants"
           ></profile-list>
@@ -80,6 +86,7 @@
 
 <script>
 import Card from 'Card'
+import Profile from 'Profile'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
@@ -87,6 +94,7 @@ export default {
   name: 'RemoteCard',
   components: {
     Card,
+    Profile,
     ProfileList,
     RoominfoModal,
   },

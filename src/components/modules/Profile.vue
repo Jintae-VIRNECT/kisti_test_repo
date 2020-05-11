@@ -1,7 +1,7 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <div class="profile--image">
+      <div class="profile--image" :class="{ group: group }">
         <img
           v-if="image && image.length > 0"
           :src="image"
@@ -9,11 +9,15 @@
           @error="onImageError"
         />
       </div>
-      <span v-if="status" class="profile--badge" :class="status">{{
+      <!-- <span v-if="status" class="profile--badge" :class="status">{{
         status
-      }}</span>
+      }}</span> -->
     </div>
-    <figcaption class="profile--text" style="color: #fff;">
+    <figcaption
+      class="profile--text"
+      style="color: #fff;"
+      v-if="mainText && mainText.length > 0"
+    >
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
@@ -44,7 +48,7 @@ export default {
     },
     mainText: {
       type: String,
-      required: true,
+      default: '',
     },
     subText: String,
     status: {
@@ -54,6 +58,10 @@ export default {
     role: {
       type: String,
       default: null,
+    },
+    group: {
+      type: Boolean,
+      default: false,
     },
   },
 }
@@ -78,32 +86,18 @@ export default {
 .profile--image {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  line-height: 0;
-  background: url('~assets/image/icon_bg.svg') no-repeat;
-  background-size: 100%;
-  &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80%;
-    height: 80%;
-    margin: 10%;
-    background: url('~assets/image/icon_user_profile.svg') no-repeat;
-    background-size: 100%;
-  }
+  @include image();
 
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background-position: center;
-    background-size: cover;
+    // background-position: center;
+    // background-size: cover;
     // -webkit-mask: url('~assets/image/icon_bg.svg') no-repeat;
     // -webkit-mask-size: 100%;
-    mask: url('~assets/image/icon_bg.svg') no-repeat;
-    mask-size: 100%;
-    @include image();
+    // mask: url('~assets/image/icon_bg.svg') no-repeat;
+    // mask-size: 100%;
   }
 }
 

@@ -7,12 +7,18 @@
       :key="user.id"
     >
       <tooltip :content="user.userName">
-        <img
+        <div class="profilelist-user__image" slot="body">
+          <profile
+            :image="user.path"
+            :thumbStyle="{ width: size, height: size }"
+          ></profile>
+        </div>
+        <!-- <img
           class="profilelist-user__image"
           @error="onImageError"
           :src="user.path"
           slot="body"
-        />
+        /> -->
         <span>{{ user.userName }}</span>
       </tooltip>
     </figure>
@@ -31,11 +37,15 @@
           v-for="user of otherUsers"
           :key="user.id"
         >
-          <img
+          <profile
+            :image="user.path"
+            :thumbStyle="{ width: '2.571em', height: '2.571em' }"
+          ></profile>
+          <!-- <img
             class="profilelist-user__image otheruser"
             :src="user.path"
             @error="onImageError"
-          />
+          /> -->
           <span class="profilelist-user__name ">{{ user.userName }}</span>
         </figure>
       </div>
@@ -49,11 +59,13 @@
 <script>
 import Tooltip from 'Tooltip'
 import Popover from 'Popover'
+import Profile from 'Profile'
 export default {
   name: 'ProfileList',
   components: {
     Tooltip,
     Popover,
+    Profile,
   },
   props: {
     users: {
@@ -71,6 +83,10 @@ export default {
     max: {
       type: Number,
       default: 6,
+    },
+    size: {
+      type: String,
+      default: '2.714em',
     },
   },
   computed: {
@@ -104,7 +120,7 @@ export default {
   width: 2.714em;
   height: 2.714em;
   margin-left: 0.429em;
-  border: solid 1px transparent;
+  // border: solid 1px transparent;
   border-radius: 50%;
   &.otheruser {
     display: flex;
@@ -148,10 +164,8 @@ export default {
   color: #fff;
   line-height: 2.714em;
   text-align: center;
-  background-color: #3e3e44;
-  border: solid 2px #979fb0;
-  border-radius: 50%;
   cursor: default;
+  @include profileMask(#3e3e44, 2px, #979fb0);
 }
 </style>
 

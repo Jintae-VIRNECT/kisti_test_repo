@@ -1,10 +1,14 @@
 <template>
   <div
-    class="profile-image"
+    class="profile-image group"
     :class="customClass"
     :style="{ width: `${imageSize}`, height: `${imageSize}` }"
   >
-    <img class="profile-image__image" :src="showImage" />
+    <img
+      v-if="image && image.length > 0"
+      class="profile-image__image"
+      :src="image"
+    />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
       이미지 삭제
     </button>
@@ -20,10 +24,10 @@ export default {
       type: [Number, String],
       default: 120,
     },
-    defaultImage: {
-      type: String,
-      default: require('assets/image/img_default_group.svg'),
-    },
+    // defaultImage: {
+    //   type: String,
+    //   default: require('assets/image/img_default_group.svg'),
+    // },
     image: {
       type: String,
       default: '',
@@ -48,13 +52,13 @@ export default {
         return this.size + 'px'
       }
     },
-    showImage() {
-      if (this.image && this.image.length > 0) {
-        return this.image
-      } else {
-        return this.defaultImage
-      }
-    },
+    // showImage() {
+    //   if (this.image && this.image.length > 0) {
+    //     return this.image
+    //   } else {
+    //     return this.defaultImage
+    //   }
+    // },
   },
   methods: {
     deleteImage() {
@@ -77,8 +81,8 @@ export default {
 .profile-image__image {
   width: 100%;
   height: 100%;
-  background-color: #fff;
-  border-radius: 50%;
+  // background-color: #fff;
+  // border-radius: 50%;
 }
 .profile-image__button {
   position: absolute;

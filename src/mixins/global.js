@@ -86,10 +86,12 @@ export default {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
-      event.target.src = require('assets/image/img_user_profile.svg')
+      // event.target.src = require('assets/image/img_user_profile.svg')
+      event.target.style.display = 'none'
     },
     onImageErrorGroup(event) {
-      event.target.src = require('assets/image/img_default_group.svg')
+      // event.target.src = require('assets/image/img_default_group.svg')
+      event.target.style.display = 'none'
     },
   },
 }

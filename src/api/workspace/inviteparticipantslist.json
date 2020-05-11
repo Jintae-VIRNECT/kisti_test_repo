@@ -8,7 +8,7 @@
       "userRole":"Master",
       "userEmail": "wooka@virnect.com",
       "status": "online",
-      "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
+      "path": ""
     },
     {
       "userId": "123457",
@@ -16,7 +16,7 @@
       "userRole":"user",
       "userEmail": "wooka@virnect.com",
       "status": "offline",
-      "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
+      "path": "틀린 path 넣으면 기본값"
     },
     {
       "userId": "123458",
@@ -24,7 +24,7 @@
       "userRole":"user",
       "userEmail": "wooka@virnect.com",
       "status": "offline",
-      "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
+      "path": ""
     },
     {
       "userId": "123459",
