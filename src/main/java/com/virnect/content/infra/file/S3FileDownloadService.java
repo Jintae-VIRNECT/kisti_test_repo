@@ -28,7 +28,7 @@ import java.io.IOException;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"local", "staging", "production"})
+@Profile({"local", "production"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {

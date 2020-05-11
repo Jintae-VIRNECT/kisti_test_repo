@@ -28,7 +28,7 @@ import java.nio.file.Paths;
  */
 
 @Slf4j
-@Profile("develop")
+@Profile({"develop", "staging"})
 @Component
 @RequiredArgsConstructor
 public class LocalFileDownloadService implements FileDownloadService {
