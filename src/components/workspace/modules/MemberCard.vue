@@ -21,7 +21,7 @@
       <role v-if="role && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
-        :role="'라이센스 만료'"
+        :role="'라이선스 만료'"
         :opt="opt"
       ></role>
     </div>

@@ -24,6 +24,7 @@ export default {
 @import '~assets/style/vars';
 .role {
   height: fit-content;
+  height: 1.43rem;
   margin: auto 0 auto 0.857rem;
   padding: 0.357em 0.714em;
   color: #bfddff;
@@ -42,6 +43,7 @@ export default {
 
   &.expired {
     color: #f2f2f2;
+    font-family: Noto Sans KR;
     background: rgba(204, 23, 1, 0.3);
     border: 1px solid rgb(204, 23, 1);
     border-radius: 0.929rem;
