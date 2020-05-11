@@ -24,8 +24,8 @@ pipeline {
 
         stage('Develop Branch') {
           when {
-            branch: 'develop',
-            tag: 'v*'
+            branch 'develop'
+            tag 'v*'
           }
           steps {
             catchError() {
