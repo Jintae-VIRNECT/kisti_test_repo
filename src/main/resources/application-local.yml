@@ -1,9 +1,76 @@
 server:
   port: 8073
+  ssl:
+    enabled: true
+    key-store: keystore.p12
+    key-store-password: 1234
+    key-store-type: PKCS12
+    key-alias: bns-ssl
 
 spring:
   application:
     name: gateway-server
+  cloud:
+    gateway:
+      routes:
+        - id: user-server
+          uri: lb:http://user-server
+          predicates:
+            - Path=/users/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/users/users/(?<segment>.*), /users/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: workspace-server
+          uri: lb:http://workspace-server
+          predicates:
+            - Path=/workspaces/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/workspaces/workspace/(?<segment>.*), /workspaces/$\{segment}
+
+        - id: license-server
+          uri: lb:http://license-server
+          predicates:
+            - Path=/licenses/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/licenses/licenses/(?<segment>.*), /licenses/$\{segment}
+
+        - id: auth-server
+          uri: lb:http://auth-server
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/auth/auth/(?<segment>.*), /auth/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+      x-forwarded:
+        prefix-enabled: false
 
 eureka:
   instance:
@@ -11,3 +78,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+
+jwt:
+  secret: 2020-tcenriv-platform-392

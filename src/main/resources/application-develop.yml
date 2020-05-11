@@ -1,9 +1,144 @@
 server:
   port: 8073
+  ssl:
+    enabled: true
+    key-store: keystore.p12
+    key-store-password: 1234
+    key-store-type: PKCS12
+    key-alias: bns-ssl
 
 spring:
   application:
     name: gateway-server
+  cloud:
+    gateway:
+      routes:
+        - id: auth-server
+          uri: lb:http://auth-server
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: user-server
+          uri: lb:http://user-server
+          predicates:
+            - Path=/users/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: workspace-server
+          uri: lb:http://workspace-server
+          predicates:
+            - Path=/workspaces/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: amdin-server
+          uri: lb:http://admin-server
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: content-server
+          uri: lb:http://content-server
+          predicates:
+            - Path=/contents/**
+          filters:
+            - StripPrefix=0
+            - RemoveRequestHeader=Expect
+            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: process-server
+          uri: lb:http://process-server
+          predicates:
+            - Path=/processes/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: license-server
+          uri: lb:http://license-server
+          predicates:
+            - Path=/licenses/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: message-server
+          uri: lb:http://message-server
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+        - id: download-server
+          uri: lb:http://download-server
+          predicates:
+            - Path=/download/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                preLogger: true
+                postLogger: true
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+      x-forwarded:
+        prefix-enabled: false
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true
 
 eureka:
   instance:
@@ -11,3 +146,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
+
+jwt:
+  secret: 2020-tcenriv-platform-392
