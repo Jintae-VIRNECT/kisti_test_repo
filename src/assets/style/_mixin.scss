@@ -160,13 +160,13 @@
   background-color: $borderColor;
   &:before {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
     z-index: -1;
     width: calc(100% - #{$borderWidth + $borderWidth});
     height: calc(100% - #{$borderWidth + $borderWidth});
-    margin: $borderWidth;
     background-color: $innerColor;
+    transform: translate(-50%, -50%);
     content: "";
     mask: url("~assets/image/icon_bg.svg") no-repeat;
     mask-size: 100%;

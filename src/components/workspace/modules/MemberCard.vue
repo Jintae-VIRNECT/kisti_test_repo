@@ -128,13 +128,10 @@ export default {
 
 .card-profile--thumb {
   position: relative;
-  padding: 0.214rem;
-  // border: 1.4px solid transparent;
+  padding: 0.286rem;
 
   &.expired {
-    // border-color: #c51803;
-    // border-radius: 50%;
-    @include profileMask(#313135, 1px, #c51803);
+    @include profileMask(#313135, 1.4px, #c51803);
   }
 }
 
