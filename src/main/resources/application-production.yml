@@ -119,9 +119,15 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "*"
+            allowedOrigins:
+              - "https://workstation.virnect.com"
+              - "https://www.virnect.com"
+              - "https://console.virnect.com"
+              - "https://account.virnect.com"
+              - "https://admin.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
+            allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
