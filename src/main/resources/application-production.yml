@@ -121,7 +121,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "https://workstation.virnect.com"
-              - "https://www.virnect.com"
+              - "https://virnect.com"
               - "https://console.virnect.com"
               - "https://account.virnect.com"
               - "https://admin.virnect.com"
