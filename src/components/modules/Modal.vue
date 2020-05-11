@@ -149,7 +149,11 @@ export default {
       if (this.beforeClose) {
         this.beforeClose()
       }
-      this.$emit('update:visible', false)
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.$emit('update:visible', false)
+      })
     },
   },
 

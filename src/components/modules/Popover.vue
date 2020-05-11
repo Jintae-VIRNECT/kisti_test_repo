@@ -122,7 +122,6 @@ export default {
   },
   methods: {
     changeTrigger() {
-      console.log('changeTrigger')
       window.removeEventListener('click', this.windowClickHandler)
       this.$el.removeEventListener('mouseenter', this.showPopover)
       this.$el.removeEventListener('mouseleave', this.hidePopover)
@@ -132,7 +131,6 @@ export default {
 
       switch (this.trigger) {
         case 'click':
-          console.log(this.$el)
           this.$el.addEventListener('click', this.togglePopover)
           window.addEventListener('click', this.windowClickHandler)
           break
@@ -224,7 +222,6 @@ export default {
     },
     hidePopover() {
       this.visible = false
-
       if (this.hide) {
         this.hide()
       }
