@@ -1,4 +1,4 @@
-package com.virnect.content.infra.file;
+package com.virnect.content.infra.file.download;
 
 
 import org.springframework.http.ResponseEntity;

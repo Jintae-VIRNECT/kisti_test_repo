@@ -1,4 +1,4 @@
-package com.virnect.content.infra.file;
+package com.virnect.content.infra.file.download;
 
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.error.ErrorCode;
@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -28,7 +27,7 @@ import java.nio.file.Paths;
  */
 
 @Slf4j
-@Profile({"develop", "staging"})
+@Profile({"develop"})
 @Component
 @RequiredArgsConstructor
 public class LocalFileDownloadService implements FileDownloadService {
