@@ -11,7 +11,6 @@ pipeline {
           sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
-
       }
     }
 
@@ -31,7 +30,6 @@ pipeline {
             catchError() {
               sh 'docker build -t pf-download .'
             }
-
           }
         }
 
@@ -43,7 +41,6 @@ pipeline {
             catchError() {
               sh 'docker build -t pf-download .'
             }
-
           }
         }
 
@@ -55,10 +52,8 @@ pipeline {
             catchError() {
               sh 'docker build -t pf-download .'
             }
-
           }
         }
-
       }
     }
 
@@ -96,7 +91,6 @@ pipeline {
               sh 'docker run -p 8086:8086 -e "SPRING_PROFILES_ACTIVE=develop" -d --restart=always --name=pf-download pf-download'
               sh 'docker image prune -f'
             }
-
           }
         }
 
@@ -140,9 +134,7 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
         }
 
@@ -187,9 +179,7 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
         }
       }
