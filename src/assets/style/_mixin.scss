@@ -128,13 +128,13 @@
   background-size: 100%;
   &:before {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
     width: 80%;
     height: 80%;
-    margin: 10%;
     background: url("~assets/image/icon_user_profile.svg") no-repeat;
     background-size: 100%;
+    transform: translate(-50%, -50%);
     content: "";
   }
   &.group {
