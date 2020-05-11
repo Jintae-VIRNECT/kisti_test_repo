@@ -24,8 +24,8 @@ pipeline {
 
         stage('Develop Branch') {
           when {
-            branch 'develop'
-            tag 'v*'
+            branch 'develop'                  
+            expression { return env.GIT_TAG_NAME }
           }
           steps {
             catchError() {
@@ -143,6 +143,7 @@ pipeline {
         stage('Master Branch') {
           when {
             branch 'master'
+            
           }
           steps {
             catchError() {
