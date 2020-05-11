@@ -22,15 +22,16 @@
 }
 
 .workspace-wrapper {
-  // max-width: 1440px;
-  // height: calc(100vh - 56px);
-  // margin: 0 auto;
-  // margin-top: 56px;
-  // text-align: center;
   display: flex;
   flex-direction: column;
   // display: flex;
   // flex-direction: column;
   min-height: 100%;
   padding-top: 2.143rem;
+  // max-width: 1440px;
+  // height: calc(100vh - 56px);
+  // margin: 0 auto;
+  // margin-top: 56px;
+  // text-align: center;
+  background-color: $color_bg;
 }
