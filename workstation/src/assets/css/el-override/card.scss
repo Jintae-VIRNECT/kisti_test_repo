@@ -40,6 +40,9 @@
 .el-card--table .el-card__body {
   padding: 0;
 
+  .el-table.clickable .el-table__row {
+    cursor: pointer;
+  }
   .el-table .cell {
     overflow: inherit;
     white-space: inherit;

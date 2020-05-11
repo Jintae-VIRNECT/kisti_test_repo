@@ -5,6 +5,7 @@ import authService from '@/services/auth'
 import Content from '@/models/content/Content'
 import ContentStatistics from '@/models/content/ContentStatistics'
 import SceneGroup from '@/models/content/SceneGroup'
+import Properties from '@/models/content/Properties'
 
 export default {
   /**
@@ -51,13 +52,33 @@ export default {
    * 컨텐츠 씬그룹 목록
    * @param {String} contentId
    */
-  async getSceneGroupsList(contentId) {
-    const data = await api('SCENE_GROUPS_LIST', {
-      params: {
+  async getContentSceneGroups(contentId) {
+    const data = await api('CONTENT_SCENE_GROUPS', {
+      route: {
         contentUUID: contentId,
       },
     })
     return data.sceneGroupInfoList.map(sceneGroup => new SceneGroup(sceneGroup))
+  },
+  /**
+   * 컨텐츠 속성 트리
+   * @param {String} contentId
+   * @param {String} userUUID
+   */
+  async getContentProperties(contentId, userUUID) {
+    const data = await api('CONTENT_PROPERTIES', {
+      route: {
+        contentUUID: contentId,
+      },
+      params: { userUUID },
+    })
+    return [
+      {
+        id: data.contentUUID,
+        label: data.contentName,
+        children: new Properties(data.propertiesMetadata).tree(),
+      },
+    ]
   },
   /**
    * 컨텐츠 삭제

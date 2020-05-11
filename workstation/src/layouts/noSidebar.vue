@@ -23,6 +23,7 @@ export default {
     return {
       showSection: {
         profile: true,
+        link: true,
       },
     }
   },
