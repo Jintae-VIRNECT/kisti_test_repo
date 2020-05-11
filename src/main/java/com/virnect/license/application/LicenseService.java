@@ -326,7 +326,7 @@ public class LicenseService {
      * @return - 시리얼 코드
      */
     private String generateCouponSerialKey() {
-        return UUID.randomUUID().toString().replace("0", "O").replace("1", "I");
+        return UUID.randomUUID().toString().replace("0", "O").replace("1", "I").toUpperCase();
     }
 
     /**
