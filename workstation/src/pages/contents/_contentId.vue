@@ -7,7 +7,7 @@
     top="11vh"
     @close="close"
   >
-    <el-row>
+    <el-row type="flex">
       <el-col :span="9">
         <h4>{{ $t('contents.info.title') }}</h4>
         <el-divider />
@@ -48,9 +48,21 @@
           <dd>{{ content.shared }}</dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-for="target in content.targets" :key="target.id">
-            {{ target.type }}
+            <span>{{ target.type }}</span>
+            <img
+              src="~assets/images/icon/ic-print.svg"
+              @click="print(target.data)"
+            />
+            <img
+              src="~assets/images/icon/ic-file-download.svg"
+              @click="download(target.data)"
+            />
           </dd>
         </dl>
+        <div class="buttons-wrapper">
+          <el-button>{{ $t('contents.info.delete') }}</el-button>
+          <el-button type="primary">{{ $t('contents.info.update') }}</el-button>
+        </div>
       </el-col>
       <el-col :span="15">
         <h4>{{ $t('contents.info.properties') }}</h4>
@@ -98,6 +110,15 @@ export default {
       this.showMe = false
       this.$router.push('/contents')
     },
+    download(url) {
+      window.open(url)
+    },
+    print(url) {
+      const popup = window.open('', '_blank')
+      popup.document.write(`<img src="${url}" />`)
+      popup.document.close()
+      popup.print()
+    },
   },
   beforeMount() {
     this.$store.commit(
@@ -112,12 +133,21 @@ export default {
 #__nuxt .contents-info-modal .el-dialog__body {
   height: 700px;
   max-height: 700px;
+  padding-bottom: 28px;
 
-  .el-col {
+  .el-row {
+    align-items: stretch;
     height: 100%;
   }
-  .el-col:nth-child(2) {
-    padding-left: 20px;
+  .el-col {
+    position: relative;
+
+    &:first-child {
+      padding-right: 30px;
+    }
+    &:last-child {
+      padding-left: 20px;
+    }
   }
   dl.row {
     display: flex;
@@ -128,6 +158,18 @@ export default {
   }
   .el-divider {
     margin: 16px 0;
+  }
+  .buttons-wrapper {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 30px);
+
+    .el-button {
+      width: 92px;
+    }
+    .el-button:last-child {
+      float: right;
+    }
   }
 
   h4 {
@@ -141,9 +183,18 @@ export default {
   }
   dd {
     margin-bottom: 20px;
+    white-space: nowrap;
+
+    & > img {
+      float: right;
+      margin-left: 12px;
+      cursor: pointer;
+    }
   }
+
+  // 콘텐츠 구성 정보
   .properties {
-    height: calc(700px - 100px);
+    height: calc(100% - 38px);
     overflow: scroll;
     border: solid 1px rgba(226, 231, 237, 0.8);
     border-radius: 3px;
@@ -159,6 +210,10 @@ export default {
       margin-left: 8px;
       color: $font-color-content;
       font-size: 1em;
+    }
+    .el-tree-node__content:hover,
+    .el-tree-node:focus > .el-tree-node__content {
+      background-color: rgba(245, 247, 250, 0.75);
     }
   }
 }

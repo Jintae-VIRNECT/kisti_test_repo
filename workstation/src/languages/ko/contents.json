@@ -25,6 +25,8 @@
     "device": "지원 디바이스",
     "sharedStatus": "현재 공유 상태",
     "target": "타겟 유형",
-    "properties": "콘텐츠 구성 정보"
+    "properties": "콘텐츠 구성 정보",
+    "delete": "삭제하기",
+    "update": "변경하기"
   }
 }
