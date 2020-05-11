@@ -771,13 +771,16 @@ public class ContentService {
         return contentUpload(uploadRequest);
     }
 
+    @Transactional(readOnly = true)
     public ApiResponse<ContentPropertiesResponse> getContentPropertiesMetadata(String contentUUID, String userUUID) {
         // 컨텐츠 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!content.getUserUUID().equals(userUUID))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+//        if (!content.getUserUUID().equals(userUUID))
+//            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        workspaceMemberCheck(userUUID, content.getWorkspaceUUID());
+
 
         // 사용자 조회
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
@@ -805,8 +808,9 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!metadataRequest.getUserUUID().equals(content.getUserUUID()))
+        if (!metadataRequest.getUserUUID().equals(content.getUserUUID())){
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        }
 
         content.setProperties(metadataRequest.getProperties());
         this.contentRepository.save(content);
