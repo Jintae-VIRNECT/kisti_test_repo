@@ -1,9 +1,14 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <p class="profile--image">
-        <img :src="image" :alt="mainText" @error="onError | onImageError" />
-      </p>
+      <div class="profile--image">
+        <img
+          v-if="image && image.length > 0"
+          :src="image"
+          :alt="mainText"
+          @error="onImageError"
+        />
+      </div>
       <span v-if="status" class="profile--badge" :class="status">{{
         status
       }}</span>
@@ -75,11 +80,29 @@ export default {
   height: 100%;
   overflow: hidden;
   line-height: 0;
+  background: url('~assets/image/icon_bg.svg') no-repeat;
+  background-size: 100%;
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    height: 80%;
+    margin: 10%;
+    background: url('~assets/image/icon_user_profile.svg') no-repeat;
+    background-size: 100%;
+  }
 
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    background-position: center;
+    background-size: cover;
+    // -webkit-mask: url('~assets/image/icon_bg.svg') no-repeat;
+    // -webkit-mask-size: 100%;
+    mask: url('~assets/image/icon_bg.svg') no-repeat;
+    mask-size: 100%;
     @include image();
   }
 }
