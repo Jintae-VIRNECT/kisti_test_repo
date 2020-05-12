@@ -961,25 +961,30 @@ public class WorkspaceService {
     public ApiResponse<Boolean> testSetMember(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         List<String> emailList = new ArrayList<>();
-        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> emailList.add(userInfo.getEmail()));
+        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
+            emailList.add(userInfo.getEmail());
+        });
         InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
 
         responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> {
+            if(!workspaceInviteRequest.getUserId().equals(inviteUserResponse.getUserUUID())){
+                WorkspaceUser workspaceUser = WorkspaceUser.builder()
+                        .userId(inviteUserResponse.getUserUUID())
+                        .workspace(workspace)
+                        .build();
+                this.workspaceUserRepository.save(workspaceUser);
+
+                //workspaceUserPermission set
+                WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
+
+                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                        .workspaceRole(workspaceRole)
+                        .workspaceUser(workspaceUser)
+                        .build();
+                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+            }
             //workspaceUser set
-            WorkspaceUser workspaceUser = WorkspaceUser.builder()
-                    .userId(inviteUserResponse.getUserUUID())
-                    .workspace(workspace)
-                    .build();
-            this.workspaceUserRepository.save(workspaceUser);
 
-            //workspaceUserPermission set
-            WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
-
-            WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                    .workspaceRole(workspaceRole)
-                    .workspaceUser(workspaceUser)
-                    .build();
-            this.workspaceUserPermissionRepository.save(workspaceUserPermission);
         });
 
         return new ApiResponse<>(true);
