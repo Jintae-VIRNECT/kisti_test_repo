@@ -967,7 +967,7 @@ public class WorkspaceService {
         InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
 
         responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> {
-            if(!workspaceInviteRequest.getUserId().equals(inviteUserResponse.getUserUUID())){
+            if(!workspace.getUserId().equals(inviteUserResponse.getUserUUID())){
                 WorkspaceUser workspaceUser = WorkspaceUser.builder()
                         .userId(inviteUserResponse.getUserUUID())
                         .workspace(workspace)
