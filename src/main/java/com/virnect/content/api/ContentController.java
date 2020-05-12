@@ -3,10 +3,7 @@ package com.virnect.content.api;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
-import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
-import com.virnect.content.dto.request.ContentTargetRequest;
-import com.virnect.content.dto.request.ContentUpdateRequest;
-import com.virnect.content.dto.request.ContentUploadRequest;
+import com.virnect.content.dto.request.*;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -331,14 +328,12 @@ public class ContentController {
     @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
             @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "contentType", defaultValue = "AUGMENTED_REALITY", required = false) Types contentType
-            , @RequestParam(value = "shared", defaultValue = "NO") YesOrNo shared
-            , @RequestParam(value = "userUUID") String userUUID
+            , @ModelAttribute @Valid ContentInfoRequest contentInfoRequest
     ) {
-        if (contentUUID.isEmpty() || userUUID.isEmpty()) {
+        if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, shared, contentType, userUUID);
+        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, contentInfoRequest);
         return ResponseEntity.ok(response);
     }
 

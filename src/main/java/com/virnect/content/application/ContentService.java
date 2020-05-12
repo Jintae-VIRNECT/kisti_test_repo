@@ -11,10 +11,7 @@ import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
-import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
-import com.virnect.content.dto.request.ContentTargetRequest;
-import com.virnect.content.dto.request.ContentUpdateRequest;
-import com.virnect.content.dto.request.ContentUploadRequest;
+import com.virnect.content.dto.request.*;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
 import com.virnect.content.event.ContentDownloadHitEvent;
@@ -300,7 +297,6 @@ public class ContentService {
             eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
 
         // 5 수정 컨텐츠 파일 크기 반영
         targetContent.setSize(updateRequest.getContent().getSize());
@@ -630,7 +626,12 @@ public class ContentService {
     }
 
     @Transactional
-    public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, final YesOrNo shared, final Types contentType, final String userUUID) {
+    public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, ContentInfoRequest contentInfoRequest) {
+
+        final YesOrNo shared    = contentInfoRequest.getShared();
+        final Types contentType = contentInfoRequest.getContentType();
+        final String userUUID   = contentInfoRequest.getUserUUID();
+
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
