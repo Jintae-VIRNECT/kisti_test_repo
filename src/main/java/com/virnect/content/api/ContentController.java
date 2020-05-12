@@ -328,7 +328,7 @@ public class ContentController {
     @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
             @PathVariable("contentUUID") String contentUUID
-            , @ModelAttribute @Valid ContentInfoRequest contentInfoRequest
+            , @RequestBody @Valid ContentInfoRequest contentInfoRequest
     ) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
