@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",
-    "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.develop.conf.js",
+    "build:develop": "export NODE_ENV=develop || set NODE_ENV=develop && webpack --progress --config build/webpack.production.conf.js",
     "start:develop": "export PORT=8885 || set PORT=8885&& export NODE_ENV=develop || set NODE_ENV=develop && node server.js",
     "start:local": "set NODE_ENV=local && webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
     "test": "jest"
