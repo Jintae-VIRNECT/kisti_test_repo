@@ -33,6 +33,12 @@
         :srcObject.prop="audioStream"
         autoplay
       ></audio>
+      <!-- for camera permission -->
+      <video
+        autoplay
+        :srcObject.prop="videoStream"
+        style="width:0px; height:0px"
+      ></video>
     </div>
   </section>
 </template>
@@ -45,6 +51,9 @@ export default {
   data: function() {
     return {
       audioStream: null,
+
+      //for camera permission.
+      videoStream: null,
       audioSoundVolume: 0,
 
       micTestMode: false,
@@ -85,7 +94,7 @@ export default {
   methods: {
     handleInputAudioStream(selectedDevice) {
       const constraints = {
-        video: false,
+        video: true,
         audio: {
           deviceId: selectedDevice,
         },
@@ -107,7 +116,11 @@ export default {
       if (this.audioContext !== null) {
         navigator.mediaDevices
           .getUserMedia(constraints)
-          .then(stream => connectSoundMeter(stream))
+          .then(stream => {
+            connectSoundMeter(stream)
+            //for camera permission.
+            this.videoStream = stream
+          })
           .catch(err => console.error(err))
       }
     },

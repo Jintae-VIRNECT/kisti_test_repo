@@ -32,6 +32,8 @@
         <div class="setting-view__header">{{ headerText }}</div>
 
         <div class="setting-view__body">
+          <device-denied :visible.sync="showDenied"></device-denied>
+
           <template v-if="tabview === 'audio-video'">
             <workspace-set-audio
               :mics="mics"
@@ -63,6 +65,7 @@ import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
 import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
 import WorkspaceMicTest from '../section/WorkspaceMicTest'
 //import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
+import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { mapState } from 'vuex'
 import {
   getConfiguration,
@@ -78,11 +81,14 @@ export default {
     WorkspaceSetRecord,
     WorkspaceMicTest,
     //WorkspaceSetVideo,
+    DeviceDenied,
   },
   data() {
     return {
       tabview: 'audio-video',
       headerText: '오디오 설정',
+
+      showDenied: false,
 
       //device list
       videos: [],
@@ -205,7 +211,7 @@ export default {
       if (permission) {
         await this.getMediaDevice()
       } else {
-        //Show deined status and guide modal
+        this.showDenied = true
       }
 
       const datas = await getConfiguration()
