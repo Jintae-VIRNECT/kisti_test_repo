@@ -43,9 +43,7 @@ export default {
       commit('SET_MY_PROFILE', new Profile(data.userInfo))
       commit(
         'SET_MY_WORKSPACES',
-        data.workspaceInfoList.workspaceList.map(
-          workspace => new Workspace(workspace),
-        ),
+        data.workspaceInfoList.map(workspace => new Workspace(workspace)),
       )
       commit('SET_LOGIN', true)
     },
