@@ -320,10 +320,8 @@ public class ContentController {
 
     @ApiOperation(value = "컨텐츠 공유", notes = "컨텐츠의 공유 여부를 변경. 2.0기능인 컨텐츠 타입 변경. 차후 컨텐츠의 세부정보들을 변경할 수 있는 기능으로 확장 예정")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
-            @ApiImplicitParam(name = "contentType", value = "컨텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "query", required = false, defaultValue = "AUGMENTED_REALITY"),
-            @ApiImplicitParam(name = "shared", value = "컨텐츠 공유(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO"),
-            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
+            @ApiImplicitParam(value="컨텐츠 식별자"   , name="contentUUID"        , dataType="string"            , required=true, paramType="path", example="73624941-8c65-4e0a-8e81-9f52547fa8d0"),
+            @ApiImplicitParam(value="컨텐츠 수정 정보", name="contentInfoRequest" , dataType="ContentInfoRequest", required=true, paramType="body")
     })
     @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
