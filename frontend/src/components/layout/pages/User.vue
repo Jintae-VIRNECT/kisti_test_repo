@@ -216,7 +216,11 @@ export default {
 			this.formData.append('sessionCode', this.$props.signup.sessionCode)
 
 			this.formData.append('profile', this.user.profile)
-			this.formData.append('nickname', this.user.nickname)
+			if (this.user.nickName !== null) {
+				this.formData.append('nickname', this.user.nickname)
+			} else {
+				this.formData.append('nickname', this.nicknameSet)
+			}
 			this.formData.append('mobile', this.mobileSet)
 			this.formData.append('recoveryEmail', this.user.recoveryEmail)
 

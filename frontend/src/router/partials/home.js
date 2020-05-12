@@ -40,6 +40,12 @@ export default {
 			props: true,
 		},
 		{
+			path: '/find?tab=:findCategory',
+			name: 'findTab',
+			component: Find,
+			props: true,
+		},
+		{
 			path: '/profile',
 			name: 'profile',
 			component: Profile,

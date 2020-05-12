@@ -8,7 +8,8 @@
 </template>
 
 <script>
-import Auth from 'api/virnectPlatformAuth'
+import Auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
+// import Auth from 'api/virnectPlatformAuth'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	data() {

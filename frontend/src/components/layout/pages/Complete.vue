@@ -17,7 +17,7 @@
 					VIRNECT 제품, 서비스는 <br />
 					VIRNECT Workstation에서 시작할 수 있습니다.
 				</p>
-				<el-button class="next-btn block-btn" type="info"
+				<el-button class="next-btn block-btn" type="info" @click="goWorkstation"
 					>VIRNECT Workstation
 				</el-button>
 			</el-col>
@@ -25,17 +25,23 @@
 	</div>
 </template>
 <script>
-import urls from 'api/urls'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 export default {
 	data() {
 		return {
-			// couponUrl: urls.api[process.env.TARGET_ENV],
+			couponUrl: urls.www[process.env.TARGET_ENV],
+			workstationUrl: urls.workstation[process.env.TARGET_ENV],
 		}
 	},
 	methods: {
+		goWorkstation() {
+			location.replace(this.workstationUrl)
+			// window.open(this.workstationUrl)
+			// console.log(this.workstationUrl)
+		},
 		trialCoupon() {
-			location.replace(`${urls.www[process.env.TARGET_ENV]}/coupon`)
-			console.log(urls.www[process.env.TARGET_ENV])
+			location.replace(`${this.couponUrl}/coupon`)
+			// console.log(this.couponUrl)
 		},
 	},
 }

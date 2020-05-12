@@ -10,12 +10,15 @@
 
 				<section class="find-wrap">
 					<div class="find-head">
-						<button :class="{ active: tab == 'email' }" @click="tab = 'email'">
+						<button
+							:class="{ active: tab == 'email' }"
+							@click="tabChange('email')"
+						>
 							<span>이메일 찾기</span>
 						</button>
 						<button
-							:class="{ active: tab == 'resetPassword' }"
-							@click="tab = 'resetPassword'"
+							:class="{ active: tab == 'reset_password' }"
+							@click="tabChange('reset_password')"
 						>
 							<span>비밀번호 재설정</span>
 						</button>
@@ -129,7 +132,7 @@
 							>
 						</div>
 					</div>
-					<div class="find-body" v-if="tab == 'resetPassword'">
+					<div class="find-body" v-if="tab == 'reset_password'">
 						<div v-if="isCodeAuth === null">
 							<p class="info-text">
 								회원 가입 시 입력한 등록된 이메일 주소로 비밀번호 재설정 보안
@@ -270,8 +273,9 @@ export default {
 		}
 	},
 	mounted() {
-		if (this.findCategory == 'email') return (this.tab = 'email')
-		else return (this.tab = 'resetPassword')
+		// console.log(this.$route.params.findCategory)
+		if (this.$props.findCategory === 'email') return (this.tab = 'email')
+		else return (this.tab = 'reset_password')
 	},
 	watch: {
 		tabCategory() {
@@ -328,6 +332,10 @@ export default {
 		},
 	},
 	methods: {
+		tabChange(tab) {
+			this.tab = tab
+			this.$router.push({ params: { findCategory: tab } })
+		},
 		async mailAccountFind() {
 			try {
 				const res = await UserService.userFindEmail({
