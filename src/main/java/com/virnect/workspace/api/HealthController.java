@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  */
 
 @RestController
-@RequestMapping("/workspaces")
+@RequestMapping("/")
 public class HealthController {
     @GetMapping("/healthCheck")
     public ResponseEntity<String> healthCheck() {
