@@ -29,6 +29,10 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  messages:
+    encoding: UTF-8
+    basename: classpath:/messages
+
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace

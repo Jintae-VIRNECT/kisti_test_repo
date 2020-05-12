@@ -15,9 +15,11 @@ import com.virnect.workspace.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,12 +27,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Project: PF-Workspace
@@ -45,6 +49,16 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
+    private final MessageSource messageSource;
+    private final LocaleResolver localeResolver;
+
+    @ApiOperation(
+            value = "언어 설정"
+    )
+    @GetMapping("/locale")
+    public void locale(@ApiIgnore Locale locale, @ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang) {
+
+    }
 
     @ApiOperation(
             value = "워크스페이스 시작하기",
@@ -57,10 +71,14 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> createWorkspace(@ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
         return ResponseEntity.ok(apiResponse);
     }
+
 
     @ApiOperation(
             value = "워크스페이스 프로필 설정",
@@ -74,7 +92,10 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
     @PutMapping
-    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest) {
+    public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> setWorkspace(@ModelAttribute @Valid WorkspaceUpdateRequest workspaceUpdateRequest, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }
@@ -259,6 +280,21 @@ public class WorkspaceController {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<Boolean> apiResponse = this.workspaceService.exitWorkspace(workspaceId, userId);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @ApiOperation(
+            value = "(테스트용)워크스페이스 멤버 추가",
+            notes = "개발서버에서 테스트 데이터 넣기 위함."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    })
+    public ResponseEntity<ApiResponse<Boolean>> testSetMember(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequest, BindingResult bindingResult) {
+        if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<Boolean> apiResponse = this.workspaceService.testSetMember(workspaceId, workspaceInviteRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
