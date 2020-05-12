@@ -33,11 +33,8 @@ function calcOffset(element) {
   let top = 0
   let left = 0
 
-  do {
-    top += element.offsetTop || 0
-    left += element.offsetLeft || 0
-    element = element.offsetParent
-  } while (element)
+  top = window.pageYOffset + element.getBoundingClientRect().top
+  left = window.pageXOffset + element.getBoundingClientRect().left
 
   return {
     top: top,
@@ -219,7 +216,6 @@ export default {
     },
     hidePopover() {
       this.visible = false
-
       if (this.hide) {
         this.hide()
       }
