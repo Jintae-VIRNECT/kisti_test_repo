@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --config config/webpack.dev.conf.js",
     "build:develop": "cross-env NODE_ENV=develop webpack --mode production --progress --config config/webpack.prod.conf.js",
-    "build": "cross-env NODE_ENV=$NODE_ENV webpack --mode production --progress --config config/webpack.prod.conf.js",
+    "build:staging": "cross-env NODE_ENV=staging webpack --mode production --progress --config config/webpack.prod.conf.js",
+    "build": "cross-env NODE_ENV=production webpack --mode production --progress --config config/webpack.prod.conf.js",
     "start": "node server.js"
   },
   "dependencies": {
