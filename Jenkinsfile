@@ -162,7 +162,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=master' -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_COMMIT}"
+                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
