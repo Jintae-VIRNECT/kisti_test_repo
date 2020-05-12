@@ -290,6 +290,7 @@ public class WorkspaceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
+    @PostMapping("/test")
     public ResponseEntity<ApiResponse<Boolean>> testSetMember(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequest, BindingResult bindingResult) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
