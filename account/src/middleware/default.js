@@ -25,9 +25,9 @@ export default async function({ req, store, redirect }) {
       }
     }
 
-    // 홈이 없어서 쿠폰으로 임시 리다이렉트
+    // 홈이 없어서 개인정보로 임시 리다이렉트
     if (req.url === '/') {
-      return redirect('/coupon')
+      return redirect('/profile')
     }
   }
 }
