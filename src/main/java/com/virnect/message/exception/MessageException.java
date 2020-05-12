@@ -9,11 +9,11 @@ import com.virnect.message.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public class BusinessException extends RuntimeException {
+public class MessageException extends RuntimeException {
 
     private ErrorCode errorCode;
 
-    public BusinessException(ErrorCode errorCode) {
+    public MessageException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 

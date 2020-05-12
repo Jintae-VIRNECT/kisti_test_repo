@@ -1,6 +1,6 @@
 package com.virnect.message.global.error;
 
-import com.virnect.message.exception.BusinessException;
+import com.virnect.message.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,9 +24,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
     }
 
-    @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<ErrorResponseMessage> handleBusinessException(final BusinessException e) {
-        log.error("BusinessException", e);
+    @ExceptionHandler(MessageException.class)
+    protected ResponseEntity<ErrorResponseMessage> handleMessageException(final MessageException e) {
+        log.error("MessageException", e);
         e.printStackTrace();
         return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
     }

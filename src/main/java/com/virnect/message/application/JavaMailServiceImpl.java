@@ -1,12 +1,10 @@
 package com.virnect.message.application;
 
-import com.virnect.message.global.common.ResponseMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -26,14 +24,12 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@Profile({"local", "develop"})
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class JavaMailServiceImpl implements MailService {
+public class JavaMailServiceImpl  {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine springTemplateEngine;
 
-    @Override
-    public ResponseMessage sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
+    public void sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
         String html = springTemplateEngine.process(mailTemplate, context);
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -48,19 +44,20 @@ public class JavaMailServiceImpl implements MailService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return new ResponseMessage();
     }
 
-    @Override
-    public void sendStringMail(String sender, String to, String subject, String context) {
+
+    public void sendMail(List<String> receivers, String sender, String subject, String html) {
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
-            message.setSubject(subject);
-            message.setText(context);
-            message.setFrom(sender);
-            message.addRecipients(Message.RecipientType.TO, to);
+            for (String receiver : receivers) {
+                message.addRecipients(Message.RecipientType.TO, "ljk@virnect.com");
+                message.setFrom(sender);
+                message.setSubject(subject);
+                message.setText(html, "UTF-8", "html");
 
-            javaMailSender.send(message);
+                javaMailSender.send(message);
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
         }

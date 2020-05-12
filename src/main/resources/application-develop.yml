@@ -1,10 +1,12 @@
 spring:
   application:
-    name: MessageServer
+    name: message-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/smic?serverTimezone=UTC
-    username: virnect-smic
-    password: virnect1234!
+    url: jdbc:mysql://192.168.6.3:4336/messages?serverTimezone=UTC
+    username: virnect-message
+    password: virnect1234
+    hikari:
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,9 +20,6 @@ spring:
     port: 587
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
-  mustache:
-    enabled: true
-    suffix: .html
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -30,10 +29,17 @@ logging:
 server:
   port: 8084
 
-## Project Configuration
-file:
-  upload-path: "upload/"
-  url: "http://localhost:${server.port}"
-  allow-extension: "gif,jpg,jpeg,png"
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://192.168.6.3:8761/eureka
 
-
+## Aws credentials
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
