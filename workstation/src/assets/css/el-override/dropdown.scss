@@ -10,6 +10,9 @@ body .el-popper {
     display: none;
   }
 
+  .el-select-dropdown__list {
+    padding: 4px;
+  }
   .el-select-dropdown__item {
     font-size: 12.6px;
     line-height: 32px;

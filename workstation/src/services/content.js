@@ -40,11 +40,9 @@ export default {
    * 컨텐츠 상세 정보
    * @param {String} contentId
    */
-  async getContentInfo(contentId) {
+  async getContentInfo(contentUUID) {
     const data = await api('CONTENT_INFO', {
-      route: {
-        contentUUID: contentId,
-      },
+      route: { contentUUID },
     })
     return new Content(data)
   },
@@ -52,24 +50,20 @@ export default {
    * 컨텐츠 씬그룹 목록
    * @param {String} contentId
    */
-  async getContentSceneGroups(contentId) {
+  async getContentSceneGroups(contentUUID) {
     const data = await api('CONTENT_SCENE_GROUPS', {
-      route: {
-        contentUUID: contentId,
-      },
+      route: { contentUUID },
     })
     return data.sceneGroupInfoList.map(sceneGroup => new SceneGroup(sceneGroup))
   },
   /**
    * 컨텐츠 속성 트리
-   * @param {String} contentId
+   * @param {String} contentUUID
    * @param {String} userUUID
    */
-  async getContentProperties(contentId, userUUID) {
+  async getContentProperties(contentUUID, userUUID) {
     const data = await api('CONTENT_PROPERTIES', {
-      route: {
-        contentUUID: contentId,
-      },
+      route: { contentUUID },
       params: { userUUID },
     })
     return [
@@ -82,17 +76,29 @@ export default {
   },
   /**
    * 컨텐츠 삭제
-   * @param {String} contentId
+   * @param {Array} contentUUIDs
    */
-  async deleteContent(contentId) {
-    const uuid = authService.myId
-    if (!uuid) throw $nuxt.$t('messages.loginRequired')
-
+  async deleteContent(contentUUIDs) {
     return await api('CONTENT_DELETE', {
-      route: {
-        contentUUID: contentId,
+      params: {
+        contentUUID: contentUUIDs,
+        workerUUID: $nuxt.$store.getters['auth/myProfile'].uuid,
       },
-      params: { uuid },
+    })
+  },
+  /**
+   * 컨텐츠 상태 변경
+   * @param {String} contentUUID
+   * @param {Object} form
+   */
+  async updateContent(contentUUID, form) {
+    return await api('CONTENT_UPDATE', {
+      route: { contentUUID },
+      params: {
+        contentUUID,
+        userUUID: $nuxt.$store.getters['auth/myProfile'].uuid,
+        ...form,
+      },
     })
   },
 }

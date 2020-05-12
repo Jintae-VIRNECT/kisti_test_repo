@@ -24,6 +24,20 @@ export default class Content extends Model {
 }
 
 /**
+ * 컨텐츠 공유상태
+ */
+export const sharedStatus = [
+  {
+    value: 'YES',
+    label: 'contents.sharedStatus.shared',
+  },
+  {
+    value: 'NO',
+    label: 'contents.sharedStatus.noShared',
+  },
+]
+
+/**
  * 콘텐츠 검색 필터설정
  */
 export const filter = {

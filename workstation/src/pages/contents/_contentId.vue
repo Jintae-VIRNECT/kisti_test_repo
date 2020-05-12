@@ -31,13 +31,13 @@
         <dl class="row">
           <div>
             <dt>{{ $t('contents.info.volume') }}</dt>
-            <dd>{{ content.contentSize }}</dd>
+            <dd>{{ content.contentSize | toMegaBytes }}</dd>
             <dt>{{ $t('contents.info.type') }}</dt>
             <dd></dd>
           </div>
           <div>
             <dt>{{ $t('contents.info.createdDate') }}</dt>
-            <dd>{{ content.createdDate }}</dd>
+            <dd>{{ content.createdDate | localDateFormat }}</dd>
             <dt>{{ $t('contents.info.device') }}</dt>
             <dd></dd>
           </div>
@@ -45,7 +45,16 @@
         <el-divider />
         <dl>
           <dt>{{ $t('contents.info.sharedStatus') }}</dt>
-          <dd>{{ content.shared }}</dd>
+          <dd class="virnect-workstation-form">
+            <el-select v-model="form.shared" popper-class="select-shared">
+              <el-option
+                v-for="status in sharedStatus"
+                :key="status.value"
+                :value="status.value"
+                :label="$t(status.label)"
+              />
+            </el-select>
+          </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-for="target in content.targets" :key="target.id">
             <span>{{ target.type }}</span>
@@ -60,10 +69,15 @@
           </dd>
         </dl>
         <div class="buttons-wrapper">
-          <el-button>{{ $t('contents.info.delete') }}</el-button>
-          <el-button type="primary">{{ $t('contents.info.update') }}</el-button>
+          <el-button @click="remove">
+            {{ $t('contents.info.delete') }}
+          </el-button>
+          <el-button @click="update" :disabled="!isDirty" type="primary">
+            {{ $t('contents.info.update') }}
+          </el-button>
         </div>
       </el-col>
+      <!-- 콘텐츠 구성 정보 -->
       <el-col :span="15">
         <h4>{{ $t('contents.info.properties') }}</h4>
         <div class="properties">
@@ -81,6 +95,8 @@
 
 <script>
 import contentService from '@/services/content'
+import { sharedStatus } from '@/models/content/Content'
+import { filters } from '@/plugins/dayjs'
 
 export default {
   async asyncData({ params, store }) {
@@ -94,16 +110,35 @@ export default {
     return {
       content: await promise.content,
       properties: await promise.properties,
-      showMe: true,
     }
   },
   data() {
     return {
+      showMe: true,
+      sharedStatus,
+      form: {
+        shared: null,
+      },
       propertiesProps: {
         label: 'label',
         childern: 'childern',
       },
     }
+  },
+  computed: {
+    isDirty() {
+      return this.form.shared !== this.content.shared
+    },
+  },
+  filters: {
+    ...filters,
+    toMegaBytes(bytes) {
+      const kb = bytes / 1024
+      const mb = kb / 1024
+      return mb < 1
+        ? Math.round(kb * 100) / 100 + 'kB'
+        : Math.round(mb * 100) / 100 + 'MB'
+    },
   },
   methods: {
     close() {
@@ -119,8 +154,47 @@ export default {
       popup.document.close()
       popup.print()
     },
+    async remove() {
+      try {
+        await this.$confirm(
+          this.$t('contents.info.message.deleteSure'),
+          this.$t('contents.info.message.delete'),
+        )
+      } catch (e) {
+        return false
+      }
+      try {
+        await contentService.deleteContent([this.content.contentUUID])
+        this.$message.success({
+          message: this.$t('contents.info.message.deleteSuccess'),
+          showClose: true,
+        })
+        this.$router.replace('/contents')
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('contents.info.message.deleteFail'),
+          showClose: true,
+        })
+      }
+    },
+    async update() {
+      try {
+        await contentService.updateContent(this.content.contentUUID, this.form)
+        this.$message.success({
+          message: this.$t('contents.info.message.updateSuccess'),
+          showClose: true,
+        })
+        this.content.shared = this.form.shared
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('contents.info.message.updateFail'),
+          showClose: true,
+        })
+      }
+    },
   },
   beforeMount() {
+    this.form.shared = this.content.shared
     this.$store.commit(
       'workspace/SET_ACTIVE_WORKSPACE',
       this.content.workspaceUUID,
@@ -190,6 +264,14 @@ export default {
       margin-left: 12px;
       cursor: pointer;
     }
+    .el-select {
+      width: 100%;
+      margin-top: 5px;
+    }
+    .el-input__inner {
+      font-size: 14px;
+      line-height: 22px;
+    }
   }
 
   // 콘텐츠 구성 정보
@@ -216,5 +298,9 @@ export default {
       background-color: rgba(245, 247, 250, 0.75);
     }
   }
+}
+
+body .el-popper.select-shared .el-select-dropdown__item {
+  font-size: 14px;
 }
 </style>

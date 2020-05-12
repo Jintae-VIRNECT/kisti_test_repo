@@ -61,10 +61,10 @@
               :width="140"
             />
             <column-boolean
-              :label="$t('contents.allContents.column.shareStatus')"
+              :label="$t('contents.allContents.column.sharedStatus')"
               prop="shared"
-              :trueText="$t('contents.allContents.shared')"
-              :falseText="$t('contents.allContents.noShared')"
+              :trueText="$t('contents.sharedStatus.shared')"
+              :falseText="$t('contents.sharedStatus.noShared')"
               sortable="custom"
               :width="120"
             />
