@@ -24,6 +24,20 @@ export default class Content extends Model {
 }
 
 /**
+ * 컨텐츠 공유상태
+ */
+export const sharedStatus = [
+  {
+    value: 'YES',
+    label: 'contents.sharedStatus.shared',
+  },
+  {
+    value: 'NO',
+    label: 'contents.sharedStatus.noShared',
+  },
+]
+
+/**
  * 콘텐츠 검색 필터설정
  */
 export const filter = {
@@ -31,15 +45,15 @@ export const filter = {
   options: [
     {
       value: 'ALL',
-      label: 'navbar.filter.all',
+      label: 'searchbar.filter.all',
     },
     {
-      value: 'MANAGED',
-      label: 'navbar.filter.processPublished',
+      value: 'YES',
+      label: 'searchbar.filter.processPublished',
     },
     {
-      value: 'WAIT',
-      label: 'navbar.filter.processUnpublished',
+      value: 'NO',
+      label: 'searchbar.filter.processUnpublished',
     },
   ],
 }
@@ -52,11 +66,11 @@ export const sort = {
   options: [
     {
       value: 'createdDate,desc',
-      label: 'navbar.sort.createdDesc',
+      label: 'searchbar.sort.createdDesc',
     },
     {
       value: 'createdDate,asc',
-      label: 'navbar.sort.createdAsc',
+      label: 'searchbar.sort.createdAsc',
     },
   ],
 }

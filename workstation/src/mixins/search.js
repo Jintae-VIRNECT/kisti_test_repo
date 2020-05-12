@@ -1,12 +1,17 @@
-import NavbarFilter from '@/components/common/navbar/NavbarFilter'
-import NavbarSort from '@/components/common/navbar/NavbarSort'
-import NavbarSearch from '@/components/common/navbar/NavbarSearch'
+import SearchbarFilter from '@/components/common/searchbar/SearchbarFilter'
+import SearchbarSort from '@/components/common/searchbar/SearchbarSort'
+import SearchbarKeyword from '@/components/common/searchbar/SearchbarKeyword'
+import SearchbarPage from '@/components/common/searchbar/SearchbarPage'
 
+/**
+ *
+ */
 export default {
   components: {
-    NavbarFilter,
-    NavbarSort,
-    NavbarSearch,
+    SearchbarFilter,
+    SearchbarSort,
+    SearchbarKeyword,
+    SearchbarPage,
   },
   data() {
     return {
@@ -14,31 +19,42 @@ export default {
     }
   },
   mounted() {
-    const { filter, sort, search } = this.$refs
+    const { filter, sort, keyword, page, table } = this.$refs
 
-    const emitChangedSearchParams = () => {
+    const emitChangedSearchParams = customParams => {
       if (this.changedSearchParams) {
         this.$nextTick(() => {
           this.searchParams = {
-            search: search.value,
-            filter: filter.value.join(','),
-            sort: sort.value,
+            search: keyword && keyword.value,
+            filter: filter && filter.value.join(','),
+            sort: (customParams && customParams.sort) || (sort && sort.value),
+            page: page && page.value,
           }
           this.changedSearchParams(this.searchParams)
         })
       }
     }
 
-    search.$on('change', emitChangedSearchParams)
-    sort.$on('change', emitChangedSearchParams)
-    filter.$on('change', () => {
-      const last = filter.myValue[filter.myValue.length - 1]
-      if (last === 'ALL' || !filter.myValue.length) {
-        filter.myValue = ['ALL']
-      } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
-        filter.myValue.shift()
-      }
-      emitChangedSearchParams()
-    })
+    if (keyword) keyword.$on('change', emitChangedSearchParams)
+    if (sort) sort.$on('change', emitChangedSearchParams)
+    if (page) page.$on('change', emitChangedSearchParams)
+    if (filter)
+      filter.$on('change', () => {
+        const last = filter.myValue[filter.myValue.length - 1]
+        if (last === 'ALL' || !filter.myValue.length) {
+          filter.myValue = ['ALL']
+        } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
+          filter.myValue.shift()
+        }
+        emitChangedSearchParams()
+      })
+    if (table)
+      table.$on('sort-change', ({ prop, order }) => {
+        if (!order) emitChangedSearchParams()
+        else {
+          const sort = `${prop},${order.replace('ending', '')}`
+          emitChangedSearchParams({ sort })
+        }
+      })
   },
 }

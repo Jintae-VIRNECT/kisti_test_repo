@@ -24,6 +24,7 @@ body {
   @import "@/assets/css/el-override/button.scss";
   @import "@/assets/css/el-override/card.scss";
   @import "@/assets/css/el-override/dialog.scss";
+  @import "@/assets/css/el-override/pagination.scss";
 
   .virnect-login-form {
     @import "@/assets/css/el-override/login-form.scss";
@@ -35,7 +36,7 @@ body {
 
 @import "@/assets/css/modules/common.scss";
 @import "@/assets/css/modules/column.scss";
-@import "@/assets/css/modules/navbar.scss";
+@import "@/assets/css/modules/searchbar.scss";
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
 @import "@/assets/css/el-override/tooltip.scss";

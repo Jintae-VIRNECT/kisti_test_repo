@@ -35,11 +35,15 @@ module.exports = {
   // 콘텐츠 목록 조회
   CONTENTS_LIST: ['GET', '/contents'],
   // 콘텐츠 삭제 요청
-  CONTENT_DELETE: ['DELETE', '/contents/{contentUUID}'],
+  CONTENT_DELETE: ['DELETE', '/contents'],
+  // 콘텐츠 상태 수정
+  CONTENT_UPDATE: ['PUT', '/contents/info/{contentUUID}'],
   // 컨텐츠 상세 정보 조회
-  CONTENT_INFO: ['GET', '/contents/{contentUUID}/info'],
+  CONTENT_INFO: ['GET', '/contents/{contentUUID}'],
   // 씬그룹 목록 조회
-  SCENE_GROUPS_LIST: ['GET', '/contents/metadata/sceneGroups'],
+  CONTENT_SCENE_GROUPS: ['GET', '/contents/sceneGroups/content/{contentUUID}'],
+  // 컨텐츠 속성 트리 조회
+  CONTENT_PROPERTIES: ['GET', '/contents/properties/metadata/{contentUUID}'],
   /**
    * Process
    */

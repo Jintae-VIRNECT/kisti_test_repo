@@ -1,5 +1,6 @@
 import api from '@/api/gateway'
 import Workspace from '@/models/workspace/Workspace'
+import Cookies from 'js-cookie'
 
 export default {
   state: () => ({
@@ -22,6 +23,7 @@ export default {
       state.activeWorkspace = state.myWorkspaces.find(
         workspace => workspace.uuid === workspaceId,
       )
+      Cookies.set('activeWorkspace', workspaceId, { expires: 7 })
     },
   },
   actions: {

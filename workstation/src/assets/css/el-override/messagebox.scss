@@ -75,5 +75,9 @@ body .el-message-box {
       border-color: #1468e2;
       border-radius: 3px;
     }
+    .el-button:not(.el-button--primary) {
+      background: none;
+      border: none;
+    }
   }
 }

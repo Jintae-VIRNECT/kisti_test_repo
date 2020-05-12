@@ -40,8 +40,27 @@
 .el-card--table .el-card__body {
   padding: 0;
 
+  .el-table.clickable .el-table__row {
+    cursor: pointer;
+  }
+  .el-table .cell {
+    overflow: inherit;
+    white-space: inherit;
+    text-overflow: inherit;
+    word-break: inherit;
+
+    & > div {
+      display: block;
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
   .el-table th {
     padding: 8px 0;
+    overflow: visible;
     color: $font-color-desc;
     font-size: 12px;
   }
@@ -70,6 +89,9 @@
         opacity: 0.7;
       }
     }
+  }
+  .el-table-column--selection .cell {
+    padding: 0 14px;
   }
   .el-table .caret-wrapper {
     margin: -10px -3px;

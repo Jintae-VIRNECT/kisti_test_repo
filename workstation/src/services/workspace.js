@@ -64,7 +64,6 @@ export default {
         workspaceId: activeWorkspaceGetter().uuid,
       },
       params: {
-        userId: myProfileGetter().uuid,
         sort: 'role,asc',
         ...searchParams,
       },

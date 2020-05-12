@@ -20,7 +20,7 @@
     "updatedAsc": "오래된 보고순",
     "updatedDesc": "최신 보고순"
   },
-  "search": {
+  "keyword": {
     "title": "검색"
   }
 }

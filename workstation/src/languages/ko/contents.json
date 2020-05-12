@@ -1,6 +1,7 @@
 {
   "allContents": {
     "title": "전체 콘텐츠 목록",
+    "all": "전체",
     "myContents": "내 콘텐츠",
     "workspaceContentsList": "워크스페이스 콘텐츠 목록",
     "column": {
@@ -9,7 +10,36 @@
       "targetType": "타겟 유형",
       "uploader": "업로드 멤버",
       "createdDate": "콘텐츠 등록일",
-      "shareStatus": "공유 상태"
+      "sharedStatus": "공유 상태"
+    }
+  },
+  "sharedStatus": {
+    "shared": "활성화",
+    "noShared": "비활성화"
+  },
+  "info": {
+    "title": "콘텐츠 정보",
+    "id": "콘텐츠 ID",
+    "name": "콘텐츠 이름",
+    "uploader": "업로드 멤버",
+    "volume": "콘텐츠 용량",
+    "createdDate": "콘텐츠 등록일",
+    "type": "콘텐츠 타입",
+    "device": "지원 디바이스",
+    "sharedStatus": "현재 공유 상태",
+    "target": "타겟 유형",
+    "properties": "콘텐츠 구성 정보",
+    "delete": "삭제하기",
+    "update": "변경하기",
+    "message": {
+      "delete": "선택 콘텐츠 삭제",
+      "deleteSure": "선택하신 콘텐츠를 삭제 하시겠습니까?",
+      "deleteSuccess": "선택하신 콘텐츠를 삭제하였습니다.",
+      "deleteFail": "선택하신 콘텐츠 삭제에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "deleteNotExist": "워크스페이스에 선택하신 콘텐츠가 존재하지 않습니다. 다시  확인해 주세요.",
+      "updateSuccess": "선택하신 콘텐츠 공유 설정을 변경하였습니다.",
+      "updateFail": "선택하신 콘텐츠 공유 설정 변경에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "updateNotExist": "워크스페이스에 선택하신 콘텐츠가 존재하지 않습니다. 다시  확인해 주세요."
     }
   }
 }
