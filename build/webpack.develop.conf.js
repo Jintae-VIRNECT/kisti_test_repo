@@ -51,38 +51,8 @@ const developWebpackConfig = merge(baseWebpackConfig(mode), {
     new Dotenv({
       path: `.env.${process.env.NODE_ENV.trim()}`,
     }),
-    // new OptimizeCSSPlugin({
-    //     cssProcessor: require('cssnano'),
-    //     cssProcessorPluginOptions: {
-    //       preset: ['default', { discardComments: { removeAll: true } }],
-    //     },
-    //     canPrint: true
-    // })
   ],
-  optimization: {
-    // minimizer: [
-    //     new TerserPlugin({
-    //         sourceMap: false,
-    //         terserOptions: {
-    //             compress: {
-    //                 drop_console: true
-    //             }
-    //         }
-    //     })
-    // ],
-    // splitChunks: {
-    //     chunks: 'initial',
-    //     maxSize: 8000000,
-    //     automaticNameDelimiter: '~',
-    //     cacheGroups: {
-    //         vendors: {
-    //             filename: '[name].js',
-    //             test: /[\\/]node_modules[\\/]/,
-    //             priority: -10
-    //         }
-    //     }
-    // }
-  },
+  optimization: {},
 })
 
 module.exports = developWebpackConfig

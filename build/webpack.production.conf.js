@@ -1,12 +1,13 @@
 'use strict'
-const webpack = require('webpack')
 const merge = require('webpack-merge')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const Dotenv = require('dotenv-webpack')
 
-const mode = 'production'
+const mode =
+  process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
 
 const productionWebpackConfig = merge(baseWebpackConfig(mode), {
   devtool: false,
@@ -15,11 +16,11 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
     new CleanWebpackPlugin('../dist/*', {
       allowExternal: true,
     }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"',
-      },
-    }),
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     NODE_ENV: '"production"',
+    //   },
+    // }),
     new HtmlWebpackPlugin({
       inject: 'body',
       hash: true,
@@ -34,36 +35,16 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       favicon: './src/assets/favicon.ico',
       template: './src/apps/extra/app.html',
       filename: 'extra/index.html',
-      chunks: ['extra']
+      chunks: ['extra'],
     }),
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',
     }),
+    new Dotenv({
+      path: `.env.${process.env.NODE_ENV.trim()}`,
+    }),
   ],
-  optimization: {
-    // minimizer: [
-    //     new TerserPlugin({
-    //         sourceMap: false,
-    //         terserOptions: {
-    //             compress: {
-    //                 drop_console: true
-    //             }
-    //         }
-    //     })
-    // ],
-    // splitChunks: {
-    //     chunks: 'initial',
-    //     maxSize: 8000000,
-    //     automaticNameDelimiter: '~',
-    //     cacheGroups: {
-    //         vendors: {
-    //             filename: '[name].js',
-    //             test: /[\\/]node_modules[\\/]/,
-    //             priority: -10
-    //         }
-    //     }
-    // }
-  },
+  optimization: {},
 })
 
 module.exports = productionWebpackConfig

@@ -27,8 +27,8 @@ pipeline {
           environment {
             NODE_ENV='develop'
           }
-          steps {            
-            sh 'npm run build:develop'
+          steps {
+            sh 'npm run build'
             sh 'docker build -t rm-web .'
           }
         }
@@ -38,9 +38,9 @@ pipeline {
             branch 'staging'
           }
           environment {
-            NODE_ENV='develop'
+            NODE_ENV='staging'
           }
-          steps {         
+          steps {
             sh 'npm run build'   
             sh 'docker build -t rm-web .'
           }
@@ -53,7 +53,7 @@ pipeline {
           environment {
             NODE_ENV='production'
           }
-          steps {           
+          steps {
             sh 'npm run build' 
             sh 'docker build -t rm-web .'
           }
