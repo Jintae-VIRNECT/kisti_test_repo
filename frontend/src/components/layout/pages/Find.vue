@@ -273,7 +273,7 @@ export default {
 		}
 	},
 	mounted() {
-		// console.log(this.$route.params.findCategory)
+		// console.log(this.$route.params.findCategory)dhodksehfdk
 		if (this.$props.findCategory === 'email') return (this.tab = 'email')
 		else return (this.tab = 'reset_password')
 	},
