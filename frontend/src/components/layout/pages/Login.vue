@@ -68,6 +68,7 @@ import Login from 'model/login'
 import AuthService from 'service/auth-service'
 
 import footerSection from '../common/Footer'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
 	name: 'login',
@@ -142,7 +143,7 @@ export default {
 							? redirectTarget
 							: `//${redirectTarget}`
 					} else {
-						location.href = '//virnect.com'
+						location.href = urls.workstation[process.env.TARGET_ENV]
 					}
 				} catch (e) {
 					// console.log(e)
