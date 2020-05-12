@@ -17,7 +17,14 @@ export default async function({ req, store, redirect }) {
       if (myWorkspaces.length) {
         await store.dispatch('workspace/getMyWorkspaces', myProfile.uuid)
         const myWorkspaces = store.getters['workspace/myWorkspaces']
-        store.commit('workspace/SET_ACTIVE_WORKSPACE', myWorkspaces[0].uuid)
+        // 마지막 워크스페이스 확인
+        const lastWorkspace = req.headers.cookie.match(
+          /activeWorkspace=([0-9a-f]+)/,
+        )
+        const activeWorkspace = lastWorkspace
+          ? lastWorkspace[1]
+          : myWorkspaces[0].uuid
+        store.commit('workspace/SET_ACTIVE_WORKSPACE', activeWorkspace)
       } else {
         // 워크스페이스가 없는 경우
         return redirect('/start')
