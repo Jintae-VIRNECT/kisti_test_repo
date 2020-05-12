@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -41,9 +40,7 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
             if (config.isPreLogger()) {
                 stopWatch.start();
                 String uri = request.getURI().toString();
-                Optional<String> forwardHeaders = Optional.ofNullable(request.getHeaders().get("X-Forwarded-For").get(0));
-                String clientIp = forwardHeaders.orElse(request.getRemoteAddress().getAddress().getHostAddress());
-
+                String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
                 log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
                 log.info("[REQUEST] [{}] [{}] [{}] {}", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
                 request.getHeaders().entrySet().forEach((entry -> log.info("[HEADER] [{}] => {} ", entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
