@@ -44,18 +44,13 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     },
     proxy: {
       '/api': {
-        target: 'https://192.168.6.3:8073',
+        target: 'https://develop.virnect.com:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
-      },
-      '/users': {
-        target: 'https://192.168.6.3:8073',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        // secure: false,
-        // changeOrigin: true,
+        pathRewrite: { '^/api': '' },
+        secure: false,
+        changeOrigin: true,
       },
     },
     noInfo: true,

@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     reset() {
-      this.title = `${this.account.name}'s Room`
+      this.title = `${this.account.nickname}'s Room`
       this.description = ''
     },
     async start() {
@@ -144,7 +144,7 @@ export default {
     },
     checkEmpty() {
       if (this.title === '') {
-        this.title = `${this.account.name}'s Room`
+        this.title = `${this.account.nickname}'s Room`
       }
     },
   },

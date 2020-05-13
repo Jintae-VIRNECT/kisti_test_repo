@@ -2,14 +2,13 @@ import { ACCOUNT_SET, ACCOUNT_CLEAR } from '../mutation-types'
 
 function getDefaultState() {
   return {
-    userId: null,
+    uuid: null,
     profile: null,
     description: null,
     email: null,
-    name: null,
+    nickname: null,
     serviceInfo: null,
     userType: null,
-    uuid: null,
   }
 }
 const state = getDefaultState()

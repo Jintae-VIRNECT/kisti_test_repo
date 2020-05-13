@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { getAccount } from 'api/common/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
@@ -22,18 +22,18 @@ function getTokensFromCookies() {
   refreshToken = Cookies.get('refreshToken')
   return accessToken
 }
-async function getMyInfo(api) {
-  api.defaults.headers.common = {
-    Authorization: `Bearer ${accessToken}`,
-  }
+async function getMyInfo() {
   try {
-    const res = await api('/users/info')
-    const { data } = res.data
-    myInfo = data.userInfo
-    myWorkspaces = data.workspaceInfoList.workspaceList
-    return data
+    const res = await getAccount()
+    myInfo = res.userInfo
+    myWorkspaces = res.workspaceInfoList.workspaceList
+    return res
   } catch (err) {
-    console.log(err)
+    if (err.code === 9999) {
+      // console.log('9999')
+      // return
+    }
+    throw err
   }
 }
 
@@ -59,25 +59,17 @@ class Auth {
     return clonedeep(myWorkspaces)
   }
 
-  async init(options = {}) {
+  async init() {
     env = process.env.TARGET_ENV
     if (env === undefined) {
       env = 'local'
     }
-    api = axios.create({
-      timeout: process.env.TARGET_ENV === 'production' ? 2000 : 1000,
-      headers: { 'Content-Type': 'application/json' },
-      baseURL: options.API_GATEWAY_URL
-        ? options.API_GATEWAY_URL
-        : urls.api[env],
-    })
 
     if (getTokensFromCookies()) {
       try {
         await getMyInfo(api)
         isLogin = true
       } catch (e) {
-        console.error(e)
         console.error('Token is expired')
         isLogin = false
       }
