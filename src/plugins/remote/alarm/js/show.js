@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import Hammer from 'hammerjs'
+import Hammer from './hammer.min'
 import animations from './animations'
 import { toastObject } from './object'
 const uuid = require('shortid')
