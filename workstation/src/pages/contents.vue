@@ -12,7 +12,18 @@
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
-        <el-col class="left"> </el-col>
+        <el-col class="left">
+          <el-button @click="showAll">
+            {{ $t('contents.allContents.all') }}
+          </el-button>
+          <el-button @click="showMine">
+            {{ $t('contents.allContents.myContents') }}
+          </el-button>
+          <el-button @click="remove" type="text">
+            <img src="~assets/images/icon/ic-delete.svg" />
+            <span>{{ $t('contents.allContents.delete') }}</span>
+          </el-button>
+        </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
         </el-col>
@@ -80,7 +91,7 @@
         :total="contentsTotal"
       />
     </div>
-    <nuxt-child />
+    <nuxt-child @updated="emitChangedSearchParams" />
   </div>
 </template>
 
@@ -118,6 +129,40 @@ export default {
     },
     rowClick(row) {
       this.$router.push(`/contents/${row.contentUUID}`)
+    },
+    showAll() {
+      this.searchParams.mine = false
+      this.emitChangedSearchParams()
+    },
+    showMine() {
+      this.searchParams.mine = true
+      this.emitChangedSearchParams()
+    },
+    async remove() {
+      try {
+        await this.$confirm(
+          this.$t('contents.info.message.deleteSure'),
+          this.$t('contents.info.message.delete'),
+        )
+      } catch (e) {
+        return false
+      }
+      try {
+        const selectedContents = this.$refs.table.selection.map(
+          content => content.contentUUID,
+        )
+        await contentService.deleteContent(selectedContents)
+        this.$message.success({
+          message: this.$t('contents.info.message.deleteSuccess'),
+          showClose: true,
+        })
+        this.emitChangedSearchParams()
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('contents.info.message.deleteFail'),
+          showClose: true,
+        })
+      }
     },
   },
   beforeMount() {

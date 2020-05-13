@@ -4,7 +4,7 @@
       <el-divider v-if="menu.divider" />
       <el-tooltip
         v-else
-        class="item"
+        popper-class="the-sidebar__tooltip"
         effect="dark"
         :content="$t(menu.label)"
         placement="right"
@@ -76,5 +76,9 @@ export default {
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.2);
   }
+}
+
+.the-sidebar__tooltip {
+  transform: translateX(8px);
 }
 </style>

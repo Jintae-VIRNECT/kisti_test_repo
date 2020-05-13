@@ -34,6 +34,8 @@ module.exports = {
   CONTENTS_STATISTICS: ['GET', '/contents/statistics'],
   // 콘텐츠 목록 조회
   CONTENTS_LIST: ['GET', '/contents'],
+  // 내 콘텐츠 목록 조회
+  CONTENTS_LIST_MINE: ['GET', '/contents/my/{userUUID}'],
   // 콘텐츠 삭제 요청
   CONTENT_DELETE: ['DELETE', '/contents'],
   // 콘텐츠 상태 수정

@@ -169,6 +169,7 @@ export default {
           message: this.$t('contents.info.message.deleteSuccess'),
           showClose: true,
         })
+        this.$emit('updated')
         this.$router.replace('/contents')
       } catch (e) {
         this.$message.error({
@@ -185,6 +186,7 @@ export default {
           showClose: true,
         })
         this.content.shared = this.form.shared
+        this.$emit('updated')
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.updateFail'),
