@@ -9,8 +9,13 @@
   "view": "VIRNECT View",
   "remote": "VIRNECT Remote",
   "pc": "PC",
+  "mobile": "<span>스마트폰/타블릿</span>",
+  "hmt-1": "<span>HMT-1</span>용 APK",
+  "realwear": "Realwear",
+  "googlePlay": "Google Play",
   "windowsInstall": "<span>Windows</span>용 설치 파일",
   "release": "Release",
   "installFileDownload": "설치 파일 다운로드",
+  "downloadLink": "다운로드 바로가기",
   "guideDownload": "설치 가이드 다운로드"
 }

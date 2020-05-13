@@ -28,12 +28,11 @@ $color-primary-active: #0a51b7;
 }
 
 .el-tabs [role="tab"] {
+  color: #979fae;
+
   &.is-active,
   &:hover:not(.is-disabled) {
     color: $color-primary;
-  }
-  &.is-disabled {
-    color: #979fae;
   }
 }
 .el-tabs__active-bar {
