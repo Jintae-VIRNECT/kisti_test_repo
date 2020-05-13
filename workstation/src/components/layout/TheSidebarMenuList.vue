@@ -9,14 +9,19 @@
         :content="$t(menu.label)"
         placement="right"
       >
-        <!-- 링크 -->
-        <nuxt-link v-if="menu.path[0] === '/'" :to="menu.path">
+        <!-- 컴포넌트 -->
+        <nuxt-link
+          v-if="menu.collapse"
+          :to="menu.path"
+          event=""
+          @click.native.stop="openCollapse(menu.collapse)"
+        >
           <img :src="menu.image" :alt="$t(menu.label)" />
         </nuxt-link>
-        <!-- 컴포넌트 -->
-        <a v-if="menu.path[0] === '@'" @click.stop="openCollapse(menu.path)">
+        <!-- 링크 -->
+        <nuxt-link v-else :to="menu.path">
           <img :src="menu.image" :alt="$t(menu.label)" />
-        </a>
+        </nuxt-link>
       </el-tooltip>
     </li>
   </ul>
@@ -29,7 +34,7 @@ export default {
   },
   methods: {
     openCollapse(component) {
-      this.emit('openCollapse', component)
+      this.$emit('openCollapse', component)
     },
   },
 }
