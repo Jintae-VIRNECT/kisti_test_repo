@@ -36,14 +36,14 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "storage_amount", nullable = false)
-    private Long storageAmount;
+    @Column(name = "max_storage_size", nullable = false)
+    private Long maxStorageSize;
 
-    @Column(name = "download_hit", nullable = false)
-    private Long downloadHit;
+    @Column(name = "max_download_hit", nullable = false)
+    private Long maxDownloadHit;
 
-    @Column(name = "call_time", nullable = false)
-    private Long callTime;
+    @Column(name = "max_call_time", nullable = false)
+    private Long maxCallTime;
 
     // nullable false 로 나중에 바꾸기
     @Column(name = "workspace_id")
@@ -65,16 +65,16 @@ public class LicensePlan extends BaseTimeEntity {
     private List<LicenseProduct> licenseProductList;
 
     @Builder
-    public LicensePlan(String userId, String workspaceId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon, Long downloadHit, Long storageAmount, Long callTime) {
+    public LicensePlan(String userId, String workspaceId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon, Long maxDownloadHit, Long maxStorageSize, Long maxCallTime) {
         this.userId = userId;
         this.workspaceId = workspaceId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.planStatus = planStatus;
         this.coupon = coupon;
-        this.downloadHit = downloadHit;
-        this.callTime = callTime;
-        this.storageAmount = storageAmount;
+        this.maxDownloadHit = maxDownloadHit;
+        this.maxCallTime = maxCallTime;
+        this.maxStorageSize = maxStorageSize;
         this.modifiedUser = userId;
     }
 }
