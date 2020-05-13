@@ -87,6 +87,11 @@
         :total="contentsTotal"
       />
     </div>
+    <!-- 생성 모달 -->
+    <set-process-info
+      :contentId="selectedContentId"
+      :visible.sync="showNewProcessInfo"
+    />
   </div>
 </template>
 
@@ -100,8 +105,13 @@ import {
   sort as contentsSort,
 } from '@/models/content/Content'
 
+import SetProcessInfo from '@/components/process/SetProcessInfo'
+
 export default {
   mixins: [searchMixin, columnsMixin],
+  components: {
+    SetProcessInfo,
+  },
   data() {
     return {
       loading: false,
@@ -111,6 +121,8 @@ export default {
       contentsSort,
       contentsSearch: '',
       contentsPage: 1,
+      selectedContentId: null,
+      showNewProcessInfo: false,
     }
   },
   methods: {
@@ -123,7 +135,8 @@ export default {
       this.contentsTotal = total
     },
     rowClick(row) {
-      console.log(row)
+      this.selectedContentId = row.contentUUID
+      this.showNewProcessInfo = true
     },
     showAll() {
       this.searchParams.mine = false

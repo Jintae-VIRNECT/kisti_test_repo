@@ -20,6 +20,10 @@
     }
   },
   "new": {
-    "title": "신규 작업 등록"
+    "title": "신규 작업 등록",
+    "contentsInfo": "신규 작업 등록 콘텐츠 정보",
+    "sceneGroupInfo": "작업 구성 정보",
+    "moveContentInfo": "콘텐츠 정보 바로가기",
+    "next": "다음"
   }
 }
