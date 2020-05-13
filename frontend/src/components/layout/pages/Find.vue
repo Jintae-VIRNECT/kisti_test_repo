@@ -273,7 +273,7 @@ export default {
 		}
 	},
 	mounted() {
-		// console.log(this.$route.params.findCategory)d
+		// console.log(this.$route.params.findCategory)
 		if (this.$props.findCategory === 'email') return (this.tab = 'email')
 		else return (this.tab = 'reset_password')
 	},
@@ -334,7 +334,7 @@ export default {
 	methods: {
 		tabChange(tab) {
 			this.tab = tab
-			this.$router.push({ params: { findCategory: tab } })
+			this.$router.push({ name: 'findTab', params: { findCategory: tab } })
 		},
 		async mailAccountFind() {
 			try {
@@ -372,7 +372,7 @@ export default {
 			}
 			try {
 				const res = await UserService.userPassChange(userInfo)
-				console.log(res)
+				// console.log(res)
 				if (res.code === 200)
 					return this.confirmWindow(
 						'비밀번호 변경 완료 ',
