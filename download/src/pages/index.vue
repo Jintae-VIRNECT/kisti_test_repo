@@ -166,7 +166,7 @@ export default {
   }
 
   .el-tabs__content {
-    margin: 94px auto 120px;
+    margin: 120px auto 160px;
   }
   .el-tabs__content .el-card {
     display: inline-block;
