@@ -1,0 +1,15 @@
+
+New Features
+- 인증 토큰 파싱 로깅 추가
+- 서비스별 API request, response 로깅 기능 추가
+- request header 필드 로깅 기능 추가
+- JWT 인증 필터 추가 (미인증 API, 만료 인증 토큰 관리)
+- 미디어 서버 요청 프록시 기능 등록
+
+Bug Fixes
+- 없음
+
+Limitation
+- 없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
