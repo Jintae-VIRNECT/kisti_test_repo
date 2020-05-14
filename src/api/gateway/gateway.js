@@ -15,10 +15,11 @@ const axios = Axios.create({
   timeout: 10000,
   withCredentials: false,
   headers: {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
     'Content-Type': 'application/json',
     Authorization: `Bearer ${TOKEN}`,
   },
+  baseURL: urls.api[process.env.TARGET_ENV],
 })
 
 const URL = {
@@ -76,7 +77,10 @@ const sender = async function(constant, params, custom) {
     method = URL[constant][0].toLowerCase() || 'post'
 
     //Extract url
-    url = `/api${URL[constant][1]}`
+    url = URL[constant][1]
+    if (process.env.TARGET_ENV === 'local') {
+      url = `/api${url}`
+    }
 
     //Extract option
     custom = URL[constant][2]
@@ -133,6 +137,7 @@ const sender = async function(constant, params, custom) {
  * @param {Object} res
  */
 const receiver = function(res) {
+  console.log(res)
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {
