@@ -16,6 +16,4 @@ public interface TargetRepository extends JpaRepository<Target, Long> {
     Optional<Target> findByData(String targetData);
 
     Optional<Target> findById(Long id);
-
-    int countByData(String targetData);
 }
