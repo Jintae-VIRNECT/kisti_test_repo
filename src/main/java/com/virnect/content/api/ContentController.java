@@ -401,4 +401,9 @@ public class ContentController {
         ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.setContentPropertiesMetadata(contentUUID, metadataRequest);
         return ResponseEntity.ok(responseMessage);
     }
+
+    @GetMapping("/healthcheck")
+    public ResponseEntity<String> checkHealth() {
+        return ResponseEntity.ok("200 OK");
+    }
 }
