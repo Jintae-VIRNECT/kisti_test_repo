@@ -15,12 +15,12 @@ export default new VueRouter({
       redirect: { name: 'workspace' },
     },
     {
-      path: '/service',
+      path: '/room',
       name: 'service',
       component: ServiceComponent,
     },
     {
-      path: '/workspace',
+      path: '/home',
       name: 'workspace',
       component: WorkspaceComponent,
     },

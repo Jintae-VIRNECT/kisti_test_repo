@@ -25,7 +25,11 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     historyApiFallback: {
       rewrites: [
         {
-          from: /workspace(\/.*)?/,
+          from: /home(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
+          from: /room(\/.*)?/,
           to: '/remote/index.html',
         },
         {
