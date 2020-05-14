@@ -746,4 +746,9 @@ public class TaskController {
         ApiResponse<ProcessInfoResponse> apiResponse = this.taskService.convertProcess(processId, workerUUID, state);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/healthcheck")
+    public ResponseEntity<String> checkHealth() {
+        return ResponseEntity.ok("200 OK");
+    }
 }
