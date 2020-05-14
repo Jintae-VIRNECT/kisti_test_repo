@@ -11,10 +11,7 @@ import com.virnect.content.dao.TargetRepository;
 import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
-import com.virnect.content.dto.request.ContentPropertiesMetadataRequest;
-import com.virnect.content.dto.request.ContentTargetRequest;
-import com.virnect.content.dto.request.ContentUpdateRequest;
-import com.virnect.content.dto.request.ContentUploadRequest;
+import com.virnect.content.dto.request.*;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
 import com.virnect.content.event.ContentDownloadHitEvent;
@@ -300,7 +297,6 @@ public class ContentService {
             eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
 
         // 5 수정 컨텐츠 파일 크기 반영
         targetContent.setSize(updateRequest.getContent().getSize());
@@ -630,7 +626,12 @@ public class ContentService {
     }
 
     @Transactional
-    public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, final YesOrNo shared, final Types contentType, final String userUUID) {
+    public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, ContentInfoRequest contentInfoRequest) {
+
+        final YesOrNo shared    = contentInfoRequest.getShared();
+        final Types contentType = contentInfoRequest.getContentType();
+        final String userUUID   = contentInfoRequest.getUserUUID();
+
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
@@ -771,13 +772,16 @@ public class ContentService {
         return contentUpload(uploadRequest);
     }
 
+    @Transactional(readOnly = true)
     public ApiResponse<ContentPropertiesResponse> getContentPropertiesMetadata(String contentUUID, String userUUID) {
         // 컨텐츠 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!content.getUserUUID().equals(userUUID))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+//        if (!content.getUserUUID().equals(userUUID))
+//            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        workspaceMemberCheck(userUUID, content.getWorkspaceUUID());
+
 
         // 사용자 조회
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
@@ -805,8 +809,9 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!metadataRequest.getUserUUID().equals(content.getUserUUID()))
+        if (!metadataRequest.getUserUUID().equals(content.getUserUUID())){
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        }
 
         content.setProperties(metadataRequest.getProperties());
         this.contentRepository.save(content);
