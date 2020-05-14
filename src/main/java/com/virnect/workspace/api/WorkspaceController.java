@@ -185,11 +185,11 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
     @PostMapping("/{workspaceId}/members/info")
-    public ResponseEntity<ApiResponse<Boolean>> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid MemberUpdateRequest memberUpdateRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<Boolean>> reviseUserPermission(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid MemberUpdateRequest memberUpdateRequest, BindingResult bindingResult, @ApiIgnore Locale locale) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = this.workspaceService.reviseMemberInfo(workspaceId, memberUpdateRequest);
+        ApiResponse<Boolean> apiResponse = this.workspaceService.reviseMemberInfo(workspaceId, memberUpdateRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
 
