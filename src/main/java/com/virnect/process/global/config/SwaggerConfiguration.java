@@ -1,5 +1,10 @@
 package com.virnect.process.global.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.process.global.error.ErrorCode;
+import com.virnect.process.global.error.ErrorResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -28,29 +33,32 @@ import java.util.List;
 @Profile({"local", "develop"})
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfiguration {
+    private final ObjectMapper objectMapper;
 
     @Bean
-    public List<ResponseMessage> globalResponseMessage() {
-        ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
-        return responseMessages;
-    }
-
-    @Bean
-    public Docket processApi() {
+    public Docket processApi() throws JsonProcessingException {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .contact(new Contact("민항기", "https://virnect.com", "hkmin@virnect.com"))
+                .contact(new Contact("허지용", "https://virnect.com", "jiyong.heo@virnect.com"))
                 .description("공정 서버 API 정보 입니다.")
                 .version("v0.0.1")
                 .title("VIRNECT PRODUCT - Process Service API Document.")
                 .license("VIRNECT INC All rights reserved.")
                 .build();
 
+        List<ResponseMessage> responseMessages = new ArrayList<>();
+        for (ErrorCode errorCode : ErrorCode.values()) {
+            responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode()).message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode))).build());
+        }
+        responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.GET, responseMessages)
+                .globalResponseMessage(RequestMethod.POST, responseMessages)
+                .globalResponseMessage(RequestMethod.PUT, responseMessages)
+                .globalResponseMessage(RequestMethod.DELETE, responseMessages)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.process.api"))
                 .paths(PathSelectors.any())
