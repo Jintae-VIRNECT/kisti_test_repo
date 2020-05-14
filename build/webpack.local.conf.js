@@ -48,7 +48,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
-        pathRewrite: { '^/api': '' },
         secure: false,
         changeOrigin: true,
       },

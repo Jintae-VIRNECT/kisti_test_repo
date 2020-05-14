@@ -78,9 +78,6 @@ const sender = async function(constant, params, custom) {
 
     //Extract url
     url = URL[constant][1]
-    if (process.env.TARGET_ENV === 'local') {
-      url = `/api${url}`
-    }
 
     //Extract option
     custom = URL[constant][2]
