@@ -125,15 +125,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import { filters } from '@/plugins/dayjs'
+import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
 export default {
+  mixins: [filters],
   components: {
     WorkspaceInfo,
-  },
-  filters: {
-    ...filters,
   },
   computed: {
     ...mapGetters({

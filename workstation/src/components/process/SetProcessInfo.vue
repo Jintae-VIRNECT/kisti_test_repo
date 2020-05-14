@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    class="set-process-info-modal"
+    id="set-process-info-modal"
+    class="info-modal"
     :visible.sync="showMe"
     :title="$t('process.new.contentsInfo')"
     width="860px"
@@ -45,25 +46,16 @@
         <dl>
           <dt>{{ $t('contents.info.sharedStatus') }}</dt>
           <dd class="virnect-workstation-form">
-            <el-select v-model="content.shared" popper-class="select-shared" />
+            <el-input v-model="shared" disabled />
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-for="target in content.targets" :key="target.id">
             <span>{{ target.type }}</span>
-            <img
-              src="~assets/images/icon/ic-print.svg"
-              @click="print(target.data)"
-            />
-            <img
-              src="~assets/images/icon/ic-file-download.svg"
-              @click="download(target.data)"
-            />
           </dd>
         </dl>
-        <div class="buttons-wrapper"></div>
       </el-col>
       <el-col :span="15">
-        <h4>{{ $t('contents.info.properties') }}</h4>
+        <h4>{{ $t('process.new.sceneGroupInfo') }}</h4>
         <div class="properties">
           <el-tree
             :data="properties"
@@ -74,15 +66,24 @@
         </div>
       </el-col>
     </el-row>
+    <template slot="footer">
+      <el-button @click="$router.push(`/contents/${content.contentUUID}`)">
+        {{ $t('process.new.moveContentInfo') }}
+      </el-button>
+      <el-button @click="$emit('next', content)" type="primary">
+        {{ $t('process.new.next') }}
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 
 <script>
 import contentService from '@/services/content'
 import { sharedStatus } from '@/models/content/Content'
-import { filters } from '@/plugins/dayjs'
+import filters from '@/mixins/filters'
 
 export default {
+  mixins: [filters],
   props: {
     visible: Boolean,
     contentId: String,
@@ -98,6 +99,13 @@ export default {
         childern: 'childern',
       },
     }
+  },
+  computed: {
+    shared() {
+      return this.$t(
+        sharedStatus.find(status => status.value === this.content.shared).label,
+      )
+    },
   },
   watch: {
     visible(bool) {
@@ -119,118 +127,12 @@ export default {
       this.properties = await promise.properties
     },
   },
-  filters: {
-    ...filters,
-    toMegaBytes(bytes) {
-      const kb = bytes / 1024
-      const mb = kb / 1024
-      return mb < 1
-        ? Math.round(kb * 100) / 100 + 'kB'
-        : Math.round(mb * 100) / 100 + 'MB'
-    },
-  },
   methods: {},
 }
 </script>
 
 <style lang="scss">
-#__nuxt .set-process-info-modal .el-dialog__body {
-  height: 700px;
-  max-height: 700px;
-  padding-bottom: 28px;
-
-  .el-row {
-    align-items: stretch;
-    height: 100%;
-  }
-  .el-col {
-    position: relative;
-
-    &:first-child {
-      padding-right: 30px;
-    }
-    &:last-child {
-      padding-left: 20px;
-    }
-  }
-  dl.row {
-    display: flex;
-
-    & > div {
-      min-width: 110px;
-    }
-  }
-  .el-divider {
-    margin: 16px 0;
-  }
-  .buttons-wrapper {
-    position: absolute;
-    bottom: 0;
-    width: calc(100% - 30px);
-
-    .el-button {
-      width: 92px;
-    }
-    .el-button:last-child {
-      float: right;
-    }
-  }
-
-  h4 {
-    margin-bottom: 16px;
-    color: #445168;
-  }
-  dt {
-    margin-bottom: 4px;
-    color: $font-color-desc;
-    font-size: 12px;
-  }
-  dd {
-    margin-bottom: 20px;
-    white-space: nowrap;
-
-    & > img {
-      float: right;
-      margin-left: 12px;
-      cursor: pointer;
-    }
-    .el-select {
-      width: 100%;
-      margin-top: 5px;
-    }
-    .el-input__inner {
-      font-size: 14px;
-      line-height: 22px;
-    }
-  }
-
-  // 콘텐츠 구성 정보
-  .properties {
-    height: calc(100% - 38px);
-    overflow: scroll;
-    border: solid 1px rgba(226, 231, 237, 0.8);
-    border-radius: 3px;
-
-    .el-tree-node__content {
-      height: 36px;
-      font-weight: 500;
-    }
-    [role='tree'] > [role='treeitem'] > :first-child {
-      height: 40px;
-    }
-    .el-tree-node__content > .el-tree-node__expand-icon:not(.is-leaf) {
-      margin-left: 8px;
-      color: $font-color-content;
-      font-size: 1em;
-    }
-    .el-tree-node__content:hover,
-    .el-tree-node:focus > .el-tree-node__content {
-      background-color: rgba(245, 247, 250, 0.75);
-    }
-  }
-}
-
-body .el-popper.select-shared .el-select-dropdown__item {
-  font-size: 14px;
+#__nuxt #set-process-info-modal .el-dialog__body {
+  height: auto;
 }
 </style>

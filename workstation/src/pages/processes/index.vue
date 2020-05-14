@@ -9,7 +9,7 @@
           }}</el-breadcrumb-item>
         </el-breadcrumb>
         <h2>{{ $t('process.list.title') }}</h2>
-        <el-button type="primary" @click="newProcess">
+        <el-button type="primary" @click="$router.push('/processes/new')">
           {{ $t('process.list.newProcess') }}
         </el-button>
       </div>
@@ -83,6 +83,7 @@ import { filter as processFilter, tabs } from '@/models/process/Process'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import processService from '@/services/process'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [searchMixin, columnMixin],
@@ -109,11 +110,19 @@ export default {
     }
   },
   methods: {
+    async searchProcesses() {
+      const { list, total } = await processService.searchProcesses(
+        this.$store.getters['workspace/activeWorkspace'].uuid,
+        this.searchParams,
+      )
+      this.processList = list
+      this.processTotal = total
+    },
     showAll() {},
     showMine() {},
-    newProcess() {
-      this.$router.push('/processes/new')
-    },
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, this.searchProcesses)
   },
 }
 </script>

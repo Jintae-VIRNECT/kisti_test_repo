@@ -9,7 +9,7 @@
           }}</el-breadcrumb-item>
           <el-breadcrumb-item>{{ $t('process.new.title') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('contents.allContents.title') }}</h2>
+        <h2>{{ $t('process.new.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
@@ -91,6 +91,16 @@
     <set-process-info
       :contentId="selectedContentId"
       :visible.sync="showNewProcessInfo"
+      @next="processInfoEnded"
+    />
+    <set-process-manage
+      :contentInfo="selectedContentInfo"
+      :visible.sync="showNewProcessManage"
+      @next="processManageEnded"
+    />
+    <set-process-target
+      :contentInfo="selectedContentInfo"
+      :visible.sync="showNewProcessTarget"
     />
   </div>
 </template>
@@ -106,14 +116,17 @@ import {
 } from '@/models/content/Content'
 
 import SetProcessInfo from '@/components/process/SetProcessInfo'
+import SetProcessManage from '@/components/process/SetProcessManage'
 
 export default {
   mixins: [searchMixin, columnsMixin],
   components: {
     SetProcessInfo,
+    SetProcessManage,
   },
   data() {
     return {
+      // 검색
       loading: false,
       contentsList: [],
       contentsTotal: 0,
@@ -121,11 +134,16 @@ export default {
       contentsSort,
       contentsSearch: '',
       contentsPage: 1,
+      // 생성
       selectedContentId: null,
+      selectedContentInfo: null,
       showNewProcessInfo: false,
+      showNewProcessManage: false,
+      showNewProcessTarget: false,
     }
   },
   methods: {
+    // 검색
     changedSearchParams(searchParams) {
       this.searchContents(searchParams)
     },
@@ -145,6 +163,14 @@ export default {
     showMine() {
       this.searchParams.mine = true
       this.emitChangedSearchParams()
+    },
+    // 생성
+    processInfoEnded(contentInfo) {
+      this.selectedContentInfo = contentInfo
+      this.showNewProcessManage = true
+    },
+    processManageEnded() {
+      this.showNewProcessTarget = true
     },
   },
   beforeMount() {
