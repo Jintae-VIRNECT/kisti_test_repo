@@ -165,6 +165,14 @@ public class ContentService {
         }
     }
 
+    private int countTargetData(String targetData) {
+        int count = 0;
+
+        count = this.targetRepository.countByData(targetData);
+
+        return count;
+    }
+
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
         Target target = Target.builder()
                 .type(targetType)
@@ -314,8 +322,17 @@ public class ContentService {
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, updateRequest.getMetadata());
 
+        String targetData = updateRequest.getTargetData();
+
+        // TODO
+        // 이미 존재하는 타겟데이터일 경우 해당 부분 지나가기.
+        if (countTargetData(targetData) == 0)
+        {
+            targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+        }
+
         // 타겟 저장 후 타겟데이터 반환
-        String targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+        //String targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);
@@ -732,6 +749,15 @@ public class ContentService {
         File file = new File(fileUrl);
         log.debug("MULTIPART FILE SOURCE - fileUrl: {}, path: {}", fileUrl, file.getPath());
         try {
+
+            // TODO
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> fieldName     : {}", file);
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> contentType   : {}", file.toPath());
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> isFormField   : {}", false);
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> fileName      : {}", file.getName());
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> sizeThreshold : {}", file.length());
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> repository    : {}", file.getParentFile());
+
             FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
             try (InputStream inputStream = new FileInputStream(file)) {
                 OutputStream outputStream = fileItem.getOutputStream();
