@@ -979,15 +979,32 @@ public class TaskService {
         Pageable pageableCustom = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().and(Sort.by(Sort.Direction.DESC, "state")).and(Sort.by(Sort.Direction.DESC, "updated_at")));
 
         Page<Process> processPage = null;
+
+        Page<Process> filteredPage = null;
+
         if (filter != null && filter.size() > 0) {
-            List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
-            processPage = filterConditionsProcessPage(processList, filter, pageable);
+             List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
+             processPage = filterConditionsProcessPage(processList, filter, pageable);
         } else {
             // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+            //processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
+//
+//    private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
+//        List<Process> processes = new ArrayList<>();
+//        for (Process process : processList) {
+//            // 상태가 일치하는 공정만 필터링
+//            if (filter.contains(process.getConditions())) {
+//                processes.add(process);
+//            }
+//        }
+//        int start = (int) pageable.getOffset();
+//        int end = (start + pageable.getPageSize()) > processes.size() ? processes.size() : (start + pageable.getPageSize());
+//        return new PageImpl<>(processes.subList(start, end), pageable, processes.size());
+//    }
 
     private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
         List<Process> processes = new ArrayList<>();
