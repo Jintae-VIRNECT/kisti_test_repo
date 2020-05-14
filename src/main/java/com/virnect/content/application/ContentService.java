@@ -380,12 +380,14 @@ public class ContentService {
     /**
      * 콘텐츠 삭제 요청 처리
      *
-     * @param contentUUIDs - 콘텐츠 고유 번호
-     * @param workerUUID   - 사용자 고유 번호
+     * @param contentDeleteRequest - 콘텐츠 고유 번호(배열), 컨텐츠를 생성한 사용자의 고유번호
      * @return - 파일 삭제 결과
      */
     @Transactional
-    public ApiResponse<ContentDeleteListResponse> contentDelete(final String[] contentUUIDs, final String workerUUID) {
+    public ApiResponse<ContentDeleteListResponse> contentDelete(ContentDeleteRequest contentDeleteRequest)  {
+        final String[] contentUUIDs = contentDeleteRequest.getContentUUIDs();
+        final String workerUUID     = contentDeleteRequest.getWorkerUUID();
+
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
             // 1. 컨텐츠들 조회
@@ -435,12 +437,17 @@ public class ContentService {
 
                 // 3 파일 존재 유무 확인 및 파일 삭제
                 log.info("content.getPath() = {}", content.getPath());
-                if (this.fileUploadService.getFile(content.getPath()).exists()) {
-                    // 파일이 없다면 파일삭제는 무시함.
-                    boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
 
-                    if (!fileDeleteResult) {
-                        throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+                // NULL 체크
+                if (this.fileUploadService.getFile(content.getPath()) != null)
+                {
+                    if (this.fileUploadService.getFile(content.getPath()).exists()) {
+                        // 파일이 없다면 파일삭제는 무시함.
+                        boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
+
+                        if (!fileDeleteResult) {
+                            throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+                        }
                     }
                 }
             }

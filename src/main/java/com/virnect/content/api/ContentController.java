@@ -237,18 +237,10 @@ public class ContentController {
     }
 
     @ApiOperation(value = "컨텐츠 삭제 요청")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호 배열(ex : contentUUID=uuid,uuid,uuid,uuid)", allowMultiple = true, dataType = "array", paramType = "query", required = true),
-            @ApiImplicitParam(name = "workerUUID", value = "삭제 요청 사용자 고유 번호", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
-    })
     @DeleteMapping
     public ResponseEntity<ApiResponse<ContentDeleteListResponse>> contentDeleteRequestHandler(
-            @RequestParam(value = "contentUUID") String[] contentUUIDs
-            , @RequestParam(value = "workerUUID") String workerUUID) {
-        if (contentUUIDs.length < 1 || workerUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(contentUUIDs, workerUUID);
+            @RequestBody @Valid ContentDeleteRequest contentDeleteRequest) {
+        ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(contentDeleteRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
