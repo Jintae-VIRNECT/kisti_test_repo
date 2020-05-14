@@ -91,6 +91,7 @@
                             nickname: myProfile.nickname,
                           })
                         "
+                        :maxlength="30"
                       />
                       <span>{{ $t('workspace.setting.nameComment') }}</span>
                     </el-form-item>
@@ -102,6 +103,8 @@
                         type="textarea"
                         v-model="form.description"
                         :placeholder="$t('workspace.setting.descPlaceholder')"
+                        :maxlength="40"
+                        :show-word-limit="true"
                       />
                       <span>{{ $t('workspace.setting.descComment') }}</span>
                     </el-form-item>
@@ -122,15 +125,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import { filters } from '@/plugins/dayjs'
+import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
 export default {
+  mixins: [filters],
   components: {
     WorkspaceInfo,
-  },
-  filters: {
-    ...filters,
   },
   computed: {
     ...mapGetters({
@@ -231,6 +232,9 @@ export default {
   }
   .el-textarea__inner {
     height: 80px;
+  }
+  .el-textarea .el-input__count {
+    background: none;
   }
 }
 </style>

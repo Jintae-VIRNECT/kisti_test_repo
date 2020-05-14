@@ -33,6 +33,6 @@ export default {
     align: String,
     sortable: [Boolean, String],
   },
-  filters: { ...filters },
+  filters,
 }
 </script>

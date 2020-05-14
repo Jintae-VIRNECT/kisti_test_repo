@@ -3,12 +3,13 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>{{ $t('menu.contents') }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{
-            $t('contents.allContents.title')
+          <el-breadcrumb-item>{{ $t('menu.tasks') }}</el-breadcrumb-item>
+          <el-breadcrumb-item to="/tasks">{{
+            $t('task.list.title')
           }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('task.new.title') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('contents.allContents.title') }}</h2>
+        <h2>{{ $t('task.new.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
@@ -18,10 +19,6 @@
           </el-button>
           <el-button @click="showMine">
             {{ $t('contents.allContents.myContents') }}
-          </el-button>
-          <el-button @click="remove" type="text">
-            <img src="~assets/images/icon/ic-delete.svg" />
-            <span>{{ $t('contents.allContents.delete') }}</span>
           </el-button>
         </el-col>
         <el-col class="right">
@@ -41,7 +38,6 @@
             v-loading="loading"
             @row-click="rowClick"
           >
-            <el-table-column type="selection" width="55" />
             <column-default
               :label="$t('contents.allContents.column.id')"
               prop="contentUUID"
@@ -91,7 +87,21 @@
         :total="contentsTotal"
       />
     </div>
-    <nuxt-child @updated="emitChangedSearchParams" />
+    <!-- 생성 모달 -->
+    <set-task-info
+      :contentId="selectedContentId"
+      :visible.sync="showNewTaskInfo"
+      @next="taskInfoEnded"
+    />
+    <set-task-manage
+      :contentInfo="selectedContentInfo"
+      :visible.sync="showNewTaskManage"
+      @next="taskManageEnded"
+    />
+    <set-task-target
+      :contentInfo="selectedContentInfo"
+      :visible.sync="showNewTaskTarget"
+    />
   </div>
 </template>
 
@@ -105,10 +115,18 @@ import {
   sort as contentsSort,
 } from '@/models/content/Content'
 
+import SetTaskInfo from '@/components/task/SetTaskInfo'
+import SetTaskManage from '@/components/task/SetTaskManage'
+
 export default {
   mixins: [searchMixin, columnsMixin],
+  components: {
+    SetTaskInfo,
+    SetTaskManage,
+  },
   data() {
     return {
+      // 검색
       loading: false,
       contentsList: [],
       contentsTotal: 0,
@@ -116,9 +134,16 @@ export default {
       contentsSort,
       contentsSearch: '',
       contentsPage: 1,
+      // 생성
+      selectedContentId: null,
+      selectedContentInfo: null,
+      showNewTaskInfo: false,
+      showNewTaskManage: false,
+      showNewTaskTarget: false,
     }
   },
   methods: {
+    // 검색
     changedSearchParams(searchParams) {
       this.searchContents(searchParams)
     },
@@ -128,7 +153,8 @@ export default {
       this.contentsTotal = total
     },
     rowClick(row) {
-      this.$router.push(`/contents/${row.contentUUID}`)
+      this.selectedContentId = row.contentUUID
+      this.showNewTaskInfo = true
     },
     showAll() {
       this.searchParams.mine = false
@@ -138,31 +164,13 @@ export default {
       this.searchParams.mine = true
       this.emitChangedSearchParams()
     },
-    async remove() {
-      try {
-        await this.$confirm(
-          this.$t('contents.info.message.deleteSure'),
-          this.$t('contents.info.message.delete'),
-        )
-      } catch (e) {
-        return false
-      }
-      try {
-        const selectedContents = this.$refs.table.selection.map(
-          content => content.contentUUID,
-        )
-        await contentService.deleteContent(selectedContents)
-        this.$message.success({
-          message: this.$t('contents.info.message.deleteSuccess'),
-          showClose: true,
-        })
-        this.emitChangedSearchParams()
-      } catch (e) {
-        this.$message.error({
-          message: this.$t('contents.info.message.deleteFail'),
-          showClose: true,
-        })
-      }
+    // 생성
+    taskInfoEnded(contentInfo) {
+      this.selectedContentInfo = contentInfo
+      this.showNewTaskManage = true
+    },
+    taskManageEnded() {
+      this.showNewTaskTarget = true
     },
   },
   beforeMount() {

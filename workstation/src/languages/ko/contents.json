@@ -3,6 +3,7 @@
     "title": "전체 콘텐츠 목록",
     "all": "전체",
     "myContents": "내 콘텐츠",
+    "delete": "삭제",
     "workspaceContentsList": "워크스페이스 콘텐츠 목록",
     "column": {
       "id": "콘텐츠 ID",

@@ -1,8 +1,8 @@
 import Model from '@/models/Model'
 
-export default class Process extends Model {
+export default class Task extends Model {
   /**
-   * 공정 구조
+   * 작업 구조
    * @param {Object} json
    */
   constructor(json = {}) {
@@ -14,19 +14,19 @@ export default class Process extends Model {
     this.conditions = json.conditions
     this.state = json.state
     this.progressRate = json.progressRate
-    this.subProcessTotal = json.subProcessTotal
+    this.subTaskTotal = json.subTaskTotal
     this.doneCount = json.doneCount
     this.issuesTotal = json.issuesTotal
     this.startDate = json.startDate
     this.endDate = json.endDate
     this.createdDate = json.createdDate
     this.updatedDate = json.updatedDate
-    this.subProcessAssign = json.subProcessAssign
+    this.subTaskAssign = json.subTaskAssign
   }
 }
 
 /**
- * 공정 상태
+ * 작업 상태
  */
 export const conditions = [
   { value: 'WAIT', label: 'conditions.wait', color: 'gray' },
@@ -44,7 +44,7 @@ export const conditions = [
 ]
 
 /**
- * 공정 검색 필터설정
+ * 작업 검색 필터설정
  */
 export const filter = {
   value: ['ALL'],
@@ -56,19 +56,19 @@ export const filter = {
  */
 export const tabs = [
   {
-    name: 'allProcesses',
-    label: 'process.list.allProcesses',
+    name: 'allTasks',
+    label: 'task.list.allTasks',
   },
   {
-    name: 'waitProcesses',
-    label: 'process.list.waitProcesses',
+    name: 'waitTasks',
+    label: 'task.list.waitTasks',
   },
   {
-    name: 'startedProcesses',
-    label: 'process.list.startedProcesses',
+    name: 'startedTasks',
+    label: 'task.list.startedTasks',
   },
   {
-    name: 'endProcesses',
-    label: 'process.list.endProcesses',
+    name: 'endTasks',
+    label: 'task.list.endTasks',
   },
 ]

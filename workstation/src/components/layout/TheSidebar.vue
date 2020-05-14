@@ -3,16 +3,18 @@
     <div class="the-sidebar__inner">
       <div class="the-sidebar__logo">
         <a
-          v-if="logoPath[0] === '@'"
-          @click.stop="openCollapse(logoPath)"
+          @click.stop="openCollapse(logoCollapse)"
           :style="`background-image: url(${activeWorkspace.profile})`"
         />
       </div>
       <div class="the-sidebar__upper">
-        <the-sidebar-menu-list :menus="menus" />
+        <the-sidebar-menu-list :menus="menus" @openCollapse="openCollapse" />
       </div>
       <div class="the-sidebar__lower">
-        <the-sidebar-menu-list :menus="bottomMenus" />
+        <the-sidebar-menu-list
+          :menus="bottomMenus"
+          @openCollapse="openCollapse"
+        />
       </div>
     </div>
     <transition name="collapse">
@@ -27,6 +29,7 @@
 
 <script>
 import collapseWorkspace from '@/components/layout/collapses/TheSidebarCollapseWorkspace'
+import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
 import TheSidebarMenuList from './TheSidebarMenuList.vue'
 import { mapGetters } from 'vuex'
 
@@ -34,6 +37,7 @@ export default {
   components: {
     TheSidebarMenuList,
     collapseWorkspace,
+    collapseTask,
   },
   props: {
     menus: Array,
@@ -43,7 +47,7 @@ export default {
     return {
       showCollapse: false,
       collapseComponent: null,
-      logoPath: '@collapseWorkspace',
+      logoCollapse: 'collapseWorkspace',
     }
   },
   computed: {
@@ -53,7 +57,7 @@ export default {
   },
   methods: {
     openCollapse(component) {
-      this.collapseComponent = component.substr(1)
+      this.collapseComponent = component
       this.showCollapse = true
     },
     closeCollapse() {
@@ -75,12 +79,15 @@ $the-sidebar-border: solid 1px #0d1d39;
   top: 0;
   bottom: 0;
   left: 0;
-  z-index: 10;
+  z-index: 2001;
   width: $the-sidebar-width;
   height: 100vh;
   background-color: $the-sidebar-background;
   & + main {
     padding-left: $the-sidebar-width;
+  }
+  a {
+    cursor: pointer;
   }
 }
 .the-sidebar__logo {
@@ -89,7 +96,6 @@ $the-sidebar-border: solid 1px #0d1d39;
   margin: 12px;
   overflow: hidden;
   border-radius: 50%;
-  cursor: pointer;
 
   & > a {
     display: block;
@@ -102,7 +108,7 @@ $the-sidebar-border: solid 1px #0d1d39;
 }
 .the-sidebar__inner {
   position: relative;
-  z-index: 11;
+  z-index: 2002;
   height: 100%;
   background-color: $the-sidebar-background;
   border-right: $the-sidebar-border;
@@ -120,7 +126,7 @@ $the-sidebar-border: solid 1px #0d1d39;
   position: absolute;
   top: 0;
   left: $the-sidebar-width;
-  z-index: 10;
+  z-index: 2001;
   width: 240px;
   height: 100%;
   color: #fff;

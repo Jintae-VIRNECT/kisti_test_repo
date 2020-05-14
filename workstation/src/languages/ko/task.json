@@ -1,0 +1,29 @@
+
+{
+  "list": {
+    "title": "워크스페이스 작업 목록",
+    "newTask": "신규 작업 등록",
+    "allTasks": "모든 작업",
+    "waitTasks": "대기 중인 작업",
+    "startedTasks": "시작된 작업",
+    "endTasks": "마감된 작업",
+    "column": {
+      "id": "작업 ID",
+      "name": "작업 이름",
+      "endedSubTasks": "하위 작업 완료",
+      "scedule": "작업 일정",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "작업 이슈",
+      "endStatus": "종료 상태"
+    }
+  },
+  "new": {
+    "title": "신규 작업 등록",
+    "contentsInfo": "신규 작업 등록 콘텐츠 정보",
+    "sceneGroupInfo": "작업 구성 정보",
+    "moveContentInfo": "콘텐츠 정보 바로가기",
+    "next": "다음"
+  }
+}
