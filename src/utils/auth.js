@@ -26,7 +26,7 @@ async function getMyInfo() {
   try {
     const res = await getAccount()
     myInfo = res.userInfo
-    myWorkspaces = res.workspaceInfoList.workspaceList
+    myWorkspaces = res.workspaceInfoList
     return res
   } catch (err) {
     if (err.code === 9999) {

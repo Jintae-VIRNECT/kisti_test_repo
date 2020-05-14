@@ -33,8 +33,12 @@ export default {
   methods: {
     async getList() {
       try {
-        const datas = await getMemberList()
-        this.memberList = datas.data.participants
+        console.log(this.workspace)
+        const params = {
+          workspaceId: this.workspace.uuid,
+        }
+        const datas = await getMemberList(params)
+        this.memberList = datas.memberInfoList
       } catch (err) {
         console.log(err)
       }

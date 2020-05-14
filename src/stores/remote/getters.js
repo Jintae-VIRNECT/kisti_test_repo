@@ -1,5 +1,6 @@
 export default {
   account: state => state.account,
+  workspace: state => state.workspace.current,
 
   // oncall
   view: state => state.oncall.view,
@@ -19,5 +20,5 @@ export default {
 
   deviceType: state => state.device.type,
 
-  searchFilter: state => state.workspace.search.filter,
+  searchFilter: state => state.sort.search.filter,
 }

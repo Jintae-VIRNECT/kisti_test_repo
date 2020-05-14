@@ -8,6 +8,13 @@ export default {
   clearAccount({ commit }) {
     commit(types.ACCOUNT_CLEAR)
   },
+  initWorkspace({ commit }, infoList) {
+    console.log(infoList)
+    commit(types.INIT_WORKSPACE, infoList)
+  },
+  changeWorkspace({ commit }, id) {
+    commit(types.CHANGE_WORKSPACE, id)
+  },
 
   /**
    * Change Call Mode

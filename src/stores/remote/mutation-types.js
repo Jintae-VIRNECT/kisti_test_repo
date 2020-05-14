@@ -1,6 +1,9 @@
 // account
 export const ACCOUNT_SET = 'ACCOUNT_SET'
 export const ACCOUNT_CLEAR = 'ACCOUNT_CLEAR'
+export const WORKSPACE_SET = 'WORKSPACE_SET'
+export const INIT_WORKSPACE = 'INIT_WORKSPACE'
+export const CHANGE_WORKSPACE = 'CHANGE_WORKSPACE'
 
 // oncall
 export const CALL_MODE_SET = 'CALL_MODE_SET'

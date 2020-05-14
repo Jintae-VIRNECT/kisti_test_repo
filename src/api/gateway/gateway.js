@@ -40,7 +40,8 @@ const URL = {
   DELETE_HISTORY_ALL: ['DELETE', '/media/history/'],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: ['GET', '/media/member/'],
+  GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
+  // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/media/room'],

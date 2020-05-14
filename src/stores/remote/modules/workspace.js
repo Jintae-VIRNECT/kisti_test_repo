@@ -1,19 +1,39 @@
-import { SEARCH_SORT, SEARCH_FILTER } from '../mutation-types'
+import { INIT_WORKSPACE, CHANGE_WORKSPACE } from '../mutation-types'
+
+class Workspace {
+  constructor(info) {
+    this.uuid = info.uuid
+    this.description = info.description
+    this.pinNumber = info.pinNumber
+    this.role = info.role
+    this.updateDate = info.updateDate
+  }
+  getUuid() {
+    return this.uuid
+  }
+}
 
 const state = {
-  search: {
-    sort: '',
-    filter: '',
-  },
-  beforeRoute: null,
+  current: {},
+  workspaceList: [],
 }
 
 const mutations = {
-  [SEARCH_SORT](state, payload) {
-    state.search.sort = payload
+  [INIT_WORKSPACE](state, infoList) {
+    state.workspaceList = []
+    for (let space of infoList) {
+      state.workspaceList.push(new Workspace(space))
+    }
+    console.log(state.workspaceList)
+    if (state.workspaceList.length > 0) {
+      state.current = state.workspaceList[0]
+    }
   },
-  [SEARCH_FILTER](state, payload) {
-    state.search.filter = payload
+  [CHANGE_WORKSPACE](state, workspaceId) {
+    const choice = state.workspaceList.find(
+      workspace => workspace.getUuid() === workspaceId,
+    )
+    state.current = choice
   },
 }
 

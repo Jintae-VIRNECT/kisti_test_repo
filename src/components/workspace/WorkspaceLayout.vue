@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 // import { getAccount } from 'api/common/account'
@@ -27,9 +27,11 @@ export default {
   name: 'WorkspaceLayout',
   async beforeMount() {
     const account = await auth.init()
-    this.updateAccount(account.myInfo)
     if (!auth.isLogin) {
       auth.login()
+    } else {
+      this.updateAccount(account.myInfo)
+      this.initWorkspace(account.myWorkspaces)
     }
   },
   components: {
@@ -48,11 +50,8 @@ export default {
       showCookie: !cookie,
     }
   },
-  computed: {
-    ...mapGetters(['account']),
-  },
   methods: {
-    ...mapActions(['updateAccount']),
+    ...mapActions(['updateAccount', 'initWorkspace']),
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
         this.tabFix = true

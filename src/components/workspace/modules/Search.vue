@@ -31,7 +31,6 @@ export default {
   },
   watch: {
     search(sch) {
-      console.log(sch)
       sch = Regexp.escapeRegExp(sch)
       this.$emit('search', sch)
       this.setFilter(sch)
