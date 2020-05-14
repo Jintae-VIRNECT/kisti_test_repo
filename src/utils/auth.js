@@ -70,6 +70,7 @@ class Auth {
         await getMyInfo(api)
         isLogin = true
       } catch (e) {
+        console.log(e)
         console.error('Token is expired')
         isLogin = false
       }
