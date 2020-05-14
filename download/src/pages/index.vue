@@ -22,9 +22,9 @@
           <el-button type="primary" @click="download(make.productName)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <el-button type="text" @click="link(make.guideUrl)">
+          <!-- <el-button type="text" @click="link(make.guideUrl)">
             {{ $t('home.guideDownload') }}
-          </el-button>
+          </el-button> -->
         </el-card>
       </el-tab-pane>
       <!-- view -->
@@ -40,9 +40,9 @@
           <el-button type="primary" @click="download(viewHmt1.productName)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <el-button type="text" @click="link(viewHmt1.guideUrl)">
+          <!-- <el-button type="text" @click="link(viewHmt1.guideUrl)">
             {{ $t('home.guideDownload') }}
-          </el-button>
+          </el-button> -->
         </el-card>
         <el-card>
           <h6 v-html="$t('home.googlePlay')" />
@@ -52,12 +52,12 @@
             {{ `${$t('home.release')}: ${viewApp.release}` }}
           </span>
           <span class="version">{{ viewApp.version }}</span>
-          <el-button type="primary" @click="link(viewApp.downloadUrl)">
+          <el-button type="primary" @click="link(viewApp.downloadUrl)" disabled>
             {{ $t('home.downloadLink') }}
           </el-button>
-          <el-button type="text" @click="link(viewApp.guideUrl)">
+          <!-- <el-button type="text" @click="link(viewApp.guideUrl)">
             {{ $t('home.guideDownload') }}
-          </el-button>
+          </el-button> -->
         </el-card>
       </el-tab-pane>
       <!-- remote -->
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import api from '@/api/gateway'
+// import api from '@/api/gateway'
 
 export default {
   data() {
@@ -81,7 +81,7 @@ export default {
       viewHmt1: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        productName: 'view-hmt1',
+        productName: 'view',
         guideUrl: '',
       },
       viewApp: {
@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     async download(productName) {
-      const data = await api('DOWNLOAD', {
+      const data = await this.$api('DOWNLOAD', {
         route: { productName },
       })
       window.open(data)
@@ -175,7 +175,7 @@ export default {
     box-shadow: none;
   }
   .el-card .el-card__body {
-    padding: 36px 44px 20px;
+    padding: 36px 44px 30px;
     h6 {
       font-size: 18px;
     }
@@ -202,7 +202,8 @@ export default {
     }
     .el-button {
       display: block;
-      margin: 6px auto;
+      height: 36px;
+      margin: 5px auto;
     }
   }
 

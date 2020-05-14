@@ -29,8 +29,13 @@ module.exports = {
   /**
    * Plugins
    */
-  plugins: ['@/plugins/element-ui'],
-  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources'],
+  modules: [
+    ['nuxt-i18n', lang],
+    '@nuxtjs/style-resources',
+    ['nuxt-env', { keys: [] }],
+    '@nuxtjs/axios',
+  ],
+  plugins: ['@/plugins/element-ui', '@/plugins/axios'],
   /*
    ** Customize style
    */
