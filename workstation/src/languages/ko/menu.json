@@ -2,7 +2,7 @@
   "home": "워크스테이션 홈",
   "members": "워크스페이스 사용자",
   "contents": "콘텐츠 관리",
-  "processes": "작업 관리",
+  "tasks": "작업 관리",
   "workspaceSetting": "워크스페이스 설정",
   "collapse": {
     "workspace": {
@@ -11,7 +11,7 @@
       "manager": "워크스페이스 매니저",
       "member": "워크스페이스 멤버"
     },
-    "processes": {
+    "tasks": {
       "list": "작업 목록"
     }
   }

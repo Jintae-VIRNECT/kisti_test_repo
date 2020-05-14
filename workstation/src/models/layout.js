@@ -21,10 +21,10 @@ export const sideMenus = [
     divider: true,
   },
   {
-    path: '/processes',
-    collapse: 'collapseProcess',
+    path: '/tasks',
+    collapse: 'collapseTask',
     image: require('assets/images/icon/ic-library-books.svg'),
-    label: 'menu.processes',
+    label: 'menu.tasks',
   },
 ]
 

@@ -1,9 +1,9 @@
 <template>
   <el-dialog
-    id="set-process-info-modal"
+    id="set-task-info-modal"
     class="info-modal"
     :visible.sync="showMe"
-    :title="$t('process.new.contentsInfo')"
+    :title="$t('task.new.contentsInfo')"
     width="860px"
     top="11vh"
   >
@@ -55,7 +55,7 @@
         </dl>
       </el-col>
       <el-col :span="15">
-        <h4>{{ $t('process.new.sceneGroupInfo') }}</h4>
+        <h4>{{ $t('task.new.sceneGroupInfo') }}</h4>
         <div class="properties">
           <el-tree
             :data="properties"
@@ -68,10 +68,10 @@
     </el-row>
     <template slot="footer">
       <el-button @click="$router.push(`/contents/${content.contentUUID}`)">
-        {{ $t('process.new.moveContentInfo') }}
+        {{ $t('task.new.moveContentInfo') }}
       </el-button>
       <el-button @click="$emit('next', content)" type="primary">
-        {{ $t('process.new.next') }}
+        {{ $t('task.new.next') }}
       </el-button>
     </template>
   </el-dialog>
@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt #set-process-info-modal .el-dialog__body {
+#__nuxt #set-task-info-modal .el-dialog__body {
   height: auto;
 }
 </style>

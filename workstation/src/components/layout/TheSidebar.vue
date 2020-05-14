@@ -29,7 +29,7 @@
 
 <script>
 import collapseWorkspace from '@/components/layout/collapses/TheSidebarCollapseWorkspace'
-import collapseProcess from '@/components/layout/collapses/TheSidebarCollapseProcess'
+import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
 import TheSidebarMenuList from './TheSidebarMenuList.vue'
 import { mapGetters } from 'vuex'
 
@@ -37,7 +37,7 @@ export default {
   components: {
     TheSidebarMenuList,
     collapseWorkspace,
-    collapseProcess,
+    collapseTask,
   },
   props: {
     menus: Array,

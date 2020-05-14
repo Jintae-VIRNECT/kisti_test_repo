@@ -1,16 +1,14 @@
 <template>
-  <div id="processes">
+  <div id="tasks">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>{{ $t('menu.processes') }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{
-            $t('process.list.title')
-          }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('menu.tasks') }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('task.list.title') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('process.list.title') }}</h2>
-        <el-button type="primary" @click="$router.push('/processes/new')">
-          {{ $t('process.list.newProcess') }}
+        <h2>{{ $t('task.list.title') }}</h2>
+        <el-button type="primary" @click="$router.push('/tasks/new')">
+          {{ $t('task.list.newTask') }}
         </el-button>
       </div>
 
@@ -24,7 +22,7 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <searchbar-keyword ref="keyword" :value.sync="processSearch" />
+        <searchbar-keyword ref="keyword" :value.sync="taskSearch" />
       </el-row>
 
       <!-- 버튼 영역 -->
@@ -39,8 +37,8 @@
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"
-            :value.sync="processFilter.value"
-            :options="processFilter.options"
+            :value.sync="taskFilter.value"
+            :options="taskFilter.options"
           />
         </el-col>
       </el-row>
@@ -53,82 +51,78 @@
           <el-table
             class="clickable"
             ref="table"
-            :data="processList"
+            :data="taskList"
             v-loading="loading"
           >
             <column-default
-              :label="$t('process.list.column.id')"
+              :label="$t('task.list.column.id')"
               prop="id"
               :width="140"
             />
             <column-default
-              :label="$t('process.list.column.name')"
+              :label="$t('task.list.column.name')"
               prop="name"
               sortable="custom"
             />
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page
-        ref="page"
-        :value.sync="processPage"
-        :total="processTotal"
-      />
+      <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />
     </div>
   </div>
 </template>
 
 <script>
-import { filter as processFilter, tabs } from '@/models/process/Process'
+import { filter as taskFilter, tabs } from '@/models/task/Task'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
-import processService from '@/services/process'
+import taskService from '@/services/task'
 import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ store }) {
     const promise = {
-      processes: processService.searchProcesses(
+      tasks: taskService.searchTasks(
         store.getters['workspace/activeWorkspace'].uuid,
       ),
     }
     return {
-      processList: (await promise.processes).list,
-      processTotal: (await promise.processes).total,
+      taskList: (await promise.tasks).list,
+      taskTotal: (await promise.tasks).total,
     }
   },
   data() {
     return {
       tabs,
-      activeTab: 'allProcesses',
-      processFilter,
-      processSearch: '',
-      processPage: 1,
-      processTotal: 0,
+      activeTab: 'allTasks',
+      taskFilter,
+      taskSearch: '',
+      taskPage: 1,
+      taskTotal: 0,
       loading: false,
     }
   },
   methods: {
-    async searchProcesses() {
-      const { list, total } = await processService.searchProcesses(
+    async searchTasks() {
+      const { list, total } = await taskService.searchTasks(
         this.$store.getters['workspace/activeWorkspace'].uuid,
         this.searchParams,
       )
-      this.processList = list
-      this.processTotal = total
+      this.taskList = list
+      this.taskTotal = total
     },
     showAll() {},
     showMine() {},
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, this.searchProcesses)
+    workspaceService.watchActiveWorkspace(this, this.searchTasks)
   },
 }
 </script>
 
 <style lang="scss">
-#processes {
+#tasks {
   .title {
     position: relative;
     .el-button {

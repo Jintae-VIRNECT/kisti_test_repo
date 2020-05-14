@@ -1,11 +1,11 @@
 <template>
-  <div class="the-sidebar__collapse--process">
+  <div class="the-sidebar__collapse--task">
     <div class="the-sidebar__collapse__header">
-      <h5>{{ $t('menu.processes') }}</h5>
+      <h5>{{ $t('menu.tasks') }}</h5>
     </div>
     <div class="the-sidebar__collapse__body">
-      <nuxt-link to="/processes" @click.native="$emit('closeCollapse')">
-        <span>{{ $t('menu.collapse.processes.list') }}</span>
+      <nuxt-link to="/tasks" @click.native="$emit('closeCollapse')">
+        <span>{{ $t('menu.collapse.tasks.list') }}</span>
       </nuxt-link>
     </div>
   </div>
@@ -16,7 +16,7 @@ export default {}
 </script>
 
 <style lang="scss">
-.the-sidebar__collapse--process .the-sidebar__collapse__body {
+.the-sidebar__collapse--task .the-sidebar__collapse__body {
   & > a {
     display: block;
     width: 100%;

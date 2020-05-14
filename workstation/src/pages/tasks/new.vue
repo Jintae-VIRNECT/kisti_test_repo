@@ -3,13 +3,13 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>{{ $t('menu.processes') }}</el-breadcrumb-item>
-          <el-breadcrumb-item to="/processes">{{
-            $t('process.list.title')
+          <el-breadcrumb-item>{{ $t('menu.tasks') }}</el-breadcrumb-item>
+          <el-breadcrumb-item to="/tasks">{{
+            $t('task.list.title')
           }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ $t('process.new.title') }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('task.new.title') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('process.new.title') }}</h2>
+        <h2>{{ $t('task.new.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
@@ -88,19 +88,19 @@
       />
     </div>
     <!-- 생성 모달 -->
-    <set-process-info
+    <set-task-info
       :contentId="selectedContentId"
-      :visible.sync="showNewProcessInfo"
-      @next="processInfoEnded"
+      :visible.sync="showNewTaskInfo"
+      @next="taskInfoEnded"
     />
-    <set-process-manage
+    <set-task-manage
       :contentInfo="selectedContentInfo"
-      :visible.sync="showNewProcessManage"
-      @next="processManageEnded"
+      :visible.sync="showNewTaskManage"
+      @next="taskManageEnded"
     />
-    <set-process-target
+    <set-task-target
       :contentInfo="selectedContentInfo"
-      :visible.sync="showNewProcessTarget"
+      :visible.sync="showNewTaskTarget"
     />
   </div>
 </template>
@@ -115,14 +115,14 @@ import {
   sort as contentsSort,
 } from '@/models/content/Content'
 
-import SetProcessInfo from '@/components/process/SetProcessInfo'
-import SetProcessManage from '@/components/process/SetProcessManage'
+import SetTaskInfo from '@/components/task/SetTaskInfo'
+import SetTaskManage from '@/components/task/SetTaskManage'
 
 export default {
   mixins: [searchMixin, columnsMixin],
   components: {
-    SetProcessInfo,
-    SetProcessManage,
+    SetTaskInfo,
+    SetTaskManage,
   },
   data() {
     return {
@@ -137,9 +137,9 @@ export default {
       // 생성
       selectedContentId: null,
       selectedContentInfo: null,
-      showNewProcessInfo: false,
-      showNewProcessManage: false,
-      showNewProcessTarget: false,
+      showNewTaskInfo: false,
+      showNewTaskManage: false,
+      showNewTaskTarget: false,
     }
   },
   methods: {
@@ -154,7 +154,7 @@ export default {
     },
     rowClick(row) {
       this.selectedContentId = row.contentUUID
-      this.showNewProcessInfo = true
+      this.showNewTaskInfo = true
     },
     showAll() {
       this.searchParams.mine = false
@@ -165,12 +165,12 @@ export default {
       this.emitChangedSearchParams()
     },
     // 생성
-    processInfoEnded(contentInfo) {
+    taskInfoEnded(contentInfo) {
       this.selectedContentInfo = contentInfo
-      this.showNewProcessManage = true
+      this.showNewTaskManage = true
     },
-    processManageEnded() {
-      this.showNewProcessTarget = true
+    taskManageEnded() {
+      this.showNewTaskTarget = true
     },
   },
   beforeMount() {

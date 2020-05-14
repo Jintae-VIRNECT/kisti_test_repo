@@ -1,9 +1,9 @@
 <template>
   <el-dialog
-    id="set-process-manage-modal"
+    id="set-task-manage-modal"
     class="info-modal"
     :visible.sync="showMe"
-    :title="$t('process.new.title')"
+    :title="$t('task.new.title')"
     width="860px"
     top="11vh"
   >
@@ -17,7 +17,7 @@
     </el-row>
     <el-row class="btn-wrapper">
       <el-button @click="$emit('next', content)" type="primary">
-        {{ $t('process.new.next') }}
+        {{ $t('task.new.next') }}
       </el-button>
     </el-row>
   </el-dialog>
@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style lang="scss">
-#set-process-info-modal .el-dialog__body {
+#set-task-info-modal .el-dialog__body {
   .el-row:first-child {
     height: calc(100% - 58px);
   }

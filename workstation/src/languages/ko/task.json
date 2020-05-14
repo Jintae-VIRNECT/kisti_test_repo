@@ -2,15 +2,15 @@
 {
   "list": {
     "title": "워크스페이스 작업 목록",
-    "newProcess": "신규 작업 등록",
-    "allProcesses": "모든 작업",
-    "waitProcesses": "대기 중인 작업",
-    "startedProcesses": "시작된 작업",
-    "endProcesses": "마감된 작업",
+    "newTask": "신규 작업 등록",
+    "allTasks": "모든 작업",
+    "waitTasks": "대기 중인 작업",
+    "startedTasks": "시작된 작업",
+    "endTasks": "마감된 작업",
     "column": {
       "id": "작업 ID",
       "name": "작업 이름",
-      "endedSubProcesses": "하위 작업 완료",
+      "endedSubTasks": "하위 작업 완료",
       "scedule": "작업 일정",
       "progressRate": "진행률",
       "status": "진행 상태",
