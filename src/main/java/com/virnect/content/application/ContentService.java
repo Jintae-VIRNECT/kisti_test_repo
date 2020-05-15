@@ -314,8 +314,28 @@ public class ContentService {
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, updateRequest.getMetadata());
 
-        // 타겟 저장 후 타겟데이터 반환
-        String targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+        String targetData = updateRequest.getTargetData();
+
+        // 추가
+        Optional<Target> target = this.targetRepository.findbyContentId(targetContent.getId());
+
+        // 컨텐츠에 물려있는 타겟 정보가 있을 경우
+        if (target != null)
+        {
+            String originTargetData = "";
+
+            originTargetData = target.get().getData();
+
+            // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
+            if (!originTargetData.equals(targetData)) {
+                
+                // 기존 타겟 데이터 삭제
+                this.targetRepository.deleteByContentId(targetContent.getId());
+
+                // 새로운 타겟 데이터 입력
+                targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+            }
+        }
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);
