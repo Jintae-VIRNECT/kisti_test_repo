@@ -316,29 +316,26 @@ public class ContentService {
 
         String targetData = updateRequest.getTargetData();
 
-        // 새로운 타겟 데이터 입력
-        targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
-
-        // 추가
-        //Optional<Target> target = this.targetRepository.findbyContentId(targetContent.getId());
+        // 해당 컨텐츠와 물려있는 타겟 정보를 찾음
+        Optional<Target> target = this.targetRepository.findByContent(targetContent);
 
         // 컨텐츠에 물려있는 타겟 정보가 있을 경우
-//        if (target != null)
-//        {
-//            String originTargetData = "";
-//
-//            originTargetData = target.get().getData();
-//
-//            // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
-//            if (!originTargetData.equals(targetData)) {
-//
-//                // 기존 타겟 데이터 삭제
-//                this.targetRepository.deleteByContentId(targetContent.getId());
-//
-//                // 새로운 타겟 데이터 입력
-//                targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
-//            }
-//        }
+        if (target != null)
+        {
+            String originTargetData = "";
+
+            originTargetData = target.get().getData();
+
+            // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
+            if (!originTargetData.equals(targetData)) {
+
+                // 기존 타겟 데이터 삭제
+                this.targetRepository.deleteByContentId(targetContent.getId());
+
+                // 새로운 타겟 데이터 입력
+                targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+            }
+        }
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);

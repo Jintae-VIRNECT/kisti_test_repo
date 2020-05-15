@@ -18,7 +18,7 @@ public interface TargetRepository extends JpaRepository<Target, Long> {
 
     Optional<Target> findById(Long id);
 
-//    Optional<Target> findbyContent(Content content);
-//
-//    void deleteByContentId(long contentId);
+    Optional<Target> findByContent(Content content);
+
+    void deleteByContentId(long contentId);
 }
