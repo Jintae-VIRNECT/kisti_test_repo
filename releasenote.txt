@@ -1,0 +1,12 @@
+
+New Features
+- 전체 쿠폰 목록 조회 API 추가
+- 쿠폰 상품 라이선스 정보 병합 (쿠폰 상품 라이선스 정보 -> 상품 라이선스 정보)
+- 헬스 체크 url 추가
+
+Bug Fixes
+- 없음
+Limitation
+- 없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
