@@ -39,7 +39,7 @@ pipeline {
                         branch 'staging'
                     }
                     steps {
-                        sh 'docker build -t pf-workspace:${GIT_TAG} .'
+                        sh 'docker build -t pf-workspace .'
                     }
                 }
 
