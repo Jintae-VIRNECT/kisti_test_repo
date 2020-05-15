@@ -101,7 +101,8 @@ export default {
 	mounted() {
 		if (this.rememberLogin) {
 			this.login.autoLogin = true
-			if (this.loggedIn) return this.$router.push({ name: 'profile' })
+			if (this.loggedIn)
+				return (location.href = urls.workstation[process.env.TARGET_ENV])
 		}
 		if (this.rememberEmail) {
 			this.login.rememberMe = true
