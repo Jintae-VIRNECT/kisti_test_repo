@@ -27,6 +27,9 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  messages:
+    encoding: UTF-8
+    basename: classpath:/messages
 
 logging:
   level:
@@ -62,3 +65,20 @@ redirectUrl: "https://192.168.6.3:8878"
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 1000
+hystrix:
+  command:
+    "UserRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "ProcessRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50

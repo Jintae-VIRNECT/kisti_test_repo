@@ -1,5 +1,6 @@
 package com.virnect.workspace.application;
 
+
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.*;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -40,10 +42,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,8 +62,8 @@ public class WorkspaceService {
     private final FileUploadService fileUploadService;
     private final UserInviteRepository userInviteRepository;
     private final SpringTemplateEngine springTemplateEngine;
-
-
+    private final HistoryRepository historyRepository;
+    private final MessageSource messageSource;
     @Value("${file.upload-path}")
     private String fileUploadPath;
 
@@ -116,8 +115,8 @@ public class WorkspaceService {
                 throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }
         } else {
-            profile = fileUrl+fileUploadPath+"workspace-profile.png";//디폴트 이미지 경로.
-    }
+            profile = fileUrl + fileUploadPath + "workspace-profile.png";//디폴트 이미지 경로.
+        }
 
         Workspace newWorkspace = Workspace.builder()
                 .uuid(uuid)
@@ -708,7 +707,7 @@ public class WorkspaceService {
 
     }
 
-    public ApiResponse<Boolean> reviseMemberInfo(String workspaceId, MemberUpdateRequest memberUpdateRequest) {
+    public ApiResponse<Boolean> reviseMemberInfo(String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale) {
         //1. 요청자 권한 확인(마스터만 가능)
         Workspace workspace = workspaceRepository.findByUuid(workspaceId);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getMasterUserId());
@@ -747,6 +746,22 @@ public class WorkspaceService {
         String html = springTemplateEngine.process("workspace_permission_update", context);
 
         this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_PERMISSION_UPDATE);
+
+        //5. 히스토리 적재
+        String message;
+        if (memberUpdateRequest.getRole().equalsIgnoreCase("MANAGER")) {
+            message = this.messageSource.getMessage("WORKSPACE_SET_MANAGER", new java.lang.String[]{masterUser.getNickname(), user.getNickname()}, locale);
+
+        } else {
+            message = this.messageSource.getMessage("WORKSPACE_SET_MEMBER", new java.lang.String[]{masterUser.getNickname(), user.getNickname()}, locale);
+        }
+
+        History history = History.builder()
+                .workspace(workspace)
+                .userId(memberUpdateRequest.getUuid())
+                .message(message)
+                .build();
+        this.historyRepository.save(history);
 
         return new ApiResponse<>(true);
     }
@@ -943,17 +958,49 @@ public class WorkspaceService {
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId) {
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
 
-        if (workspace.getUserId().equals(userId)){
+        if (workspace.getUserId().equals(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId,workspace);
+        WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId, workspace);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
 
         //라이선스 지우기
 
         this.workspaceUserPermissionRepository.delete(workspaceUserPermission);
         this.workspaceUserRepository.delete(workspaceUser);
+
+        return new ApiResponse<>(true);
+    }
+
+    public ApiResponse<Boolean> testSetMember(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        List<String> emailList = new ArrayList<>();
+        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
+            emailList.add(userInfo.getEmail());
+        });
+        InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
+
+        responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> {
+            if (!workspace.getUserId().equals(inviteUserResponse.getUserUUID())) {
+                WorkspaceUser workspaceUser = WorkspaceUser.builder()
+                        .userId(inviteUserResponse.getUserUUID())
+                        .workspace(workspace)
+                        .build();
+                this.workspaceUserRepository.save(workspaceUser);
+
+                //workspaceUserPermission set
+                WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
+
+                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                        .workspaceRole(workspaceRole)
+                        .workspaceUser(workspaceUser)
+                        .build();
+                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+            }
+            //workspaceUser set
+
+        });
 
         return new ApiResponse<>(true);
     }
