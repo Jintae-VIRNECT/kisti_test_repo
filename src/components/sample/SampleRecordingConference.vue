@@ -2,13 +2,31 @@
   <div class="test">
     <h1 class="test-title">Recording Conference Demo</h1>
 
+    <section
+      class="test-section"
+      style="width: fit-content; padding:20px 30px; background-color: transparent; border: solid 2px #333;"
+    >
+      <span style="color: #000; font-weight: 700; font-size: 30px;">{{
+        callTime | timeFilter
+      }}</span>
+    </section>
     <section class="test-section">
       <h2 class="subtitle">Action</h2>
       <button @click="start">녹화</button>
       <button @click="stop">정지</button>
-      <span>{{ callTime | timeFilter }}</span>
       <div>
         <h2 class="subtitle">Options</h2>
+        <div>
+          <span style="color: #000;">Codec:</span>
+          <select v-model="codec" :disabled="recording">
+            <option
+              v-for="(option, idx) in codecList"
+              :key="idx"
+              :value="option.value"
+              >{{ option.key }}</option
+            >
+          </select>
+        </div>
         <div>
           <span style="color: #000;">Resolution:</span>
           <select v-model="resolution" :disabled="recording">
@@ -51,6 +69,15 @@
             />
             <label for="b" style="color: #000;">전문가2 voice</label>
           </p>
+          <p>
+            <input
+              type="checkbox"
+              id="b"
+              v-model="export3"
+              :disabled="recording"
+            />
+            <label for="b" style="color: #000;">전문가2 video</label>
+          </p>
         </div>
       </div>
     </section>
@@ -72,7 +99,7 @@
               class="video-support"
               crossOrigin="anonymous"
               ref="streamVideo2"
-              src="~assets/media/send.mp3"
+              src="~assets/media/Sample720.mp4"
               autoplay
               loop
             ></video>
@@ -110,6 +137,29 @@ export default {
         mimeType: 'video/webm;codecs=vp8',
       },
 
+      codec: 'video/webm;codecs=vp8',
+      codecList: [
+        {
+          key: 'video/webm;codecs=vp9',
+          value: 'video/webm;codecs=vp9',
+        },
+        {
+          key: 'video/webm;codecs=vp8',
+          value: 'video/webm;codecs=vp8',
+        },
+        {
+          key: 'video/webm;codecs=h264',
+          value: 'video/webm;codecs=h264',
+        },
+        {
+          key: 'video/x-matroska;codecs=avc1',
+          value: 'video/x-matroska;codecs=avc1',
+        },
+        {
+          key: 'video/mp4 (NOT SUPPORTED)',
+          value: 'video/mp4',
+        },
+      ],
       resolution: {
         width: 1280,
         height: 720,
@@ -144,7 +194,7 @@ export default {
           },
         },
       ],
-      bitrate: 8000000,
+      bitrate: 800000,
       bitrateList: [
         {
           key: '100MB bps',
@@ -169,11 +219,12 @@ export default {
       ],
       export1: false,
       export2: false,
+      export3: false,
 
       // timer
       runnerID: null,
       callStartTime: null,
-      callTime: null,
+      callTime: 0,
     }
   },
   watch: {
@@ -188,12 +239,20 @@ export default {
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: {
-            mandatory: {
-              minWidth: resolution.width,
-              maxWidth: resolution.width,
-              minHeight: resolution.height,
-              maxHeight: resolution.height,
+            width: {
+              min: resolution.width,
+              max: resolution.width,
             },
+            height: {
+              min: resolution.height,
+              max: resolution.height,
+            },
+            // mandatory: {
+            //   minWidth: resolution.width,
+            //   maxWidth: resolution.width,
+            //   minHeight: resolution.height,
+            //   maxHeight: resolution.height,
+            // },
           },
           audio: true,
         })
@@ -216,6 +275,7 @@ export default {
 
       let recordStream = new MediaStream()
       if (!this.export1 && !this.export2) {
+        console.log('one stream')
         recordStream = workerStream
       } else {
         const audioStream = new MediaStream()
@@ -234,12 +294,13 @@ export default {
         }
         if (this.export2) {
           const expert2Stream = this.$refs['streamVideo3'].captureStream()
+          console.log(expert2Stream)
           audio2Stream.addTrack(
             expert2Stream.getTracks().find(track => track.kind === 'audio'),
           )
           mixingStreams.push(audio2Stream)
         }
-        // console.log(mixingStreams.getTracks())
+        console.log(mixingStreams)
 
         const mixer = new MultiStreamsMixer(mixingStreams)
         recordStream.addTrack(
@@ -248,9 +309,37 @@ export default {
             .getTracks()
             .find(track => track.kind === 'audio'),
         )
-        recordStream.addTrack(
-          workerStream.getTracks().find(track => track.kind === 'video'),
-        )
+
+        if (this.export3) {
+          const videoStream1 = new MediaStream()
+          const videoStream2 = new MediaStream()
+          const mixingStreams2 = []
+          const expert3Stream = this.$refs['streamVideo3'].captureStream()
+          console.log(expert3Stream)
+          videoStream1.addTrack(
+            workerStream.getTracks().find(track => track.kind === 'video'),
+          )
+          videoStream2.addTrack(
+            expert3Stream.getTracks().find(track => track.kind === 'video'),
+          )
+          mixingStreams2.push(videoStream1)
+          mixingStreams2.push(videoStream2)
+          console.log(mixingStreams2)
+          console.log(mixingStreams2[0])
+          console.log(mixingStreams2[1])
+
+          const mixer2 = new MultiStreamsMixer(mixingStreams2)
+          recordStream.addTrack(
+            mixer2
+              .getMixedStream()
+              .getTracks()
+              .find(track => track.kind === 'audio'),
+          )
+        } else {
+          recordStream.addTrack(
+            workerStream.getTracks().find(track => track.kind === 'video'),
+          )
+        }
       }
 
       // if (
@@ -262,11 +351,14 @@ export default {
       // }
       this.recordOption.video = this.resolution
       this.recordOption.bitsPerSecond = this.bitrate
+      this.recordOption.mimeType = this.codec
+      console.log(this.recordOption)
 
       this.recorder = RecordRTC(recordStream, this.recordOption)
       this.recorder.reset()
     },
     start() {
+      if (this.recording) return
       this.recordInit()
       this.recording = true
       this.recorder.startRecording()
@@ -275,9 +367,11 @@ export default {
     },
     stop() {
       if (!this.recorder) return
+      if (!this.recording) return
       this.recording = false
       this.recorder.stopRecording()
       this.callStartTime = this.currentTime = null
+      this.callTime = 0
       clearInterval(this.runnerID)
       setTimeout(() => {
         this.recorder.save(`Remote_Record_${Date.now()}.mp4`)
@@ -289,6 +383,9 @@ export default {
         const diff = this.$dayjs().unix() - this.callStartTime
 
         this.callTime = this.$dayjs.duration(diff, 'seconds').as('milliseconds')
+        if (this.callTime > 1000 * 10) {
+          this.stop()
+        }
       }, 1000)
     },
   },

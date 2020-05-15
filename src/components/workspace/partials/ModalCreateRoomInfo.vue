@@ -98,6 +98,13 @@ export default {
     },
   },
   computed: {
+    shortName() {
+      if (this.account.nickname.length > 10) {
+        return this.account.nickname.substr(0, 10)
+      } else {
+        return this.account.nickname
+      }
+    },
     btnDisabled() {
       if (this.selection.length < 1) {
         return true
@@ -117,7 +124,7 @@ export default {
   },
   methods: {
     reset() {
-      this.title = `${this.account.nickname}'s Room`
+      this.title = `${this.shortName}'s Room`
       this.description = ''
     },
     async start() {
@@ -144,7 +151,7 @@ export default {
     },
     checkEmpty() {
       if (this.title === '') {
-        this.title = `${this.account.nickname}'s Room`
+        this.title = `${this.shortName}'s Room`
       }
     },
   },

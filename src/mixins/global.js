@@ -5,6 +5,9 @@ export default {
   components: {},
   filters: {
     timeFilter(time) {
+      if (time === 0) {
+        return '00:00'
+      }
       if (!time) {
         return null
       }
