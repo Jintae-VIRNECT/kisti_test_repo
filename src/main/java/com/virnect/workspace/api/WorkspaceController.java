@@ -279,6 +279,7 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
+/*
     @ApiOperation(
             value = "(테스트용)워크스페이스 멤버 추가",
             notes = "개발서버에서 테스트 데이터 넣기 위함."
@@ -294,5 +295,6 @@ public class WorkspaceController {
         ApiResponse<Boolean> apiResponse = this.workspaceService.testSetMember(workspaceId, workspaceInviteRequest);
         return ResponseEntity.ok(apiResponse);
     }
+*/
 
 }
