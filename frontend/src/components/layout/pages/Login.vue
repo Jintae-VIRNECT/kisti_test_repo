@@ -151,7 +151,7 @@ export default {
 						location.href = urls.workstation[process.env.TARGET_ENV]
 					}
 				} catch (e) {
-					// console.log(e)
+					// console.log(e)d
 					if (e.code === 2000) {
 						console.log('asdf')
 						this.alertWindow(
