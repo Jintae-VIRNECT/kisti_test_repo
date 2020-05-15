@@ -316,6 +316,9 @@ public class ContentService {
 
         String targetData = updateRequest.getTargetData();
 
+        // 새로운 타겟 데이터 입력
+        targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+
         // 추가
         //Optional<Target> target = this.targetRepository.findbyContentId(targetContent.getId());
 
