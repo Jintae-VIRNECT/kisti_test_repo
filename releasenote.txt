@@ -1,0 +1,12 @@
+RELEASE
+
+New Features
+url직접 접속 후 로그인 시 워크스테이션으로 이동
+
+Bug Fixes
+자동 로그인 시 워크스테이션으로 이동
+
+Limitation
+현재 가입 프로세스에서 모든 폼을 입력해야만 가입이 되는 문제가 있습니다.
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

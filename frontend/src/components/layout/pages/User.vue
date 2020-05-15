@@ -157,11 +157,11 @@ export default {
 		return {
 			profilePopup: false,
 			user: {
-				profile: null,
-				nickname: null,
-				countryCode: null,
-				mobile: null,
-				recoveryEmail: null,
+				profile: '',
+				nickname: '',
+				countryCode: '',
+				mobile: '',
+				recoveryEmail: '',
 			},
 			countryCodeLists: CountryCode.countryCode,
 			submitted: false,
@@ -214,15 +214,18 @@ export default {
 			this.formData.append('joinInfo', this.$props.signup.joinInfo)
 			this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
 			this.formData.append('sessionCode', this.$props.signup.sessionCode)
-
-			this.formData.append('profile', this.user.profile)
-			if (this.user.nickName !== null) {
+			if (this.user.profile !== '') {
+				this.formData.append('profile', this.user.profile)
+			}
+			if (this.user.nickName !== '') {
 				this.formData.append('nickname', this.user.nickname)
 			} else {
 				this.formData.append('nickname', this.nicknameSet)
 			}
 			this.formData.append('mobile', this.mobileSet)
-			this.formData.append('recoveryEmail', this.user.recoveryEmail)
+			if (this.user.recoveryEmail !== '') {
+				this.formData.append('recoveryEmail', this.user.recoveryEmail)
+			}
 
 			let registerData = null
 
