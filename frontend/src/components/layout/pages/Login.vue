@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import Login from 'model/login'
 import AuthService from 'service/auth-service'
 
@@ -94,6 +95,7 @@ export default {
 			},
 			loading: false,
 			message: '',
+			token: Cookies.get('accessToken'),
 			rememberEmail: localStorage.getItem('email'),
 			rememberLogin: localStorage.getItem('auto'),
 		}
@@ -101,7 +103,7 @@ export default {
 	mounted() {
 		if (this.rememberLogin) {
 			this.login.autoLogin = true
-			if (this.loggedIn)
+			if (this.token)
 				return (location.href = urls.workstation[process.env.TARGET_ENV])
 		}
 		if (this.rememberEmail) {
