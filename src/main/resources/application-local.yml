@@ -32,9 +32,8 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
-    enabled: false
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://localhost:8761/eureka
 
 ## Server Configuration
 server:
@@ -45,15 +44,6 @@ upload:
   dir: "upload/"
   serverUrl: "http://localhost:${server.port}/processes/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
-
-process:
-  serverUrl: "http://localhost:${server.port}/processes"
-
-content:
-  serverUrl: "http://localhost:8078/contents"
-
-user:
-  serverUrl: "http://192.168.6.3:8081/users"
 
 ## FEIGN Configuration
 feign:
