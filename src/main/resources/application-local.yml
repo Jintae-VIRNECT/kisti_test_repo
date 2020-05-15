@@ -50,15 +50,6 @@ upload:
   serverUrl: "http://localhost:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
-process:
-  serverUrl: "http://localhost:8079/processes"
-
-content:
-  serverUrl: "http://localhost:${server.port}/contents"
-
-user:
-  serverUrl: "http://192.168.6.3:8081/users"
-
 ## FEIGN Configuration
 feign:
   okhttp:
