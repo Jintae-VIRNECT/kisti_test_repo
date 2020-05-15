@@ -3,8 +3,12 @@ spring:
     name: message-server
   datasource:
     url: jdbc:mysql://platform-qa-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/messages?serverTimezone=UTC
-    username: virnect-message
+    username: virnect-messages
     password: virnect1234
+    hikari:
+      minimum-idle: 2
+      max-lifetime: 30000
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate
