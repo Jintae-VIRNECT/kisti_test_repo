@@ -7,7 +7,7 @@ spring:
     password: qjsprxm2020!#@$
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -33,7 +33,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka.virnect.com/eureka
 
 ## AWS Storage
 cloud:
