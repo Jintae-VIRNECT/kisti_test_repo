@@ -25,6 +25,8 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<LoggingGatewayFilterFactory.Config> {
+    private static String MESSAGE_DIVIDE_LINE = "-----------------------------------------------------------------------------------------------------------------------------------------";
+
     public LoggingGatewayFilterFactory() {
         super(Config.class);
     }
@@ -41,19 +43,19 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
                 stopWatch.start();
                 String uri = request.getURI().toString();
                 String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
-                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                log.info(MESSAGE_DIVIDE_LINE);
                 log.info("[REQUEST] [{}] [{}] [{}] {}", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
                 request.getHeaders().entrySet().forEach((entry -> log.info("[HEADER] [{}] => {} ", entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
-                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                log.info(MESSAGE_DIVIDE_LINE);
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 stopWatch.stop();
                 if (config.isPostLogger()) {
                     String uri = request.getURI().toString();
                     String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                    log.info(MESSAGE_DIVIDE_LINE);
                     log.info("[RESPONSE] [{}] [{}] [{}] [{}] {} [{} ms]", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, String.format("%d %s", response.getRawStatusCode(), HttpStatus.valueOf(response.getRawStatusCode()).name()), response.getHeaders().get("Content-Type"), stopWatch.getTotalTimeMillis());
-                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                    log.info(MESSAGE_DIVIDE_LINE);
                 }
             }));
         };
