@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    GIT_TAG = sh(returnStdout: true, script: "git describe --tags --abbrev=0").trim()
+    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
   }
   stages {
     stage('Pre-Build') {
