@@ -1,6 +1,5 @@
 package com.virnect.content.dao;
 
-import com.virnect.content.domain.Content;
 import com.virnect.content.domain.Target;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,7 +17,7 @@ public interface TargetRepository extends JpaRepository<Target, Long> {
 
     Optional<Target> findById(Long id);
 
-    Optional<Target> findByContent(Content content);
+    Optional<Target> findByContentId(Long contentId);
 
-    void deleteByContentId(long contentId);
+    void deleteByContentId(Long contentId);
 }

@@ -40,7 +40,7 @@ public class SwaggerConfiguration {
     @Bean
     public Docket contentApi() throws JsonProcessingException {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .contact(new Contact("민항기", "https://virnect.com", "hkmin@vinrect.com"))
+                .contact(new Contact("허지용", "https://virnect.com", "jiyong.heo@vinrect.com"))
                 .description("컨텐츠 서버 API 정보 입니다.")
                 .version("v0.0.1")
                 .title("VIRNECT PRODUCT - Content Service API Document.")

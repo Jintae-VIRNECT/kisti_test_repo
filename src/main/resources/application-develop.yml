@@ -40,17 +40,20 @@ upload:
   serverUrl: "http://192.168.6.3:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
-process:
-  serverUrl: "http://192.168.6.3:8079/processes"
-
-content:
-  serverUrl: "http://192.168.6.3:${server.port}/contents"
-
-user:
-  serverUrl: "http://192.168.6.3:8081/users"
-
 ## FEIGN Configuration
 feign:
   okhttp:
     enabled: true
 
+## AWS Configuration
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-platform-qa"
+        resource: "workspace/"
