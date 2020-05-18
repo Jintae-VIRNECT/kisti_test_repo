@@ -403,7 +403,8 @@ public class LicenseService {
             return new ApiResponse<>(workspaceLicensePlanInfoResponse);
         }
 
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan, WorkspaceLicensePlanInfoResponse.class);
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
+        workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
     }
 }
