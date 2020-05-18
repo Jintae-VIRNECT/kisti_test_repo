@@ -1,6 +1,8 @@
 package com.virnect.workspace.dao;
 
 import com.virnect.workspace.domain.History;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -11,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * DESCRIPTION:
  */
 public interface HistoryRepository extends JpaRepository<History,Long> {
+    Page<History> findAllByUserIdAndWorkspace_Uuid(String userId, String workspaceId, Pageable pageable);
 }
