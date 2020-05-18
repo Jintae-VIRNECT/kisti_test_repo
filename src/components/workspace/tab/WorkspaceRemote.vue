@@ -6,7 +6,7 @@
     :emptyImage="require('assets/image/img_remote_empty.svg')"
     emptyTitle="원격 협업 목록이 없습니다."
     emptyDescription="원격 협업을 시작해보세요."
-    :listCount="currentCount"
+    :listCount="rooms.length"
     :empty="rooms.length === 0"
     :showRefreshButton="true"
     @refresh="refresh"
@@ -15,7 +15,7 @@
       <remote-card
         v-for="room of roomList"
         :key="room.roomId"
-        :roomInfo="room"
+        :room="room"
         @join="joinRoom"
         @leave="leaveRoom"
         @remove="removeRoom"
@@ -42,20 +42,6 @@ export default {
     }
   },
   computed: {
-    // rooms() {
-    //   if (!this.remoteInfo || !this.remoteInfo.rooms) {
-    //     return []
-    //   } else {
-    //     return this.remoteInfo.rooms
-    //   }
-    // },
-    currentCount() {
-      if (!this.remoteInfo || !this.remoteInfo.currentCount) {
-        return 0
-      } else {
-        return this.remoteInfo.currentCount
-      }
-    },
     roomList() {
       return this.getFilter(this.rooms, ['title', 'description'], 'room')
     },
@@ -63,12 +49,8 @@ export default {
   watch: {},
   methods: {
     async refresh() {
-      this.remoteInfo = await getRoomList({
-        title: '이건 무슨 데이터일까',
-        participantName: this.account.userId,
-      })
+      this.remoteInfo = await getRoomList()
       this.rooms = this.remoteInfo.rooms
-      this.rooms = []
     },
     async remove(roomId) {
       const rtn = await deleteRoom({ roomId: roomId })

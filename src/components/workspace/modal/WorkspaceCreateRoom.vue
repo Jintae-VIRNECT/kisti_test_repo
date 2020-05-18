@@ -28,7 +28,7 @@ import Modal from 'Modal'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { inviteParticipantsList } from 'api/workspace/room'
+import { getMemberList } from 'api/workspace/member'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
@@ -57,7 +57,7 @@ export default {
   watch: {
     visible(flag) {
       if (flag) {
-        this.reset()
+        this.inviteRefresh()
       }
       this.visibleFlag = flag
     },
@@ -84,17 +84,16 @@ export default {
       }
     },
     async inviteRefresh() {
-      const inviteList = await inviteParticipantsList()
-      this.users = inviteList.participants
+      const inviteList = await getMemberList({
+        workspaceId: this.workspace.uuid,
+      })
+      this.users = inviteList.memberInfoList
       this.selection = []
     },
   },
 
   /* Lifecycles */
-  async created() {
-    const inviteList = await inviteParticipantsList()
-    this.users = inviteList.participants
-  },
+  created() {},
   mounted() {},
 }
 </script>

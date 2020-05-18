@@ -134,14 +134,17 @@ export default {
         )
         return
       }
-      console.log('원격 협업 생성')
-      // TODO: 이미지는 어떻게 처리??
+      const selectedUser = []
+      for (let select of this.selection) {
+        selectedUser.push(select.uuid)
+      }
       const roomId = await createRoom({
+        file: this.imageFile,
         title: this.title,
         description: this.description,
-        sessionId: '',
-        profile: this.image,
-        roomParticipants: this.selection,
+        leaderId: this.account.uuid,
+        participants: selectedUser,
+        workspaceId: this.workspace.uuid,
       })
       console.log(roomId)
       this.$eventBus.$emit('popover:close')

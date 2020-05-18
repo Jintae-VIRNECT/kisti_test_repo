@@ -20,18 +20,16 @@
             :customClass="{
               choice: true,
               selected:
-                selection.findIndex(select => select.userId === user.userId) >
-                -1,
+                selection.findIndex(select => select.uuid === user.uuid) > -1,
             }"
             height="6.143em"
             @click.native="selectUser(user)"
           >
             <profile
-              :image="user.path"
-              :mainText="user.userName"
-              :subText="user.userEmail"
-              :status="user.status"
-              :role="user.userRole"
+              :image="user.profile"
+              :mainText="user.nickName"
+              :subText="user.email"
+              :role="user.role"
               :thumbStyle="{ width: '3em', height: '3em' }"
             ></profile
           ></wide-card>

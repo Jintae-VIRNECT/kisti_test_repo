@@ -6,20 +6,24 @@
       v-for="user of showUsers"
       :key="user.id"
     >
-      <tooltip :content="user.userName">
+      <tooltip
+        :content="user.nickName.length === 0 ? user.name : user.nickName"
+      >
         <div class="profilelist-user__image" slot="body">
           <profile
-            :image="user.path"
+            :image="user.profile"
             :thumbStyle="{ width: size, height: size }"
           ></profile>
         </div>
         <!-- <img
           class="profilelist-user__image"
           @error="onImageError"
-          :src="user.path"
+          :src="user.profile"
           slot="body"
         /> -->
-        <span>{{ user.userName }}</span>
+        <span>{{
+          user.nickName.length === 0 ? user.name : user.nickName
+        }}</span>
       </tooltip>
     </figure>
     <br />
@@ -38,15 +42,17 @@
           :key="user.id"
         >
           <profile
-            :image="user.path"
+            :image="user.profile"
             :thumbStyle="{ width: '2.571em', height: '2.571em' }"
           ></profile>
           <!-- <img
             class="profilelist-user__image otheruser"
-            :src="user.path"
+            :src="user.profile"
             @error="onImageError"
           /> -->
-          <span class="profilelist-user__name ">{{ user.userName }}</span>
+          <span class="profilelist-user__name ">{{
+            user.nickName.length === 0 ? user.name : user.nickName
+          }}</span>
         </figure>
       </div>
       <p slot="reference" class="profilelist-user__expend" :style="customStyle">

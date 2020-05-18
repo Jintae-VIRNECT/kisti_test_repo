@@ -74,7 +74,7 @@ export default {
       default: false,
     },
     roomId: {
-      type: String,
+      type: Number,
       required: true,
     },
   },

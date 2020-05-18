@@ -29,4 +29,10 @@ export default {
     staging: 'https://stgworkstation.virnect.com',
     production: 'https://workstation.virnect.com',
   },
+  media: {
+    local: 'https://192.168.6.3:4443/',
+    develop: 'https://192.168.6.3:4443/',
+    staging: 'https://stgapi.virnect.com',
+    production: 'https://api.virnect.com',
+  },
 }

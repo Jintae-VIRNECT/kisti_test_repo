@@ -7,14 +7,12 @@
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
-      <span class="groupcard__leader" v-if="accountId === room.roomLeaderId"
-        >Leader</span
-      >
+      <span class="groupcard__leader" v-if="leader">Leader</span>
       <div class="groupcard-profile">
         <div class="profile__image">
           <profile
             :group="true"
-            :image="room.path"
+            :image="room.orgPath"
             :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
           ></profile>
         </div>
@@ -27,13 +25,13 @@
         <p class="profile__description">
           {{ room.description }}
         </p>
-        <p class="profile__leader">리더 : {{ room.roomLeaderName }}</p>
+        <p class="profile__leader">리더 : {{ room.leaderNickName }}</p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            {{ `총 멤버: ${room.maxParticipantCount}명` }}
+            {{ `총 멤버: ${room.participantsCount}명` }}
           </p>
         </div>
         <div class="info__section">
@@ -48,7 +46,7 @@
             }"
             size="2rem"
             :max="5"
-            :users="participants"
+            :users="room.participants"
           ></profile-list>
         </div>
       </div>
@@ -65,7 +63,7 @@
           상세 보기
         </button>
       </li>
-      <li v-if="accountId === room.roomLeaderId">
+      <li v-if="leader">
         <button class="group-pop__button" @click="$emit('remove', room.roomId)">
           협업 삭제
         </button>
@@ -104,7 +102,7 @@ export default {
     }
   },
   props: {
-    roomInfo: {
+    room: {
       type: Object,
       default: () => {
         return {}
@@ -112,17 +110,11 @@ export default {
     },
   },
   computed: {
-    room() {
-      return this.roomInfo.room
-    },
-    participants() {
-      return this.roomInfo.participants
-    },
     accountId() {
       return this.account.userId
     },
     leader() {
-      if (this.account.userId === this.room.roomLeaderId) {
+      if (this.account.userId === this.room.leaderId) {
         return true
       } else {
         return false
@@ -140,7 +132,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    // console.log(this.roomInfo)
+    console.log(this.room)
   },
 }
 </script>
