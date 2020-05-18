@@ -171,7 +171,7 @@ pipeline {
                           execCommand: 'docker image prune -f'
                         ),
                          sshTransfer(
-                           execCommand: 'curl --data "{$"tag_name": "$tag", "target_commitish": "master", "name": "$name","body": "$description","draft": false,"prerelease": false}" "https://api.github.com/repos/$repo_full_name/releases?access_token=$securitykey"
+                           execCommand: 'curl --data "{"tag_name": "$tag", "target_commitish": "master", "name": "$name","body": "$description","draft": false,"prerelease": false}" "https://api.github.com/repos/$repo_full_name/releases?access_token=$securitykey"
                         )
                       ]
                     )
