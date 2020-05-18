@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GIT_TAG = sh(returnStdout: true, script: 'git tag -l  | tail -n 1').trim()
+        GIT_TAG = sh(returnStdout: true, script: 'git describe --abbrev=0').trim()
     }
     stages {
         stage('Pre-Build') {
