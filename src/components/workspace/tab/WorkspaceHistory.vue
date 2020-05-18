@@ -25,6 +25,8 @@ import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
 import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
 
 import confirmMixin from 'mixins/confirm'
+import auth from 'utils/auth'
+
 export default {
   name: 'WorkspaceHistory',
   mixins: [confirmMixin],
@@ -41,7 +43,7 @@ export default {
   methods: {
     async refresh() {
       try {
-        const datas = await getHistoryList()
+        const datas = await getHistoryList(param, header)
         this.historyList = datas.data.romms
       } catch (err) {
         console.log(err)
@@ -73,8 +75,21 @@ export default {
   mounted() {},
   async created() {
     try {
-      const datas = await getHistoryList()
-      this.historyList = datas.data.romms
+      const account = await auth.init()
+
+      const param = {
+        page: 0,
+        paging: false,
+        size: 100,
+      }
+
+      const header = {
+        userId: account.myInfo.uuid,
+        workspaceId: this.workspace.uuid,
+      }
+
+      const datas = await getHistoryList(param, header)
+      this.historyList = datas.rooms
     } catch (err) {
       // 에러처리
       console.error(err)

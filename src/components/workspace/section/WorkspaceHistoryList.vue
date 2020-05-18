@@ -6,22 +6,22 @@
       v-bind:key="index"
     >
       <profile
-        :image="''"
+        :image="history.path"
         :imageAlt="'profileImg'"
         :mainText="history.title"
-        :subText="`참석자 ${history.memberCount}명`"
+        :subText="`참석자 ${history.participantsCount}명`"
         :group="true"
       ></profile>
 
       <div slot="column1" class="label label--noraml">
-        {{ `총 이용시간: ${history.totalUseTime}` }}
+        {{ `총 이용시간: ${convertTime(history.totalUseTime)}` }}
       </div>
       <div slot="column2" class="label label--date">
-        {{ convertDate(history.collaborationStartDate) }}
+        {{ convertDate(history.startDate) }}
       </div>
       <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${history.roomLeaderName}` }}</span>
+        <span class="text">{{ `리더 : ${history.leaderName}` }}</span>
       </div>
       <button slot="menuPopover"></button>
       <button
@@ -82,6 +82,8 @@ import {
   deleteHistorySingleItem,
 } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
+import dayjs from 'dayjs'
+import auth from 'utils/auth'
 
 export default {
   name: 'WorkspaceHistoryList',
@@ -97,7 +99,7 @@ export default {
     return {
       visible: false,
       showRoomInfo: false,
-      roomId: '',
+      roomId: 0,
     }
   },
   computed: {
@@ -131,12 +133,26 @@ export default {
   methods: {
     //상세보기
     async openRoomInfo(roomId) {
-      let result = await getHistorySingleItem({ roomId })
-      this.roomInfo = result.data
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        this.showRoomInfo = !this.showRoomInfo
-      })
+      try {
+        console.log(roomId)
+        const account = await auth.init()
+
+        const header = {
+          userId: account.myInfo.uuid,
+          workspaceId: this.workspace.uuid,
+        }
+
+        const result = await getHistorySingleItem({ roomId }, header)
+
+        this.roomInfo = result.data
+        this.$eventBus.$emit('popover:close')
+        this.$nextTick(() => {
+          this.showRoomInfo = !this.showRoomInfo
+        })
+      } catch (err) {
+        // 에러처리
+        console.error(err)
+      }
     },
     async showDeleteDialog(roomId) {
       this.$eventBus.$emit('popover:close')
@@ -169,8 +185,24 @@ export default {
       this.visible = !this.visible
     },
     convertDate(date) {
-      const re = /-/gi
-      return date.replace(re, '.')
+      if (date !== null) {
+        const re = /T/gi
+        let cvtDate = date.replace(re, ' ')
+        cvtDate = dayjs(cvtDate).format('YYYY.MM.DD')
+        const today = dayjs().format('YYYY.MM.DD')
+        if (cvtDate === today) {
+          return 'Today'
+        } else {
+          return cvtDate
+        }
+      }
+    },
+    convertTime(totalUseTime) {
+      const min = Math.floor(totalUseTime / 60)
+      const minText = '분'
+      const sec = totalUseTime % 60
+      const secText = '초'
+      return `${min + minText + ' ' + sec + secText}`
     },
   },
   created() {},
