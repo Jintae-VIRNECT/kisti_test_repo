@@ -128,8 +128,11 @@ public class LicenseController {
 
 
     @ApiOperation(value = "워크스페이스 라이선스 플랜 정보 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+    })
     @GetMapping("/{workspaceId}/plan")
-    public ResponseEntity<ApiResponse<WorkspaceLicensePlanInfoResponse>> getWorkspaceLicensePlanInfo(@PathVariable("workspaceId") @NotBlank String workspaceId, BindingResult result) {
+    public ResponseEntity<ApiResponse<WorkspaceLicensePlanInfoResponse>> getWorkspaceLicensePlanInfo(@PathVariable("workspaceId") String workspaceId) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
