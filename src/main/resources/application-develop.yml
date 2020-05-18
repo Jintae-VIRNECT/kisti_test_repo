@@ -39,15 +39,6 @@ upload:
   serverUrl: "http://192.168.6.3:${server.port}/processes/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
-process:
-  serverUrl: "http://192.168.6.3:${server.port}/processes"
-
-content:
-  serverUrl: "http://192.168.6.3:8078/contents"
-
-user:
-  serverUrl: "http://192.168.6.3:8081/users"
-
 ## FEIGN Configuration
 feign:
   okhttp:
