@@ -171,12 +171,13 @@ export default {
       try {
         await workspaceService.updateWorkspaceInfo(form)
         this.$message.success({
-          message: 'success',
+          message: this.$t('workspace.setting.message.updateSuccess'),
           showClose: true,
         })
       } catch (e) {
+        console.error(e)
         this.$message.error({
-          message: e,
+          message: this.$t('workspace.setting.message.updateFail'),
           showClose: true,
         })
       }
