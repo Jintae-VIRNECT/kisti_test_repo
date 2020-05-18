@@ -1,0 +1,38 @@
+package com.virnect.license.dto.response;
+
+import com.virnect.license.domain.PlanStatus;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+/**
+ * @author jeonghyeon.chang (johnmark)
+ * @project PF-License
+ * @email practice1356@gmail.com
+ * @description
+ * @since 2020.05.18
+ */
+@Getter
+@Setter
+@ApiModel
+public class WorkspaceLicensePlanInfoResponse {
+    @ApiModelProperty(value = "워크스페이스 식별자", example = "4d6eab0860969a50acbfa4599fbb5ae8")
+    private String workspaceId = "";
+    @ApiModelProperty(value = "라이선스 플랜 마스터 사용자 식별자", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
+    private String masterUserUUID = "";
+    @ApiModelProperty(value = "워크스페이스 최대 저장 용량(byte 단위)", notes = "byte 단위의 최대 용량", position = 2, example = "9663676416")
+    private Long maxStorageSize = 0L;
+    @ApiModelProperty(value = "워크스페이스 최대 컨텐츠 다운로드 수", position = 3, example = "5000")
+    private Long maxDownloadHit = 0L;
+    @ApiModelProperty(value = "워크스페이스 최대 통화 횟수", position = 4, example = "100")
+    private Long maxCallTime = 0L;
+    @ApiModelProperty(value = "라이선스 플랜 시작일자", position = 5, example = "2020-05-15T13:00:00")
+    private LocalDateTime startDate = LocalDateTime.now();
+    @ApiModelProperty(value = "라이선스 플랜 종료일자", position = 6, example = "2020-05-15T13:00:00")
+    private LocalDateTime endDate = LocalDateTime.now();
+    @ApiModelProperty(value = "라이선스 플랜 상태", position = 7, example = "ACTIVE")
+    private PlanStatus planStatus = PlanStatus.INACTIVE;
+}

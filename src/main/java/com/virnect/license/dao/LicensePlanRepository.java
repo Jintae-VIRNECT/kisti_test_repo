@@ -19,4 +19,5 @@ public interface LicensePlanRepository extends JpaRepository<LicensePlan, Long> 
     Optional<LicensePlan> findByUserIdAndWorkspaceIdAndPlanStatus(String userId, String workspaceId, PlanStatus status);
     @Transactional(readOnly = true)
     Optional<LicensePlan> findByUserIdAndWorkspaceId(String userId, String workspaceId);
+    Optional<LicensePlan> findByWorkspaceIdAndPlanStatus(String workspaceId, PlanStatus planStatus);
 }

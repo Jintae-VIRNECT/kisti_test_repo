@@ -19,7 +19,9 @@ import java.util.List;
 @Getter
 @Setter
 @Audited
-@Table(name = "license_plan")
+@Table(name = "license_plan", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"workspace_id", "status"}),
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LicensePlan extends BaseTimeEntity {
     @Id
