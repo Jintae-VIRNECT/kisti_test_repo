@@ -24,7 +24,7 @@ const axios = Axios.create({
 
 const URL = {
   /* Account */
-  LOGIN: ['GET', '/users/info'],
+  LOGIN: ['GET', '/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* CONFIGURATION */
@@ -44,7 +44,7 @@ const URL = {
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/media/room'],
+  ROOM_LIST: ['GET', '/media/room?paging={paging}'],
   ROOM_INFO: ['GET', '/media/room/{roomId}'],
   UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
   LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
@@ -52,10 +52,13 @@ const URL = {
   INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
   CREATE_ROOM: [
     'POST',
-    ' /media/room?workspaceId={workspaceId}',
+    '/media/room?workspaceId={workspaceId}',
     { type: 'form' },
   ],
   DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
+
+  /* CALL */
+  GET_TOKEN: ['POST', '/media/tokens'],
 }
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
@@ -68,7 +71,7 @@ console.log(`ENV: ${process.env.TARGET_ENV}`)
  */
 // const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-const sender = async function(constant, params, custom) {
+const sender = async function(constant, params, headers = {}, custom) {
   constant = constant.toUpperCase()
 
   let option = axios.defaults
@@ -84,6 +87,19 @@ const sender = async function(constant, params, custom) {
     //Extract url
     url = URL[constant][1]
 
+    // 정의되지 않은 URL 처리
+    if (url === undefined) {
+      throw new Error('Unknown API')
+    }
+
+    // URI 전환
+    url = url.replace(/{(\w+)}/g, (match, $1) => {
+      const alt = params[$1]
+      delete params[$1]
+      delete parameter[$1]
+      return alt
+    })
+
     //Extract option
     custom = URL[constant][2]
 
@@ -91,10 +107,12 @@ const sender = async function(constant, params, custom) {
       option.headers['Content-Type'] = 'multipart/form-data'
 
       //Extract params
+      let paramsOption = parameter
       parameter = new FormData()
-      for (let param in params) {
+      for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
+      console.log(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
 
@@ -112,22 +130,19 @@ const sender = async function(constant, params, custom) {
   option = merge(option, {
     ...custom,
   })
-
-  // 정의되지 않은 URL 처리
-  if (url === undefined) {
-    throw new Error('Unknown API')
-  }
-
-  // URI 전환
-  url = url.replace(/{(\w+)}/g, (match, $1) => {
-    const alt = params[$1]
-    delete params[$1]
-    delete parameter[$1]
-    return alt
+  option.headers = merge(option.headers, {
+    ...headers,
   })
+
   try {
-    console.log(method, url, parameter)
-    const response = await axios[method](url, parameter, option)
+    console.log(method.toUpperCase(), url, parameter, headers)
+    const request = {
+      method: method,
+      data: parameter,
+      url: url,
+      ...option,
+    }
+    const response = await axios(request)
     return receiver(response)
   } catch (error) {
     throw error
@@ -139,7 +154,7 @@ const sender = async function(constant, params, custom) {
  * @param {Object} res
  */
 const receiver = function(res) {
-  console.log(res)
+  // console.log(res)
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {
