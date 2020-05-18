@@ -2,7 +2,6 @@ pipeline {
   agent any
   environment {
     GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-    REPO_NAME= sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\/\/github.com\///;s/.git$//"').trim()
     NAME = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | head -n1').trim()
     DESCRIPTION = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | sed -z "s/\n/\\n/g"').trim()
   }
@@ -174,7 +173,7 @@ pipeline {
                           execCommand: 'docker image prune -f'
                         ),
                          sshTransfer(
-                           execCommand: 'curl --data "{\"tag_name\": \"$GIT_TAG\", \"target_commitish\": \"master\", \"name\": \"$NAME\",\"body\": \"$DESCRIPTION\",\"draft\": false,\"prerelease\": false}" "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"'
+                           execCommand: 'curl --data "{\"tag_name\": \"$GIT_TAG\", \"target_commitish\": \"master\", \"name\": \"$NAME\",\"body\": \"$DESCRIPTION\",\"draft\": false,\"prerelease\": false}" "https://api.github.com/repos/virnect-corp/PF-Workspace/releases?access_token=$securitykey"'
                         )
                       ]
                     )
