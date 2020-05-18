@@ -1,0 +1,17 @@
+RELEASE
+
+New Features
+워크스페이스 히스토리(워크스페이스 권한 변경에만) 저장 기능 추가
+워크스페이스 나가기 기능 추가
+헬스체크 기능 추가
+스웨거 에러 응답 추가
+
+Bug Fixes
+타 서비스 간 타임아웃 설정
+워크스페이스 프로필 디폴트 이미지 설정
+메일 html 이미지 리소스 이름 수정
+
+Limitation
+없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

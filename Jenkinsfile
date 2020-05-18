@@ -1,8 +1,8 @@
 pipeline {
   agent any
-  environment {
-    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format='%(refname)' --count=1 | cut -d/  -f3').trim()
-  }
+      environment {
+        GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format='%(refname)' --count=1 | cut -d/  -f3').trim()
+    }
   stages {
     stage('Pre-Build') {
       steps {
@@ -29,7 +29,7 @@ pipeline {
           when {
             branch 'develop'
           }
-          steps {            
+          steps {
             sh 'docker build -t pf-workspace .'
           }
         }
@@ -40,7 +40,7 @@ pipeline {
           }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'docker build -t pf-workspace:$GIT_TAG .'
+            sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
         }
 
@@ -50,7 +50,7 @@ pipeline {
           }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'docker build -t pf-workspace:$GIT_TAG .'
+            sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
         }
       }
@@ -99,7 +99,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-workspace").push("$GIT_TAG")
+                  docker.image("pf-workspace").push("${GIT_TAG}")
                 }
               }
 
@@ -143,7 +143,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-workspace").push("$GIT_TAG")
+                  docker.image("pf-workspace").push("${GIT_TAG}")
                 }
               }
 
