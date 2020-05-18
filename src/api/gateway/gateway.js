@@ -24,7 +24,7 @@ const axios = Axios.create({
 
 const URL = {
   /* Account */
-  LOGIN: ['GET', '/users/info'],
+  LOGIN: ['GET', '/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* CONFIGURATION */
@@ -52,7 +52,7 @@ const URL = {
   INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
   CREATE_ROOM: [
     'POST',
-    ' /media/room?workspaceId={workspaceId}',
+    '/media/room?workspaceId={workspaceId}',
     { type: 'form' },
   ],
   DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
@@ -68,7 +68,7 @@ console.log(`ENV: ${process.env.TARGET_ENV}`)
  */
 // const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-const sender = async function(constant, params, custom) {
+const sender = async function(constant, params, headers = {}, custom) {
   constant = constant.toUpperCase()
 
   let option = axios.defaults
@@ -86,15 +86,18 @@ const sender = async function(constant, params, custom) {
 
     //Extract option
     custom = URL[constant][2]
+    console.log(custom)
 
     if (custom && 'form' === custom.type) {
       option.headers['Content-Type'] = 'multipart/form-data'
 
       //Extract params
+      let paramsOption = parameter
       parameter = new FormData()
-      for (let param in params) {
+      for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
+      console.log(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
 
@@ -112,6 +115,9 @@ const sender = async function(constant, params, custom) {
   option = merge(option, {
     ...custom,
   })
+  option.headers = merge(option.headers, {
+    ...headers,
+  })
 
   // 정의되지 않은 URL 처리
   if (url === undefined) {
@@ -126,8 +132,14 @@ const sender = async function(constant, params, custom) {
     return alt
   })
   try {
-    console.log(method, url, parameter)
-    const response = await axios[method](url, parameter, option)
+    console.log(method.toUpperCase(), url, parameter, headers)
+    const request = {
+      method: method,
+      data: parameter,
+      url: url,
+      ...option,
+    }
+    const response = await axios(request)
     return receiver(response)
   } catch (error) {
     throw error
