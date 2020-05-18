@@ -44,7 +44,7 @@ const URL = {
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/media/room'],
+  ROOM_LIST: ['GET', '/media/room?paging={paging}'],
   ROOM_INFO: ['GET', '/media/room/{roomId}'],
   UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
   LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
@@ -56,6 +56,9 @@ const URL = {
     { type: 'form' },
   ],
   DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
+
+  /* CALL */
+  GET_TOKEN: ['POST', '/media/tokens'],
 }
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
@@ -83,6 +86,19 @@ const sender = async function(constant, params, headers = {}, custom) {
 
     //Extract url
     url = URL[constant][1]
+
+    // 정의되지 않은 URL 처리
+    if (url === undefined) {
+      throw new Error('Unknown API')
+    }
+
+    // URI 전환
+    url = url.replace(/{(\w+)}/g, (match, $1) => {
+      const alt = params[$1]
+      delete params[$1]
+      delete parameter[$1]
+      return alt
+    })
 
     //Extract option
     custom = URL[constant][2]
@@ -119,18 +135,6 @@ const sender = async function(constant, params, headers = {}, custom) {
     ...headers,
   })
 
-  // 정의되지 않은 URL 처리
-  if (url === undefined) {
-    throw new Error('Unknown API')
-  }
-
-  // URI 전환
-  url = url.replace(/{(\w+)}/g, (match, $1) => {
-    const alt = params[$1]
-    delete params[$1]
-    delete parameter[$1]
-    return alt
-  })
   try {
     console.log(method.toUpperCase(), url, parameter, headers)
     const request = {
@@ -151,7 +155,7 @@ const sender = async function(constant, params, headers = {}, custom) {
  * @param {Object} res
  */
 const receiver = function(res) {
-  console.log(res)
+  // console.log(res)
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {
