@@ -1,5 +1,6 @@
 package com.virnect.process.application;
 
+import com.virnect.process.api.SearchType;
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
 import com.virnect.process.dao.*;
@@ -37,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Project: PF-ProcessManagement
@@ -908,14 +910,16 @@ public class TaskService {
 
     public ResponseMessage getTotalRate(String workspaceUUID) {
         // 전체 공정 진행률 조회
-        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+//        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(workspaceUUID);
         return new ResponseMessage().addParam("totalRate", ProgressManager.getAllProcessesTotalProgressRate(processes));
     }
 
     public ApiResponse<ProcessesStatisticsResponse> getStatistics(String workspaceUUID) {
         // 전체 공정 진행률 및 공정진행상태별 현황 조회
         int totalRate = 0, totalProcesses = 0, categoryWait = 0, categoryStarted = 0, categoryEnded = 0, wait = 0, unprogressing = 0, progressing = 0, completed = 0, incompleted = 0, failed = 0, success = 0, fault = 0;
-        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+        //List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(workspaceUUID);
         for (Process process : processes) {
             totalRate = totalRate + process.getProgressRate();
             Conditions conditions = process.getConditions();
@@ -967,13 +971,31 @@ public class TaskService {
         return new ApiResponse<>(processesStatisticsResponse);
     }
 
-    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
+//    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, SearchType searchType, String search, List<Conditions> filter, Pageable pageable) {
         // 전체 공정의 목록을 조회
-        // 사용자 검색
-        List<UserInfoResponse> userInfos = getUserInfoSearch(search);
-        List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
+        List<String> userUUIDList = new ArrayList<>();
+
+//        if (searchType.equals(SearchType.)) {
+//            // 사용자 검색
+//            List<UserInfoResponse> userInfos = getUserInfoSearch("");
+//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> userInfos : {}", userInfos);
+//
+//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> nickname : {}", userInfos.stream().filter(e -> e.getNickname().contains(search)).collect(Collectors.toList()));
+//
+//            List<UserInfoResponse> findNickname =  userInfos.stream().filter(e -> search.contains(e.getNickname())).collect(Collectors.toList());
+//
+//            userUUIDList = findNickname.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
+//        }
+//        else if (searchType.equals(SearchType.PROCESS_NAME)) {
+//            processTitle = search;
+//        }
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> userUUIDList : {}", userUUIDList);
+
+        //List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
-        if (userUUIDList.size() == 0) userUUIDList = null;
+        // if (userUUIDList.size() == 0) userUUIDList = null;
 
         // pageable 을 멀티로 여러개 받는 방법을 몰라서 서버에서 임의로 공정생성주기와 업데이트 일자로 부가정렬을 추가함.
         Pageable pageableCustom = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().and(Sort.by(Sort.Direction.DESC, "state")).and(Sort.by(Sort.Direction.DESC, "updated_at")));
@@ -983,12 +1005,18 @@ public class TaskService {
         Page<Process> filteredPage = null;
 
         if (filter != null && filter.size() > 0) {
-             List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
+             //List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
+             List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList);
+
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, pageable);
+
+             log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> processList : {}", processList);
              processPage = filterConditionsProcessPage(processList, filter, pageable);
         } else {
             // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
             //processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, pageable);
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
@@ -1005,6 +1033,34 @@ public class TaskService {
 //        int end = (start + pageable.getPageSize()) > processes.size() ? processes.size() : (start + pageable.getPageSize());
 //        return new PageImpl<>(processes.subList(start, end), pageable, processes.size());
 //    }
+
+    public void updateProcessesCondition() {
+
+        List<Process> processList = this.processRepository.getProcessListSearchUser("", "", null);
+        String cond;
+
+        List<Map<String, Object>> condList = new ArrayList<>();
+
+        for (Process process : processList) {
+            cond = process.getConditions().toString();
+
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            log.debug(">>>>>>>>>>>>>>> processId   : {}", process.getId());
+            log.debug(">>>>>>>>>>>>>>> processName : {}", process.getName());
+            log.debug(">>>>>>>>>>>>>>> condition   : {}", cond);
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+            Map<String, Object> condMap = new HashMap<>();
+
+            condMap.put("id", process.getId());
+            condMap.put("name", process.getName());
+            condMap.put("cond", cond);
+
+            condList.add(condMap);
+        }
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>> condList : {}", condList);
+    }
 
     private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
         List<Process> processes = new ArrayList<>();
@@ -1059,11 +1115,13 @@ public class TaskService {
     public ApiResponse<ProcessInfoResponse> getProcessInfo(Long processId) {
         // 공정상세조회
         Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
         // contentUUID 추가
         processInfoResponse.setContentUUID(process.getContentUUID());
         processInfoResponse.setSubProcessTotal(Optional.of(process.getSubProcessList().size()).orElse(0));
         processInfoResponse.setDoneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count());
+        //processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
         processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
         processInfoResponse.setSubProcessAssign(this.getSubProcessesAssign(process));
         return new ApiResponse<>(processInfoResponse);
@@ -1548,7 +1606,9 @@ public class TaskService {
     @Scheduled(cron = "55 59 14 * * *")
     public void saveDailyTotal() {
         // 공정목록 조회
-        List<Process> processes = this.processRepository.getProcesses(null);
+        //List<Process> processes = this.processRepository.getProcesses(null);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(null);
+
         int totalRate = 0, totalProcesses = 0;
         List<String> workspaces = new ArrayList<>();
         List<Integer> rates = new ArrayList<>();
@@ -1681,5 +1741,13 @@ public class TaskService {
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
 
         return new ApiResponse<>(processInfoResponse);
+    }
+
+    public Process test(Long processId) {
+        //ProcessesStatisticsResponse temp = this.processRepository.getStatistics();
+
+        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
+        return process;
     }
 }

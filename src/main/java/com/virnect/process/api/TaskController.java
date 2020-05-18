@@ -363,6 +363,15 @@ public class TaskController {
         return ResponseEntity.ok(processesStatisticsResponseApiResponse);
     }
 
+    @ApiOperation(value = "테스트용")
+    @GetMapping("/test")
+    public ResponseEntity<String> test(
+            @RequestParam(value="processId", required=true) Long processId) {
+        //this.taskService.updateProcessesCondition();
+        this.taskService.test(processId);
+        return ResponseEntity.ok("테스트");
+    }
+
     /**
      * 전체 작업의 목록을 조회
      *
@@ -373,6 +382,7 @@ public class TaskController {
     @ApiOperation(value = "전체 작업 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "searchType", value = "검색 타입", dataType="string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
@@ -381,11 +391,13 @@ public class TaskController {
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ProcessListResponse>> getProcessList(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+              @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam(value = "searchType", required = false) SearchType searchType
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "filter", required = false) List<Conditions> filter
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(workspaceUUID, search, filter, pageable.of());
+//        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(workspaceUUID, search, filter, pageable.of());
+        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(workspaceUUID, searchType, search, filter, pageable.of());
         return ResponseEntity.ok(processListApiResponse);
     }
 

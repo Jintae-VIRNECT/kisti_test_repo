@@ -10,12 +10,48 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProcessCustomRepository {
 
+    /**
+     *
+     * @param targetData    타겟 데이터
+     * @param state         작업 상태
+     * @return
+     */
     Process findByTargetDataAndState(String targetData, State state);
 
-    //List<Process> getProcessListSearchUser(String workspaceUUID, String title, List<String> userUUIDList);
+    /**
+     *
+     * @param workspaceUUID 워크스페이스UUID
+     * @param title         작업명
+     * @param userUUIDList  사용자UUID
+     * @return
+     */
+    List<Process> getProcessListSearchUser(String workspaceUUID, String title, List<String> userUUIDList);
 
-    Page<Process> getProcessPageSearchUser(String workspaceUUID, String title, List<String> userUUIDList, Pageable pageable);
+    /**
+     *
+     * @param workspaceUUID 워크스페이스UUID
+     * @param title         작업명
+     * @param pageable
+     * @return
+     */
+    Page<Process> getProcessPageSearchUser(String workspaceUUID, String title, Pageable pageable);
+
+    /**
+     * 특정 작업의 Issue 카운트
+     * @param processId 작업ID
+     * @return
+     */
+    int getCountIssuesInProcess(Long processId);
+
+    /**
+     * 종료되지 않은 작업 조회
+     * @param workspaceUUID 워크스페이스UUID
+     * @param targetData    타겟데이터
+     * @return
+     */
+    Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 }

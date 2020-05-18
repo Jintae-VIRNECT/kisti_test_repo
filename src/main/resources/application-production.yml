@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: process-server
+  datasource:
+    url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/processes
+    username: virnect-processes
+    password: qjsprxm2020!@#$
+    hikari:
+      minimum-idle: 2
+      max-lifetime: 30000
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 400MB
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+#logging:
+#  level:
+#    org.hibernate.type.descriptor.sql: trace
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka.virnect.com/eureka
+
+## Server Configuration
+server:
+  port: 8079
+
+# File Upload Configuration
+upload:
+  dir: "upload/"
+  serverUrl: "http://192.168.6.3:${server.port}/processes/"
+  allowed-extension: '.ares,.mars,.Ares,.Mars'
+
+## FEIGN Configuration
+feign:
+  okhttp:
+    enabled: true
