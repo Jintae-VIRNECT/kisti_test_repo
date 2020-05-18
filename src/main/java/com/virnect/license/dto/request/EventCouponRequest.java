@@ -56,7 +56,7 @@ public class EventCouponRequest {
     @ApiModelProperty(value = "직원 수", position = 10, example = "50~100명")
     private String companyWorker;
     @NotBlank
-    @Length(min = 0, max = 500)
+    @Length(max = 500)
     @ApiModelProperty(value = "제품 사용 이유 또는 의견", position = 11, example = "킹왕짱멋져서")
     private String content;
     @NotNull
