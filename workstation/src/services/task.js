@@ -1,4 +1,4 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 import Task from '@/models/process/Process'
 
 export default {

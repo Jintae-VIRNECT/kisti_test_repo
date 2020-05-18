@@ -1,4 +1,4 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 import SubProcess from '@/models/process/SubProcess'
 
 export default {

@@ -1,4 +1,4 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 import Process from '@/models/process/Process'
 import ProcessStatistics from '@/models/process/ProcessStatistics'
 
