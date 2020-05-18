@@ -7,51 +7,114 @@
     width="860px"
     top="11vh"
   >
-    <el-row type="flex" v-if="content">
+    <el-row type="flex">
       <el-col :span="12">
-        ㅁㄴ유
+        <h4>{{ $t('task.manage.registerNewTaskInfo') }}</h4>
+        <el-divider />
+        <p>{{ $t('task.manage.registerTaskInfo') }}</p>
+        <dl>
+          <dt>{{ $t('task.manage.taskName') }}</dt>
+          <dd>{{ contentName }}</dd>
+        </dl>
+        <el-form class="virnect-workstation-form">
+          <el-form-item class="horizon" :label="$t('task.manage.taskSchedule')">
+            <el-date-picker
+              v-model="mainForm.schedule"
+              :placeholder="$t('task.manage.taskPositionPlaceholder')"
+              type="datetimerange"
+              :start-placeholder="$t('task.manage.scheduleStart')"
+              :end-placeholder="$t('task.manage.scheduleEnd')"
+              format="yyyy. MM. dd.  HH:mm"
+            />
+          </el-form-item>
+          <el-form-item class="horizon" :label="$t('task.manage.taskWorker')">
+            <el-input
+              v-model="mainForm.worker"
+              :placeholder="$t('task.manage.taskWorkerPlaceholder')"
+            />
+            <span>{{ $t('task.manage.taskWorkerDesc') }}</span>
+          </el-form-item>
+          <el-form-item class="horizon" :label="$t('task.manage.taskPosition')">
+            <el-input
+              v-model="mainForm.position"
+              :placeholder="$t('task.manage.taskPositionPlaceholder')"
+              :maxlength="100"
+            />
+            <span>{{ $t('task.manage.taskPositionDesc') }}</span>
+          </el-form-item>
+        </el-form>
       </el-col>
+      <!-- 하위 작업 -->
       <el-col :span="12">
-        1234
+        <h4>{{ $t('task.manage.subTaskCount') }}</h4>
+        <el-divider />
+        <el-collapse v-model="activeSubForms">
+          <el-collapse-item
+            v-for="(form, index) in subForm"
+            :title="$tc('task.manage.subTaskSetting', index + 1)"
+            :name="form.id"
+            :key="form.id"
+          >
+            <el-form class="virnect-workstation-form">
+              <dl>
+                <dt>{{ $tc('task.manage.subTaskName', index + 1) }}</dt>
+                <dd>{{ form.name }}</dd>
+              </dl>
+              <el-form-item
+                class="horizon"
+                :label="$tc('task.manage.subTaskName', index + 1)"
+              >
+                <el-date-picker
+                  v-model="form.schedule"
+                  :placeholder="$tc('task.manage.subTaskSchedule', index + 1)"
+                  type="datetimerange"
+                  :start-placeholder="$t('task.manage.scheduleStart')"
+                  :end-placeholder="$t('task.manage.scheduleEnd')"
+                  format="yyyy. MM. dd.  HH:mm"
+                />
+              </el-form-item>
+              <el-form-item
+                class="horizon"
+                :label="$tc('task.manage.subTaskWorker', index + 1)"
+              >
+                <el-input
+                  v-model="form.worker"
+                  :placeholder="$t('task.manage.subTaskWorkerPlaceholder')"
+                />
+                <span>{{ $t('task.manage.taskWorkerDesc') }}</span>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+        </el-collapse>
       </el-col>
     </el-row>
-    <el-row class="btn-wrapper">
-      <el-button @click="$emit('next', content)" type="primary">
+    <template slot="footer">
+      <el-button @click="$emit('next')" type="primary">
         {{ $t('task.new.next') }}
       </el-button>
-    </el-row>
+    </template>
   </el-dialog>
 </template>
 
 <script>
-import contentService from '@/services/content'
-import { sharedStatus } from '@/models/content/Content'
-import filters from '@/mixins/filters'
-
 export default {
-  mixins: [filters],
   props: {
     visible: Boolean,
     contentInfo: Object,
+    properties: Array,
   },
   data() {
     return {
       showMe: false,
-      content: this.contentInfo,
-      properties: null,
-      sharedStatus,
-      propertiesProps: {
-        label: 'label',
-        childern: 'childern',
+      contentName: '',
+      mainForm: {
+        schedule: '',
+        worker: '',
+        position: '',
       },
+      subForm: [],
+      activeSubForms: [],
     }
-  },
-  computed: {
-    shared() {
-      return this.$t(
-        sharedStatus.find(status => status.value === this.content.shared).label,
-      )
-    },
   },
   watch: {
     visible(bool) {
@@ -62,15 +125,14 @@ export default {
         this.$emit('update:visible', bool)
         return false
       }
-      const promise = {
-        content: contentService.getContentInfo(this.contentId),
-        properties: contentService.getContentProperties(
-          this.contentId,
-          this.$store.getters['auth/myProfile'].uuid,
-        ),
-      }
-      this.content = await promise.content
-      this.properties = await promise.properties
+      this.contentName = this.contentInfo.contentName
+      this.subForm = this.properties[0].children.map(sceneGroup => ({
+        id: sceneGroup.id,
+        name: sceneGroup.label,
+        schedule: '',
+        worker: '',
+      }))
+      this.activeSubForms = this.subForm.map(form => form.id)
     },
   },
   methods: {},
@@ -78,20 +140,41 @@ export default {
 </script>
 
 <style lang="scss">
-#set-task-info-modal .el-dialog__body {
-  .el-row:first-child {
-    height: calc(100% - 58px);
+#__nuxt #set-task-manage-modal .el-dialog__body {
+  height: 640px;
+
+  .el-col:first-child {
+    padding-right: 15px;
   }
-  .el-row.btn-wrapper {
-    height: auto;
-    margin: 24px 0;
-    .el-button:first-child {
-      width: 270px;
-    }
-    .el-button:last-child {
-      float: right;
-      width: 92px;
-    }
+  .el-col:last-child {
+    padding-left: 15px;
+    overflow: auto;
   }
+  p {
+    margin-bottom: 16px;
+  }
+  dt,
+  .el-form-item__label {
+    font-size: 12.6px;
+  }
+  dd {
+    font-size: 15px;
+  }
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+  .el-collapse {
+    margin-top: -16px;
+    border-top: none;
+  }
+  .el-collapse-item__content {
+    padding-top: 4px;
+    padding-bottom: 0;
+  }
+}
+#__nuxt #set-task-manage-modal .el-dialog__footer {
+  height: 84px;
+  padding-top: 24px;
+  border-top: solid 1px #edf0f7;
 }
 </style>

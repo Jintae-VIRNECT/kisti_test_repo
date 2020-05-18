@@ -95,6 +95,7 @@
     />
     <set-task-manage
       :contentInfo="selectedContentInfo"
+      :properties="selectedContentProperties"
       :visible.sync="showNewTaskManage"
       @next="taskManageEnded"
     />
@@ -137,6 +138,7 @@ export default {
       // 생성
       selectedContentId: null,
       selectedContentInfo: null,
+      selectedContentProperties: null,
       showNewTaskInfo: false,
       showNewTaskManage: false,
       showNewTaskTarget: false,
@@ -165,8 +167,9 @@ export default {
       this.emitChangedSearchParams()
     },
     // 생성
-    taskInfoEnded(contentInfo) {
+    taskInfoEnded(contentInfo, properties) {
       this.selectedContentInfo = contentInfo
+      this.selectedContentProperties = properties
       this.showNewTaskManage = true
     },
     taskManageEnded() {

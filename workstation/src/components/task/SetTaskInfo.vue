@@ -70,7 +70,7 @@
       <el-button @click="$router.push(`/contents/${content.contentUUID}`)">
         {{ $t('task.new.moveContentInfo') }}
       </el-button>
-      <el-button @click="$emit('next', content)" type="primary">
+      <el-button @click="$emit('next', content, properties)" type="primary">
         {{ $t('task.new.next') }}
       </el-button>
     </template>
@@ -133,6 +133,6 @@ export default {
 
 <style lang="scss">
 #__nuxt #set-task-info-modal .el-dialog__body {
-  height: auto;
+  height: 640px;
 }
 </style>

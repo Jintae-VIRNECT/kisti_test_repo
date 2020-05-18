@@ -25,5 +25,25 @@
     "sceneGroupInfo": "작업 구성 정보",
     "moveContentInfo": "콘텐츠 정보 바로가기",
     "next": "다음"
+  },
+  "manage": {
+    "registerNewTaskInfo": "신규 작업 정보 등록",
+    "registerTaskInfo": "작업 정보 등록",
+    "taskName": "작업 이름",
+    "taskSchedule": "작업 일정",
+    "taskWorker": "작업 담당자",
+    "taskWorkerPlaceholder": "담당자를 선택해 주세요",
+    "taskWorkerDesc": "작업 담당자 설정 시 작업 내 전체 하위 작업 담당자로 한번에 지정됩니다.",
+    "taskPosition": "작업 위치",
+    "taskPositionPlaceholder": "작업 장소를 입력해 주세요",
+    "taskPositionDesc": "담당자에게 작업을 진행할 장소를 안내합니다",
+    "subTaskCount": "하위 작업 목록 수",
+    "subTaskSetting": "하위 작업 {n} 설정",
+    "subTaskName": "하위 작업 {n} 이름",
+    "subTaskSchedule": "하위 작업 {n} 일정",
+    "subTaskWorker": "하위 작업 {n} 담당자",
+    "subTaskWorkerPlaceholder": "하위 작업 담당자를 선택해 주세요",
+    "scheduleStart": "시작일",
+    "scheduleEnd": "마감일"
   }
 }
