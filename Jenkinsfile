@@ -178,7 +178,7 @@ pipeline {
                 )
               }
              }
-            sh 'curl --data "{\"tag_name\": \"${GIT_TAG}\", \"target_commitish\": \"master\", \"name\": \"test\",\"body\": \"${DESCRIPTION}\",\"draft\": false,\"prerelease\": false}" "https://api.github.com/repos/${REPO_NAME}/releases?access_token=${securitykey}"'
+            sh 'curl --data "{\"tag_name\": \"${GIT_TAG}\", \"target_commitish\": \"master\", \"name\": \"test\",\"body\": \"fawefawefwaefawefwaef\",\"draft\": false,\"prerelease\": false}" "https://api.github.com/repos/${REPO_NAME}/releases?access_token=${securitykey}"'
           }
         }
       }
