@@ -175,9 +175,6 @@ pipeline {
                   ]
                 )
               }
-          steps {
-            sh 'sh Create_release.sh ${GIT_TAG}'
-          }
         }
             }
           }
