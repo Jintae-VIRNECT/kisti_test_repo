@@ -608,6 +608,7 @@ public class WorkspaceService {
             //거절 응답
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectUrl);
+            redirectView.setContentType("application/json");
             return redirectView;
         } else {
             //초대 코드 대조
@@ -661,6 +662,7 @@ public class WorkspaceService {
             //수락 응답
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectUrl);
+            redirectView.setContentType("application/json");
             return redirectView;
         }
     }
@@ -962,7 +964,7 @@ public class WorkspaceService {
         receiverEmailList.add(kickedUser.getEmail());
 
         String html = springTemplateEngine.process("workspace_kickout", context);
-        //this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
 
         //history 저장
         String message = this.messageSource.getMessage("WORKSPACE_EXPELED", new String[]{userInfoRestResponse.getNickname(), kickedUser.getNickname()}, locale);
