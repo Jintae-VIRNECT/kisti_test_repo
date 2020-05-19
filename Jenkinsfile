@@ -169,15 +169,16 @@ pipeline {
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
-                        ),
-                        sshTransfer(
-                          execCommand: 'sh Create_release.sh ${GIT_TAG}'
                         )
                       ]
                     )
                   ]
                 )
               }
+          steps {
+            sh 'sh Create_release.sh ${GIT_TAG}'
+          }
+        }
             }
           }
         }
