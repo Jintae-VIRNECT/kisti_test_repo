@@ -70,7 +70,7 @@ export default {
       e.stopPropagation()
 
       this.onSpeaker = !this.onSpeaker
-      // this.$openvidu.audioOnOff(this.session.nodeId, this.onSpeaker)
+      // this.$call.audioOnOff(this.session.nodeId, this.onSpeaker)
     },
   },
 

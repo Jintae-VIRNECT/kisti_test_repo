@@ -33,7 +33,7 @@ export default {
       this.callMic(mic)
 
       // TODO: openvidu
-      // this.$openvidu.micOnOff(mic)
+      // this.$call.micOnOff(mic)
     },
   },
 

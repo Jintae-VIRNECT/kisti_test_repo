@@ -39,7 +39,7 @@ export default {
       let stream = !this.stream
 
       this.callStream(stream)
-      this.$openvidu.streamOnOff(stream)
+      this.$call.streamOnOff(stream)
     },
   },
 

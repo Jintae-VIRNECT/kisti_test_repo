@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     doSend() {
-      this.$openvidu.sendChat(this.inputText)
+      this.$call.sendChat(this.inputText)
       this.inputText = ''
     },
     clickUpload() {

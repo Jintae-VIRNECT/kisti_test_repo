@@ -63,10 +63,16 @@ export default {
         }
       })
     },
-    joinRoom(roomId) {
-      console.log('참가하기::' + roomId)
-      this.confirmDefault('이미 삭제된 협업입니다.')
-      this.confirmDefault('협업에 참가가 불가능합니다.')
+    async joinRoom(roomInfo) {
+      console.log(roomInfo)
+      try {
+        const token = await this.$call.join(roomInfo)
+        console.log(token)
+      } catch (err) {
+        console.log(err)
+      }
+      // this.confirmDefault('이미 삭제된 협업입니다.')
+      // this.confirmDefault('협업에 참가가 불가능합니다.')
     },
     leaveRoom(roomId) {
       this.confirmCancel(
@@ -74,7 +80,7 @@ export default {
         {
           text: '나가기',
           action: () => {
-            this.remove(roomId)
+            this.remove(roomId, this.account.nickname)
           },
         },
         { text: '취소' },
@@ -92,15 +98,18 @@ export default {
         { text: '취소' },
       )
     },
+    async init() {
+      this.remoteInfo = await getRoomList({
+        title: '이건 무슨 데이터일까',
+        participantName: this.account.userId,
+      })
+      this.rooms = this.remoteInfo.rooms
+    },
   },
 
   /* Lifecycles */
-  async created() {
-    this.remoteInfo = await getRoomList({
-      title: '이건 무슨 데이터일까',
-      participantName: this.account.userId,
-    })
-    this.rooms = this.remoteInfo.rooms
+  created() {
+    this.init()
   },
   mounted() {},
 }

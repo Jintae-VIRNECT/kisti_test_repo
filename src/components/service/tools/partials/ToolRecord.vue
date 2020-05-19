@@ -34,7 +34,7 @@ export default {
       }
     },
     record() {
-      this.$openvidu
+      this.$call
         .record()
         .then(() => {
           this.isRecording = true
@@ -44,7 +44,7 @@ export default {
         })
     },
     stop() {
-      this.$openvidu
+      this.$call
         .stop()
         .then(() => {
           this.isRecording = false

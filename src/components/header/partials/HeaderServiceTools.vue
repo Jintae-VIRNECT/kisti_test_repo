@@ -43,7 +43,7 @@ export default {
       deep: true,
       handler: function(val) {
         if (val.stream) {
-          let state = this.$openvidu.getState()
+          let state = this.$call.getState()
 
           this.callMic(state.audio)
           this.callStream(state.video)
@@ -54,7 +54,7 @@ export default {
   methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
-      // this.$openvidu.leave()
+      // this.$call.leave()
 
       this.$router.push({ name: 'workspace' })
     },

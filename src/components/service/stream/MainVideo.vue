@@ -110,7 +110,7 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    // this.$openvidu.leave()
+    // this.$call.leave()
     this.$eventBus.$off('capture', this.capture)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
@@ -128,9 +128,9 @@ export default {
       nickName: nickName,
     })
 
-    // this.$openvidu.join(sessionName, nickName).then(session => {
-    //   console.log(session.connection)
-    // })
+    this.$call.join(sessionName, nickName).then(session => {
+      console.log(session.connection)
+    })
   },
 }
 </script>
