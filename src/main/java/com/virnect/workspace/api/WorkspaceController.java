@@ -300,6 +300,21 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(
+            value = "워크스페이스 멤버 조회",
+            notes = "워크스페이스 내의 마스터, 매니저를 포함한 모든 멤버를 조회합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+    })
+    @GetMapping("/{workspaceId}/members/simple")
+    public ResponseEntity<ApiResponse<MemberListResponse>> getSimpleWorkspaceUserList(@PathVariable("workspaceId") String workspaceId) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getSimpleWorkspaceUserList(workspaceId);
+        return ResponseEntity.ok(apiResponse);
+    }
 /*
     @ApiOperation(
             value = "(테스트용)워크스페이스 멤버 추가",

@@ -965,7 +965,7 @@ public class WorkspaceService {
         //this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
 
         //history 저장
-        String message = this.messageSource.getMessage("WORKSPACE_EXPELED",new String[]{userInfoRestResponse.getNickname(),kickedUser.getNickname()},locale);
+        String message = this.messageSource.getMessage("WORKSPACE_EXPELED", new String[]{userInfoRestResponse.getNickname(), kickedUser.getNickname()}, locale);
         History history = History.builder()
                 .message(message)
                 .userId(kickedUser.getUuid())
@@ -1036,7 +1036,7 @@ public class WorkspaceService {
 
     public ApiResponse<WorkspaceHistoryListResponse> getWorkspaceHistory(String workspaceId, String userId, Pageable pageable) {
 
-        Page<History> historyPage = this.historyRepository.findAllByUserIdAndWorkspace_Uuid(userId,workspaceId,pageable);
+        Page<History> historyPage = this.historyRepository.findAllByUserIdAndWorkspace_Uuid(userId, workspaceId, pageable);
         List<WorkspaceHistoryListResponse.WorkspaceHistory> workspaceHistoryList = historyPage.stream().map(history -> {
             return modelMapper.map(history, WorkspaceHistoryListResponse.WorkspaceHistory.class);
         }).collect(Collectors.toList());
@@ -1049,4 +1049,20 @@ public class WorkspaceService {
 
         return new ApiResponse<>(new WorkspaceHistoryListResponse(workspaceHistoryList, pageMetadataResponse));
     }
+
+    public ApiResponse<MemberListResponse> getSimpleWorkspaceUserList(String workspaceId) {
+        List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
+        String[] workspaceUserIdList = workspaceUserList.stream().map(workspaceUser -> workspaceUser.getUserId()).toArray(String[]::new);
+        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+
+        UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList("", workspaceUserIdList).getData();
+        userInfoListRestResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+            MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+            memberInfoDTOList.add(memberInfoDTO);
+        });
+
+        return new ApiResponse<>(new MemberListResponse(memberInfoDTOList,null));
+    }
+
 }
+
