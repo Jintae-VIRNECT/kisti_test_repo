@@ -5,18 +5,6 @@ pipeline {
     REPO_NAME= sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     NAME = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | head -n1').trim()
     DESCRIPTION = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)"').trim()
-    POSTDATA = sh(returnStdout: true, script: 'generate_post_data() {
-          cat <<EOF
-{
-  "tag_name": "$tag",
-  "target_commitish": "develop",
-  "name": "$name",
-  "body": "$description",
-  "draft": false,
-  "prerelease": false
-}
-EOF
-  }').trim()
   }
   stages {
     stage('Pre-Build') {
@@ -190,7 +178,9 @@ EOF
                 )
               }
              }
-            sh 'curl --data "$(generate_post_data)" "https://api.github.com/repos/$repo_full_name/releases?access_token=$token"'
+            sh 'cat > ./Create_release.txt  <<EOF {"tag_name": "$GIT_TAG","target_commitish": "master","name": "name","body": "$DESCRIPTION","draft": false,"prerelease": false}EOF'
+
+            sh 'curl --data "@./Create_release.txt" "https://api.github.com/repos/$REPO_NAME/releases?access_token=$token"'
           }
         }
       }
