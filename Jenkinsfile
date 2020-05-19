@@ -178,7 +178,7 @@ pipeline {
                 )
               }
              }
-                        sh 'sh Create_release.sh ${GIT_TAG}'
+                        sh 'curl --data "{\"tag_name\": \"$GIT_TAG\", \"target_commitish\": \"master\", \"name\": \"$NAME\",\"body\": \"$DESCRIPTION\",\"draft\": false,\"prerelease\": false}" "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"'
           }
         }
       }
