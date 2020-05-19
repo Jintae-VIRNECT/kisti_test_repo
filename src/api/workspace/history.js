@@ -20,11 +20,6 @@ import http from 'api/gateway'
 export const getHistoryList = async function(param, header) {
   //for test data
   //remove after devleop!!
-  header = {
-    userId: '498b1839dc29ed7bb2ee90ad6985c608',
-    workspaceId: '4d6eab0860969a50acbfa4599fbb5ae8',
-  }
-
   const returnVal = await http('GET_HISTORY_LIST', param, header)
 
   return returnVal
@@ -39,15 +34,7 @@ export const getHistoryList = async function(param, header) {
  * @param {String} header.workspaceId uuid for workspaceId
  */
 export const getHistorySingleItem = async function(param, header) {
-  //for test data
-  //remove after devleop!!
-  const roomId = 18
-  header = {
-    userId: '498b1839dc29ed7bb2ee90ad6985c608',
-    workspaceId: '4d6eab0860969a50acbfa4599fbb5ae8',
-  }
-
-  //const { roomId } = param
+  const { roomId } = param
   const returnVal = await http('GET_HISTORY_ITEM', { roomId }, header)
 
   return returnVal
