@@ -83,7 +83,6 @@ import {
 } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
 import dayjs from 'dayjs'
-import auth from 'utils/auth'
 
 export default {
   name: 'WorkspaceHistoryList',
@@ -135,14 +134,8 @@ export default {
     async openRoomInfo(roomId) {
       try {
         console.log(roomId)
-        const account = await auth.init()
 
-        const header = {
-          userId: account.myInfo.uuid,
-          workspaceId: this.workspace.uuid,
-        }
-
-        const result = await getHistorySingleItem({ roomId }, header)
+        const result = await getHistorySingleItem({ roomId })
 
         this.roomInfo = result.data
         this.$eventBus.$emit('popover:close')

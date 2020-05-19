@@ -21,15 +21,13 @@ export const getHistoryList = async function(param) {
 
 /**
  * 최근 협업 목록중 단일 항목에 대한 세부 내용 요청
- * @param {Object} param 상세 조회할 최근 기록의 roomid
+ * @param {Object} param params for http request
+ * @param {Number} param.roomId history room id for request
  *
- * @param {Object} header header for http request
- * @param {String} header.userId uuid for user
- * @param {String} header.workspaceId uuid for workspaceId
  */
-export const getHistorySingleItem = async function(param, header) {
+export const getHistorySingleItem = async function(param) {
   const { roomId } = param
-  const returnVal = await http('GET_HISTORY_ITEM', { roomId }, header)
+  const returnVal = await http('GET_HISTORY_ITEM', { roomId })
 
   return returnVal
 }
