@@ -46,7 +46,7 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>{{ $t('task.list.allTasksList') }}</h3>
           </div>
           <el-table
             class="clickable"
@@ -63,6 +63,16 @@
               :label="$t('task.list.column.name')"
               prop="name"
               sortable="custom"
+            />
+            <column-default
+              :label="$t('task.list.column.endedSubTasks')"
+              prop="doneCount"
+            />
+            <column-date
+              :label="$t('task.list.column.scedule')"
+              type="time"
+              prop="startDate"
+              prop2="endDate"
             />
           </el-table>
         </el-card>
@@ -104,6 +114,9 @@ export default {
     }
   },
   methods: {
+    changedSearchParams(searchParams) {
+      this.searchTasks(searchParams)
+    },
     async searchTasks() {
       const { list, total } = await taskService.searchTasks(
         this.$store.getters['workspace/activeWorkspace'].uuid,

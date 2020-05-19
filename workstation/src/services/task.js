@@ -1,5 +1,5 @@
 import { api } from '@/plugins/axios'
-import Task from '@/models/process/Process'
+import Task from '@/models/task/Task'
 
 export default {
   /**
@@ -8,7 +8,7 @@ export default {
    * @param {Object} params
    */
   async searchTasks(workspaceUUID, params) {
-    const data = await api('PROCESS_LIST', {
+    const data = await api('TASK_LIST', {
       params: {
         workspaceUUID,
         size: 10,
@@ -17,7 +17,7 @@ export default {
       },
     })
     return {
-      list: data.processes.map(process => new Task(process)),
+      list: data.tasks.map(task => new Task(task)),
       total: data.pageMeta.totalElements,
     }
   },
@@ -26,7 +26,7 @@ export default {
    * @param {RegisterNewTask} form
    */
   async createTask(form) {
-    return await api('PROCESS_CREATE', {
+    return await api('TASK_CREATE', {
       params: form,
     })
   },

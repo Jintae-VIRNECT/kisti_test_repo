@@ -18,7 +18,7 @@ export default class RegisterNewTask extends Model {
     this.endDate = dayjs.utc(task.schedule[1])
     this.position = task.position
     this.targetType = null
-    this.subProcessList = subTasks.map(subTask => {
+    this.subTaskList = subTasks.map(subTask => {
       return {
         id: subTask.id,
         name: subTask.name,

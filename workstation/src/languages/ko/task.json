@@ -3,6 +3,7 @@
   "list": {
     "title": "워크스페이스 작업 목록",
     "newTask": "신규 작업 등록",
+    "allTasksList": "전체 작업 목록",
     "allTasks": "모든 작업",
     "waitTasks": "대기 중인 작업",
     "startedTasks": "시작된 작업",
