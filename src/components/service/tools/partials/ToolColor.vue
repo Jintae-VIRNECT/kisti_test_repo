@@ -101,9 +101,11 @@ export default {
 </script>
 <style scoped>
 .line-color {
+  z-index: 1;
   display: inline-block;
   width: 18px;
   height: 18px;
+  margin: auto;
   overflow: hidden;
   text-indent: -99px;
   border-radius: 50%;

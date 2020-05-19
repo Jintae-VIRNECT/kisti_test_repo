@@ -1,8 +1,8 @@
 <template>
   <tool-button
     text="포인팅"
-    :active="action === 'pointing'"
-    :src="require('assets/image/call/ic_pointing.png')"
+    :active="isPointing"
+    :src="require('assets/image/ic_pointing.svg')"
     @click="pointing"
   ></tool-button>
 </template>
@@ -13,13 +13,14 @@ export default {
   name: 'PointingTool',
   mixins: [toolMixin],
   data() {
-    return {}
+    return { isPointing: false }
   },
   computed: {},
   watch: {},
   methods: {
     pointing() {
-      this.setAction('pointing')
+      this.isPointing = !this.isPointing
+      // this.setAction('pointing')
     },
   },
 

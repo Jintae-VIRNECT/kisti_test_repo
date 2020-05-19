@@ -49,6 +49,7 @@
   padding: 11px 17px;
   > .tooltip,
   > .popover--wrapper {
+    display: inline-block;
     margin-left: 8px;
   }
   .header-tools__notice {

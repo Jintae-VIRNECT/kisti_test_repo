@@ -1,18 +1,22 @@
 <template>
-  <div class="stream-tools tools">
-    <pointing></pointing>
-    <color></color>
+  <div class="stream-menu menus">
+    <capture></capture>
+    <record></record>
+    <local-record></local-record>
+    <setting></setting>
   </div>
 </template>
 
 <script>
-import { Pointing, Color } from './partials'
+import { Capture, Record, LocalRecord, Setting } from './partials'
 
 export default {
-  name: 'StreamTools',
+  name: 'Menus',
   components: {
-    Pointing,
-    Color,
+    Capture,
+    Record,
+    LocalRecord,
+    Setting,
   },
   data() {
     return {

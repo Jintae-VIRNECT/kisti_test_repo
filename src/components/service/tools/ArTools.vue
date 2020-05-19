@@ -1,20 +1,41 @@
 <template>
   <div class="ar-tools tools">
-    <pointing></pointing>
-    <capture></capture>
-    <record></record>
+    <ar-pointing></ar-pointing>
+    <ar-capture></ar-capture>
+    <div class="division"></div>
+    <line-mode></line-mode>
+    <line-width></line-width>
+    <color></color>
+    <div class="division"></div>
+    <undo></undo>
+    <redo></redo>
+    <clear></clear>
   </div>
 </template>
 
 <script>
-import { Pointing, Capture, Record } from './partials'
+import {
+  ArPointing,
+  ArCapture,
+  LineMode,
+  LineWidth,
+  Color,
+  Undo,
+  Redo,
+  Clear,
+} from './partials'
 
 export default {
   name: 'ArTools',
   components: {
-    Pointing,
-    Capture,
-    Record,
+    ArPointing,
+    ArCapture,
+    LineMode,
+    LineWidth,
+    Color,
+    Undo,
+    Redo,
+    Clear,
   },
   data() {
     return {

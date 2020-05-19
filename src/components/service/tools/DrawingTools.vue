@@ -1,24 +1,40 @@
 <template>
   <div class="drawing-tools tools">
     <line-mode></line-mode>
-    <text-mode></text-mode>
-    <line-color></line-color>
     <line-width></line-width>
+    <text-mode></text-mode>
     <text-size></text-size>
+    <color></color>
+    <div class="division"></div>
+    <undo></undo>
+    <redo></redo>
+    <clear></clear>
   </div>
 </template>
 
 <script>
-import { LineMode, TextMode, LineColor, LineWidth, TextSize } from './partials'
+import {
+  LineMode,
+  TextMode,
+  Color,
+  LineWidth,
+  TextSize,
+  Undo,
+  Redo,
+  Clear,
+} from './partials'
 
 export default {
   name: 'DrawingTools',
   components: {
     LineMode,
     TextMode,
-    LineColor,
+    Color,
     LineWidth,
     TextSize,
+    Undo,
+    Redo,
+    Clear,
   },
   data() {
     return {}

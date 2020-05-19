@@ -1,6 +1,15 @@
 <template>
   <figure class="notice-item">
-    <img class="notice-item__image" :class="type" :src="icon" />
+    <div class="notice-item__image">
+      <img
+        v-if="icon && icon.length > 0"
+        :class="type"
+        :src="icon"
+        :alt="info"
+        @error="onImageError"
+      />
+    </div>
+    <!-- <img class="notice-item__image" :class="type" :src="icon" /> -->
     <figcaption class="notice-item__body">
       <p class="notice-item__info" :class="type">{{ info }}</p>
       <p class="notice-item__description" v-html="description"></p>
@@ -80,7 +89,10 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    console.log(this.type)
+    console.log(this.icon)
+  },
 }
 </script>
 
@@ -128,11 +140,11 @@ export default {
   height: 36px;
   margin: 0 20px auto 0;
   @include image();
-  &.info,
-  &.license {
+  > .info,
+  > .license {
     background-color: $color_primary;
   }
-  &.fail {
+  > .fail {
     background-color: $color_yellow;
   }
 }

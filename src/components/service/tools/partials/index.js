@@ -1,8 +1,8 @@
-const files = require.context('.', false, /^\.\/Tool.*\.vue$/)
+const files = require.context('.', false, /\.vue$/)
 const modules = {}
 
 files.keys().forEach(key => {
-  const rep = key.replace(/(\.\/Tool|\.vue$)/g, '')
+  const rep = key.replace(/(\.\/Tool|\.\/Menu|\.vue$)/g, '')
   modules[rep] = files(key).default
 })
 

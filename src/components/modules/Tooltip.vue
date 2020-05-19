@@ -144,7 +144,6 @@ export default {
 <style lang="scss">
 .tooltip {
   position: relative;
-  display: inline-block;
 }
 
 .tooltip .tooltiptext {

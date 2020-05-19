@@ -2,7 +2,7 @@
   <tooltip :content="text" placement="bottom">
     <button
       slot="body"
-      class="tool"
+      class="menu"
       :class="{ active: active }"
       v-on="$listeners"
     >
@@ -16,7 +16,7 @@
 <script>
 import Tooltip from 'Tooltip'
 export default {
-  name: 'ToolButton',
+  name: 'MenuButton',
   components: {
     Tooltip,
   },
@@ -49,14 +49,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tool {
+.menu {
   position: relative;
   display: flex;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
   font-size: 12px;
   background-color: transparent;
   border-left: solid 1px #d8d8d8;
+  border-radius: 2px;
   opacity: 0.6;
 
   &:first-child {
@@ -67,22 +69,15 @@ export default {
     opacity: 1;
   }
   &.active {
+    background-color: rgba(#888888, 0.3);
     opacity: 1;
-    &:before {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 38px;
-      height: 38px;
-      background-color: #494a4e;
-      border-radius: 2px;
-      transform: translate(-50%, -50%);
-      content: '';
-    }
   }
 
   > img {
     z-index: 1;
+    width: 20px;
+    height: 20px;
+    margin: auto;
   }
 }
 </style>
