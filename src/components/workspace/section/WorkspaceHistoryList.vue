@@ -97,7 +97,7 @@ export default {
     return {
       visible: false,
       showRoomInfo: false,
-      roomId: '',
+      roomId: 0,
     }
   },
   computed: {
