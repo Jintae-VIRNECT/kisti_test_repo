@@ -41,7 +41,6 @@ import java.util.Objects;
 @Api(produces = MediaType.APPLICATION_JSON_VALUE, value = "작업 서버 API Controller 입니다.")
 @Slf4j
 @RestController
-//@RequestMapping("/processes")
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
