@@ -2,9 +2,9 @@ pipeline {
   agent any
   environment {
     GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-    REPO_NAME= sh(returnStdout: true, script: "git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//'")
+    REPO_NAME= sh(returnStdout: true, script: "git config --get remote.origin.url | cut -d / -f 4,5 | cut -d . -f1'")
     NAME = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | head -n1').trim()
-    DESCRIPTION = sh(returnStdout: true, script: "git for-each-ref refs/tags/$GIT_TAG --format='%(contents)' | sed -z 's/\n/\\n/g'").trim()
+    DESCRIPTION = sh(returnStdout: true, script: "git for-each-ref refs/tags/$GIT_TAG --format='%(contents)'").trim()
   }
   stages {
     stage('Pre-Build') {
