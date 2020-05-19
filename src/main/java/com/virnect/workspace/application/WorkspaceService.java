@@ -608,6 +608,7 @@ public class WorkspaceService {
             //거절 응답
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectUrl);
+            redirectView.setContentType("application/json");
             return redirectView;
         } else {
             //초대 코드 대조
@@ -661,6 +662,7 @@ public class WorkspaceService {
             //수락 응답
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectUrl);
+            redirectView.setContentType("application/json");
             return redirectView;
         }
     }
