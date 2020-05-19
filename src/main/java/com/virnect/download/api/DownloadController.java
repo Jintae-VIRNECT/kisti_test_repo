@@ -1,8 +1,11 @@
 package com.virnect.download.api;
 
 import com.virnect.download.application.DownloadService;
-import com.virnect.download.dto.response.AppInfoResponse;
+import com.virnect.download.dto.response.AppInfoListResponse;
+import com.virnect.download.dto.response.AppUploadResponse;
+import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
+import com.virnect.download.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -10,10 +13,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * Project: base
@@ -28,11 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DownloadController {
     private final DownloadService downloadService;
+
 /*
 
     @ApiOperation(
             value = "어플리케이션 업로드",
-            hidden = true
+            notes = "어플리케이션 파일을 업로드 합니다."
     )
     @GetMapping("/upload/{productName}")
     public ResponseEntity<ApiResponse<AppUploadResponse>> uploadFile(@RequestPart("file") MultipartFile file, @PathVariable("productName") String productName) throws IOException {
@@ -41,29 +46,50 @@ public class DownloadController {
     }
 */
 
+
     @ApiOperation(
             value = "어플리케이션 다운로드",
-            notes = "가장 최근에 업로드 된 파일이 다운로드 됩니다."
+            notes = "어플리케이션 파일을 다운로드 합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "productName", value = "제품명", dataType = "string", defaultValue = "make", required = true)
+            @ApiImplicitParam(name = "id", value = "어플리케이션 id", dataType = "string", defaultValue = "1", required = true)
     })
-    @GetMapping("/{productName}")
-    public ResponseEntity<ApiResponse<String>> downloadFile(@PathVariable("productName") String productName) {
-        ApiResponse<String> apiResponse = this.downloadService.downloadFile(productName);
-        return ResponseEntity.ok(apiResponse);
+    @GetMapping("/app/{id}")
+    public ResponseEntity<byte[]> downloadApp(@PathVariable("id") String id) {
+        if (!StringUtils.hasText(id)) {
+            throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        return this.downloadService.downloadApp(id);
+    }
+
+    @ApiOperation(
+            value = "가이드 다운로드",
+            notes = "가이드 파일을 다운로드 합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "가이드 id", dataType = "string", defaultValue = "1", required = true)
+    })
+    @GetMapping("/guide/{id}")
+    public ResponseEntity<byte[]> downloadGuide(@PathVariable("id") String id) {
+        if (!StringUtils.hasText(id)) {
+            throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        return this.downloadService.downloadGuide(id);
     }
 
     @ApiOperation(
             value = "어플리케이션 조회",
-            notes = "가장 최근에 업로드 된 파일을 조회합니다."
+            notes = "제품 별 가장 최신 버전의 다운로드 항목을 조회합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "productName", value = "제품명", dataType = "string", defaultValue = "make", required = true)
+            @ApiImplicitParam(name = "productName", value = "제품명(make,remote,view)", dataType = "string", defaultValue = "make", required = true)
     })
     @GetMapping("/list/{productName}")
-    public ResponseEntity<ApiResponse<AppInfoResponse>> findFile(@PathVariable("productName") String productName) {
-        ApiResponse<AppInfoResponse> apiResponse = this.downloadService.findFile(productName);
+    public ResponseEntity<ApiResponse<AppInfoListResponse>> getAppList(@PathVariable("productName") String productName) {
+        if (!StringUtils.hasText(productName)) {
+            throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<AppInfoListResponse> apiResponse = this.downloadService.getAppList(productName);
         return ResponseEntity.ok(apiResponse);
     }
 }

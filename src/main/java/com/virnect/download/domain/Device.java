@@ -25,6 +25,10 @@ public class Device extends TimeEntity {
     @Column(name = "device_id")
     private Long id;
 
+    @Column(name = "type", nullable = false)
+    private String type;
+
     @Column(name = "name", nullable = false)
     private String name;
+
 }

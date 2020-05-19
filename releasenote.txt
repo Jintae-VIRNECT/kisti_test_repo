@@ -1,0 +1,11 @@
+RELEASE
+
+New Features
+어플리케이션 다운로드
+어플리케이션 조회
+
+Bug Fixes
+
+Limitation
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
