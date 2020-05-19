@@ -178,7 +178,7 @@ pipeline {
                 )
               }
              }
-            sh 'cat > ./Create_release.txt  <<EOF {"tag_name": "\\$GIT_TAG","target_commitish": "master","name": "name","body": "\\$DESCRIPTION","draft": false,"prerelease": false}EOF'
+            sh 'cat > ./Create_release.txt  <<EOF {"tag_name": \\$GIT_TAG,"target_commitish": "master","name": "name","body": \\$DESCRIPTION,"draft": false,"prerelease": false}EOF'
 
             sh 'curl --data "@./Create_release.txt" "https://api.github.com/repos/\\$REPO_NAME/releases?access_token=\\$token"'
           }
