@@ -179,7 +179,9 @@ pipeline {
               }
 
               script {
-                def payload = """{"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": "false", "prerelease": "false"}"""
+                def payload = """
+                {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": "false", "prerelease": "false", validResponseCodes: '200:404'}
+                """
                 
                 def response = httpRequest acceptType: 'APPLICATION_JSON', 
                 contentType: 'APPLICATION_JSON', 
