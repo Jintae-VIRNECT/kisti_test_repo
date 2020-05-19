@@ -77,10 +77,10 @@ spring:
         - id: process-server
           uri: lb:http://process-server
           predicates:
-            - Path=/processes/**
+            - Path=/tasks/**
           filters:
             - StripPrefix=0
-            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/tasks/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
                 preLogger: true
