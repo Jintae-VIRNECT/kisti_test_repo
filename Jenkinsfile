@@ -179,9 +179,7 @@ pipeline {
               }
 
               script {
-                response = $(curl --request "POST" \
-                --url "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey" \
-                --data '{"tag_name": "$GIT_TAG", "target_commitish": "master", "name": "$NAME", "body": "$DESCRIPTION","draft": false, "prerelease": false}')
+                def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: '{"tag_name": "$GIT_TAG", "target_commitish": "master", "name": "$NAME", "body": "$DESCRIPTION","draft": false, "prerelease": false}' url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
                 
                 echo "${response}"
               }
