@@ -179,10 +179,10 @@ pipeline {
               }
 
               script {
-                curl \
+                echo curl 
                 --request "POST" \
                 --url "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey" \
-                --data '{"tag_name": "$GIT_TAG", "target_commitish": "master", "name": "$NAME","body": "$DESCRIPTION","draft": false,"prerelease": false}'                
+                --data '{"tag_name": "$GIT_TAG", "target_commitish": "master", "name": "$NAME", "body": "$DESCRIPTION","draft": false, "prerelease": false}'                
               }
 
             }
