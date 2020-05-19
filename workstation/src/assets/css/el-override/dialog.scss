@@ -44,7 +44,8 @@
     &:not(.horizon) .el-input + .el-input {
       margin-top: 10px;
     }
-    &.horizon .el-form-item__content {
+    &.horizon .el-form-item__content,
+    &.horizon .el-select {
       display: inline-block;
       width: 100%;
 

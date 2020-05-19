@@ -100,8 +100,9 @@
       @next="taskManageEnded"
     />
     <set-task-target
-      :contentInfo="selectedContentInfo"
+      :form="registerTaskForm"
       :visible.sync="showNewTaskTarget"
+      @prev="canceledManageTarget"
     />
   </div>
 </template>
@@ -118,12 +119,14 @@ import {
 
 import SetTaskInfo from '@/components/task/SetTaskInfo'
 import SetTaskManage from '@/components/task/SetTaskManage'
+import SetTaskTarget from '@/components/task/SetTaskTarget'
 
 export default {
   mixins: [searchMixin, columnsMixin],
   components: {
     SetTaskInfo,
     SetTaskManage,
+    SetTaskTarget,
   },
   data() {
     return {
@@ -139,6 +142,7 @@ export default {
       selectedContentId: null,
       selectedContentInfo: null,
       selectedContentProperties: null,
+      registerTaskForm: null,
       showNewTaskInfo: false,
       showNewTaskManage: false,
       showNewTaskTarget: false,
@@ -171,9 +175,16 @@ export default {
       this.selectedContentInfo = contentInfo
       this.selectedContentProperties = properties
       this.showNewTaskManage = true
+      setTimeout(() => (this.showNewTaskInfo = false), 100)
     },
-    taskManageEnded() {
+    taskManageEnded(form) {
+      this.registerTaskForm = form
       this.showNewTaskTarget = true
+      setTimeout(() => (this.showNewTaskManage = false), 100)
+    },
+    canceledManageTarget() {
+      this.showNewTaskManage = true
+      setTimeout(() => (this.showNewTaskTarget = false), 100)
     },
   },
   beforeMount() {

@@ -71,7 +71,7 @@
         {{ $t('task.new.moveContentInfo') }}
       </el-button>
       <el-button @click="$emit('next', content, properties)" type="primary">
-        {{ $t('task.new.next') }}
+        {{ $t('common.next') }}
       </el-button>
     </template>
   </el-dialog>
@@ -131,8 +131,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#__nuxt #set-task-info-modal .el-dialog__body {
-  height: 640px;
-}
-</style>
+<style lang="scss"></style>

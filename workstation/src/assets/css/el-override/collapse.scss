@@ -1,0 +1,14 @@
+.el-collapse {
+  .el-collapse-item__header {
+    position: relative;
+    padding-left: 21px;
+  }
+  .el-collapse-item__arrow {
+    position: absolute;
+    left: 0;
+    font-size: 14px;
+    &:before {
+      content: "\e791";
+    }
+  }
+}

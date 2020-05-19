@@ -3,7 +3,7 @@ import Task from '@/models/process/Process'
 
 export default {
   /**
-   * 공정 검색
+   * 작업 검색
    * @param {String} workspaceUUID
    * @param {Object} params
    */
@@ -20,5 +20,14 @@ export default {
       list: data.processes.map(process => new Task(process)),
       total: data.pageMeta.totalElements,
     }
+  },
+  /**
+   * 작업 생성
+   * @param {RegisterNewTask} form
+   */
+  async createTask(form) {
+    return await api('PROCESS_CREATE', {
+      params: form,
+    })
   },
 }

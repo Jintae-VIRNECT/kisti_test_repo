@@ -20,18 +20,29 @@
           <el-form-item class="horizon" :label="$t('task.manage.taskSchedule')">
             <el-date-picker
               v-model="mainForm.schedule"
-              :placeholder="$t('task.manage.taskPositionPlaceholder')"
               type="datetimerange"
               :start-placeholder="$t('task.manage.scheduleStart')"
               :end-placeholder="$t('task.manage.scheduleEnd')"
               format="yyyy. MM. dd.  HH:mm"
+              time-arrow-control
             />
           </el-form-item>
           <el-form-item class="horizon" :label="$t('task.manage.taskWorker')">
-            <el-input
+            <el-select
               v-model="mainForm.worker"
               :placeholder="$t('task.manage.taskWorkerPlaceholder')"
-            />
+              filterable
+              remote
+              :remote-method="searchMembers"
+              :loading="searchLoading"
+            >
+              <el-option
+                v-for="worker in workerList"
+                :key="worker.uuid"
+                :value="worker.uuid"
+                :label="worker.nickname"
+              />
+            </el-select>
             <span>{{ $t('task.manage.taskWorkerDesc') }}</span>
           </el-form-item>
           <el-form-item class="horizon" :label="$t('task.manage.taskPosition')">
@@ -62,26 +73,36 @@
               </dl>
               <el-form-item
                 class="horizon"
-                :label="$tc('task.manage.subTaskName', index + 1)"
+                :label="$tc('task.manage.subTaskSchedule', index + 1)"
               >
                 <el-date-picker
                   v-model="form.schedule"
-                  :placeholder="$tc('task.manage.subTaskSchedule', index + 1)"
                   type="datetimerange"
                   :start-placeholder="$t('task.manage.scheduleStart')"
                   :end-placeholder="$t('task.manage.scheduleEnd')"
                   format="yyyy. MM. dd.  HH:mm"
+                  time-arrow-control
                 />
               </el-form-item>
               <el-form-item
                 class="horizon"
                 :label="$tc('task.manage.subTaskWorker', index + 1)"
               >
-                <el-input
+                <el-select
                   v-model="form.worker"
                   :placeholder="$t('task.manage.subTaskWorkerPlaceholder')"
-                />
-                <span>{{ $t('task.manage.taskWorkerDesc') }}</span>
+                  filterable
+                  remote
+                  :remote-method="searchMembers"
+                  :loading="searchLoading"
+                >
+                  <el-option
+                    v-for="worker in workerList"
+                    :key="worker.uuid"
+                    :value="worker.uuid"
+                    :label="worker.nickname"
+                  />
+                </el-select>
               </el-form-item>
             </el-form>
           </el-collapse-item>
@@ -89,14 +110,17 @@
       </el-col>
     </el-row>
     <template slot="footer">
-      <el-button @click="$emit('next')" type="primary">
-        {{ $t('task.new.next') }}
+      <el-button @click="next" type="primary">
+        {{ $t('common.next') }}
       </el-button>
     </template>
   </el-dialog>
 </template>
 
 <script>
+import workspaceService from '@/services/workspace'
+import RegisterNewTask from '@/models/task/RegisterNewTask'
+
 export default {
   props: {
     visible: Boolean,
@@ -114,6 +138,8 @@ export default {
       },
       subForm: [],
       activeSubForms: [],
+      workerList: [],
+      searchLoading: false,
     }
   },
   watch: {
@@ -133,16 +159,50 @@ export default {
         worker: '',
       }))
       this.activeSubForms = this.subForm.map(form => form.id)
+      this.searchMembers()
+    },
+    'mainForm.schedule'(date) {
+      this.subForm.map(form => (form.schedule = date))
+    },
+    'mainForm.worker'(worker) {
+      if (worker !== this.$t('task.manage.subTaskWorkerSelected')) {
+        this.subForm.map(form => (form.worker = worker))
+      }
+    },
+    subForm: {
+      deep: true,
+      handler(forms) {
+        forms.forEach(form => {
+          if (form.worker !== this.mainForm.worker) {
+            this.mainForm.worker = this.$t('task.manage.subTaskWorkerSelected')
+          }
+        })
+      },
     },
   },
-  methods: {},
+  methods: {
+    async searchMembers(keyword) {
+      this.searchLoading = true
+      const searchParams = keyword && { search: keyword }
+      const { list } = await workspaceService.searchMembers(searchParams)
+      this.workerList = list
+      this.searchLoading = false
+    },
+    next() {
+      const form = new RegisterNewTask({
+        workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
+        content: this.contentInfo,
+        task: this.mainForm,
+        subTasks: this.subForm,
+      })
+      this.$emit('next', form)
+    },
+  },
 }
 </script>
 
 <style lang="scss">
 #__nuxt #set-task-manage-modal .el-dialog__body {
-  height: 640px;
-
   .el-col:first-child {
     padding-right: 15px;
   }
@@ -155,7 +215,7 @@ export default {
   }
   dt,
   .el-form-item__label {
-    font-size: 12.6px;
+    font-size: 13px;
   }
   dd {
     font-size: 15px;
@@ -170,6 +230,9 @@ export default {
   .el-collapse-item__content {
     padding-top: 4px;
     padding-bottom: 0;
+  }
+  .el-select__caret:before {
+    content: '\e6e1';
   }
 }
 #__nuxt #set-task-manage-modal .el-dialog__footer {

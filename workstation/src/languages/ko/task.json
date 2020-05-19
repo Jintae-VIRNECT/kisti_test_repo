@@ -23,8 +23,7 @@
     "title": "신규 작업 등록",
     "contentsInfo": "신규 작업 등록 콘텐츠 정보",
     "sceneGroupInfo": "작업 구성 정보",
-    "moveContentInfo": "콘텐츠 정보 바로가기",
-    "next": "다음"
+    "moveContentInfo": "콘텐츠 정보 바로가기"
   },
   "manage": {
     "registerNewTaskInfo": "신규 작업 정보 등록",
@@ -44,6 +43,23 @@
     "subTaskWorker": "하위 작업 {n} 담당자",
     "subTaskWorkerPlaceholder": "하위 작업 담당자를 선택해 주세요",
     "scheduleStart": "시작일",
-    "scheduleEnd": "마감일"
+    "scheduleEnd": "마감일",
+    "subTaskWorkerSelected": "하위 작업 별 담당자가 지정되었습니다"
+  },
+  "target": {
+    "targetSetting": "타겟 설정",
+    "contentTarget": "콘텐츠 타겟",
+    "taskTarget": "작업 타겟",
+    "duplicate": "콘텐츠를 작업으로 복제하여 등록",
+    "duplicateDesc": "콘텐츠를 작업 관리 항목으로 복제합니다. <br>복제된 콘텐츠에 새로운 작업 타겟을 발급하여 작업을 관리합니다.",
+    "transform": "콘텐츠를 작업으로 전환하여 등록",
+    "transformDesc": "기존 콘텐츠 타겟을 작업 타겟으로 사용합니다. <br>작업으로 전환된 콘텐츠는 작업 관리 항목으로 이동하며 콘텐츠 메뉴에서 관리되지 않습니다.",
+    "register": "작업 등록",
+    "registerComment": "입력하신 정보로 새로운 작업을 등록합니다.",
+    "message": {
+      "registerSuccess": "신규 작업이 등록되었습니다.",
+      "registerFail": "작업 등록에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "registerStroageFail": "스토리지 용량이 부족하여 작업 등록에 실패했습니다. 스토리지 용량을 구매해 주세요."
+    }
   }
 }

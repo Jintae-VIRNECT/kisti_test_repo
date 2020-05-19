@@ -196,3 +196,9 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#__nuxt #contents-info-modal .el-dialog__body {
+  height: 700px;
+}
+</style>
