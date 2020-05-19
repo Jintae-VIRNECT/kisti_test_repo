@@ -23,7 +23,7 @@ export default async function({ req, store, redirect }) {
         )
         const activeWorkspace =
           lastWorkspace &&
-          myWorkspaces.find(workspace => workspace.uuid === lastWorkspace)
+          myWorkspaces.find(workspace => workspace.uuid === lastWorkspace[1])
             ? lastWorkspace[1]
             : myWorkspaces[0].uuid
         store.commit('workspace/SET_ACTIVE_WORKSPACE', activeWorkspace)
