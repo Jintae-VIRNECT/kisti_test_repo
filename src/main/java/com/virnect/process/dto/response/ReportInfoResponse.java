@@ -15,13 +15,13 @@ import java.util.List;
 public class ReportInfoResponse {
 
     @ApiModelProperty(value = "공정 식별자", notes = "공정 식별자", example = "1")
-    private final long processId;
+    private final long taskId;
 
     @ApiModelProperty(value = "세부공정 식별자", notes = "세부공정 식별자", position = 1, example = "1")
-    private final long subProcessId;
+    private final long subTaskId;
 
-    @ApiModelProperty(value = "작업 식별자", notes = "작업 식별자", position = 2, example = "1")
-    private final long jobId;
+    @ApiModelProperty(value = "단계 식별자", notes = "작업 식별자", position = 2, example = "1")
+    private final long stepId;
 
     @ApiModelProperty(value = "리포트 식별자", notes = "이슈 식별자", position = 3, example = "uuid")
     private final long reportId;
@@ -30,13 +30,13 @@ public class ReportInfoResponse {
     private final LocalDateTime reportedDate;
 
     @ApiModelProperty(value = "공정명", notes = "공정명", position = 5, example = "A공정")
-    private final String processName;
+    private final String taskName;
 
     @ApiModelProperty(value = "세부공정명", notes = "세부공정명", position = 6, example = "1세부공정")
-    private final String subProcessName;
+    private final String subTaskName;
 
     @ApiModelProperty(value = "작업명", notes = "작업명", position = 7, example = "가작업")
-    private final String jobName;
+    private final String stepName;
 
     @ApiModelProperty(value = "작업자 식별자", notes = "작업자 식별자", position = 8, example = "uuid")
     private final String workerUUID;
@@ -48,21 +48,21 @@ public class ReportInfoResponse {
     private String workerProfile;
 
     @ApiModelProperty(value = "리포트 항목", position = 11, notes = "리포트의 항목들")
-    private List<ItemResponse> reportItems;
+    private List<ItemResponse> reportActions;
 
     @Builder
-    public ReportInfoResponse(long processId, long subProcessId, long jobId, long reportId, LocalDateTime reportedDate, String processName, String subProcessName, String jobName, String workerUUID, String workerName, String workerProfile, List<ItemResponse> reportItems) {
-        this.processId = processId;
-        this.subProcessId = subProcessId;
-        this.jobId = jobId;
+    public ReportInfoResponse(long taskId, long subTaskId, long stepId, long reportId, LocalDateTime reportedDate, String taskName, String subTaskName, String stepName, String workerUUID, String workerName, String workerProfile, List<ItemResponse> reportActions) {
+        this.taskId = taskId;
+        this.subTaskId = subTaskId;
+        this.stepId = stepId;
         this.reportId = reportId;
         this.reportedDate = reportedDate;
-        this.processName = processName;
-        this.subProcessName = subProcessName;
-        this.jobName = jobName;
+        this.taskName = taskName;
+        this.subTaskName = subTaskName;
+        this.stepName = stepName;
         this.workerUUID = workerUUID;
         this.workerName = workerName;
         this.workerProfile = workerProfile;
-        this.reportItems = reportItems;
+        this.reportActions = reportActions;
     }
 }

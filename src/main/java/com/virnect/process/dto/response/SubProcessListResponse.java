@@ -14,16 +14,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SubProcessListResponse {
     @ApiModelProperty(value = "공정 식별자", notes = "조회한 세부공정의 공정 식별자", example = "1")
-    private final long processId;
+    private final long taskId;
 
     @ApiModelProperty(value = "공정명", notes = "조회한 세부공정의 공정명", position = 1, example = "공정명")
-    private final String processName;
+    private final String taskName;
 
     @ApiModelProperty(value = "공정 생명주기 상태", notes = "공정 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 2, example = "CREATED")
     private final State state;
 
     @ApiModelProperty(value = "세부공정 목록", notes = "조회한 세부공정의 배열", position = 3)
-    private final List<EditSubProcessResponse> subProcesses;
+    private final List<EditSubProcessResponse> subTasks;
 
     @ApiModelProperty(value = "페이지 정보", notes = "pangenation 정보", position = 4)
     private final PageMetadataResponse pageMeta;

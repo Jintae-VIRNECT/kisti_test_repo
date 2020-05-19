@@ -26,27 +26,27 @@ public class ProcessDto {
         private long id;
         private String name;
         private String managerUUID;
-        private int subProcessTotal;
+        private int subTaskTotal;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
         private Conditions conditions;
         private State state;
         private long progressRate;
-        private List<SubProcessDto.SubProcessInfo> subProcesses;
+        private List<SubProcessDto.SubTaskInfo> subTasks;
 
         @Override
         public String toString() {
-            return "ProcessInfo{" +
+            return "TaskInfo{" +
                     "id=" + id +
                     "name='" + name + '\'' +
                     "managerUUID='" + managerUUID + '\'' +
-                    "subProcessTotal=" + subProcessTotal +
+                    "subProcessTotal=" + subTaskTotal +
                     "startDate=" + startDate +
                     "endDate=" + endDate +
                     "conditions=" + conditions +
                     "state=" + state +
                     "progressRate=" + progressRate +
-                    "subProcesses=" + subProcesses +
+                    "subTasks=" + subTasks +
                     '}';
         }
     }
@@ -74,6 +74,6 @@ public class ProcessDto {
         private String position;
 
         @NotNull
-        private List<SubProcessDto.NewSubProcess> subProcesses = new ArrayList<>();
+        private List<SubProcessDto.NewSubTask> subProcesses = new ArrayList<>();
     }
 }

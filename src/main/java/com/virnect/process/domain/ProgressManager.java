@@ -147,7 +147,6 @@ public class ProgressManager {
             baseRule = NOT_CREATED_AND_NOT_UPDATED_AND_CLOSED_OR_DELETED;
         }
 
-
         // 공정 RateRange
         RateRange rateRange;
         LocalDateTime nowTime = LocalDateTime.now();
