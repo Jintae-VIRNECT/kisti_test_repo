@@ -34,7 +34,7 @@
 
 <script>
 import search from '@/mixins/search'
-import { filter as reportFilter } from '@/models/report'
+import { filter as reportFilter } from '@/models/Report'
 
 export default {
   mixins: [search],
