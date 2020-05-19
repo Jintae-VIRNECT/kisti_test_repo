@@ -29,7 +29,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
-          from: /room(\/.*)?/,
+          from: /service(\/.*)?/,
           to: '/remote/index.html',
         },
         {

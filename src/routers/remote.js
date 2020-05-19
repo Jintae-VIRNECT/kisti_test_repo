@@ -15,7 +15,7 @@ export default new VueRouter({
       redirect: { name: 'workspace' },
     },
     {
-      path: '/room',
+      path: '/service',
       name: 'service',
       component: ServiceComponent,
     },
