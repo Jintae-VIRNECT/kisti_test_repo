@@ -2,6 +2,7 @@
   
 repo_full_name=$(git config --get remote.origin.url | sed 's/.*:\/\/github.com\///;s/.git$//')
 
+token="f4f37c34c276080e0b3832792c1ceb0d2ac9f3c5"
 tag=$1
 # Get the full message associated with this tag
 message="$(git for-each-ref refs/tags/$tag --format='%(contents)')"
