@@ -12,15 +12,9 @@ import http from 'api/gateway'
  * @param {Number} param.page history page number
  * @param {Boolean} param.paging history paging option
  * @param {Number} param.size history paging size
- *
- * @param {Object} header header for http request
- * @param {String} header.userId uuid for user
- * @param {String} header.workspaceId uuid for workspaceId
  */
-export const getHistoryList = async function(param, header) {
-  //for test data
-  //remove after devleop!!
-  const returnVal = await http('GET_HISTORY_LIST', param, header)
+export const getHistoryList = async function(param) {
+  const returnVal = await http('GET_HISTORY_LIST', param)
 
   return returnVal
 }
@@ -43,16 +37,12 @@ export const getHistorySingleItem = async function(param, header) {
 /**
  * 최근 협업 목록중 단일 항목 제거
  * @param {Object} param
+ * @param {Number} roomId roomId for delete
  */
 export const deleteHistorySingleItem = async function(param) {
   const { roomId } = param
+  const returnVal = await http('DELETE_HISTORY_ITEM', { roomId })
 
-  //const returnVal = await http('DELETE_HISTORY_ITEM', roomId)
-
-  const returnVal = {
-    code: 200,
-    message: 'complete',
-  }
   return returnVal
 }
 
@@ -60,11 +50,7 @@ export const deleteHistorySingleItem = async function(param) {
  * 최근 협업 목록 모두 삭제
  */
 export const deleteAllHistory = async function() {
-  //const returnVal = await http('DELETE_HISTORY_ALL')
+  const returnVal = await http('DELETE_HISTORY_ALL')
 
-  const returnVal = {
-    code: 200,
-    message: 'complete',
-  }
   return returnVal
 }

@@ -185,7 +185,7 @@ export default {
       this.visible = !this.visible
     },
     convertDate(date) {
-      if (date !== null) {
+      if (date !== null && date !== '') {
         const re = /T/gi
         let cvtDate = date.replace(re, ' ')
         cvtDate = dayjs(cvtDate).format('YYYY.MM.DD')
@@ -195,6 +195,8 @@ export default {
         } else {
           return cvtDate
         }
+      } else {
+        console.log('convertDate :: Invalid data')
       }
     },
     convertTime(totalUseTime) {
