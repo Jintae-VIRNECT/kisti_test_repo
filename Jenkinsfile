@@ -49,7 +49,6 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'git checkout $GIT_TAG'
             sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
         }
