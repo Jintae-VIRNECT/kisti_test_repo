@@ -75,6 +75,17 @@ export default {
     }
   },
   /**
+   * 멤버 전체 리스트
+   */
+  async allMembers() {
+    const { memberInfoList } = await api('MEMBER_LIST_ALL', {
+      route: {
+        workspaceId: activeWorkspaceGetter().uuid,
+      },
+    })
+    return memberInfoList.map(member => new Member(member))
+  },
+  /**
    * 워크스페이스 시작
    * @param {form} form
    */

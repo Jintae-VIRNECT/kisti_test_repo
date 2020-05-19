@@ -32,9 +32,7 @@
               v-model="mainForm.worker"
               :placeholder="$t('task.manage.taskWorkerPlaceholder')"
               filterable
-              remote
-              :remote-method="searchMembers"
-              :loading="searchLoading"
+              popper-class="no-data-hidden"
             >
               <el-option
                 v-for="worker in workerList"
@@ -92,9 +90,6 @@
                   v-model="form.worker"
                   :placeholder="$t('task.manage.subTaskWorkerPlaceholder')"
                   filterable
-                  remote
-                  :remote-method="searchMembers"
-                  :loading="searchLoading"
                 >
                   <el-option
                     v-for="worker in workerList"
@@ -132,7 +127,7 @@ export default {
       showMe: false,
       contentName: '',
       mainForm: {
-        schedule: '',
+        schedule: [],
         worker: '',
         position: '',
       },
@@ -155,11 +150,11 @@ export default {
       this.subForm = this.properties[0].children.map(sceneGroup => ({
         id: sceneGroup.id,
         name: sceneGroup.label,
-        schedule: '',
+        schedule: [],
         worker: '',
       }))
       this.activeSubForms = this.subForm.map(form => form.id)
-      this.searchMembers()
+      this.workerList = await workspaceService.allMembers()
     },
     'mainForm.schedule'(date) {
       this.subForm.map(form => (form.schedule = date))
@@ -173,6 +168,20 @@ export default {
       deep: true,
       handler(forms) {
         forms.forEach(form => {
+          // 공정 일정 자동 조정
+          if (this.mainForm.schedule[0] > form.schedule[0]) {
+            this.mainForm.schedule = [
+              form.schedule[0],
+              this.mainForm.schedule[1],
+            ]
+          }
+          if (this.mainForm.schedule[1] < form.schedule[1]) {
+            this.mainForm.schedule = [
+              this.mainForm.schedule[0],
+              form.schedule[1],
+            ]
+          }
+          // 하위 작업 담당자가 모두 같은 사람이 아닐 경우
           if (form.worker !== this.mainForm.worker) {
             this.mainForm.worker = this.$t('task.manage.subTaskWorkerSelected')
           }
@@ -181,13 +190,6 @@ export default {
     },
   },
   methods: {
-    async searchMembers(keyword) {
-      this.searchLoading = true
-      const searchParams = keyword && { search: keyword }
-      const { list } = await workspaceService.searchMembers(searchParams)
-      this.workerList = list
-      this.searchLoading = false
-    },
     next() {
       const form = new RegisterNewTask({
         workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
@@ -239,5 +241,8 @@ export default {
   height: 84px;
   padding-top: 24px;
   border-top: solid 1px #edf0f7;
+}
+.no-data-hidden .el-select-dropdown__empty {
+  display: none;
 }
 </style>
