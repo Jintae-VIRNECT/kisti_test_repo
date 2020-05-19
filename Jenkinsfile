@@ -179,20 +179,14 @@ pipeline {
               }
 
               script {
-                def payload = {
-                  "tag_name": "$GIT_TAG",
-                  "name": "$NAME",
-                  "body": "$DESCRIPTION",
-                  "target_commitish": "master",
-                  "draft": "false",
-                  "prerelease": "false"
-                }
-                def response = httpRequest acceptType: 'APPLICATION_JSON',
-                  contentType: 'APPLICATION_JSON',
-                  httpMode: 'POST',
-                  requestBody: payload,
-                  url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
-
+                def payload = """{"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": "false", "prerelease": "false"}"""
+                
+                def response = httpRequest acceptType: 'APPLICATION_JSON', 
+                contentType: 'APPLICATION_JSON', 
+                httpMode: 'POST', 
+                requestBody: payload, 
+                url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
+                
                 echo "${response}"
               }
 
