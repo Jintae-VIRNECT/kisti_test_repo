@@ -50,10 +50,7 @@
           ></profile-list>
         </div>
       </div>
-      <button
-        class="groupcard-button btn small"
-        @click="$emit('join', room.roomId)"
-      >
+      <button class="groupcard-button btn small" @click="$emit('join', room)">
         참가하기
       </button>
     </div>
@@ -131,9 +128,7 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    console.log(this.room)
-  },
+  mounted() {},
 }
 </script>
 

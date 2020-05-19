@@ -138,6 +138,7 @@ export default {
       for (let select of this.selection) {
         selectedUser.push(select.uuid)
       }
+      selectedUser.push(this.account.uuid)
       const roomId = await createRoom({
         file: this.imageFile,
         title: this.title,
@@ -149,7 +150,7 @@ export default {
       console.log(roomId)
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
-        this.$router.push({ name: 'service' })
+        // this.$router.push({ name: 'service' })
       })
     },
     checkEmpty() {

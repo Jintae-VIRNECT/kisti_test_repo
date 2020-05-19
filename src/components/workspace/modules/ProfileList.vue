@@ -7,7 +7,11 @@
       :key="user.id"
     >
       <tooltip
-        :content="user.nickName.length === 0 ? user.name : user.nickName"
+        :content="
+          user.nickname && user.nickname.length === 0
+            ? user.name
+            : user.nickname
+        "
       >
         <div class="profilelist-user__image" slot="body">
           <profile
@@ -22,7 +26,9 @@
           slot="body"
         /> -->
         <span>{{
-          user.nickName.length === 0 ? user.name : user.nickName
+          user.nickname && user.nickname.length === 0
+            ? user.name
+            : user.nickname
         }}</span>
       </tooltip>
     </figure>
@@ -51,7 +57,7 @@
             @error="onImageError"
           /> -->
           <span class="profilelist-user__name ">{{
-            user.nickName.length === 0 ? user.name : user.nickName
+            user.nickname.length === 0 ? user.name : user.nickname
           }}</span>
         </figure>
       </div>

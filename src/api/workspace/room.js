@@ -91,7 +91,7 @@ export const inviteParticipantsList = async function() {
  * @param {String} title
  * @param {String} description
  * @param {String} leaderId // 리더 아이디(uuid)
- * @param {Array} participants // 참여자 리스트
+ * @param {Array[String]} participants // 참여자 리스트
  * @param {String} workspaceId
  */
 export const createRoom = async function({
@@ -116,24 +116,12 @@ export const createRoom = async function({
 
 /**
  * 원격협업 통화방 삭제
- * @param {String} title
- * @param {String} description
- * @param {String} sessionId
- * >> profile 변경될 예정
- * @param {Object} profile
- *  @param {String} path
- * @param {Array} roomParticipants
- *  @param {Object} participant
- *    @param {String} participantId
- *    @param {String} sessionId
+ * @param {String} roomId
  */
 export const deleteRoom = async function({ roomId }) {
-  // const returnVal = await http('DELETE_ROOM', {
-  //   roomId,
-  // })
-  console.log('DELETE_ROOM')
-  console.log('param::', { roomId })
-  const returnVal = true
+  const returnVal = await http('DELETE_ROOM', {
+    roomId,
+  })
 
   return returnVal
 }
