@@ -20,11 +20,11 @@ import java.util.List;
 public class SubProcessDto {
     @Getter
     @Setter
-    public static class SubProcessInfo {
+    public static class SubTaskInfo {
         private long id;
         private int priority;
         private String name;
-        private int jobTotal;
+        private int stepTotal;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
         private Conditions conditions;
@@ -32,16 +32,16 @@ public class SubProcessDto {
         private String workerUUID;
         private LocalDateTime syncDate;
         private String syncUserUUID;
-        private String newSubProcess;
-        private List<JobDto.JobInfo> jobs;
+        private String newSubTask;
+        private List<JobDto.JobInfo> steps;
 
         @Override
         public String toString() {
-            return "SubProcessInfo{" +
+            return "SubTaskInfo{" +
                     "id=" + id +
                     ", priority=" + priority +
                     ", name='" + name + '\'' +
-                    ", jobTotal=" + jobTotal +
+                    ", stepTotal=" + stepTotal +
                     ", startDate=" + startDate +
                     ", endDate=" + endDate +
                     ", conditions=" + conditions +
@@ -49,8 +49,8 @@ public class SubProcessDto {
                     ", workerUUID='" + workerUUID + '\'' +
                     ", syncDate=" + syncDate +
                     ", syncUserUUID='" + syncUserUUID + '\'' +
-                    ", newSubProcess='" + newSubProcess + '\'' +
-                    ", jobs=" + jobs +
+                    ", newSubTask='" + newSubTask + '\'' +
+                    ", steps=" + steps +
                     '}';
         }
     }
@@ -59,7 +59,7 @@ public class SubProcessDto {
     @Setter
     public static class UploadWorkResult {
         @NotNull
-        private long processId;
+        private long taskId;
         @NotBlank
         private String metadata;
         @NotBlank
@@ -68,7 +68,7 @@ public class SubProcessDto {
         @Override
         public String toString() {
             return "UploadWorkResult{" +
-                    "processId=" + processId +
+                    "taskId=" + taskId +
                     ", metadata='" + metadata + '\'' +
                     ", actorUUID='" + actorUUID + '\'' +
                     '}';
@@ -77,7 +77,7 @@ public class SubProcessDto {
 
     @Getter
     @Setter
-    public static class NewSubProcess {
+    public static class NewSubTask {
         @NotNull
         private Date startDate;
         @NotNull

@@ -16,12 +16,12 @@ public class WorkspaceDto {
     @Getter
     @Setter
     public static class WorkspaceInfo {
-        private List<ProcessDto> processes;
+        private List<ProcessDto> tasks;
 
         @Override
         public String toString() {
             return "WorkspaceInfo{" +
-                    ", processes=" + processes +
+                    ", tasks=" + tasks +
                     '}';
         }
     }

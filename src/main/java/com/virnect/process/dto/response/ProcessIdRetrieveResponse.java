@@ -9,6 +9,6 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class ProcessIdRetrieveResponse {
-    @ApiModelProperty(value = "공정 식별자", notes = "공정을 식별하기 위한 식별자", example = "1")
-    private final List<Long> processeIds;
+    @ApiModelProperty(value = "작업 식별자", notes = "작업을 식별하기 위한 식별자", example = "1")
+    private final List<Long> tasksIds;
 }

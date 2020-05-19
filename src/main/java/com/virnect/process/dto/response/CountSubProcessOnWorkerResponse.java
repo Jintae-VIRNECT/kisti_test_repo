@@ -16,9 +16,9 @@ public class CountSubProcessOnWorkerResponse {
     private String workerName;
     @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 2, example = "VIRNECT 워크스페이스 유저")
     private String workerProfile;
-    @ApiModelProperty(value = "작업 진행중인 세부공정 수", notes = "작업자에게 할당된 세부공정들 중 작업이 진행중인 세부공정의 개수", position = 3, example = "1")
+    @ApiModelProperty(value = "작업 진행중인 세부 작업 수", notes = "작업자에게 할당된 세부 작업들 중 작업이 진행중인 세부 작업의 개수", position = 3, example = "1")
     private Integer countProgressing;
-    @ApiModelProperty(value = "할당된 세부공정 수", notes = "작업자에게 할당된 세부공정의 총 개수", position = 4, example = "5")
+    @ApiModelProperty(value = "할당된 세부 작업 수", notes = "작업자에게 할당된 세부 작업의 총 개수", position = 4, example = "5")
     private Integer countAssigned;
 
     @Builder

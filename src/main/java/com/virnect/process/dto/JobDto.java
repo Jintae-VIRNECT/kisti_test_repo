@@ -22,7 +22,7 @@ public class JobDto {
         private long id;
         private int priority;
         private String name;
-        private int subJobTotal;
+        private int actionTotal;
         private Conditions conditions;
         private long progressRate;
         private List<ReportDto.ReportInfo> reports;
@@ -30,11 +30,11 @@ public class JobDto {
 
         @Override
         public String toString() {
-            return "SubProcessInfo{" +
+            return "StepInfo{" +
                     "id=" + id +
                     "priority=" + priority +
                     "name='" + name + '\'' +
-                    "subJobTotal=" + subJobTotal +
+                    "actionTotal=" + actionTotal +
                     "conditions=" + conditions +
                     "progressRate=" + progressRate +
                     "reports=" + reports +

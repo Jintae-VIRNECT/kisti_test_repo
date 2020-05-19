@@ -15,11 +15,11 @@ public class SubProcessesOfTargetResponse {
 
     @NotBlank
     @ApiModelProperty(value = "공정식별자", notes = "공정식별자(UUID)", example = "1")
-    private final long processId;
+    private final long taskId;
 
     @NotBlank
     @ApiModelProperty(value = "공정명", notes = "공정명", position = 1, example = "공정이름")
-    private final String processName;
+    private final String taskName;
 
     @NotBlank
     @ApiModelProperty(value = "컨텐츠식별자", notes = "컨텐츠식별자(UUID)", position = 2, example = "48254844-235e-4421-b713-4ea682994a98")
@@ -31,18 +31,18 @@ public class SubProcessesOfTargetResponse {
 
 
     @ApiModelProperty(value = "공정 목록", notes = "조회한 공정의 배열", position = 4)
-    private final List<SubProcessOfTargetResponse> subProcesses;
+    private final List<SubProcessOfTargetResponse> subTasks;
 
     @ApiModelProperty(value = "페이지 정보", position = 5, notes = "pangenation 정보")
     private final PageMetadataResponse pageMeta;
 
     @Builder
-    public SubProcessesOfTargetResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank String contentUUID, @NotBlank String downloadPath, List<SubProcessOfTargetResponse> subProcesses, PageMetadataResponse pageMeta) {
-        this.processId = processId;
-        this.processName = processName;
+    public SubProcessesOfTargetResponse(@NotBlank long taskId, @NotBlank String taskName, @NotBlank String contentUUID, @NotBlank String downloadPath, List<SubProcessOfTargetResponse> subTasks, PageMetadataResponse pageMeta) {
+        this.taskId = taskId;
+        this.taskName = taskName;
         this.contentUUID = contentUUID;
         this.downloadPath = downloadPath;
-        this.subProcesses = subProcesses;
+        this.subTasks = subTasks;
         this.pageMeta = pageMeta;
     }
 }

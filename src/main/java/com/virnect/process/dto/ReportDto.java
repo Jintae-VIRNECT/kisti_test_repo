@@ -18,13 +18,13 @@ public class ReportDto {
     @Setter
     public static class ReportInfo {
         private long id;
-        private List<ReportDto.ItemInfo> items;
+        private List<ReportDto.ItemInfo> actions;
 
         @Override
         public String toString() {
             return "ReportInfo{" +
                     "id=" + id +
-                    ", items=" + items +
+                    ", actions=" + actions +
                     '}';
         }
     }
@@ -41,7 +41,7 @@ public class ReportDto {
 
         @Override
         public String toString() {
-            return "ItemInfo{" +
+            return "ActionInfo{" +
                     "id=" + id +
                     ", type=" + type +
                     ", title='" + title + '\'' +

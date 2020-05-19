@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -130,7 +131,13 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         query.join(qProcess.targetList, qTarget);
 
-        query.where(qProcess.workspaceUUID.eq(workspaceUUID), qProcess.state.eq(State.CREATED), qProcess.state.eq(State.UPDATED), qTarget.data.eq(targetData));
+        query.where(qTarget.data.eq(targetData));
+
+        query.where(qProcess.state.eq(State.CREATED).or(qProcess.state.eq(State.UPDATED)));
+
+        if (Objects.nonNull(workspaceUUID)) {
+            query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+        }
 
         Process result = query.fetchOne();
 

@@ -75,10 +75,8 @@ public interface ProcessRepository extends JpaRepository<Process, Long>, Process
 //    @Query(value = "select count(*) from process p left join sub_process s on p.process_id = s.process_id", nativeQuery = true)
 //    int getSubProcessesTotal(Long id);
 
-    @Query(value = "select * from process where process_id = :processId", nativeQuery = true)
-    Optional<Process> getProcessInfo(@Param("processId") Long processId);
-
-
+//    @Query(value = "select * from process where process_id = :processId", nativeQuery = true)
+//    Optional<Process> getProcessInfo(@Param("processId") Long processId);
 
 //    @Query(value = "select count(i.issue_id) from process p join sub_process s on s.process_id = p.process_id and s.process_id = :processId join job j on j.sub_process_id = s.sub_process_id join issue i on i.job_id = j.job_id where i.job_id is not null", nativeQuery = true)
 //    int getCountIssuesInProcess(@Param("processId") Long processId);
