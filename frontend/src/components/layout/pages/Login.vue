@@ -102,13 +102,14 @@ export default {
 			rememberLogin: localStorage.getItem('auto'),
 		}
 	},
-	mounted() {
+	beforeMount() {
 		this.checkToken()
-		if (this.rememberLogin) {
+	},
+	mounted() {
+		if (this.rememberLogin === 'true') {
 			this.login.autoLogin = true
-			if (this.isLogin)
-				return (location.href = urls.workstation[process.env.TARGET_ENV])
 		}
+
 		if (this.rememberEmail) {
 			this.login.rememberMe = true
 			this.login.email = this.rememberEmail
@@ -118,6 +119,9 @@ export default {
 		async checkToken() {
 			let res = await auth.init()
 			this.isLogin = res.isLogin
+			if (this.isLogin === true && this.login.autoLogin === true) {
+				location.href = urls.workstation[process.env.TARGET_ENV]
+			}
 		},
 		emailRemember(email, check) {
 			if (check == true) {
@@ -162,7 +166,6 @@ export default {
 				} catch (e) {
 					// console.log(e)d
 					if (e.code === 2000) {
-						console.log('asdf')
 						this.alertWindow(
 							'계정 정보 입력 오류',
 							'등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.',
