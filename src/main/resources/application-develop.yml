@@ -171,3 +171,6 @@ eureka:
 
 jwt:
   secret: 2020-tcenriv-platform-392
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.WebsocketRoutingFilter: TRACE
