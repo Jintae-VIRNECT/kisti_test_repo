@@ -181,6 +181,9 @@ pipeline {
                 def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": "false", "prerelease": "false"}
                 """
+                                echo "${GIT_TAG}"
+                echo "asdfasdfsadf"
+                echo "${payload}"
                 
                 def response = httpRequest acceptType: 'APPLICATION_JSON', 
                 contentType: 'APPLICATION_JSON', 
