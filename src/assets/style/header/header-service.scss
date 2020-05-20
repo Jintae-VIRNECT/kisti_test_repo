@@ -5,6 +5,21 @@
 
 .header-lnb {
   height: 100%;
+  > .flex li {
+    &.notice {
+      position: relative;
+      &::after {
+        position: absolute;
+        top: 16px;
+        right: 0px;
+        width: 6px;
+        height: 6px;
+        background-color: $color_red;
+        border-radius: 50%;
+        content: "";
+      }
+    }
+  }
 }
 
 .header-lnb__button {

@@ -14,6 +14,7 @@
       <lnb-button
         text="AR 기능"
         keyvalue="ar"
+        :notice="true"
         :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
       ></lnb-button>
     </ul>

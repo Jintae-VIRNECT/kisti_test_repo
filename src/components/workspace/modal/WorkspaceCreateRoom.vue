@@ -70,9 +70,7 @@ export default {
       this.$emit('update:visible', false)
     },
     selectUser(user) {
-      const idx = this.selection.findIndex(
-        select => user.userId === select.userId,
-      )
+      const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
           this.toastNotify('최대 2명까지 선택이 가능합니다.')

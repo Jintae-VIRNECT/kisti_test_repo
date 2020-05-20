@@ -1,6 +1,6 @@
 <template>
   <div class="header-tools">
-    <stream></stream>
+    <!-- <stream></stream> -->
 
     <mic></mic>
 
@@ -17,7 +17,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
-import Stream from '../tools/Stream'
+// import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
@@ -26,7 +26,7 @@ import CallTime from '../tools/CallTime'
 export default {
   name: 'HeaderTools',
   components: {
-    Stream,
+    // Stream,
     Mic,
     Speaker,
     Notice,
