@@ -178,9 +178,9 @@ pipeline {
                 )
               }
               script {
-                def payload = '''\
+                def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": "false", "prerelease": "false"}
-                '''
+                """
                 echo "$payload"
                 sh "curl -d '${payload}' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                
