@@ -184,7 +184,7 @@ pipeline {
                              
 
                 echo "$payload"
-                sh "curl "Content-Type: text/plain"  -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                sh "curl -H 'Content-Type: text/plain'  -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
             }
           }
