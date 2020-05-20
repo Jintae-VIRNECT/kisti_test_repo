@@ -177,12 +177,11 @@ pipeline {
                 )
               }
               script {
-                 def NAME = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | head -n1').trim()
-                 def DESCRIPTION = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format='%(contents)').trim()
+                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)"').trim()
                  def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "$DESCRIPTION", "target_commitish": "master", "draft": false, "prerelease": false}
+                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """
-                echo "$NAME"
+                echo "$payload"
                 sh "curl -d '${payload}' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
             }
