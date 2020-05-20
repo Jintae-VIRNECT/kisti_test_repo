@@ -177,7 +177,7 @@ pipeline {
                 )
               }
               script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | sed -z "s/\n/\\n/g"')
+                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: "git for-each-ref refs/tags/$GIT_TAG --format='%(contents)' | sed -z 's/\n/\\n/g'")
                  def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """                             
