@@ -24,7 +24,8 @@ const axios = Axios.create({
 
 const URL = {
   /* Account */
-  LOGIN: ['GET', '/users/info', { type: 'form' }],
+  LOGIN: ['POST', '/auth/signin'],
+  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* CONFIGURATION */
@@ -37,7 +38,7 @@ const URL = {
   GET_HISTORY_LIST: ['GET', '/media/history'],
   GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
   DELETE_HISTORY_ITEM: ['DELETE', '/media/history/{roomId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/media/history/'],
+  DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
 
   /* Workspace - Member */
   GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],

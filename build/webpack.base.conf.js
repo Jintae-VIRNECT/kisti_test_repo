@@ -11,6 +11,7 @@ const config = mode => {
     entry: {
       remote: './src/apps/remote/app.js',
       extra: './src/apps/extra/app.js',
+      account: './src/apps/account/app.js',
       sample: './src/apps/sample/app.js',
     },
     output: {

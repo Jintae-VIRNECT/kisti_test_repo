@@ -25,6 +25,7 @@ import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
 import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
 
 import confirmMixin from 'mixins/confirm'
+
 export default {
   name: 'WorkspaceHistory',
   mixins: [confirmMixin],
@@ -40,12 +41,7 @@ export default {
   watch: {},
   methods: {
     async refresh() {
-      try {
-        const datas = await getHistoryList()
-        this.historyList = datas.data.romms
-      } catch (err) {
-        console.log(err)
-      }
+      this.getHistory()
     },
     showDeleteDialog() {
       this.confirmCancel(
@@ -67,19 +63,29 @@ export default {
         console.log(err)
       }
     },
+    async getHistory() {
+      try {
+        const param = {
+          page: 0,
+          paging: false,
+          size: 100,
+        }
+
+        const datas = await getHistoryList(param)
+        this.historyList = datas.rooms
+      } catch (err) {
+        // 에러처리
+        console.error(err)
+      }
+    },
   },
 
   /* Lifecycles */
   mounted() {},
   async created() {
-    try {
-      const datas = await getHistoryList()
-      this.historyList = datas.data.romms
-    } catch (err) {
-      // 에러처리
-      console.error(err)
-    }
+    this.getHistory()
   },
+
   beforeDestroy() {
     this.$eventBus.$off('delete')
     this.$eventBus.$off('refresh')
