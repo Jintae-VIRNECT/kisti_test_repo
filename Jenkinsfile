@@ -185,7 +185,7 @@ pipeline {
                     
 
                 echo "$payload"
-                sh "curl -d '@txt.txt' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                sh "curl -d '@$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
             }
           }
