@@ -187,7 +187,10 @@ pipeline {
                 httpMode: 'POST', 
                 requestBody: payload, 
                 url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
-                
+                echo "${GIT_TAG}"
+                echo "asdfasdfsadf"
+                echo "${payload}"
+                echo "asdfasdfsadsdfsdfsdfsadfsdff"
                 echo "${response}"
               }
             }
