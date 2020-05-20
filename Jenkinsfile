@@ -4,7 +4,7 @@ pipeline {
     GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
     REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     NAME = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | head -n1').trim()
-    DESCRIPTION = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)"').trim()
+    DESCRIPTION = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format="%(contents)" | sed -z 's/\\n/\\\\n/g'').trim()
   }
   stages {
     stage('Pre-Build') {
@@ -179,9 +179,10 @@ pipeline {
               }
               script {
                 def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "sadfasdfasdfsadf", "target_commitish": "master", "draft": false, "prerelease": false}
+                {"tag_name": "$GIT_TAG", "name": "$NAME", "body": "ddgasdfsadf", "target_commitish": "master", "draft": false, "prerelease": false}
                 """
                 def response = httpRequest  acceptType: 'APPLICATION_JSON',
+                contentType: 'APPLICATION_JSON',
                 httpMode: 'POST', 
                 requestBody: payload, 
                 url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
