@@ -32,6 +32,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
     @Override
     public Page<Process> getProcessPageSearchUser(String workspaceUUID, String title, List<String> userUUIDList, Pageable pageable){
         log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
+
         QProcess qProcess = QProcess.process;
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QTarget qTarget = QTarget.target;
@@ -46,16 +47,19 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
         {
             query = query.where(qProcess.workspaceUUID.contains(workspaceUUID));
         }
-
-        if (userUUIDList != null)
-        {
-            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
-        }
+        
+        // 검색시 사용자 명은 잠시 보류
+//        if (userUUIDList != null && userUUIDList.size() > 0)
+//        {
+//            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+//        }
 
         if (title != null)
         {
             query = query.where(qProcess.name.contains(title));
         }
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
 
         query.groupBy(qProcess.id);
 
