@@ -3,54 +3,36 @@
 @import url("//fonts.googleapis.com/css?family=Montserrat:200,300,400,600,700");
 @import url("//fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
 
-@font-face {
-    font-weight: 300;
-    font-family: "NotoSansKR";
-    font-style: normal;
-    src: url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Light.eot");
-    src: local(※),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Light.woff")
-            format("woff"),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Light.otf")
-            format("opentype");
-    font-display: auto;
-}
+$noto-sans-weight-thin: 100 !default;
+$noto-sans-weight-light: 300 !default;
+$noto-sans-weight-regular: 400 !default;
+$noto-sans-weight-medium: 500 !default;
+$noto-sans-weight-bold: 700 !default;
+$noto-sans-weight-black: 900 !default;
+$noto-sans-weight-map: (
+    "thin": $noto-sans-weight-thin,
+    "light": $noto-sans-weight-light,
+    "regular": $noto-sans-weight-regular,
+    "medium": $noto-sans-weight-medium,
+    "bold": $noto-sans-weight-bold,
+    "black": $noto-sans-weight-black
+) !default;
+$noto-sans-family: "NotoSansKR" !default;
+$noto-sans-style: normal !default;
+$noto-sans-path: "~assets/fonts/NotoSansCJKkr/" !default;
+$noto-sans-prefix: "NotoSansCJKkr-" !default;
 
-@font-face {
-    font-weight: 400;
-    font-family: "NotoSansKR";
-    font-style: normal;
-    src: url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Regular.eot");
-    src: local(※),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Regular.woff")
-            format("woff"),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Regular.otf")
-            format("opentype");
-    font-display: auto;
-}
+@each $name, $weight in $noto-sans-weight-map {
+    $noto-sans-weight: to-upper-case(str-slice($name, 1, 1)) +
+        str-slice($name, 2);
+    $noto-sans-src: $noto-sans-path + $noto-sans-prefix + $noto-sans-weight;
 
-@font-face {
-    font-weight: 500;
-    font-family: "NotoSansKR";
-    font-style: normal;
-    src: url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Medium.eot");
-    src: local(※),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Medium.woff")
-            format("woff"),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Medium.otf")
-            format("opentype");
-    font-display: auto;
-}
-
-@font-face {
-    font-weight: 600;
-    font-family: "NotoSansKR";
-    font-style: normal;
-    src: url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Bold.eot");
-    src: local(※),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Bold.woff")
-            format("woff"),
-        url("~assets/fonts/NotoSansCJKkr/NotoSansCJKkr-Bold.otf")
-            format("opentype");
-    font-display: auto;
+    @font-face {
+        font-weight: $weight;
+        font-family: $noto-sans-family;
+        font-style: $noto-sans-style;
+        src: url(unquote("#{$noto-sans-src}.eot"));
+        src: local(※), url(unquote("#{$noto-sans-src}.woff")) format("woff"),
+            url(unquote("#{$noto-sans-src}.otf")) format("opentype");
+    }
 }

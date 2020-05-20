@@ -73,6 +73,7 @@ import Login from 'model/login'
 import AuthService from 'service/auth-service'
 
 import footerSection from '../common/Footer'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
@@ -94,6 +95,7 @@ export default {
 				autoLogin: null,
 			},
 			loading: false,
+			isLogin: null,
 			message: '',
 			token: Cookies.get('accessToken'),
 			rememberEmail: localStorage.getItem('email'),
@@ -101,9 +103,10 @@ export default {
 		}
 	},
 	mounted() {
+		this.checkToken()
 		if (this.rememberLogin) {
 			this.login.autoLogin = true
-			if (this.token)
+			if (this.isLogin)
 				return (location.href = urls.workstation[process.env.TARGET_ENV])
 		}
 		if (this.rememberEmail) {
@@ -112,6 +115,10 @@ export default {
 		}
 	},
 	methods: {
+		async checkToken() {
+			let res = await auth.init()
+			this.isLogin = res.isLogin
+		},
 		emailRemember(email, check) {
 			if (check == true) {
 				this.rememberEmail = true
