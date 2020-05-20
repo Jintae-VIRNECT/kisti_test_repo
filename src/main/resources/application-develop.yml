@@ -146,9 +146,13 @@ spring:
         - id: media-server-websocket
           uri: lb:wss://media-server
           predicates:
+            - HEADER=Sec-WebSocket-Version, \d+
+            - HEADER=Sec-WebSocket-Key, \s+
+            - HEADER=Upgrade, websocket
             - Path=/media/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=0
+            - RewritePath=/media/(?<segment>.*), /openvidu/$\{segment}
             - name: Logging
               args:
                 messagePrefix: "MEDIA_WEBSOCKET"
