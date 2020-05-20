@@ -1000,47 +1000,6 @@ public class TaskService {
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
-//
-//    private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
-//        List<Process> processes = new ArrayList<>();
-//        for (Process process : processList) {
-//            // 상태가 일치하는 공정만 필터링
-//            if (filter.contains(process.getConditions())) {
-//                processes.add(process);
-//            }
-//        }
-//        int start = (int) pageable.getOffset();
-//        int end = (start + pageable.getPageSize()) > processes.size() ? processes.size() : (start + pageable.getPageSize());
-//        return new PageImpl<>(processes.subList(start, end), pageable, processes.size());
-//    }
-
-//    public void updateProcessesCondition() {
-//
-//        List<Process> processList = this.processRepository.getProcessListSearchUser("", "", null);
-//        String cond;
-//
-//        List<Map<String, Object>> condList = new ArrayList<>();
-//
-//        for (Process process : processList) {
-//            cond = process.getConditions().toString();
-//
-//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-//            log.debug(">>>>>>>>>>>>>>> processId   : {}", process.getId());
-//            log.debug(">>>>>>>>>>>>>>> processName : {}", process.getName());
-//            log.debug(">>>>>>>>>>>>>>> condition   : {}", cond);
-//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-//
-//            Map<String, Object> condMap = new HashMap<>();
-//
-//            condMap.put("id", process.getId());
-//            condMap.put("name", process.getName());
-//            condMap.put("cond", cond);
-//
-//            condList.add(condMap);
-//        }
-//
-//        log.debug(">>>>>>>>>>>>>>>>>>>>>>> condList : {}", condList);
-//    }
 
     private Page<Process> filterConditionsProcessPage(Page<Process> processList, List<Conditions> filter, Pageable pageable) {
         List<Process> processes = new ArrayList<>();
