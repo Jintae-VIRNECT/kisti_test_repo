@@ -54,7 +54,7 @@
             ref="table"
             :data="taskList"
             v-loading="loading"
-            @row-click="moveToSubTask"
+            @row-click="moveToTaskDetail"
           >
             <column-default
               :label="$t('task.list.column.id')"
@@ -129,11 +129,9 @@ import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  async asyncData({ store }) {
+  async asyncData() {
     const promise = {
-      tasks: taskService.searchTasks(
-        store.getters['workspace/activeWorkspace'].uuid,
-      ),
+      tasks: taskService.searchTasks(),
     }
     return {
       taskList: (await promise.tasks).list,
@@ -168,10 +166,7 @@ export default {
       this.searchTasks(searchParams)
     },
     async searchTasks() {
-      const { list, total } = await taskService.searchTasks(
-        this.$store.getters['workspace/activeWorkspace'].uuid,
-        this.searchParams,
-      )
+      const { list, total } = await taskService.searchTasks(this.searchParams)
       this.taskList = list
       this.taskTotal = total
     },
@@ -180,7 +175,7 @@ export default {
     },
     showAll() {},
     showMine() {},
-    moveToSubTask({ id }) {
+    moveToTaskDetail({ id }) {
       this.$router.push(`/tasks/${id}`)
     },
   },

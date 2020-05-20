@@ -15,6 +15,10 @@
         </el-button>
       </div>
 
+      <div>
+        {{ taskInfo.name }}
+      </div>
+
       <!-- 탭 -->
       <el-row class="tab-wrapper searchbar">
         <el-tabs v-model="activeTab">
@@ -46,6 +50,83 @@
           />
         </el-col>
       </el-row>
+
+      <el-row>
+        <el-card class="el-card--table">
+          <div slot="header">
+            <h3>{{ $t('task.list.allTasksList') }}</h3>
+          </div>
+          <el-table
+            class="clickable"
+            ref="table"
+            :data="subTaskList"
+            v-loading="loading"
+          >
+            <column-default
+              :label="$t('task.detail.subTaskColumn.no')"
+              prop="priority"
+              :width="80"
+            />
+            <column-default
+              :label="$t('task.detail.subTaskColumn.id')"
+              prop="subTaskId"
+              :width="140"
+            />
+            <column-default
+              :label="$t('task.detail.subTaskColumn.name')"
+              prop="subTaskName"
+              sortable="custom"
+            />
+            <column-count
+              :label="$t('task.detail.subTaskColumn.endedSteps')"
+              prop="doneCount"
+              maxProp="stepTotal"
+              :width="120"
+            />
+            <column-date
+              :label="$t('task.detail.subTaskColumn.schedule')"
+              type="time"
+              prop="startDate"
+              prop2="endDate"
+              :width="250"
+            />
+            <column-progress
+              :label="$t('task.detail.subTaskColumn.progressRate')"
+              prop="progressRate"
+              :width="150"
+            />
+            <column-status
+              :label="$t('task.detail.subTaskColumn.status')"
+              prop="conditions"
+              :statusList="taskConditions"
+              :width="100"
+            />
+            <column-date
+              :label="$t('task.detail.subTaskColumn.reportedDate')"
+              type="time"
+              prop="reportedDate"
+              :width="130"
+            />
+            <column-boolean
+              :label="$t('task.detail.subTaskColumn.issue')"
+              prop="issuesTotal"
+              :trueText="$t('task.list.hasIssue.yes')"
+              :falseText="$t('task.list.hasIssue.no')"
+              :width="80"
+            />
+            <column-default
+              :label="$t('task.detail.subTaskColumn.endStatus')"
+              prop="state"
+              :width="100"
+            />
+          </el-table>
+        </el-card>
+      </el-row>
+      <searchbar-page
+        ref="page"
+        :value.sync="subTaskPage"
+        :total="subTaskTotal"
+      />
     </div>
   </div>
 </template>
@@ -59,8 +140,22 @@ import { tabs } from '@/models/task/SubTask'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 
+import workspaceService from '@/services/workspace'
+import taskService from '@/services/task'
+
 export default {
   mixins: [searchMixin, columnMixin],
+  async asyncData({ params }) {
+    const promise = {
+      taskDetail: taskService.getTaskDetail(params.taskId),
+      subTask: taskService.searchSubTasks(params.taskId),
+    }
+    return {
+      taskInfo: await promise.taskDetail,
+      subTaskList: (await promise.subTask).list,
+      subTaskTotal: (await promise.subTask).total,
+    }
+  },
   data() {
     return {
       tabs,
@@ -69,9 +164,42 @@ export default {
       taskFilter: { ...taskFilter },
       subTaskSearch: '',
       subTaskPage: 1,
-      subTaskTotal: 0,
       loading: false,
     }
+  },
+  watch: {
+    activeTab(tabName) {
+      const enableFilter = tabs.find(tab => tab.name === tabName).filter
+      this.taskFilter.value = tabName === 'allSubTasks' ? ['ALL'] : enableFilter
+      this.taskFilter.options = taskFilter.options.map(option => ({
+        ...option,
+        disabled: !enableFilter.includes(option.value),
+      }))
+      this.emitChangedSearchParams()
+    },
+  },
+  methods: {
+    changedSearchParams(searchParams) {
+      this.searchSubTasks(searchParams)
+    },
+    async searchSubTasks() {
+      const { list, total } = await taskService.searchSubTasks(
+        this.taskInfo.id,
+        this.searchParams,
+      )
+      this.subTaskList = list
+      this.subTaskTotal = total
+    },
+    filterChanged(filter) {
+      if (!filter.length) this.activeTab = 'allSubTasks'
+    },
+    showAll() {},
+    showMine() {},
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.$router.replace('/tasks')
+    })
   },
 }
 </script>
