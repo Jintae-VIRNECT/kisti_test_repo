@@ -65,15 +65,47 @@
               prop="name"
               sortable="custom"
             />
-            <column-default
+            <column-count
               :label="$t('task.list.column.endedSubTasks')"
               prop="doneCount"
+              maxProp="subTaskTotal"
+              :width="120"
             />
             <column-date
               :label="$t('task.list.column.scedule')"
               type="time"
               prop="startDate"
               prop2="endDate"
+              :width="250"
+            />
+            <column-progress
+              :label="$t('task.list.column.progressRate')"
+              prop="progressRate"
+              :width="150"
+            />
+            <column-status
+              :label="$t('task.list.column.status')"
+              prop="conditions"
+              :statusList="taskConditions"
+              :width="100"
+            />
+            <column-date
+              :label="$t('task.list.column.reportedDate')"
+              type="time"
+              prop="reportedDate"
+              :width="130"
+            />
+            <column-boolean
+              :label="$t('task.list.column.issue')"
+              prop="issuesTotal"
+              :trueText="$t('task.list.hasIssue.yes')"
+              :falseText="$t('task.list.hasIssue.no')"
+              :width="80"
+            />
+            <column-default
+              :label="$t('task.list.column.endStatus')"
+              prop="state"
+              :width="100"
             />
           </el-table>
         </el-card>
@@ -84,7 +116,11 @@
 </template>
 
 <script>
-import { filter as taskFilter, tabs } from '@/models/task/Task'
+import {
+  conditions as taskConditions,
+  filter as taskFilter,
+  tabs,
+} from '@/models/task/Task'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import taskService from '@/services/task'
@@ -107,6 +143,7 @@ export default {
     return {
       tabs,
       activeTab: 'allTasks',
+      taskConditions,
       taskFilter,
       taskSearch: '',
       taskPage: 1,
@@ -176,6 +213,12 @@ export default {
   }
   .btn-wrapper {
     margin-bottom: 16px;
+  }
+  .column-boolean .true {
+    color: inherit;
+    &:before {
+      background-color: #ee5c57;
+    }
   }
 }
 </style>

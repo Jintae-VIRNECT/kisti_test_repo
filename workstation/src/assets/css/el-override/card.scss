@@ -41,6 +41,7 @@
   padding: 0;
 
   .el-table.clickable .el-table__row {
+    height: 64px;
     cursor: pointer;
   }
   .el-table .cell {
@@ -65,7 +66,6 @@
     font-size: 12px;
   }
   .el-table td {
-    padding: 17px 0;
     color: $font-color-content;
   }
   th:first-child,

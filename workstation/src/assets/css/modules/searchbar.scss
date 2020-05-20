@@ -23,6 +23,10 @@
     text-align: right;
   }
 
+  .el-button + span {
+    margin-left: 20px;
+  }
+
   .el-select {
     margin-right: 13px;
     cursor: pointer;

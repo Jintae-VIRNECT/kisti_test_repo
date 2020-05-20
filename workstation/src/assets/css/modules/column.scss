@@ -67,3 +67,75 @@
     }
   }
 }
+
+.column-status {
+  & > span {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 0 10px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 22px;
+    text-align: center;
+    border: solid 1px transparent;
+    border-radius: 3px;
+  }
+}
+
+.column-boolean {
+  & > span {
+    color: #566173;
+  }
+  & > span:before {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 0.3em;
+    vertical-align: middle;
+    background: #566173;
+    border-radius: 1em;
+    content: "";
+  }
+  // true
+  & > span.true {
+    color: #186ae2;
+  }
+  & > span.true:before {
+    background: #186ae2;
+  }
+}
+
+.column-count {
+  & > div {
+    display: inline-block;
+    padding: 6px 10px;
+    line-height: 1.1em;
+    background-color: #fbfbfd;
+    border: solid 1px #eaedf3;
+    border-radius: 4px;
+
+    & > span:first-child {
+      color: $color-blue;
+    }
+    & > span:nth-child(2) {
+      margin: 0 -0.1em;
+      letter-spacing: 0.1em;
+    }
+  }
+}
+
+.column-progress {
+  .el-progress-bar {
+    padding-right: 30px;
+  }
+  .el-progress-bar__inner {
+    background: $color-blue;
+  }
+  .el-progress__text {
+    display: block;
+    margin-top: 4px;
+    padding-right: 30px;
+    font-size: 13px !important;
+    text-align: right;
+  }
+}

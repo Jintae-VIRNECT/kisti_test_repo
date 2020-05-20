@@ -18,6 +18,10 @@
       "reportedDate": "최종 보고 시간",
       "issue": "작업 이슈",
       "endStatus": "종료 상태"
+    },
+    "hasIssue": {
+      "yes": "있음",
+      "no": "없음"
     }
   },
   "new": {

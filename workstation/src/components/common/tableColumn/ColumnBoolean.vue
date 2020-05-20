@@ -17,7 +17,8 @@
 
 <script>
 function check(bool) {
-  return bool && bool.toLowerCase() !== 'no'
+  if (bool > 0) return true
+  else return bool && bool.toLowerCase() !== 'no'
 }
 
 export default {
@@ -39,28 +40,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.column-boolean {
-  & > span {
-    color: #566173;
-  }
-  & > span:before {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    margin-right: 0.3em;
-    vertical-align: middle;
-    background: #566173;
-    border-radius: 1em;
-    content: '';
-  }
-  // true
-  & > span.true {
-    color: #186ae2;
-  }
-  & > span.true:before {
-    background: #186ae2;
-  }
-}
-</style>
