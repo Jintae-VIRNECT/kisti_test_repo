@@ -1,5 +1,6 @@
 node_modules
 yarn-error.log
+releasenote.txt
 
 HELP.md
 .gradle
