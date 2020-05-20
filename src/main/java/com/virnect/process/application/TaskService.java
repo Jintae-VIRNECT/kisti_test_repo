@@ -352,9 +352,7 @@ public class TaskService {
 
     public ApiResponse<ProcessContentAndTargetResponse> getRelatedInfoOfProcess(Long processId) {
         // 공정의 타겟 데이터와 contentUUID 가져오기
-        Process process = this.processRepository.findById(processId)
-                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-
+        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         ProcessContentAndTargetResponse processContentAndTargetResponse = ProcessContentAndTargetResponse.builder()
                 .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
                 .contentUUID(process.getContentUUID())
@@ -369,7 +367,9 @@ public class TaskService {
 
         for (Long processId : processesId) {
             // 요청한 공정들을 모두 조회
-            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
+            Process process = this.processRepository.findById(processId)
+                    .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA));
+//            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
             if (Objects.isNull(process)) {
                 log.info("getMetadataTheProcess - getProcessInfo is null");
                 // 조회되는 공정이 없을 경우 예외처리
@@ -423,7 +423,9 @@ public class TaskService {
 
         for (Long processId : processesId) {
             // 요청한 공정들을 모두 조회
-            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
+            Process process = this.processRepository.findById(processId)
+                    .orElseGet(() -> null);
+//            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
             if (Objects.isNull(process)) {
                 log.info("getMetadataTheProcess - getProcessInfo is null");
                 // 조회되는 공정이 없을 경우 예외처리
@@ -912,14 +914,14 @@ public class TaskService {
 
     public ResponseMessage getTotalRate(String workspaceUUID) {
         // 전체 공정 진행률 조회
-        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(workspaceUUID);
         return new ResponseMessage().addParam("totalRate", ProgressManager.getAllProcessesTotalProgressRate(processes));
     }
 
     public ApiResponse<ProcessesStatisticsResponse> getStatistics(String workspaceUUID) {
         // 전체 공정 진행률 및 공정진행상태별 현황 조회
         int totalRate = 0, totalProcesses = 0, categoryWait = 0, categoryStarted = 0, categoryEnded = 0, wait = 0, unprogressing = 0, progressing = 0, completed = 0, incompleted = 0, failed = 0, success = 0, fault = 0;
-        List<Process> processes = this.processRepository.getProcesses(workspaceUUID);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(workspaceUUID);
         for (Process process : processes) {
             totalRate = totalRate + process.getProgressRate();
             Conditions conditions = process.getConditions();
@@ -974,41 +976,86 @@ public class TaskService {
     public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
         // 전체 공정의 목록을 조회
         // 사용자 검색
-        List<UserInfoResponse> userInfos = getUserInfoSearch(search);
-        List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
-        // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
-        if (userUUIDList.size() == 0) userUUIDList = null;
 
-        // pageable 을 멀티로 여러개 받는 방법을 몰라서 서버에서 임의로 공정생성주기와 업데이트 일자로 부가정렬을 추가함.
-        Pageable pageableCustom = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().and(Sort.by(Sort.Direction.DESC, "state")).and(Sort.by(Sort.Direction.DESC, "updated_at")));
+        List<String> userUUIDList = new ArrayList<>();
+
+        if (Objects.nonNull(search)) {
+            List<UserInfoResponse> userInfos = getUserInfoSearch(search);
+            userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
+        }
+        // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
+        // if (userUUIDList.size() == 0) userUUIDList = null;
 
         Page<Process> processPage = null;
-        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
-            List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
 
-            processPage = filterConditionsProcessPage(processList, filter, pageable);
+        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+
+            processPage = filterConditionsProcessPage(processPage, filter, pageable);
         } else {
             // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
-//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, pageable);
+            //processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
+//
+//    private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
+//        List<Process> processes = new ArrayList<>();
+//        for (Process process : processList) {
+//            // 상태가 일치하는 공정만 필터링
+//            if (filter.contains(process.getConditions())) {
+//                processes.add(process);
+//            }
+//        }
+//        int start = (int) pageable.getOffset();
+//        int end = (start + pageable.getPageSize()) > processes.size() ? processes.size() : (start + pageable.getPageSize());
+//        return new PageImpl<>(processes.subList(start, end), pageable, processes.size());
+//    }
 
-    private Page<Process> filterConditionsProcessPage(List<Process> processList, List<Conditions> filter, Pageable pageable) {
+//    public void updateProcessesCondition() {
+//
+//        List<Process> processList = this.processRepository.getProcessListSearchUser("", "", null);
+//        String cond;
+//
+//        List<Map<String, Object>> condList = new ArrayList<>();
+//
+//        for (Process process : processList) {
+//            cond = process.getConditions().toString();
+//
+//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//            log.debug(">>>>>>>>>>>>>>> processId   : {}", process.getId());
+//            log.debug(">>>>>>>>>>>>>>> processName : {}", process.getName());
+//            log.debug(">>>>>>>>>>>>>>> condition   : {}", cond);
+//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//
+//            Map<String, Object> condMap = new HashMap<>();
+//
+//            condMap.put("id", process.getId());
+//            condMap.put("name", process.getName());
+//            condMap.put("cond", cond);
+//
+//            condList.add(condMap);
+//        }
+//
+//        log.debug(">>>>>>>>>>>>>>>>>>>>>>> condList : {}", condList);
+//    }
+
+    private Page<Process> filterConditionsProcessPage(Page<Process> processList, List<Conditions> filter, Pageable pageable) {
         List<Process> processes = new ArrayList<>();
+
         for (Process process : processList) {
             // 상태가 일치하는 공정만 필터링
             if (filter.contains(process.getConditions())) {
                 processes.add(process);
             }
         }
-        int start = (int) pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > processes.size() ? processes.size() : (start + pageable.getPageSize());
-        return new PageImpl<>(processes.subList(start, end), pageable, processes.size());
+        return new PageImpl<>(processes, pageable, processes.size());
     }
 
     private ApiResponse<ProcessListResponse> getProcessesPageResponseApiResponse(Pageable pageable, Page<Process> processPage) {
+
         List<ProcessInfoResponse> processInfoResponseList = processPage.stream().map(process -> {
             ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
             processInfoResponse.setSubTaskAssign(this.getSubProcessesAssign(process));
@@ -1016,14 +1063,6 @@ public class TaskService {
             processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
             processInfoResponse.setSubTaskTotal(process.getSubProcessList().size());
 
-//            ProcessInfoResponse processInfoResponse = ProcessInfoResponse.builder()
-//                    .id(process.getId())
-//                    .subTaskAssign(this.getSubProcessesAssign(process))
-//                    .doneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count())
-//                    .issuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()))
-//                    .subTaskTotal(process.getSubProcessList().size())
-//                    .createdDate(process.getUpdatedDate())
-//                    .build();
             return processInfoResponse;
         }).collect(Collectors.toList());
 
@@ -1042,7 +1081,9 @@ public class TaskService {
         // 공정종료
         // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
-        Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        Process process = this.processRepository.findById(processId)
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         // 마감 상태로 변경
 
         if (!process.getContentManagerUUID().equals(actorUUID))
@@ -1058,7 +1099,10 @@ public class TaskService {
 
     public ApiResponse<ProcessInfoResponse> getProcessInfo(Long processId) {
         // 공정상세조회
-        Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        Process process = this.processRepository.findById(processId)
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
         // contentUUID 추가
         processInfoResponse.setContentUUID(process.getContentUUID());
@@ -1079,7 +1123,9 @@ public class TaskService {
         try {
             // 1 공정편집가능여부판단
             // 1-1 공정조회
-            Process updateSourceProcess = this.processRepository.getProcessInfo(editProcessRequest.getTaskId()).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+            //Process updateSourceProcess = this.processRepository.getProcessInfo(editProcessRequest.getProcessId()).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+            Process updateSourceProcess = this.processRepository.findById(editProcessRequest.getTaskId())
+                    .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
             if (!updateSourceProcess.getContentManagerUUID().equals(actorUUID))
                 throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
@@ -1111,7 +1157,10 @@ public class TaskService {
     public ApiResponse<SubProcessListResponse> getSubProcessList(Long processId, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
         // 공정내 세부공정목록조회
         // 공정정보
-        Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        Process process = this.processRepository.findById(processId)
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
         String processName = process.getName();
         State processState = process.getState();
         // 검색어로 사용자 목록 조회
@@ -1549,7 +1598,8 @@ public class TaskService {
     @Scheduled(cron = "55 59 14 * * *")
     public void saveDailyTotal() {
         // 공정목록 조회
-        List<Process> processes = this.processRepository.getProcesses(null);
+        List<Process> processes = this.processRepository.findByWorkspaceUUID(null);
+
         int totalRate = 0, totalProcesses = 0;
         List<String> workspaces = new ArrayList<>();
         List<Integer> rates = new ArrayList<>();

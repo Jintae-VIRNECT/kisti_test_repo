@@ -28,6 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -235,7 +236,7 @@ public class TaskController {
             @ApiImplicitParam(name = "inout", value = "작업내외 필터 - ALL, IN, OUT", dataType = "object", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc")
     })
     @GetMapping("/issues")
     public ResponseEntity<ApiResponse<IssuesResponse>> getIssues(
@@ -761,5 +762,4 @@ public class TaskController {
     public ResponseEntity<String> checkHealth() {
         return ResponseEntity.ok("200 OK");
     }
-
 }
