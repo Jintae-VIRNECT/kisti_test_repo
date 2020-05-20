@@ -1,5 +1,9 @@
 pipeline {
     agent any
+      environment {
+        GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+      }
     stages {
         stage('Pre-Build') {
             steps {
@@ -37,7 +41,8 @@ pipeline {
                     }
                     steps {
                         sh 'NODE_ENV=staging yarn workspace download build'
-                        sh 'docker build -t pf-webdownload .'
+                        sh 'git checkout ${GIT_TAG}'
+                        sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
 
@@ -47,7 +52,8 @@ pipeline {
                     }
                     steps {
                         sh 'NODE_ENV=production yarn workspace download build'
-                        sh 'docker build -t pf-webdownload .'
+                        sh 'git checkout ${GIT_TAG}'
+                        sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
 
@@ -85,7 +91,7 @@ pipeline {
                     steps {
                         sh 'count=`docker ps -a | grep pf-webdownload | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 8833:8833 --restart=always -e "NODE_ENV=develop" -d --name=pf-webdownload pf-webdownload'
-                        sh 'docker image prune -f'
+                        sh 'docker image prune -a -f'
                     }
                 }
 
@@ -98,7 +104,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-webdownload").push("$GIT_COMMIT")
+                                    docker.image("pf-webdownload").push("${GIT_TAG}")
                                 }
                             }
 
@@ -114,16 +120,16 @@ pipeline {
                                                     execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -f'
+                                                    execCommand: 'docker image prune -a -f'
                                                 )
                                             ]
                                         )
@@ -145,7 +151,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-webdownload").push("$GIT_COMMIT")
+                                    docker.image("pf-webdownload").push("${GIT_TAG}")
                                 }
                             }
 
@@ -161,23 +167,30 @@ pipeline {
                                                     execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                    execCommand: "docker pull $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=production' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_COMMIT}"
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=production' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -f'
+                                                    execCommand: 'docker image prune -a -f'
                                                 )
                                             ]
                                         )
                                     ]
                                 )
                             }
+                          script {
+                             def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                             def payload = """
+                            {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                            """                             
 
+                            sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                           }
                         }
 
                     }
