@@ -58,17 +58,21 @@ export const tabs = [
   {
     name: 'allTasks',
     label: 'task.list.allTasks',
+    filter: filter.options.map(option => option.value),
   },
   {
     name: 'waitTasks',
     label: 'task.list.waitTasks',
+    filter: ['WAIT'],
   },
   {
     name: 'startedTasks',
     label: 'task.list.startedTasks',
+    filter: ['UNPROGRESSING', 'PROGRESSING', 'INCOMPLETED', 'COMPLETED'],
   },
   {
     name: 'endTasks',
     label: 'task.list.endTasks',
+    filter: ['FAILED', 'SUCCESS', 'FAULT'],
   },
 ]

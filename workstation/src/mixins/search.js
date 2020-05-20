@@ -19,7 +19,7 @@ export default {
     }
   },
   methods: {
-    emitChangedSearchParams(customParams) {
+    emitChangedSearchParams(customParams = {}) {
       const { filter, sort, keyword, page } = this.$refs
       if (this.changedSearchParams) {
         this.$nextTick(() => {
@@ -30,6 +30,10 @@ export default {
             sort: (customParams && customParams.sort) || (sort && sort.value),
             page: page && page.value,
           }
+          // null 삭제
+          Object.keys(this.searchParams).forEach(key => {
+            if (!this.searchParams[key]) delete this.searchParams[key]
+          })
           this.changedSearchParams(this.searchParams)
         })
       }

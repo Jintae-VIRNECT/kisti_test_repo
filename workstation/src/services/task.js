@@ -7,7 +7,10 @@ export default {
    * @param {String} workspaceUUID
    * @param {Object} params
    */
-  async searchTasks(workspaceUUID, params) {
+  async searchTasks(workspaceUUID, params = {}) {
+    if (params.filter && params.filter[0] === 'ALL') {
+      delete params.filter
+    }
     const data = await api('TASK_LIST', {
       params: {
         workspaceUUID,

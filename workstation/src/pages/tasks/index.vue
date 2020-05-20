@@ -39,6 +39,7 @@
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
+            @change="filterChanged"
           />
         </el-col>
       </el-row>
@@ -113,6 +114,17 @@ export default {
       loading: false,
     }
   },
+  watch: {
+    activeTab(tabName) {
+      const enableFilter = tabs.find(tab => tab.name === tabName).filter
+      this.taskFilter.value = tabName === 'allTasks' ? ['ALL'] : enableFilter
+      this.taskFilter.options = taskFilter.options.map(option => ({
+        ...option,
+        disabled: !enableFilter.includes(option.value),
+      }))
+      this.emitChangedSearchParams()
+    },
+  },
   methods: {
     changedSearchParams(searchParams) {
       this.searchTasks(searchParams)
@@ -124,6 +136,9 @@ export default {
       )
       this.taskList = list
       this.taskTotal = total
+    },
+    filterChanged(filter) {
+      if (!filter.length) this.activeTab = 'allTasks'
     },
     showAll() {},
     showMine() {},
