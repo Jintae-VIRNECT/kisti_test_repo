@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -255,10 +256,12 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "code", value = "워크스페이스 초대 코드", dataType = "string", defaultValue = "123456", paramType = "query", required = true)
     })
     @GetMapping("/{workspaceId}/invite/accept")
-    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code, @ApiIgnore Locale locale) {
+    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code, @ApiIgnore Locale locale,
+                                              @ApiIgnore HttpServletRequest request) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(code)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+        log.info("Authorization Info : {}", request.getHeader("Authorization"));
         RedirectView redirectView = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code, locale);
         return redirectView;
     }
