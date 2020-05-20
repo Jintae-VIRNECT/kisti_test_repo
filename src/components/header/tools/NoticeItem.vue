@@ -89,10 +89,7 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    console.log(this.type)
-    console.log(this.icon)
-  },
+  mounted() {},
 }
 </script>
 
