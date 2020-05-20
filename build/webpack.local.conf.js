@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const path = require('path')
 const fs = require('fs')
-const host = 'local.virnect.com'
+const host = '127.0.0.1'
 const port = '8886'
 const logger = require('../server/logger')
 const Dotenv = require('dotenv-webpack')
@@ -35,6 +35,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         {
           from: /sample(\/.*)?/,
           to: '/sample/index.html',
+        },
+        {
+          from: /account(\/.*)?/,
+          to: '/account/index.html',
         },
         {
           from: /support(\/.*)?/,
@@ -89,6 +93,16 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/extra/app.html',
       filename: 'extra/index.html',
       chunks: ['extra'],
+    }),
+
+    // account
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
+      template: './src/apps/account/app.html',
+      filename: 'account/index.html',
+      chunks: ['account'],
     }),
 
     // sample

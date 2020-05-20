@@ -24,7 +24,8 @@ const axios = Axios.create({
 
 const URL = {
   /* Account */
-  LOGIN: ['GET', '/users/info', { type: 'form' }],
+  LOGIN: ['POST', '/auth/signin'],
+  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* CONFIGURATION */
