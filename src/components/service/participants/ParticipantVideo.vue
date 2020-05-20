@@ -6,6 +6,13 @@
       :id="'video-view__' + session.nodeId"
       @click="changeMain"
     >
+      <div class="participant-video__profile">
+        <img :src="session.path" @error="profileImageError" />
+        <profile
+          :thumbStyle="{ width: '64px', height: '64px', margin: '10px auto 0' }"
+          :src="session.path"
+        ></profile>
+      </div>
       <img
         v-if="!isMain"
         class="participant-video__speaker"
@@ -28,10 +35,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import Profile from 'Profile'
 
 export default {
   name: 'ParticipantVideo',
-  components: {},
+  components: {
+    Profile,
+  },
   data() {
     return {
       onSpeaker: true,
@@ -64,6 +74,9 @@ export default {
     ...mapActions(['setMainSession']),
     changeMain() {
       this.setMainSession(this.session)
+    },
+    profileImageError(event) {
+      event.target.style.display = 'none'
     },
     mute(e) {
       e.preventDefault()

@@ -72,7 +72,7 @@ export default {
 @import '~assets/style/mixin';
 
 .profile {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   justify-content: left;
   width: fit-content;
