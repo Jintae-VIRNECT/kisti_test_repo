@@ -28,7 +28,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -511,12 +510,12 @@ public class TaskController {
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - start_date, end_date, name, priority, reported_date)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
     })
-    @GetMapping("/subTasks/{taskId}")
+    @GetMapping("{taskId}/subTasks")
     public ResponseEntity<ApiResponse<SubProcessListResponse>> getSubProcessList(
             @PathVariable("taskId") Long taskId
             , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
@@ -644,6 +643,7 @@ public class TaskController {
         return ResponseEntity.ok(responseMessage);
     }
 
+
     /**
      * 단계목록조회
      *
@@ -655,12 +655,12 @@ public class TaskController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "subTaskId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
             @ApiImplicitParam(name = "search", value = "검색어 - name을 검색", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+            @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, is_reported)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
     })
-    @GetMapping("/subTasks/steps/{subTaskId}")
+    @GetMapping("/subTasks/{subTaskId}/steps")
     public ResponseEntity<ApiResponse<JobListResponse>> getJobs(@PathVariable("subTaskId") Long subTaskId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) List<Conditions> filter, @ApiIgnore PageRequest pageable) {
         if (subTaskId == null) {
             log.info("[subTaskId] => [{}]", subTaskId);

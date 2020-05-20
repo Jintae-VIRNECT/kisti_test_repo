@@ -1129,7 +1129,7 @@ public class TaskService {
         if (userUUIDList.size() == 0) userUUIDList = null;
         // 세부공정 목록
         Page<SubProcess> subProcessPage = null;
-        if (filter != null && filter.size() > 0) {
+        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
             List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(workspaceUUID, processId, search, userUUIDList, pageable.getSort());
             subProcessPage = filterConditionsSubProcessPage(subProcessList, filter, pageable);
         } else {
@@ -1346,7 +1346,7 @@ public class TaskService {
         Process process = this.processRepository.findById(subProcess.getProcess().getId())
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         Page<Job> jobPage = null;
-        if (filter != null && filter.size() > 0) {
+        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
             List<Job> jobList = Optional.ofNullable(this.jobRepository.getJobList(subProcessId, search, pageable.getSort())).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
             jobPage = filterConditionsJobPage(jobList, filter, pageable);
         } else {
