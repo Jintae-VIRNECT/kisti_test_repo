@@ -146,9 +146,9 @@ spring:
         - id: media-server-websocket
           uri: lb:wss://media-server
           predicates:
-            - HEADER=Sec-WebSocket-Version, \d+
-            - HEADER=Sec-WebSocket-Key, \s+
-            - HEADER=Upgrade, websocket
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, \s+
+            - Header=Upgrade, websocket
             - Path=/media/**
           filters:
             - StripPrefix=0
