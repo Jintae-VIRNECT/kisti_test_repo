@@ -40,8 +40,10 @@
 .el-card--table .el-card__body {
   padding: 0;
 
-  .el-table.clickable .el-table__row {
+  .el-table .el-table__row {
     height: 64px;
+  }
+  .el-table.clickable .el-table__row {
     cursor: pointer;
   }
   .el-table .cell {

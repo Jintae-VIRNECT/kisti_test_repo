@@ -8,11 +8,12 @@
     "waitTasks": "대기 중인 작업",
     "startedTasks": "시작된 작업",
     "endTasks": "마감된 작업",
+    "myTasks": "내 작업",
     "column": {
       "id": "작업 ID",
       "name": "작업 이름",
       "endedSubTasks": "하위 작업 완료",
-      "scedule": "작업 일정",
+      "schedule": "작업 일정",
       "progressRate": "진행률",
       "status": "진행 상태",
       "reportedDate": "최종 보고 시간",
@@ -22,6 +23,29 @@
     "hasIssue": {
       "yes": "있음",
       "no": "없음"
+    }
+  },
+  "detail": {
+    "title": "선택 작업 정보",
+    "subTaskList": "하위 작업 목록",
+    "allSubTasks": "모든 하위 작업",
+    "waitSubTasks": "대기 중인 하위 작업",
+    "startedSubTasks": "시작된 하위 작업",
+    "endSubTasks": "마감된 하위 작업",
+    "subTaskCount": "등록된 하위 작업 수",
+    "mySubTasks": "내 하위 작업",
+    "subTaskColumn": {
+      "no": "순번",
+      "id": "하위 작업 ID",
+      "name": "하위 작업 이름",
+      "endedSteps": "단계 완료",
+      "schedule": "하위 작업 일정",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "작업 이슈",
+      "worker": "담당자",
+      "endStatus": "종료 상태"
     }
   },
   "new": {

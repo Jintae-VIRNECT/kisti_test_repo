@@ -14,7 +14,7 @@
       <el-row class="searchbar">
         <el-col class="left">
           <el-button @click="showAll">
-            {{ $t('contents.allContents.all') }}
+            {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
             {{ $t('contents.allContents.myContents') }}

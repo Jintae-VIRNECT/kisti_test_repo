@@ -12,7 +12,7 @@
       <el-row class="searchbar">
         <el-col class="left">
           <el-button @click="showAll">
-            {{ $t('contents.allContents.all') }}
+            {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
             {{ $t('contents.allContents.myContents') }}
@@ -28,18 +28,35 @@
           <searchbar-keyword ref="keyword" :value.sync="reportsSearch" />
         </el-col>
       </el-row>
+      <!-- 테이블 -->
+      <el-row>
+        <el-card class="el-card--table">
+          <el-tabs slot="header" v-model="activeTab">
+            <el-tab-pane
+              v-for="tab in tabs"
+              :key="tab.name"
+              :name="tab.name"
+              :label="$t(tab.label)"
+            >
+            </el-tab-pane>
+          </el-tabs>
+          <el-table class="clickable" ref="table"> </el-table>
+        </el-card>
+      </el-row>
     </div>
   </div>
 </template>
 
 <script>
 import search from '@/mixins/search'
-import { filter as reportFilter } from '@/models/Report'
+import { filter as reportFilter, tabs } from '@/models/Report'
 
 export default {
   mixins: [search],
   data() {
     return {
+      tabs,
+      activeTab: 'task',
       reportsSearch: '',
       reportFilter,
     }
@@ -50,3 +67,17 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#reports {
+  .el-card__header {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .el-tabs .el-tabs__item {
+      height: 56px;
+      line-height: 56px;
+    }
+  }
+}
+</style>

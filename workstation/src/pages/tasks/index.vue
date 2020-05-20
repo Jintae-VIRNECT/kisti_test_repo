@@ -1,5 +1,5 @@
 <template>
-  <div id="tasks">
+  <div id="tasks" class="task">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -29,10 +29,10 @@
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
           <el-button @click="showAll">
-            {{ $t('contents.allContents.all') }}
+            {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
+            {{ $t('task.list.myTasks') }}
           </el-button>
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
@@ -54,6 +54,7 @@
             ref="table"
             :data="taskList"
             v-loading="loading"
+            @row-click="moveToSubTask"
           >
             <column-default
               :label="$t('task.list.column.id')"
@@ -72,7 +73,7 @@
               :width="120"
             />
             <column-date
-              :label="$t('task.list.column.scedule')"
+              :label="$t('task.list.column.schedule')"
               type="time"
               prop="startDate"
               prop2="endDate"
@@ -144,7 +145,7 @@ export default {
       tabs,
       activeTab: 'allTasks',
       taskConditions,
-      taskFilter,
+      taskFilter: { ...taskFilter },
       taskSearch: '',
       taskPage: 1,
       taskTotal: 0,
@@ -179,46 +180,12 @@ export default {
     },
     showAll() {},
     showMine() {},
+    moveToSubTask({ id }) {
+      this.$router.push(`/tasks/${id}`)
+    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, this.searchTasks)
   },
 }
 </script>
-
-<style lang="scss">
-#tasks {
-  .title {
-    position: relative;
-    .el-button {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-    }
-  }
-  .searchbar .left > .el-button:nth-child(2) {
-    margin: 0 20px 0 4px;
-  }
-  .tab-wrapper {
-    margin-bottom: 20px;
-
-    .searchbar__keyword {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      height: 34px;
-      margin: auto 0;
-    }
-  }
-  .btn-wrapper {
-    margin-bottom: 16px;
-  }
-  .column-boolean .true {
-    color: inherit;
-    &:before {
-      background-color: #ee5c57;
-    }
-  }
-}
-</style>

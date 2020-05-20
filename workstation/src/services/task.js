@@ -15,7 +15,7 @@ export default {
       params: {
         workspaceUUID,
         size: 10,
-        sort: 'updated_at,desc',
+        sort: 'updatedDate,desc',
         ...params,
       },
     })

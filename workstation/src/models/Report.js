@@ -17,3 +17,21 @@ export const filter = {
   value: ['ALL'],
   options: [],
 }
+
+/**
+ * 탭
+ */
+export const tabs = [
+  {
+    name: 'task',
+    label: 'reports.task',
+  },
+  {
+    name: 'paper',
+    label: 'reports.paper',
+  },
+  {
+    name: 'issue',
+    label: 'reports.issue',
+  },
+]
