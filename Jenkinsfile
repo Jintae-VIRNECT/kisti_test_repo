@@ -188,8 +188,8 @@ pipeline {
                 url: "https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey"
                 
                 echo "${response}"
-              
-            
+              }
+            }
           }
         }
       }
