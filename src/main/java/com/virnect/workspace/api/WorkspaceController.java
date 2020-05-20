@@ -238,11 +238,14 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
     @PostMapping("/{workspaceId}/invite")
-    public ResponseEntity<ApiResponse<Boolean>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<Boolean>> inviteWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestBody @Valid WorkspaceInviteRequest workspaceInviteRequest, BindingResult bindingResult,
+                                                                @ApiIgnore HttpServletRequest request) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, workspaceInviteRequest);
+        log.info("Authorization Info : {}", request.getHeader("add*" +
+                ""));
+        ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspace(workspaceId, workspaceInviteRequest, request);
         return ResponseEntity.ok(apiResponse);
     }
 

@@ -35,6 +35,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -446,7 +447,7 @@ public class WorkspaceService {
      * @param workspaceInviteRequest - 초대 유저 정보
      * @return
      */
-    public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
+    public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, HttpServletRequest request) {
         //1. 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, workspaceInviteRequest.getUserId());
@@ -483,7 +484,7 @@ public class WorkspaceService {
         context.setVariable("workspaceMasterEmail", materUser.getEmail());
         context.setVariable("workspaceName", workspace.getName());
         context.setVariable("workstationHomeUrl", redirectUrl);
-
+        context.setVariable("token",request.getHeader("Authorization"));
         Long duration = Duration.ofDays(7).getSeconds();
         responseUserList.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
             //이미 이 워크스페이스에 소속되어 있는 경우
