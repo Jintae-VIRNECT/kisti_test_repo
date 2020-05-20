@@ -352,7 +352,9 @@ public class TaskService {
 
     public ApiResponse<ProcessContentAndTargetResponse> getRelatedInfoOfProcess(Long processId) {
         // 공정의 타겟 데이터와 contentUUID 가져오기
-        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+        Process process = this.processRepository.findById(processId)
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+
         ProcessContentAndTargetResponse processContentAndTargetResponse = ProcessContentAndTargetResponse.builder()
                 .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
                 .contentUUID(process.getContentUUID())
@@ -981,12 +983,14 @@ public class TaskService {
         Pageable pageableCustom = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().and(Sort.by(Sort.Direction.DESC, "state")).and(Sort.by(Sort.Direction.DESC, "updated_at")));
 
         Page<Process> processPage = null;
-        if (filter != null && filter.size() > 0) {
+        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
             List<Process> processList = this.processRepository.getProcessListSearchUser(workspaceUUID, search, userUUIDList, pageableCustom.getSort());
+
             processPage = filterConditionsProcessPage(processList, filter, pageable);
         } else {
             // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, pageable);
         }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
@@ -1010,6 +1014,16 @@ public class TaskService {
             processInfoResponse.setSubTaskAssign(this.getSubProcessesAssign(process));
             processInfoResponse.setDoneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count());
             processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
+            processInfoResponse.setSubTaskTotal(process.getSubProcessList().size());
+
+//            ProcessInfoResponse processInfoResponse = ProcessInfoResponse.builder()
+//                    .id(process.getId())
+//                    .subTaskAssign(this.getSubProcessesAssign(process))
+//                    .doneCount((int) process.getSubProcessList().stream().filter(subProcess -> subProcess.getConditions() == Conditions.COMPLETED || subProcess.getConditions() == Conditions.SUCCESS).count())
+//                    .issuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()))
+//                    .subTaskTotal(process.getSubProcessList().size())
+//                    .createdDate(process.getUpdatedDate())
+//                    .build();
             return processInfoResponse;
         }).collect(Collectors.toList());
 
@@ -1019,6 +1033,7 @@ public class TaskService {
                 .totalPage(processPage.getTotalPages())
                 .totalElements(processPage.getTotalElements())
                 .build();
+
         return new ApiResponse<>(new ProcessListResponse(processInfoResponseList, pageMetadataResponse));
     }
 
