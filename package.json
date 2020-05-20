@@ -98,7 +98,8 @@
     "lodash.clonedeep": "^4.5.0",
     "js-cookie": "^2.2.1",
     "recordrtc": "^5.5.9",
-    "multistreamsmixer": "^1.2.2"
+    "multistreamsmixer": "^1.2.2",
+    "crypto-js": "^4.0.0"
   },
   "bin": {
     "app": "./server.js"

@@ -21,7 +21,7 @@
           :active="micTestMode"
           :activeSrc="require('assets/image/setting/ic_mic.svg')"
           :inactiveSrc="require('assets/image/setting/ic_mic_mute.svg')"
-          @action="micTestMode = !micTestMode"
+          @action="toggleMicTestMode"
         ></toggle-button>
       </div>
 
@@ -34,11 +34,7 @@
         autoplay
       ></audio>
       <!-- for camera permission -->
-      <video
-        autoplay
-        :srcObject.prop="videoStream"
-        style="width:0px; height:0px"
-      ></video>
+      <video autoplay style="width:0px; height:0px"></video>
     </div>
   </section>
 </template>
@@ -65,7 +61,6 @@ export default {
     }
   },
   props: {},
-  created() {},
   mounted() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.$refs['audioComponent'].muted = true
@@ -87,8 +82,11 @@ export default {
     }),
   },
   watch: {
-    mic(newMic) {
-      this.handleInputAudioStream(newMic)
+    mic: {
+      handler(newMic) {
+        this.handleInputAudioStream(newMic)
+      },
+      immediate: true,
     },
   },
   methods: {
