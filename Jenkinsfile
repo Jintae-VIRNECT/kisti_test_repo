@@ -181,7 +181,7 @@ pipeline {
                  def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """
-                sh 'cat > ./txt.txt << EOF ${payload}  EOF'
+                sh 'echo $payload > txt.txt'
                     
 
                 echo "$payload"
