@@ -125,6 +125,21 @@ export default {
     store.commit('workspace/SET_ACTIVE_WORKSPACE', data.uuid)
   },
   /**
+   * 워크스페이스 나가기
+   * @param {string} uuid
+   */
+  async workspaceLeave(uuid) {
+    const formData = new FormData()
+    formData.append('kickedUserId', uuid)
+    formData.append('userId', myProfileGetter().uuid)
+    formData.append('workspaceId ', activeWorkspaceGetter().uuid)
+
+    const data = await api('WORKSPACE_LEAVE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+  },
+  /**
    * 멤버 권한 변경
    * @param {form} form
    */
