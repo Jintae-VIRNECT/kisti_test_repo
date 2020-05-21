@@ -747,7 +747,7 @@ public class TaskService {
                     .taskId(process.getId())
                     .subTaskId(subProcess.getId())
                     .stepId(job.getId())
-                    .reportId(report.getId())
+                    .paperId(report.getId())
                     .reportedDate(report.getJob().getSubProcess().getReportedDate())
                     .taskName(process.getName())
                     .subTaskName(subProcess.getName())
@@ -755,7 +755,7 @@ public class TaskService {
                     .workerUUID(userInfoResponse.getData().getUuid())
                     .workerName(userInfoResponse.getData().getName())
                     .workerProfile(userInfoResponse.getData().getProfile())
-                    .reportActions(itemResponseList)
+                    .paperActions(itemResponseList)
                     .build();
         }).collect(Collectors.toList());
 
@@ -1363,10 +1363,10 @@ public class TaskService {
                     .build();
             // report, issue는 job 하위에 1개씩만 생성하는 것으로 메이크와 협의됨.
             if (job.getReportList().size() > 0) {
-                JobResponse.Report report = JobResponse.Report.builder()
+                JobResponse.Paper paper = JobResponse.Paper.builder()
                         .id(job.getReportList().get(0).getId())
                         .build();
-                jobResponse.setReport(report);
+                jobResponse.setPaper(paper);
             }
             if (job.getIssueList().size() > 0) {
                 JobResponse.Issue issue = JobResponse.Issue.builder()
@@ -1467,12 +1467,12 @@ public class TaskService {
                 .subTaskName(subProcess.getName())
                 .stepId(job.getId())
                 .stepName(job.getName())
-                .reportId(report.getId())
+                .paperId(report.getId())
                 .reportedDate(subProcess.getReportedDate())
                 .workerUUID(subProcess.getWorkerUUID())
                 .workerName(userInfoResponse.getData().getName())
                 .workerProfile(userInfoResponse.getData().getProfile())
-                .reportActions(report.getItemList().stream().map(item -> {
+                .paperActions(report.getItemList().stream().map(item -> {
                     return ItemResponse.builder()
                             .id(item.getId())
                             .title(item.getTitle())
