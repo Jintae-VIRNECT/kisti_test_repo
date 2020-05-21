@@ -34,10 +34,9 @@ export default {
       deep: true,
       handler: function(val) {
         if (val.stream) {
-          let state = this.$call.getState()
-
-          this.callMic(state.audio)
-          this.callStream(state.video)
+          // let state = this.$call.getState()
+          // this.callMic(state.audio)
+          // this.callStream(state.video)
         }
       },
     },

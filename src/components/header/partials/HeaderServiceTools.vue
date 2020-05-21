@@ -54,7 +54,7 @@ export default {
   methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
-      // this.$call.leave()
+      this.$call.leave()
 
       this.$router.push({ name: 'workspace' })
     },

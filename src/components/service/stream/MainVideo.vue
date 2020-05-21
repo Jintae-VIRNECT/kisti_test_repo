@@ -118,19 +118,6 @@ export default {
     this.$eventBus.$on('capture', this.capture)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
-  mounted() {
-    // console.log(this.optimizeVideoSize())
-    // let sessionName = "Session " + Math.floor(Math.random() * 10)
-    let sessionName = 'virnect'
-    let nickName = 'Participant ' + Math.floor(Math.random() * 100)
-    this.updateAccount({
-      sessionName: sessionName,
-      nickName: nickName,
-    })
-
-    this.$call.join(sessionName, nickName).then(session => {
-      console.log(session.connection)
-    })
-  },
+  mounted() {},
 }
 </script>

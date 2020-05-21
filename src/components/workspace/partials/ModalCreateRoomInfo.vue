@@ -139,7 +139,7 @@ export default {
         selectedUser.push(select.uuid)
       }
       selectedUser.push(this.account.uuid)
-      const roomId = await createRoom({
+      const roomInfo = await createRoom({
         file: this.imageFile,
         title: this.title,
         description: this.description,
@@ -147,11 +147,17 @@ export default {
         participants: selectedUser,
         workspaceId: this.workspace.uuid,
       })
-      console.log(roomId)
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        // this.$router.push({ name: 'service' })
-      })
+      console.log(roomInfo)
+      const joinRtn = await this.$call.join(roomInfo, this.account)
+      if (joinRtn) {
+        console.log('>>>join room 성공')
+        this.$eventBus.$emit('popover:close')
+        this.$nextTick(() => {
+          this.$router.push({ name: 'service' })
+        })
+      } else {
+        console.error('>>>join room 실패')
+      }
     },
     checkEmpty() {
       if (this.title === '') {

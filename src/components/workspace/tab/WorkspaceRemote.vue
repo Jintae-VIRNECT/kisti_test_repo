@@ -64,9 +64,8 @@ export default {
       })
     },
     async joinRoom(roomInfo) {
-      console.log(roomInfo)
       try {
-        const token = await this.$call.join(roomInfo)
+        const token = await this.$call.join(roomInfo, this.account)
         console.log(token)
       } catch (err) {
         console.log(err)

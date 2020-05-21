@@ -1,12 +1,10 @@
-import { OpenVidu } from 'openvidu-browser'
+import { OpenVidu } from './openvidu-browser'
 import openviduStore from './OpenviduStore'
+import { getStream } from './OpenviduUtils'
 import { getToken } from 'api/workspace/call'
-import io from 'socket.io-client'
 
 export default {
   install(Vue, { Store }) {
-    console.log(Store)
-
     if (!Store) {
       throw new Error('Can not find vuex store')
     } else {
@@ -15,20 +13,38 @@ export default {
     let OV
 
     const addSessionEventListener = session => {
-      session.on('streamCreated', event => {})
+      session.on('streamCreated', event => {
+        console.log(event)
+      })
 
       // On every Stream destroyed...
-      session.on('streamDestroyed', event => {})
+      session.on('streamDestroyed', event => {
+        console.log(event)
+      })
 
-      session.on('signal:audio', event => {})
+      session.on('signal:audio', event => {
+        console.log(event)
+      })
 
-      session.on('signal:video', event => {})
+      session.on('signal:video', event => {
+        console.log(event)
+      })
 
-      session.on('signal:chat', event => {})
+      session.on('signal:chat', event => {
+        console.log(event)
+      })
+    }
+
+    const updateSessionStream = (nodeId, stream) => {
+      Store.dispatch('updateSessionStream', {
+        nodeId: nodeId,
+        stream: stream,
+      })
     }
 
     Vue.prototype.$call = {
-      join: async (roomInfo, nickname) => {
+      session: null,
+      join: async (roomInfo, account) => {
         try {
           const params = {
             sessionId: roomInfo.sessionId,
@@ -37,25 +53,63 @@ export default {
             kurentoOptions: {},
           }
           const rtnValue = await getToken(params)
-          console.log(rtnValue)
 
           OV = new OpenVidu()
-          const session = OV.initSession()
-          console.log(session)
-          // const session = io(rtnValue.token)
-          // console.log(session)
-          addSessionEventListener(session)
-          console.log('session add event')
+          this.session = OV.initSession()
 
-          session.connect(rtnValue.token, { clientData: nickname }).then(() => {
-            console.log('connection success')
+          addSessionEventListener(this.session)
+          console.log('[session] add event listener')
+
+          await this.session.connect(rtnValue.token, {
+            clientData: account.nickname,
           })
+          console.log('[session] connection success')
+          // const streams = await getStream({
+          //   video: true,
+          //   audio: true,
+          // })
+          // console.log(streams)
+
+          const publisher = OV.initPublisher('', {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            resolution: '1280x720', // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: 'PREPEND', // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          })
+          publisher.on('streamCreated', event => {
+            console.log('[session] publisher stream created success')
+            updateSessionStream('main', publisher.stream.getMediaStream())
+
+            Store.dispatch('setMainSession', {
+              stream: publisher.stream.getMediaStream(),
+              // session: session,
+              // connection: publisher.connection,
+              nickName: account.nickname,
+              userName: account.name,
+              nodeId: 'main',
+            })
+            console.log()
+          })
+
+          this.session.publish(publisher)
+          console.log(publisher)
+          console.log('[session] init publisher success')
+          return true
         } catch (err) {
           console.error(err)
+          return false
         }
         // return session
       },
-      leave: () => {},
+      leave: () => {
+        Store.dispatch('clearSession')
+        this.session.disconnect()
+        this.session = null
+      },
       sendChat: text => {},
       getDevices: () => {},
       getState: () => {},
