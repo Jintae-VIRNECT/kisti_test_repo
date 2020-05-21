@@ -3,17 +3,30 @@
     <div
       class="participant-video"
       :class="{ current: isCurrent }"
-      :id="'video-view__' + session.nodeId"
       @click="changeMain"
     >
-      <div class="participant-video__profile">
-        <img :src="session.path" @error="profileImageError" />
+      <div class="participant-video__stream" v-if="session.stream">
+        <video :srcObject="session.stream"></video>
+      </div>
+      <div class="participant-video__profile" v-else>
+        <img
+          class="participant-video__profile-background"
+          :src="session.path"
+          @error="profileImageError"
+        />
         <profile
           :thumbStyle="{ width: '64px', height: '64px', margin: '10px auto 0' }"
-          :src="session.path"
+          :image="session.path"
         ></profile>
       </div>
-      <img
+      <div
+        v-if="!isMain"
+        class="participant-video__status"
+        :class="session.status"
+      >
+        <span>우수</span>
+      </div>
+      <!-- <img
         v-if="!isMain"
         class="participant-video__speaker"
         :src="
@@ -21,13 +34,32 @@
             ? require('assets/image/call/gnb_ic_voice_on.svg')
             : require('assets/image/call/gnb_ic_voice_off.svg')
         "
-      />
-
-      <div v-if="!isMain" class="participant-video__status good">
-        <span>우수</span>
-      </div>
+      /> -->
       <div class="participant-video__name">
         <span :class="{ active: isMain }">{{ session.nickName }}</span>
+        <popover
+          trigger="click"
+          placement="right-end"
+          popperClass="participant-video__menu"
+          :width="120"
+        >
+          <button slot="reference" class="participant-video__setting">
+            메뉴
+          </button>
+
+          <ul class="video-popover">
+            <li>
+              <button class="video-pop__button" @click="">
+                음소거
+              </button>
+            </li>
+            <li>
+              <button class="video-pop__button" @click="">
+                내보내기
+              </button>
+            </li>
+          </ul>
+        </popover>
       </div>
     </div>
   </article>
@@ -36,11 +68,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import Profile from 'Profile'
+import Popover from 'Popover'
 
 export default {
   name: 'ParticipantVideo',
   components: {
     Profile,
+    Popover,
   },
   data() {
     return {
@@ -53,13 +87,13 @@ export default {
   computed: {
     ...mapGetters(['mainSession', 'speaker']),
     isMain() {
-      if (this.session.nodeId === 'main') {
+      if (this.session.uuid === 'main') {
         return true
       }
       return false
     },
     isCurrent() {
-      if (this.mainSession.nodeId === this.session.nodeId) return true
+      if (this.mainSession.uuid === this.session.uuid) return true
       return false
     },
   },
@@ -83,7 +117,7 @@ export default {
       e.stopPropagation()
 
       this.onSpeaker = !this.onSpeaker
-      // this.$call.audioOnOff(this.session.nodeId, this.onSpeaker)
+      // this.$call.audioOnOff(this.session.uuid, this.onSpeaker)
     },
   },
 

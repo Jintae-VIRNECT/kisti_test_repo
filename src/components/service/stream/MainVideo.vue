@@ -14,12 +14,12 @@
       ></video>
 
       <pointing v-if="true" :scale="1" class="main-video__pointing"></pointing>
-
+      <!-- 
       <div class="main-video__info">
         <img class="profile" src="~assets/image/call/chat_img_user.svg" />
         <span class="name">{{ session.nickName }}</span>
         <span class="status" :class="status">연결상태</span>
-      </div>
+      </div> -->
 
       <button v-if="session.nodeId === 'main'" class="main-video__setting">
         화면 설정

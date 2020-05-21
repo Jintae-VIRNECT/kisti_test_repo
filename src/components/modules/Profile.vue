@@ -1,7 +1,10 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <div class="profile--image" :class="{ group: group }">
+      <div
+        class="profile--image"
+        :class="{ group: group, image: image && image.length > 0 }"
+      >
         <img
           v-if="image && image.length > 0"
           :src="image"

@@ -58,7 +58,7 @@
 @mixin status-color($dot: false) {
   &.good {
     color: $color_state_good;
-    background-color: $color_state_good_bg;
+    background-color: $color_state_good;
     border-color: $color_state_good;
     @if $dot {
       &::after {
@@ -76,7 +76,7 @@
   }
   &.normal {
     color: $color_state_normal;
-    background-color: $color_state_normal_bg;
+    background-color: $color_state_normal;
     border-color: $color_state_normal;
     @if $dot {
       &::after {
@@ -94,7 +94,7 @@
   }
   &.bad {
     color: $color_state_bad;
-    background-color: $color_state_bad_bg;
+    background-color: $color_state_bad;
     border-color: $color_state_bad;
     @if $dot {
       &::after {

@@ -91,6 +91,7 @@ export default {
     onImageError(event) {
       // event.target.src = require('assets/image/img_user_profile.svg')
       event.target.style.display = 'none'
+      event.target.classList.add('default')
     },
     onImageErrorGroup(event) {
       // event.target.src = require('assets/image/img_default_group.svg')

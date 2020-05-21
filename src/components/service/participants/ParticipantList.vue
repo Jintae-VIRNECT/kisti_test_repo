@@ -29,11 +29,30 @@ export default {
     return {
       sessions: [
         {
-          nodeId: 1,
-          stream: '',
+          uuid: null,
+          stream: null,
           nickName: '이름',
           sessionName: '세션이름',
           path: 'default',
+          status: 'good',
+        },
+        {
+          uuid: 2,
+          stream: null,
+          nickName: '프로필사진',
+          sessionName: 'haha',
+          path:
+            'https://virnect.com/images/pages/landing/logo-main-bi-remote.png',
+          status: 'normal',
+        },
+        {
+          uuid: 3,
+          stream: null,
+          nickName: '프로필사진2',
+          sessionName: 'haha2',
+          path:
+            'https://virnect.com/images/pages/landing/logo-main-bi-remote.png',
+          status: 'bad',
         },
       ],
     }
