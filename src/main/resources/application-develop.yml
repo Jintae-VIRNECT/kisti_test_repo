@@ -22,6 +22,7 @@ spring:
             - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "AUTH_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -34,6 +35,7 @@ spring:
             - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "USER_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -46,6 +48,7 @@ spring:
             - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "WORKSPACE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -71,6 +74,7 @@ spring:
             - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "CONTENT_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -83,6 +87,7 @@ spring:
             - RewritePath=/tasks/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "PROCESS_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -95,6 +100,7 @@ spring:
             - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "LICENSE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -107,6 +113,7 @@ spring:
             - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "MESSAGE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -119,6 +126,7 @@ spring:
             - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "DOWNLOAD_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -131,17 +139,23 @@ spring:
             - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "MEDIA_SERVER"
                 preLogger: true
                 postLogger: true
 
         - id: media-server-websocket
           uri: lb:wss://media-server
           predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, \s+
+            - Header=Upgrade, websocket
             - Path=/media/**
           filters:
             - StripPrefix=0
+            - RewritePath=/media/(?<segment>.*), /openvidu/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "MEDIA_WEBSOCKET"
                 preLogger: true
                 postLogger: true
 
@@ -171,3 +185,6 @@ eureka:
 
 jwt:
   secret: 2020-tcenriv-platform-392
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.WebsocketRoutingFilter: TRACE
