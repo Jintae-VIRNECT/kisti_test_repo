@@ -1,5 +1,5 @@
 <template>
-  <div id="task-detail" class="task">
+  <div id="sub-task-detail" class="task">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -40,7 +40,6 @@
             <column-default
               :label="$t('task.detail.subTaskColumn.name')"
               prop="subTaskName"
-              sortable="custom"
             />
             <column-count
               :label="$t('task.detail.subTaskColumn.endedSteps')"
@@ -126,12 +125,7 @@
           <div slot="header">
             <h3>{{ $t('task.list.allTasksList') }}</h3>
           </div>
-          <el-table
-            class="clickable"
-            ref="table"
-            :data="stepsList"
-            v-loading="loading"
-          >
+          <el-table ref="table" :data="stepsList" v-loading="loading">
             <column-default
               :label="$t('task.subTaskDetail.stepsColumn.no')"
               prop="priority"
@@ -170,16 +164,28 @@
               prop="reportedDate"
               :width="130"
             />
-            <column-default
-              :label="$t('task.subTaskDetail.stepsColumn.issue')"
+            <el-table-column
               prop="issue"
+              :label="$t('task.subTaskDetail.stepsColumn.issue')"
               :width="90"
-            />
-            <column-default
-              :label="$t('task.subTaskDetail.stepsColumn.paper')"
+            >
+              <template slot-scope="scope">
+                <el-button>
+                  {{ $t('task.subTaskDetail.showIssue') }}
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
               prop="paper"
-              :width="110"
-            />
+              :label="$t('task.subTaskDetail.stepsColumn.paper')"
+              :width="130"
+            >
+              <template slot-scope="scope">
+                <el-button>
+                  {{ $t('task.subTaskDetail.showPaper') }}
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-card>
       </el-row>
@@ -261,3 +267,13 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#__nuxt #sub-task-detail {
+  .cell .el-button {
+    padding: 8px 11px;
+    color: #0d2a58;
+    font-size: 12.6px;
+  }
+}
+</style>

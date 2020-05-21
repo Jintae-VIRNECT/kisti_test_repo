@@ -46,6 +46,9 @@
   .el-table.clickable .el-table__row {
     cursor: pointer;
   }
+  .el-table--enable-row-hover:not(.clickable) .el-table__body tr:hover > td {
+    background-color: inherit;
+  }
   .el-table .cell {
     overflow: inherit;
     white-space: inherit;
