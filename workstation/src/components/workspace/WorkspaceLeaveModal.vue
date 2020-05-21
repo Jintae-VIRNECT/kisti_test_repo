@@ -76,6 +76,7 @@ export default {
           message: this.$t('workspace.setting.leaveInfo.success'),
           showClose: true,
         })
+        this.$router.push('/')
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.leaveInfo.fail'),
