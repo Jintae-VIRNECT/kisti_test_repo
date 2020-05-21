@@ -103,7 +103,6 @@ const sender = async function(constant, params, headers = {}, custom) {
 
     //Extract option
     custom = URL[constant][2]
-    console.log(custom)
 
     if (custom && 'form' === custom.type) {
       option.headers['Content-Type'] = 'multipart/form-data'

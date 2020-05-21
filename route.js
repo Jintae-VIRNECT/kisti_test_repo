@@ -36,7 +36,7 @@ router.get('/home', function(req, res) {
   }
 })
 
-router.get('/room', function(req, res) {
+router.get('/service', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       res.redirect('/m/qrcode')

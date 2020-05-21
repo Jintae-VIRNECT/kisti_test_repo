@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li :class="{ notice: notice }">
     <button
       class="header-lnb__button"
       :class="{ active: view === keyvalue }"
@@ -19,6 +19,10 @@ export default {
     text: String,
     keyvalue: String,
     image: String,
+    notice: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapGetters(['view']),

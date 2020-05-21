@@ -27,16 +27,19 @@ export default {
   },
   data() {
     return {
-      // sessions: [{
-      //   nodeId: 1,
-      //   stream: '',
-      //   nickName: '이름'
-      //   sessionName: '세션이름'
-      // }]
+      sessions: [
+        {
+          nodeId: 1,
+          stream: '',
+          nickName: '이름',
+          sessionName: '세션이름',
+          path: 'default',
+        },
+      ],
     }
   },
   computed: {
-    ...mapGetters(['sessions', 'mainSession']),
+    ...mapGetters(['mainSession']),
   },
   watch: {
     'sessions.length': {

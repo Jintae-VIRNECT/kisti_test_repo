@@ -1,16 +1,16 @@
 <template>
-  <tool-button
+  <menu-button
     text="캡쳐 후 공유"
-    :active="action === 'capture'"
-    :src="require('assets/image/call/icn_capture.png')"
-    @click="capture"
-  ></tool-button>
+    :active="action === 'setting'"
+    :src="require('assets/image/ic_setting.svg')"
+    @click="setting"
+  ></menu-button>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
 export default {
-  name: 'CaptureTool',
+  name: 'SettingMenu',
   mixins: [toolMixin],
   data() {
     return {}
@@ -18,8 +18,8 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    capture() {
-      this.setAction('capture')
+    setting() {
+      this.setAction('setting')
     },
   },
 
