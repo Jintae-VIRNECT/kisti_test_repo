@@ -84,9 +84,9 @@ module.exports = {
   // 워크스페이스의 전체 하위작업목록조회
   SUB_TASK_ALL: ['GET', '/tasks/subTasks'],
   // 하위작업 상세조회
-  SUB_TASK_INFO: ['GET', '/tasks/subTasks/{subTaskId}'],
+  SUB_TASK_INFO: ['GET', '/tasks/subTask/{subTaskId}'],
   // 하위작업편집
   SUB_TASK_UPDATE: ['POST', '/tasks/subTasks/{subTaskId}'],
   // 단계목록조회
-  JOBS_LIST: ['GET', '/tasks/subTasks/{subTaskId}/steps'],
+  STEPS_LIST: ['GET', '/tasks/subTasks/{subTaskId}/steps'],
 }

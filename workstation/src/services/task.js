@@ -67,4 +67,14 @@ export default {
       total: data.pageMeta.totalElements,
     }
   },
+  /**
+   * 하위 작업 상세조회
+   * @param {String} subTaskId
+   */
+  async getSubTaskDetail(subTaskId) {
+    const data = await api('SUB_TASK_INFO', {
+      route: { subTaskId },
+    })
+    return new SubTask(data)
+  },
 }

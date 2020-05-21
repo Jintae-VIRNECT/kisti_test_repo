@@ -48,6 +48,29 @@
       "endStatus": "종료 상태"
     }
   },
+  "subTaskDetail": {
+    "title": "선택 하위 작업 정보",
+    "stepsList": "단계 목록",
+    "allSteps": "모든 단계",
+    "waitSteps": "대기 중인 단계",
+    "startedSteps": "시작된 단계",
+    "endSteps": "마감된 단계",
+    "StepsCount": "등록된 단계 수",
+    "mySteps": "내 단계",
+    "stepsColumn": {
+      "no": "순번",
+      "id": "단계 ID",
+      "name": "단계 이름",
+      "endedActions": "행동 완료",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "이슈 정보",
+      "paper": "페이퍼 정보"
+    },
+    "showIssue": "이슈 보기",
+    "showPaper": "페이퍼 보기"
+  },
   "new": {
     "title": "신규 작업 등록",
     "contentsInfo": "신규 작업 등록 콘텐츠 정보",

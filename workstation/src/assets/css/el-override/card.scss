@@ -106,3 +106,12 @@
     border-top-color: $color-primary;
   }
 }
+// 카드 - 정보 테이블
+.el-card--table--info {
+  margin-bottom: 40px;
+
+  .el-table th.is-leaf {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}

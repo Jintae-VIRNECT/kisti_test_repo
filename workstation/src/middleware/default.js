@@ -1,4 +1,7 @@
 export default async function({ req, store, redirect }) {
+  // nuxt undefined url bug
+  if (req && req.url.match('undefined')) redirect('/')
+
   if (process.server) {
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {

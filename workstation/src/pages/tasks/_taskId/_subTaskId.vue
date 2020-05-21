@@ -7,118 +7,26 @@
           <el-breadcrumb-item to="/tasks">{{
             $t('task.list.title')
           }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ $t('task.detail.title') }}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="`/tasks/${$route.params.taskId}`">{{
+            $t('task.detail.title')
+          }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{
+            $t('task.subTaskDetail.title')
+          }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('task.detail.title') }}</h2>
+        <h2>{{ $t('task.subTaskDetail.title') }}</h2>
         <el-button type="primary" @click="$router.push('/tasks/new')">
           {{ $t('task.list.newTask') }}
         </el-button>
       </div>
 
-      <!-- 작업 정보 -->
+      <!-- 하위 작업 정보 -->
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
-            <h3>{{ $t('task.detail.title') }}</h3>
+            <h3>{{ $t('task.subTaskDetail.title') }}</h3>
           </div>
-          <el-table :data="[taskInfo]" v-loading="loading">
-            <column-default
-              :label="$t('task.list.column.id')"
-              prop="id"
-              :width="140"
-            />
-            <column-default :label="$t('task.list.column.name')" prop="name" />
-            <column-count
-              :label="$t('task.list.column.endedSubTasks')"
-              prop="doneCount"
-              maxProp="subTaskTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.list.column.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.list.column.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.list.column.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.list.column.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.list.column.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.list.column.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
-        </el-card>
-      </el-row>
-
-      <!-- 탭 -->
-      <el-row class="tab-wrapper searchbar">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane
-            v-for="tab in tabs"
-            :key="tab.name"
-            :name="tab.name"
-            :label="$t(tab.label)"
-          />
-        </el-tabs>
-        <searchbar-keyword ref="keyword" :value.sync="subTaskSearch" />
-      </el-row>
-
-      <!-- 버튼 영역 -->
-      <el-row class="btn-wrapper searchbar">
-        <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('task.detail.mySubTasks') }}
-          </el-button>
-          <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
-            ref="filter"
-            :value.sync="taskFilter.value"
-            :options="taskFilter.options"
-            @change="filterChanged"
-          />
-        </el-col>
-      </el-row>
-
-      <!-- 하위 작업 -->
-      <el-row>
-        <el-card class="el-card--table">
-          <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
-          </div>
-          <el-table
-            class="clickable"
-            ref="table"
-            :data="subTaskList"
-            v-loading="loading"
-            @row-click="moveToSubTaskDetail"
-          >
+          <el-table :data="[subTaskInfo]" v-loading="loading">
             <column-default
               :label="$t('task.detail.subTaskColumn.no')"
               prop="priority"
@@ -179,11 +87,103 @@
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page
-        ref="page"
-        :value.sync="subTaskPage"
-        :total="subTaskTotal"
-      />
+
+      <!-- 탭 -->
+      <el-row class="tab-wrapper searchbar">
+        <el-tabs v-model="activeTab">
+          <el-tab-pane
+            v-for="tab in tabs"
+            :key="tab.name"
+            :name="tab.name"
+            :label="$t(tab.label)"
+          />
+        </el-tabs>
+        <searchbar-keyword ref="keyword" :value.sync="stepsSearch" />
+      </el-row>
+
+      <!-- 버튼 영역 -->
+      <el-row class="btn-wrapper searchbar">
+        <el-col class="left">
+          <el-button @click="showAll">
+            {{ $t('common.all') }}
+          </el-button>
+          <el-button @click="showMine">
+            {{ $t('task.subTaskDetail.mySteps') }}
+          </el-button>
+          <span>{{ $t('searchbar.filter.title') }}:</span>
+          <searchbar-filter
+            ref="filter"
+            :value.sync="taskFilter.value"
+            :options="taskFilter.options"
+            @change="filterChanged"
+          />
+        </el-col>
+      </el-row>
+
+      <!-- 단계 리스트 -->
+      <el-row>
+        <el-card class="el-card--table">
+          <div slot="header">
+            <h3>{{ $t('task.list.allTasksList') }}</h3>
+          </div>
+          <el-table
+            class="clickable"
+            ref="table"
+            :data="stepsList"
+            v-loading="loading"
+          >
+            <column-default
+              :label="$t('task.subTaskDetail.stepsColumn.no')"
+              prop="priority"
+              :width="80"
+            />
+            <column-default
+              :label="$t('task.subTaskDetail.stepsColumn.id')"
+              prop="id"
+              :width="140"
+            />
+            <column-default
+              :label="$t('task.subTaskDetail.stepsColumn.name')"
+              prop="name"
+              sortable="custom"
+            />
+            <column-count
+              :label="$t('task.subTaskDetail.stepsColumn.endedActions')"
+              prop="doneCount"
+              maxProp="actionTotal"
+              :width="120"
+            />
+            <column-progress
+              :label="$t('task.subTaskDetail.stepsColumn.progressRate')"
+              prop="progressRate"
+              :width="150"
+            />
+            <column-status
+              :label="$t('task.subTaskDetail.stepsColumn.status')"
+              prop="conditions"
+              :statusList="taskConditions"
+              :width="100"
+            />
+            <column-date
+              :label="$t('task.subTaskDetail.stepsColumn.reportedDate')"
+              type="time"
+              prop="reportedDate"
+              :width="130"
+            />
+            <column-default
+              :label="$t('task.subTaskDetail.stepsColumn.issue')"
+              prop="issue"
+              :width="90"
+            />
+            <column-default
+              :label="$t('task.subTaskDetail.stepsColumn.paper')"
+              prop="paper"
+              :width="110"
+            />
+          </el-table>
+        </el-card>
+      </el-row>
+      <searchbar-page ref="page" :value.sync="stepsPage" :total="stepsTotal" />
     </div>
   </div>
 </template>
@@ -193,41 +193,42 @@ import {
   conditions as taskConditions,
   filter as taskFilter,
 } from '@/models/task/Task'
-import { tabs } from '@/models/task/SubTask'
+import { tabs } from '@/models/step/Step'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
+import stepService from '@/services/step'
 
 export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ params }) {
     const promise = {
-      taskDetail: taskService.getTaskDetail(params.taskId),
-      subTask: taskService.searchSubTasks(params.taskId),
+      subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
+      steps: stepService.searchSteps(params.subTaskId),
     }
     return {
-      taskInfo: await promise.taskDetail,
-      subTaskList: (await promise.subTask).list,
-      subTaskTotal: (await promise.subTask).total,
+      subTaskInfo: await promise.subTaskDetail,
+      stepsList: (await promise.steps).list,
+      stepsTotal: (await promise.steps).total,
     }
   },
   data() {
     return {
       tabs,
-      activeTab: 'allSubTasks',
+      activeTab: 'allSteps',
       taskConditions,
       taskFilter: { ...taskFilter },
-      subTaskSearch: '',
-      subTaskPage: 1,
+      stepsSearch: '',
+      stepsPage: 1,
       loading: false,
     }
   },
   watch: {
     activeTab(tabName) {
       const enableFilter = tabs.find(tab => tab.name === tabName).filter
-      this.taskFilter.value = tabName === 'allSubTasks' ? ['ALL'] : enableFilter
+      this.taskFilter.value = tabName === 'allSteps' ? ['ALL'] : enableFilter
       this.taskFilter.options = taskFilter.options.map(option => ({
         ...option,
         disabled: !enableFilter.includes(option.value),
@@ -237,24 +238,21 @@ export default {
   },
   methods: {
     changedSearchParams(searchParams) {
-      this.searchSubTasks(searchParams)
+      this.searchSteps(searchParams)
     },
-    async searchSubTasks() {
-      const { list, total } = await taskService.searchSubTasks(
-        this.taskInfo.id,
+    async searchSteps() {
+      const { list, total } = await stepService.searchSteps(
+        this.subTaskInfo.subTaskId,
         this.searchParams,
       )
-      this.subTaskList = list
-      this.subTaskTotal = total
+      this.stepsList = list
+      this.stepsTotal = total
     },
     filterChanged(filter) {
-      if (!filter.length) this.activeTab = 'allSubTasks'
+      if (!filter.length) this.activeTab = 'allSteps'
     },
     showAll() {},
     showMine() {},
-    moveToSubTaskDetail({ subTaskId }) {
-      this.$router.push(`/tasks/${this.taskInfo.id}/${subTaskId}`)
-    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
