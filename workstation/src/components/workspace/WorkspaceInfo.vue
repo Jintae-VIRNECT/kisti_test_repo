@@ -38,7 +38,10 @@
           :content="user.name"
         >
           <div class="avatar">
-            <img :src="user.profile" />
+            <div
+              class="image"
+              :style="`background-image: url(${user.profile})`"
+            />
           </div>
         </el-tooltip>
       </div>
