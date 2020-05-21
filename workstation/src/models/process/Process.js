@@ -48,27 +48,30 @@ export const conditions = [
  */
 export const filter = {
   value: ['ALL'],
-  options: [{ value: 'ALL', label: 'searchbar.filter.all' }, ...conditions],
+  options: [{ value: 'ALL', label: 'SearchTabNav.filter.all' }, ...conditions],
 }
 
 /**
- * 탭
+ * 공정 검색 정렬설정
  */
-export const tabs = [
-  {
-    name: 'allProcesses',
-    label: 'process.list.allProcesses',
-  },
-  {
-    name: 'waitProcesses',
-    label: 'process.list.waitProcesses',
-  },
-  {
-    name: 'startedProcesses',
-    label: 'process.list.startedProcesses',
-  },
-  {
-    name: 'endProcesses',
-    label: 'process.list.endProcesses',
-  },
-]
+export const sort = {
+  value: 'updated_at,desc',
+  options: [
+    {
+      value: 'name,asc',
+      label: 'SearchTabNav.sort.alphabetAsc',
+    },
+    {
+      value: 'name,desc',
+      label: 'SearchTabNav.sort.alphabetDesc',
+    },
+    {
+      value: 'updated_at,desc',
+      label: 'SearchTabNav.sort.updatedDesc',
+    },
+    {
+      value: 'updated_at,asc',
+      label: 'SearchTabNav.sort.updatedAsc',
+    },
+  ],
+}

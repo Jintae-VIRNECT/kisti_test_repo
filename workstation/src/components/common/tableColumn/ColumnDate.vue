@@ -34,12 +34,6 @@ export default {
     align: String,
     sortable: [Boolean, String],
   },
-  methods: {
-    format(date) {
-      if (!this.type) return filters.localDateFormat(date)
-      if (this.type === 'date') return filters.localDateFormat(date)
-      if (this.type === 'time') return filters.localTimeFormat(date)
-    },
-  },
+  filters: { ...filters },
 }
 </script>

@@ -1,5 +1,5 @@
-import { api } from '@/plugins/axios'
-import { store } from '@/plugins/context'
+import api from '@/api/gateway'
+import authService from '@/services/auth'
 
 // model
 import Content from '@/models/content/Content'
@@ -24,32 +24,13 @@ export default {
       params.shareds = params.filter
       delete params.filter
     }
-
-    const userUUID = store.getters['auth/myProfile'].uuid
-    const workspaceUUID = store.getters['workspace/activeWorkspace'].uuid
-    let data = null
-    // 내 컨텐츠
-    if (params.mine) {
-      data = await api('CONTENTS_LIST_MINE', {
-        route: { userUUID },
-        params: {
-          workspaceUUID,
-          userUUID,
-          size: 10,
-          ...params,
-        },
-      })
-    }
-    // 전체 컨텐츠
-    else {
-      data = await api('CONTENTS_LIST', {
-        params: {
-          workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
-          size: 10,
-          ...params,
-        },
-      })
-    }
+    const data = await api('CONTENTS_LIST', {
+      params: {
+        workspaceUUID: $nuxt.$store.getters['workspace/activeWorkspace'].uuid,
+        size: 10,
+        ...params,
+      },
+    })
     return {
       list: data.contentInfo.map(content => new Content(content)),
       total: data.pageMeta.totalElements,

@@ -1,3 +1,9 @@
+export const sideLogo = {
+  path: '@collapseWorkspace',
+  image: require('assets/images/workspace-profile.png'),
+  label: 'Workspaces',
+}
+
 export const sideMenus = [
   {
     path: '/',
@@ -17,15 +23,14 @@ export const sideMenus = [
     image: require('assets/images/icon/ic-description.svg'),
     label: 'menu.contents',
   },
-  {
-    divider: true,
-  },
-  {
-    path: '/tasks',
-    collapse: 'collapseTask',
-    image: require('assets/images/icon/ic-library-books.svg'),
-    label: 'menu.tasks',
-  },
+  // {
+  //   divider: true,
+  // },
+  // {
+  //   path: '/processes',
+  //   image: require('assets/images/icon/ic-library-books.svg'),
+  //   label: 'processes',
+  // },
 ]
 
 export const sideBottomMenus = [

@@ -105,7 +105,7 @@ export default {
   margin: 24px;
 
   .info {
-    margin: 0 6px 40px;
+    margin-bottom: 40px;
     text-align: center;
 
     & > .avatar {

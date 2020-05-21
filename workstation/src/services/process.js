@@ -19,13 +19,11 @@ export default {
   },
   /**
    * 공정 검색
-   * @param {String} workspaceUUID
    * @param {Object} params
    */
-  async searchProcesses(workspaceUUID, params) {
+  async searchProcesses(params) {
     const data = await api('PROCESS_LIST', {
       params: {
-        workspaceUUID,
         size: 10,
         sort: 'updated_at,desc',
         ...params,

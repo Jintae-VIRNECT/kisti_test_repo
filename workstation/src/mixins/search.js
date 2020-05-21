@@ -18,13 +18,13 @@ export default {
       searchParams: {},
     }
   },
-  methods: {
-    emitChangedSearchParams(customParams = {}) {
-      const { filter, sort, keyword, page } = this.$refs
+  mounted() {
+    const { filter, sort, keyword, page, table } = this.$refs
+
+    const emitChangedSearchParams = customParams => {
       if (this.changedSearchParams) {
         this.$nextTick(() => {
           this.searchParams = {
-            ...this.searchParams,
             search: keyword && keyword.value,
             filter: filter && filter.value.join(','),
             sort: (customParams && customParams.sort) || (sort && sort.value),
@@ -37,14 +37,11 @@ export default {
           this.changedSearchParams(this.searchParams)
         })
       }
-    },
-  },
-  mounted() {
-    const { filter, sort, keyword, page, table } = this.$refs
+    }
 
-    if (keyword) keyword.$on('change', this.emitChangedSearchParams)
-    if (sort) sort.$on('change', this.emitChangedSearchParams)
-    if (page) page.$on('change', this.emitChangedSearchParams)
+    if (keyword) keyword.$on('change', emitChangedSearchParams)
+    if (sort) sort.$on('change', emitChangedSearchParams)
+    if (page) page.$on('change', emitChangedSearchParams)
     if (filter)
       filter.$on('change', () => {
         const last = filter.myValue[filter.myValue.length - 1]
@@ -53,14 +50,14 @@ export default {
         } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
           filter.myValue.shift()
         }
-        this.emitChangedSearchParams()
+        emitChangedSearchParams()
       })
     if (table)
       table.$on('sort-change', ({ prop, order }) => {
-        if (!order) this.emitChangedSearchParams()
+        if (!order) emitChangedSearchParams()
         else {
           const sort = `${prop},${order.replace('ending', '')}`
-          this.emitChangedSearchParams({ sort })
+          emitChangedSearchParams({ sort })
         }
       })
   },

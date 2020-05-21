@@ -13,7 +13,6 @@
 body {
   overflow-y: scroll;
   font-weight: 500;
-  word-wrap: break-word;
   .v-modal {
     background: #020a17;
   }
@@ -38,14 +37,8 @@ body {
 @import "@/assets/css/modules/common.scss";
 @import "@/assets/css/modules/column.scss";
 @import "@/assets/css/modules/searchbar.scss";
-@import "@/assets/css/modules/info-modal.scss";
-@import "@/assets/css/modules/color.scss";
-@import "@/assets/css/modules/task.scss";
-
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
 @import "@/assets/css/el-override/tooltip.scss";
 @import "@/assets/css/el-override/datepicker.scss";
 @import "@/assets/css/el-override/dropdown.scss";
-@import "@/assets/css/el-override/tabs.scss";
-@import "@/assets/css/el-override/collapse.scss";

@@ -2,7 +2,6 @@
   "home": "워크스테이션 홈",
   "members": "워크스페이스 사용자",
   "contents": "콘텐츠 관리",
-  "tasks": "작업 관리",
   "workspaceSetting": "워크스페이스 설정",
   "collapse": {
     "workspace": {
@@ -10,10 +9,6 @@
       "master": "워크스페이스 마스터",
       "manager": "워크스페이스 매니저",
       "member": "워크스페이스 멤버"
-    },
-    "tasks": {
-      "list": "작업 목록",
-      "reports": "작업 보고 관리"
     }
   }
 }
