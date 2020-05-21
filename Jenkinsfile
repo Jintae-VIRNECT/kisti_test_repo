@@ -116,7 +116,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-license").push("${GIT_TAG}")
+                                    docker.image("pf-license:${GIT_TAG}").push("${GIT_TAG}")
                                 }
                             }
 
@@ -162,7 +162,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-license").push("${GIT_TAG}")
+                                    docker.image("pf-license:${GIT_TAG}").push("${GIT_TAG}")
                                 }
                             }
 
