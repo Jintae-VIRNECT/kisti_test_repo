@@ -122,8 +122,8 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: media-server
-          uri: lb:https://media-server
+        - id: remote-service-server
+          uri: lb:https://remote-service-server
           predicates:
             - Path=/media/**
           filters:
