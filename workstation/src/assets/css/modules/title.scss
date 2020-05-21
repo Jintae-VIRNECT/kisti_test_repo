@@ -7,11 +7,14 @@
     font-size: 12px;
 
     &__inner {
-      color: #5e6b81;
+      color: $font-color-desc;
       font-weight: 500;
     }
     &__separator {
       margin: 0 4px;
+    }
+    .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+      color: $font-color-content;
     }
   }
   h2 {
