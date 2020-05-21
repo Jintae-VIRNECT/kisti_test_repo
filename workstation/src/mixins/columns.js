@@ -3,6 +3,9 @@ import ColumnDate from '@/components/common/tableColumn/ColumnDate'
 import ColumnUser from '@/components/common/tableColumn/ColumnUser'
 import ColumnBoolean from '@/components/common/tableColumn/ColumnBoolean'
 import ColumnRole from '@/components/common/tableColumn/ColumnRole'
+import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
+import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
+import ColumnCount from '@/components/common/tableColumn/ColumnCount'
 
 export default {
   components: {
@@ -11,5 +14,8 @@ export default {
     ColumnUser,
     ColumnBoolean,
     ColumnRole,
+    ColumnProgress,
+    ColumnStatus,
+    ColumnCount,
   },
 }

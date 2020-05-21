@@ -1,5 +1,5 @@
 <template>
-  <div id="tasks">
+  <div id="tasks" class="task">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -29,16 +29,17 @@
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
           <el-button @click="showAll">
-            {{ $t('contents.allContents.all') }}
+            {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
+            {{ $t('task.list.myTasks') }}
           </el-button>
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
+            @change="filterChanged"
           />
         </el-col>
       </el-row>
@@ -46,13 +47,14 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>{{ $t('task.list.allTasksList') }}</h3>
           </div>
           <el-table
             class="clickable"
             ref="table"
             :data="taskList"
             v-loading="loading"
+            @row-click="moveToTaskDetail"
           >
             <column-default
               :label="$t('task.list.column.id')"
@@ -64,6 +66,48 @@
               prop="name"
               sortable="custom"
             />
+            <column-count
+              :label="$t('task.list.column.endedSubTasks')"
+              prop="doneCount"
+              maxProp="subTaskTotal"
+              :width="120"
+            />
+            <column-date
+              :label="$t('task.list.column.schedule')"
+              type="time"
+              prop="startDate"
+              prop2="endDate"
+              :width="250"
+            />
+            <column-progress
+              :label="$t('task.list.column.progressRate')"
+              prop="progressRate"
+              :width="150"
+            />
+            <column-status
+              :label="$t('task.list.column.status')"
+              prop="conditions"
+              :statusList="taskConditions"
+              :width="100"
+            />
+            <column-date
+              :label="$t('task.list.column.reportedDate')"
+              type="time"
+              prop="reportedDate"
+              :width="130"
+            />
+            <column-boolean
+              :label="$t('task.list.column.issue')"
+              prop="issuesTotal"
+              :trueText="$t('task.list.hasIssue.yes')"
+              :falseText="$t('task.list.hasIssue.no')"
+              :width="80"
+            />
+            <column-default
+              :label="$t('task.list.column.endStatus')"
+              prop="state"
+              :width="100"
+            />
           </el-table>
         </el-card>
       </el-row>
@@ -73,7 +117,11 @@
 </template>
 
 <script>
-import { filter as taskFilter, tabs } from '@/models/task/Task'
+import {
+  conditions as taskConditions,
+  filter as taskFilter,
+  tabs,
+} from '@/models/task/Task'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import taskService from '@/services/task'
@@ -81,11 +129,9 @@ import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  async asyncData({ store }) {
+  async asyncData() {
     const promise = {
-      tasks: taskService.searchTasks(
-        store.getters['workspace/activeWorkspace'].uuid,
-      ),
+      tasks: taskService.searchTasks(),
     }
     return {
       taskList: (await promise.tasks).list,
@@ -96,58 +142,45 @@ export default {
     return {
       tabs,
       activeTab: 'allTasks',
-      taskFilter,
+      taskConditions,
+      taskFilter: { ...taskFilter },
       taskSearch: '',
       taskPage: 1,
       taskTotal: 0,
       loading: false,
     }
   },
+  watch: {
+    activeTab(tabName) {
+      const enableFilter = tabs.find(tab => tab.name === tabName).filter
+      this.taskFilter.value = tabName === 'allTasks' ? ['ALL'] : enableFilter
+      this.taskFilter.options = taskFilter.options.map(option => ({
+        ...option,
+        disabled: !enableFilter.includes(option.value),
+      }))
+      this.emitChangedSearchParams()
+    },
+  },
   methods: {
+    changedSearchParams(searchParams) {
+      this.searchTasks(searchParams)
+    },
     async searchTasks() {
-      const { list, total } = await taskService.searchTasks(
-        this.$store.getters['workspace/activeWorkspace'].uuid,
-        this.searchParams,
-      )
+      const { list, total } = await taskService.searchTasks(this.searchParams)
       this.taskList = list
       this.taskTotal = total
     },
+    filterChanged(filter) {
+      if (!filter.length) this.activeTab = 'allTasks'
+    },
     showAll() {},
     showMine() {},
+    moveToTaskDetail({ id }) {
+      this.$router.push(`/tasks/${id}`)
+    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, this.searchTasks)
   },
 }
 </script>
-
-<style lang="scss">
-#tasks {
-  .title {
-    position: relative;
-    .el-button {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-    }
-  }
-  .searchbar .left > .el-button:nth-child(2) {
-    margin: 0 20px 0 4px;
-  }
-  .tab-wrapper {
-    margin-bottom: 20px;
-
-    .searchbar__keyword {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      height: 34px;
-      margin: auto 0;
-    }
-  }
-  .btn-wrapper {
-    margin-bottom: 16px;
-  }
-}
-</style>

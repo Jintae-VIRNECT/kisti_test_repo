@@ -41,27 +41,31 @@
             :placeholder="$t('members.add.emailPlaceholder')"
           />
         </el-form-item>
-        <el-form-item class="horizon">
-          <template slot="label">
-            <span>{{ $t('members.setting.role') }}</span>
-            <el-tooltip
-              :content="$t('members.setting.roleDesc')"
-              placement="bottom-start"
-            >
-              <img src="~assets/images/icon/ic-error.svg" />
-            </el-tooltip>
-          </template>
-          <el-select v-model="form.role">
-            <el-option
-              class="column-role"
-              v-for="role in roles"
-              :key="role.value"
-              :value="role.value"
-            >
-              <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-            </el-option>
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item class="horizon">
+              <template slot="label">
+                <span>{{ $t('members.setting.role') }}</span>
+                <el-tooltip
+                  :content="$t('members.setting.roleDesc')"
+                  placement="bottom-start"
+                >
+                  <img src="~assets/images/icon/ic-error.svg" />
+                </el-tooltip>
+              </template>
+              <el-select v-model="form.role">
+                <el-option
+                  class="column-role"
+                  v-for="role in roles"
+                  :key="role.value"
+                  :value="role.value"
+                >
+                  <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <label>
           <span>{{ $t('members.setting.givePlans') }}</span>
           <el-tooltip

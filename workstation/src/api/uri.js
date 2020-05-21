@@ -19,8 +19,12 @@ module.exports = {
   WORKSPACE_START: ['POST', '/workspaces'],
   // 워크스페이스 프로필 설정
   WORKSPACE_EDIT: ['PUT', '/workspaces'],
+  // 워크스페이스 프로필 설정
+  WORKSPACE_LEAVE: ['DELETE', '/workspaces/{workspaceId}/exit'],
   // 워크스페이스 멤버 검색
   MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
+  // 워크스페이스 멤버 전체 리스트
+  MEMBER_LIST_ALL: ['GET', '/workspaces/{workspaceId}/members/simple'],
   // 워크스페이스 사용자 - 멤버 권한 설정
   MEMBER_ROLE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
   // 워크스페이스 사용자 - 멤버 내보내기
@@ -47,42 +51,42 @@ module.exports = {
   // 컨텐츠 속성 트리 조회
   CONTENT_PROPERTIES: ['GET', '/contents/properties/metadata/{contentUUID}'],
   /**
-   * Process
+   * Task
    */
-  // 공정 통계 조회
-  PROCESS_STATISTICS: ['GET', '/processes/statistics'],
-  // 전체 공정 진행률 조회
-  PROCESS_TOTAL_RATE: ['GET', '/processes/totalRate'],
-  // 전체 공정 목록 조회
-  PROCESS_LIST: ['GET', '/processes'],
-  // 공정상세조회
-  PROCESS_INFO: ['GET', '/processes/{processId}'],
-  // 공정편집
-  PROCESS_UPDATE: ['POST', '/processes/{processId}'],
-  // 공정삭제
-  PROCESS_DELETE: ['DELETE', '/processes/{processId}'],
-  // 공정마감
-  PROCESS_CLOSE: ['PUT', '/processes/{processId}/closed'],
-  // 세부공정목록조회
-  SUB_PROCESS_LIST: ['GET', '/processes/{processId}/subProcesses'],
+  // 작업 통계 조회
+  TASK_STATISTICS: ['GET', '/tasks/statistics'],
+  // 전체 작업 진행률 조회
+  TASK_TOTAL_RATE: ['GET', '/tasks/totalRate'],
+  // 전체 작업 목록 조회
+  TASK_LIST: ['GET', '/tasks'],
+  // 작업상세조회
+  TASK_INFO: ['GET', '/tasks/{taskId}'],
+  // 작업편집
+  TASK_UPDATE: ['POST', '/tasks/{taskId}'],
+  // 작업삭제
+  TASK_DELETE: ['DELETE', '/tasks/{taskId}'],
+  // 작업마감
+  TASK_CLOSE: ['PUT', '/tasks/{taskId}/closed'],
+  // 하위작업목록조회
+  SUB_TASK_LIST: ['GET', '/tasks/{taskId}/subTasks'],
   // 이슈 목록을 조회
-  ISSUE_LIST: ['GET', '/processes/issues'],
+  ISSUE_LIST: ['GET', '/tasks/issues'],
   // 이슈상세조회
-  ISSUE_INFO: ['GET', '/processes/issue/{issueId}'],
-  // 공정생성
-  PROCESS_CREATE: ['POST', '/processes/process'],
+  ISSUE_INFO: ['GET', '/tasks/issue/{issueId}'],
+  // 작업생성
+  TASK_CREATE: ['POST', '/tasks/task'],
   // 리포트 목록 조회
-  REPORT_LIST: ['GET', '/processes/reports'],
+  REPORT_LIST: ['GET', '/tasks/reports'],
   // 리포트상세조회
-  REPORT_INFO: ['GET', '/processes/report/{reportId}'],
-  // 스마트툴 작업 목록 조회
-  SMART_TOOL_LIST: ['GET', '/processes/smartToolJobs'],
-  // 워크스페이스의 전체 세부공정목록조회
-  SUB_PROCESS_ALL: ['GET', '/processes/subProcesses'],
-  // 세부공정 상세조회
-  SUB_PROCESS_INFO: ['GET', '/processes/subProcesses/{subProcessId}'],
-  // 세부공정편집
-  SUB_PROCESS_UPDATE: ['POST', '/processes/subProcesses/{subProcessId}'],
-  // 작업목록조회
-  JOBS_LIST: ['GET', '/processes/subProcesses/{subProcessId}/jobs'],
+  REPORT_INFO: ['GET', '/tasks/report/{reportId}'],
+  // 스마트툴 단계 목록 조회
+  SMART_TOOL_LIST: ['GET', '/tasks/smartToolSteps'],
+  // 워크스페이스의 전체 하위작업목록조회
+  SUB_TASK_ALL: ['GET', '/tasks/subTasks'],
+  // 하위작업 상세조회
+  SUB_TASK_INFO: ['GET', '/tasks/subTask/{subTaskId}'],
+  // 하위작업편집
+  SUB_TASK_UPDATE: ['POST', '/tasks/subTasks/{subTaskId}'],
+  // 단계목록조회
+  STEPS_LIST: ['GET', '/tasks/subTasks/{subTaskId}/steps'],
 }

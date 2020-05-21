@@ -1,4 +1,4 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 import Job from '@/models/job/Job'
 import Report from '@/models/job/Report'
 import SmartTool from '@/models/job/SmartTool'

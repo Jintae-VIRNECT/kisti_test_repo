@@ -1,17 +1,18 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
+import { store } from '@/plugins/context'
 
 // model
 import Workspace from '@/models/workspace/Workspace'
 import Member from '@/models/workspace/Member'
 
 function myWorkspacesGetter() {
-  return $nuxt.$store.getters['workspace/myWorkspaces']
+  return store.getters['workspace/myWorkspaces']
 }
 function activeWorkspaceGetter() {
-  return $nuxt.$store.getters['workspace/activeWorkspace']
+  return store.getters['workspace/activeWorkspace']
 }
 function myProfileGetter() {
-  return $nuxt.$store.getters['auth/myProfile']
+  return store.getters['auth/myProfile']
 }
 
 export default {
@@ -21,7 +22,7 @@ export default {
    * @param {function} func
    */
   watchActiveWorkspace(that, func) {
-    const watch = $nuxt.$store.watch(activeWorkspaceGetter, func)
+    const watch = store.watch(activeWorkspaceGetter, func)
     that.$on('hook:beforeDestroy', watch)
   },
   /**
@@ -74,6 +75,17 @@ export default {
     }
   },
   /**
+   * 멤버 전체 리스트
+   */
+  async allMembers() {
+    const { memberInfoList } = await api('MEMBER_LIST_ALL', {
+      route: {
+        workspaceId: activeWorkspaceGetter().uuid,
+      },
+    })
+    return memberInfoList.map(member => new Member(member))
+  },
+  /**
    * 워크스페이스 시작
    * @param {form} form
    */
@@ -109,11 +121,23 @@ export default {
     }
     const data = await api('WORKSPACE_EDIT', options)
     // 변경된 내용 적용
-    await $nuxt.$store.dispatch(
-      'workspace/getMyWorkspaces',
-      myProfileGetter().uuid,
-    )
-    $nuxt.$store.commit('workspace/SET_ACTIVE_WORKSPACE', data.uuid)
+    await store.dispatch('workspace/getMyWorkspaces', myProfileGetter().uuid)
+    store.commit('workspace/SET_ACTIVE_WORKSPACE', data.uuid)
+  },
+  /**
+   * 워크스페이스 나가기
+   * @param {string} uuid
+   */
+  async workspaceLeave(uuid) {
+    const formData = new FormData()
+    formData.append('kickedUserId', uuid)
+    formData.append('userId', myProfileGetter().uuid)
+    formData.append('workspaceId ', activeWorkspaceGetter().uuid)
+
+    const data = await api('WORKSPACE_LEAVE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
   },
   /**
    * 멤버 권한 변경

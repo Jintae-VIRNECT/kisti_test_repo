@@ -15,7 +15,7 @@
       <el-row class="searchbar">
         <el-col class="left">
           <el-button @click="showAll">
-            {{ $t('contents.allContents.all') }}
+            {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
             {{ $t('contents.allContents.myContents') }}
@@ -95,12 +95,14 @@
     />
     <set-task-manage
       :contentInfo="selectedContentInfo"
+      :properties="selectedContentProperties"
       :visible.sync="showNewTaskManage"
       @next="taskManageEnded"
     />
     <set-task-target
-      :contentInfo="selectedContentInfo"
+      :form="registerTaskForm"
       :visible.sync="showNewTaskTarget"
+      @prev="canceledManageTarget"
     />
   </div>
 </template>
@@ -117,12 +119,14 @@ import {
 
 import SetTaskInfo from '@/components/task/SetTaskInfo'
 import SetTaskManage from '@/components/task/SetTaskManage'
+import SetTaskTarget from '@/components/task/SetTaskTarget'
 
 export default {
   mixins: [searchMixin, columnsMixin],
   components: {
     SetTaskInfo,
     SetTaskManage,
+    SetTaskTarget,
   },
   data() {
     return {
@@ -137,6 +141,8 @@ export default {
       // 생성
       selectedContentId: null,
       selectedContentInfo: null,
+      selectedContentProperties: null,
+      registerTaskForm: null,
       showNewTaskInfo: false,
       showNewTaskManage: false,
       showNewTaskTarget: false,
@@ -165,12 +171,20 @@ export default {
       this.emitChangedSearchParams()
     },
     // 생성
-    taskInfoEnded(contentInfo) {
+    taskInfoEnded(contentInfo, properties) {
       this.selectedContentInfo = contentInfo
+      this.selectedContentProperties = properties
       this.showNewTaskManage = true
+      setTimeout(() => (this.showNewTaskInfo = false), 100)
     },
-    taskManageEnded() {
+    taskManageEnded(form) {
+      this.registerTaskForm = form
       this.showNewTaskTarget = true
+      setTimeout(() => (this.showNewTaskManage = false), 100)
+    },
+    canceledManageTarget() {
+      this.showNewTaskManage = true
+      setTimeout(() => (this.showNewTaskTarget = false), 100)
     },
   },
   beforeMount() {

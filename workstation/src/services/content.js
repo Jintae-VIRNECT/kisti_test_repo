@@ -1,4 +1,5 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
+import { store } from '@/plugins/context'
 
 // model
 import Content from '@/models/content/Content'
@@ -24,8 +25,8 @@ export default {
       delete params.filter
     }
 
-    const userUUID = $nuxt.$store.getters['auth/myProfile'].uuid
-    const workspaceUUID = $nuxt.$store.getters['workspace/activeWorkspace'].uuid
+    const userUUID = store.getters['auth/myProfile'].uuid
+    const workspaceUUID = store.getters['workspace/activeWorkspace'].uuid
     let data = null
     // 내 컨텐츠
     if (params.mine) {
@@ -43,7 +44,7 @@ export default {
     else {
       data = await api('CONTENTS_LIST', {
         params: {
-          workspaceUUID: $nuxt.$store.getters['workspace/activeWorkspace'].uuid,
+          workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
           size: 10,
           ...params,
         },
@@ -99,8 +100,8 @@ export default {
   async deleteContent(contentUUIDs) {
     return await api('CONTENT_DELETE', {
       params: {
-        contentUUID: contentUUIDs,
-        workerUUID: $nuxt.$store.getters['auth/myProfile'].uuid,
+        contentUUIDs,
+        workerUUID: store.getters['auth/myProfile'].uuid,
       },
     })
   },
@@ -114,7 +115,7 @@ export default {
       route: { contentUUID },
       params: {
         contentUUID,
-        userUUID: $nuxt.$store.getters['auth/myProfile'].uuid,
+        userUUID: store.getters['auth/myProfile'].uuid,
         ...form,
       },
     })

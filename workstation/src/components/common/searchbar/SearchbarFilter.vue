@@ -12,6 +12,7 @@
         :key="option.value"
         :value="option.value"
         :label="$t(option.label)"
+        :disabled="option.disabled"
       />
     </el-select>
   </div>

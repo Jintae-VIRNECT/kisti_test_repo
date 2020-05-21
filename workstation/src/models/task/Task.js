@@ -21,6 +21,7 @@ export default class Task extends Model {
     this.endDate = json.endDate
     this.createdDate = json.createdDate
     this.updatedDate = json.updatedDate
+    this.reportedDate = json.reportedDate
     this.subTaskAssign = json.subTaskAssign
   }
 }
@@ -29,18 +30,26 @@ export default class Task extends Model {
  * 작업 상태
  */
 export const conditions = [
-  { value: 'WAIT', label: 'conditions.wait', color: 'gray' },
+  { value: 'WAIT', label: 'status.conditions.wait', color: 'gray' },
   {
     value: 'UNPROGRESSING',
-    label: 'conditions.unprogressing',
+    label: 'status.conditions.unprogressing',
     color: 'silver',
   },
-  { value: 'PROGRESSING', label: 'conditions.progressing', color: 'blue' },
-  { value: 'INCOMPLETED', label: 'conditions.incompleted', color: 'orange' },
-  { value: 'COMPLETED', label: 'conditions.complted', color: 'green' },
-  { value: 'FAILED', label: 'conditions.failed', color: 'dark-gray' },
-  { value: 'SUCCESS', label: 'conditions.success', color: 'dark-blue' },
-  { value: 'FAULT', label: 'conditions.fault', color: 'dark-red' },
+  {
+    value: 'PROGRESSING',
+    label: 'status.conditions.progressing',
+    color: 'blue',
+  },
+  {
+    value: 'INCOMPLETED',
+    label: 'status.conditions.incompleted',
+    color: 'orange',
+  },
+  { value: 'COMPLETED', label: 'status.conditions.complted', color: 'green' },
+  { value: 'FAILED', label: 'status.conditions.failed', color: 'dark-gray' },
+  { value: 'SUCCESS', label: 'status.conditions.success', color: 'dark-blue' },
+  { value: 'FAULT', label: 'status.conditions.fault', color: 'dark-red' },
 ]
 
 /**
@@ -58,17 +67,21 @@ export const tabs = [
   {
     name: 'allTasks',
     label: 'task.list.allTasks',
+    filter: filter.options.map(option => option.value),
   },
   {
     name: 'waitTasks',
     label: 'task.list.waitTasks',
+    filter: ['WAIT'],
   },
   {
     name: 'startedTasks',
     label: 'task.list.startedTasks',
+    filter: ['UNPROGRESSING', 'PROGRESSING', 'INCOMPLETED', 'COMPLETED'],
   },
   {
     name: 'endTasks',
     label: 'task.list.endTasks',
+    filter: ['FAILED', 'SUCCESS', 'FAULT'],
   },
 ]

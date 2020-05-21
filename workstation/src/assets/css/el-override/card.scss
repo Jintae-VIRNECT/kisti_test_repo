@@ -40,6 +40,9 @@
 .el-card--table .el-card__body {
   padding: 0;
 
+  .el-table .el-table__row {
+    height: 64px;
+  }
   .el-table.clickable .el-table__row {
     cursor: pointer;
   }
@@ -65,7 +68,6 @@
     font-size: 12px;
   }
   .el-table td {
-    padding: 17px 0;
     color: $font-color-content;
   }
   th:first-child,
@@ -102,5 +104,14 @@
   }
   .el-table .descending .sort-caret.descending {
     border-top-color: $color-primary;
+  }
+}
+// 카드 - 정보 테이블
+.el-card--table--info {
+  margin-bottom: 40px;
+
+  .el-table th.is-leaf {
+    padding-bottom: 0;
+    border-bottom: none;
   }
 }

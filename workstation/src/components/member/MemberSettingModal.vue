@@ -30,27 +30,31 @@
         :model="form"
         @submit.native.prevent="submit"
       >
-        <el-form-item class="horizon">
-          <template slot="label">
-            <span>{{ $t('members.setting.role') }}</span>
-            <el-tooltip
-              :content="$t('members.setting.roleDesc')"
-              placement="bottom-start"
-            >
-              <img src="~assets/images/icon/ic-error.svg" />
-            </el-tooltip>
-          </template>
-          <el-select v-model="form.role" :disabled="form.role === 'MASTER'">
-            <el-option
-              class="column-role"
-              v-for="role in roles"
-              :key="role.value"
-              :value="role.value"
-            >
-              <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-            </el-option>
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item class="horizon">
+              <template slot="label">
+                <span>{{ $t('members.setting.role') }}</span>
+                <el-tooltip
+                  :content="$t('members.setting.roleDesc')"
+                  placement="bottom-start"
+                >
+                  <img src="~assets/images/icon/ic-error.svg" />
+                </el-tooltip>
+              </template>
+              <el-select v-model="form.role" :disabled="form.role === 'MASTER'">
+                <el-option
+                  class="column-role"
+                  v-for="role in roles"
+                  :key="role.value"
+                  :value="role.value"
+                >
+                  <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <dt>
           <span>{{ $t('members.setting.givePlans') }}</span>
           <el-tooltip

@@ -86,6 +86,7 @@
                     >
                       <el-input
                         v-model="form.name"
+                        :disabled="activeWorkspace.role !== 'MASTER'"
                         :placeholder="
                           $t('workspace.setting.namePlaceholder', {
                             nickname: myProfile.nickname,
@@ -93,7 +94,9 @@
                         "
                         :maxlength="30"
                       />
-                      <span>{{ $t('workspace.setting.nameComment') }}</span>
+                      <span v-if="activeWorkspace.role === 'MASTER'">{{
+                        $t('workspace.setting.nameComment')
+                      }}</span>
                     </el-form-item>
                     <el-form-item
                       class="horizon"
@@ -102,14 +105,24 @@
                       <el-input
                         type="textarea"
                         v-model="form.description"
+                        :disabled="activeWorkspace.role !== 'MASTER'"
                         :placeholder="$t('workspace.setting.descPlaceholder')"
                         :maxlength="40"
                         :show-word-limit="true"
                       />
-                      <span>{{ $t('workspace.setting.descComment') }}</span>
+                      <span v-if="activeWorkspace.role === 'MASTER'">{{
+                        $t('workspace.setting.descComment')
+                      }}</span>
                     </el-form-item>
-                    <el-button type="primary" @click="submit">
+                    <el-button
+                      type="primary"
+                      @click="submit"
+                      v-if="activeWorkspace.role === 'MASTER'"
+                    >
                       {{ $t('workspace.setting.update') }}
+                    </el-button>
+                    <el-button @click="showAddModal = true" v-else>
+                      {{ $t('workspace.setting.leave') }}
                     </el-button>
                   </el-form>
                 </el-col>
@@ -119,12 +132,18 @@
         </el-col>
       </el-row>
     </div>
+    <workspace-leave-modal
+      :visible.sync="showAddModal"
+      :activeWorkspace="activeWorkspace"
+      :myProfile="myProfile"
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
+import WorkspaceLeaveModal from '@/components/workspace/WorkspaceLeaveModal'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
@@ -132,6 +151,7 @@ export default {
   mixins: [filters],
   components: {
     WorkspaceInfo,
+    WorkspaceLeaveModal,
   },
   computed: {
     ...mapGetters({
@@ -147,6 +167,7 @@ export default {
         name: '',
         description: '',
       },
+      showAddModal: false,
     }
   },
   methods: {
@@ -171,12 +192,13 @@ export default {
       try {
         await workspaceService.updateWorkspaceInfo(form)
         this.$message.success({
-          message: 'success',
+          message: this.$t('workspace.setting.message.updateSuccess'),
           showClose: true,
         })
       } catch (e) {
+        console.error(e)
         this.$message.error({
-          message: e,
+          message: this.$t('workspace.setting.message.updateFail'),
           showClose: true,
         })
       }
