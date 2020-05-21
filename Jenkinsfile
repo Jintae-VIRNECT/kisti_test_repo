@@ -29,8 +29,11 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+            NODE_ENV='develop'
+          }
           steps {
-            sh 'NODE_ENV=develop yarn workspace workstation build'
+            sh 'yarn workspace workstation build'
             sh 'docker build -t pf-webworkstation .'
           }
         }
@@ -39,9 +42,12 @@ pipeline {
           when {
             branch 'staging'
           }
+          environment {
+            NODE_ENV='staging'
+          }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'NODE_ENV=staging yarn workspace workstation build'
+            sh 'yarn workspace workstation build'
             sh 'docker build -t pf-webworkstation:${GIT_TAG} .'
           }
         }
@@ -50,9 +56,12 @@ pipeline {
           when {
             branch 'master'
           }
+          environment {
+            NODE_ENV='production'
+          }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'NODE_ENV=production yarn workspace workstation build'
+            sh 'yarn workspace workstation build'
             sh 'docker build -t pf-webworkstation:${GIT_TAG} .'
           }
         }
