@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    class="contents-info-modal"
+    id="contents-info-modal"
+    class="info-modal"
     :visible.sync="showMe"
     :title="$t('contents.info.title')"
     width="860px"
@@ -96,9 +97,10 @@
 <script>
 import contentService from '@/services/content'
 import { sharedStatus } from '@/models/content/Content'
-import { filters } from '@/plugins/dayjs'
+import filters from '@/mixins/filters'
 
 export default {
+  mixins: [filters],
   async asyncData({ params, store }) {
     const promise = {
       content: contentService.getContentInfo(params.contentId),
@@ -130,16 +132,6 @@ export default {
       return this.form.shared !== this.content.shared
     },
   },
-  filters: {
-    ...filters,
-    toMegaBytes(bytes) {
-      const kb = bytes / 1024
-      const mb = kb / 1024
-      return mb < 1
-        ? Math.round(kb * 100) / 100 + 'kB'
-        : Math.round(mb * 100) / 100 + 'MB'
-    },
-  },
   methods: {
     close() {
       this.showMe = false
@@ -169,6 +161,7 @@ export default {
           message: this.$t('contents.info.message.deleteSuccess'),
           showClose: true,
         })
+        this.$emit('updated')
         this.$router.replace('/contents')
       } catch (e) {
         this.$message.error({
@@ -185,6 +178,7 @@ export default {
           showClose: true,
         })
         this.content.shared = this.form.shared
+        this.$emit('updated')
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.updateFail'),
@@ -204,103 +198,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .contents-info-modal .el-dialog__body {
+#__nuxt #contents-info-modal .el-dialog__body {
   height: 700px;
-  max-height: 700px;
-  padding-bottom: 28px;
-
-  .el-row {
-    align-items: stretch;
-    height: 100%;
-  }
-  .el-col {
-    position: relative;
-
-    &:first-child {
-      padding-right: 30px;
-    }
-    &:last-child {
-      padding-left: 20px;
-    }
-  }
-  dl.row {
-    display: flex;
-
-    & > div {
-      min-width: 110px;
-    }
-  }
-  .el-divider {
-    margin: 16px 0;
-  }
-  .buttons-wrapper {
-    position: absolute;
-    bottom: 0;
-    width: calc(100% - 30px);
-
-    .el-button {
-      width: 92px;
-    }
-    .el-button:last-child {
-      float: right;
-    }
-  }
-
-  h4 {
-    margin-bottom: 16px;
-    color: #445168;
-  }
-  dt {
-    margin-bottom: 4px;
-    color: $font-color-desc;
-    font-size: 12px;
-  }
-  dd {
-    margin-bottom: 20px;
-    white-space: nowrap;
-
-    & > img {
-      float: right;
-      margin-left: 12px;
-      cursor: pointer;
-    }
-    .el-select {
-      width: 100%;
-      margin-top: 5px;
-    }
-    .el-input__inner {
-      font-size: 14px;
-      line-height: 22px;
-    }
-  }
-
-  // 콘텐츠 구성 정보
-  .properties {
-    height: calc(100% - 38px);
-    overflow: scroll;
-    border: solid 1px rgba(226, 231, 237, 0.8);
-    border-radius: 3px;
-
-    .el-tree-node__content {
-      height: 36px;
-      font-weight: 500;
-    }
-    [role='tree'] > [role='treeitem'] > :first-child {
-      height: 40px;
-    }
-    .el-tree-node__content > .el-tree-node__expand-icon:not(.is-leaf) {
-      margin-left: 8px;
-      color: $font-color-content;
-      font-size: 1em;
-    }
-    .el-tree-node__content:hover,
-    .el-tree-node:focus > .el-tree-node__content {
-      background-color: rgba(245, 247, 250, 0.75);
-    }
-  }
-}
-
-body .el-popper.select-shared .el-select-dropdown__item {
-  font-size: 14px;
 }
 </style>

@@ -24,9 +24,11 @@ export default async function({ req, store, redirect }) {
         const lastWorkspace = req.headers.cookie.match(
           /activeWorkspace=([0-9a-f]+)/,
         )
-        const activeWorkspace = lastWorkspace
-          ? lastWorkspace[1]
-          : myWorkspaces[0].uuid
+        const activeWorkspace =
+          lastWorkspace &&
+          myWorkspaces.find(workspace => workspace.uuid === lastWorkspace[1])
+            ? lastWorkspace[1]
+            : myWorkspaces[0].uuid
         store.commit('workspace/SET_ACTIVE_WORKSPACE', activeWorkspace)
       } else {
         // 워크스페이스가 없는 경우

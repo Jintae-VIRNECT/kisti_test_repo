@@ -92,6 +92,7 @@
                             nickname: myProfile.nickname,
                           })
                         "
+                        :maxlength="30"
                       />
                       <span v-if="activeWorkspace.role === 'MASTER'">{{
                         $t('workspace.setting.nameComment')
@@ -106,6 +107,8 @@
                         v-model="form.description"
                         :disabled="activeWorkspace.role !== 'MASTER'"
                         :placeholder="$t('workspace.setting.descPlaceholder')"
+                        :maxlength="40"
+                        :show-word-limit="true"
                       />
                       <span v-if="activeWorkspace.role === 'MASTER'">{{
                         $t('workspace.setting.descComment')
@@ -140,16 +143,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import { filters } from '@/plugins/dayjs'
+import WorkspaceLeaveModal from '@/components/workspace/WorkspaceLeaveModal'
+import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
 export default {
+  mixins: [filters],
   components: {
     WorkspaceInfo,
     WorkspaceLeaveModal,
-  },
-  filters: {
-    ...filters,
   },
   computed: {
     ...mapGetters({
@@ -252,6 +254,9 @@ export default {
   }
   .el-textarea__inner {
     height: 80px;
+  }
+  .el-textarea .el-input__count {
+    background: none;
   }
 }
 </style>

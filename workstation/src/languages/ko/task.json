@@ -1,0 +1,117 @@
+
+{
+  "list": {
+    "title": "워크스페이스 작업 목록",
+    "newTask": "신규 작업 등록",
+    "allTasksList": "전체 작업 목록",
+    "allTasks": "모든 작업",
+    "waitTasks": "대기 중인 작업",
+    "startedTasks": "시작된 작업",
+    "endTasks": "마감된 작업",
+    "myTasks": "내 작업",
+    "column": {
+      "id": "작업 ID",
+      "name": "작업 이름",
+      "endedSubTasks": "하위 작업 완료",
+      "schedule": "작업 일정",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "작업 이슈",
+      "endStatus": "종료 상태"
+    },
+    "hasIssue": {
+      "yes": "있음",
+      "no": "없음"
+    }
+  },
+  "detail": {
+    "title": "선택 작업 정보",
+    "subTaskList": "하위 작업 목록",
+    "allSubTasks": "모든 하위 작업",
+    "waitSubTasks": "대기 중인 하위 작업",
+    "startedSubTasks": "시작된 하위 작업",
+    "endSubTasks": "마감된 하위 작업",
+    "subTaskCount": "등록된 하위 작업 수",
+    "mySubTasks": "내 하위 작업",
+    "subTaskColumn": {
+      "no": "순번",
+      "id": "하위 작업 ID",
+      "name": "하위 작업 이름",
+      "endedSteps": "단계 완료",
+      "schedule": "하위 작업 일정",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "작업 이슈",
+      "worker": "담당자",
+      "endStatus": "종료 상태"
+    }
+  },
+  "subTaskDetail": {
+    "title": "선택 하위 작업 정보",
+    "stepsList": "단계 목록",
+    "allSteps": "모든 단계",
+    "waitSteps": "대기 중인 단계",
+    "startedSteps": "시작된 단계",
+    "endSteps": "마감된 단계",
+    "StepsCount": "등록된 단계 수",
+    "mySteps": "내 단계",
+    "stepsColumn": {
+      "no": "순번",
+      "id": "단계 ID",
+      "name": "단계 이름",
+      "endedActions": "행동 완료",
+      "progressRate": "진행률",
+      "status": "진행 상태",
+      "reportedDate": "최종 보고 시간",
+      "issue": "이슈 정보",
+      "paper": "페이퍼 정보"
+    },
+    "showIssue": "이슈 보기",
+    "showPaper": "페이퍼 보기"
+  },
+  "new": {
+    "title": "신규 작업 등록",
+    "contentsInfo": "신규 작업 등록 콘텐츠 정보",
+    "sceneGroupInfo": "작업 구성 정보",
+    "moveContentInfo": "콘텐츠 정보 바로가기"
+  },
+  "manage": {
+    "registerNewTaskInfo": "신규 작업 정보 등록",
+    "registerTaskInfo": "작업 정보 등록",
+    "taskName": "작업 이름",
+    "taskSchedule": "작업 일정",
+    "taskWorker": "작업 담당자",
+    "taskWorkerPlaceholder": "담당자를 선택해 주세요",
+    "taskWorkerDesc": "작업 담당자 설정 시 작업 내 전체 하위 작업 담당자로 한번에 지정됩니다.",
+    "taskPosition": "작업 위치",
+    "taskPositionPlaceholder": "작업 장소를 입력해 주세요",
+    "taskPositionDesc": "담당자에게 작업을 진행할 장소를 안내합니다",
+    "subTaskCount": "하위 작업 목록 수",
+    "subTaskSetting": "하위 작업 {n} 설정",
+    "subTaskName": "하위 작업 {n} 이름",
+    "subTaskSchedule": "하위 작업 {n} 일정",
+    "subTaskWorker": "하위 작업 {n} 담당자",
+    "subTaskWorkerPlaceholder": "하위 작업 담당자를 선택해 주세요",
+    "scheduleStart": "시작일",
+    "scheduleEnd": "마감일",
+    "subTaskWorkerSelected": "하위 작업 별 담당자가 지정되었습니다"
+  },
+  "target": {
+    "targetSetting": "타겟 설정",
+    "contentTarget": "콘텐츠 타겟",
+    "taskTarget": "작업 타겟",
+    "duplicate": "콘텐츠를 작업으로 복제하여 등록",
+    "duplicateDesc": "콘텐츠를 작업 관리 항목으로 복제합니다. <br>복제된 콘텐츠에 새로운 작업 타겟을 발급하여 작업을 관리합니다.",
+    "transform": "콘텐츠를 작업으로 전환하여 등록",
+    "transformDesc": "기존 콘텐츠 타겟을 작업 타겟으로 사용합니다. <br>작업으로 전환된 콘텐츠는 작업 관리 항목으로 이동하며 콘텐츠 메뉴에서 관리되지 않습니다.",
+    "register": "작업 등록",
+    "registerComment": "입력하신 정보로 새로운 작업을 등록합니다.",
+    "message": {
+      "registerSuccess": "신규 작업이 등록되었습니다.",
+      "registerFail": "작업 등록에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "registerStroageFail": "스토리지 용량이 부족하여 작업 등록에 실패했습니다. 스토리지 용량을 구매해 주세요."
+    }
+  }
+}
