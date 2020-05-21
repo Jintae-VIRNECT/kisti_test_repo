@@ -40,8 +40,8 @@ pipeline {
                         branch 'staging'
                     }
                     steps {
-                        sh 'NODE_ENV=staging yarn workspace download build'
                         sh 'git checkout ${GIT_TAG}'
+                        sh 'NODE_ENV=staging yarn workspace download build'
                         sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
@@ -51,8 +51,8 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        sh 'NODE_ENV=production yarn workspace download build'
                         sh 'git checkout ${GIT_TAG}'
+                        sh 'NODE_ENV=production yarn workspace download build'
                         sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
@@ -104,7 +104,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-webdownload").push("${GIT_TAG}")
+                                    docker.image("pf-webdownload:${GIT_TAG}").push("${GIT_TAG}")
                                 }
                             }
 
@@ -151,7 +151,7 @@ pipeline {
                         catchError() {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("pf-webdownload").push("${GIT_TAG}")
+                                    docker.image("pf-webdownload:${GIT_TAG}").push("${GIT_TAG}")
                                 }
                             }
 
