@@ -19,6 +19,8 @@ module.exports = {
   WORKSPACE_START: ['POST', '/workspaces'],
   // 워크스페이스 프로필 설정
   WORKSPACE_EDIT: ['PUT', '/workspaces'],
+  // 워크스페이스 프로필 설정
+  WORKSPACE_LEAVE: ['DELETE', '/workspaces/{workspaceId}/members/info'],
   // 워크스페이스 멤버 검색
   MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
   // 워크스페이스 멤버 전체 리스트
