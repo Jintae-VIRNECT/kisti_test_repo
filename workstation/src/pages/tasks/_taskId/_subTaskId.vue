@@ -170,7 +170,10 @@
               :width="90"
             >
               <template slot-scope="scope">
-                <el-button v-if="scope.row.issue">
+                <el-button
+                  v-if="scope.row.issue"
+                  @click="moveToIssue(scope.row.issue.id)"
+                >
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
               </template>
@@ -181,7 +184,10 @@
               :width="130"
             >
               <template slot-scope="scope">
-                <el-button v-if="scope.row.paper">
+                <el-button
+                  v-if="scope.row.paper"
+                  @click="moveToPaper(scope.row.paper.id)"
+                >
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>
               </template>
@@ -191,6 +197,7 @@
       </el-row>
       <searchbar-page ref="page" :value.sync="stepsPage" :total="stepsTotal" />
     </div>
+    <nuxt-child />
   </div>
 </template>
 
@@ -199,20 +206,19 @@ import {
   conditions as taskConditions,
   filter as taskFilter,
 } from '@/models/task/Task'
-import { tabs } from '@/models/step/Step'
+import { tabs } from '@/models/task/Step'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
-import stepService from '@/services/step'
 
 export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ params }) {
     const promise = {
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
-      steps: stepService.searchSteps(params.subTaskId),
+      steps: taskService.searchSteps(params.subTaskId),
     }
     return {
       subTaskInfo: await promise.subTaskDetail,
@@ -247,7 +253,7 @@ export default {
       this.searchSteps(searchParams)
     },
     async searchSteps() {
-      const { list, total } = await stepService.searchSteps(
+      const { list, total } = await taskService.searchSteps(
         this.subTaskInfo.subTaskId,
         this.searchParams,
       )
@@ -259,6 +265,16 @@ export default {
     },
     showAll() {},
     showMine() {},
+    moveToIssue(issueId) {
+      this.$router.replace(
+        `${this.$router.currentRoute.path}/issues/${issueId}`,
+      )
+    },
+    moveToPaper(paperId) {
+      this.$router.replace(
+        `${this.$router.currentRoute.path}/papers/${paperId}`,
+      )
+    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {

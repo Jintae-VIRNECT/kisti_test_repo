@@ -19,9 +19,10 @@
           </el-button>
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
+            v-if="activeTab === 'task'"
             ref="filter"
-            :value.sync="resultsFilter.value"
-            :options="resultsFilter.options"
+            :value.sync="taskFilter.value"
+            :options="taskFilter.options"
           />
         </el-col>
         <el-col class="right">
@@ -40,30 +41,92 @@
             >
             </el-tab-pane>
           </el-tabs>
-          <el-table class="clickable" ref="table"> </el-table>
+          <nuxt-child :data="list" />
         </el-card>
       </el-row>
+      <searchbar-page ref="page" :value.sync="page" :total="total" />
     </div>
   </div>
 </template>
 
 <script>
 import search from '@/mixins/search'
-import { filter as resultsFilter, tabs } from '@/models/result'
+import resultService from '@/services/result'
+import { filter as taskFilter } from '@/models/task/Task'
 
 export default {
   mixins: [search],
   data() {
     return {
-      tabs,
-      activeTab: 'task',
+      activeTab: '',
+      tabs: [
+        {
+          name: 'task',
+          label: 'results.task',
+        },
+        {
+          name: 'paper',
+          label: 'results.paper',
+        },
+        {
+          name: 'issue',
+          label: 'results.issue',
+        },
+      ],
+      taskFilter,
       resultsSearch: '',
-      resultsFilter,
+      list: [],
+      total: 0,
+      page: 1,
     }
   },
+  watch: {
+    activeTab(tab) {
+      if (tab === 'task') {
+        this.$router.replace(`/tasks/results`)
+        this.searchSubTasks()
+      } else if (tab === 'issue') {
+        this.$router.replace(`/tasks/results/issues`)
+        this.searchIssues()
+      } else if (tab === 'paper') {
+        this.$router.replace(`/tasks/results/papers`)
+        this.searchPapers()
+      }
+    },
+  },
   methods: {
+    changedSearchParams(searchParams) {
+      this.searchSubTasks(searchParams)
+    },
+    async searchSubTasks() {
+      const { list, total } = await resultService.searchCurrentSubTasks(
+        this.searchParams,
+      )
+      this.list = list
+      this.total = total
+    },
+    async searchIssues() {
+      const { list, total } = await resultService.searchIssues(
+        this.searchParams,
+      )
+      this.list = list
+      this.total = total
+    },
+    async searchPapers() {
+      const { list, total } = await resultService.searchPapers(
+        this.searchParams,
+      )
+      this.list = list
+      this.total = total
+    },
     showAll() {},
     showMine() {},
+  },
+  beforeMount() {
+    const tab = this.$route.path.match(/[a-z]*?$/)[0]
+    if (tab === 'results') this.activeTab = 'task'
+    else if (tab === 'issues') this.activeTab = 'issue'
+    else if (tab === 'papers') this.activeTab = 'paper'
   },
 }
 </script>

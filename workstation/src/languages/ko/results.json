@@ -1,6 +1,16 @@
 {
   "title": "작업 보고 관리",
   "task": "작업",
+  "issue": "이슈",
+  "issueDetail": {
+    "title": "이슈 정보",
+    "reporter": "보고자",
+    "reportedDate": "작업 이슈 보고 시간",
+    "content": "작업 이슈 내용"
+  },
   "paper": "페이퍼",
-  "issue": "이슈"
+  "paperDetail": {
+    "title": "페이퍼 정보",
+    "item": "항목 {n}."
+  }
 }

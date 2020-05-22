@@ -6,7 +6,7 @@
     :title="$t('contents.info.title')"
     width="860px"
     top="11vh"
-    @close="close"
+    @close="closed"
   >
     <el-row type="flex">
       <el-col :span="9">
@@ -133,7 +133,7 @@ export default {
     },
   },
   methods: {
-    close() {
+    closed() {
       this.showMe = false
       this.$router.push('/contents')
     },
