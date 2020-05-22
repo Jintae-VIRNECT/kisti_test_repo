@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    class="member-kick-modal"
+    class="paper-modal"
     :visible.sync="showMe"
     :title="$t('members.kick.title')"
     width="440px"

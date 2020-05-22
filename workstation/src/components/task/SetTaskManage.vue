@@ -113,18 +113,18 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
 import RegisterNewTask from '@/models/task/RegisterNewTask'
 
 export default {
+  mixins: [modalMixin],
   props: {
-    visible: Boolean,
     contentInfo: Object,
     properties: Array,
   },
   data() {
     return {
-      showMe: false,
       contentName: '',
       mainForm: {
         schedule: [],
@@ -138,24 +138,6 @@ export default {
     }
   },
   watch: {
-    visible(bool) {
-      this.showMe = bool
-    },
-    async showMe(bool) {
-      if (!bool) {
-        this.$emit('update:visible', bool)
-        return false
-      }
-      this.contentName = this.contentInfo.contentName
-      this.subForm = this.properties[0].children.map(sceneGroup => ({
-        id: sceneGroup.id,
-        name: sceneGroup.label,
-        schedule: [],
-        worker: '',
-      }))
-      this.activeSubForms = this.subForm.map(form => form.id)
-      this.workerList = await workspaceService.allMembers()
-    },
     'mainForm.schedule'(date) {
       this.subForm.map(form => (form.schedule = date))
     },
@@ -190,6 +172,17 @@ export default {
     },
   },
   methods: {
+    async opend() {
+      this.contentName = this.contentInfo.contentName
+      this.subForm = this.properties[0].children.map(sceneGroup => ({
+        id: sceneGroup.id,
+        name: sceneGroup.label,
+        schedule: [],
+        worker: '',
+      }))
+      this.activeSubForms = this.subForm.map(form => form.id)
+      this.workerList = await workspaceService.allMembers()
+    },
     next() {
       const form = new RegisterNewTask({
         workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,

@@ -90,31 +90,23 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
 
 export default {
+  mixins: [modalMixin],
   props: {
     data: Object,
-    visible: Boolean,
   },
   data() {
     return {
-      showMe: false,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       form: {
         uuid: this.data.uuid,
         role: this.data.role,
       },
     }
-  },
-  watch: {
-    visible(val) {
-      this.showMe = val
-    },
-    showMe(val) {
-      this.$emit('update:visible', val)
-    },
   },
   methods: {
     async submit() {

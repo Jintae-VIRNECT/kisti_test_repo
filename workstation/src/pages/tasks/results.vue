@@ -1,12 +1,12 @@
 <template>
-  <div id="reports">
+  <div id="results">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item>{{ $t('menu.tasks') }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ $t('reports.title') }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('results.title') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>{{ $t('reports.title') }}</h2>
+        <h2>{{ $t('results.title') }}</h2>
       </div>
       <!-- 검색 영역 -->
       <el-row class="searchbar">
@@ -20,12 +20,12 @@
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"
-            :value.sync="reportFilter.value"
-            :options="reportFilter.options"
+            :value.sync="resultsFilter.value"
+            :options="resultsFilter.options"
           />
         </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="reportsSearch" />
+          <searchbar-keyword ref="keyword" :value.sync="resultsSearch" />
         </el-col>
       </el-row>
       <!-- 테이블 -->
@@ -49,7 +49,7 @@
 
 <script>
 import search from '@/mixins/search'
-import { filter as reportFilter, tabs } from '@/models/Report'
+import { filter as resultsFilter, tabs } from '@/models/result'
 
 export default {
   mixins: [search],
@@ -57,8 +57,8 @@ export default {
     return {
       tabs,
       activeTab: 'task',
-      reportsSearch: '',
-      reportFilter,
+      resultsSearch: '',
+      resultsFilter,
     }
   },
   methods: {
@@ -69,7 +69,7 @@ export default {
 </script>
 
 <style lang="scss">
-#reports {
+#results {
   .el-card__header {
     padding-top: 0;
     padding-bottom: 0;

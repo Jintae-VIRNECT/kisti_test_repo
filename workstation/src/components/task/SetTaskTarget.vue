@@ -60,30 +60,19 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import taskService from '@/services/task'
 
 export default {
+  mixins: [modalMixin],
   props: {
-    visible: Boolean,
     form: Object,
   },
   data() {
     return {
-      showMe: false,
       checkedDuplicate: false,
       checkedTransform: false,
     }
-  },
-  watch: {
-    visible(bool) {
-      this.showMe = bool
-    },
-    async showMe(bool) {
-      if (!bool) {
-        this.$emit('update:visible', bool)
-        return false
-      }
-    },
   },
   methods: {
     checkDuplicate() {

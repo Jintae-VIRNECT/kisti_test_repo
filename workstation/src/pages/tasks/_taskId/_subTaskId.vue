@@ -170,7 +170,7 @@
               :width="90"
             >
               <template slot-scope="scope">
-                <el-button>
+                <el-button v-if="scope.row.issue">
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
               </template>
@@ -181,7 +181,7 @@
               :width="130"
             >
               <template slot-scope="scope">
-                <el-button>
+                <el-button v-if="scope.row.paper">
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>
               </template>
