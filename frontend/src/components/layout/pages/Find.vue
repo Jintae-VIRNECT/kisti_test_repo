@@ -334,7 +334,7 @@ export default {
 	methods: {
 		tabChange(tab) {
 			this.tab = tab
-			this.$router.push({ name: 'findTab', params: { findCategory: tab } })
+			router.push({ name: 'findTab', params: { findCategory: tab } })
 		},
 		async mailAccountFind() {
 			try {

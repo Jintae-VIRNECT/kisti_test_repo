@@ -120,7 +120,14 @@ export default {
 			let res = await auth.init()
 			this.isLogin = res.isLogin
 			if (this.isLogin === true && this.login.autoLogin === true) {
-				location.href = urls.workstation[process.env.TARGET_ENV]
+				let redirectTarget = this.$route.query.continue
+				if (redirectTarget) {
+					location.href = /^https?:/.test(redirectTarget)
+						? redirectTarget
+						: `//${redirectTarget}`
+				} else {
+					location.href = urls.workstation[process.env.TARGET_ENV]
+				}
 			}
 		},
 		emailRemember(email, check) {
@@ -163,6 +170,7 @@ export default {
 					} else {
 						location.href = urls.workstation[process.env.TARGET_ENV]
 					}
+					// location.href = urls.workstation[process.env.TARGET_ENV]
 				} catch (e) {
 					// console.log(e)d
 					if (e.code === 2000) {
