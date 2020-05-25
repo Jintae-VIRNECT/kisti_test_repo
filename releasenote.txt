@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
-추가 개발 내용 없음
+QR로그인센터 푸터 추가
 
 Bug Fixes
-무한 리다이렉트 현상 변경
+헤더 모듈 최신화
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

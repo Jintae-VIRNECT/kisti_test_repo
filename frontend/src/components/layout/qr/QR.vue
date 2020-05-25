@@ -1,9 +1,12 @@
 <template>
 	<section>
-		<TheHeader :showSection="showSection" :subTitle="subTitle" />
+		<TheHeader :showSection="showSection">
+			<template slot="subTitle">QR 로그인 센터</template>
+		</TheHeader>
 		<transition name="app-fade" mode="out-in">
 			<router-view :myInfo="myInfo" />
 		</transition>
+		<TheFooter />
 	</section>
 </template>
 
@@ -11,6 +14,7 @@
 import Auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 // import Auth from 'api/virnectPlatformAuth'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
+import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
 	data() {
 		return {
@@ -19,13 +23,13 @@ export default {
 				profile: false,
 			},
 			auth: Auth,
-			subTitle: 'QR 로그인 센터',
 			myInfo: {},
 			qrImg: null,
 		}
 	},
 	components: {
 		TheHeader,
+		TheFooter,
 	},
 	async mounted() {
 		try {

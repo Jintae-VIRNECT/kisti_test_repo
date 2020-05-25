@@ -20,11 +20,6 @@ export default {
 	components: {
 		TheHeader,
 	},
-	computed: {
-		currentUser() {
-			return this.$store.state.user
-		},
-	},
 }
 </script>
 
