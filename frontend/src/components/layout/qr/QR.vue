@@ -6,7 +6,7 @@
 		<transition name="app-fade" mode="out-in">
 			<router-view :myInfo="myInfo" />
 		</transition>
-		<TheFooter />
+		<!-- <TheFooter /> -->
 	</section>
 </template>
 
