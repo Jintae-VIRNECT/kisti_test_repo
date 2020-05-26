@@ -401,10 +401,10 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="contentUUID", example="16ac0c7e-9e64-409a-b412-7583ca3e3be4")
     })
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> propertyToMetadata(
+    public ResponseEntity<ApiResponse<MetadataInfoResponse>> propertyToMetadata(
             @PathVariable("contentUUID") String contentUUID
     ) {
-        ApiResponse<ContentInfoResponse> response = this.contentService.propertyToMetadata(contentUUID);
+        ApiResponse<MetadataInfoResponse> response = this.contentService.propertyToMetadata(contentUUID);
         return ResponseEntity.ok(response);
     }
 }

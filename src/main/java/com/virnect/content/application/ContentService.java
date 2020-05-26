@@ -873,7 +873,7 @@ public class ContentService {
     }
     
     // property 정보 -> metadata로 변환
-    public ApiResponse<ContentInfoResponse> propertyToMetadata(String contentUUID){
+    public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID){
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
@@ -1041,6 +1041,15 @@ public class ContentService {
 
         this.contentRepository.save(content);
 
-        return getContentInfoResponseApiResponse(content);
+        Gson gson = new Gson();
+
+        // Gson으로 json -> Class로 변환
+        MetadataInfoResponse metaResponse = gson.fromJson(meta, MetadataInfoResponse.class);
+
+        metaResponse.getContents().setUuid(content.getUuid());
+
+        log.debug("contentMeta {}", metaResponse.getContents());
+
+        return new ApiResponse<>(metaResponse);
     }
 }
