@@ -303,14 +303,15 @@ public class TaskService {
      */
     private void addJobToReport(ContentRestDto.Scene scene, Job job, Process newProcess) {
         try {
-            log.debug(">>>>>>>>>>>>>>> scene {}", scene);
-            log.debug(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
+            log.info(">>>>>>>>>>>>>>> scene {}", scene);
+            log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
+            log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
 
             // 널체크 추가..
-            if (!scene.getReportObjects().isEmpty() && scene.getReportObjects() != null) {
+            if (scene.getReportObjects().size() > 0 && scene.getReportObjects() != null) {
                 scene.getReportObjects().forEach(reportObject -> {
                     // Item이 잇다면 (널 체크 추가)
-                    if (!reportObject.getItems().isEmpty() && reportObject.getItems() != null) {
+                    if (reportObject.getItems().size() > 0 && reportObject.getItems() != null) {
                         Report report = new Report();
                         reportObject.getItems().forEach(reportObjectItem -> {
                             Item item = Item.builder()
