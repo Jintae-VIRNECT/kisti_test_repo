@@ -6,7 +6,7 @@
 		<transition name="app-fade" mode="out-in">
 			<router-view :myInfo="myInfo" />
 		</transition>
-		<!-- <TheFooter /> -->
+		<TheFooter />
 	</section>
 </template>
 
@@ -14,7 +14,7 @@
 import Auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 // import Auth from 'api/virnectPlatformAuth'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
-// import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
+import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
 	data() {
 		return {
@@ -29,7 +29,7 @@ export default {
 	},
 	components: {
 		TheHeader,
-		// TheFooter,
+		TheFooter,
 	},
 	async mounted() {
 		console.log(this.$i18n.getLocaleMessage('ko'))
