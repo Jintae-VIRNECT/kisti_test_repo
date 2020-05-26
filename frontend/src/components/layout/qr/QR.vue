@@ -32,17 +32,18 @@ export default {
 		// TheFooter,
 	},
 	async mounted() {
-		try {
-			await Auth.init()
-			if (Auth.myInfo) {
-				this.myInfo = Auth.myInfo
-				this.showSection.login = false
-				this.showSection.profile = true
-			} else throw 'error'
-		} catch (e) {
-			this.showSection.login = true
-			this.showSection.profile = false
-		}
+		console.log(this.$i18n.getLocaleMessage('ko'))
+		// try {
+		// 	await Auth.init()
+		// 	if (Auth.myInfo) {
+		// 		this.myInfo = Auth.myInfo
+		// 		this.showSection.login = false
+		// 		this.showSection.profile = true
+		// 	} else throw 'error'
+		// } catch (e) {
+		// 	this.showSection.login = true
+		// 	this.showSection.profile = false
+		// }
 	},
 }
 </script>
