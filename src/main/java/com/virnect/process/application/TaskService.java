@@ -1,6 +1,5 @@
 package com.virnect.process.application;
 
-import com.virnect.process.api.SearchType;
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
 import com.virnect.process.dao.*;
@@ -27,7 +26,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Project: PF-ProcessManagement
@@ -80,6 +80,8 @@ public class TaskService {
     public ApiResponse<ProcessRegisterResponse> createTheProcess(ProcessRegisterRequest registerNewProcess) {
         // 공정 생성 요청 처리
         log.info("CREATE THE PROCESS requestBody ---> {}", registerNewProcess.toString());
+
+        this.contentRestService.propertyToMetadata(registerNewProcess.getContentUUID());
 
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());

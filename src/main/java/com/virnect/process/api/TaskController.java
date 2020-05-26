@@ -723,7 +723,6 @@ public class TaskController {
         return ResponseEntity.ok(responseMessage);
     }
 
-
     /**
      * 단계목록조회
      *
@@ -741,7 +740,11 @@ public class TaskController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, is_reported)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
     })
     @GetMapping("/subTasks/{subTaskId}/steps")
-    public ResponseEntity<ApiResponse<JobListResponse>> getJobs(@PathVariable("subTaskId") Long subTaskId, @RequestParam(value = "search", required = false) String search, @RequestParam(value = "filter", required = false) List<Conditions> filter, @ApiIgnore PageRequest pageable) {
+    public ResponseEntity<ApiResponse<JobListResponse>> getJobs(
+            @PathVariable("subTaskId") Long subTaskId
+            , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "filter", required = false) List<Conditions> filter
+            , @ApiIgnore PageRequest pageable) {
         if (subTaskId == null) {
             log.info("[subTaskId] => [{}]", subTaskId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);

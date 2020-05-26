@@ -42,4 +42,7 @@ public class ContentFallbackService implements ContentRestService {
     public ApiResponse<ContentInfoResponse> getContentInfo(String contentUUID) {
         return null;
     }
+
+    @Override
+    public ApiResponse<ContentInfoResponse> propertyToMetadata(String contentUUID) { return null; }
 }
