@@ -76,6 +76,7 @@ var Publisher = /** @class */ (function(_super) {
         ),
         targEl,
       ) || this
+    console.log('My Stream:::::', this)
     /**
      * Whether the Publisher has been granted access to the requested input devices or not
      */

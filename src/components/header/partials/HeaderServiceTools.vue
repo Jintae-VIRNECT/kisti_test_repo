@@ -36,10 +36,10 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainSession', 'mute']),
+    ...mapGetters(['mainView', 'mute']),
   },
   watch: {
-    mainSession: {
+    mainView: {
       deep: true,
       handler: function(val) {
         if (val.stream) {
@@ -53,9 +53,13 @@ export default {
   methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
-      this.$call.leave()
+      try {
+        this.$call.leave()
 
-      this.$router.push({ name: 'workspace' })
+        this.$router.push({ name: 'workspace' })
+      } catch (err) {
+        this.$router.push({ name: 'workspace' })
+      }
     },
   },
 

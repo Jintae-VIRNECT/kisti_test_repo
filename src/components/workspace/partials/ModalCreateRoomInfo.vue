@@ -65,7 +65,8 @@ import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
-import { createRoom } from 'api/workspace/room'
+import { createRoom, getRoomInfo } from 'api/workspace/room'
+import { mapActions } from 'vuex'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
 
@@ -96,6 +97,20 @@ export default {
       type: Boolean,
       default: true,
     },
+    roomInfo: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+  },
+  watch: {
+    roomInfo: {
+      deep: true,
+      handler: function(info) {
+        console.log(info)
+      },
+    },
   },
   computed: {
     shortName() {
@@ -123,6 +138,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setRoomInfo', 'roomClear']),
     reset() {
       this.title = `${this.shortName}'s Room`
       this.description = ''
@@ -134,29 +150,52 @@ export default {
         )
         return
       }
-      const selectedUser = []
-      for (let select of this.selection) {
-        selectedUser.push(select.uuid)
-      }
-      selectedUser.push(this.account.uuid)
-      const roomInfo = await createRoom({
-        file: this.imageFile,
-        title: this.title,
-        description: this.description,
-        leaderId: this.account.uuid,
-        participants: selectedUser,
-        workspaceId: this.workspace.uuid,
-      })
-      console.log(roomInfo)
-      const joinRtn = await this.$call.join(roomInfo, this.account)
-      if (joinRtn) {
-        console.log('>>>join room 성공')
-        this.$eventBus.$emit('popover:close')
-        this.$nextTick(() => {
-          this.$router.push({ name: 'service' })
+      try {
+        const selectedUser = []
+
+        // 필요없어지면 삭제할거임!!!!!!!!!!!!!
+        let selectedUserEmail = ''
+        for (let select of this.selection) {
+          selectedUser.push(select.uuid)
+          selectedUserEmail += select.email + ','
+        }
+        selectedUser.push(this.account.uuid)
+        selectedUserEmail += this.account.email
+        // 여기까지!!!!!!!!!!!!!!!!!!!!!!!!
+        const createdRoom = await createRoom({
+          file: this.imageFile,
+          title: this.title,
+          description: this.description,
+          leaderId: this.account.uuid,
+          participants: selectedUser,
+          workspaceId: this.workspace.uuid,
         })
-      } else {
-        console.error('>>>join room 실패')
+
+        const joinRtn = await this.$call.join(
+          createdRoom,
+          this.account,
+          selectedUserEmail,
+        )
+        if (joinRtn) {
+          console.log('>>>join room 성공')
+          this.$eventBus.$emit('popover:close')
+
+          const roomInfo = await getRoomInfo({
+            roomId: createdRoom.roomId,
+          })
+
+          console.log(roomInfo)
+          this.setRoomInfo(roomInfo)
+          this.$nextTick(() => {
+            this.$router.push({ name: 'service' })
+          })
+        } else {
+          this.roomClear()
+          console.error('>>>join room 실패')
+        }
+      } catch (err) {
+        this.roomClear()
+        console.log(err)
       }
     },
     checkEmpty() {

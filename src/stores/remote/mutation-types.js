@@ -30,6 +30,10 @@ export const SETTINGS = {
 }
 export const SET_DEVICE = 'SET_DEVICE'
 
+// room
+export const ROOM_SET = 'ROOM_SET'
+export const ROOM_CLEAR = 'ROOM_CLEAR'
+
 //list search
 export const SEARCH_SORT = 'SEARCH_SORT'
 export const SEARCH_FILTER = 'SEARCH_FILTER'

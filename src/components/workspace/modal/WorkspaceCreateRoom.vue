@@ -10,6 +10,7 @@
   >
     <div class="createroom">
       <create-room-info
+        :roomInfo="roomInfo"
         :selection="selection"
         :nouser="users.length === 0"
       ></create-room-info>
@@ -29,6 +30,7 @@ import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
 import { getMemberList } from 'api/workspace/member'
+import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
@@ -46,6 +48,7 @@ export default {
       visibleFlag: false,
       users: [],
       maxSelect: 2,
+      roomInfo: {},
     }
   },
   props: {
@@ -53,16 +56,30 @@ export default {
       type: Boolean,
       default: false,
     },
+    roomId: {
+      type: Number,
+      default: 0,
+    },
   },
   watch: {
     visible(flag) {
       if (flag) {
         this.inviteRefresh()
+        if (this.roomId && this.roomId > 0) {
+          this.getInfo()
+        }
       }
       this.visibleFlag = flag
     },
   },
   methods: {
+    async getInfo() {
+      try {
+        this.roomInfo = await getHistorySingleItem({ roomId: this.roomId })
+      } catch (err) {
+        console.error(err)
+      }
+    },
     reset() {
       this.selection = []
     },

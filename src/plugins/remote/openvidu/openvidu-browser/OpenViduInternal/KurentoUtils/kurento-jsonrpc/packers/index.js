@@ -1,5 +1,5 @@
-var JsonRPC = require('./JsonRPC');
-var XmlRPC = require('./XmlRPC');
-exports.JsonRPC = JsonRPC;
-exports.XmlRPC = XmlRPC;
+var JsonRPC = require('./JsonRPC')
+var XmlRPC = require('./XmlRPC')
+exports.JsonRPC = JsonRPC
+exports.XmlRPC = XmlRPC
 //# sourceMappingURL=index.js.map

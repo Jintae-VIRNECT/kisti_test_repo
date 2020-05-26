@@ -12,8 +12,9 @@ export default {
     production: 'https://virnect.com',
   },
   console: {
-    local: 'https://127.0.0.1:8886/account',
+    local: '/account',
     develop: 'https://192.168.6.3:8883',
+    // develop: '/account',
     staging: 'https://stgconsole.virnect.com',
     production: 'https://console.virnect.com',
   },

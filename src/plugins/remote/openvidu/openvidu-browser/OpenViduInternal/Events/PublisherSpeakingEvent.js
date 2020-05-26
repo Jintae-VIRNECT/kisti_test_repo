@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,21 +15,32 @@
  * limitations under the License.
  *
  */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-exports.__esModule = true;
-var Event_1 = require("./Event");
+var __extends =
+  (this && this.__extends) ||
+  (function() {
+    var extendStatics = function(d, b) {
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function(d, b) {
+            d.__proto__ = b
+          }) ||
+        function(d, b) {
+          for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+        }
+      return extendStatics(d, b)
+    }
+    return function(d, b) {
+      extendStatics(d, b)
+      function __() {
+        this.constructor = d
+      }
+      d.prototype =
+        b === null ? Object.create(b) : ((__.prototype = b.prototype), new __())
+    }
+  })()
+exports.__esModule = true
+var Event_1 = require('./Event')
 /**
  * Defines the following events:
  * - `publisherStartSpeaking`: dispatched by [[Session]] when a remote user has started speaking
@@ -39,24 +50,24 @@ var Event_1 = require("./Event");
  * - This events will only be triggered for **remote streams that have audio tracks** ([[Stream.hasAudio]] must be true)
  * - You can further configure how the events are dispatched by setting property `publisherSpeakingEventsOptions` in the call of [[OpenVidu.setAdvancedConfiguration]]
  */
-var PublisherSpeakingEvent = /** @class */ (function (_super) {
-    __extends(PublisherSpeakingEvent, _super);
-    /**
-     * @hidden
-     */
-    function PublisherSpeakingEvent(target, type, connection, streamId) {
-        var _this = _super.call(this, false, target, type) || this;
-        _this.type = type;
-        _this.connection = connection;
-        _this.streamId = streamId;
-        return _this;
-    }
-    /**
-     * @hidden
-     */
-    // tslint:disable-next-line:no-empty
-    PublisherSpeakingEvent.prototype.callDefaultBehavior = function () { };
-    return PublisherSpeakingEvent;
-}(Event_1.Event));
-exports.PublisherSpeakingEvent = PublisherSpeakingEvent;
+var PublisherSpeakingEvent = /** @class */ (function(_super) {
+  __extends(PublisherSpeakingEvent, _super)
+  /**
+   * @hidden
+   */
+  function PublisherSpeakingEvent(target, type, connection, streamId) {
+    var _this = _super.call(this, false, target, type) || this
+    _this.type = type
+    _this.connection = connection
+    _this.streamId = streamId
+    return _this
+  }
+  /**
+   * @hidden
+   */
+  // tslint:disable-next-line:no-empty
+  PublisherSpeakingEvent.prototype.callDefaultBehavior = function() {}
+  return PublisherSpeakingEvent
+})(Event_1.Event)
+exports.PublisherSpeakingEvent = PublisherSpeakingEvent
 //# sourceMappingURL=PublisherSpeakingEvent.js.map

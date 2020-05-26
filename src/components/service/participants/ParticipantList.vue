@@ -3,9 +3,9 @@
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <div class="participants__view">
         <participant-video
-          v-for="session of sessions"
-          :key="session.nodeId"
-          :session="session"
+          v-for="participant of participants"
+          :key="participant.id"
+          :participant="participant"
         ></participant-video>
         <article>
           <div class="participant-video more" @click="more">
@@ -26,42 +26,13 @@ export default {
     ParticipantVideo,
   },
   data() {
-    return {
-      sessions: [
-        {
-          uuid: null,
-          stream: null,
-          nickName: '이름',
-          sessionName: '세션이름',
-          path: 'default',
-          status: 'good',
-        },
-        {
-          uuid: 2,
-          stream: null,
-          nickName: '프로필사진',
-          sessionName: 'haha',
-          path:
-            'https://virnect.com/images/pages/landing/logo-main-bi-remote.png',
-          status: 'normal',
-        },
-        {
-          uuid: 3,
-          stream: null,
-          nickName: '프로필사진2',
-          sessionName: 'haha2',
-          path:
-            'https://virnect.com/images/pages/landing/logo-main-bi-remote.png',
-          status: 'bad',
-        },
-      ],
-    }
+    return {}
   },
   computed: {
-    ...mapGetters(['mainSession']),
+    ...mapGetters(['participants', 'mainView']),
   },
   watch: {
-    'sessions.length': {
+    'participants.length': {
       deep: false,
       handler(newVal, oldVal) {
         if (newVal > oldVal) {
@@ -71,12 +42,12 @@ export default {
             }
           })
         } else if (newVal < oldVal) {
-          let idx = this.sessions.findIndex(
-            session => session.nodeId === this.mainSession.nodeId,
-          )
-          if (idx < 0) {
-            this.setMainSession(this.sessions[0])
-          }
+          // let idx = this.participants.findIndex(
+          //   session => session.uuid === this.mainView.uuid,
+          // )
+          // if (idx < 0) {
+          //   this.setMainSession(this.sessions[0])
+          // }
           this.$nextTick(() => {
             if (this.$refs['sessionListScrollbar']) {
               this.$refs['sessionListScrollbar'].scrollToX(999999999)
@@ -87,7 +58,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainSession']),
+    // ...mapActions(['setMainSession']),
     more() {
       console.log('추가 초대하기')
     },

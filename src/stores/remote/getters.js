@@ -21,4 +21,7 @@ export default {
   deviceType: state => state.device.type,
 
   searchFilter: state => state.sort.search.filter,
+
+  roomInfo: state => state.room,
+  roomParticipants: state => state.room.participants,
 }

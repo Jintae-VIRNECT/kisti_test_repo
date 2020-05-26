@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,12 +15,15 @@
  * limitations under the License.
  *
  */
-exports.__esModule = true;
-var LocalRecorderState;
-(function (LocalRecorderState) {
-    LocalRecorderState["READY"] = "READY";
-    LocalRecorderState["RECORDING"] = "RECORDING";
-    LocalRecorderState["PAUSED"] = "PAUSED";
-    LocalRecorderState["FINISHED"] = "FINISHED";
-})(LocalRecorderState = exports.LocalRecorderState || (exports.LocalRecorderState = {}));
+exports.__esModule = true
+var LocalRecorderState
+;(function(LocalRecorderState) {
+  LocalRecorderState['READY'] = 'READY'
+  LocalRecorderState['RECORDING'] = 'RECORDING'
+  LocalRecorderState['PAUSED'] = 'PAUSED'
+  LocalRecorderState['FINISHED'] = 'FINISHED'
+})(
+  (LocalRecorderState =
+    exports.LocalRecorderState || (exports.LocalRecorderState = {})),
+)
 //# sourceMappingURL=LocalRecorderState.js.map

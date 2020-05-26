@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,46 +15,57 @@
  * limitations under the License.
  *
  */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-exports.__esModule = true;
-var Event_1 = require("./Event");
+var __extends =
+  (this && this.__extends) ||
+  (function() {
+    var extendStatics = function(d, b) {
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function(d, b) {
+            d.__proto__ = b
+          }) ||
+        function(d, b) {
+          for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+        }
+      return extendStatics(d, b)
+    }
+    return function(d, b) {
+      extendStatics(d, b)
+      function __() {
+        this.constructor = d
+      }
+      d.prototype =
+        b === null ? Object.create(b) : ((__.prototype = b.prototype), new __())
+    }
+  })()
+exports.__esModule = true
+var Event_1 = require('./Event')
 /**
  * Defines the following events:
  * - `signal`: dispatched by [[Session]] when a signal is received
  * - `signal:TYPE`: dispatched by [[Session]] when a signal of type TYPE is received
  */
-var SignalEvent = /** @class */ (function (_super) {
-    __extends(SignalEvent, _super);
-    /**
-     * @hidden
-     */
-    function SignalEvent(target, type, data, from) {
-        var _this = _super.call(this, false, target, 'signal') || this;
-        if (!!type) {
-            _this.type = 'signal:' + type;
-        }
-        _this.data = data;
-        _this.from = from;
-        return _this;
+var SignalEvent = /** @class */ (function(_super) {
+  __extends(SignalEvent, _super)
+  /**
+   * @hidden
+   */
+  function SignalEvent(target, type, data, from) {
+    var _this = _super.call(this, false, target, 'signal') || this
+    if (type) {
+      _this.type = 'signal:' + type
     }
-    /**
-     * @hidden
-     */
-    // tslint:disable-next-line:no-empty
-    SignalEvent.prototype.callDefaultBehavior = function () { };
-    return SignalEvent;
-}(Event_1.Event));
-exports.SignalEvent = SignalEvent;
+    _this.data = data
+    _this.from = from
+    return _this
+  }
+  /**
+   * @hidden
+   */
+  // tslint:disable-next-line:no-empty
+  SignalEvent.prototype.callDefaultBehavior = function() {}
+  return SignalEvent
+})(Event_1.Event)
+exports.SignalEvent = SignalEvent
 //# sourceMappingURL=SignalEvent.js.map

@@ -1,10 +1,6 @@
 import {
   CALL_MODE_SET,
   CALL_ACTION_SET,
-  CALL_STREAM,
-  CALL_SPEAKER,
-  CALL_MIC,
-  MUTE_ON_OFF,
   TOOL_DRAWING_COLOR,
   TOOL_DRAWING_OPACITY,
   TOOL_TEXT_SIZE,
@@ -20,13 +16,12 @@ const state = {
   lineWidth: reset.width,
   fontSize: reset.size,
   action: 'pointing', // pointing, drawing
-  stream: true,
-  mic: true,
-  speaker: true,
-  unmute: true,
 }
 
 const mutations = {
+  [CALL_MODE_SET](state, info) {
+    state.roomInfo = info
+  },
   [CALL_MODE_SET](state, mode) {
     state.view = mode
   },
@@ -44,18 +39,6 @@ const mutations = {
   },
   [TOOL_LINE_WIDTH](state, mode) {
     state.lineWidth = mode
-  },
-  [CALL_STREAM](state, payload) {
-    state.stream = payload
-  },
-  [CALL_MIC](state, payload) {
-    state.mic = payload
-  },
-  [CALL_SPEAKER](state, payload) {
-    state.speaker = payload
-  },
-  [MUTE_ON_OFF](state) {
-    state.unmute = !state.unmute
   },
 }
 

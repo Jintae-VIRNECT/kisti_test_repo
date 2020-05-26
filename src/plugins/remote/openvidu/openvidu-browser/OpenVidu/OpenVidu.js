@@ -977,6 +977,8 @@ var OpenVidu = /** @class */ (function() {
    * @hidden
    */
   OpenVidu.prototype.startWs = function(onConnectSucces) {
+    console.log('startWs:::::', this.session)
+    console.log(this.wsUri)
     var config = {
       heartbeat: 5000,
       sendCloseMessage: false,

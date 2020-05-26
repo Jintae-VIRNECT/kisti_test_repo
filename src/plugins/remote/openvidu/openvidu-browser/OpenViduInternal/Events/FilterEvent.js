@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,40 +15,51 @@
  * limitations under the License.
  *
  */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-exports.__esModule = true;
-var Event_1 = require("./Event");
+var __extends =
+  (this && this.__extends) ||
+  (function() {
+    var extendStatics = function(d, b) {
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function(d, b) {
+            d.__proto__ = b
+          }) ||
+        function(d, b) {
+          for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+        }
+      return extendStatics(d, b)
+    }
+    return function(d, b) {
+      extendStatics(d, b)
+      function __() {
+        this.constructor = d
+      }
+      d.prototype =
+        b === null ? Object.create(b) : ((__.prototype = b.prototype), new __())
+    }
+  })()
+exports.__esModule = true
+var Event_1 = require('./Event')
 /**
  * Defines every event dispatched by audio/video stream filters. You can subscribe to filter events by calling [[Filter.addEventListener]]
  */
-var FilterEvent = /** @class */ (function (_super) {
-    __extends(FilterEvent, _super);
-    /**
-     * @hidden
-     */
-    function FilterEvent(target, eventType, data) {
-        var _this = _super.call(this, false, target, eventType) || this;
-        _this.data = data;
-        return _this;
-    }
-    /**
-     * @hidden
-     */
-    // tslint:disable-next-line:no-empty
-    FilterEvent.prototype.callDefaultBehavior = function () { };
-    return FilterEvent;
-}(Event_1.Event));
-exports.FilterEvent = FilterEvent;
+var FilterEvent = /** @class */ (function(_super) {
+  __extends(FilterEvent, _super)
+  /**
+   * @hidden
+   */
+  function FilterEvent(target, eventType, data) {
+    var _this = _super.call(this, false, target, eventType) || this
+    _this.data = data
+    return _this
+  }
+  /**
+   * @hidden
+   */
+  // tslint:disable-next-line:no-empty
+  FilterEvent.prototype.callDefaultBehavior = function() {}
+  return FilterEvent
+})(Event_1.Event)
+exports.FilterEvent = FilterEvent
 //# sourceMappingURL=FilterEvent.js.map

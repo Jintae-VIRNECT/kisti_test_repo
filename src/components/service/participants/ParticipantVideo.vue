@@ -5,24 +5,29 @@
       :class="{ current: isCurrent }"
       @click="changeMain"
     >
-      <div class="participant-video__stream" v-if="session.stream">
-        <video :srcObject="session.stream"></video>
+      <div class="participant-video__stream" v-if="participant.stream">
+        <video
+          :srcObject.prop="participant.stream"
+          autoplay
+          playsinline
+          loop
+        ></video>
       </div>
       <div class="participant-video__profile" v-else>
         <img
           class="participant-video__profile-background"
-          :src="session.path"
+          :src="participant.path"
           @error="profileImageError"
         />
         <profile
           :thumbStyle="{ width: '64px', height: '64px', margin: '10px auto 0' }"
-          :image="session.path"
+          :image="participant.path"
         ></profile>
       </div>
       <div
         v-if="!isMain"
         class="participant-video__status"
-        :class="session.status"
+        :class="participant.status"
       >
         <span>우수</span>
       </div>
@@ -30,13 +35,13 @@
         v-if="!isMain"
         class="participant-video__speaker"
         :src="
-          session.audio
+          participant.audio
             ? require('assets/image/call/gnb_ic_voice_on.svg')
             : require('assets/image/call/gnb_ic_voice_off.svg')
         "
       /> -->
       <div class="participant-video__name">
-        <span :class="{ active: isMain }">{{ session.nickName }}</span>
+        <span :class="{ active: isMain }">{{ participant.nickname }}</span>
         <popover
           trigger="click"
           placement="right-end"
@@ -82,18 +87,18 @@ export default {
     }
   },
   props: {
-    session: Object,
+    participant: Object,
   },
   computed: {
-    ...mapGetters(['mainSession', 'speaker']),
+    ...mapGetters(['mainView', 'speaker']),
     isMain() {
-      if (this.session.uuid === 'main') {
+      if (this.participant.uuid === 'main') {
         return true
       }
       return false
     },
     isCurrent() {
-      if (this.mainSession.uuid === this.session.uuid) return true
+      if (this.mainView.uuid === this.participant.uuid) return true
       return false
     },
   },
@@ -105,9 +110,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainSession']),
+    // ...mapActions(['setMainSession']),
     changeMain() {
-      this.setMainSession(this.session)
+      // this.setMainSession(this.participant)
     },
     profileImageError(event) {
       event.target.style.display = 'none'
@@ -117,11 +122,13 @@ export default {
       e.stopPropagation()
 
       this.onSpeaker = !this.onSpeaker
-      // this.$call.audioOnOff(this.session.uuid, this.onSpeaker)
+      // this.$call.audioOnOff(this.participant.uuid, this.onSpeaker)
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    console.log(this.participant)
+  },
 }
 </script>

@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,5 +15,5 @@
  * limitations under the License.
  *
  */
-exports.__esModule = true;
+exports.__esModule = true
 //# sourceMappingURL=StreamManagerVideo.js.map

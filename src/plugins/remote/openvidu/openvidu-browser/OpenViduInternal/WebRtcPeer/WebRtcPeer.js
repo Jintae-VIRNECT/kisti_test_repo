@@ -56,13 +56,26 @@ var WebRtcPeer = /** @class */ (function() {
       this.configuration.iceServers.length > 0
         ? this.configuration.iceServers
         : freeice()
+    // this.pc = new RTCPeerConnection({
+    //   iceServers: this.configuration.iceServers,
+    // })
     this.pc = new RTCPeerConnection({
-      iceServers: this.configuration.iceServers,
+      iceServers: [
+        // {
+        //   url: 'stun:stun.l.google.com:19302',
+        // },
+        {
+          url: 'turn:turn.virnectremote.com:3478?transport=udp',
+          username: 'virnectremote',
+          credential: 'qjsprxmflahxm01!',
+        },
+      ],
     })
     this.id = configuration.id ? configuration.id : uuid.v4()
     this.pc.onicecandidate = function(event) {
       if (event.candidate) {
         var candidate = event.candidate
+        console.log('icecandidate::send::', candidate.candidate)
         if (candidate) {
           _this.localCandidatesQueue.push({ candidate: candidate.candidate })
           _this.candidategatheringdone = false
@@ -70,6 +83,8 @@ var WebRtcPeer = /** @class */ (function() {
         } else if (!_this.candidategatheringdone) {
           _this.candidategatheringdone = true
         }
+      } else {
+        console.log('icecandidate::send::end')
       }
     }
     this.pc.onsignalingstatechange = function() {
@@ -269,7 +284,9 @@ var WebRtcPeer = /** @class */ (function() {
    */
   WebRtcPeer.prototype.addIceCandidate = function(iceCandidate) {
     var _this = this
+    // console.log(iceCandidate)
     return new Promise(function(resolve, reject) {
+      console.log('icecandidate::receive::', iceCandidate.candidate)
       console.debug('Remote ICE candidate received', iceCandidate)
       _this.remoteCandidatesQueue.push(iceCandidate)
       switch (_this.pc.signalingState) {
@@ -301,6 +318,7 @@ var WebRtcPeer = /** @class */ (function() {
     var _this = this
     this.pc.oniceconnectionstatechange = function() {
       var iceConnectionState = _this.pc.iceConnectionState
+      console.log(_this.pc)
       switch (iceConnectionState) {
         case 'disconnected':
           // Possible network disconnection

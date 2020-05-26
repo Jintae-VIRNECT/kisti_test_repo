@@ -1,3 +1,3 @@
-var JsonRpcClient = require('./jsonrpcclient');
-exports.JsonRpcClient = JsonRpcClient;
+var JsonRpcClient = require('./jsonrpcclient')
+exports.JsonRpcClient = JsonRpcClient
 //# sourceMappingURL=index.js.map

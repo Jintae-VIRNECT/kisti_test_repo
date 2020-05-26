@@ -21,7 +21,7 @@
       </div>
       <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${history.leaderName}` }}</span>
+        <span class="text">{{ `리더 : ${history.leaderNickName}` }}</span>
       </div>
       <button slot="menuPopover"></button>
       <button
@@ -63,7 +63,7 @@
       :roomId="roomId"
     ></roominfo-modal>
     <create-room-modal
-      :visible.sync="visible"
+      :visible.sync="showRestart"
       :roomId="roomId"
     ></create-room-modal>
   </div>
@@ -77,10 +77,7 @@ import sort from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
-import {
-  getHistorySingleItem,
-  deleteHistorySingleItem,
-} from 'api/workspace/history'
+import { deleteHistorySingleItem } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
 import dayjs from 'dayjs'
 
@@ -96,7 +93,7 @@ export default {
   },
   data() {
     return {
-      visible: false,
+      showRestart: false,
       showRoomInfo: false,
       roomId: 0,
     }
@@ -131,23 +128,11 @@ export default {
   },
   methods: {
     //상세보기
-    async openRoomInfo(roomId) {
-      try {
-        console.log(roomId)
-
-        const result = await getHistorySingleItem({ roomId })
-
-        this.roomInfo = result.data
-        this.$eventBus.$emit('popover:close')
-        this.$nextTick(() => {
-          this.showRoomInfo = !this.showRoomInfo
-        })
-      } catch (err) {
-        // 에러처리
-        console.error(err)
-      }
+    openRoomInfo(roomId) {
+      this.roomId = roomId
+      this.showRoomInfo = true
     },
-    async showDeleteDialog(roomId) {
+    showDeleteDialog(roomId) {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
@@ -173,9 +158,9 @@ export default {
     },
 
     //재시작
-    async createRoom(roomId) {
+    createRoom(roomId) {
       this.roomId = roomId
-      this.visible = !this.visible
+      this.showRestart = !this.showRestart
     },
     convertDate(date) {
       if (date !== null && date !== '') {

@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,46 +15,57 @@
  * limitations under the License.
  *
  */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-exports.__esModule = true;
-var Event_1 = require("./Event");
+var __extends =
+  (this && this.__extends) ||
+  (function() {
+    var extendStatics = function(d, b) {
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function(d, b) {
+            d.__proto__ = b
+          }) ||
+        function(d, b) {
+          for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+        }
+      return extendStatics(d, b)
+    }
+    return function(d, b) {
+      extendStatics(d, b)
+      function __() {
+        this.constructor = d
+      }
+      d.prototype =
+        b === null ? Object.create(b) : ((__.prototype = b.prototype), new __())
+    }
+  })()
+exports.__esModule = true
+var Event_1 = require('./Event')
 /**
  * Defines the following events:
  * - `recordingStarted`: dispatched by [[Session]] after the session has started being recorded
  * - `recordingStopped`: dispatched by [[Session]] after the session has stopped being recorded
  */
-var RecordingEvent = /** @class */ (function (_super) {
-    __extends(RecordingEvent, _super);
-    /**
-     * @hidden
-     */
-    function RecordingEvent(target, type, id, name, reason) {
-        var _this = _super.call(this, false, target, type) || this;
-        _this.id = id;
-        if (name !== id) {
-            _this.name = name;
-        }
-        _this.reason = reason;
-        return _this;
+var RecordingEvent = /** @class */ (function(_super) {
+  __extends(RecordingEvent, _super)
+  /**
+   * @hidden
+   */
+  function RecordingEvent(target, type, id, name, reason) {
+    var _this = _super.call(this, false, target, type) || this
+    _this.id = id
+    if (name !== id) {
+      _this.name = name
     }
-    /**
-     * @hidden
-     */
-    // tslint:disable-next-line:no-empty
-    RecordingEvent.prototype.callDefaultBehavior = function () { };
-    return RecordingEvent;
-}(Event_1.Event));
-exports.RecordingEvent = RecordingEvent;
+    _this.reason = reason
+    return _this
+  }
+  /**
+   * @hidden
+   */
+  // tslint:disable-next-line:no-empty
+  RecordingEvent.prototype.callDefaultBehavior = function() {}
+  return RecordingEvent
+})(Event_1.Event)
+exports.RecordingEvent = RecordingEvent
 //# sourceMappingURL=RecordingEvent.js.map

@@ -1,31 +1,69 @@
-export const addSession = stream => {
+let $store
+
+export const addSessionEventListener = (session, Store) => {
+  $store = Store
+  session.on('streamCreated', event => {
+    console.log('[session] stream created')
+
+    // let nodeId = event.stream.connection.connectionId
+    const subscriber = session.subscribe(event.stream, '', () => {
+      console.log(event.stream.mediaStream)
+      // streamObj.stream = subscriber.stream.mediaStream
+      // $store.commit('setStream', streamObj)
+      const streamObj = getUserObject(
+        subscriber.stream,
+        Store.getters['roomParticipants'],
+      )
+      Store.commit('addStream', streamObj)
+    })
+    console.log(subscriber)
+    subscriber.on('streamPlaying', e => {
+      console.log('[subscriber] stream playing')
+      console.log(e)
+    })
+  })
+
+  // On every Stream destroyed...
+  session.on('streamDestroyed', event => {
+    console.log(event)
+  })
+
+  session.on('signal:audio', event => {
+    console.log(event)
+  })
+
+  session.on('signal:video', event => {
+    console.log(event)
+  })
+
+  session.on('signal:chat', event => {
+    console.log(event)
+  })
+}
+
+export const getUserObject = (stream, participants) => {
+  console.log(participants)
   let streamObj
-  if (stream.nodeId === 'main') {
-    streamObj = {
-      stream: null,
-      // session: session,
-      nickName: stream.nickName,
-      userName: stream.userName,
-      nodeId: 'main',
-    }
-  } else {
-    let connection = stream.connection
+  let connection = stream.connection
 
-    let clientData = JSON.parse(connection.data.split('%/%')[0]).clientData,
-      // serverData = JSON.parse(connection.data.split('%/%')[1]).serverData,
-      nodeId = connection.connectionId
+  let uuid = JSON.parse(connection.data.split('%/%')[0]).clientData
 
-    streamObj = {
-      stream: null,
-      nickName: clientData,
-      // userName: serverData,
-      nodeId: nodeId,
-      audio: stream.audioActive,
-      video: stream.videoActive,
-    }
+  const participant = participants.find(user => {
+    console.log(user)
+    console.log(uuid)
+    return user.uuid === uuid
+  })
+  console.log(participant)
+
+  streamObj = {
+    id: uuid,
+    stream: stream.mediaStream,
+    nickname: participant.nickname,
+    path: participant.path,
+    audio: stream.audioActive,
+    video: stream.videoActive,
   }
 
-  // Store.dispatch('addSession', streamObj)
   return streamObj
 }
 
@@ -50,4 +88,23 @@ export const getStream = async constraints => {
   } catch (err) {
     console.error(err)
   }
+}
+
+const setStream = (streamObj, subscriber, idx) => {
+  console.log('[subscriber] finding stream....')
+  console.log(subscriber)
+  if (idx > 10) {
+    console.log('스트림을 못찾았습니다.')
+    return
+  }
+  setTimeout(() => {
+    if (!subscriber.stream.mediaStream) {
+      console.log(subscriber.stream.mediaStream)
+      setStream(streamObj, subscriber, idx++)
+    } else {
+      console.log(subscriber.stream.mediaStream)
+      streamObj.stream = subscriber.stream.mediaStream
+      $store.commit('setStream', streamObj)
+    }
+  }, 1000)
 }

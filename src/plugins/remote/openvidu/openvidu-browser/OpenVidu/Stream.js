@@ -145,6 +145,13 @@ var Stream = /** @class */ (function() {
     }
     this.ee.on('mediastream-updated', function() {
       _this.streamManager.updateMediaStream(_this.mediaStream)
+      console.log(
+        'Video srcObject [' +
+          _this.mediaStream +
+          '] updated in stream [' +
+          _this.streamId +
+          ']',
+      )
       console.debug(
         'Video srcObject [' +
           _this.mediaStream +
@@ -410,6 +417,7 @@ var Stream = /** @class */ (function() {
   Stream.prototype.publish = function() {
     var _this = this
     return new Promise(function(resolve, reject) {
+      console.log(_this.isLocalStreamReadyToPublish)
       if (_this.isLocalStreamReadyToPublish) {
         _this
           .initWebRtcPeerSend(false)
@@ -1143,6 +1151,7 @@ var Stream = /** @class */ (function() {
     } else {
       returnValue = undefined
     }
+    console.log('getIceServersConf::', returnValue)
     return returnValue
   }
   Stream.prototype.gatherStatsForPeer = function() {

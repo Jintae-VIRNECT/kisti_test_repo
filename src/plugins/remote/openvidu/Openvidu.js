@@ -1,6 +1,6 @@
 import { OpenVidu } from './openvidu-browser'
 import openviduStore from './OpenviduStore'
-import { getStream } from './OpenviduUtils'
+import { addSessionEventListener } from './OpenviduUtils'
 import { getToken } from 'api/workspace/call'
 
 export default {
@@ -12,39 +12,16 @@ export default {
     }
     let OV
 
-    const addSessionEventListener = session => {
-      session.on('streamCreated', event => {
-        console.log(event)
-      })
-
-      // On every Stream destroyed...
-      session.on('streamDestroyed', event => {
-        console.log(event)
-      })
-
-      session.on('signal:audio', event => {
-        console.log(event)
-      })
-
-      session.on('signal:video', event => {
-        console.log(event)
-      })
-
-      session.on('signal:chat', event => {
-        console.log(event)
-      })
-    }
-
-    const updateSessionStream = (nodeId, stream) => {
-      Store.dispatch('updateSessionStream', {
-        nodeId: nodeId,
+    const setStream = (uuid, stream) => {
+      Store.commit('setStream', {
+        uuid: uuid,
         stream: stream,
       })
     }
 
     Vue.prototype.$call = {
       session: null,
-      join: async (roomInfo, account) => {
+      join: async (roomInfo, account, users, screen) => {
         try {
           const params = {
             sessionId: roomInfo.sessionId,
@@ -55,24 +32,42 @@ export default {
           const rtnValue = await getToken(params)
 
           OV = new OpenVidu()
+          console.log(OV)
           this.session = OV.initSession()
 
-          addSessionEventListener(this.session)
+          addSessionEventListener(this.session, Store)
           console.log('[session] add event listener')
+          const metaData = {
+            clientData: account.uuid,
+            serverData: users,
+          }
+          console.log(JSON.stringify(metaData))
+          const iceServer = [
+            {
+              url: 'stun:stun.l.google.com:19302',
+            },
+            // {
+            //   url: 'turn:turn.virnectremote.com:3478?transport=udp',
+            //   username: 'virnect',
+            //   credential: 'virnect',
+            // },
+            // {
+            //   url: 'turn:turn.virnectremote.com:3478?transport=tcp',
+            //   username: 'virnect',
+            //   credential: 'virnect',
+            // },
+          ]
 
-          await this.session.connect(rtnValue.token, {
-            clientData: account.nickname,
-          })
+          await this.session.connect(
+            rtnValue.token,
+            JSON.stringify(metaData),
+            iceServer,
+          )
           console.log('[session] connection success')
-          // const streams = await getStream({
-          //   video: true,
-          //   audio: true,
-          // })
-          // console.log(streams)
 
           const publisher = OV.initPublisher('', {
             audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
+            videoSource: undefined, //screen ? 'screen' : undefined, // The source of video. If undefined default webcam
             publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: true, // Whether you want to start publishing with your video enabled or not
             resolution: '1280x720', // The resolution of your video
@@ -82,21 +77,22 @@ export default {
           })
           publisher.on('streamCreated', event => {
             console.log('[session] publisher stream created success')
-            updateSessionStream('main', publisher.stream.getMediaStream())
+            setStream('main', publisher.stream.getMediaStream())
 
-            Store.dispatch('setMainSession', {
+            Store.commit('setMainView', {
               stream: publisher.stream.getMediaStream(),
               // session: session,
               // connection: publisher.connection,
-              nickName: account.nickname,
-              userName: account.name,
-              nodeId: 'main',
+              nickname: account.nickname,
+              name: account.name,
+              id: account.uuid,
             })
-            console.log()
           })
+          console.log(publisher)
+          console.log(publisher.stream)
+          console.log(publisher.stream.streamId)
 
           this.session.publish(publisher)
-          console.log(publisher)
           console.log('[session] init publisher success')
           return true
         } catch (err) {
@@ -106,9 +102,13 @@ export default {
         // return session
       },
       leave: () => {
-        Store.dispatch('clearSession')
-        this.session.disconnect()
-        this.session = null
+        try {
+          Store.commit('clearStreams')
+          this.session.disconnect()
+          this.session = null
+        } catch (err) {
+          throw err
+        }
       },
       sendChat: text => {},
       getDevices: () => {},

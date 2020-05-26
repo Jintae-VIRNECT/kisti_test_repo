@@ -2,7 +2,7 @@
   <tab-view
     title="최근 통화 목록"
     description="최근 통화 목록은 30일 동안 보관됩니다."
-    placeholder="협업, 멤버 검색"
+    placeholder="협업, 멤버 이름 검색"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
     emptyTitle="최근 통화 목록이 없습니다."

@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
  *
@@ -15,110 +15,124 @@
  * limitations under the License.
  *
  */
-exports.__esModule = true;
-var Stream_1 = require("./Stream");
+exports.__esModule = true
+var Stream_1 = require('./Stream')
 /**
  * Represents each one of the user's connection to the session (the local one and other user's connections).
  * Therefore each [[Session]] and [[Stream]] object has an attribute of type Connection
  */
-var Connection = /** @class */ (function () {
+var Connection = /** @class */ (function() {
+  /**
+   * @hidden
+   */
+  function Connection(session, opts) {
+    this.session = session
     /**
      * @hidden
      */
-    function Connection(session, opts) {
-        this.session = session;
-        /**
-         * @hidden
-         */
-        this.disposed = false;
-        var msg = "'Connection' created ";
-        if (!!opts) {
-            // Connection is remote
-            msg += "(remote) with 'connectionId' [" + opts.id + ']';
-            this.options = opts;
-            this.connectionId = opts.id;
-            this.creationTime = opts.createdAt;
-            if (opts.metadata) {
-                this.data = opts.metadata;
-            }
-            if (opts.streams) {
-                this.initRemoteStreams(opts.streams);
-            }
-        }
-        else {
-            // Connection is local
-            msg += '(local)';
-        }
-        console.info(msg);
+    this.disposed = false
+    var msg = "'Connection' created "
+    if (opts) {
+      // Connection is remote
+      msg += "(remote) with 'connectionId' [" + opts.id + ']'
+      this.options = opts
+      this.connectionId = opts.id
+      this.creationTime = opts.createdAt
+      if (opts.metadata) {
+        this.data = opts.metadata
+      }
+      if (opts.streams) {
+        this.initRemoteStreams(opts.streams)
+      }
+    } else {
+      // Connection is local
+      msg += '(local)'
     }
-    /* Hidden methods */
-    /**
-     * @hidden
-     */
-    Connection.prototype.sendIceCandidate = function (candidate) {
-        console.debug((!!this.stream.outboundStreamOpts ? 'Local' : 'Remote') + 'candidate for' +
-            this.connectionId, candidate);
-        this.session.openvidu.sendRequest('onIceCandidate', {
-            endpointName: this.connectionId,
-            candidate: candidate.candidate,
-            sdpMid: candidate.sdpMid,
-            sdpMLineIndex: candidate.sdpMLineIndex
-        }, function (error, response) {
-            if (error) {
-                console.error('Error sending ICE candidate: '
-                    + JSON.stringify(error));
-            }
-        });
-    };
-    /**
-     * @hidden
-     */
-    Connection.prototype.initRemoteStreams = function (options) {
-        var _this = this;
-        // This is ready for supporting multiple streams per Connection object. Right now the loop will always run just once
-        // this.stream should also be replaced by a collection of streams to support multiple streams per Connection
-        options.forEach(function (opts) {
-            var streamOptions = {
-                id: opts.id,
-                createdAt: opts.createdAt,
-                connection: _this,
-                hasAudio: opts.hasAudio,
-                hasVideo: opts.hasVideo,
-                audioActive: opts.audioActive,
-                videoActive: opts.videoActive,
-                typeOfVideo: opts.typeOfVideo,
-                frameRate: opts.frameRate,
-                videoDimensions: !!opts.videoDimensions ? JSON.parse(opts.videoDimensions) : undefined,
-                filter: !!opts.filter ? opts.filter : undefined
-            };
-            var stream = new Stream_1.Stream(_this.session, streamOptions);
-            _this.addStream(stream);
-        });
-        console.info("Remote 'Connection' with 'connectionId' [" + this.connectionId + '] is now configured for receiving Streams with options: ', this.stream.inboundStreamOpts);
-    };
-    /**
-     * @hidden
-     */
-    Connection.prototype.addStream = function (stream) {
-        stream.connection = this;
-        this.stream = stream;
-    };
-    /**
-     * @hidden
-     */
-    Connection.prototype.removeStream = function (streamId) {
-        delete this.stream;
-    };
-    /**
-     * @hidden
-     */
-    Connection.prototype.dispose = function () {
-        if (!!this.stream) {
-            delete this.stream;
+    console.info(msg)
+  }
+  /* Hidden methods */
+  /**
+   * @hidden
+   */
+  Connection.prototype.sendIceCandidate = function(candidate) {
+    console.debug(
+      (this.stream.outboundStreamOpts ? 'Local' : 'Remote') +
+        'candidate for' +
+        this.connectionId,
+      candidate,
+    )
+    this.session.openvidu.sendRequest(
+      'onIceCandidate',
+      {
+        endpointName: this.connectionId,
+        candidate: candidate.candidate,
+        sdpMid: candidate.sdpMid,
+        sdpMLineIndex: candidate.sdpMLineIndex,
+      },
+      function(error, response) {
+        if (error) {
+          console.error('Error sending ICE candidate: ' + JSON.stringify(error))
         }
-        this.disposed = true;
-    };
-    return Connection;
-}());
-exports.Connection = Connection;
+      },
+    )
+  }
+  /**
+   * @hidden
+   */
+  Connection.prototype.initRemoteStreams = function(options) {
+    var _this = this
+    // This is ready for supporting multiple streams per Connection object. Right now the loop will always run just once
+    // this.stream should also be replaced by a collection of streams to support multiple streams per Connection
+    options.forEach(function(opts) {
+      var streamOptions = {
+        id: opts.id,
+        createdAt: opts.createdAt,
+        connection: _this,
+        hasAudio: opts.hasAudio,
+        hasVideo: opts.hasVideo,
+        audioActive: opts.audioActive,
+        videoActive: opts.videoActive,
+        typeOfVideo: opts.typeOfVideo,
+        frameRate: opts.frameRate,
+        videoDimensions: opts.videoDimensions
+          ? JSON.parse(opts.videoDimensions)
+          : undefined,
+        filter: opts.filter ? opts.filter : undefined,
+      }
+      var stream = new Stream_1.Stream(_this.session, streamOptions)
+      console.log('Remote Stream:::::', stream)
+      _this.addStream(stream)
+    })
+    console.info(
+      "Remote 'Connection' with 'connectionId' [" +
+        this.connectionId +
+        '] is now configured for receiving Streams with options: ',
+      this.stream.inboundStreamOpts,
+    )
+  }
+  /**
+   * @hidden
+   */
+  Connection.prototype.addStream = function(stream) {
+    stream.connection = this
+    this.stream = stream
+  }
+  /**
+   * @hidden
+   */
+  Connection.prototype.removeStream = function(streamId) {
+    delete this.stream
+  }
+  /**
+   * @hidden
+   */
+  Connection.prototype.dispose = function() {
+    if (this.stream) {
+      delete this.stream
+    }
+    this.disposed = true
+  }
+  return Connection
+})()
+exports.Connection = Connection
 //# sourceMappingURL=Connection.js.map

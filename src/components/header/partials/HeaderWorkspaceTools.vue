@@ -27,10 +27,10 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainSession', 'mute']),
+    ...mapGetters(['mainView', 'mute']),
   },
   watch: {
-    mainSession: {
+    mainView: {
       deep: true,
       handler: function(val) {
         if (val.stream) {
@@ -43,9 +43,6 @@ export default {
   },
   methods: {
     ...mapActions(['callMic', 'callStream']),
-    leave() {
-      this.$call.leave()
-    },
   },
 
   /* Lifecycles */

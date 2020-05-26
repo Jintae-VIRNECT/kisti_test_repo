@@ -1,29 +1,31 @@
 <template>
   <div class="main-video">
     <div class="main-video__box">
-      <video
-        ref="mainVideo"
-        id="main-video"
-        :srcObject.prop="session.stream"
-        @resize="optimizeVideoSize"
-        @loadeddata="optimizeVideoSize"
-        :muted="!speaker"
-        autoplay
-        playsinline
-        loop
-      ></video>
+      <template v-if="mainView && mainView.stream">
+        <video
+          ref="mainVideo"
+          id="main-video"
+          :srcObject.prop="mainView.stream"
+          @resize="optimizeVideoSize"
+          @loadeddata="optimizeVideoSize"
+          :muted="!speaker"
+          autoplay
+          playsinline
+          loop
+        ></video>
+      </template>
 
       <pointing v-if="true" :scale="1" class="main-video__pointing"></pointing>
       <!-- 
       <div class="main-video__info">
         <img class="profile" src="~assets/image/call/chat_img_user.svg" />
-        <span class="name">{{ session.nickName }}</span>
+        <span class="name">{{ mainView.nickName }}</span>
         <span class="status" :class="status">연결상태</span>
       </div> -->
-
-      <button v-if="session.nodeId === 'main'" class="main-video__setting">
+      <!-- 
+      <button v-if="mainView.uuid === 'main'" class="main-video__setting">
         화면 설정
-      </button>
+      </button> -->
     </div>
   </div>
 </template>
@@ -44,7 +46,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      session: 'mainSession',
+      mainView: 'mainView',
       speaker: 'speaker',
     }),
   },
@@ -52,6 +54,12 @@ export default {
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
       console.log(this.$refs['mainVideo'].muted)
+    },
+    mainView: {
+      deep: true,
+      handler(e) {
+        console.log(e)
+      },
     },
   },
   methods: {
