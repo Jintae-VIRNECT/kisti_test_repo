@@ -937,15 +937,17 @@ public class ContentService {
                 JsonObject metaSceneGroupsObj = new JsonObject();
 
                 String sceneGroupId   = "";
-                String sceneGroupName = "기본 하위작업명";
+                String sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
 
                 if (!sceneGroupInfo.get("identifier").isJsonNull()){
                     sceneGroupId = sceneGroupInfo.get("identifier").getAsString();
                 }
 
-                if (!sceneGroupInfo.get("sceneGroupTitle").isJsonNull()){
-                    sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
-                }
+                if (Objects.isNull(sceneGroupName) || "".equals(sceneGroupName))
+                    sceneGroupName = "기본 하위 작업명";
+//                if (!sceneGroupInfo.get("sceneGroupTitle").isJsonNull()){
+//                    sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
+//                }
 
                 metaSceneGroupsObj.addProperty("id"      , sceneGroupId);
                 metaSceneGroupsObj.addProperty("priority", i);
@@ -992,9 +994,9 @@ public class ContentService {
                             JsonObject item = obj.getAsJsonObject();
 
                             metaItem.addProperty("id", item.get("identifier").getAsString());
-                            metaItem.addProperty("proprity",k);
+                            metaItem.addProperty("priority",k);
                             metaItem.addProperty("title", item.get("contents").getAsString());
-
+                            metaItem.addProperty("item", "NONE"); // 협의 필요
                             itemsArr.add(metaItem);
                             k++;
                         }
@@ -1005,7 +1007,7 @@ public class ContentService {
                     String stepName = sceneInfo.get("sceneTitle").getAsString();
                     int subJobTotal = reportListItems.size();
 
-                    if (Objects.nonNull(stepName)) {
+                    if (Objects.isNull(stepName) || "".equals(stepName)) {
                         stepName = "기본 단계명";
                     }
 
