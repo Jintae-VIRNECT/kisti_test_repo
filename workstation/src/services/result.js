@@ -2,6 +2,7 @@ import { api } from '@/plugins/axios'
 import SubTask from '@/models/task/SubTask'
 import Issue from '@/models/result/Issue'
 import Paper from '@/models/result/Paper'
+import Trouble from '@/models/result/Trouble'
 
 export default {
   /**
@@ -60,7 +61,27 @@ export default {
       },
     })
     return {
-      list: data.papers.map(paper => new Paper(paper)),
+      list: data.reports.map(paper => new Paper(paper)),
+      total: data.pageMeta.totalElements,
+    }
+  },
+  /**
+   * 트러블 리스트
+   * @param {object} params
+   */
+  async searchTroubles(params = {}) {
+    if (params.filter && params.filter[0] === 'ALL') {
+      delete params.filter
+    }
+    const data = await api('TROUBLES_LIST', {
+      params: {
+        size: 10,
+        sort: 'updated_at,desc',
+        ...params,
+      },
+    })
+    return {
+      list: data.issues.map(trouble => new Trouble(trouble)),
       total: data.pageMeta.totalElements,
     }
   },
@@ -83,5 +104,15 @@ export default {
       route: { paperId },
     })
     return new Paper(data)
+  },
+  /**
+   * 트러블메모 상세정보 조회
+   * @param {String} troubleMemoId
+   */
+  async getTroubleDetail(troubleMemoId) {
+    const data = await api('TROUBLE_INFO', {
+      route: { troubleMemoId },
+    })
+    return new Trouble(data)
   },
 }

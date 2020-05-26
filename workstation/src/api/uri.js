@@ -90,4 +90,8 @@ module.exports = {
   ISSUE_INFO: ['GET', '/tasks/issue/{issueId}'],
   // 페이퍼 상세조회
   PAPER_INFO: ['GET', '/tasks/paper/{paperId}'],
+  // 트러블 메모 목록 조회
+  TROUBLES_LIST: ['GET', '/tasks/troubleMemos'],
+  // 트러블 메모 상세 조회
+  TROUBLE_INFO: ['GET', '/tasks/troubleMemo/{troubleMemoId}'],
 }

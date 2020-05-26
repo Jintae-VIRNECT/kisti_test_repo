@@ -31,6 +31,6 @@ export default class Properties extends Model {
   }
 
   tree(depth = 3) {
-    return recursion(this._json, depth)
+    return recursion(this._json.PropertyInfo, depth)
   }
 }
