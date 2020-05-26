@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import AuthService from 'service/auth-service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -58,7 +59,7 @@ export default {
 				.add(3, 'minute')
 				.unix(),
 			remainTime: 0,
-			loginUrl: process.env.LOGIN_SITE_URL,
+			loginUrl: urls.console[process.env.TARGET_ENV],
 			curruntUrl: location.href,
 			otpInfo: null,
 			qrImage: null,
@@ -87,7 +88,6 @@ export default {
 			try {
 				let otp = await AuthService.qrOtp(this.otpInfo)
 				if (otp.code == 200) {
-					console.log(this.myInfo)
 					this.timeRunner()
 					this.deadline = dayjs()
 						.add(3, 'minute')
@@ -98,9 +98,7 @@ export default {
 					throw otp.data
 				}
 			} catch (e) {
-				location.replace(
-					`https://${this.loginUrl}/?continue=${this.curruntUrl}`,
-				)
+				location.replace(`${this.loginUrl}/?continue=${this.curruntUrl}`)
 			}
 		},
 		timeRunner() {
