@@ -305,13 +305,13 @@ public class TaskService {
         try {
             log.info(">>>>>>>>>>>>>>> scene {}", scene);
             log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
-            log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
 
             // 널체크 추가..
-            if (scene.getReportObjects().size() > 0 && scene.getReportObjects() != null) {
+            if (scene.getReportObjects() != null) {
                 scene.getReportObjects().forEach(reportObject -> {
+                    log.info(">>>>>>>>>>>>>>> reportObject.getItems() {}", reportObject.getItems());
                     // Item이 잇다면 (널 체크 추가)
-                    if (reportObject.getItems().size() > 0 && reportObject.getItems() != null) {
+                    if (reportObject.getItems() != null) {
                         Report report = new Report();
                         reportObject.getItems().forEach(reportObjectItem -> {
                             Item item = Item.builder()
