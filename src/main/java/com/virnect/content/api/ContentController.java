@@ -1,7 +1,6 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
-import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.*;
 import com.virnect.content.dto.response.*;
@@ -14,8 +13,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -397,5 +394,17 @@ public class ContentController {
     @GetMapping("/healthcheck")
     public ResponseEntity<String> checkHealth() {
         return ResponseEntity.ok("200 OK");
+    }
+
+    @ApiOperation(value="프로퍼티 -> 메타데이터", tags="test")
+    @GetMapping("/propertyToMetadata/{contentUUID}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="contentUUID", example="16ac0c7e-9e64-409a-b412-7583ca3e3be4")
+    })
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> propertyToMetadata(
+            @PathVariable("contentUUID") String contentUUID
+    ) {
+        ApiResponse<ContentInfoResponse> response = this.contentService.propertyToMetadata(contentUUID);
+        return ResponseEntity.ok(response);
     }
 }
