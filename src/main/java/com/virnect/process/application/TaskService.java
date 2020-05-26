@@ -305,8 +305,8 @@ public class TaskService {
         try {
             if (!scene.getReportObjects().isEmpty()) {
                 scene.getReportObjects().forEach(reportObject -> {
-                    // Item이 잇다면
-                    if (!reportObject.getItems().isEmpty()) {
+                    // Item이 잇다면 (널 체크 추가)
+                    if (!reportObject.getItems().isEmpty() || reportObject.getItems() != null) {
                         Report report = new Report();
                         reportObject.getItems().forEach(reportObjectItem -> {
                             Item item = Item.builder()
