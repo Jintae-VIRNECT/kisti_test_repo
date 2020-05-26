@@ -103,13 +103,16 @@ public class ContentService {
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
 
-            // 2. 업로드 컨텐츠 정보 수집
+            // 2-1. 프로퍼티로 메타데이터 생성
+            String metadata = makeMetadata(uploadRequest.getName(), uploadRequest.getUserUUID(), uploadRequest.getProperties()).toString();
+
+            // 2-2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
                     // TODO : 유효한 워크스페이스 인지 검증 필요.
                     .workspaceUUID(uploadRequest.getWorkspaceUUID())
                     .uuid(contentUUID)
                     .name(uploadRequest.getName())
-                    .metadata(uploadRequest.getMetadata())
+                    .metadata(metadata)
                     .properties(uploadRequest.getProperties())
                     .userUUID(uploadRequest.getUserUUID())
                     .shared(INIT_IS_SHARED)
@@ -305,8 +308,12 @@ public class ContentService {
         // 6. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
-        // 7. 컨텐츠 메타데이터 변경
-        targetContent.setMetadata(updateRequest.getMetadata());
+        // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
+        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getMetadata());
+
+        String metadata = metaObject.toString();
+
+        targetContent.setMetadata(metadata);
 
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
@@ -874,13 +881,35 @@ public class ContentService {
     
     // property 정보 -> metadata로 변환
     public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID){
+
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
+        String contentName = content.getName();
+        String userUuid    = content.getUserUUID();
         String properties = content.getProperties();
 
-        log.debug(">>>>>>>>>>>> properties : {} ", properties);
+        JsonObject metaObject = makeMetadata(contentName, userUuid, properties);
 
+        String metaString = metaObject.toString();
+
+        log.debug("metaString {}", metaString);
+
+        Gson gson = new Gson();
+
+        // Gson으로 json -> Class로 변환
+        MetadataInfoResponse metaResponse = gson.fromJson(metaObject, MetadataInfoResponse.class);
+
+        metaResponse.getContents().setUuid(content.getUuid());
+
+        log.debug("contentMeta {}", metaResponse.getContents());
+
+        //addSceneGroupToContent(content,metaString);
+
+        return new ApiResponse<>(metaResponse);
+    }
+
+    public JsonObject makeMetadata(String contentName, String userUuid, String properties){
         JsonObject meta = new JsonObject();
         // 테스트
         try{
@@ -909,8 +938,8 @@ public class ContentService {
 
             JsonObject taskObj = new JsonObject();        // task 정보를 담을 JsonObject
             String taskId      = propertyObj.get("TargetID").getAsString();                      // taskId
-            String taskName    = content.getName();       // DB에 저장된 ContentsName 사용
-            String managerUUID = content.getUserUUID();   // DB에 저장 된 uploaderUUID 사용
+            String taskName    = contentName;       // DB에 저장된 ContentsName 사용
+            String managerUUID = userUuid;   // DB에 저장 된 uploaderUUID 사용
             int subTaskTotal   = propertyInfo1.keySet().size();         // SceneGroups 하위에 있는 SceneGroup의 갯수
 
             // task 정보 채우기
@@ -1040,25 +1069,7 @@ public class ContentService {
         }catch(Exception e){
             e.printStackTrace();
         }
-        String metaString = meta.toString();
 
-        content.setMetadata(metaString);
-
-        log.debug("metaString {}", metaString);
-
-        this.contentRepository.save(content);
-
-        Gson gson = new Gson();
-
-        // Gson으로 json -> Class로 변환
-        MetadataInfoResponse metaResponse = gson.fromJson(meta, MetadataInfoResponse.class);
-
-        metaResponse.getContents().setUuid(content.getUuid());
-
-        log.debug("contentMeta {}", metaResponse.getContents());
-
-        addSceneGroupToContent(content,metaString);
-
-        return new ApiResponse<>(metaResponse);
+        return meta;
     }
 }
