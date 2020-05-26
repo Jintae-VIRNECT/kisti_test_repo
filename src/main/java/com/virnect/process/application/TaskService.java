@@ -81,10 +81,10 @@ public class TaskService {
         // 공정 생성 요청 처리
         log.info("CREATE THE PROCESS requestBody ---> {}", registerNewProcess.toString());
 
-        this.contentRestService.propertyToMetadata(registerNewProcess.getContentUUID());
 
         // 1. 컨텐츠 메타데이터 가져오기
-        ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
+        //ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
+        ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.propertyToMetadata(registerNewProcess.getContentUUID());
 
         log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
 

@@ -44,5 +44,5 @@ public class ContentFallbackService implements ContentRestService {
     }
 
     @Override
-    public ApiResponse<ContentInfoResponse> propertyToMetadata(String contentUUID) { return null; }
+    public ApiResponse<ContentRestDto> propertyToMetadata(String contentUUID) { return null; }
 }

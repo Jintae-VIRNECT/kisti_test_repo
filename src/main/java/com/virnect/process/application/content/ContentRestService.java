@@ -34,5 +34,5 @@ public interface ContentRestService {
     ApiResponse<ContentInfoResponse> getContentInfo(@PathVariable("contentUUID") String contentUUID);
 
     @GetMapping("/contents/propertyToMetadata/{contentUUID}")
-    ApiResponse<ContentInfoResponse> propertyToMetadata(@PathVariable("contentUUID") String contentUUID);
+    ApiResponse<ContentRestDto> propertyToMetadata(@PathVariable("contentUUID") String contentUUID);
 }
