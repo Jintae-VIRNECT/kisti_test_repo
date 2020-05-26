@@ -32,7 +32,4 @@ public interface ContentRestService {
 
     @GetMapping("/contents/{contentUUID}")
     ApiResponse<ContentInfoResponse> getContentInfo(@PathVariable("contentUUID") String contentUUID);
-
-    @GetMapping("/contents/propertyToMetadata/{contentUUID}")
-    ApiResponse<ContentRestDto> propertyToMetadata(@PathVariable("contentUUID") String contentUUID);
 }

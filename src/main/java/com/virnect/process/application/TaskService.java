@@ -83,8 +83,7 @@ public class TaskService {
 
 
         // 1. 컨텐츠 메타데이터 가져오기
-        //ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
-        ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.propertyToMetadata(registerNewProcess.getContentUUID());
+        ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
 
         log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
 
