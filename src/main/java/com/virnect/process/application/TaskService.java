@@ -148,6 +148,8 @@ public class TaskService {
         ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
         Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
 
+        log.debug("ConetntMetadata {}", metadata);
+
         metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
 
         addSubProcessOnProcess(registerNewProcess, sceneGroupMap, newProcess);
@@ -260,6 +262,8 @@ public class TaskService {
      */
     private void addJobToSubProcess(ContentRestDto.SceneGroup sceneGroup, SubProcess subProcess, Process newProcess) {
         try {
+            log.debug(">>>>>>>> sceneGroup.getScenes() -> {}", sceneGroup.getScenes());
+
             sceneGroup.getScenes().forEach(
                     scene -> {
                         Job job = Job.builder()
