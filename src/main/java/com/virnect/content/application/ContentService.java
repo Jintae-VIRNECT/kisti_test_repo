@@ -937,7 +937,7 @@ public class ContentService {
                 JsonObject metaSceneGroupsObj = new JsonObject();
 
                 String sceneGroupId   = "";
-                String sceneGroupName = "";
+                String sceneGroupName = "기본 하위작업명";
 
                 if (!sceneGroupInfo.get("identifier").isJsonNull()){
                     sceneGroupId = sceneGroupInfo.get("identifier").getAsString();
@@ -1002,7 +1002,12 @@ public class ContentService {
                         reportObj.add("items", itemsArr);
                     }
 
+                    String stepName = sceneInfo.get("sceneTitle").getAsString();
                     int subJobTotal = reportListItems.size();
+
+                    if (Objects.nonNull(stepName)) {
+                        stepName = "기본 단계명";
+                    }
 
                     if (subJobTotal == 0) {
                         subJobTotal = 1;
@@ -1012,7 +1017,7 @@ public class ContentService {
 
                     metaScenesObj.addProperty("id", sceneInfo.get("identifier").getAsString());
                     metaScenesObj.addProperty("priority", j);
-                    metaScenesObj.addProperty("name", sceneInfo.get("sceneTitle").getAsString());
+                    metaScenesObj.addProperty("name", stepName);
                     metaScenesObj.addProperty("subJobTotal", subJobTotal);
                     metaScenesObj.add("reportObjects", reportArr);
 
