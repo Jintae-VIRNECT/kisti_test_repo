@@ -1050,6 +1050,8 @@ public class ContentService {
 
         log.debug("contentMeta {}", metaResponse.getContents());
 
+        addSceneGroupToContent(content,metaString);
+
         return new ApiResponse<>(metaResponse);
     }
 }
