@@ -1,14 +1,26 @@
 {
   "title": "작업 보고 관리",
   "task": "작업",
+  "paper": "페이퍼",
   "issue": "이슈",
+  "myTask": "내 작업",
+  "myPaper": "내 페이퍼",
+  "myIssue": "내 이슈",
+  "column": {
+    "taskName": "작업 이름",
+    "subTaskName": "하위 작업 이름",
+    "stepName": "단계 이름",
+    "issueTitle": "이슈 제목",
+    "status": "진행 상태",
+    "reporter": "보고자",
+    "reportedDate": "보고일시"
+  },
   "issueDetail": {
     "title": "이슈 정보",
     "reporter": "보고자",
     "reportedDate": "작업 이슈 보고 시간",
     "content": "작업 이슈 내용"
   },
-  "paper": "페이퍼",
   "paperDetail": {
     "title": "페이퍼 정보",
     "item": "항목 {n}."

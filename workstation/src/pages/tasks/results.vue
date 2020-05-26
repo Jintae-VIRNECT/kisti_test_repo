@@ -15,9 +15,11 @@
             {{ $t('common.all') }}
           </el-button>
           <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
+            {{ myResult }}
           </el-button>
-          <span>{{ $t('searchbar.filter.title') }}:</span>
+          <span v-if="activeTab === 'task'">
+            {{ $t('searchbar.filter.title') }}:
+          </span>
           <searchbar-filter
             v-if="activeTab === 'task'"
             ref="filter"
@@ -78,6 +80,7 @@ export default {
       list: [],
       total: 0,
       page: 1,
+      myResult: '',
     }
   },
   watch: {
@@ -85,12 +88,15 @@ export default {
       if (tab === 'task') {
         this.$router.replace(`/tasks/results`)
         this.searchSubTasks()
+        this.myResult = this.$t('results.myTask')
       } else if (tab === 'issue') {
         this.$router.replace(`/tasks/results/issues`)
         this.searchIssues()
+        this.myResult = this.$t('results.myIssue')
       } else if (tab === 'paper') {
         this.$router.replace(`/tasks/results/papers`)
         this.searchPapers()
+        this.myResult = this.$t('results.myPaper')
       }
     },
   },

@@ -8,6 +8,8 @@ export default class SubTask extends Model {
    */
   constructor(json = {}) {
     super()
+    this.taskId = json.taskId
+    this.taskName = json.taskName
     this.subTaskId = json.subTaskId
     this.subTaskName = json.subTaskName
     this.priority = json.priority
