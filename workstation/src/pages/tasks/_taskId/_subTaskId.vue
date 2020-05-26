@@ -26,64 +26,7 @@
           <div slot="header">
             <h3>{{ $t('task.subTaskDetail.title') }}</h3>
           </div>
-          <el-table :data="[subTaskInfo]" v-loading="loading">
-            <column-default
-              :label="$t('task.detail.subTaskColumn.no')"
-              prop="priority"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.id')"
-              prop="subTaskId"
-              :width="140"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.name')"
-              prop="subTaskName"
-            />
-            <column-count
-              :label="$t('task.detail.subTaskColumn.endedSteps')"
-              prop="doneCount"
-              maxProp="stepTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.detail.subTaskColumn.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.detail.subTaskColumn.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.detail.subTaskColumn.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
+          <sub-tasks-list :data="[subTaskInfo]" />
         </el-card>
       </el-row>
 
@@ -212,9 +155,13 @@ import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
+import SubTasksList from '@/components/task/SubTasksList'
 
 export default {
   mixins: [searchMixin, columnMixin],
+  components: {
+    SubTasksList,
+  },
   async asyncData({ params }) {
     const promise = {
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
