@@ -43,19 +43,19 @@ export default {
           }
           console.log(JSON.stringify(metaData))
           const iceServer = [
+            // {
+            //   url: 'stun:stun.l.google.com:19302',
+            // },
             {
-              url: 'stun:stun.l.google.com:19302',
+              url: 'turn:turn.virnectremote.com:3478?transport=udp',
+              username: 'virnect',
+              credential: 'virnect',
             },
-            // {
-            //   url: 'turn:turn.virnectremote.com:3478?transport=udp',
-            //   username: 'virnect',
-            //   credential: 'virnect',
-            // },
-            // {
-            //   url: 'turn:turn.virnectremote.com:3478?transport=tcp',
-            //   username: 'virnect',
-            //   credential: 'virnect',
-            // },
+            {
+              url: 'turn:turn.virnectremote.com:3478?transport=tcp',
+              username: 'virnect',
+              credential: 'virnect',
+            },
           ]
 
           await this.session.connect(

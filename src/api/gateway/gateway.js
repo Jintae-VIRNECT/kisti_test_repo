@@ -9,6 +9,7 @@ import { merge } from 'lodash'
 import Axios from 'axios'
 import Cookies from 'js-cookie'
 import urls from '@/server/urls'
+import { tokenRenewal } from 'utils/auth'
 
 const TOKEN = Cookies.get('accessToken')
 const axios = Axios.create({
@@ -25,6 +26,7 @@ const axios = Axios.create({
 const URL = {
   /* Account */
   LOGIN: ['POST', '/auth/signin'],
+  TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
@@ -41,7 +43,10 @@ const URL = {
   DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
+  GET_MEMBER_LIST: [
+    'GET',
+    'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
+  ],
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
@@ -189,12 +194,10 @@ const errorHandler = function(err) {
         // "Unexpected Server Error, Please contact Administrator"
         break
       // case 8005:
-      // case 8003:
-      //   // sessionStorage.clear();
-      //   // window.location.href = "/"
-      //   sessionStorage.clear()
-      //   window.location.reload()
-      //   break
+      case 8003:
+        // 토근만료, 갱신
+        tokenRenewal()
+        break
       // case 'Network Error':
       //   sessionStorage.clear()
       //   window.location.reload()

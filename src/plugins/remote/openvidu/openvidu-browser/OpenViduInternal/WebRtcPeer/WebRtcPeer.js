@@ -69,6 +69,11 @@ var WebRtcPeer = /** @class */ (function() {
           username: 'virnectremote',
           credential: 'qjsprxmflahxm01!',
         },
+        {
+          url: 'turn:turn.virnectremote.com:3478?transport=tcp',
+          username: 'virnectremote',
+          credential: 'qjsprxmflahxm01!',
+        },
       ],
     })
     this.id = configuration.id ? configuration.id : uuid.v4()

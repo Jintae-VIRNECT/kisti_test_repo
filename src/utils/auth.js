@@ -1,4 +1,4 @@
-import { getAccount } from 'api/common/account'
+import { getAccount, tokenRequest } from 'api/common/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
@@ -22,6 +22,11 @@ function getTokensFromCookies() {
   refreshToken = Cookies.get('refreshToken')
   return accessToken
 }
+function setTokensToCookies(accessToken, refreshToken) {
+  Cookies.set('accessToken', accessToken)
+  Cookies.set('refreshToken', refreshToken)
+  return accessToken
+}
 async function getMyInfo() {
   try {
     const res = await getAccount()
@@ -35,6 +40,18 @@ async function getMyInfo() {
     }
     throw err
   }
+}
+
+export const tokenRenewal = async () => {
+  // console.log('[[ TOKEN INTERVAL ]]')
+  let params = {
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  }
+
+  const response = await tokenRequest(params)
+
+  setTokensToCookies(response.accessToken, response.refreshToken)
 }
 
 /**
