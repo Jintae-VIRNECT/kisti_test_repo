@@ -23,7 +23,7 @@ function IsMobileBrowser(req) {
   return isChromeMobile
 }
 
-router.get('/workspace', function(req, res) {
+router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       res.redirect('/m/qrcode')
@@ -54,7 +54,7 @@ router.get('/support', function(req, res) {
 })
 
 router.get('/*', function(req, res) {
-  res.redirect('/workspace')
+  res.redirect('/home')
 })
 
 module.exports = router

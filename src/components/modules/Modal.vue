@@ -135,6 +135,8 @@ export default {
       e.stopPropagation()
     },
     clickHander(event) {
+      this.$eventBus.$emit('popover:close')
+
       if (this.eventPropagation) {
         event.stopPropagation()
       }
@@ -148,7 +150,10 @@ export default {
         this.beforeClose()
       }
 
-      this.$emit('update:visible', false)
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.$emit('update:visible', false)
+      })
     },
   },
 

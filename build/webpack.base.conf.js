@@ -11,6 +11,7 @@ const config = mode => {
     entry: {
       remote: './src/apps/remote/app.js',
       extra: './src/apps/extra/app.js',
+      account: './src/apps/account/app.js',
       sample: './src/apps/sample/app.js',
     },
     output: {
@@ -23,7 +24,7 @@ const config = mode => {
       modules: ['node_modules', 'modules'],
       alias: {
         vue$: 'vue/dist/vue.esm.js',
-        '@': join(__dirname, '../src'),
+        '@': join(__dirname, '../'),
         apps: join(__dirname, '../src/apps'),
         assets: join(__dirname, '../src/assets'),
         components: join(__dirname, '../src/components'),

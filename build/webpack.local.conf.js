@@ -4,9 +4,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const path = require('path')
 const fs = require('fs')
-const host = '0.0.0.0'
-const port = process.env.port
+const host = '127.0.0.1'
+const port = '8886'
 const logger = require('../server/logger')
+const Dotenv = require('dotenv-webpack')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'
@@ -24,12 +25,20 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     historyApiFallback: {
       rewrites: [
         {
-          from: /workspace(\/.*)?/,
+          from: /home(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
+          from: /service(\/.*)?/,
           to: '/remote/index.html',
         },
         {
           from: /sample(\/.*)?/,
           to: '/sample/index.html',
+        },
+        {
+          from: /account(\/.*)?/,
+          to: '/account/index.html',
         },
         {
           from: /support(\/.*)?/,
@@ -42,17 +51,13 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       ],
     },
     proxy: {
-      '/admin': {
-        target: 'http://192.168.6.3:8081',
+      '/api': {
+        target: 'https://develop.virnect.com:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
-      },
-      '/auth': {
-        target: 'http://192.168.6.3:8321',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
+        secure: false,
+        changeOrigin: true,
       },
     },
     noInfo: true,
@@ -90,6 +95,16 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       chunks: ['extra'],
     }),
 
+    // account
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
+      template: './src/apps/account/app.html',
+      filename: 'account/index.html',
+      chunks: ['account'],
+    }),
+
     // sample
     new HtmlWebpackPlugin({
       inject: 'body',
@@ -98,6 +113,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/sample/app.html',
       filename: 'sample/index.html',
       chunks: ['sample'],
+    }),
+
+    new Dotenv({
+      path: `.env.${process.env.NODE_ENV.trim()}`,
     }),
 
     // new BundleAnalyzerPlugin({

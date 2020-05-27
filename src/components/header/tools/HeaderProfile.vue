@@ -5,17 +5,17 @@
     trigger="click"
     popperClass="popover-profile"
   >
-    <profile-image
+    <profile
       slot="reference"
       :image="account.profile"
       :size="30"
-      customClass="header-tools__profile"
-    ></profile-image>
+      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
+    ></profile>
     <div>
       <div class="popover-profile__myinfo">
         <profile
           :image="account.profile"
-          :mainText="account.name"
+          :mainText="account.nickname"
           :subText="account.email"
         ></profile>
       </div>
@@ -36,14 +36,12 @@
 import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
-import ProfileImage from 'ProfileImage'
-// import auth from 'utils/auth'
+import auth from 'utils/auth'
 export default {
   name: 'HeaderProfile',
   components: {
     Popover,
     Profile,
-    ProfileImage,
   },
   computed: {
     ...mapGetters(['account']),
@@ -58,7 +56,7 @@ export default {
     logout() {
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
-        // auth.logout()
+        auth.logout()
         // auth.login()
       })
     },
@@ -68,15 +66,6 @@ export default {
   mounted() {},
 }
 </script>
-<style lang="scss" scoped>
-.header-tools__profile.profile-image {
-  margin: 0.143rem 0.143rem 0.143rem 0.929rem;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.8;
-  }
-}
-</style>
 <style lang="scss">
 @import '~assets/style/vars';
 
@@ -98,7 +87,7 @@ export default {
     height: 4rem;
   }
   > .profile .profile--text .profile--maintext {
-    margin: 0.5rem 0 0.286rem;
+    margin: 0.286rem 0;
     font-size: 1.214rem;
   }
 }

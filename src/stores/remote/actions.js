@@ -8,19 +8,51 @@ export default {
   clearAccount({ commit }) {
     commit(types.ACCOUNT_CLEAR)
   },
+  initWorkspace({ commit }, infoList) {
+    console.log(infoList)
+    commit(types.INIT_WORKSPACE, infoList)
+  },
+  changeWorkspace({ commit }, id) {
+    commit(types.CHANGE_WORKSPACE, id)
+  },
 
   /**
    * Change Call Mode
    * @param {String} state : stream, sharing, ar
    */
-  changeCallMode({ commit }, state) {
+  setView({ commit }, state) {
     commit(types.CALL_MODE_SET, state)
+  },
+  /**
+   * Change Tool Status
+   * @param {Object} state { key: value }
+   */
+  setTool({ commit }, payload) {
+    if (payload && payload.target) {
+      let type = ''
+
+      switch (payload.target) {
+        case 'drawColor':
+          type = types.TOOL_DRAWING_COLOR
+          break
+        case 'drawOpacity':
+          type = types.TOOL_DRAWING_OPACITY
+          break
+        case 'textSize':
+          type = types.TOOL_TEXT_SIZE
+          break
+        case 'lineWidth':
+          type = types.TOOL_LINE_WIDTH
+      }
+
+      commit(type, payload.value)
+    }
   },
   /**
    * Change Call Action
    * @param {String} state : pointing, drawing
    */
-  changeAction({ commit }, state) {
+  setAction({ commit }, state) {
     commit(types.CALL_ACTION_SET, state)
   },
 
@@ -103,5 +135,21 @@ export default {
   setLanguage({ commit }, payload) {
     localStorage.setItem('language', payload)
     commit(types.SETTINGS.SET_LANGUAGE, payload)
+  },
+
+  /**
+   * set room info
+   * @param {Object} payload // room info
+   */
+  setRoomInfo({ commit }, payload) {
+    commit(types.ROOM_SET, payload)
+  },
+
+  /**
+   * clear room info
+   * @param {*} payload
+   */
+  roomClear({ commit }) {
+    commit(types.ROOM_CLEAR)
   },
 }

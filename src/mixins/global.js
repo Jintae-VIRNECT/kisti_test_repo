@@ -5,6 +5,9 @@ export default {
   components: {},
   filters: {
     timeFilter(time) {
+      if (time === 0) {
+        return '00:00'
+      }
       if (!time) {
         return null
       }
@@ -55,7 +58,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['account', 'deviceType']),
+    ...mapGetters(['account', 'workspace', 'deviceType']),
     isMobileChrome() {
       const userAgent = navigator.userAgent
       const isChromeMobile =
@@ -86,10 +89,13 @@ export default {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
-      event.target.src = require('assets/image/img_user_profile.svg')
+      // event.target.src = require('assets/image/img_user_profile.svg')
+      event.target.style.display = 'none'
+      event.target.classList.add('default')
     },
     onImageErrorGroup(event) {
-      event.target.src = require('assets/image/img_default_group.svg')
+      // event.target.src = require('assets/image/img_default_group.svg')
+      event.target.style.display = 'none'
     },
   },
 }

@@ -5,6 +5,21 @@
 
 .header-lnb {
   height: 100%;
+  > .flex li {
+    &.notice {
+      position: relative;
+      &::after {
+        position: absolute;
+        top: 16px;
+        right: 0px;
+        width: 6px;
+        height: 6px;
+        background-color: $color_red;
+        border-radius: 50%;
+        content: "";
+      }
+    }
+  }
 }
 
 .header-lnb__button {
@@ -49,6 +64,7 @@
   padding: 11px 17px;
   > .tooltip,
   > .popover--wrapper {
+    display: inline-block;
     margin-left: 8px;
   }
   .header-tools__notice {

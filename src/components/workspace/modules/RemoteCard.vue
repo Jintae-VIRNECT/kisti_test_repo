@@ -7,46 +7,52 @@
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
-      <span class="groupcard__leader" v-if="accountId === room.roomLeaderId"
-        >Leader</span
-      >
+      <span class="groupcard__leader" v-if="leader">Leader</span>
       <div class="groupcard-profile">
-        <img
+        <div class="profile__image">
+          <profile
+            :group="true"
+            :image="room.orgPath"
+            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+          ></profile>
+        </div>
+        <!-- <img
           class="profile__image"
           :src="room.path"
           @error="onImageErrorGroup"
-        />
+        /> -->
         <p class="profile__name">{{ room.title }}</p>
         <p class="profile__description">
           {{ room.description }}
         </p>
-        <p class="profile__leader">리더 : {{ room.roomLeaderName }}</p>
+        <p class="profile__leader">리더 : {{ room.leaderNickName }}</p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            {{ `총 멤버: ${room.maxParticipantCount}명` }}
+            {{ `총 멤버: ${room.participantsCount}명` }}
           </p>
         </div>
         <div class="info__section">
           <p class="info__title">접속한 회원</p>
           <profile-list
-            :size="28"
             :customStyle="{
-              width: '28px',
-              height: '28px',
+              width: '2rem',
+              height: '2rem',
               'font-size': '12px',
-              'margin-left': '4px',
-              'line-height': '25px',
-              'border-width': '1px',
+              'margin-left': '0.286rem',
+              'line-height': '2rem',
             }"
+            size="2rem"
             :max="5"
-            :users="participants"
+            :users="room.participants"
           ></profile-list>
         </div>
       </div>
-      <button class="groupcard-button btn small">참가하기</button>
+      <button class="groupcard-button btn small" @click="$emit('join', room)">
+        참가하기
+      </button>
     </div>
     <ul slot="menuPopover" class="groupcard-popover">
       <li>
@@ -54,13 +60,13 @@
           상세 보기
         </button>
       </li>
-      <li v-if="accountId === room.roomLeaderId">
-        <button class="group-pop__button" @click="removeRoom(room.roomId)">
+      <li v-if="leader">
+        <button class="group-pop__button" @click="$emit('remove', room.roomId)">
           협업 삭제
         </button>
       </li>
       <li v-else>
-        <button class="group-pop__button" @click="leaveRoom(room.roomId)">
+        <button class="group-pop__button" @click="$emit('leave', room.roomId)">
           협업 나가기
         </button>
       </li>
@@ -75,17 +81,15 @@
 
 <script>
 import Card from 'Card'
+import Profile from 'Profile'
 import ProfileList from './ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
-import { deleteRoom } from 'api/workspace/room'
-import confirmMixin from 'mixins/confirm'
-
 export default {
   name: 'RemoteCard',
-  mixins: [confirmMixin],
   components: {
     Card,
+    Profile,
     ProfileList,
     RoominfoModal,
   },
@@ -95,7 +99,7 @@ export default {
     }
   },
   props: {
-    roomInfo: {
+    room: {
       type: Object,
       default: () => {
         return {}
@@ -103,17 +107,11 @@ export default {
     },
   },
   computed: {
-    room() {
-      return this.roomInfo.room
-    },
-    participants() {
-      return this.roomInfo.participants
-    },
     accountId() {
       return this.account.userId
     },
     leader() {
-      if (this.account.userId === this.room.roomLeaderId) {
+      if (this.account.userId === this.room.leaderId) {
         return true
       } else {
         return false
@@ -127,47 +125,10 @@ export default {
         this.showRoomInfo = !this.showRoomInfo
       })
     },
-    leaveRoom(roomId) {
-      this.confirmCancel(
-        '협업에서 나가시겠습니까?',
-        {
-          text: '나가기',
-          action: () => {
-            this.remove(roomId)
-          },
-        },
-        { text: '취소' },
-      )
-    },
-    removeRoom(roomId) {
-      this.confirmCancel(
-        '협업을 삭제 하시겠습니까?',
-        {
-          text: '내보내기',
-          action: () => {
-            this.remove(roomId)
-          },
-        },
-        { text: '취소' },
-      )
-    },
-    async remove(roomId) {
-      const rtn = await deleteRoom({ roomId: roomId })
-
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        if (rtn) {
-          this.$emit('refresh')
-          this.$eventBus.$emit('popover:close')
-        }
-      })
-    },
   },
 
   /* Lifecycles */
-  mounted() {
-    // console.log(this.roomInfo)
-  },
+  mounted() {},
 }
 </script>
 

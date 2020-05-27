@@ -51,6 +51,7 @@
 <script>
 import Modal from 'Modal'
 import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
+import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 
@@ -84,10 +85,14 @@ export default {
       default: false,
     },
     roomId: {
-      type: String,
+      type: Number,
       required: true,
     },
     leader: {
+      type: Boolean,
+      default: false,
+    },
+    history: {
       type: Boolean,
       default: false,
     },
@@ -95,15 +100,28 @@ export default {
   watch: {
     visible(flag) {
       if (flag === true) {
-        this.clear()
+        if (this.history) {
+          this.initHistory()
+        } else {
+          this.initRemote()
+        }
       }
       this.visibleFlag = flag
     },
   },
   methods: {
-    async clear() {
+    async initRemote() {
       try {
         this.room = await getRoomInfo({ roomId: this.roomId })
+        this.image = this.room.path
+        this.tabview = 'group'
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async initHistory() {
+      try {
+        this.room = await getHistorySingleItem({ roomId: this.roomId })
         this.image = this.room.path
         this.tabview = 'group'
       } catch (err) {

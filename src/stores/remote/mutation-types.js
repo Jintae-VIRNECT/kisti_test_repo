@@ -1,6 +1,9 @@
 // account
 export const ACCOUNT_SET = 'ACCOUNT_SET'
 export const ACCOUNT_CLEAR = 'ACCOUNT_CLEAR'
+export const WORKSPACE_SET = 'WORKSPACE_SET'
+export const INIT_WORKSPACE = 'INIT_WORKSPACE'
+export const CHANGE_WORKSPACE = 'CHANGE_WORKSPACE'
 
 // oncall
 export const CALL_MODE_SET = 'CALL_MODE_SET'
@@ -9,6 +12,12 @@ export const CALL_STREAM = 'CALL_STREAM'
 export const CALL_SPEAKER = 'CALL_SPEAKER'
 export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
+
+// tools
+export const TOOL_DRAWING_COLOR = 'TOOL_DRAWING_COLOR'
+export const TOOL_DRAWING_OPACITY = 'TOOL_DRAWING_OPACITY'
+export const TOOL_TEXT_SIZE = 'TOOL_TEXT_SIZE'
+export const TOOL_LINE_WIDTH = 'TOOL_LINE_WIDTH'
 
 //workspace-settings
 export const SETTINGS = {
@@ -20,6 +29,10 @@ export const SETTINGS = {
   SET_RECORD_RESOLUTION: 'SET_RECORD_RESOLUTION',
 }
 export const SET_DEVICE = 'SET_DEVICE'
+
+// room
+export const ROOM_SET = 'ROOM_SET'
+export const ROOM_CLEAR = 'ROOM_CLEAR'
 
 //list search
 export const SEARCH_SORT = 'SEARCH_SORT'

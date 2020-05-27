@@ -4,7 +4,9 @@
       <p class="workspace-welcome__group">
         리모트원격솔루션 <role :role="'Manager'"></role>
       </p>
-      <p class="workspace-welcome__name">리모트님, 반갑습니다.</p>
+      <p class="workspace-welcome__name">
+        {{ account.nickname }}님, 반갑습니다.
+      </p>
       <button class="btn" @click="createRoom">원격 협업 생성</button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
@@ -14,10 +16,8 @@
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import toastMixin from 'mixins/toast'
 export default {
   name: 'WorkspaceWelcome',
-  mixins: [toastMixin],
   components: {
     Role,
     CreateRoomModal,

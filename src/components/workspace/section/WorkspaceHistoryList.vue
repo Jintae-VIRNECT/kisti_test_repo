@@ -6,21 +6,22 @@
       v-bind:key="index"
     >
       <profile
-        :image="require('assets/image/img_default_group.svg')"
+        :image="history.path"
         :imageAlt="'profileImg'"
         :mainText="history.title"
-        :subText="`참석자 ${history.memberCount}명`"
+        :subText="`참석자 ${history.participantsCount}명`"
+        :group="true"
       ></profile>
 
       <div slot="column1" class="label label--noraml">
-        {{ `총 이용시간: ${history.totalUseTime}` }}
+        {{ `총 이용시간: ${convertTime(history.totalUseTime)}` }}
       </div>
       <div slot="column2" class="label label--date">
-        {{ convertDate(history.collaborationStartDate) }}
+        {{ convertDate(history.startDate) }}
       </div>
       <div slot="column3" class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${history.roomLeaderName}` }}</span>
+        <span class="text">{{ `리더 : ${history.leaderNickName}` }}</span>
       </div>
       <button slot="menuPopover"></button>
       <button
@@ -62,7 +63,7 @@
       :roomId="roomId"
     ></roominfo-modal>
     <create-room-modal
-      :visible.sync="visible"
+      :visible.sync="showRestart"
       :roomId="roomId"
     ></create-room-modal>
   </div>
@@ -76,11 +77,9 @@ import sort from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
-import {
-  getHistorySingleItem,
-  deleteHistorySingleItem,
-} from 'api/workspace/history'
+import { deleteHistorySingleItem } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
+import dayjs from 'dayjs'
 
 export default {
   name: 'WorkspaceHistoryList',
@@ -94,9 +93,9 @@ export default {
   },
   data() {
     return {
-      visible: false,
+      showRestart: false,
       showRoomInfo: false,
-      roomId: '',
+      roomId: 0,
     }
   },
   computed: {
@@ -129,15 +128,11 @@ export default {
   },
   methods: {
     //상세보기
-    async openRoomInfo(roomId) {
-      let result = await getHistorySingleItem({ roomId })
-      this.roomInfo = result.data
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        this.showRoomInfo = !this.showRoomInfo
-      })
+    openRoomInfo(roomId) {
+      this.roomId = roomId
+      this.showRoomInfo = true
     },
-    async showDeleteDialog(roomId) {
+    showDeleteDialog(roomId) {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
@@ -163,13 +158,31 @@ export default {
     },
 
     //재시작
-    async createRoom(roomId) {
+    createRoom(roomId) {
       this.roomId = roomId
-      this.visible = !this.visible
+      this.showRestart = !this.showRestart
     },
     convertDate(date) {
-      const re = /-/gi
-      return date.replace(re, '.')
+      if (date !== null && date !== '') {
+        const re = /T/gi
+        let cvtDate = date.replace(re, ' ')
+        cvtDate = dayjs(cvtDate).format('YYYY.MM.DD')
+        const today = dayjs().format('YYYY.MM.DD')
+        if (cvtDate === today) {
+          return 'Today'
+        } else {
+          return cvtDate
+        }
+      } else {
+        console.log('convertDate :: Invalid data')
+      }
+    },
+    convertTime(totalUseTime) {
+      const min = Math.floor(totalUseTime / 60)
+      const minText = '분'
+      const sec = totalUseTime % 60
+      const secText = '초'
+      return `${min + minText + ' ' + sec + secText}`
     },
   },
   created() {},

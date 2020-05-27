@@ -52,7 +52,7 @@
     </input-row>
     <button
       class="btn large createroom-info__button"
-      :disabled="btnDisabled"
+      :class="{ disabled: btnDisabled }"
       @click="start"
     >
       시작하기
@@ -65,12 +65,14 @@ import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 
+import { createRoom, getRoomInfo } from 'api/workspace/room'
+import { mapActions } from 'vuex'
 import imageMixin from 'mixins/uploadImage'
-import { createRoom } from 'api/workspace/room'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [imageMixin],
+  mixins: [imageMixin, confirmMixin],
   components: {
     ProfileImage,
     InputRow,
@@ -95,8 +97,29 @@ export default {
       type: Boolean,
       default: true,
     },
+    roomInfo: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+  },
+  watch: {
+    roomInfo: {
+      deep: true,
+      handler: function(info) {
+        console.log(info)
+      },
+    },
   },
   computed: {
+    shortName() {
+      if (this.account.nickname.length > 10) {
+        return this.account.nickname.substr(0, 10)
+      } else {
+        return this.account.nickname
+      }
+    },
     btnDisabled() {
       if (this.selection.length < 1) {
         return true
@@ -115,29 +138,69 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setRoomInfo', 'roomClear']),
     reset() {
-      this.title = `${this.account.name}'s Room`
+      this.title = `${this.shortName}'s Room`
       this.description = ''
     },
     async start() {
-      console.log('원격 협업 생성')
-      // TODO: 이미지는 어떻게 처리??
-      const roomId = await createRoom({
-        title: this.title,
-        description: this.description,
-        sessionId: '',
-        profile: this.image,
-        roomParticipants: this.selection,
-      })
-      console.log(roomId)
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        this.$router.push({ name: 'service' })
-      })
+      if (this.btnDisabled) {
+        this.confirmDefault(
+          '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
+        )
+        return
+      }
+      try {
+        const selectedUser = []
+
+        // 필요없어지면 삭제할거임!!!!!!!!!!!!!
+        let selectedUserEmail = ''
+        for (let select of this.selection) {
+          selectedUser.push(select.uuid)
+          selectedUserEmail += select.email + ','
+        }
+        selectedUser.push(this.account.uuid)
+        selectedUserEmail += this.account.email
+        // 여기까지!!!!!!!!!!!!!!!!!!!!!!!!
+        const createdRoom = await createRoom({
+          file: this.imageFile,
+          title: this.title,
+          description: this.description,
+          leaderId: this.account.uuid,
+          participants: selectedUser,
+          workspaceId: this.workspace.uuid,
+        })
+
+        const joinRtn = await this.$call.join(
+          createdRoom,
+          this.account,
+          selectedUserEmail,
+        )
+        if (joinRtn) {
+          console.log('>>>join room 성공')
+          this.$eventBus.$emit('popover:close')
+
+          const roomInfo = await getRoomInfo({
+            roomId: createdRoom.roomId,
+          })
+
+          console.log(roomInfo)
+          this.setRoomInfo(roomInfo)
+          this.$nextTick(() => {
+            this.$router.push({ name: 'service' })
+          })
+        } else {
+          this.roomClear()
+          console.error('>>>join room 실패')
+        }
+      } catch (err) {
+        this.roomClear()
+        console.log(err)
+      }
     },
     checkEmpty() {
       if (this.title === '') {
-        this.title = `${this.account.name}'s Room`
+        this.title = `${this.shortName}'s Room`
       }
     },
   },

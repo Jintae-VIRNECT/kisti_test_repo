@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="46px" height="46px" viewBox="0 0 46 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 64 (101010) - https://sketch.com -->
+    <title>D822B629-DD2A-4D24-A094-BE9DB86990B4@1.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M29.6666667,21 L29.6666667,16.3333333 C29.6666667,15.6 29.0666667,15 28.3333333,15 L12.3333333,15 C11.6,15 11,15.6 11,16.3333333 L11,29.6666667 C11,30.4 11.6,31 12.3333333,31 L28.3333333,31 C29.0666667,31 29.6666667,30.4 29.6666667,29.6666667 L29.6666667,25 L35,30.3333333 L35,15.6666667 L29.6666667,21 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part01" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0040-_접속-전-화면_환경-설정-_녹화-설정_접근-권한_Pop-up" transform="translate(-798.000000, -544.000000)">
+            <g id="popup_01" transform="translate(646.000000, 427.000000)">
+                <g id="area" transform="translate(131.000000, 61.000000)">
+                    <g id="Group-4" transform="translate(21.000000, 54.000000)">
+                        <g id="icon" transform="translate(0.000000, 2.000000)">
+                            <g>
+                                <rect id="tr" x="0" y="0" width="46" height="46"></rect>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="icon/av/videocam_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

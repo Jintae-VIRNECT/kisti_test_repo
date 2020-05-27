@@ -1,9 +1,9 @@
 <template>
-  <li>
+  <li :class="{ notice: notice }">
     <button
       class="header-lnb__button"
       :class="{ active: view === keyvalue }"
-      @click="changeCallMode(keyvalue)"
+      @click="setView(keyvalue)"
     >
       <img class="header-lnb__image" :src="image" />
       <span class="header-lnb__text">{{ text }}</span>
@@ -19,13 +19,17 @@ export default {
     text: String,
     keyvalue: String,
     image: String,
+    notice: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapGetters(['view']),
   },
   watch: {},
   methods: {
-    ...mapActions(['changeCallMode']),
+    ...mapActions(['setView']),
   },
 
   /* Lifecycles */

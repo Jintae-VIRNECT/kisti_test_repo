@@ -112,6 +112,13 @@
   > .tooltip,
   > .popover--wrapper {
     margin-left: 8px;
+    > .profile {
+      margin: 0.143rem 0.143rem 0.143rem 0.929rem;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
   .notice {
     position: relative;

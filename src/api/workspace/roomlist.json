@@ -12,7 +12,7 @@
         "currentParticipantCount":"2",
         "maxParticipantCount":"3",
         "joinYn":"Y",
-        "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
+        "path": ""
       },
       "participants": [
           {
@@ -20,7 +20,7 @@
             "userName":"우경아",
             "userRole":"master",
             "userEmail": "wooka@virnect.com",
-            "path": "https://virtualconnection.atlassian.net/secure/projectavatar?pid=10101&avatarId=10610&size=xxlarge"
+            "path": ""
           },
           {
             "userId": "123457",

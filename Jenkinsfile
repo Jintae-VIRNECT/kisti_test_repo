@@ -7,7 +7,6 @@ pipeline {
         catchError() {
           sh 'npm cache verify'
           sh 'npm install'
-          sh 'npm run build'
           sh 'cp docker/Dockerfile ./'
         }
       }
@@ -25,7 +24,11 @@ pipeline {
           when {
             branch 'develop'
           }
-          steps {            
+          environment {
+            NODE_ENV='develop'
+          }
+          steps {
+            sh 'npm run build'
             sh 'docker build -t rm-web .'
           }
         }
@@ -34,7 +37,11 @@ pipeline {
           when {
             branch 'staging'
           }
-          steps {            
+          environment {
+            NODE_ENV='staging'
+          }
+          steps {
+            sh 'npm run build'   
             sh 'docker build -t rm-web .'
           }
         }
@@ -43,7 +50,11 @@ pipeline {
           when {
             branch 'master'
           }
-          steps {            
+          environment {
+            NODE_ENV='production'
+          }
+          steps {
+            sh 'npm run build' 
             sh 'docker build -t rm-web .'
           }
         }

@@ -20,7 +20,7 @@ export default new VueRouter({
       component: ServiceComponent,
     },
     {
-      path: '/workspace',
+      path: '/home',
       name: 'workspace',
       component: WorkspaceComponent,
     },

@@ -1,5 +1,5 @@
 import { localStorage } from 'utils/storage'
-import $http from 'api/service/gateway'
+// import $http from 'api/service/gateway'
 
 const order = ['ko', 'en', 'zh']
 const shortLang = new Map([

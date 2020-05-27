@@ -2,10 +2,10 @@
   <div class="grid-container">
     <member-card
       v-for="userinfo in list"
-      :key="userinfo.participantId"
-      :name="userinfo.participantName"
-      :email="'example@test.com'"
-      :role="userinfo.participantRole"
+      :key="userinfo.uuid"
+      :name="userinfo.nickName"
+      :email="userinfo.email"
+      :role="userinfo.role"
       :license="userinfo.license"
     >
     </member-card>

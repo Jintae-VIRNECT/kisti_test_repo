@@ -1,6 +1,6 @@
 <template>
   <div class="header-tools">
-    <stream></stream>
+    <!-- <stream></stream> -->
 
     <mic></mic>
 
@@ -17,7 +17,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
-import Stream from '../tools/Stream'
+// import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
@@ -26,7 +26,7 @@ import CallTime from '../tools/CallTime'
 export default {
   name: 'HeaderTools',
   components: {
-    Stream,
+    // Stream,
     Mic,
     Speaker,
     Notice,
@@ -36,17 +36,16 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainSession', 'mute']),
+    ...mapGetters(['mainView', 'mute']),
   },
   watch: {
-    mainSession: {
+    mainView: {
       deep: true,
       handler: function(val) {
         if (val.stream) {
-          let state = this.$openvidu.getState()
-
-          this.callMic(state.audio)
-          this.callStream(state.video)
+          // let state = this.$call.getState()
+          // this.callMic(state.audio)
+          // this.callStream(state.video)
         }
       },
     },
@@ -54,9 +53,13 @@ export default {
   methods: {
     ...mapActions(['callMic', 'callStream']),
     leave() {
-      // this.$openvidu.leave()
+      try {
+        this.$call.leave()
 
-      this.$router.push({ name: 'workspace' })
+        this.$router.push({ name: 'workspace' })
+      } catch (err) {
+        this.$router.push({ name: 'workspace' })
+      }
     },
   },
 

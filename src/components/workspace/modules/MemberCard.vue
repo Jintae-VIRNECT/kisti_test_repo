@@ -2,7 +2,10 @@
   <div class="card" :class="{ no__button: !showMessageButton }">
     <div class="card-center">
       <div class="card-profile--thumb" :class="{ expired: !license }">
-        <profile :image="imageUrl" size="4.571rem"></profile>
+        <profile
+          :image="imageUrl"
+          :thumbStyle="{ width: '4.571rem', height: '4.571rem' }"
+        ></profile>
         <span
           v-if="status && license"
           class="card-profile--badge"
@@ -18,7 +21,7 @@
       <role v-if="role && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
-        :role="'라이센스 만료'"
+        :role="'라이선스 만료'"
         :opt="opt"
       ></role>
     </div>
@@ -29,12 +32,12 @@
 </template>
 
 <script>
-import ProfileImage from 'ProfileImage'
+import Profile from 'Profile'
 import Role from 'Role'
 export default {
   name: 'Card',
   components: {
-    Profile: ProfileImage,
+    Profile,
     Role,
   },
 
@@ -43,10 +46,7 @@ export default {
       type: String,
       validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
     },
-    imageUrl: {
-      type: String,
-      default: require('assets/image/img_user_profile.svg'),
-    },
+    imageUrl: String,
     name: {
       type: String,
       default: '',
@@ -100,6 +100,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 .card {
   display: flex;
   flex-direction: column;
@@ -127,12 +128,10 @@ export default {
 
 .card-profile--thumb {
   position: relative;
-  padding: 0.214rem;
-  border: 1.4px solid transparent;
+  padding: 0.286rem;
 
   &.expired {
-    border-color: #c51803;
-    border-radius: 50%;
+    @include profileMask(#313135, 1.4px, #c51803);
   }
 }
 

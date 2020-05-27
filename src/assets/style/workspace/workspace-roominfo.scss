@@ -136,9 +136,9 @@
 .roominfo-userinfo {
   display: flex;
   width: 100%;
-}
-.profile {
-  flex: 1;
+  > .profile {
+    flex: 1;
+  }
 }
 .userinfo__image {
   flex: 0;

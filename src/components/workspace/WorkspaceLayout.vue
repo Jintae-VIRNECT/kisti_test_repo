@@ -17,12 +17,23 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import { getAccount } from 'api/common/account'
+// import { getAccount } from 'api/common/account'
+import auth from 'utils/auth'
+
 export default {
   name: 'WorkspaceLayout',
+  async beforeMount() {
+    const account = await auth.init()
+    if (!auth.isLogin) {
+      auth.login()
+    } else {
+      this.updateAccount(account.myInfo)
+      this.initWorkspace(account.myWorkspaces)
+    }
+  },
   components: {
     WorkspaceWelcome,
     WorkspaceTab,
@@ -39,11 +50,8 @@ export default {
       showCookie: !cookie,
     }
   },
-  computed: {
-    ...mapGetters(['account']),
-  },
   methods: {
-    ...mapActions(['updateAccount']),
+    ...mapActions(['updateAccount', 'initWorkspace']),
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
         this.tabFix = true
@@ -59,22 +67,18 @@ export default {
 
   /* Lifecycles */
   async created() {
-    this.updateAccount({
-      userId: '123456',
-      profile: require('assets/image/profile.png'),
-      description: null,
-      email: 'remote@remote.com',
-      name: '리모트',
-      serviceInfo: null,
-      userType: 'Manager',
-      uuid: null,
-    })
+    // this.updateAccount({
+    //   userId: '123456',
+    //   profile: require('assets/image/profile.png'),
+    //   description: null,
+    //   email: 'remote@remote.com',
+    //   name: '리모트',
+    //   serviceInfo: null,
+    //   userType: 'Manager',
+    //   uuid: null,
+    // })
     // try {
-    //   const datas = await getAccount({
-    //     email: 'smic1',
-    //     password: 'smic1234',
-    //     rememberMe: false,
-    //   })
+    //   const datas = await getAccount()
     //   console.log(datas)
     // } catch (err) {
     //   // 에러처리

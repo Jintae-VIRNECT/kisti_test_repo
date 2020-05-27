@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>956DB331-9CF9-492D-AC3D-CA39D6ABC90D@1.00x</title>
+    <defs>
+        <path d="M28.6244661,19.26 L27.2144661,17.85 L23.6544661,21.4 L25.0644661,22.81 C25.0644661,22.81 28.5144661,19.29 28.6244661,19.26 Z M19.8786797,15 L21.8786797,15 L21.8786797,20 L19.8786797,20 L19.8786797,15 Z M31,24.5 L31,26.5 L26,26.5 L26,24.5 L31,24.5 Z M16,24.5 L16,26.5 L11,26.5 L11,24.5 L16,24.5 Z M16.6928932,22.81 L18.1028932,21.4 L14.5528932,17.84 L13.1328932,19.26 C13.2428932,19.29 16.6928932,22.81 16.6928932,22.81 L16.6928932,22.81 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_02" transform="translate(-50.000000, -529.000000)">
+            <g id="edit-tool" transform="translate(30.000000, 528.000000)">
+                <g id="Group-2">
+                    <g id="btn_pointing">
+                        <g id="ic_pointing">
+                            <g id="Group-13" transform="translate(19.769078, 0.924078)">
+                                <rect id="tr" fill-rule="nonzero" x="0.230921895" y="0.0759218946" width="48" height="48"></rect>
+                                <g id="icn_pointing" transform="translate(9.230922, 9.075922)"></g>
+                                <path d="M34.913889,27.8579763 L23.9592985,23.1176348 C23.7627968,23.0344336 23.5351822,23.0778111 23.3841128,23.2288833 C23.2330433,23.3799554 23.189144,23.607574 23.2728663,23.8040793 L28.0131231,34.75897 C28.0963228,34.9524093 28.28617,35.0759219 28.4938905,35.0759219 C28.5091855,35.0759219 28.5250381,35.0753993 28.5413435,35.0738663 C28.7669373,35.0534492 28.9537185,34.8896251 29.003715,34.6686264 L30.1030448,29.9479354 L34.8235469,28.8485859 C35.0445417,28.7985537 35.2083629,28.6117692 35.2287796,28.3862062 C35.2491962,28.1606432 35.1221321,27.9472747 34.913889,27.8579763 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero"></path>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="icon/communication/ring_volume_24px" fill="#FFFFFF" fill-rule="nonzero" transform="translate(21.000000, 20.750000) rotate(-405.000000) translate(-21.000000, -20.750000) " xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

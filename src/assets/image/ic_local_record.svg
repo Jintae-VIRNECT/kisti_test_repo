@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>651A638E-CB55-4186-85B8-6E4DDA9913A7@1.00x</title>
+    <defs>
+        <path d="M2,13 L0,13 L0,16 C0,17.1 0.9,18 2,18 L5,18 L5,16 L2,16 L2,13 Z M2,2 L5,2 L5,0 L2,0 C0.9,0 0,0.9 0,2 L0,5 L2,5 L2,2 Z M16,0 L13,0 L13,2 L16,2 L16,5 L18,5 L18,2 C18,0.9 17.1,0 16,0 Z M18,13 L18,16 C18,17.1 17.1,18 16,18 L16,18 L13,18 L13,16 L16,16 L16,13 L18,13 Z M11,6 L11,8 L14,6 L14,12 L11,10 L11,12 L4,12 L4,6 L11,6 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_01" transform="translate(-118.000000, -448.000000)">
+            <g id="Group-2" transform="translate(0.000000, 413.000000)">
+                <g id="import_btns" transform="translate(38.000000, 35.000000)">
+                    <g id="btn_Local_recording" transform="translate(80.000000, 0.000000)">
+                        <g id="ic_record">
+                            <rect id="tr20" opacity="0.5" x="0" y="0" width="20" height="20"></rect>
+                            <g id="icon_Local_record" transform="translate(1.000000, 1.000000)">
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

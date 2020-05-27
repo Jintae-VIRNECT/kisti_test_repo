@@ -1,14 +1,26 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <p class="profile--image">
-        <img :src="image" :alt="mainText" @error="onError | onImageError" />
-      </p>
-      <span v-if="status" class="profile--badge" :class="status">{{
+      <div
+        class="profile--image"
+        :class="{ group: group, image: image && image.length > 0 }"
+      >
+        <img
+          v-if="image && image.length > 0"
+          :src="image"
+          :alt="mainText"
+          @error="onImageError"
+        />
+      </div>
+      <!-- <span v-if="status" class="profile--badge" :class="status">{{
         status
-      }}</span>
+      }}</span> -->
     </div>
-    <figcaption class="profile--text" style="color: #fff;">
+    <figcaption
+      class="profile--text"
+      style="color: #fff;"
+      v-if="mainText && mainText.length > 0"
+    >
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
@@ -39,7 +51,7 @@ export default {
     },
     mainText: {
       type: String,
-      required: true,
+      default: '',
     },
     subText: String,
     status: {
@@ -50,6 +62,10 @@ export default {
       type: String,
       default: null,
     },
+    group: {
+      type: Boolean,
+      default: false,
+    },
   },
 }
 </script>
@@ -59,7 +75,7 @@ export default {
 @import '~assets/style/mixin';
 
 .profile {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   justify-content: left;
   width: fit-content;
@@ -73,14 +89,18 @@ export default {
 .profile--image {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  line-height: 0;
+  @include image();
 
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    @include image();
+    // background-position: center;
+    // background-size: cover;
+    // -webkit-mask: url('~assets/image/icon_bg.svg') no-repeat;
+    // -webkit-mask-size: 100%;
+    // mask: url('~assets/image/icon_bg.svg') no-repeat;
+    // mask-size: 100%;
   }
 }
 

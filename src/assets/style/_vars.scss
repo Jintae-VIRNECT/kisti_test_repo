@@ -29,7 +29,7 @@ $color_darkgray_400: #38383a;
 /* Status Color */
 $color_state_good: #3ce900;
 $color_state_normal: #4bc6ff;
-$color_state_bad: #eb001d;
+$color_state_bad: #ffdc00;
 $color_online: #7ed321;
 $color_offline: #cccccc;
 $color_busy: #ef3e33;
@@ -67,8 +67,6 @@ $color_chat_header: rgba(#a9a9a9, 0.2);
 $color_chat_bg_me: #d1dffa;
 $color_chat_bg_opponent: $color_white;
 
-$color_videolist_border: rgba(151, 151, 151, 0.21);
-
 $color_state_good_bg: rgba(#0e2805, 0.6);
 $color_state_normal_bg: rgba(#1a1e00, 0.6);
 $color_state_bad_bg: rgba(#2c070c, 0.72);
@@ -84,7 +82,7 @@ $size_m_min: 320px;
 $size_m_pad: 20px;
 
 /* Font */
-$font_family: "NotoSansKR";
+$font_family: "Noto Sans KR";
 $font_family2: "Roboto";
 // $font_family2: "Noto Sans";
 $font_family3: "Noto Sans SC";

@@ -10,6 +10,7 @@
   >
     <div class="createroom">
       <create-room-info
+        :roomInfo="roomInfo"
         :selection="selection"
         :nouser="users.length === 0"
       ></create-room-info>
@@ -28,12 +29,14 @@ import Modal from 'Modal'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { inviteParticipantsList } from 'api/workspace/room'
+import { getMemberList } from 'api/workspace/member'
+import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -45,6 +48,7 @@ export default {
       visibleFlag: false,
       users: [],
       maxSelect: 2,
+      roomInfo: {},
     }
   },
   props: {
@@ -52,16 +56,30 @@ export default {
       type: Boolean,
       default: false,
     },
+    roomId: {
+      type: Number,
+      default: 0,
+    },
   },
   watch: {
     visible(flag) {
       if (flag) {
-        this.reset()
+        this.inviteRefresh()
+        if (this.roomId && this.roomId > 0) {
+          this.getInfo()
+        }
       }
       this.visibleFlag = flag
     },
   },
   methods: {
+    async getInfo() {
+      try {
+        this.roomInfo = await getHistorySingleItem({ roomId: this.roomId })
+      } catch (err) {
+        console.error(err)
+      }
+    },
     reset() {
       this.selection = []
     },
@@ -69,12 +87,10 @@ export default {
       this.$emit('update:visible', false)
     },
     selectUser(user) {
-      const idx = this.selection.findIndex(
-        select => user.userId === select.userId,
-      )
+      const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify('선택 가능 멤버를 초과했습니다.')
+          this.toastNotify('최대 2명까지 선택이 가능합니다.')
           return
         }
         this.selection.push(user)
@@ -83,17 +99,16 @@ export default {
       }
     },
     async inviteRefresh() {
-      const inviteList = await inviteParticipantsList()
-      this.users = inviteList.participants
+      const inviteList = await getMemberList({
+        workspaceId: this.workspace.uuid,
+      })
+      this.users = inviteList.memberInfoList
       this.selection = []
     },
   },
 
   /* Lifecycles */
-  async created() {
-    const inviteList = await inviteParticipantsList()
-    this.users = inviteList.participants
-  },
+  created() {},
   mounted() {},
 }
 </script>

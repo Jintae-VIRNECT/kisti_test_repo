@@ -1,23 +1,32 @@
 <template>
-  <div class="notice-item">
-    <img class="notice-item__image" :class="section" :src="icon" />
-    <div class="notice-item__body">
-      <p class="notice-item__info" :class="section">{{ info }}</p>
+  <figure class="notice-item">
+    <div class="notice-item__image">
+      <img
+        v-if="icon && icon.length > 0"
+        :class="type"
+        :src="icon"
+        :alt="info"
+        @error="onImageError"
+      />
+    </div>
+    <!-- <img class="notice-item__image" :class="type" :src="icon" /> -->
+    <figcaption class="notice-item__body">
+      <p class="notice-item__info" :class="type">{{ info }}</p>
       <p class="notice-item__description" v-html="description"></p>
       <p class="notice-item__date">{{ date }}</p>
-      <div class="notice-item__buttons" v-if="btnType === 'license'">
+      <div class="notice-item__buttons" v-if="type === 'license'">
         <button class="btn small">라이선스 구매</button>
       </div>
-      <div class="notice-item__buttons" v-if="btnType === 'invite'">
+      <div class="notice-item__buttons" v-if="type === 'invite'">
         <button class="btn small">수락</button>
         <button class="btn small sub">거절</button>
       </div>
-      <div class="notice-item__buttons" v-if="btnType === 'file'">
+      <div class="notice-item__buttons" v-if="type === 'file'">
         <button class="btn small sub filelink">{{ filename }}</button>
       </div>
       <button class="notice-item__close">삭제</button>
-    </div>
-  </div>
+    </figcaption>
+  </figure>
 </template>
 
 <script>
@@ -40,11 +49,11 @@ export default {
       type: String,
       default: '',
     },
-    section: {
+    type: {
       type: String,
       validate(value) {
         return (
-          ['message', 'invite', 'info', 'alert', 'license', 'file'].indexOf(
+          ['message', 'invite', 'info', 'fail', 'license', 'file'].indexOf(
             value,
           ) >= 0
         )
@@ -63,16 +72,12 @@ export default {
       type: String,
       default: '',
     },
-    btnType: {
-      type: String,
-      default: '',
-    },
   },
   computed: {
     icon() {
-      if (this.section === 'info' || this.section === 'license') {
+      if (this.type === 'info' || this.type === 'license') {
         return require('assets/image/ic_system.svg')
-      } else if (this.section === 'alert') {
+      } else if (this.type === 'fail') {
         return require('assets/image/ic_notice.svg')
       } else {
         return this.image
@@ -132,10 +137,11 @@ export default {
   height: 36px;
   margin: 0 20px auto 0;
   @include image();
-  &.info {
+  > .info,
+  > .license {
     background-color: $color_primary;
   }
-  &.alert {
+  > .fail {
     background-color: $color_yellow;
   }
 }
@@ -147,11 +153,11 @@ export default {
   &.message,
   &.invite,
   &.file {
-    color: rgba(#fff, 0.5);
+    color: rgba($color_text, 0.5);
   }
 }
 .notice-item__description {
-  color: #fff;
+  color: $color_text;
   font-size: 16px;
   > em {
     color: $color_primary_500;

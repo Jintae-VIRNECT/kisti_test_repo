@@ -1,5 +1,5 @@
 import http from 'api/gateway'
-import dummyJsonMember from './member.json'
+// import dummyJsonMember from './member.json'
 
 /**
  * ----------------------------------------------------------------
@@ -7,8 +7,8 @@ import dummyJsonMember from './member.json'
  * ----------------------------------------------------------------
  */
 
-export const getMemberList = async function() {
-  //const returnVal = await http('GET_MEMBER_LIST')
-  const returnVal = dummyJsonMember
+export const getMemberList = async function({ workspaceId }) {
+  const returnVal = await http('GET_MEMBER_LIST', { workspaceId, size: 100 })
+  // const returnVal = dummyJsonMember
   return returnVal
 }

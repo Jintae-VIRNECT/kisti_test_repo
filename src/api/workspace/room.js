@@ -1,21 +1,14 @@
-// import http from 'api/gateway'
-import roomlist from './roomlist.json'
-import roomdetail from './roomdetail.json'
+import http from 'api/gateway'
+// import roomlist from './roomlist.json'
+// import roomdetail from './roomdetail.json'
 import participants from './participantslist.json'
-import inviteParticipants from './inviteparticipantslist.json'
+// import inviteParticipants from './inviteparticipantslist.json'
 
 /**
  * 진행중인 원격협업 리스트 조회
- * @param {String} title // 방이름
- * @param {String} participantName
  */
-export const getRoomList = async function({ title, participantName }) {
-  // const returnVal = await http('ROOM_LIST', {
-  //   title,
-  //   participantName,
-  // })
-  console.log('ROOM_LIST::param::', title, participantName)
-  const returnVal = roomlist
+export const getRoomList = async function() {
+  const returnVal = await http('ROOM_LIST', { paging: false })
 
   return returnVal
 }
@@ -25,11 +18,9 @@ export const getRoomList = async function({ title, participantName }) {
  * @param {String} roomId
  */
 export const getRoomInfo = async function({ roomId }) {
-  // const returnVal = await http('ROOM_INFO', {
-  //   roomId,
-  // })
-  console.log('ROOM_INFO::param::', roomId)
-  const returnVal = roomdetail
+  const returnVal = await http('ROOM_INFO', {
+    roomId,
+  })
 
   return returnVal
 }
@@ -88,9 +79,7 @@ export const participantsList = async function({ roomId }) {
  * 원격협업 통화방 멤버 추가 후보 리스트 조회
  */
 export const inviteParticipantsList = async function() {
-  // const returnVal = await http('INVITE_PARTICIPANTS_LIST')
-  console.log('INVITE_PARTICIPANTS_LIST')
-  const returnVal = inviteParticipants
+  const returnVal = await http('INVITE_PARTICIPANTS_LIST')
 
   return returnVal
 }
@@ -101,61 +90,38 @@ export const inviteParticipantsList = async function() {
  * @param {File} file // 프로필 이미지 파일
  * @param {String} title
  * @param {String} description
- * @param {String} id // 리더 아이디(uuid)
- * @param {Array} participants // 참여자 리스트
- *  @param {String} id
- *  @param {String} email
+ * @param {String} leaderId // 리더 아이디(uuid)
+ * @param {Array[String]} participants // 참여자 리스트
+ * @param {String} workspaceId
  */
 export const createRoom = async function({
   file,
   title,
   description,
-  id,
+  leaderId,
   participants = [],
+  workspaceId,
 }) {
-  // const returnVal = await http('CREATE_ROOM', {
-  //   file,
-  //   room: {
-  //     title,
-  //     description,
-  //     id,
-  //     participants,
-  //   }
-  // })
-  console.log('CREATE_ROOM::param::', {
+  const returnVal = await http('CREATE_ROOM', {
     file,
-    room: {
-      title,
-      description,
-      id,
-      participants,
-    },
+    title,
+    description,
+    leaderId,
+    participants,
+    workspaceId,
   })
-  const returnVal = '방 ID'
 
   return returnVal
 }
 
 /**
  * 원격협업 통화방 삭제
- * @param {String} title
- * @param {String} description
- * @param {String} sessionId
- * >> profile 변경될 예정
- * @param {Object} profile
- *  @param {String} path
- * @param {Array} roomParticipants
- *  @param {Object} participant
- *    @param {String} participantId
- *    @param {String} sessionId
+ * @param {String} roomId
  */
 export const deleteRoom = async function({ roomId }) {
-  // const returnVal = await http('DELETE_ROOM', {
-  //   roomId,
-  // })
-  console.log('DELETE_ROOM')
-  console.log('param::', { roomId })
-  const returnVal = true
+  const returnVal = await http('DELETE_ROOM', {
+    roomId,
+  })
 
   return returnVal
 }

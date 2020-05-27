@@ -27,26 +27,22 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainSession', 'mute']),
+    ...mapGetters(['mainView', 'mute']),
   },
   watch: {
-    mainSession: {
+    mainView: {
       deep: true,
       handler: function(val) {
         if (val.stream) {
-          let state = this.$openvidu.getState()
-
-          this.callMic(state.audio)
-          this.callStream(state.video)
+          // let state = this.$call.getState()
+          // this.callMic(state.audio)
+          // this.callStream(state.video)
         }
       },
     },
   },
   methods: {
     ...mapActions(['callMic', 'callStream']),
-    leave() {
-      this.$openvidu.leave()
-    },
   },
 
   /* Lifecycles */

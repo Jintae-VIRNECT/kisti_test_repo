@@ -73,11 +73,11 @@ export default {
         return false
       }
 
-      if (this.afterChat.nodeId !== this.chat.nodeId) {
+      if (this.afterChat.uuid !== this.chat.uuid) {
         return false
       }
 
-      if (this.chat.nodeId === null && this.chat.name === 'alarm') {
+      if (this.chat.uuid === null && this.chat.name === 'alarm') {
         return false
       }
 
@@ -90,7 +90,7 @@ export default {
 
       if (
         this.beforeChat.type === this.chat.type &&
-        this.beforeChat.nodeId === this.chat.nodeId
+        this.beforeChat.uuid === this.chat.uuid
       ) {
         return true
       }
