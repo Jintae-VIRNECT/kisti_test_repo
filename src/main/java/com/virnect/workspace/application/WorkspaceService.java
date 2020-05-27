@@ -93,7 +93,7 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
-        // 이미 생성한 워크스페이스가 있는지 확인
+        //이미 생성한 워크스페이스가 있는지 확인(사용자가 마스터로 소속되는 워크스페이스는 단 1개다.)
         boolean userHasWorkspace = this.workspaceRepository.existsByUserId(workspaceCreateRequest.getUserId());
 
         if (userHasWorkspace) {
@@ -363,23 +363,23 @@ public class WorkspaceService {
      * @return
      */
     public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
-        //1. 요청한 사람이 마스터유저 또는 매니저유저인지 체크
+        // 워크스페이스에 이미 멤버가 9명인지 체크 with 라이선스 서비스
+
+        // 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, workspaceInviteRequest.getUserId());
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //TODO: 라이선스 체크 - 최대 멤버 수(9명) 체크하기
-
-        //2. 계정 유효성 체크(user 서비스)
+        // 초대할 유저의 계정 유효성 체크(user 서비스)
         List<String> emailList = new ArrayList<>();
         workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> emailList.add(userInfo.getEmail()));
         InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(emailList.stream().toArray(String[]::new)).getData();
 
         // 유효하지 않은 이메일을 가진 사용자가 포함되어 있는 경우.
         if (emailList.size() != responseUserList.getInviteUserInfoList().size()) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_USER_EXIST);
         }
         //서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
         /*inviteUserInfoRestResponse.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
@@ -409,7 +409,11 @@ public class WorkspaceService {
             workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
                 //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크
                 if (userInfo.getRole().equals("MASTER")) {
-                    throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                //초대받는 사람에게 부여되는 라이선스는 최소 1개 이상이도록 체크
+                if (userInfo.getPlanRemote() == false && userInfo.getPlanMake() == false && userInfo.getPlanView() == false) {
+                    throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_PLAN_INFO);
                 }
                 if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
                     //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간만 갱신.
@@ -421,6 +425,7 @@ public class WorkspaceService {
 
                     } else {
                         UserInvite newUserInvite = UserInvite.builder()
+                                .inviteId(inviteUserResponse.getUserUUID() + inviteCode)
                                 .responseUserId(inviteUserResponse.getUserUUID())
                                 .responseUserEmail(inviteUserResponse.getEmail())
                                 .responseUserName(inviteUserResponse.getName())
@@ -433,8 +438,9 @@ public class WorkspaceService {
                                 .workspaceName(workspace.getName())
                                 .code(inviteCode)
                                 .role(userInfo.getRole())
-                                .makeType(userInfo.getMakeType())
-                                .viewType(userInfo.getViewType())
+                                .planRemote(userInfo.getPlanRemote())
+                                .planMake(userInfo.getPlanMake())
+                                .planView(userInfo.getPlanView())
                                 .expireTime(duration)
                                 .build();
 
@@ -450,6 +456,18 @@ public class WorkspaceService {
                     context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
                     context.setVariable("responseUserNickName", inviteUserResponse.getNickName());
                     context.setVariable("role", userInfo.getRole());
+                    StringBuilder plan = new StringBuilder();
+                    if (userInfo.getPlanRemote()) {
+                        plan.append("REMOTE");
+                    }
+                    if (userInfo.getPlanMake()) {
+                        plan.append(",MAKE");
+                    }
+                    if (userInfo.getPlanView()) {
+                        plan.append(",VIEW");
+                    }
+
+                    context.setVariable("plan", plan.toString());
 
                     String html = springTemplateEngine.process("workspace_invite", context);
                     List<String> emailReceiverList = new ArrayList<>();
@@ -489,7 +507,7 @@ public class WorkspaceService {
      */
     public RedirectView inviteWorkspaceAccept(String workspaceId, String userId, String code, Locale locale) {
         //REDIS 에서 초대정보 조회
-        UserInvite userInvite = this.userInviteRepository.findById(userId).orElse(null);
+        UserInvite userInvite = this.userInviteRepository.findById(userId+code).orElse(null);
         if (userInvite == null) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO);
         }
@@ -528,9 +546,9 @@ public class WorkspaceService {
             return redirectView;
         } else {
             //초대 코드 대조
-            if (!userInvite.getCode().equals(code)) {
+          /*  if (!userInvite.getCode().equals(code)) {
                 throw new WorkspaceException(ErrorCode.ERR_INCORRECT_INVITE_WORKSPACE_CODE);
-            }
+            }*/
 
             //워크스페이스 소속 넣기 (workspace_user)
             WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
@@ -978,7 +996,7 @@ public class WorkspaceService {
             memberInfoDTOList.add(memberInfoDTO);
         });
 
-        return new ApiResponse<>(new MemberListResponse(memberInfoDTOList,null));
+        return new ApiResponse<>(new MemberListResponse(memberInfoDTOList, null));
     }
 
 }

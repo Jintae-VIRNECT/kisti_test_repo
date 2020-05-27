@@ -23,6 +23,7 @@ import java.io.Serializable;
 @ToString
 public class UserInvite implements Serializable {
     @Id
+    private String inviteId;
     private String responseUserId;
     private String responseUserEmail;
     private String responseUserName;
@@ -35,15 +36,17 @@ public class UserInvite implements Serializable {
     private String workspaceName;
     private String code;
     private String role;
-    private String makeType;
-    private String viewType;
+    private Boolean planRemote;
+    private Boolean planMake;
+    private Boolean planView;
 
     @TimeToLive
     private Long expireTime;
 
     @Builder
-    public UserInvite(String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
-                      String workspaceId, String workspaceName, String code, String role, String makeType, String viewType, Long expireTime) {
+    public UserInvite(String inviteId, String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
+                      String workspaceId, String workspaceName, String code, String role, Boolean planRemote, Boolean planMake, Boolean planView, Long expireTime) {
+        this.inviteId = inviteId;
         this.responseUserId = responseUserId;
         this.responseUserEmail = responseUserEmail;
         this.responseUserName = responseUserName;
@@ -56,8 +59,9 @@ public class UserInvite implements Serializable {
         this.workspaceName = workspaceName;
         this.code = code;
         this.role = role;
-        this.makeType = makeType;
-        this.viewType = viewType;
+        this.planRemote = planRemote;
+        this.planMake = planMake;
+        this.planView = planView;
         this.expireTime = expireTime;
     }
 }
