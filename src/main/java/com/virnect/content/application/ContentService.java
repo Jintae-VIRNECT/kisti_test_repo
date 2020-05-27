@@ -171,7 +171,7 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = fileUploadService.base64ImageUpload(targetData);
+        String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
 
         Target target = Target.builder()
                 .type(targetType)
@@ -187,7 +187,7 @@ public class ContentService {
     }
 
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = fileUploadService.base64ImageUpload(targetData);
+        String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
 
         Target target = Target.builder()
                 .type(targetType)
