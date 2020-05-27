@@ -30,7 +30,7 @@ public class MemberInfoDTO {
     private Integer countProgressing;
     private Integer countAssigned;
     private LocalDateTime joinDate;
-    //사용중인 플랜정보
+    private String[] planList;
 
     @Override
     public String toString() {

@@ -193,13 +193,11 @@
                     </table>
 
                     <p style="text-align: center;">
-                        <img src="http://image.virnect.com/images/mailling_service/invite_reject_btn.png" th:onclick="invite_reject(${token})">
+                        <a th:href="@{${rejectUrl}}" style="margin: 0 4px;"><img
+                                src="http://image.virnect.com/images/mailling_service/invite_reject_btn.png"></a>
                         <a th:href="@{${acceptUrl}}" style="margin: 0 4px;"><img
                                 src="http://image.virnect.com/images/mailling_service/invite_accept_btn.png"></a>
                     </p>
-                    <script>
-
-                    </script>
 
                 </td>
             </tr>
@@ -242,4 +240,3 @@
         </table>
     </div>
 </xmeta>
-<script src="workspace_invite.js"></script>
