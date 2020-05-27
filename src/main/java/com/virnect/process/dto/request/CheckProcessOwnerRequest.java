@@ -5,14 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @ToString
 public class CheckProcessOwnerRequest {
 
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "작업 식별자", notes = "작업 식별자", required = true, example = "1")
     private Long taskId;
 
