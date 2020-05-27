@@ -61,6 +61,8 @@ public class WorkspaceService {
     private final SpringTemplateEngine springTemplateEngine;
     private final HistoryRepository historyRepository;
     private final MessageSource messageSource;
+    private final LicenseRestService licenseRestService;
+
     @Value("${file.upload-path}")
     private String fileUploadPath;
 
@@ -340,7 +342,29 @@ public class WorkspaceService {
         long managerUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
         long memberUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MEMBER");
 
-        return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount));
+        //plan 정보 set
+        long remotePlanCount = 0L;
+        long makePlanCount = 0L;
+        long viewPlanCount = 0L;
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
+            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
+                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                remotePlanCount = licenseInfoResponseList.size();
+            }
+            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("MAKE")) {
+                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                makePlanCount = licenseInfoResponseList.size();
+            }
+            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("VIEW")) {
+                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                viewPlanCount = licenseInfoResponseList.size();
+            }
+        }
+        return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount, remotePlanCount, makePlanCount, viewPlanCount));
     }
 
     /**
@@ -416,16 +440,19 @@ public class WorkspaceService {
                     throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_PLAN_INFO);
                 }
                 if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
-                    //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간만 갱신.
-                    UserInvite userInvite = this.userInviteRepository.findById(inviteUserResponse.getUserUUID()).orElse(null);
-                    if (userInvite != null) {
+                    //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간과 초대 정보 업데이트
+                    UserInvite userInvite = this.userInviteRepository.findById(inviteUserResponse.getUserUUID() + workspaceId).orElse(null);
+                    if (userInvite != null && userInvite.getWorkspaceId().equals(workspaceId)) {
+                        userInvite.setRole(userInfo.getRole());
+                        userInvite.setPlanRemote(userInfo.getPlanRemote());
+                        userInvite.setPlanMake(userInfo.getPlanMake());
+                        userInvite.setPlanView(userInfo.getPlanView());
                         userInvite.setExpireTime(duration);
                         this.userInviteRepository.save(userInvite);
-                        log.info("REDIS SET - {}", userInvite.toString());
-
+                        log.info("REDIS UPDATE - {}", userInvite.toString());
                     } else {
                         UserInvite newUserInvite = UserInvite.builder()
-                                .inviteId(inviteUserResponse.getUserUUID() + inviteCode)
+                                .inviteId(inviteUserResponse.getUserUUID() + workspaceId)
                                 .responseUserId(inviteUserResponse.getUserUUID())
                                 .responseUserEmail(inviteUserResponse.getEmail())
                                 .responseUserName(inviteUserResponse.getName())
@@ -507,7 +534,7 @@ public class WorkspaceService {
      */
     public RedirectView inviteWorkspaceAccept(String workspaceId, String userId, String code, Locale locale) {
         //REDIS 에서 초대정보 조회
-        UserInvite userInvite = this.userInviteRepository.findById(userId+code).orElse(null);
+        UserInvite userInvite = this.userInviteRepository.findById(userId + workspaceId).orElse(null);
         if (userInvite == null) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO);
         }
@@ -539,66 +566,67 @@ public class WorkspaceService {
             String html = springTemplateEngine.process("workspace_invite_reject", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
 
-            //거절 응답
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl);
-            redirectView.setContentType("application/json");
-            return redirectView;
         } else {
             //초대 코드 대조
-          /*  if (!userInvite.getCode().equals(code)) {
+            if (!userInvite.getCode().equals(code)) {
                 throw new WorkspaceException(ErrorCode.ERR_INCORRECT_INVITE_WORKSPACE_CODE);
-            }*/
-
-            //워크스페이스 소속 넣기 (workspace_user)
-            WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
-
-            //워크스페이스 권한 부여하기 (workspace_user_permission)
-            WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(userInvite.getRole().toUpperCase());
-
-            WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                    .workspaceUser(workspaceUser)
-                    .workspaceRole(workspaceRole)
-                    .build();
-            this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-
-            //TODO: 라이선스 플랜 부여하기
-
-            //MAIL 발송
-            Context context = new Context();
-            context.setVariable("workspaceName", workspace.getName());
-            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-            context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
-            context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
-            context.setVariable("role", userInvite.getRole());
-            context.setVariable("workstationHomeUrl", redirectUrl);
-
-            String html = springTemplateEngine.process("workspace_invite_accept", context);
-            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
-            //redis 에서 삭제
-            this.userInviteRepository.deleteById(userId);
-
-            //history 저장
-            String message;
-            if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
-                message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName()}, locale);
-            } else {
-                message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName()}, locale);
             }
-            History history = History.builder()
-                    .message(message)
-                    .userId(userInvite.getResponseUserId())
-                    .workspace(workspace)
-                    .build();
-            this.historyRepository.save(history);
 
-            //수락 응답
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl);
-            redirectView.setContentType("application/json");
-            return redirectView;
+            //이미 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 최대 개수 9개 체크하기
+            if (this.workspaceUserRepository.findAllByUserId(userId).size() > 8) {
+                //TODO: 메일 발송
+                //리다이렉트
+                redirectUrl= redirectUrl+"?message=abortJoinWorkspace";
+
+            } else {
+                //워크스페이스 소속 넣기 (workspace_user)
+                WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
+
+                //워크스페이스 권한 부여하기 (workspace_user_permission)
+                WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(userInvite.getRole().toUpperCase());
+
+                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
+                        .workspaceUser(workspaceUser)
+                        .workspaceRole(workspaceRole)
+                        .build();
+                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
+
+                //TODO: 라이선스 플랜 부여하기
+
+                //MAIL 발송
+                Context context = new Context();
+                context.setVariable("workspaceName", workspace.getName());
+                context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+                context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+                context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
+                context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
+                context.setVariable("role", userInvite.getRole());
+                context.setVariable("workstationHomeUrl", redirectUrl);
+
+                String html = springTemplateEngine.process("workspace_invite_accept", context);
+                this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
+                //redis 에서 삭제
+                this.userInviteRepository.deleteById(userId);
+
+                //history 저장
+                String message;
+                if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
+                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName()}, locale);
+                } else {
+                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName()}, locale);
+                }
+                History history = History.builder()
+                        .message(message)
+                        .userId(userInvite.getResponseUserId())
+                        .workspace(workspace)
+                        .build();
+                this.historyRepository.save(history);
+            }
         }
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(redirectUrl);
+        redirectView.setContentType("application/json");
+        return redirectView;
     }
 
     /**

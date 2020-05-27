@@ -16,6 +16,7 @@ public enum ErrorCode {
     ERR_INCORRECT_INVITE_WORKSPACE_CODE(1005,"Incorrect Workspace Invite Code."),
     ERR_INVALID_USER_EXIST(1006,"Invalid User Exist."),
     ERR_INCORRECT_USER_PLAN_INFO(1007,"Users must have at least 1 plan."),
+    ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),

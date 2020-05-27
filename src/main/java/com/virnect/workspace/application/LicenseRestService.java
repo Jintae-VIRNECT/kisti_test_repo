@@ -1,6 +1,10 @@
 package com.virnect.workspace.application;
 
+import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Project: PF-Workspace
@@ -11,4 +15,6 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 @FeignClient(name = "license-server", fallbackFactory = LicenseRestFallbackFactory.class)
 public interface LicenseRestService {
+    @GetMapping(value = "/licenses/{workspaceId}/plan")
+    ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicenses(@PathVariable("workspaceId") String workspaceId);
 }
