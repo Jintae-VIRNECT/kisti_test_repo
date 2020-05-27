@@ -210,8 +210,7 @@ public class TaskService {
         try {
             String targetData = UUID.randomUUID().toString();
 
-            String imgPath = "";// = this.s3UploadService.base64ImageUpload(targetData);
-
+            String imgPath = this.fileUploadService.base64ImageUpload(targetData);
 
             Target target = Target.builder()
                     .type(targetType)
@@ -242,7 +241,7 @@ public class TaskService {
         try {
             String targetData = contentTargetResponse.getData();
             TargetType targetType = contentTargetResponse.getType();
-            String imgPath = "";// = s3UploadService.base64ImageUpload(targetData);
+            String imgPath = this.fileUploadService.base64ImageUpload(targetData);
 
             Target target = Target.builder()
                     .type(targetType)
