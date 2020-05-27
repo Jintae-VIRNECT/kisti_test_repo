@@ -62,7 +62,6 @@ import java.util.stream.Collectors;
 public class ContentService {
     private final FileUploadService fileUploadService;
     private final FileDownloadService fileDownloadService;
-    private final S3UploadService s3UploadService;
 
     private final ContentRepository contentRepository;
     private final SceneGroupRepository sceneGroupRepository;
@@ -172,7 +171,7 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = s3UploadService.base64ImageUpload(targetData);
+        String imgPath = fileUploadService.base64ImageUpload(targetData);
 
         Target target = Target.builder()
                 .type(targetType)
@@ -188,7 +187,7 @@ public class ContentService {
     }
 
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = s3UploadService.base64ImageUpload(targetData);
+        String imgPath = fileUploadService.base64ImageUpload(targetData);
 
         Target target = Target.builder()
                 .type(targetType)
