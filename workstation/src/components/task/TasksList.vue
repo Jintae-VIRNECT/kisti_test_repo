@@ -1,96 +1,110 @@
 <template>
-  <el-table
-    :class="clickable ? 'clickable' : ''"
-    :data="data"
-    @row-click="moveToTaskDetail"
-    @sort-change="sortChange"
-  >
-    <column-default :label="$t('task.list.column.id')" prop="id" :width="140" />
-    <column-default
-      :label="$t('task.list.column.name')"
-      prop="name"
-      :sortable="clickable ? 'custom' : null"
+  <div>
+    <el-table
+      :class="clickable ? 'clickable' : ''"
+      :data="data"
+      @row-click="moveToTaskDetail"
+      @sort-change="sortChange"
+    >
+      <column-default
+        :label="$t('task.list.column.id')"
+        prop="id"
+        :width="140"
+      />
+      <column-default
+        :label="$t('task.list.column.name')"
+        prop="name"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-count
+        :label="$t('task.list.column.endedSubTasks')"
+        prop="doneCount"
+        maxProp="subTaskTotal"
+        :width="120"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-date
+        :label="$t('task.list.column.schedule')"
+        type="time"
+        prop="startDate"
+        prop2="endDate"
+        :width="250"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-progress
+        :label="$t('task.list.column.progressRate')"
+        prop="progressRate"
+        :width="150"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-status
+        :label="$t('task.list.column.status')"
+        prop="conditions"
+        :statusList="taskConditions"
+        :width="100"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-date
+        :label="$t('task.list.column.reportedDate')"
+        type="time"
+        prop="reportedDate"
+        :width="130"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-boolean
+        :label="$t('task.list.column.issue')"
+        prop="issuesTotal"
+        :trueText="$t('task.list.hasIssue.yes')"
+        :falseText="$t('task.list.hasIssue.no')"
+        :width="90"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-closed
+        :label="$t('task.list.column.endStatus')"
+        prop="state"
+        :width="90"
+        :sortable="clickable ? 'custom' : null"
+      />
+      <column-dropdown :width="60" v-slot:default="{ row }">
+        <span class="title">{{ $t('task.list.dropdown.taskSetting') }}</span>
+        <el-dropdown-item @click.native="showTarget(row)">
+          {{ $t('task.list.dropdown.targetInfo') }}
+        </el-dropdown-item>
+        <el-dropdown-item @click.native="edit(row.id)">
+          {{ $t('task.list.dropdown.taskEdit') }}
+        </el-dropdown-item>
+        <el-dropdown-item @click.native="add(row.id)">
+          {{ $t('task.list.dropdown.taskAdd') }}
+        </el-dropdown-item>
+        <el-dropdown-item
+          v-if="row.state !== 'CLOSED'"
+          @click.native="close(row.id)"
+        >
+          {{ $t('task.list.dropdown.taskClose') }}
+        </el-dropdown-item>
+        <el-dropdown-item class="red" @click.native="remove(row.id)">
+          {{ $t('task.list.dropdown.taskDelete') }}
+        </el-dropdown-item>
+      </column-dropdown>
+    </el-table>
+    <task-target-info
+      :task="activeTask"
+      :visible.sync="showTaskTargetInfoModal"
     />
-    <column-count
-      :label="$t('task.list.column.endedSubTasks')"
-      prop="doneCount"
-      maxProp="subTaskTotal"
-      :width="120"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-date
-      :label="$t('task.list.column.schedule')"
-      type="time"
-      prop="startDate"
-      prop2="endDate"
-      :width="250"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-progress
-      :label="$t('task.list.column.progressRate')"
-      prop="progressRate"
-      :width="150"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-status
-      :label="$t('task.list.column.status')"
-      prop="conditions"
-      :statusList="taskConditions"
-      :width="100"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-date
-      :label="$t('task.list.column.reportedDate')"
-      type="time"
-      prop="reportedDate"
-      :width="130"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-boolean
-      :label="$t('task.list.column.issue')"
-      prop="issuesTotal"
-      :trueText="$t('task.list.hasIssue.yes')"
-      :falseText="$t('task.list.hasIssue.no')"
-      :width="90"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-closed
-      :label="$t('task.list.column.endStatus')"
-      prop="state"
-      :width="90"
-      :sortable="clickable ? 'custom' : null"
-    />
-    <column-dropdown :width="60" v-slot:default="{ row }">
-      <span class="title">{{ $t('task.list.dropdown.taskSetting') }}</span>
-      <el-dropdown-item @click.native="showTarget(row.id)">
-        {{ $t('task.list.dropdown.targetInfo') }}
-      </el-dropdown-item>
-      <el-dropdown-item @click.native="edit(row.id)">
-        {{ $t('task.list.dropdown.taskEdit') }}
-      </el-dropdown-item>
-      <el-dropdown-item @click.native="add(row.id)">
-        {{ $t('task.list.dropdown.taskAdd') }}
-      </el-dropdown-item>
-      <el-dropdown-item
-        v-if="row.state !== 'CLOSED'"
-        @click.native="close(row.id)"
-      >
-        {{ $t('task.list.dropdown.taskClose') }}
-      </el-dropdown-item>
-      <el-dropdown-item class="red" @click.native="remove(row.id)">
-        {{ $t('task.list.dropdown.taskDelete') }}
-      </el-dropdown-item>
-    </column-dropdown>
-  </el-table>
+  </div>
 </template>
 
 <script>
 import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
 import taskService from '@/services/task'
+import TaskTargetInfo from '@/components/task/TaskTargetInfo'
 
 export default {
   mixins: [columnMixin],
+  components: {
+    TaskTargetInfo,
+  },
   props: {
     data: Array,
     clickable: Boolean,
@@ -98,6 +112,8 @@ export default {
   data() {
     return {
       taskConditions,
+      activeTask: null,
+      showTaskTargetInfoModal: false,
     }
   },
   methods: {
@@ -108,6 +124,11 @@ export default {
       if (!this.clickable) return false
       this.$router.push(`/tasks/${id}`)
     },
+    showTarget(task) {
+      this.activeTask = task
+      this.showTaskTargetInfoModal = true
+    },
+    // 종료
     async close(taskId) {
       try {
         await this.$confirm(
@@ -135,6 +156,7 @@ export default {
         })
       }
     },
+    // 삭제
     async remove(taskId) {
       try {
         await this.$confirm(

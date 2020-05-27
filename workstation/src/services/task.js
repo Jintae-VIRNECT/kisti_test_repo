@@ -79,6 +79,15 @@ export default {
     })
   },
   /**
+   * 작업 타겟 정보 조회
+   * @param {taskId}} taskId
+   */
+  async getTargetInfo(taskId) {
+    return await api('TARGET_INFO', {
+      route: { taskId },
+    })
+  },
+  /**
    * 하위 작업 검색
    * @param {String} taskId
    * @param {Object} params

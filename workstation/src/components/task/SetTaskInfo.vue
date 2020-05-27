@@ -108,7 +108,7 @@ export default {
     },
   },
   methods: {
-    async opend() {
+    async opened() {
       const promise = {
         content: contentService.getContentInfo(this.contentId),
         properties: contentService.getContentProperties(

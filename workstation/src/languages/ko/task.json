@@ -137,5 +137,13 @@
       "registerFail": "작업 등록에 실패했습니다. 잠시 후 다시 이용해 주세요.",
       "registerStroageFail": "스토리지 용량이 부족하여 작업 등록에 실패했습니다. 스토리지 용량을 구매해 주세요."
     }
+  },
+  "targetInfo": {
+    "title": "작업 타겟 정보",
+    "id": "작업 ID",
+    "name": "작업 이름",
+    "capacity": "작업 용량",
+    "createdDate": "작업 등록일",
+    "targetType": "타겟 유형"
   }
 }

@@ -77,7 +77,7 @@ export default {
   props: {
     data: Array,
     clickable: Boolean,
-    taskId: String,
+    taskId: Number,
   },
   data() {
     return {

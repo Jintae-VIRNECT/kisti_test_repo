@@ -172,7 +172,7 @@ export default {
     },
   },
   methods: {
-    async opend() {
+    async opened() {
       this.contentName = this.contentInfo.contentName
       this.subForm = this.properties[0].children.map(sceneGroup => ({
         id: sceneGroup.id,

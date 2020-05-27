@@ -77,6 +77,8 @@ module.exports = {
   SUB_TASK_UPDATE: ['POST', '/tasks/subTasks/{subTaskId}'],
   // 단계목록조회
   STEPS_LIST: ['GET', '/tasks/subTasks/{subTaskId}/steps'],
+  // 타겟정보조회
+  TARGET_INFO: ['GET', '/tasks/task/content/{taskId}'],
   /**
    * results
    */

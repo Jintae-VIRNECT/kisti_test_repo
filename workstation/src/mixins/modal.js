@@ -12,7 +12,7 @@ export default {
       this.showMe = val
     },
     showMe(val) {
-      if (val && this.opend) this.opend()
+      if (val && this.opened) this.opened()
       if (!val && this.closed) this.closed()
       this.$emit('update:visible', val)
     },

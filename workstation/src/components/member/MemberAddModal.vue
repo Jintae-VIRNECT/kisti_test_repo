@@ -116,7 +116,7 @@ export default {
     }
   },
   methods: {
-    opend() {
+    opened() {
       this.userInfoList = [new InviteMember()]
     },
     addMember() {
