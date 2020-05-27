@@ -1,5 +1,11 @@
 package com.virnect.process.application;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
 import com.virnect.process.dao.*;
@@ -16,6 +22,7 @@ import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
+import com.virnect.process.global.util.QRcodeGenerator;
 import com.virnect.process.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +37,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -210,7 +224,7 @@ public class TaskService {
         try {
             String targetData = UUID.randomUUID().toString();
 
-            String imgPath = ""; //= this.fileUploadService.base64ImageUpload(targetData);
+            String imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
 
             Target target = Target.builder()
                     .type(targetType)
@@ -1856,5 +1870,27 @@ public class TaskService {
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
 
         return new ApiResponse<>(processInfoResponse);
+    }
+
+    private String getImgPath(String targetData) {
+        String qrString = "";
+
+        try{
+            BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            ImageIO.write(qrImage, "png", os);
+            os.toByteArray();
+
+            qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String imgPath = this.fileUploadService.base64ImageUpload(qrString);
+
+        return imgPath;
     }
 }
