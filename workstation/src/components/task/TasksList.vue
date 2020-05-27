@@ -1,21 +1,22 @@
 <template>
   <el-table
     :class="clickable ? 'clickable' : ''"
-    ref="table"
     :data="data"
     @row-click="moveToTaskDetail"
+    @sort-change="sortChange"
   >
     <column-default :label="$t('task.list.column.id')" prop="id" :width="140" />
     <column-default
       :label="$t('task.list.column.name')"
       prop="name"
-      sortable="custom"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-count
       :label="$t('task.list.column.endedSubTasks')"
       prop="doneCount"
       maxProp="subTaskTotal"
       :width="120"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-date
       :label="$t('task.list.column.schedule')"
@@ -23,42 +24,70 @@
       prop="startDate"
       prop2="endDate"
       :width="250"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-progress
       :label="$t('task.list.column.progressRate')"
       prop="progressRate"
       :width="150"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-status
       :label="$t('task.list.column.status')"
       prop="conditions"
       :statusList="taskConditions"
       :width="100"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-date
       :label="$t('task.list.column.reportedDate')"
       type="time"
       prop="reportedDate"
       :width="130"
+      :sortable="clickable ? 'custom' : null"
     />
     <column-boolean
       :label="$t('task.list.column.issue')"
       prop="issuesTotal"
       :trueText="$t('task.list.hasIssue.yes')"
       :falseText="$t('task.list.hasIssue.no')"
-      :width="80"
+      :width="90"
+      :sortable="clickable ? 'custom' : null"
     />
-    <column-default
+    <column-closed
       :label="$t('task.list.column.endStatus')"
       prop="state"
-      :width="100"
+      :width="90"
+      :sortable="clickable ? 'custom' : null"
     />
+    <column-dropdown :width="60" v-slot:default="{ row }">
+      <span class="title">{{ $t('task.list.dropdown.taskSetting') }}</span>
+      <el-dropdown-item @click.native="showTarget(row.id)">
+        {{ $t('task.list.dropdown.targetInfo') }}
+      </el-dropdown-item>
+      <el-dropdown-item @click.native="edit(row.id)">
+        {{ $t('task.list.dropdown.taskEdit') }}
+      </el-dropdown-item>
+      <el-dropdown-item @click.native="add(row.id)">
+        {{ $t('task.list.dropdown.taskAdd') }}
+      </el-dropdown-item>
+      <el-dropdown-item
+        v-if="row.state !== 'CLOSED'"
+        @click.native="close(row.id)"
+      >
+        {{ $t('task.list.dropdown.taskClose') }}
+      </el-dropdown-item>
+      <el-dropdown-item class="red" @click.native="remove(row.id)">
+        {{ $t('task.list.dropdown.taskDelete') }}
+      </el-dropdown-item>
+    </column-dropdown>
   </el-table>
 </template>
 
 <script>
 import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
+import taskService from '@/services/task'
 
 export default {
   mixins: [columnMixin],
@@ -72,9 +101,66 @@ export default {
     }
   },
   methods: {
+    sortChange(params) {
+      this.$emit('sort-change', params)
+    },
     moveToTaskDetail({ id }) {
       if (!this.clickable) return false
       this.$router.push(`/tasks/${id}`)
+    },
+    async close(taskId) {
+      try {
+        await this.$confirm(
+          this.$t('task.list.message.closeSure'),
+          this.$t('task.list.dropdown.taskClose'),
+          {
+            confirmButtonText: this.$t('task.list.close'),
+            dangerouslyUseHTMLString: true,
+          },
+        )
+      } catch (e) {
+        return false
+      }
+      try {
+        await await taskService.deleteTask(taskId)
+        this.$message.success({
+          message: this.$t('task.list.message.closeSuccess'),
+          showClose: true,
+        })
+        this.$emit('updated')
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('task.list.message.closeFail'),
+          showClose: true,
+        })
+      }
+    },
+    async remove(taskId) {
+      try {
+        await this.$confirm(
+          this.$t('task.list.message.deleteSure'),
+          this.$t('task.list.dropdown.taskDelete'),
+          {
+            confirmButtonText: this.$t('common.delete'),
+            dangerouslyUseHTMLString: true,
+          },
+        )
+      } catch (e) {
+        return false
+      }
+      try {
+        await await taskService.deleteTask(taskId)
+        this.$message.success({
+          message: this.$t('task.list.message.deleteSuccess'),
+          showClose: true,
+        })
+        this.$emit('updated')
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('task.list.message.deleteFail'),
+          showClose: true,
+        })
+      }
     },
   },
 }

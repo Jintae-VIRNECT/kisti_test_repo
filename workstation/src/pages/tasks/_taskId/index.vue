@@ -64,6 +64,7 @@
             <h3>{{ $t('task.list.allTasksList') }}</h3>
           </div>
           <sub-tasks-list
+            ref="table"
             :data="subTaskList"
             :taskId="taskInfo.id"
             :clickable="true"

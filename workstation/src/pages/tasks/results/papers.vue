@@ -1,5 +1,11 @@
 <template>
-  <el-table class="clickable" ref="table" :data="data" @row-click="rowClick">
+  <el-table
+    class="clickable"
+    ref="table"
+    :data="data"
+    @row-click="rowClick"
+    @sort-change="sortChange"
+  >
     <column-default
       :label="$t('results.column.taskName')"
       prop="taskName"
@@ -43,6 +49,9 @@ export default {
     data: Array,
   },
   methods: {
+    sortChange(params) {
+      this.$emit('sort-change', params)
+    },
     rowClick(row) {
       this.$router.push(
         `/tasks/${row.taskId}/${row.taskId}/papers/${row.paperId}`,

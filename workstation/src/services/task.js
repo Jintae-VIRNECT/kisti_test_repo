@@ -46,6 +46,28 @@ export default {
     })
   },
   /**
+   * 작업 종료
+   * @param {taskId}} taskId
+   */
+  async closeTask(taskId) {
+    const actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_CLOSE', {
+      route: { taskId },
+      params: { actorUUID },
+    })
+  },
+  /**
+   * 작업 삭제
+   * @param {taskId}} taskId
+   */
+  async deleteTask(taskId) {
+    const actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_DELETE', {
+      route: { taskId },
+      params: { actorUUID },
+    })
+  },
+  /**
    * 하위 작업 검색
    * @param {String} taskId
    * @param {Object} params

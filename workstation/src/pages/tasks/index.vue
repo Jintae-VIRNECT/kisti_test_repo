@@ -49,7 +49,12 @@
           <div slot="header">
             <h3>{{ $t('task.list.allTasksList') }}</h3>
           </div>
-          <tasks-list :data="taskList" :clickable="true" />
+          <tasks-list
+            ref="table"
+            :data="taskList"
+            :clickable="true"
+            @updated="searchTasks"
+          />
         </el-card>
       </el-row>
       <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />

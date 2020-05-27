@@ -1,9 +1,9 @@
 <template>
   <el-table
     :class="clickable ? 'clickable' : ''"
-    ref="table"
     :data="data"
     @row-click="moveToSubTaskDetail"
+    @sort-change="sortChange"
   >
     <column-default
       :label="$t('task.detail.subTaskColumn.no')"
@@ -57,10 +57,13 @@
       :falseText="$t('task.list.hasIssue.no')"
       :width="80"
     />
-    <column-default
-      :label="$t('task.detail.subTaskColumn.endStatus')"
-      prop="state"
-      :width="100"
+    <column-user
+      :label="$t('task.detail.subTaskColumn.worker')"
+      prop="workerUUID"
+      nameProp="workerName"
+      imageProp="workerProfile"
+      type="tooltip"
+      :width="70"
     />
   </el-table>
 </template>
@@ -82,6 +85,9 @@ export default {
     }
   },
   methods: {
+    sortChange(params) {
+      this.$emit('sort-change', params)
+    },
     moveToSubTaskDetail({ subTaskId }) {
       if (!this.clickable) return false
       this.$router.push(`/tasks/${this.taskId}/${subTaskId}`)

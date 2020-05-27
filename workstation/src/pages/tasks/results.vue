@@ -21,7 +21,7 @@
             {{ $t('searchbar.filter.title') }}:
           </span>
           <searchbar-filter
-            v-if="activeTab === 'task'"
+            v-show="activeTab === 'task'"
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
@@ -43,7 +43,7 @@
             >
             </el-tab-pane>
           </el-tabs>
-          <nuxt-child :data="list" />
+          <nuxt-child ref="table" :data="list" />
         </el-card>
       </el-row>
       <searchbar-page ref="page" :value.sync="page" :total="total" />
