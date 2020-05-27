@@ -39,7 +39,7 @@ const URL = {
   /* Workspace - History */
   GET_HISTORY_LIST: ['GET', '/media/history'],
   GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: ['DELETE', '/media/history/{roomId}'],
+  DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
   DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
 
   /* Workspace - Member */
