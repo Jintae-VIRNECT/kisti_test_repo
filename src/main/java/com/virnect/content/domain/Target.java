@@ -54,6 +54,7 @@ public class Target extends BaseTimeEntity {
                 "id=" + id +
                 ", type=" + type +
                 ", data='" + data + '\'' +
+                ", imgPath=" + imgPath + '\'' +
 //                ", content=" + content +
                 '}';
     }
