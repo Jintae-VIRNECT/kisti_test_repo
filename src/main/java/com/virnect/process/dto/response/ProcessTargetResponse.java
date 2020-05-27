@@ -22,11 +22,14 @@ public class ProcessTargetResponse {
     private TargetType type;
     @ApiModelProperty(value = "공정의 타겟 데이터", position = 2, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     private String data;
+    @ApiModelProperty(value = "타겟 이미지 경로", position = 3)
+    private String imgPath;
 
     @Builder
-    public ProcessTargetResponse(Long id, TargetType type, String data) {
+    public ProcessTargetResponse(Long id, TargetType type, String data, String imgPath) {
         this.id = id;
         this.type = type;
         this.data = data;
+        this.imgPath = imgPath;
     }
 }
