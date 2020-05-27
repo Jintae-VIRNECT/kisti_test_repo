@@ -47,6 +47,10 @@ public class ProcessRegisterRequest {
     private String workspaceUUID;
 
     @NotNull
-    @ApiModelProperty(value = "세부 작업 정보 배열", notes = "해당 작업에서의 세부 작업 정보들이 담긴 배열", required = true, position = 8)
+    @ApiModelProperty(value = "타겟 설정", notes = "작업 타겟 설정(duplicate, transform)", required = true, position = 8, example = "duplicate")
+    private String targetSetting;
+
+    @NotNull
+    @ApiModelProperty(value = "세부 작업 정보 배열", notes = "해당 작업에서의 세부 작업 정보들이 담긴 배열", required = true, position = 9)
     private List<NewSubProcessRequest> subTaskList;
 }

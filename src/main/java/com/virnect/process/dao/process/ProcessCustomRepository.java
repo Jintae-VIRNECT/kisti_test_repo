@@ -4,9 +4,6 @@ import com.virnect.process.domain.Process;
 import com.virnect.process.domain.State;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,4 +40,6 @@ public interface ProcessCustomRepository {
      * @return
      */
     Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
+
+    Page<Process> getMyWork(String title, String workerUUID, Pageable pageable);
 }

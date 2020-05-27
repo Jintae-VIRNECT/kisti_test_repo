@@ -1,8 +1,8 @@
 package com.virnect.process.dao.process;
 
 import com.querydsl.jpa.JPQLQuery;
-import com.virnect.process.domain.*;
 import com.virnect.process.domain.Process;
+import com.virnect.process.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements ProcessCustomRepository {
@@ -43,19 +42,18 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         query = query.join(qProcess.targetList, qTarget);
 
-        if (workspaceUUID != null)
-        {
-            query = query.where(qProcess.workspaceUUID.contains(workspaceUUID));
+        // 워크스페이스UUID
+        if (workspaceUUID != null) {
+            query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
         }
-        
+
         // 검색시 사용자 명은 잠시 보류
 //        if (userUUIDList != null && userUUIDList.size() > 0)
 //        {
 //            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
 //        }
 
-        if (title != null)
-        {
+        if (title != null){
             query = query.where(qProcess.name.contains(title));
         }
 
@@ -74,7 +72,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QJob qJob = QJob.job;
         QIssue qIssue = QIssue.issue;
-
 
         JPQLQuery<Process> query = from(qProcess);
 
@@ -109,5 +106,29 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
         Process result = query.fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Page<Process> getMyWork(String title, String workerUUID, Pageable pageable) {
+        QProcess qProcess = QProcess.process;
+        QSubProcess qSubProcess = QSubProcess.subProcess;
+        QTarget qTarget = QTarget.target;
+
+        JPQLQuery<Process> query = from(qProcess);
+        query.join(qProcess.subProcessList, qSubProcess);
+        query.join(qProcess.targetList, qTarget);
+
+        query.where(qSubProcess.workerUUID.eq(workerUUID));
+
+        // 검색어가 들어왔을 경우
+        if (Objects.nonNull(title)) {
+            query.where(qProcess.name.contains("title"));
+        }
+
+        query.groupBy(qProcess.id);
+
+        final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+        return new PageImpl<>(myList, pageable, query.fetchCount());
     }
 }

@@ -6,14 +6,9 @@ import com.virnect.process.dao.*;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.*;
-import com.virnect.process.dto.request.EditProcessRequest;
-import com.virnect.process.dto.request.EditSubProcessRequest;
-import com.virnect.process.dto.request.ProcessRegisterRequest;
-import com.virnect.process.dto.request.WorkResultSyncRequest;
+import com.virnect.process.dto.request.*;
 import com.virnect.process.dto.response.*;
-import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
-import com.virnect.process.dto.rest.response.content.ContentRestDto;
-import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
+import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
@@ -22,6 +17,7 @@ import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.S3UploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,13 +70,12 @@ public class TaskService {
 
     private final ModelMapper modelMapper;
     private final FileUploadService fileUploadService;
-
+    private final S3UploadService s3UploadService;
     // TODO : 작업저장실패시 컨텐츠 서버도 함께 롤백하는 프로세스 필요. 현재는 만약 예외가 발생할 경우 컨텐츠 서버는 파일 및 컨텐츠가 복제된 채로 그대로 남으므로 저장소가 낭비됨..
     @Transactional
     public ApiResponse<ProcessRegisterResponse> createTheProcess(ProcessRegisterRequest registerNewProcess) {
         // 공정 생성 요청 처리
         log.info("CREATE THE PROCESS requestBody ---> {}", registerNewProcess.toString());
-
 
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
@@ -113,34 +108,58 @@ public class TaskService {
                 .contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())
                 .build();
 
-        // 컨텐츠 파일 복제 요청
-        ApiResponse<ContentUploadResponse> contentDuplicate = this.contentRestService.contentDuplicate(
-                registerNewProcess.getContentUUID()
-                , registerNewProcess.getWorkspaceUUID()
-                , registerNewProcess.getOwnerUUID());
+        // 메뉴얼(컨텐츠)도 보고 작업(보고)도 필요한 경우 = 복제
+        if ("duplicate".equals(registerNewProcess.getTargetSetting())) {
+            // 컨텐츠 파일 복제 요청
+            ApiResponse<ContentUploadResponse> contentDuplicate = this.contentRestService.contentDuplicate(
+                    registerNewProcess.getContentUUID()
+                    , registerNewProcess.getWorkspaceUUID()
+                    , registerNewProcess.getOwnerUUID());
+            try {
+                log.info("CREATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", registerNewProcess.getContentUUID(), contentDuplicate.getData().getContentUUID());
 
-        try {
+                // 복제된 컨텐츠 식별자 등록
+                newProcess.setContentUUID(contentDuplicate.getData().getContentUUID());
+                newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
-            log.info("CREATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", registerNewProcess.getContentUUID(), contentDuplicate.getData().getContentUUID());
+                // 컨텐츠의 전환상태 변경
+                this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
 
-            // 복제된 컨텐츠 식별자 등록
-            newProcess.setContentUUID(contentDuplicate.getData().getContentUUID());
+                // 작업 저장
+                this.processRepository.save(newProcess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
+                rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), registerNewProcess.getOwnerUUID());
+                throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
+            }
+
+            // 타겟
+            addTargetToProcess(newProcess, registerNewProcess.getTargetType());
+        }
+        // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
+        else {
+            log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", registerNewProcess.getContentUUID());
+            ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(registerNewProcess.getContentUUID());
+
+            ContentTargetResponse contentTarget = contentTransfrom.getData().getTarget();
+
+            // 기존 컨텐츠 식별자 등록
+            newProcess.setContentUUID(registerNewProcess.getContentUUID());
             newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
-            // 컨텐츠의 전환상태 변경
-            this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+            // 삭제할 컨텐츠의 UUID
+            String[] contentUUIDs = {registerNewProcess.getContentUUID()};
+
+            // 컨텐츠 파일 삭제
+            this.contentRestService.contentDeleteRequestHandler(contentUUIDs, registerNewProcess.getOwnerUUID());
 
             // 작업 저장
             this.processRepository.save(newProcess);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
-            rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), registerNewProcess.getOwnerUUID());
-            throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
-        }
 
-        // 타겟
-        addTargetToProcess(newProcess, registerNewProcess.getTargetType());
+            // 컨텐츠의 타겟 정보를 가져옴
+            getTargetFromContent(newProcess, contentTarget);
+        }
 
         // 5. 세부 공정 정보 리스트 생성
         log.info("{}", contentApiResponse.getData().getContents().toString());
@@ -182,15 +201,24 @@ public class TaskService {
         this.contentRestService.contentDeleteRequestHandler(contentUUIDs, userUUID);
     }
 
+    /**
+     * 컨텐츠를 작업으로 복제(Duplicate)할 때 - 작업의 새로운 타겟을 만든다. (매뉴얼 + 작업 보고)
+     * @param newProcess
+     * @param targetType
+     */
     private void addTargetToProcess(Process newProcess, final TargetType targetType) {
         // 타겟데이터
         try {
             String targetData = UUID.randomUUID().toString();
 
+            String imgPath = this.s3UploadService.base64ImageUpload(targetData);
+
+
             Target target = Target.builder()
                     .type(targetType)
                     .process(newProcess)
                     .data(targetData)
+                    .imgPath(imgPath)
                     .build();
 
             this.targetRepository.save(target);
@@ -205,6 +233,35 @@ public class TaskService {
             throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
         }
     }
+
+    /**
+     * 컨텐츠를 작업으로 변환(Transform)할 때 - 기존 컨텐츠의 타겟을 작업 타겟으로 설정.( 메뉴얼 X, Only 작업 보고)
+     * @param newProcess
+     * @param contentTargetResponse
+     */
+    private void getTargetFromContent(Process newProcess, ContentTargetResponse contentTargetResponse) {
+        try {
+            String targetData = contentTargetResponse.getData();
+            TargetType targetType = contentTargetResponse.getType();
+            String imgPath = s3UploadService.base64ImageUpload(targetData);
+
+            Target target = Target.builder()
+                    .type(targetType)
+                    .process(newProcess)
+                    .data(targetData)
+                    .imgPath(imgPath)
+                    .build();
+
+            this.targetRepository.save(target);
+
+            newProcess.addTarget(target);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("ERROR : GET TARGET FROM CONTENT getMessage: {}, getCause: {}", e.getMessage(), e.getCause());
+            throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
+        }
+    }
+
 
     /**
      * 신규 공정에 세부 공정 내역 추가 처리
@@ -367,6 +424,7 @@ public class TaskService {
                 .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
                 .contentUUID(process.getContentUUID())
                 .build();
+
         return new ApiResponse<>(processContentAndTargetResponse);
     }
 
@@ -647,6 +705,9 @@ public class TaskService {
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
         if (userUUIDList.size() == 0) userUUIDList = null;
         Page<Issue> issuePage = this.issueRepository.getIssuesOutSearchUserName(userUUIDList, pageable);
+        //Page<Issue> issuePage = this.issueRepository.getTroubleMemoSearchUserName(userUUIDList, pageable);
+
+
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -667,8 +728,9 @@ public class TaskService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesOut(Pageable pageable) {
+    public ApiResponse<IssuesResponse> getIssuesOut(String userUUID, Pageable pageable) {
         Page<Issue> issuePage = this.issueRepository.getIssuesOut(pageable);
+        //Page<Issue> issuePage = this.issueRepository.getTroubleMemo(userUUID, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -736,6 +798,8 @@ public class TaskService {
     public ApiResponse<ReportsResponse> getReports(String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
         // 리포트 목록을 category 내에서 조회
         Page<Report> reportPage = this.reportRepository.getReports(workspaceUUID, processId, subProcessId/*, search*/, reported, pageable);
+        //Page<Report> reportPage = this.reportRepository.getPages(workspaceUUID, processId, subProcessId, userUUID, reported, pageable);
+
         List<ReportInfoResponse> reportInfoResponseList = reportPage.stream().map(report -> {
             List<Item> items = Optional.ofNullable(this.itemRepository.findByReport(report)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT_ITEM));
             // 리포트의 아이템
@@ -983,7 +1047,7 @@ public class TaskService {
         return new ApiResponse<>(processesStatisticsResponse);
     }
 
-    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, String userUUID, List<Conditions> filter, Pageable pageable) {
         // 전체 공정의 목록을 조회
         // 사용자 검색
 
@@ -998,16 +1062,27 @@ public class TaskService {
 
         Page<Process> processPage = null;
 
-        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
-
-            processPage = filterConditionsProcessPage(processPage, filter, pageable);
-        } else {
-            // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
-            //processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
-//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+        if (Objects.nonNull(userUUID)) {
+            processPage = this.processRepository.getMyWork(search, userUUID, pageable);
+        }
+        else {
             processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
         }
+
+        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
+            processPage = filterConditionsProcessPage(processPage, filter, pageable);
+        }
+//
+//        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
+//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+//
+//            processPage = filterConditionsProcessPage(processPage, filter, pageable);
+//        } else {
+//            // TODO : 검증 필요, 타겟 데이터가 중복발생하는 경우가 배제되어 공정이 누락되거나, 중복될 수 있음.
+//            //processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageableCustom);
+////            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+//            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+//        }
         return getProcessesPageResponseApiResponse(pageable, processPage);
     }
 
@@ -1046,7 +1121,9 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long processId, String actorUUID) {
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(CheckProcessOwnerRequest checkProcessOwnerRequest) {
+        Long processId   = checkProcessOwnerRequest.getTaskId();
+        String actorUUID = checkProcessOwnerRequest.getActorUUID();
         // 공정종료
         // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
@@ -1072,6 +1149,16 @@ public class TaskService {
         Process process = this.processRepository.findById(processId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
+
+        // 타겟 정보
+        List<ProcessTargetResponse> targetResponseList = process.getTargetList().stream().map(target -> {
+            return ProcessTargetResponse.builder()
+                    .id(target.getId())
+                    .type(target.getType())
+                    .data(target.getData())
+                    .build();
+        }).collect(Collectors.toList());
+
         ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
         // contentUUID 추가
         processInfoResponse.setContentUUID(process.getContentUUID());
@@ -1080,6 +1167,7 @@ public class TaskService {
         //processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
         processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
         processInfoResponse.setSubTaskAssign(this.getSubProcessesAssign(process));
+        processInfoResponse.setTargets(targetResponseList);
         return new ApiResponse<>(processInfoResponse);
     }
 
@@ -1123,7 +1211,7 @@ public class TaskService {
         }
     }
 
-    public ApiResponse<SubProcessListResponse> getSubProcessList(Long processId, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<SubProcessListResponse> getSubProcessList(Long processId, String workspaceUUID, String search, String userUUID, List<Conditions> filter, Pageable pageable) {
         // 공정내 세부공정목록조회
         // 공정정보
         //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
@@ -1139,12 +1227,14 @@ public class TaskService {
         if (userUUIDList.size() == 0) userUUIDList = null;
         // 세부공정 목록
         Page<SubProcess> subProcessPage = null;
+
         if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
             List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(workspaceUUID, processId, search, userUUIDList, pageable.getSort());
             subProcessPage = filterConditionsSubProcessPage(subProcessList, filter, pageable);
         } else {
             subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
         }
+
         List<EditSubProcessResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return EditSubProcessResponse.builder()
@@ -1347,6 +1437,71 @@ public class TaskService {
         return new ResponseMessage().addParam("result", true);
     }
 
+    // TO DO
+//    public ApiResponse<JobReportedResponse> getJobsAll(String workspaceUUID, String search, List<Conditions> filter, Pageable pageable) {
+//        // 검색어로 사용자 목록 조회
+//        List<UserInfoResponse> userInfos = getUserInfoSearch(search);
+//        List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
+//
+//        // 전체 단계 조회
+//        List<JobAll> jobList = this.jobRepository.getJobAll(workspaceUUID, search, userUUIDList, pageable);
+//
+//        // 세부 공정 조회 (condition조회를 위해 job 객체 필요)
+//        List<Job> job = this.jobRepository.findAll();
+//
+//        // job의 condition 조회
+//        List<Map<Long, Conditions>> jobCond = filterConditionsAllJob(job);
+//
+//        log.debug("jobCond : {}", jobCond);
+//
+//        job.forEach(j -> {
+//            log.debug("{}", j.getId());
+//            log.debug("{}", j.getConditions());
+//            log.debug("{}", j.getProgressRate());
+//        });
+//
+//        // job객체로 계산된 jobCondition을 jobId를 기준으로 추가
+//        jobCond.forEach(c -> {
+//            jobList.forEach(l -> {
+//                if (c.get(l.getJobId()) != null) {
+//                    l.setJobCondition(c.get(l.getJobId()));
+//                }
+//            });
+//        });
+//
+//
+//        List<JobAll> temp = new ArrayList<>();
+//
+//        if (filter != null && filter.size() > 0) {
+//            for (JobAll j : jobList) {
+//                if (filter.contains(j.getJobCondition())) {
+//                    temp.add(j);
+//                }
+//            }
+//        } else {
+//            temp = jobList;
+//        }
+////
+////        temp.forEach( p ->{
+////            try {
+////                log.info(objectMapper.writeValueAsString(p));
+////            } catch (JsonProcessingException e) {
+////                e.printStackTrace();
+////            }
+////        });
+//        return null;
+//    }
+
+    private List<Map<Long, Conditions>> filterConditionsAllJob(List<Job> jobList) {
+        List<Map<Long, Conditions>> jobs = new ArrayList<>();
+        for (Job job : jobList) {
+            Map<Long, Conditions> jobCond = new HashMap<>();
+            jobCond.put(job.getId(), job.getConditions());
+            jobs.add(jobCond);
+        }
+        return jobs;
+    }
+
     public ApiResponse<JobListResponse> getJobs(Long subProcessId, String search, List<Conditions> filter, Pageable pageable) {
         // 작업목록조회
         // 세부공정조회
@@ -1497,8 +1652,10 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(Long processId, String actorUUID) {
-        // 공정 삭제
+    public ApiResponse<ProcessSimpleResponse> deleteTheProcess(CheckProcessOwnerRequest checkProcessOwnerRequest) {
+        Long processId = checkProcessOwnerRequest.getTaskId();
+        String actorUUID = checkProcessOwnerRequest.getActorUUID();
+        // 작업 삭제
         Process process = this.processRepository.findById(processId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
