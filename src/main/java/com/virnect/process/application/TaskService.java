@@ -17,7 +17,6 @@ import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.infra.file.FileUploadService;
-import com.virnect.process.infra.file.S3UploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +69,7 @@ public class TaskService {
 
     private final ModelMapper modelMapper;
     private final FileUploadService fileUploadService;
-    private final S3UploadService s3UploadService;
+
     // TODO : 작업저장실패시 컨텐츠 서버도 함께 롤백하는 프로세스 필요. 현재는 만약 예외가 발생할 경우 컨텐츠 서버는 파일 및 컨텐츠가 복제된 채로 그대로 남으므로 저장소가 낭비됨..
     @Transactional
     public ApiResponse<ProcessRegisterResponse> createTheProcess(ProcessRegisterRequest registerNewProcess) {
@@ -211,7 +210,7 @@ public class TaskService {
         try {
             String targetData = UUID.randomUUID().toString();
 
-            String imgPath = this.s3UploadService.base64ImageUpload(targetData);
+            String imgPath = "";// = this.s3UploadService.base64ImageUpload(targetData);
 
 
             Target target = Target.builder()
@@ -243,7 +242,7 @@ public class TaskService {
         try {
             String targetData = contentTargetResponse.getData();
             TargetType targetType = contentTargetResponse.getType();
-            String imgPath = s3UploadService.base64ImageUpload(targetData);
+            String imgPath = "";// = s3UploadService.base64ImageUpload(targetData);
 
             Target target = Target.builder()
                     .type(targetType)
