@@ -576,7 +576,7 @@ public class WorkspaceService {
             if (this.workspaceUserRepository.findAllByUserId(userId).size() > 8) {
                 //TODO: 메일 발송
                 //리다이렉트
-                redirectUrl= redirectUrl+"?message=abortJoinWorkspace";
+                redirectUrl = redirectUrl + "?message=abortJoinWorkspace";
 
             } else {
                 //워크스페이스 소속 넣기 (workspace_user)
@@ -629,48 +629,6 @@ public class WorkspaceService {
         return redirectView;
     }
 
-    /**
-     * 워크스페이스에서 유저 생성
-     *
-     * @param workspaceId       - 유저 소속 workspace uuid
-     * @param userId            - 유저를 생성할 마스터 또는 매니저의 uuid
-     * @param userCreateRequest - 생성할 유저 정보
-     * @return - 유저 생성 결과값
-     */
-    public ApiResponse<UsersCreateResponse> createUsers(String workspaceId, String
-            userId, UsersCreateRequest userCreateRequest) {
-        //1. 생성 권한 확인
-        if (this.workspaceUserPermissionRepository.findWorkspaceUserRole(workspaceId, userId).getRole().equals("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
-        //2. 아이디 중복 확인
-        String[] emailList = userCreateRequest.getUserInfoList().stream().map(userInfo -> userInfo.getEmail()).toArray(String[]::new);
-        InviteUserInfoRestResponse inviteUserInfoRestResponse = this.userRestService.getUserInfoByEmailList(emailList).getData();
-        for (InviteUserInfoRestResponse.InviteUserResponse inviteUserResponse : inviteUserInfoRestResponse.getInviteUserInfoList()) {
-            if (Arrays.asList(emailList).contains(inviteUserResponse.getEmail())) {
-                //이메일이 중복되는 사용자가 있어서 계정을 생성할 수 없는 경우에 에러 리턴
-                throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
-            }
-        }
-
-        //3. 워크스페이스 소속 부여 / 권한 및 직책 부여
-        for (UsersCreateRequest.UserInfo userInfo : userCreateRequest.getUserInfoList()) {
-            //임시 유저 uuid
-            WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0));
-            if (!userInfo.getWorkspacePermission().isEmpty()) {
-                setWorkspaceUserPermissionInfo(userInfo.getWorkspacePermission(), workspaceUser);
-            }
-
-            //4. group_users, group_user_permission insert
-            if (userInfo.getGroups() != null) {
-                this.groupService.setGroupUser(userInfo.getGroups(), workspaceUser);
-            }
-        }
-        //5. user insert (해야됨) : user server의 회원가입 url로 넣기
-
-        return new ApiResponse<>(new UsersCreateResponse(true));
-    }
-
     public Resource downloadFile(String fileName) throws IOException {
         Path file = Paths.get(fileUploadPath).resolve(fileName);
         Resource resource = new UrlResource(file.toUri());
@@ -699,28 +657,35 @@ public class WorkspaceService {
         }
 
         //3. 권한 변경
+
         WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(memberUpdateRequest.getRole().toUpperCase());
-        userPermission.setWorkspaceRole(workspaceRole);
-
-        this.workspaceUserPermissionRepository.save(userPermission);
-
-        //4. 메일 발송
         UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
         UserInfoRestResponse user = this.userRestService.getUserInfoByUserId(memberUpdateRequest.getUuid()).getData();
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-        context.setVariable("responseUserNickName", user.getNickname());
-        context.setVariable("responseUserEmail", user.getEmail());
-        context.setVariable("role", workspaceRole.getRole());
-        context.setVariable("workstationHomeUrl", redirectUrl);
 
-        List<String> receiverEmailList = new ArrayList<>();
-        receiverEmailList.add(user.getEmail());
-        String html = springTemplateEngine.process("workspace_permission_update", context);
+        if (!userPermission.getWorkspaceRole().equals(workspaceRole)) {
+            userPermission.setWorkspaceRole(workspaceRole);
+            this.workspaceUserPermissionRepository.save(userPermission);
+            // 메일 발송
 
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_PERMISSION_UPDATE);
+            Context context = new Context();
+            context.setVariable("workspaceName", workspace.getName());
+            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+            context.setVariable("responseUserNickName", user.getNickname());
+            context.setVariable("responseUserEmail", user.getEmail());
+            context.setVariable("role", workspaceRole.getRole());
+            context.setVariable("workstationHomeUrl", redirectUrl);
+
+            List<String> receiverEmailList = new ArrayList<>();
+            receiverEmailList.add(user.getEmail());
+            String html = springTemplateEngine.process("workspace_user_permission_update", context);
+
+            this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_USER_PERMISSION_UPDATE);
+
+        }
+        //4. 플랜 변경
+        userPlanValidCheck(memberUpdateRequest.getPlanRemote(),memberUpdateRequest.getPlanMake(),memberUpdateRequest.getPlanView());
+        //TODO : 플랜 바뀐게 있으면 변경하고 메일 발송
 
         //5. 히스토리 적재
         String message;
@@ -740,6 +705,12 @@ public class WorkspaceService {
         return new ApiResponse<>(true);
     }
 
+    private void userPlanValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
+        if (planRemote && planMake && planView) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+    }
+
     /**
      * 워크스페이스 소속 부여 : insert workspace_user table
      *
@@ -754,57 +725,6 @@ public class WorkspaceService {
                 .build();
         this.workspaceUserRepository.save(workspaceUser);
         return workspaceUser;
-    }
-
-    /**
-     * 워크스페이스 권한/직책 부여 : insert workspace_user_permission table
-     *
-     * @param permissionIdList - 권한 리스트
-     * @param workspaceUser    - 권한 및 직책이 부여될 사용자 정보
-     */
-    public void setWorkspaceUserPermissionInfo(List<Long> permissionIdList, WorkspaceUser workspaceUser) {
-        /*
-        role이 1이면 -> permission은 1(all)만 가능하다.
-        role이 2이면 -> permission은 2~5 사이만 가능하다.
-        role이 3이면 -> permission은 6(none)만 가능하다.
-        */
-
-        WorkspaceRole workspaceRole;
-        for (Long permissionId : permissionIdList) {
-            switch (Integer.parseInt(permissionId.toString())) {
-                case 1:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MASTER");
-                    break;
-                case 2:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
-                    break;
-                case 3:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
-                    break;
-                case 4:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
-                    break;
-                case 5:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MANAGER");
-                    break;
-                case 6:
-                    workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
-                    break;
-                default:
-                    workspaceRole = null;
-            }
-            WorkspacePermission workspacePermission = WorkspacePermission.builder().id(permissionId).build();
-
-            WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                    .workspaceRole(workspaceRole)
-                    .workspacePermission(workspacePermission)
-                    .workspaceUser(workspaceUser)
-                    .build();
-
-            this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-
-            log.info("[사용자 - " + workspaceUser.getUserId() + " ] [직책 - " + workspaceRole.getRole() + " ] [권한 - " + workspacePermission.getId() + " ]");
-        }
     }
 
     public ApiResponse<List<WorkspaceNewMemberInfoDTO>> getWorkspaceNewUserInfo(String workspaceId) {
