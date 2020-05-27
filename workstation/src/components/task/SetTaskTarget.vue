@@ -85,14 +85,14 @@ export default {
     },
     async submit() {
       const form = this.form
-      form.targetType = 'QR' // this.checkedDuplicate ? 'duplicate' : 'transform'
+      form.targetSetting = this.checkedDuplicate ? 'duplicate' : 'transform'
       try {
         const data = await taskService.createTask(form)
         this.$message.success({
           message: this.$t('task.target.message.registerSuccess'),
           showClose: true,
         })
-        this.$router.push(`/tasks/${data.id}`)
+        this.$router.push(`/tasks/${data.taskId}`)
       } catch (e) {
         this.$message.error({
           message: this.$t('task.target.message.registerFail'),
