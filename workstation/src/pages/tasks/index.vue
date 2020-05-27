@@ -12,6 +12,9 @@
         </el-button>
       </div>
 
+      <!-- 대시보드 -->
+      <task-dashboard />
+
       <!-- 탭 -->
       <el-row class="tab-wrapper searchbar">
         <el-tabs v-model="activeTab">
@@ -72,11 +75,13 @@ import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import taskService from '@/services/task'
 import workspaceService from '@/services/workspace'
+import TaskDashboard from '@/components/task/TaskDashboard'
 import TasksList from '@/components/task/TasksList'
 
 export default {
   mixins: [searchMixin, columnMixin],
   components: {
+    TaskDashboard,
     TasksList,
   },
   async asyncData() {

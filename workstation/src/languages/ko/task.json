@@ -10,6 +10,13 @@
     "endTasks": "마감된 작업",
     "myTasks": "내 작업",
     "close": "종료",
+    "dashboard": {
+      "title": "실시간 작업 진행 상태",
+      "allProgress": "전체 작업 진행률",
+      "countOfConditions": "진행 상태별 작업 수",
+      "graphOn": "그래프 펼치기",
+      "graphOff": "그래프 접기"
+    },
     "column": {
       "id": "작업 ID",
       "name": "작업 이름",

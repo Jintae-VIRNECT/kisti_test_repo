@@ -6,6 +6,17 @@ import Step from '@/models/task/Step'
 
 export default {
   /**
+   * 작업 통계
+   */
+  async getTaskStatistics() {
+    const data = await api('TASK_STATISTICS', {
+      params: {
+        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+      },
+    })
+    return data
+  },
+  /**
    * 작업 검색
    * @param {Object} params
    */

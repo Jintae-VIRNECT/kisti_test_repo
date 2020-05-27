@@ -46,7 +46,7 @@ export const conditions = [
     label: 'status.conditions.incompleted',
     color: 'orange',
   },
-  { value: 'COMPLETED', label: 'status.conditions.complted', color: 'green' },
+  { value: 'COMPLETED', label: 'status.conditions.completed', color: 'green' },
   { value: 'FAILED', label: 'status.conditions.failed', color: 'dark-gray' },
   { value: 'SUCCESS', label: 'status.conditions.success', color: 'dark-blue' },
   { value: 'FAULT', label: 'status.conditions.fault', color: 'dark-red' },

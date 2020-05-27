@@ -4,6 +4,7 @@
   box-shadow: none;
 }
 .el-card__header {
+  position: relative;
   height: 56px;
   padding-right: 24px;
   padding-left: 24px;
@@ -31,6 +32,11 @@
   & > div > img {
     margin-left: 7px;
     vertical-align: middle;
+  }
+  & > div > .right {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }
 .el-card__body {
