@@ -458,6 +458,35 @@
         </div>
       </div>
     </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">개발중 Checkbox</h2>
+      <div class="action-box">
+        <div class="component">
+          <r-check
+            :text="'저는 시작부터 체크가 되어있어요'"
+            :value="'으억'"
+            :default="true"
+            @toggle="updateCheckBox"
+          ></r-check>
+          <r-check
+            :text="'난 체크 안되어있지'"
+            :value="'크어어억'"
+            @toggle="updateCheckBox"
+          ></r-check>
+        </div>
+        <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="checked"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 <script>
@@ -482,6 +511,7 @@ import ToggleButton from 'ToggleButton'
 import Search from 'components/workspace/modules/Search'
 import IconButton from 'components/workspace/modules/IconButton'
 import LocalRecordSetting from 'components/workspace/modal/LocalRecordSetting'
+import RCheck from 'RemoteCheckBox'
 export default {
   components: {
     CreateRoom,
@@ -505,6 +535,7 @@ export default {
     Search,
     IconButton,
     LocalRecordSetting,
+    RCheck,
   },
   data() {
     return {
@@ -638,6 +669,7 @@ export default {
       modal: {
         visible: false,
       },
+      checked: false,
     }
   },
   methods: {
@@ -650,6 +682,9 @@ export default {
     },
     toggleModal() {
       this.customModal.visible = !this.customModal.visible
+    },
+    updateCheckBox(value) {
+      console.log(value)
     },
   },
 }
