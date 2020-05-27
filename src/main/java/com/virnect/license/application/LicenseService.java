@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -395,6 +396,7 @@ public class LicenseService {
     }
 
 
+    @Transactional(readOnly = true)
     public ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicensePlanInfo(String workspaceId) {
         Optional<LicensePlan> licensePlan = this.licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, PlanStatus.ACTIVE);
 
@@ -403,8 +405,39 @@ public class LicenseService {
             return new ApiResponse<>(workspaceLicensePlanInfoResponse);
         }
 
+        LicensePlan licensePlanInfo = licensePlan.get();
+        List<LicenseProduct> licenseProductList = licensePlanInfo.getLicenseProductList();
+        List<LicenseProductInfoResponse> licenseProductInfoResponses = new ArrayList<>();
+        licenseProductList.forEach(licenseProduct -> {
+            LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
+            Product product = licenseProduct.getProduct();
+
+            // Product Info
+            licenseProductInfo.setProductId(product.getId());
+            licenseProductInfo.setProductName(product.getName());
+            licenseProductInfo.setLicenseType(product.getProductType().getName());
+
+            // License Info
+            List<LicenseInfoResponse> licenseInfoList = new ArrayList<>();
+            licenseProduct.getLicenseList().forEach(license -> {
+                LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+                licenseInfoResponse.setLicenseKey(license.getSerialKey());
+                licenseInfoResponse.setStatus(license.getStatus());
+                licenseInfoResponse.setUserId(license.getUserId() == null ? "" : license.getUserId());
+                licenseInfoResponse.setCreatedDate(license.getCreatedDate());
+                licenseInfoResponse.setUpdatedDate(license.getUpdatedDate());
+                licenseInfoList.add(licenseInfoResponse);
+            });
+
+            licenseProductInfo.setLicenseInfoList(licenseInfoList);
+            licenseProductInfo.setQuantity(licenseInfoList.size());
+
+            licenseProductInfoResponses.add(licenseProductInfo);
+        });
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
+        workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
+
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
     }
 }

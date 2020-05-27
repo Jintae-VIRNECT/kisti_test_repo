@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -35,4 +36,6 @@ public class WorkspaceLicensePlanInfoResponse {
     private LocalDateTime endDate = LocalDateTime.now();
     @ApiModelProperty(value = "라이선스 플랜 상태", position = 7, example = "ACTIVE")
     private PlanStatus planStatus = PlanStatus.INACTIVE;
+    @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 8)
+    private List<LicenseProductInfoResponse> licenseProductInfoList;
 }
