@@ -33,14 +33,18 @@ public class Target extends BaseTimeEntity {
     @Column(name = "data", unique = true)
     private String data;
 
+    @Column(name = "img_path")
+    private String imgPath;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")
     private Content content;
 
     @Builder
-    public Target(TargetType type, String data, Content content) {
+    public Target(TargetType type, String data, String imgPath, Content content) {
         this.type = type;
         this.data = data;
+        this.imgPath = imgPath;
         this.content = content;
     }
 
