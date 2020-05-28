@@ -8,6 +8,7 @@ import com.virnect.process.domain.Process;
 import com.virnect.process.domain.*;
 import com.virnect.process.dto.request.*;
 import com.virnect.process.dto.response.*;
+import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
@@ -37,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -200,7 +200,12 @@ public class TaskService {
     private void rollbackDuplicateContent(String contentUUID, String userUUID) {
         this.contentRestService.contentConvertHandler(contentUUID, YesOrNo.NO);
         String[] contentUUIDs = {contentUUID};
-        this.contentRestService.contentDeleteRequestHandler(contentUUIDs, userUUID);
+
+        ContentDeleteRequest contentDeleteRequest = new ContentDeleteRequest();
+        contentDeleteRequest.setContentUUIDs(contentUUIDs);
+        contentDeleteRequest.setWorkerUUID(userUUID);
+
+        this.contentRestService.contentDeleteRequestHandler(contentDeleteRequest);
     }
 
     /**
@@ -1805,7 +1810,12 @@ public class TaskService {
 
         // 컨텐츠 삭제
         String[] processes = {process.getContentUUID()};
-        ApiResponse<ContentDeleteListResponse> apiResponse = this.contentRestService.contentDeleteRequestHandler(processes, actorUUID);
+
+        ContentDeleteRequest contentDeleteRequest = new ContentDeleteRequest();
+
+        contentDeleteRequest.setContentUUIDs(processes);
+        contentDeleteRequest.setWorkerUUID(actorUUID);
+        ApiResponse<ContentDeleteListResponse> apiResponse = this.contentRestService.contentDeleteRequestHandler(contentDeleteRequest);
 
         log.debug("apiResponse : {}", apiResponse.getData().toString());
 
