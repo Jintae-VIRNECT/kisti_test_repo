@@ -403,4 +403,61 @@ public class LicenseService {
 //        }
         return new ApiResponse<>(new MyLicenseInfoListResponse(myLicenseInfoResponseList));
     }
+
+    /**
+     * 워크스페이스내에서 사용자에게 플랜 할당, 해제
+     *
+     * @param workspaceId - 플랜할당(해제)이 이루어지는 워크스페이스 식별자
+     * @param userId      - 플랜 할당(해제)을 받을 사용자 식별자
+     * @param productName - 할당(해제) 을 받을 제품명(REMOTE, MAKE, VIEW 중 1)
+     * @return - 할당받은 라이선스 정보 or 해제 성공 여부
+     */
+    @Transactional
+    public ApiResponse grantWorkspaceLicenseToUser(String workspaceId, String userId, String productName, Boolean grant) {
+        //워크스페이스 플랜찾기
+        LicensePlan licensePlan = this.licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, PlanStatus.ACTIVE)
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+        Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
+
+        Product product = null;
+        for (LicenseProduct licenseProduct : licenseProductSet) {
+            if (licenseProduct.getProduct().getName().equalsIgnoreCase(productName)) {
+                product = licenseProduct.getProduct();
+            }
+        }
+        //워크스페이스가 가진 라이선스 중에 사용자가 요청한 제품 라이선스가 없는경우.
+        if (product == null) {
+            throw new LicenseServiceException(ErrorCode.ERR_LICENSE_PRODUCT_NOT_FOUND);
+        }
+
+        //라이선스 부여/해제
+        License oldLicense = this.licenseRepository.findByUserIdAndLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_ProductAndStatus(userId, workspaceId, product, LicenseStatus.USE);
+        if(grant){
+            if (oldLicense!=null) {
+                throw new LicenseServiceException(ErrorCode.ERR_LICENSE_ALREADY_GRANTED);
+            }
+            //부여 가능한 라이선스 찾기
+            List<License> licenseList = this.licenseRepository.findAllByLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_LicensePlan_PlanStatusAndLicenseProduct_ProductAndStatus(
+                    workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSE);
+            if (licenseList.isEmpty()) {
+                throw new LicenseServiceException(ErrorCode.ERR_USEFUL_LICENSE_NOT_FOUND);
+            }
+
+            License updatedLicense = licenseList.get(0);
+            updatedLicense.setUserId(userId);
+            updatedLicense.setStatus(LicenseStatus.USE);
+            this.licenseRepository.save(updatedLicense);
+
+            MyLicenseInfoResponse myLicenseInfoResponse = this.modelMapper.map(updatedLicense, MyLicenseInfoResponse.class);
+            myLicenseInfoResponse.setLicenseType(updatedLicense.getLicenseProduct().getLicenseType().getName());
+            return new ApiResponse<>(myLicenseInfoResponse);
+        }else{
+            oldLicense.setUserId(null);
+            oldLicense.setStatus(LicenseStatus.UNUSE);
+            this.licenseRepository.save(oldLicense);
+
+            return new ApiResponse<>(true);
+        }
+    }
+
 }

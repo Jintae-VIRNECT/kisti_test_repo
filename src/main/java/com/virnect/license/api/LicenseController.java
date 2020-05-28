@@ -128,5 +128,36 @@ public class LicenseController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    @ApiOperation(value = "워크스페이스내에서 라이선스 할당")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", required = true),
+            @ApiImplicitParam(name = "userId", value = "워크스페이스 유저 식별자", paramType = "path", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
+            @ApiImplicitParam(name = "productName", value = "제품명", paramType = "query", defaultValue = "make", required = true),
+    })
+    @PutMapping("/{workspaceId}/{userId}/grant")
+    public ResponseEntity<ApiResponse<MyLicenseInfoResponse>> grantWorkspaceLicenseToUser(
+            @PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(productName)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MyLicenseInfoResponse> responseMessage = this.licenseService.grantWorkspaceLicenseToUser(workspaceId, userId, productName, true);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스페이스내에서 라이선스 할당 해제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "userId", value = "워크스페이스 유저 식별자", paramType = "path", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+            @ApiImplicitParam(name = "productName", value = "제품명", paramType = "query", defaultValue = "make"),
+    })
+    @PutMapping("/{workspaceId}/{userId}/revoke")
+    public ResponseEntity<ApiResponse<Boolean>> revokeWorkspaceLicenseToUser(
+            @PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(productName)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<Boolean> responseMessage = this.licenseService.grantWorkspaceLicenseToUser(workspaceId, userId, productName, false);
+        return ResponseEntity.ok(responseMessage);
+    }
 }
 
