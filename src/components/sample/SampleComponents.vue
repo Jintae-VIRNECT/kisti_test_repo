@@ -459,7 +459,7 @@
       </div>
     </section>
     <section class="test-section select" style="background-color: #1e1e20;">
-      <h2 class="subtitle">개발중 Checkbox</h2>
+      <h2 class="subtitle">개발 완 Checkbox</h2>
       <div class="action-box">
         <div class="component">
           <r-check
