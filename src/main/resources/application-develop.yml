@@ -65,3 +65,4 @@ redirectUrl: "https://192.168.6.3:8878"
 feign:
   hystrix:
     enabled: true
+

@@ -25,9 +25,9 @@ public interface LicenseRestService {
     @GetMapping(value="/licenses/{workspaceId}/{userId}")
     ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(@PathVariable("userId") String userId, @PathVariable("workspaceId") String workspaceId);
 
-    @PutMapping("/{workspaceId}/{userId}/grant")
+    @PutMapping(value="/{workspaceId}/{userId}/grant")
     ApiResponse<MyLicenseInfoResponse> grantWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
 
-    @PutMapping("/{workspaceId}/{userId}/revoke")
+    @PutMapping(value="/{workspaceId}/{userId}/revoke")
     ApiResponse<Boolean> revokeWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
 }

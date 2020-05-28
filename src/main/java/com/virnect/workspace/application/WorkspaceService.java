@@ -244,12 +244,12 @@ public class WorkspaceService {
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
+                /*    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
                     String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                         return myLicenseInfoResponse.getProductName();
                     }).toArray(String[]::new);
 
-                    memberInfoDTO.setLicenseProducts(licenseProducts);
+                    memberInfoDTO.setLicenseProducts(licenseProducts);*/
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
@@ -276,12 +276,12 @@ public class WorkspaceService {
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
+                   /* MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
                     String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                         return myLicenseInfoResponse.getProductName();
                     }).toArray(String[]::new);
                     memberInfoDTO.setLicenseProducts(licenseProducts);
-
+*/
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
@@ -705,7 +705,7 @@ public class WorkspaceService {
         List<String> oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
 
         //리스트 반환
-
+        //getRequestLicenseList(oldProductList);
         //새로 추가하려는 라이선스
         List<LicenseProduct> newProductList = new ArrayList<>();
 
