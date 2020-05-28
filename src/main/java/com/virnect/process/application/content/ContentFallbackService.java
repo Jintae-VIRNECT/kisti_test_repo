@@ -1,6 +1,7 @@
 package com.virnect.process.application.content;
 
 import com.virnect.process.domain.YesOrNo;
+import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.global.common.ApiResponse;
@@ -24,7 +25,7 @@ public class ContentFallbackService implements ContentRestService {
     }
 
     @Override
-    public ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(String[] contentUUIDs, String workerUUID) {
+    public ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(ContentDeleteRequest contentDeleteRequest) {
         return null;
     }
 
