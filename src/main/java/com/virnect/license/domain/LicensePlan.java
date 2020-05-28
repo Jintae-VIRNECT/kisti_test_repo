@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -64,7 +65,7 @@ public class LicensePlan extends BaseTimeEntity {
     private Coupon coupon;
 
     @OneToMany(mappedBy = "licensePlan", fetch = FetchType.LAZY)
-    private List<LicenseProduct> licenseProductList;
+    private Set<LicenseProduct> licenseProductList;
 
     @Builder
     public LicensePlan(String userId, String workspaceId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus, Coupon coupon, Long maxDownloadHit, Long maxStorageSize, Long maxCallTime) {

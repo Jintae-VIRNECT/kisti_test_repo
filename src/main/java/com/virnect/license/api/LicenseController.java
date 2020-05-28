@@ -91,29 +91,6 @@ public class LicenseController {
         return ResponseEntity.ok(responseMessage);
     }
 
-
-    @ApiOperation(value = "내 라이선스 플랜에 등록된 라이선스 정보 조회", hidden = true)
-    @GetMapping("/{userId}/{workspaceId}")
-    public ResponseEntity<ApiResponse<MyLicenseInfoListResponse>> getMyLicenseInfoRequestHandler(@PathVariable("userId") @NotBlank String userId, @PathVariable("workspaceId")
-    @NotBlank String workspaceId, @RequestParam(value = "status", defaultValue = "ALL") String status, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<MyLicenseInfoListResponse> responseMessage = this.licenseService.getMyLicenseInfoList(userId, workspaceId, status);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-
-    @ApiOperation(value = "내 라이선스 플랜 정보 조회", hidden = true)
-    @GetMapping("/{userId}/{workspaceId}/plan")
-    public ResponseEntity<ApiResponse<MyLicensePlanInfoResponse>> getMyLicensePlanInfoRequestHandler(@PathVariable("userId") @NotBlank String userId, @PathVariable("workspaceId") @NotBlank String workspaceId, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<MyLicensePlanInfoResponse> responseMessage = this.licenseService.getMyLicensePlanInfo(userId, workspaceId);
-        return ResponseEntity.ok(responseMessage);
-    }
-
     @ApiOperation(value = "전체 쿠폰 정보 조회", tags = "ADMIN")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
@@ -139,5 +116,17 @@ public class LicenseController {
         ApiResponse<WorkspaceLicensePlanInfoResponse> responseMessage = this.licenseService.getWorkspaceLicensePlanInfo(workspaceId);
         return ResponseEntity.ok(responseMessage);
     }
+
+    @ApiOperation(value = "워크스페이스에서 할당받은 내 라이선스 정보 조회")
+    @GetMapping("/{workspaceId}/{userId}")
+    public ResponseEntity<ApiResponse<MyLicenseInfoListResponse>> getMyLicenseInfoRequestHandler(@PathVariable("userId") @NotBlank String userId, @PathVariable("workspaceId")
+    @NotBlank String workspaceId) {
+        if (!StringUtils.hasText(userId)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MyLicenseInfoListResponse> responseMessage = this.licenseService.getMyLicenseInfoList(userId, workspaceId);
+        return ResponseEntity.ok(responseMessage);
+    }
+
 }
 

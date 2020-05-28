@@ -1,5 +1,6 @@
 package com.virnect.license.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.license.dao.*;
 import com.virnect.license.domain.*;
 import com.virnect.license.dto.request.CouponActiveRequest;
@@ -25,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +49,7 @@ public class LicenseService {
     private final UserRestService userRestService;
     private final EmailService emailService;
     private final ModelMapper modelMapper;
-
+    private final ObjectMapper objectMapper;
 
     /**
      * 이벤트 쿠폰 생성
@@ -109,31 +107,15 @@ public class LicenseService {
         LicenseType licenseType = this.licenseTypeRepository.findByName(LICENSE_TYPE_OF_2WEEK_FREE_COUPON)
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 
-        // 모든 제품군의 경우
-//        for (String productName : eventCouponRequest.getProducts()) {
-//            Product product = this.productRepository.findByProductType_NameAndName("BASIC", productName)
-//                    .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
-//
-//            CouponProduct couponProduct = CouponProduct.builder()
-//                    .product(product)
-//                    .coupon(coupon)
-//                    .licenseType(licenseType)
-//                    .build();
-//
-//            this.couponProductRepository.save(couponProduct);
-//        }
-
-        // 메이크와 뷰 제품 (2020-04-15: MAKE VIEW 제품군만 출시일정 잡힘)
-
-        Product product = this.productRepository.findByProductType_NameAndName("BASIC", "MAKE")
+        Set<Product> product = this.productRepository.findByProductType_NameAndNameIsIn("BASIC", Arrays.asList(eventCouponRequest.getProducts()))
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 
-        LicenseProduct licenseProduct = LicenseProduct.builder()
-                .product(product)
-                .licenseType(licenseType)
-                .coupon(coupon)
-                .quantity(1)
-                .build();
+        for (Product couponProduct : product) {
+            LicenseProduct licenseProduct = LicenseProduct.builder()
+                    .product(couponProduct)
+                    .coupon(coupon)
+                    .quantity(1)
+                    .build();
 
 //        CouponProduct couponProduct = CouponProduct.builder()
 //                .product(product)
@@ -141,7 +123,8 @@ public class LicenseService {
 //                .licenseType(licenseType)
 //                .build();
 //        this.couponProductRepository.save(couponProduct);
-        this.licenseProductRepository.save(licenseProduct);
+            this.licenseProductRepository.save(licenseProduct);
+        }
 
         UserInfoRestResponse userInfoRestResponse = userInfoApiResponse.getData();
         EmailMessage message = new EmailMessage();
@@ -295,20 +278,6 @@ public class LicenseService {
 
         // 2. 쿠폰 기반으로 쿠폰에 관련된 상품 정보 입력
         for (LicenseProduct couponProduct : couponProductList) {
-//            // 2-1. 쿠폰 상품 조회
-//            Product product = couponProduct.getProduct();
-//            // 2-2. 쿠폰에 부여된 라이선스 타입 조회
-//            LicenseType licenseType = couponProduct.getLicenseType();
-//            // 2-3. 라이선스 타입에 맞는 상품 등록
-//            LicenseProduct licenseProduct = LicenseProduct.builder()
-//                    .product(product)
-//                    .licenseType(licenseType)
-//                    .price(product.getPrice())
-//                    .quantity(1)
-//                    .licensePlan(licensePlan)
-//                    .build();
-//
-//            this.licenseProductRepository.save(licenseProduct);
             couponProduct.setLicensePlan(licensePlan);
             // 2-4. 라이선스 상품별 사용가능한 라이선스 생성
             for (int i = 0; i < couponProduct.getQuantity(); i++) {
@@ -331,48 +300,6 @@ public class LicenseService {
         return UUID.randomUUID().toString().replace("0", "O").replace("1", "I").toUpperCase();
     }
 
-    /**
-     * 내 라이선스 플랜 정보 조회
-     *
-     * @param userId      - 사용자 식별자
-     * @param workspaceId - 워크스페이스 식별자
-     * @return - 내 라이선스 플랜 정보
-     */
-    public ApiResponse<MyLicensePlanInfoResponse> getMyLicensePlanInfo(String userId, String workspaceId) {
-        LicensePlan licensePlan = this.licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(userId, workspaceId, PlanStatus.ACTIVE)
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
-
-
-        return null;
-    }
-
-    /**
-     * 내 라이선스 플랜의 라이선스 정보 목록 가져오기
-     *
-     * @param userId      - 사용자 식별자
-     * @param workspaceId - 워크스페이스 식별자
-     * @param status      - 라이선스 상태 (ALL, USE, UNUSE)
-     * @return - 라이선스 정보 목록
-     */
-    public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId, String status) {
-        LicensePlan licensePlan = this.licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(userId, workspaceId, PlanStatus.ACTIVE)
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
-
-        if (status.equals("ALL")) {
-            List<LicenseProduct> licenseProductList = licensePlan.getLicenseProductList();
-        } else {
-            // QueryParameter Validator 구현 필요
-            try {
-                LicenseStatus licenseStatus = LicenseStatus.valueOf(status);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return null;
-    }
 
     @Transactional(readOnly = true)
     public ApiResponse<AdminCouponInfoListResponse> getAllCouponInfo(Pageable pageable) {
@@ -406,7 +333,7 @@ public class LicenseService {
         }
 
         LicensePlan licensePlanInfo = licensePlan.get();
-        List<LicenseProduct> licenseProductList = licensePlanInfo.getLicenseProductList();
+        Set<LicenseProduct> licenseProductList = licensePlanInfo.getLicenseProductList();
         List<LicenseProductInfoResponse> licenseProductInfoResponses = new ArrayList<>();
         licenseProductList.forEach(licenseProduct -> {
             LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
@@ -439,5 +366,41 @@ public class LicenseService {
         workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
 
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
+    }
+
+
+    /**
+     * 워크스페이스에서 내 라이선스 정보 가져오기
+     *
+     * @param userId      - 사용자 식별자
+     * @param workspaceId - 워크스페이스 식별자
+     * @return - 라이선스 정보 목록
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId) {
+//        List<LicensePlan> licensePlanList = this.licensePlanRepository.getMyLicenseInfoInWorkspaceLicensePlan(userId, workspaceId);
+//        log.info("LICENSE PLAN SIZE: {}", licensePlanList.size());
+        LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, PlanStatus.ACTIVE)
+                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+
+        List<MyLicenseInfoResponse> myLicenseInfoResponseList = new ArrayList<>();
+//        for (LicensePlan licensePlan : licensePlanList) {
+        for (LicenseProduct licenseProduct : licensePlan.getLicenseProductList()) {
+            Product product = licenseProduct.getProduct();
+            ProductType productType = product.getProductType();
+            licenseProduct.getLicenseList().stream().filter(license -> license.getUserId().equals(userId)).forEach(license -> {
+                MyLicenseInfoResponse licenseInfo = new MyLicenseInfoResponse();
+                licenseInfo.setId(license.getId());
+                licenseInfo.setSerialKey(license.getSerialKey());
+                licenseInfo.setCreatedDate(license.getCreatedDate());
+                licenseInfo.setProductName(product.getName());
+                licenseInfo.setUpdatedDate(license.getUpdatedDate());
+                licenseInfo.setLicenseType(productType.getName());
+                licenseInfo.setStatus(license.getStatus());
+                myLicenseInfoResponseList.add(licenseInfo);
+            });
+        }
+//        }
+        return new ApiResponse<>(new MyLicenseInfoListResponse(myLicenseInfoResponseList));
     }
 }
