@@ -1,6 +1,5 @@
 package com.virnect.license.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.license.dao.*;
 import com.virnect.license.domain.*;
 import com.virnect.license.dto.request.CouponActiveRequest;
@@ -9,6 +8,10 @@ import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.dto.response.admin.AdminCouponInfoResponse;
+import com.virnect.license.dto.response.biling.ProductInfoListResponse;
+import com.virnect.license.dto.response.biling.ProductInfoResponse;
+import com.virnect.license.dto.response.biling.ProductTypeInfoListResponse;
+import com.virnect.license.dto.response.biling.ProductTypeInfoResponse;
 import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
@@ -42,6 +45,7 @@ import java.util.stream.Collectors;
 public class LicenseService {
     private final CouponRepository couponRepository;
     private final ProductRepository productRepository;
+    private final ProductTypeRepository productTypeRepository;
     private final LicensePlanRepository licensePlanRepository;
     private final LicenseProductRepository licenseProductRepository;
     private final LicenseRepository licenseRepository;
@@ -443,5 +447,29 @@ public class LicenseService {
             return new ApiResponse<>(true);
         }
     }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<ProductInfoListResponse> getAllProductInfo() {
+        List<Product> productList = productRepository.findAll();
+        List<ProductInfoResponse> productInfoList = new ArrayList<>();
+        productList.forEach(product -> {
+            ProductInfoResponse productInfo = modelMapper.map(product, ProductInfoResponse.class);
+            productInfo.setProductId(product.getId());
+            productInfoList.add(productInfo);
+        });
+        return new ApiResponse<>(new ProductInfoListResponse(productInfoList));
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<ProductTypeInfoListResponse> getAllProductTypeInfo() {
+        List<ProductType> productTypeList = productTypeRepository.findAll();
+        List<ProductTypeInfoResponse> productTypeInfoList = new ArrayList<>();
+        productTypeList.forEach(productType -> {
+            ProductTypeInfoResponse productTypeInfoResponse = modelMapper.map(productType, ProductTypeInfoResponse.class);
+            productTypeInfoList.add(productTypeInfoResponse);
+        });
+        return new ApiResponse<>(new ProductTypeInfoListResponse(productTypeInfoList));
+    }
+
 
 }

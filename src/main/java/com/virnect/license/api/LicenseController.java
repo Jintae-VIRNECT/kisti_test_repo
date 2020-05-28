@@ -6,6 +6,8 @@ import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
+import com.virnect.license.dto.response.biling.ProductInfoListResponse;
+import com.virnect.license.dto.response.biling.ProductTypeInfoListResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageRequest;
@@ -157,6 +159,20 @@ public class LicenseController {
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<Boolean> responseMessage = this.licenseService.grantWorkspaceLicenseToUser(workspaceId, userId, productName, false);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "상품 정보 조회", tags = "BillingSystem")
+    @GetMapping("/products")
+    public ResponseEntity<ApiResponse<ProductInfoListResponse>> getAllProductInfoRequest() {
+        ApiResponse<ProductInfoListResponse> responseMessage = this.licenseService.getAllProductInfo();
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "상품 타입 정보 조회", tags = "BillingSystem")
+    @GetMapping("/products/types")
+    public ResponseEntity<ApiResponse<ProductTypeInfoListResponse>> getAllProductTypeInRequest() {
+        ApiResponse<ProductTypeInfoListResponse> responseMessage = this.licenseService.getAllProductTypeInfo();
         return ResponseEntity.ok(responseMessage);
     }
 }
