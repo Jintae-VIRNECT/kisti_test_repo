@@ -70,7 +70,7 @@
         <el-dropdown-item @click.native="showTarget(row)">
           {{ $t('task.list.dropdown.targetInfo') }}
         </el-dropdown-item>
-        <el-dropdown-item @click.native="edit(row.id)">
+        <el-dropdown-item @click.native="edit(row)">
           {{ $t('task.list.dropdown.taskEdit') }}
         </el-dropdown-item>
         <el-dropdown-item @click.native="add(row.id)">
@@ -91,6 +91,10 @@
       :task="activeTask"
       :visible.sync="showTaskTargetInfoModal"
     />
+    <set-task-manage
+      :taskId="activeTask.id"
+      :visible.sync="showSetTaskManageModal"
+    />
   </div>
 </template>
 
@@ -99,11 +103,13 @@ import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
 import taskService from '@/services/task'
 import TaskTargetInfo from '@/components/task/TaskTargetInfo'
+import SetTaskManage from '@/components/task/SetTaskManage'
 
 export default {
   mixins: [columnMixin],
   components: {
     TaskTargetInfo,
+    SetTaskManage,
   },
   props: {
     data: Array,
@@ -112,8 +118,9 @@ export default {
   data() {
     return {
       taskConditions,
-      activeTask: null,
+      activeTask: {},
       showTaskTargetInfoModal: false,
+      showSetTaskManageModal: false,
     }
   },
   methods: {
@@ -127,6 +134,11 @@ export default {
     showTarget(task) {
       this.activeTask = task
       this.showTaskTargetInfoModal = true
+    },
+    // 편집
+    edit(task) {
+      this.activeTask = task
+      this.showSetTaskManageModal = true
     },
     // 종료
     async close(taskId) {

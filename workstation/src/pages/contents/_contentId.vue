@@ -61,11 +61,11 @@
             <span>{{ target.type }}</span>
             <img
               src="~assets/images/icon/ic-print.svg"
-              @click="print(target.data)"
+              @click="print(target.imgPath)"
             />
             <img
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(target.data)"
+              @click="download(target.imgPath)"
             />
           </dd>
         </dl>

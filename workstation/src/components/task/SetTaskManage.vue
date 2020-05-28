@@ -3,13 +3,14 @@
     id="set-task-manage-modal"
     class="info-modal"
     :visible.sync="showMe"
-    :title="$t('task.new.title')"
+    :title="$t(taskId ? 'task.manage.taskEdit' : 'task.new.title')"
     width="860px"
     top="11vh"
   >
     <el-row type="flex">
       <el-col :span="12">
-        <h4>{{ $t('task.manage.registerNewTaskInfo') }}</h4>
+        <h4 v-if="taskId">{{ $t('task.manage.taskEditNotice') }}</h4>
+        <h4 v-else>{{ $t('task.manage.registerNewTaskInfo') }}</h4>
         <el-divider />
         <p>{{ $t('task.manage.registerTaskInfo') }}</p>
         <dl>
@@ -105,7 +106,12 @@
       </el-col>
     </el-row>
     <template slot="footer">
-      <el-button @click="next" type="primary">
+      <!-- 변경 -->
+      <el-button v-if="taskId" @click="update" type="primary">
+        {{ $t('task.manage.update') }}
+      </el-button>
+      <!-- 생성 -->
+      <el-button v-else @click="next" type="primary">
         {{ $t('common.next') }}
       </el-button>
     </template>
@@ -115,11 +121,15 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
+import taskService from '@/services/task'
 import RegisterNewTask from '@/models/task/RegisterNewTask'
+import EditTaskFrom from '@/models/task/EditTaskFrom'
+import dayjs from '@/plugins/dayjs'
 
 export default {
   mixins: [modalMixin],
   props: {
+    taskId: Number,
     contentInfo: Object,
     properties: Array,
   },
@@ -173,13 +183,42 @@ export default {
   },
   methods: {
     async opened() {
-      this.contentName = this.contentInfo.contentName
-      this.subForm = this.properties[0].children.map(sceneGroup => ({
-        id: sceneGroup.id,
-        name: sceneGroup.label,
-        schedule: [],
-        worker: '',
-      }))
+      // 편집
+      if (this.taskId) {
+        const [taskInfo, subTasks] = await Promise.all([
+          taskService.getTaskDetail(this.taskId),
+          taskService.searchSubTasks(this.taskId, { size: 50 }),
+        ])
+        this.contentName = taskInfo.name
+        this.mainForm = {
+          schedule: [
+            dayjs.utc(taskInfo.startDate).local(),
+            dayjs.utc(taskInfo.endDate).local(),
+          ],
+          worker: '',
+          position: taskInfo.position,
+        }
+        this.subForm = subTasks.list.map(subTask => ({
+          id: subTask.subTaskId,
+          name: subTask.subTaskName,
+          schedule: [
+            dayjs.utc(subTask.startDate).local(),
+            dayjs.utc(subTask.endDate).local(),
+          ],
+          worker: subTask.workerUUID,
+        }))
+      }
+      // 생성
+      else {
+        this.contentName = this.contentInfo.contentName
+        this.subForm = this.properties[0].children.map(sceneGroup => ({
+          id: sceneGroup.id,
+          name: sceneGroup.label,
+          schedule: [],
+          worker: '',
+        }))
+      }
+      // 공통
       this.activeSubForms = this.subForm.map(form => form.id)
       this.workerList = await workspaceService.allMembers()
     },
@@ -191,6 +230,25 @@ export default {
         subTasks: this.subForm,
       })
       this.$emit('next', form)
+    },
+    async update() {
+      const form = new EditTaskFrom({
+        task: this.mainForm,
+        subTasks: this.subForm,
+      })
+      try {
+        await taskService.updateTask(this.taskId, form)
+        this.$message.success({
+          message: this.$t('task.manage.message.taskUpdateSuccess'),
+          showClose: true,
+        })
+        this.$emit('updated')
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('task.manage.message.taskUpdateFail'),
+          showClose: true,
+        })
+      }
     },
   },
 }

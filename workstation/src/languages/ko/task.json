@@ -108,6 +108,8 @@
     "registerNewTaskInfo": "신규 작업 정보 등록",
     "registerTaskInfo": "작업 정보 등록",
     "taskInfo": "작업 정보",
+    "taskEdit": "작업 편집",
+    "taskEditNotice": "작업 편집 안내",
     "taskName": "작업 이름",
     "taskSchedule": "작업 일정",
     "taskWorker": "작업 담당자",
@@ -128,6 +130,8 @@
     "update": "변경하기",
     "subTaskWorkerChangeDesc":"변경하신 정보로 하위 작업 보고를 받습니다",
     "message": {
+      "taskUpdateSuccess": "작업 정보가 변경되었습니다.",
+      "taskUpdateFail": "작업 편집에 실패했습니다. 잠시 후 다시 이용해 주세요.",
       "subTaskUpdateSuccess": "하위 작업 정보가 변경되었습니다.",
       "subTaskUpdateFail": "하위 작업 편집에 실패했습니다. 잠시 후 다시 이용해 주세요."
     }

@@ -57,8 +57,19 @@ export default {
     })
   },
   /**
+   * 작업 편집
+   * @param {taskId} taskId
+   */
+  async updateTask(taskId, form) {
+    form.actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_UPDATE', {
+      route: { taskId },
+      params: form,
+    })
+  },
+  /**
    * 작업 종료
-   * @param {taskId}} taskId
+   * @param {taskId} taskId
    */
   async closeTask(taskId) {
     const actorUUID = store.getters['auth/myProfile'].uuid
@@ -69,7 +80,7 @@ export default {
   },
   /**
    * 작업 삭제
-   * @param {taskId}} taskId
+   * @param {taskId} taskId
    */
   async deleteTask(taskId) {
     const actorUUID = store.getters['auth/myProfile'].uuid
@@ -80,7 +91,7 @@ export default {
   },
   /**
    * 작업 타겟 정보 조회
-   * @param {taskId}} taskId
+   * @param {taskId} taskId
    */
   async getTargetInfo(taskId) {
     return await api('TARGET_INFO', {
