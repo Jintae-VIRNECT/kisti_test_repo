@@ -23,6 +23,7 @@ import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
 import com.virnect.content.global.util.AES256EncryptUtils;
+import com.virnect.content.global.util.QRcodeGenerator;
 import com.virnect.content.infra.file.download.FileDownloadService;
 import com.virnect.content.infra.file.upload.FileUploadService;
 import com.virnect.content.infra.file.upload.S3UploadService;
@@ -45,6 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -181,7 +184,7 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
+        String imgPath = decodeData(targetData);
 
         Target target = Target.builder()
                 .type(targetType)
@@ -720,10 +723,13 @@ public class ContentService {
     private ApiResponse<ContentInfoResponse> getContentInfoResponseApiResponse(Content content) {
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
         List<ContentTargetResponse> targetResponseList = new ArrayList<>();
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", content.getTargetList());
         for (Target target : content.getTargetList()) {
             ContentTargetResponse map = this.modelMapper.map(target, ContentTargetResponse.class);
             targetResponseList.add(map);
         }
+
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                 .workspaceUUID(content.getWorkspaceUUID())
                 .contentUUID(content.getUuid())
@@ -906,7 +912,7 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
     }
-    
+
     // property 정보 -> metadata로 변환
     public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID){
 
@@ -1108,11 +1114,15 @@ public class ContentService {
         // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다.
         Long workspaceSize = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
 
+        if (Objects.isNull(workspaceSize)) {
+            workspaceSize = 0L;
+        }
+
         log.debug("{}", maxStorageSize);
         log.debug("{}", uploadContentSize);
 
         // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
-        Long sumSize = workspaceSize +  uploadContentSize;
+        Long sumSize = workspaceSize + uploadContentSize;
 
         log.debug("{}", sumSize);
 
@@ -1129,9 +1139,54 @@ public class ContentService {
         // 현재 워크스페이스의 다운로드 횟수
         Integer sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
 
+        if (Objects.isNull(sumDownload)) {
+            sumDownload = 0;
+        }
+
         if (maxDownload < sumDownload + 1) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
         }
+    }
 
+    public String decodeData(String encodeURL){
+        String imgPath = "";
+        try {
+            String decoder = URLDecoder.decode(encodeURL, "UTF-8");
+
+            log.debug("{}", decoder);
+
+            String targetData = AES256EncryptUtils.decryptByBytes("virnect", decoder);
+
+            log.debug("{}", targetData);
+
+            imgPath = getImgPath(targetData);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return imgPath;
+    }
+
+    private String getImgPath(String targetData) {
+
+        String qrString = "";
+
+        try{
+            BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            ImageIO.write(qrImage, "png", os);
+            os.toByteArray();
+
+            qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String imgPath = this.fileUploadService.base64ImageUpload(qrString);
+
+        return imgPath;
     }
 }
