@@ -1,5 +1,7 @@
 package com.virnect.content.global.util;
 
+import com.sun.xml.fastinfoset.Encoder;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -48,6 +50,27 @@ public class AES256EncryptUtils {
                 | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static String decryptByBytes(final String key, final String encryptedData){
+        byte[] keyData;
+        try {
+            byte[] keyOriginBytes = key.getBytes(StandardCharsets.UTF_8);
+            byte[] keyBytes = new byte[16];
+            System.arraycopy(keyOriginBytes,0,keyBytes,0,keyOriginBytes.length);
+//            keyData = key.getBytes(StandardCharsets.UTF_8);
+//            byte[] ivData = key.substring(0, 16).getBytes(StandardCharsets.UTF_8);
+            SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(keyBytes));
+            byte[] decrypted = Base64.getDecoder().decode(encryptedData.getBytes(StandardCharsets.UTF_8));
+            return new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
+                | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 }
