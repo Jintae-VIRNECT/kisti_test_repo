@@ -15,7 +15,7 @@ public enum ErrorCode {
     ERR_NOT_FOUND_INVITE_WORKSPACE_INFO(1004, "Not found Wokrspace Invite Code."),
     ERR_INCORRECT_INVITE_WORKSPACE_CODE(1005,"Incorrect Workspace Invite Code."),
     ERR_INVALID_USER_EXIST(1006,"Invalid User Exist."),
-    ERR_INCORRECT_USER_PLAN_INFO(1007,"Users must have at least 1 plan."),
+    ERR_INCORRECT_USER_LICENSE_INFO(1007,"Users must have at least 1 plan."),
     ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
 
     // 공통 에러

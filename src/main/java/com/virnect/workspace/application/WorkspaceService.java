@@ -246,7 +246,7 @@ public class WorkspaceService {
 
                     String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList()!=null) {
+                    if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                             return myLicenseInfoResponse.getProductName();
                         }).toArray(String[]::new);
@@ -282,7 +282,7 @@ public class WorkspaceService {
 
                     String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList()!=null) {
+                    if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                             return myLicenseInfoResponse.getProductName();
                         }).toArray(String[]::new);
@@ -458,9 +458,8 @@ public class WorkspaceService {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
                 //초대받는 사람에게 부여되는 라이선스는 최소 1개 이상이도록 체크
-                if (userInfo.getPlanRemote() == false && userInfo.getPlanMake() == false && userInfo.getPlanView() == false) {
-                    throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_PLAN_INFO);
-                }
+                userLicenseValidCheck(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView());
+
                 if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
                     //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간과 초대 정보 업데이트
                     UserInvite userInvite = this.userInviteRepository.findById(inviteUserResponse.getUserUUID() + workspaceId).orElse(null);
@@ -672,67 +671,80 @@ public class WorkspaceService {
         UserInfoRestResponse user = this.userRestService.getUserInfoByUserId(memberUpdateRequest.getUserId()).getData();
         UserInfoRestResponse requestUser = this.userRestService.getUserInfoByUserId(memberUpdateRequest.getRequestUserId()).getData();
 
-        //권한 변경 일어남 -> 권한 변경 로직 태움
+        //권한 변경
         if (!userPermission.getWorkspaceRole().equals(workspaceRole)) {
             updateUserPermission(workspace, memberUpdateRequest.getRequestUserId(), memberUpdateRequest.getUserId(), workspaceRole, masterUser, user, locale);
         }
 
         //플랜 변경
-        userLicenseValidCheck(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView());
-        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(memberUpdateRequest.getUserId(), workspaceId).getData();
+        grantRevokeworkspaceUserLicense(memberUpdateRequest.getUserId(), workspace, masterUser, user, requestUser, memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), locale);
 
-        //가지고 있던 라이선스
-        List<String> oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
+        return new ApiResponse<>(true);
+    }
 
-        //새로 추가하려는 라이선스
-        List<LicenseProduct> newProductList = new ArrayList<>();
+    private void grantRevokeworkspaceUserLicense(String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user, UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale) {        userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
 
-        //이제 사용안하는 라이선스
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userId, workspace.getUuid()).getData();
+
+        List<String> oldProductList = new ArrayList<>();
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+            oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
+        }
         List<LicenseProduct> notFoundProductList = new ArrayList<>();
 
-        if (memberUpdateRequest.getLicenseRemote()) {
-            if (oldProductList.contains(LicenseProduct.REMOTE.toString())) {
+        List<LicenseProduct> newProductList = new ArrayList<>();
+        if (remoteLicense) {
+            if (!oldProductList.contains(LicenseProduct.REMOTE.toString())) {
+                //CASE1 : 기존에 없던 라이선스인데 사용하는 경우면
                 newProductList.add(LicenseProduct.REMOTE);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.REMOTE.toString());
-
-            } else {
+                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString());
+            }
+            //CASE2 : 기존에 있던 라이선스인데 사용하는 경우면
+        } else {
+            //CASE3 : 기존에 있던 라이선스인데 사용안하는 경우면
+            if (oldProductList.contains(LicenseProduct.REMOTE.toString())) {
                 notFoundProductList.add(LicenseProduct.REMOTE);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.REMOTE.toString());
-
+                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString());
             }
+            //CASE4 : 기존에 없던 라이선스인데 사용안하는 경우면
         }
-        if (memberUpdateRequest.getLicenseMake()) {
-            if (oldProductList.contains(LicenseProduct.MAKE.toString())) {
+
+        if (makeLicense) {
+            if (!oldProductList.contains(LicenseProduct.MAKE.toString())) {
                 newProductList.add(LicenseProduct.MAKE);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.MAKE.toString());
-            } else {
+                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString());
+            }
+        } else {
+            if (oldProductList.contains(LicenseProduct.MAKE.toString())) {
                 notFoundProductList.add(LicenseProduct.MAKE);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.MAKE.toString());
-
+                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString());
             }
         }
-        if (memberUpdateRequest.getLicenseView()) {
-            if (oldProductList.contains(LicenseProduct.VIEW.toString())) {
+
+        if (viewLicense) {
+            if (!oldProductList.contains(LicenseProduct.VIEW.toString())) {
                 newProductList.add(LicenseProduct.VIEW);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.VIEW.toString());
-            } else {
+                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString());
+            }
+        } else {
+            if (oldProductList.contains(LicenseProduct.VIEW.toString())) {
                 notFoundProductList.add(LicenseProduct.VIEW);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, memberUpdateRequest.getUserId(), LicenseProduct.VIEW.toString());
-
+                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString());
             }
         }
+
 
         if (!newProductList.isEmpty() || !notFoundProductList.isEmpty()) {
             //히스토리
             if (!newProductList.isEmpty()) {
                 String newProductString = newProductList.stream().map(licenseProduct -> String.valueOf(licenseProduct)).collect(Collectors.joining());
                 String message = this.messageSource.getMessage("WORKSPACE_GRANT_LICENSE", new java.lang.String[]{requestUser.getNickname(), user.getNickname(), newProductString}, locale);
-                saveHistotry(workspace, memberUpdateRequest.getUserId(), message);
+                saveHistotry(workspace, userId, message);
             }
             if (!notFoundProductList.isEmpty()) {
                 String notFoundProductString = notFoundProductList.stream().map(licenseProduct -> String.valueOf(licenseProduct)).collect(Collectors.joining());
                 String message = this.messageSource.getMessage("WORKSPACE_GRANT_LICENSE", new java.lang.String[]{requestUser.getNickname(), user.getNickname(), notFoundProductString}, locale);
-                saveHistotry(workspace, memberUpdateRequest.getUserId(), message);
+                saveHistotry(workspace, userId, message);
             }
 
             //메일 발송
@@ -744,16 +756,15 @@ public class WorkspaceService {
             context.setVariable("responseUserNickName", user.getNickname());
             context.setVariable("responseUserEmail", user.getEmail());
             StringBuilder plan = new StringBuilder();
-            if (memberUpdateRequest.getLicenseRemote()) {
+            if (remoteLicense) {
                 plan.append("REMOTE");
             }
-            if (memberUpdateRequest.getLicenseMake()) {
+            if (makeLicense) {
                 plan.append(",MAKE");
             }
-            if (memberUpdateRequest.getLicenseView()) {
+            if (viewLicense) {
                 plan.append(",VIEW");
             }
-
             context.setVariable("plan", plan.toString());
 
             List<String> receiverEmailList = new ArrayList<>();
@@ -762,7 +773,6 @@ public class WorkspaceService {
             this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_USER_PLAN_UPDATE);
         }
 
-        return new ApiResponse<>(true);
     }
 
     private void updateUserPermission(Workspace workspace, String requestUserId, String responseUserId, WorkspaceRole workspaceRole, UserInfoRestResponse masterUser, UserInfoRestResponse user, Locale locale) {
@@ -821,8 +831,8 @@ public class WorkspaceService {
     }
 
     private void userLicenseValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
-        if (planRemote && planMake && planView) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        if (!planRemote && !planMake && !planView) {
+            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
         }
     }
 
