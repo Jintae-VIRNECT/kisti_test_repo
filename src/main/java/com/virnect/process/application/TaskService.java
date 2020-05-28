@@ -1258,9 +1258,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, CheckProcessOwnerRequest checkProcessOwnerRequest) {
-        Long processId   = checkProcessOwnerRequest.getTaskId();
-        String actorUUID = checkProcessOwnerRequest.getActorUUID();
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, String actorUUID) {
         // 공정종료
         // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
