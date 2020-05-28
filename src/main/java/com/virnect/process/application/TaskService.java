@@ -144,16 +144,17 @@ public class TaskService {
         // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
         else {
             log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", registerNewProcess.getContentUUID());
-            ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(registerNewProcess.getContentUUID());
+            ApiResponse<ContentInfoResponse> contentTransform = this.contentRestService.getContentInfo(registerNewProcess.getContentUUID());
 
-            ContentTargetResponse contentTarget = contentTransfrom.getData().getTarget();
+            // 컨텐츠의 타겟값을 가져옴
+            ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
 
             // 기존 컨텐츠 식별자 등록
             newProcess.setContentUUID(registerNewProcess.getContentUUID());
             newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
             // 컨텐츠의 전환상태 변경
-            this.contentRestService.contentConvertHandler(contentTransfrom.getData().getContentUUID(), YesOrNo.YES);
+            this.contentRestService.contentConvertHandler(contentTransform.getData().getContentUUID(), YesOrNo.YES);
 
             // 작업 저장
             this.processRepository.save(newProcess);
@@ -243,7 +244,7 @@ public class TaskService {
         try {
             String targetData = contentTargetResponse.getData();
             TargetType targetType = contentTargetResponse.getType();
-            String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
+            String imgPath = contentTargetResponse.getImgPath(); //this.fileUploadService.base64ImageUpload(targetData);
 
             Target target = Target.builder()
                     .type(targetType)
@@ -464,7 +465,7 @@ public class TaskService {
             log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", duplicateRequest.getContentUUID());
             ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(duplicateRequest.getContentUUID());
 
-            ContentTargetResponse contentTarget = contentTransfrom.getData().getTarget();
+            ContentTargetResponse contentTarget = contentTransfrom.getData().getTargets().get(0);
 
             // 기존 컨텐츠 식별자 등록
             newProcess.setContentUUID(duplicateRequest.getContentUUID());

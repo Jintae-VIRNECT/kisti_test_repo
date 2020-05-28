@@ -21,4 +21,5 @@ public class ContentTargetResponse {
     private Long id;
     private TargetType type;
     private String data;
+    private String imgPath;
 }
