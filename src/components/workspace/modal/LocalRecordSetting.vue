@@ -2,23 +2,37 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    :width="546"
-    :height="482"
+    :width="568"
+    :height="462"
     :beforeClose="beforeClose"
     :class="'local-recsetting-modal'"
   >
     <div class="rec-setting">
+      <div class="rec-setting__header">포인팅 설정</div>
+      <div class="rec-setting__row">
+        <p class="rec-setting__text">참가자 포인팅</p>
+
+        <r-check
+          :text="'참가자 포인팅 허용'"
+          :value="'AllowJoinerPointing'"
+          @toggle="updateCheckBox"
+        ></r-check>
+      </div>
+
+      <div class="rec-setting__underbar" />
+
       <div class="rec-setting__header">로컬 녹화 설정</div>
 
       <div class="rec-setting__row">
         <p class="rec-setting__text">녹화대상</p>
-        <r-radio
-          class="rec-setting__selector"
-          :options="radioOption.options"
-          :text="radioOption.text"
-          :value="radioOption.value"
-          :selectedOption.sync="selectRecTarget"
-        ></r-radio>
+        <div class="rec-setting__selector">
+          <r-radio
+            :options="radioOption.options"
+            :text="radioOption.text"
+            :value="radioOption.value"
+            :selectedOption.sync="selectParticipantRecTarget"
+          ></r-radio>
+        </div>
       </div>
       <div class="rec-setting__row">
         <p class="rec-setting__text">최대 녹화 시간</p>
@@ -44,14 +58,11 @@
       </div>
       <div class="rec-setting__row">
         <div class="rec-setting__text">참가자 로컬 녹화</div>
-        <div class="rec-setting__selector">
-          <r-radio
-            :options="radioOption.options"
-            :text="radioOption.text"
-            :value="radioOption.value"
-            :selectedOption.sync="selectParticipantRecTarget"
-          ></r-radio>
-        </div>
+        <r-check
+          :text="'참가자 로컬 녹화 허용'"
+          :value="'AllowJoinerLocalRecording'"
+          @toggle="updateCheckBox"
+        ></r-check>
       </div>
     </div>
   </modal>
@@ -60,6 +71,7 @@
 <script>
 import Modal from 'Modal'
 import RSelect from 'RemoteSelect'
+import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 
 export default {
@@ -67,6 +79,7 @@ export default {
   components: {
     Modal,
     RSelect,
+    RCheck,
     RRadio,
   },
   data() {
@@ -77,6 +90,8 @@ export default {
 
       localRecordingTime: '',
       localRecordingResolution: '',
+
+      joinerPointingApprove: false,
 
       localRecTimeOpt: [
         {
@@ -165,6 +180,9 @@ export default {
       console.log(newResolution)
       //this.$store.dispatch('setRecordResolution', newResolution.value)
     },
+    updateCheckBox(value) {
+      console.log(value)
+    },
   },
 }
 </script>
@@ -174,12 +192,13 @@ export default {
 /** custom mdoal */
 .local-recsetting-modal .modal--inner {
   background-color: $color_darkgray_500;
-  box-shadow: 0 0 0.714em 0 rgba(255, 255, 255, 0.07),
-    0 0.857em 0.857em 0 rgba(255, 255, 255, 0.3);
+  // box-shadow: 0 0 0.714em 0 rgba(255, 255, 255, 0.07),
+  //   0 0.857em 0.857em 0 rgba(255, 255, 255, 0.3);
+  box-shadow: none;
 }
 .local-recsetting-modal .modal--header {
-  height: 45px;
-  padding: 12px 11px 0 0;
+  height: 2.813rem;
+  padding: 0.75rem 0.688rem 0 0;
   background-color: $color_darkgray_500;
   border-bottom: none;
 }
@@ -189,33 +208,42 @@ export default {
 }
 
 .rec-setting__header {
-  margin-bottom: 26px;
+  margin-bottom: 1.625rem;
   color: $color_white;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 .rec-setting__row {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 0.875rem;
 }
 
 .rec-setting__text {
-  width: 162px;
+  width: 12.875rem;
   color: $color_text_main;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .rec-setting__selector {
   align-items: flex-start;
-  width: 336px;
+  width: 21rem;
+}
+
+.rec-setting__underbar {
+  margin-top: 2.313rem;
+  margin-bottom: 2.375rem;
+  border-bottom-color: #454548;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 /*custom remote radio */
 .rec-setting {
   .radio-group {
     flex-direction: row;
+    padding: 0;
 
     .radio-option:not(:first-of-type) {
       padding-left: 26px;
