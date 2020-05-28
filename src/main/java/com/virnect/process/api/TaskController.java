@@ -486,7 +486,7 @@ public class TaskController {
     @ApiOperation(value = "작업종료", notes = "진행중인 작업을 종료합니다. 더이상 작업 수행을 할 수 없게 됩니다. 또한 활성화된 작업은 하나이기 때문에 작업이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
     @PutMapping("/closed/{taskId}")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(
-            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest) {
+            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest, BindingResult result) {
         ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(checkProcessOwnerRequest);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
@@ -529,6 +529,23 @@ public class TaskController {
     }
 
     /**
+     * 작업복제
+     *
+     * @param registerNewProcess
+     * @param result
+     * @return
+     */
+    @ApiOperation(value = "작업생성", notes = "테스트시 contentUUID 및 subProcessList.id는 컨텐츠 uuid와 메타데이터의 sceneGroup id, workspace uuid가 일치해야 함에 유의\n워크스페이스는 컨텐츠의 워크스페이스와 동일.\n워크스페이스의 아무 컨텐츠로나 작업을 생성할 수 있는지는 아직 확인되지 않음.\n개발 완료 후 기획쪽과 협의 필요.")
+    @PostMapping("/duplicate")
+    public ResponseEntity<ApiResponse<ProcessRegisterResponse>> duplicateProcess(@RequestBody @Valid ProcessDuplicateRequest duplicateRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ProcessRegisterResponse> responseMessage = this.taskService.duplicateTheProcess(duplicateRequest);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
      * 작업삭제
      *
      * @return
@@ -536,7 +553,10 @@ public class TaskController {
     @ApiOperation(value = "작업삭제", notes = "actorUUID는 작업의 contentManagerUUID와 동일해야 함.")
     @DeleteMapping("/{taskId}")
     public ResponseEntity<ApiResponse<ProcessSimpleResponse>> deleteProcessHandler(
-            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest) {
+            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(checkProcessOwnerRequest);
         return ResponseEntity.ok(processSimpleResponseApiResponse);
     }
@@ -554,12 +574,12 @@ public class TaskController {
     })
     @PostMapping("/{taskId}")
     public ResponseEntity<ResponseMessage> updateProcess(
-            @PathVariable("taskId") Long taskId, @RequestParam(value = "actorUUID") String actorUUID
+            @PathVariable("taskId") Long taskId
             , @RequestBody @Valid EditProcessRequest editTaskRequest, BindingResult result) {
-        if (actorUUID.isEmpty() || Objects.isNull(taskId) || result.hasErrors()) {
+        if (Objects.isNull(taskId) || result.hasErrors()) {
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseMessage responseMessage = this.taskService.updateProcess(actorUUID, editTaskRequest);
+        ResponseMessage responseMessage = this.taskService.updateProcess(editTaskRequest);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -700,7 +720,8 @@ public class TaskController {
             @ApiImplicitParam(name = "subTaskId", value = "하위작업 식별자", dataType = "string", paramType = "path", required = true, example = "1"),
     })
     @PostMapping("/subTasks/{subTaskId}")
-    public ResponseEntity<ResponseMessage> updateSubProcess(@PathVariable("subTaskId") Long subTaskId, @RequestBody EditSubProcessRequest subProcessRequest) {
+    public ResponseEntity<ResponseMessage> updateSubProcess(@PathVariable("subTaskId") Long subTaskId
+            , @RequestBody EditSubProcessRequest subProcessRequest) {
         if (subTaskId == null) {
             log.info("[subTaskId] => [{}]", subTaskId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -793,3 +814,4 @@ public class TaskController {
         return ResponseEntity.ok("200 OK");
     }
 }
+

@@ -152,11 +152,8 @@ public class TaskService {
             newProcess.setContentUUID(registerNewProcess.getContentUUID());
             newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
-            // 삭제할 컨텐츠의 UUID
-            String[] contentUUIDs = {registerNewProcess.getContentUUID()};
-
-            // 컨텐츠 파일 삭제
-            this.contentRestService.contentDeleteRequestHandler(contentUUIDs, registerNewProcess.getOwnerUUID());
+            // 컨텐츠의 전환상태 변경
+            this.contentRestService.contentConvertHandler(contentTransfrom.getData().getContentUUID(), YesOrNo.YES);
 
             // 작업 저장
             this.processRepository.save(newProcess);
@@ -264,7 +261,6 @@ public class TaskService {
             throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
         }
     }
-
 
     /**
      * 신규 공정에 세부 공정 내역 추가 처리
@@ -396,6 +392,131 @@ public class TaskService {
             rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
             throw new ProcessServiceException(ErrorCode.ERR_REPORT_REGISTER);
         }
+    }
+
+    @Transactional
+    public ApiResponse<ProcessRegisterResponse> duplicateTheProcess(ProcessDuplicateRequest duplicateRequest) {
+        // 공정 생성 요청 처리
+        log.info("CREATE THE PROCESS requestBody ---> {}", duplicateRequest.toString());
+
+        // 1. 컨텐츠 메타데이터 가져오기
+        ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(duplicateRequest.getContentUUID());
+
+        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
+
+        // 1-1. 에러가 난 경우
+        if (contentApiResponse.getCode() != 200) {
+            throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
+        }
+
+        if (contentApiResponse.getData() == null) {
+            throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
+        }
+
+        log.debug("----------content uuid : {}", contentApiResponse.getData().getContents().getUuid());
+
+        // 4. 공정 정보 저장
+        Process newProcess = Process.builder()
+                .startDate(duplicateRequest.getStartDate())
+                .endDate(duplicateRequest.getEndDate())
+                .name(duplicateRequest.getName())
+                .position(duplicateRequest.getPosition())
+                .conditions(INIT_CONDITIONS)
+                .progressRate(INIT_PROGRESS_RATE)
+                .state(INIT_STATE)
+                .subProcessList(new ArrayList<>())
+                .workspaceUUID(duplicateRequest.getWorkspaceUUID())
+                .contentUUID(contentApiResponse.getData().getContents().getUuid())
+                .contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())
+                .build();
+
+        // 메뉴얼(컨텐츠)도 보고 작업(보고)도 필요한 경우 = 복제
+        if ("duplicate".equals(duplicateRequest.getTargetSetting())) {
+            // 컨텐츠 파일 복제 요청
+            ApiResponse<ContentUploadResponse> contentDuplicate = this.contentRestService.contentDuplicate(
+                    duplicateRequest.getContentUUID()
+                    , duplicateRequest.getWorkspaceUUID()
+                    , duplicateRequest.getOwnerUUID());
+            try {
+                log.info("CREATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", duplicateRequest.getContentUUID(), contentDuplicate.getData().getContentUUID());
+
+                // 복제된 컨텐츠 식별자 등록
+                newProcess.setContentUUID(contentDuplicate.getData().getContentUUID());
+                newProcess.setContentManagerUUID(duplicateRequest.getOwnerUUID());
+
+                // 컨텐츠의 전환상태 변경
+                this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+
+                // 작업 저장
+                this.processRepository.save(newProcess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
+                rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), duplicateRequest.getOwnerUUID());
+                throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
+            }
+
+            // 타겟
+            addTargetToProcess(newProcess, duplicateRequest.getTargetType());
+        }
+        // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
+        else {
+            log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", duplicateRequest.getContentUUID());
+            ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(duplicateRequest.getContentUUID());
+
+            ContentTargetResponse contentTarget = contentTransfrom.getData().getTarget();
+
+            // 기존 컨텐츠 식별자 등록
+            newProcess.setContentUUID(duplicateRequest.getContentUUID());
+            newProcess.setContentManagerUUID(duplicateRequest.getOwnerUUID());
+
+            // 컨텐츠의 전환상태 변경
+            this.contentRestService.contentConvertHandler(contentTransfrom.getData().getContentUUID(), YesOrNo.YES);
+
+            // 작업 저장
+            this.processRepository.save(newProcess);
+
+            // 컨텐츠의 타겟 정보를 가져옴
+            getTargetFromContent(newProcess, contentTarget);
+        }
+
+        // 5. 세부 공정 정보 리스트 생성
+        log.info("{}", contentApiResponse.getData().getContents().toString());
+        ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
+        Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
+
+        log.debug("ConetntMetadata {}", metadata);
+
+        metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
+
+        ProcessRegisterRequest processRegisterRequest = new ProcessRegisterRequest();
+
+        processRegisterRequest.setSubTaskList(duplicateRequest.getSubTaskList());
+
+        addSubProcessOnProcess(processRegisterRequest, sceneGroupMap, newProcess);
+
+        List<ProcessTargetResponse> targetResponseList = new ArrayList<>();
+        newProcess.getTargetList().forEach(target -> {
+            ProcessTargetResponse processTargetResponse = this.modelMapper.map(target, ProcessTargetResponse.class);
+            targetResponseList.add(processTargetResponse);
+        });
+
+        ProcessRegisterResponse processRegisterResponse = ProcessRegisterResponse.builder()
+                .taskId(newProcess.getId())
+                .name(newProcess.getName())
+                .startDate(newProcess.getStartDate())
+                .totalSubTask(newProcess.getSubProcessList().size())
+                .endDate(newProcess.getEndDate())
+                .conditions(newProcess.getConditions())
+                .progressRate(newProcess.getProgressRate())
+                .state(newProcess.getState())
+                .target(targetResponseList)
+                .workspaceUUID(duplicateRequest.getWorkspaceUUID())
+                .build();
+
+        // TODO : 공정전환 완료 후 converted yes로 변경해야 함.
+
+        return new ApiResponse<>(processRegisterResponse);
     }
 
     public ApiResponse<RecentSubProcessResponse> getNewWork(String workspaceUUID, String workerUUID) {
@@ -1190,7 +1311,7 @@ public class TaskService {
     공정 및 그 하위의 모든(세부공정, 작업 등) 정보를 업데이트함.
      */
     @Transactional
-    public ResponseMessage updateProcess(String actorUUID, EditProcessRequest editProcessRequest) {
+    public ResponseMessage updateProcess(EditProcessRequest editProcessRequest) {
         // 공정편집
         try {
             // 1 공정편집가능여부판단
@@ -1199,7 +1320,7 @@ public class TaskService {
             Process updateSourceProcess = this.processRepository.findById(editProcessRequest.getTaskId())
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
-            if (!updateSourceProcess.getContentManagerUUID().equals(actorUUID))
+            if (!updateSourceProcess.getContentManagerUUID().equals(editProcessRequest.getActorUUID()))
                 throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 
             // 공정진행중여부확인 - 편집할 수 없는 상태라면 에러
@@ -1876,6 +1997,7 @@ public class TaskService {
     }
 
     private String getImgPath(String targetData) {
+
         String qrString = "";
 
         try{

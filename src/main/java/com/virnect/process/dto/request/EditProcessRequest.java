@@ -16,8 +16,8 @@ public class EditProcessRequest {
     private Long taskId;
 
 
-    @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자 식별자, 설정시 모든 세부 작업 담당자가 해당 사용자로 동기화 됨", required = true, position = 1, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
-    private String ownerUUID = "";
+    @ApiModelProperty(value = "작업 수정 사용자 식별자", notes = "작업 담당 사용자 식별자, 설정시 모든 세부 작업 담당자가 해당 사용자로 동기화 됨", required = true, position = 1, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
+    private String actorUUID = "";
 
     @NotNull
     @ApiModelProperty(value = "작업 시작일", notes = "작업 시작일", required = true, position = 2, example = "2020-01-16T11:20:33")
