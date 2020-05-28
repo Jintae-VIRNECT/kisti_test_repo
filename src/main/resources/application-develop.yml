@@ -30,7 +30,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
-    enabled: false
 
 server:
   port: 8632
