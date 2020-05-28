@@ -23,19 +23,21 @@ public class WorkspaceLicensePlanInfoResponse {
     private String workspaceId;
     @ApiModelProperty(value = "라이선스 플랜 마스터 사용자 식별자", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String masterUserUUID;
-    @ApiModelProperty(value = "워크스페이스 최대 저장 용량(byte 단위)", notes = "byte 단위의 최대 용량", position = 2, example = "9663676416")
+    @ApiModelProperty(value = "워크스페이스 이용 최대 사용자 수 ", notes = "마스터 계정 포함", position = 2, example = "9")
+    private Long maxUserAmount = 0L;
+    @ApiModelProperty(value = "워크스페이스 최대 저장 용량(byte 단위)", notes = "byte 단위의 최대 용량", position = 3, example = "9663676416")
     private Long maxStorageSize;
-    @ApiModelProperty(value = "워크스페이스 최대 컨텐츠 다운로드 수", position = 3, example = "5000")
+    @ApiModelProperty(value = "워크스페이스 최대 컨텐츠 다운로드 수", position = 4, example = "5000")
     private Long maxDownloadHit;
-    @ApiModelProperty(value = "워크스페이스 최대 통화 횟수", position = 4, example = "100")
+    @ApiModelProperty(value = "워크스페이스 최대 통화 횟수", position = 5, example = "100")
     private Long maxCallTime;
-    @ApiModelProperty(value = "라이선스 플랜 시작일자", position = 5, example = "2020-05-15T13:00:00")
+    @ApiModelProperty(value = "라이선스 플랜 시작일자", position = 6, example = "2020-05-15T13:00:00")
     private LocalDateTime startDate;
-    @ApiModelProperty(value = "라이선스 플랜 종료일자", position = 6, example = "2020-05-15T13:00:00")
+    @ApiModelProperty(value = "라이선스 플랜 종료일자", position = 7, example = "2020-05-15T13:00:00")
     private LocalDateTime endDate;
-    @ApiModelProperty(value = "라이선스 플랜 상태", position = 7, example = "ACTIVE")
+    @ApiModelProperty(value = "라이선스 플랜 상태", position = 8, example = "ACTIVE")
     private String planStatus;
-    @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 8)
+    @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 9)
     private List<LicenseProductInfoResponse> licenseProductInfoList;
 
     @Getter

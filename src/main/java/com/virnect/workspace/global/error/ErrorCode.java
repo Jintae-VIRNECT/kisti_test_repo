@@ -21,7 +21,10 @@ public enum ErrorCode {
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),
-    ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL(2000,"Workspace user license revoke fail"),
+    ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL(2001,"Workspace user license revoke fail"),
+    ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN(2002,"Workspace license plan not found"),
+    ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE(2003,"Useful workspace license not found"),
+
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),

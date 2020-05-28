@@ -414,7 +414,15 @@ public class WorkspaceService {
      * @return
      */
     public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
-        // 워크스페이스에 이미 멤버가 9명인지 체크 with 라이선스 서비스
+        // 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse == null) {
+            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+        }
+        int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
+        if (workspaceLicensePlanInfoResponse.getMaxUserAmount() > workspaceUserAmount + workspaceInviteRequest.getUserInfoList().size()) {
+            throw new WorkspaceException(ErrorCode.ERR_NOMORE_JOIN_WORKSPACE);
+        }
 
         // 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
@@ -432,7 +440,7 @@ public class WorkspaceService {
         if (emailList.size() != responseUserList.getInviteUserInfoList().size()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_USER_EXIST);
         }
-        //서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
+        //TODO : 서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
 
         //마스터 유저 정보
         UserInfoRestResponse materUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
@@ -514,7 +522,6 @@ public class WorkspaceService {
                     if (userInfo.getPlanView()) {
                         plan.append(",VIEW");
                     }
-
                     context.setVariable("plan", plan.toString());
 
                     String html = springTemplateEngine.process("workspace_invite", context);
@@ -594,12 +601,67 @@ public class WorkspaceService {
             }
 
             //이미 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 최대 개수 9개 체크하기
-            if (this.workspaceUserRepository.findAllByUserId(userId).size() > 8) {
-                //TODO: 메일 발송
-                //리다이렉트
+            if (this.workspaceUserRepository.findAllByUserId(userId).size() > 9) {
+                //TODO: 메일 발송(D-005. 워크스페이스 참여 수 초과로 인한 참여 실패)
                 redirectUrl = redirectUrl + "?message=abortJoinWorkspace";
 
             } else {
+                //라이선스 플랜 - 멤버 제한 수 체크
+                WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+                if (workspaceLicensePlanInfoResponse == null) {
+                    throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+                }
+                int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
+                if (workspaceLicensePlanInfoResponse.getMaxUserAmount() > workspaceUserAmount + 1) {
+                    //1은 현재 워크스페이스에 들어오려고 하는 나자신;;
+                    throw new WorkspaceException(ErrorCode.ERR_NOMORE_JOIN_WORKSPACE);
+                }
+
+                //라이선스 - 할당 가능한 라이선스 체크
+                int usefulRemoteLicense = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
+                        .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equalsIgnoreCase(LicenseProduct.REMOTE.toString()))
+                        .map(licenseProductInfoResponse -> licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE")))
+                        .collect(Collectors.toList()).size();
+
+                int usefulMakeLicense = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
+                        .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equalsIgnoreCase(LicenseProduct.MAKE.toString()))
+                        .map(licenseProductInfoResponse -> licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE")))
+                        .collect(Collectors.toList()).size();
+
+                int usefulViewLicense = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
+                        .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equalsIgnoreCase(LicenseProduct.VIEW.toString()))
+                        .map(licenseProductInfoResponse -> licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE")))
+                        .collect(Collectors.toList()).size();
+
+                //라이선스 플랜부여
+                if (userInvite.getPlanRemote()) {
+                    if (usefulRemoteLicense < 0) {
+                        throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+                    }
+                    MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.REMOTE.toString()).getData();
+                    if (myLicenseInfoResponse.getProductName() == null) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                    }
+                }
+                if (userInvite.getPlanMake()) {
+                    if (usefulMakeLicense < 0) {
+                        throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+                    }
+                    MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.MAKE.toString()).getData();
+                    if (myLicenseInfoResponse.getProductName() == null) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                    }
+                }
+                if (userInvite.getPlanView()) {
+                    if (usefulViewLicense < 0) {
+                        throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+                    }
+                    MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.VIEW.toString()).getData();
+                    if (myLicenseInfoResponse.getProductName() == null) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                    }
+                }
+
                 //워크스페이스 소속 넣기 (workspace_user)
                 WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
 
@@ -612,8 +674,6 @@ public class WorkspaceService {
                         .build();
                 this.workspaceUserPermissionRepository.save(workspaceUserPermission);
 
-                //TODO: 라이선스 플랜 부여하기
-
                 //MAIL 발송
                 Context context = new Context();
                 context.setVariable("workspaceName", workspace.getName());
@@ -623,6 +683,17 @@ public class WorkspaceService {
                 context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
                 context.setVariable("role", userInvite.getRole());
                 context.setVariable("workstationHomeUrl", redirectUrl);
+                StringBuilder plan = new StringBuilder();
+                if (userInvite.getPlanRemote()) {
+                    plan.append("REMOTE");
+                }
+                if (userInvite.getPlanMake()) {
+                    plan.append(",MAKE");
+                }
+                if (userInvite.getPlanView()) {
+                    plan.append(",VIEW");
+                }
+                context.setVariable("plan", plan.toString());
 
                 String html = springTemplateEngine.process("workspace_invite_accept", context);
                 this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
@@ -632,9 +703,9 @@ public class WorkspaceService {
                 //history 저장
                 String message;
                 if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
-                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName()}, locale);
+                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName(), plan.toString()}, locale);
                 } else {
-                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName()}, locale);
+                    message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName(), plan.toString()}, locale);
                 }
                 History history = History.builder()
                         .message(message)
@@ -973,7 +1044,7 @@ public class WorkspaceService {
         if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
             myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
                 Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName()).getData();
-                if(!revokeResult){
+                if (!revokeResult) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
                 }
             });
@@ -1025,7 +1096,7 @@ public class WorkspaceService {
         if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
             myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
                 Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
-                if(!revokeResult){
+                if (!revokeResult) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
                 }
             });

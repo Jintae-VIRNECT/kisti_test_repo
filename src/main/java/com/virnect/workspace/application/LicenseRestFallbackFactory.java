@@ -26,7 +26,7 @@ public class LicenseRestFallbackFactory implements FallbackFactory<LicenseRestSe
         return new LicenseRestService() {
             @Override
             public ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicenses(String workspaceId) {
-                return null;
+                return new ApiResponse<>(null);
             }
 
             @Override
