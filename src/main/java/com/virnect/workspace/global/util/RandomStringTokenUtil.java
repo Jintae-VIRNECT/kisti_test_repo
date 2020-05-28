@@ -18,7 +18,8 @@ public class RandomStringTokenUtil {
         switch (type) {
             case UUID_WITH_SEQUENCE: {
                 String[] tokens = UUID.randomUUID().toString().split("-");
-                return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+                String uuid=tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+                return uuid.substring(0,13);
             }
             case PIN_NUMBER: {
                 Random random = new Random(System.currentTimeMillis());
