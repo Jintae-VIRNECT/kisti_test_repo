@@ -218,7 +218,7 @@ public class WorkspaceService {
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
 
         //불러온 정보들에서 userId 가지고 페이징 처리를 한다. (+ filter)
-        if (workspaceRoleList.size() > 0) {
+        if (!workspaceRoleList.isEmpty()) {
             List<WorkspaceUser> workspaceUsers = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
                 return this.workspaceUserRepository.findByUserIdAndWorkspace(userInfoRestResponse.getUuid(), workspace);
 
