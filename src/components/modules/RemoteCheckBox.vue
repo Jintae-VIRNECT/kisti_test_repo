@@ -1,13 +1,17 @@
 <template>
   <div class="checkbox">
-    <div
-      class="checkbox__box"
-      :class="{ active: checked }"
-      @click="toggleCheckBox"
-    >
-      <img v-if="checked" src="~assets/image/mdpi_icon_check.svg" />
-    </div>
-    <label :value="value" class="checkbox__label">{{ text }}</label>
+    <span>
+      <div
+        class="checkbox__box"
+        :class="{ active: checked }"
+        @click="toggleCheckBox"
+      >
+        <img v-if="checked" src="~assets/image/mdpi_icon_check.svg" />
+      </div>
+    </span>
+    <label :value="value" class="checkbox__label" @click="toggleCheckBox">{{
+      text
+    }}</label>
   </div>
 </template>
 
@@ -35,9 +39,9 @@ export default {
     value: {
       default: null,
     },
-    default: {
+    defaultVal: {
       type: Boolean,
-      default: false,
+      defaultVal: false,
     },
   },
   methods: {
@@ -48,7 +52,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.default) {
+    if (this.defaultVal) {
       this.checked = true
     }
   },

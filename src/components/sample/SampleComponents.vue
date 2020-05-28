@@ -465,16 +465,21 @@
           <r-check
             :text="'저는 시작부터 체크가 되어있어요'"
             :value="'으억'"
-            :default="true"
+            :defaultVal="true"
             @toggle="updateCheckBox"
           ></r-check>
           <r-check
-            :text="'난 체크 안되어있지'"
+            :text="'난 체크 안되어있지. 날 true로 만들면 value가 emit된답니다.'"
             :value="'크어어억'"
             @toggle="updateCheckBox"
           ></r-check>
+          <r-check
+            :text="'눌러보세요!'"
+            :value="'으아아악'"
+            @toggle="updateCheckBox"
+          ></r-check>
         </div>
-        <div class="props">
+        <!-- <div class="props">
           <div class="props-option">
             <p class="props-title">value</p>
             <input
@@ -484,7 +489,7 @@
               v-model="checked"
             />
           </div>
-        </div>
+        </div> -->
       </div>
     </section>
   </div>
