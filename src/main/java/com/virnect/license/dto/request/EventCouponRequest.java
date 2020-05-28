@@ -47,9 +47,6 @@ public class EventCouponRequest {
     @ApiModelProperty(value = "회사 웹사이트", position = 7, example = "https://virnect.com")
     private String companySite;
     @NotBlank
-    @ApiModelProperty(value = "업종", position = 8, example = "IT")
-    private String companyCategory;
-    @NotBlank
     @ApiModelProperty(value = "서비스 분야", position = 9, example = "IT 서비스")
     private String companyService;
     @NotBlank
@@ -62,9 +59,6 @@ public class EventCouponRequest {
     @NotNull
     @ApiModelProperty(value = "마케팅 활용 동의", position = 12, example = "ACCEPT")
     private Status marketInfoReceivePolicy;
-    @NotNull
-    @ApiModelProperty(value = "개인정보 활용 동의", position = 13, example = "ACCEPT")
-    private Status personalInfoPolicy;
 
     @Override
     public String toString() {
@@ -77,12 +71,10 @@ public class EventCouponRequest {
                 ", companyEmail='" + companyEmail + '\'' +
                 ", callNumber='" + callNumber + '\'' +
                 ", companySite='" + companySite + '\'' +
-                ", companyCategory='" + companyCategory + '\'' +
                 ", companyService='" + companyService + '\'' +
                 ", companyWorker=" + companyWorker +
                 ", content='" + content + '\'' +
                 ", marketInfoReceivePolicy=" + marketInfoReceivePolicy +
-                ", personalInfoPolicy=" + personalInfoPolicy +
                 '}';
     }
 }
