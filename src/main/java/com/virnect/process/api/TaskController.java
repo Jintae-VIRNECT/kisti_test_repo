@@ -531,11 +531,11 @@ public class TaskController {
     /**
      * 작업복제
      *
-     * @param registerNewProcess
+     * @param duplicateRequest
      * @param result
      * @return
      */
-    @ApiOperation(value = "작업생성", notes = "테스트시 contentUUID 및 subProcessList.id는 컨텐츠 uuid와 메타데이터의 sceneGroup id, workspace uuid가 일치해야 함에 유의\n워크스페이스는 컨텐츠의 워크스페이스와 동일.\n워크스페이스의 아무 컨텐츠로나 작업을 생성할 수 있는지는 아직 확인되지 않음.\n개발 완료 후 기획쪽과 협의 필요.")
+    @ApiOperation(value = "작업복제", notes = "작업 생성과 동일. 테스트시 contentUUID 및 subProcessList.id는 컨텐츠 uuid와 메타데이터의 sceneGroup id, workspace uuid가 일치해야 함에 유의\n워크스페이스는 컨텐츠의 워크스페이스와 동일.\n워크스페이스의 아무 컨텐츠로나 작업을 생성할 수 있는지는 아직 확인되지 않음.\n개발 완료 후 기획쪽과 협의 필요.")
     @PostMapping("/duplicate")
     public ResponseEntity<ApiResponse<ProcessRegisterResponse>> duplicateProcess(@RequestBody @Valid ProcessDuplicateRequest duplicateRequest, BindingResult result) {
         if (result.hasErrors()) {
@@ -806,12 +806,6 @@ public class TaskController {
         }
         ApiResponse<ProcessInfoResponse> apiResponse = this.taskService.convertProcess(taskId, workerUUID, state);
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @ApiOperation(value = "헬스체크", tags = "healthcheck")
-    @GetMapping("/healthcheck")
-    public ResponseEntity<String> checkHealth() {
-        return ResponseEntity.ok("200 OK");
     }
 }
 

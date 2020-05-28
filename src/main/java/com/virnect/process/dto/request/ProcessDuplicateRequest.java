@@ -49,7 +49,7 @@ public class ProcessDuplicateRequest {
     private String workspaceUUID;
 
     @NotNull
-    @ApiModelProperty(value = "타겟 설정", notes = "작업 타겟 설정(duplicate, transform)", required = true, position = 8, example = "duplicate")
+    @ApiModelProperty(value = "타겟 설정", notes = "작업 타겟 설정(duplicate, closed)", required = true, position = 8, example = "duplicate")
     private String targetSetting;
 
     @NotNull
