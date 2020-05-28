@@ -700,8 +700,11 @@ public class WorkspaceService {
 
         MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(memberUpdateRequest.getUuid(), workspaceId).getData();
 
+
         //가지고 있던 라이선스
         List<String> oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
+
+        //리스트 반환
 
         //새로 추가하려는 라이선스
         List<LicenseProduct> newProductList = new ArrayList<>();
