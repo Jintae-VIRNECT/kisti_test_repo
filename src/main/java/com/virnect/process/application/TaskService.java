@@ -1267,8 +1267,9 @@ public class TaskService {
         //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         // 마감 상태로 변경
 
-        if (!process.getContentManagerUUID().equals(actorUUID))
+        if (actorUUID.equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+        }
 
         process.setState(State.CLOSED);
         this.processRepository.save(process);
@@ -1795,8 +1796,9 @@ public class TaskService {
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
         // 권한 체크
-        if (!process.getContentManagerUUID().equals(actorUUID))
+        if (!actorUUID.equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+        }
 
         // 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
         this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
