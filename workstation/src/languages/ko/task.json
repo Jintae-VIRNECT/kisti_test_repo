@@ -70,6 +70,9 @@
       "issue": "작업 이슈",
       "worker": "담당자",
       "endStatus": "종료 상태"
+    },
+    "dropdown": {
+      "subTaskEdit": "하위 작업 편집"
     }
   },
   "subTaskDetail": {
@@ -104,6 +107,7 @@
   "manage": {
     "registerNewTaskInfo": "신규 작업 정보 등록",
     "registerTaskInfo": "작업 정보 등록",
+    "taskInfo": "작업 정보",
     "taskName": "작업 이름",
     "taskSchedule": "작업 일정",
     "taskWorker": "작업 담당자",
@@ -120,7 +124,13 @@
     "subTaskWorkerPlaceholder": "하위 작업 담당자를 선택해 주세요",
     "scheduleStart": "시작일",
     "scheduleEnd": "마감일",
-    "subTaskWorkerSelected": "하위 작업 별 담당자가 지정되었습니다"
+    "subTaskWorkerSelected": "하위 작업 별 담당자가 지정되었습니다",
+    "update": "변경하기",
+    "subTaskWorkerChangeDesc":"변경하신 정보로 하위 작업 보고를 받습니다",
+    "message": {
+      "subTaskUpdateSuccess": "하위 작업 정보가 변경되었습니다.",
+      "subTaskUpdateFail": "하위 작업 편집에 실패했습니다. 잠시 후 다시 이용해 주세요."
+    }
   },
   "target": {
     "targetSetting": "타겟 설정",

@@ -143,7 +143,7 @@ $input-background-color: rgba(233, 237, 244, 0.5);
     color: #a5adba;
   }
 }
-.el-range-editor {
+.el-range-editor:not(.is-disabled) {
   &:hover .el-range-input {
     background: $input-hover-color;
     border-color: transparent;

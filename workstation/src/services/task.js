@@ -121,6 +121,17 @@ export default {
     return new SubTask(data)
   },
   /**
+   * 하위 작업 생성
+   * @param {String} subTaskId
+   * @param {form} form
+   */
+  async updateSubTask(subTaskId, form) {
+    return await api('SUB_TASK_UPDATE', {
+      route: { subTaskId },
+      params: form,
+    })
+  },
+  /**
    * 단계 검색
    * @param {String} subTaskId
    * @param {Object} params

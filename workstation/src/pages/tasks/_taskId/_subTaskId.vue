@@ -26,7 +26,7 @@
           <div slot="header">
             <h3>{{ $t('task.subTaskDetail.title') }}</h3>
           </div>
-          <sub-tasks-list :data="[subTaskInfo]" />
+          <sub-tasks-list :data="[subTaskInfo]" @updated="subTaskUpdated" />
         </el-card>
       </el-row>
 
@@ -66,7 +66,7 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <h3>{{ $t('task.subTaskDetail.stepsList') }}</h3>
           </div>
           <el-table ref="table" :data="stepsList" v-loading="loading">
             <column-default
@@ -196,6 +196,11 @@ export default {
     },
   },
   methods: {
+    async subTaskUpdated() {
+      this.subTaskInfo = await taskService.getSubTaskDetail(
+        this.subTaskInfo.subTaskId,
+      )
+    },
     changedSearchParams(searchParams) {
       this.searchSteps(searchParams)
     },

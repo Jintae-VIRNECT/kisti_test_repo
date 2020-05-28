@@ -61,13 +61,14 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <h3>{{ $t('task.detail.subTaskList') }}</h3>
           </div>
           <sub-tasks-list
             ref="table"
             :data="subTaskList"
-            :taskId="taskInfo.id"
+            :taskInfo="taskInfo"
             :clickable="true"
+            @updated="searchSubTasks"
           />
         </el-card>
       </el-row>

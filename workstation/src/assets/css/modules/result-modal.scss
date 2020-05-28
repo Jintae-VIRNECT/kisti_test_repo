@@ -48,6 +48,12 @@
     dd {
       margin-bottom: 20px;
       white-space: nowrap;
+
+      & > img {
+        float: right;
+        margin-left: 12px;
+        cursor: pointer;
+      }
     }
   }
 }

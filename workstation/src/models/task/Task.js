@@ -23,6 +23,7 @@ export default class Task extends Model {
     this.updatedDate = json.updatedDate
     this.reportedDate = json.reportedDate
     this.subTaskAssign = json.subTaskAssign
+    this.targets = json.targets
   }
 }
 
