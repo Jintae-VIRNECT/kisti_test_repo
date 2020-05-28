@@ -42,14 +42,12 @@ import java.util.stream.Collectors;
 public class LicenseService {
     private final CouponRepository couponRepository;
     private final ProductRepository productRepository;
-    private final LicenseTypeRepository licenseTypeRepository;
     private final LicensePlanRepository licensePlanRepository;
     private final LicenseProductRepository licenseProductRepository;
     private final LicenseRepository licenseRepository;
     private final UserRestService userRestService;
     private final EmailService emailService;
     private final ModelMapper modelMapper;
-    private final ObjectMapper objectMapper;
 
     /**
      * 이벤트 쿠폰 생성

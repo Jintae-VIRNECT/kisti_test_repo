@@ -39,6 +39,9 @@ public class LicensePlan extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(name = "max_user_amount")
+    private Long maxUserAmount;
+
     @Column(name = "max_storage_size", nullable = false)
     private Long maxStorageSize;
 
