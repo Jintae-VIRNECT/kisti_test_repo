@@ -1258,13 +1258,13 @@ public class TaskService {
     }
 
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(CheckProcessOwnerRequest checkProcessOwnerRequest) {
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, CheckProcessOwnerRequest checkProcessOwnerRequest) {
         Long processId   = checkProcessOwnerRequest.getTaskId();
         String actorUUID = checkProcessOwnerRequest.getActorUUID();
         // 공정종료
         // 공정수행중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
         // 공정조회
-        Process process = this.processRepository.findById(processId)
+        Process process = this.processRepository.findById(taskId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         // 마감 상태로 변경
