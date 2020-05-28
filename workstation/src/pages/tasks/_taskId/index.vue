@@ -19,7 +19,15 @@
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
+            <router-link to="/tasks">
+              <img src="~assets/images/icon/ic-arrow-back.svg" />
+            </router-link>
             <h3>{{ $t('task.detail.title') }}</h3>
+            <div class="right">
+              <span>
+                {{ $t('task.detail.taskPosition') }} : {{ taskInfo.position }}
+              </span>
+            </div>
           </div>
           <tasks-list :data="[taskInfo]" />
         </el-card>
@@ -59,9 +67,13 @@
 
       <!-- 하위 작업 -->
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
             <h3>{{ $t('task.detail.subTaskList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.detail.subTaskCount') }}</span>
+              <span class="num">{{ subTaskTotal }}</span>
+            </div>
           </div>
           <sub-tasks-list
             ref="table"

@@ -120,13 +120,15 @@
 </template>
 
 <script>
-import taskService from '@/services/task'
 import { conditions } from '@/models/task/Task'
 import TaskDashboardGraph from '@/components/task/TaskDashboardGraph'
 
 export default {
   components: {
     TaskDashboardGraph,
+  },
+  props: {
+    stat: Object,
   },
   data() {
     return {
@@ -135,16 +137,12 @@ export default {
         return obj
       }, {}),
       isGraph: false,
-      stat: {},
     }
   },
   methods: {
     graphToggle() {
       this.isGraph = !this.isGraph
     },
-  },
-  async beforeCreate() {
-    this.stat = await taskService.getTaskStatistics()
   },
 }
 </script>

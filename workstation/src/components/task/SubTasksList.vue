@@ -19,7 +19,7 @@
       <column-default
         :label="$t('task.detail.subTaskColumn.name')"
         prop="subTaskName"
-        sortable="custom"
+        :sortable="sortable"
       />
       <column-count
         :label="$t('task.detail.subTaskColumn.endedSteps')"
@@ -102,6 +102,11 @@ export default {
       activeSubTask: {},
       showSubTaskManageModal: false,
     }
+  },
+  computed: {
+    sortable() {
+      return this.clickable ? 'custom' : null
+    },
   },
   methods: {
     sortChange(params) {

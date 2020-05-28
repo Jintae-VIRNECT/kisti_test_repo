@@ -2,6 +2,11 @@
 .el-card {
   margin-bottom: 30px;
   box-shadow: none;
+
+  &--big .el-card__header {
+    height: 60px;
+    padding-top: 19px;
+  }
 }
 .el-card__header {
   position: relative;
@@ -37,6 +42,15 @@
     position: absolute;
     top: 0;
     right: 0;
+    & > span {
+      vertical-align: middle;
+    }
+    .num {
+      padding: 0 28px 0 12px;
+      color: #0065e0;
+      font-size: 18px;
+      line-height: 60px;
+    }
   }
 }
 .el-card__body {
@@ -119,6 +133,22 @@
 .el-card--table--info {
   margin-bottom: 40px;
 
+  .el-card__header {
+    height: 48px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    & > div > a {
+      position: relative;
+      left: -8px;
+      float: left;
+    }
+    .right > span {
+      padding-right: 30px;
+      color: $font-color-desc;
+      font-size: 12.6px;
+      line-height: 48px;
+    }
+  }
   .el-table th.is-leaf {
     padding-bottom: 0;
     border-bottom: none;

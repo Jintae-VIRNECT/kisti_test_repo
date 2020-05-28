@@ -13,7 +13,7 @@
       </div>
 
       <!-- 대시보드 -->
-      <task-dashboard />
+      <task-dashboard :stat="taskStatistics" />
 
       <!-- 탭 -->
       <el-row class="tab-wrapper searchbar">
@@ -48,9 +48,13 @@
       </el-row>
 
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
             <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.list.taskCount') }}</span>
+              <span class="num">{{ taskStatistics.totalTasks }}</span>
+            </div>
           </div>
           <tasks-list
             ref="table"
@@ -87,10 +91,12 @@ export default {
   async asyncData() {
     const promise = {
       tasks: taskService.searchTasks(),
+      stat: taskService.getTaskStatistics(),
     }
     return {
       taskList: (await promise.tasks).list,
       taskTotal: (await promise.tasks).total,
+      taskStatistics: await promise.stat,
     }
   },
   data() {

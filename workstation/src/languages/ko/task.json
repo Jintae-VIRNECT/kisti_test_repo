@@ -8,6 +8,7 @@
     "waitTasks": "대기 중인 작업",
     "startedTasks": "시작된 작업",
     "endTasks": "마감된 작업",
+    "taskCount": "등록된 작업 수",
     "myTasks": "내 작업",
     "close": "종료",
     "dashboard": {
@@ -51,6 +52,7 @@
   },
   "detail": {
     "title": "선택 작업 정보",
+    "taskPosition": "작업 위치",
     "subTaskList": "하위 작업 목록",
     "allSubTasks": "모든 하위 작업",
     "waitSubTasks": "대기 중인 하위 작업",
@@ -82,7 +84,7 @@
     "waitSteps": "대기 중인 단계",
     "startedSteps": "시작된 단계",
     "endSteps": "마감된 단계",
-    "StepsCount": "등록된 단계 수",
+    "stepsCount": "등록된 단계 수",
     "mySteps": "내 단계",
     "stepsColumn": {
       "no": "순번",

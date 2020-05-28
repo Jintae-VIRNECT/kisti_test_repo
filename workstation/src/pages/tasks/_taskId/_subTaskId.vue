@@ -24,6 +24,9 @@
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
+            <router-link :to="`/tasks/${$route.params.taskId}`">
+              <img src="~assets/images/icon/ic-arrow-back.svg" />
+            </router-link>
             <h3>{{ $t('task.subTaskDetail.title') }}</h3>
           </div>
           <sub-tasks-list :data="[subTaskInfo]" @updated="subTaskUpdated" />
@@ -64,9 +67,13 @@
 
       <!-- 단계 리스트 -->
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
             <h3>{{ $t('task.subTaskDetail.stepsList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.subTaskDetail.stepsCount') }}</span>
+              <span class="num">{{ stepsTotal }}</span>
+            </div>
           </div>
           <el-table ref="table" :data="stepsList" v-loading="loading">
             <column-default
@@ -83,12 +90,6 @@
               :label="$t('task.subTaskDetail.stepsColumn.name')"
               prop="name"
               sortable="custom"
-            />
-            <column-count
-              :label="$t('task.subTaskDetail.stepsColumn.endedActions')"
-              prop="doneCount"
-              maxProp="actionTotal"
-              :width="120"
             />
             <column-progress
               :label="$t('task.subTaskDetail.stepsColumn.progressRate')"

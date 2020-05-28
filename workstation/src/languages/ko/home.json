@@ -35,13 +35,13 @@
   "contentsList": {
     "title": "최근 등록된 콘텐츠 및 작업",
     "contents": "최근 등록된 콘텐츠",
-    "work": "최근 등록된 작업",
+    "task": "최근 등록된 작업",
     "empty": "최근 등록된 콘텐츠가 없습니다"
   },
   "reportList": {
     "title": "최근 작업 보고",
-    "work": "작업",
-    "paper": "AR 페이퍼",
+    "task": "작업",
+    "paper": "페이퍼",
     "issue": "이슈",
     "empty": "보고된 내용이 없습니다"
   },

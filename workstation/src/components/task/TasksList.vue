@@ -14,14 +14,14 @@
       <column-default
         :label="$t('task.list.column.name')"
         prop="name"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-count
         :label="$t('task.list.column.endedSubTasks')"
         prop="doneCount"
         maxProp="subTaskTotal"
         :width="120"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-date
         :label="$t('task.list.column.schedule')"
@@ -29,27 +29,27 @@
         prop="startDate"
         prop2="endDate"
         :width="250"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-progress
         :label="$t('task.list.column.progressRate')"
         prop="progressRate"
         :width="150"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-status
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
         :width="100"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-date
         :label="$t('task.list.column.reportedDate')"
         type="time"
         prop="reportedDate"
         :width="130"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-boolean
         :label="$t('task.list.column.issue')"
@@ -57,13 +57,13 @@
         :trueText="$t('task.list.hasIssue.yes')"
         :falseText="$t('task.list.hasIssue.no')"
         :width="90"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-closed
         :label="$t('task.list.column.endStatus')"
         prop="state"
         :width="90"
-        :sortable="clickable ? 'custom' : null"
+        :sortable="sortable"
       />
       <column-dropdown :width="60" v-slot:default="{ row }">
         <span class="title">{{ $t('task.list.dropdown.taskSetting') }}</span>
@@ -122,6 +122,11 @@ export default {
       showTaskTargetInfoModal: false,
       showSetTaskManageModal: false,
     }
+  },
+  computed: {
+    sortable() {
+      return this.clickable ? 'custom' : null
+    },
   },
   methods: {
     sortChange(params) {

@@ -54,7 +54,7 @@ export default {
     },
     rowClick(row) {
       this.$router.push(
-        `/tasks/${row.taskId}/${row.taskId}/papers/${row.paperId}`,
+        `/tasks/${row.taskId}/${row.subTaskId}/papers/${row.paperId}`,
       )
     },
   },
