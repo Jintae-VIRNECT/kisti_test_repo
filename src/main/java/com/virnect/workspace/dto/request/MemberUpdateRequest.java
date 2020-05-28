@@ -27,11 +27,11 @@ public class MemberUpdateRequest {
     private String role;
     @ApiModelProperty(value = "유저의 리모트 플랜 사용 여부", required = true)
     @NotNull
-    private Boolean planRemote;
+    private Boolean licenseRemote;
     @ApiModelProperty(value = "유저의 메이크 플랜 사용 여부", required = true)
     @NotNull
-    private Boolean planMake;
+    private Boolean licenseMake;
     @ApiModelProperty(value = "유저의 뷰 플랜 사용 여부", required = true)
     @NotNull
-    private Boolean planView;
+    private Boolean licenseView;
 }

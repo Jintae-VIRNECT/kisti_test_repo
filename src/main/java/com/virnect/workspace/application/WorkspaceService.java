@@ -10,7 +10,10 @@ import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.dto.response.MemberListResponse;
+import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -39,7 +42,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -238,7 +244,7 @@ public class WorkspaceService {
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(),workspaceId).getData();
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
                     String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                         return myLicenseInfoResponse.getProductName();
                     }).toArray(String[]::new);
@@ -270,7 +276,7 @@ public class WorkspaceService {
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(),workspaceId).getData();
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
                     String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                         return myLicenseInfoResponse.getProductName();
                     }).toArray(String[]::new);
@@ -419,11 +425,6 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_USER_EXIST);
         }
         //서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
-        /*inviteUserInfoRestResponse.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
-            if(inviteUserResponse.getUserType().equals("SUB_USER")){
-                throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
-            }
-        });*/
 
         //마스터 유저 정보
         UserInfoRestResponse materUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
@@ -670,7 +671,6 @@ public class WorkspaceService {
         }
 
         //3. 권한 변경
-
         WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(memberUpdateRequest.getRole().toUpperCase());
         UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
         UserInfoRestResponse user = this.userRestService.getUserInfoByUserId(memberUpdateRequest.getUuid()).getData();
@@ -679,7 +679,6 @@ public class WorkspaceService {
             userPermission.setWorkspaceRole(workspaceRole);
             this.workspaceUserPermissionRepository.save(userPermission);
             // 메일 발송
-
             Context context = new Context();
             context.setVariable("workspaceName", workspace.getName());
             context.setVariable("workspaceMasterNickName", masterUser.getNickname());
@@ -697,7 +696,41 @@ public class WorkspaceService {
 
         }
         //4. 플랜 변경
-        userPlanValidCheck(memberUpdateRequest.getPlanRemote(),memberUpdateRequest.getPlanMake(),memberUpdateRequest.getPlanView());
+        userLicenseValidCheck(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView());
+
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(memberUpdateRequest.getUuid(), workspaceId).getData();
+
+        //가지고 있던 라이선스
+        List<String> oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
+
+        //새로 추가하려는 라이선스
+        List<LicenseProduct> newProductList = new ArrayList<>();
+
+        //이제 사용안하는 라이선스
+        List<LicenseProduct> notFoundProductList = new ArrayList<>();
+
+        if (memberUpdateRequest.getLicenseRemote() ) {
+            if(oldProductList.contains(LicenseProduct.REMOTE.toString())){
+                newProductList.add(LicenseProduct.REMOTE);
+            }else{
+                notFoundProductList.add(LicenseProduct.REMOTE);
+            }
+        }
+        if (memberUpdateRequest.getLicenseMake() ) {
+            if(oldProductList.contains(LicenseProduct.MAKE.toString())){
+                newProductList.add(LicenseProduct.MAKE);
+            }else{
+                notFoundProductList.add(LicenseProduct.MAKE);
+            }
+        }
+        if (memberUpdateRequest.getLicenseView() ) {
+            if(oldProductList.contains(LicenseProduct.VIEW.toString())){
+                newProductList.add(LicenseProduct.VIEW);
+            }else{
+                notFoundProductList.add(LicenseProduct.VIEW);
+            }
+        }
+
         //TODO : 플랜 바뀐게 있으면 변경하고 메일 발송
 
         //5. 히스토리 적재
@@ -718,7 +751,7 @@ public class WorkspaceService {
         return new ApiResponse<>(true);
     }
 
-    private void userPlanValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
+    private void userLicenseValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
         if (planRemote && planMake && planView) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }

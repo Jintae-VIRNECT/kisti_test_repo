@@ -179,7 +179,7 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 멤버 권한 설정",
-            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능합니다."
+            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능하고 워크스페이스 내의 플랜은 마스터, 매니저유저만 가능합니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
