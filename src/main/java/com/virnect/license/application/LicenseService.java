@@ -102,8 +102,6 @@ public class LicenseService {
 
         this.couponRepository.save(coupon);
 
-        LicenseType licenseType = this.licenseTypeRepository.findByName(LICENSE_TYPE_OF_2WEEK_FREE_COUPON)
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
 
         Set<Product> product = this.productRepository.findByProductType_NameAndNameIsIn("BASIC", Arrays.asList(eventCouponRequest.getProducts()))
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_CREATE_COUPON));
@@ -115,12 +113,6 @@ public class LicenseService {
                     .quantity(1)
                     .build();
 
-//        CouponProduct couponProduct = CouponProduct.builder()
-//                .product(product)
-//                .coupon(coupon)
-//                .licenseType(licenseType)
-//                .build();
-//        this.couponProductRepository.save(couponProduct);
             this.licenseProductRepository.save(licenseProduct);
         }
 
@@ -376,13 +368,10 @@ public class LicenseService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId) {
-//        List<LicensePlan> licensePlanList = this.licensePlanRepository.getMyLicenseInfoInWorkspaceLicensePlan(userId, workspaceId);
-//        log.info("LICENSE PLAN SIZE: {}", licensePlanList.size());
         LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, PlanStatus.ACTIVE)
                 .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
         List<MyLicenseInfoResponse> myLicenseInfoResponseList = new ArrayList<>();
-//        for (LicensePlan licensePlan : licensePlanList) {
         for (LicenseProduct licenseProduct : licensePlan.getLicenseProductList()) {
             Product product = licenseProduct.getProduct();
             ProductType productType = product.getProductType();
@@ -398,7 +387,6 @@ public class LicenseService {
                 myLicenseInfoResponseList.add(licenseInfo);
             });
         }
-//        }
         return new ApiResponse<>(new MyLicenseInfoListResponse(myLicenseInfoResponseList));
     }
 
@@ -430,8 +418,8 @@ public class LicenseService {
 
         //라이선스 부여/해제
         License oldLicense = this.licenseRepository.findByUserIdAndLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_ProductAndStatus(userId, workspaceId, product, LicenseStatus.USE);
-        if(grant){
-            if (oldLicense!=null) {
+        if (grant) {
+            if (oldLicense != null) {
                 throw new LicenseServiceException(ErrorCode.ERR_LICENSE_ALREADY_GRANTED);
             }
             //부여 가능한 라이선스 찾기
@@ -449,7 +437,7 @@ public class LicenseService {
             MyLicenseInfoResponse myLicenseInfoResponse = this.modelMapper.map(updatedLicense, MyLicenseInfoResponse.class);
             myLicenseInfoResponse.setLicenseType(updatedLicense.getLicenseProduct().getLicenseType().getName());
             return new ApiResponse<>(myLicenseInfoResponse);
-        }else{
+        } else {
             oldLicense.setUserId(null);
             oldLicense.setStatus(LicenseStatus.UNUSE);
             this.licenseRepository.save(oldLicense);
