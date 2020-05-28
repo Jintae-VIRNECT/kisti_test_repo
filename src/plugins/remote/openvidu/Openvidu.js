@@ -5,6 +5,7 @@ import { getToken } from 'api/workspace/call'
 
 export default {
   install(Vue, { Store }) {
+    console.log('init call')
     if (!Store) {
       throw new Error('Can not find vuex store')
     } else {

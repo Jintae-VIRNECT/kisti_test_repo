@@ -29,6 +29,12 @@ const getDefaultState = () => {
         },
       ],
     },
+    isBackground: false,
+    zoomLevel: 1, // zoom 레벨
+    zoomMax: 5, // zoom 최대 레벨
+    zoomStatus: 'default', // 'default': 초기세팅, utils/deviceinfo.js
+    flash: false, // flash 제어
+    flashStatus: 'default', // 'default': 초기세팅, utils/deviceinfo.js
   }
 }
 
@@ -109,6 +115,11 @@ const mutations = {
   },
   clearChat(state) {
     state.chat.chatList = []
+  },
+  deviceUpdate(state, object) {
+    for (let key in object) {
+      state[key] = object[key]
+    }
   },
 }
 
