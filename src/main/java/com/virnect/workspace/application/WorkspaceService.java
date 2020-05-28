@@ -214,8 +214,6 @@ public class WorkspaceService {
         String[] workspaceUserIdList = workspaceUserList.stream().map(workspaceUser -> workspaceUser.getUserId()).toArray(String[]::new);
         UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(search, workspaceUserIdList).getData();
 
-        //LICENSE-SEVRER : 사용자가 사용중인 플랜 정보를 가져온다.
-
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
 
@@ -235,10 +233,17 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
+
                     SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(),workspaceId).getData();
+                    String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
+                        return myLicenseInfoResponse.getProductName();
+                    }).toArray(String[]::new);
+
+                    memberInfoDTO.setLicenseProducts(licenseProducts);
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });
@@ -260,9 +265,17 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
+
                     SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
                     memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
+
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(),workspaceId).getData();
+                    String[] licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
+                        return myLicenseInfoResponse.getProductName();
+                    }).toArray(String[]::new);
+                    memberInfoDTO.setLicenseProducts(licenseProducts);
+
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             });

@@ -30,7 +30,7 @@ public class MemberInfoDTO {
     private Integer countProgressing;
     private Integer countAssigned;
     private LocalDateTime joinDate;
-    private String[] planList;
+    private String[] LicenseProducts;
 
     @Override
     public String toString() {
