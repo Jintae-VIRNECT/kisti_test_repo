@@ -18,6 +18,11 @@ public enum ErrorCode {
     ERR_INCORRECT_USER_LICENSE_INFO(1007,"Users must have at least 1 plan."),
     ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
 
+
+    //라이선스 관련 에러
+    ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),
+    ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL(2000,"Workspace user license revoke fail"),
+
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),

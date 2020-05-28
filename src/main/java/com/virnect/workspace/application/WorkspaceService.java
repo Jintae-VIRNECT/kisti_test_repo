@@ -677,15 +677,16 @@ public class WorkspaceService {
         }
 
         //플랜 변경
-        grantRevokeworkspaceUserLicense(memberUpdateRequest.getUserId(), workspace, masterUser, user, requestUser, memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), locale);
+        workspaceUserLicenseHandling(memberUpdateRequest.getUserId(), workspace, masterUser, user, requestUser, memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), locale);
 
         return new ApiResponse<>(true);
     }
 
-    private void grantRevokeworkspaceUserLicense(String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user, UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale) {        userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
+    private void workspaceUserLicenseHandling(String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user, UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale) {
+        userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
 
+        //사용자의 예전 라이선스정보 가져오기
         MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userId, workspace.getUuid()).getData();
-
         List<String> oldProductList = new ArrayList<>();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
             oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
@@ -697,14 +698,20 @@ public class WorkspaceService {
             if (!oldProductList.contains(LicenseProduct.REMOTE.toString())) {
                 //CASE1 : 기존에 없던 라이선스인데 사용하는 경우면
                 newProductList.add(LicenseProduct.REMOTE);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString());
+                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
+                if (myLicenseInfoResponse.getProductName() == null) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
             }
             //CASE2 : 기존에 있던 라이선스인데 사용하는 경우면
         } else {
             //CASE3 : 기존에 있던 라이선스인데 사용안하는 경우면
             if (oldProductList.contains(LicenseProduct.REMOTE.toString())) {
                 notFoundProductList.add(LicenseProduct.REMOTE);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString());
+                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
+                if (!revokeResult) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
             }
             //CASE4 : 기존에 없던 라이선스인데 사용안하는 경우면
         }
@@ -712,27 +719,38 @@ public class WorkspaceService {
         if (makeLicense) {
             if (!oldProductList.contains(LicenseProduct.MAKE.toString())) {
                 newProductList.add(LicenseProduct.MAKE);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString());
+                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
+                if (myLicenseInfoResponse.getProductName() == null) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
             }
         } else {
             if (oldProductList.contains(LicenseProduct.MAKE.toString())) {
                 notFoundProductList.add(LicenseProduct.MAKE);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString());
+                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
+                if (!revokeResult) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
             }
         }
 
         if (viewLicense) {
             if (!oldProductList.contains(LicenseProduct.VIEW.toString())) {
                 newProductList.add(LicenseProduct.VIEW);
-                this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString());
+                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
+                if (myLicenseInfoResponse.getProductName() == null) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
             }
         } else {
             if (oldProductList.contains(LicenseProduct.VIEW.toString())) {
                 notFoundProductList.add(LicenseProduct.VIEW);
-                this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString());
+                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
+                if (!revokeResult) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
             }
         }
-
 
         if (!newProductList.isEmpty() || !notFoundProductList.isEmpty()) {
             //히스토리
