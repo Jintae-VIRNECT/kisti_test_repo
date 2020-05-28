@@ -66,7 +66,7 @@ module.exports = {
   // 작업편집
   TASK_UPDATE: ['POST', '/tasks/{taskId}'],
   // 작업삭제
-  TASK_DELETE: ['DELETE', '/tasks/{taskId}'],
+  TASK_DELETE: ['DELETE', '/tasks'],
   // 작업마감
   TASK_CLOSE: ['PUT', '/tasks/{taskId}/closed'],
   // 하위작업목록조회

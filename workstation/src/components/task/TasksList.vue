@@ -160,7 +160,7 @@ export default {
         return false
       }
       try {
-        await await taskService.deleteTask(taskId)
+        await await taskService.closeTask(taskId)
         this.$message.success({
           message: this.$t('task.list.message.closeSuccess'),
           showClose: true,
@@ -193,7 +193,7 @@ export default {
           message: this.$t('task.list.message.deleteSuccess'),
           showClose: true,
         })
-        this.$emit('updated')
+        this.$emit('deleted')
       } catch (e) {
         this.$message.error({
           message: this.$t('task.list.message.deleteFail'),

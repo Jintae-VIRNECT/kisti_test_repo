@@ -75,7 +75,7 @@ export default {
     const actorUUID = store.getters['auth/myProfile'].uuid
     return await api('TASK_CLOSE', {
       route: { taskId },
-      params: { actorUUID },
+      params: { taskId, actorUUID },
     })
   },
   /**
@@ -85,8 +85,7 @@ export default {
   async deleteTask(taskId) {
     const actorUUID = store.getters['auth/myProfile'].uuid
     return await api('TASK_DELETE', {
-      route: { taskId },
-      params: { actorUUID },
+      params: { taskId, actorUUID },
     })
   },
   /**

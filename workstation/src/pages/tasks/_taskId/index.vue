@@ -29,7 +29,11 @@
               </span>
             </div>
           </div>
-          <tasks-list :data="[taskInfo]" />
+          <tasks-list
+            :data="[taskInfo]"
+            @updated="taskUpdated"
+            @deleted="$router.push('/tasks')"
+          />
         </el-card>
       </el-row>
 
@@ -147,6 +151,9 @@ export default {
     },
   },
   methods: {
+    async taskUpdated() {
+      this.taskInfo = await taskService.getTaskDetail(this.taskInfo.id)
+    },
     changedSearchParams(searchParams) {
       this.searchSubTasks(searchParams)
     },

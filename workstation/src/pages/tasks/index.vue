@@ -61,6 +61,7 @@
             :data="taskList"
             :clickable="true"
             @updated="searchTasks"
+            @deleted="searchTasks"
           />
         </el-card>
       </el-row>
