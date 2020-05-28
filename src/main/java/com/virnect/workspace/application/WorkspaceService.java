@@ -832,7 +832,7 @@ public class WorkspaceService {
             }
             if (!notFoundProductList.isEmpty()) {
                 String notFoundProductString = notFoundProductList.stream().map(licenseProduct -> String.valueOf(licenseProduct)).collect(Collectors.joining());
-                String message = this.messageSource.getMessage("WORKSPACE_GRANT_LICENSE", new java.lang.String[]{requestUser.getNickname(), user.getNickname(), notFoundProductString}, locale);
+                String message = this.messageSource.getMessage("WORKSPACE_REVOKE_LICENSE", new java.lang.String[]{requestUser.getNickname(), user.getNickname(), notFoundProductString}, locale);
                 saveHistotry(workspace, userId, message);
             }
 
