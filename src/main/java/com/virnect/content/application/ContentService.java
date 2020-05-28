@@ -3,6 +3,7 @@ package com.virnect.content.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
+import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
@@ -21,6 +22,7 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.global.util.AES256EncryptUtils;
 import com.virnect.content.infra.file.download.FileDownloadService;
 import com.virnect.content.infra.file.upload.FileUploadService;
 import com.virnect.content.infra.file.upload.S3UploadService;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.service.spi.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,6 +75,7 @@ public class ContentService {
     private final UserRestService userRestService;
     private final ProcessRestService processRestService;
     private final WorkspaceRestService workspaceRestService;
+    private final LicenseRestService licenseRestService;
 
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -95,6 +100,11 @@ public class ContentService {
      */
     @Transactional
     public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
+        String workspaceUUID = uploadRequest.getWorkspaceUUID();
+        Long contentSize = uploadRequest.getContent().getSize();
+
+        checkLicenseStorage(workspaceUUID, contentSize);
+
         // 1. 콘텐츠 업로드 파일 저장
         try {
             String contentUUID = UUID.randomUUID().toString();
@@ -290,6 +300,11 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
+        // 기존 컨텐츠 크기와 수정하려는 컨텐츠의 크기를 뺀다.
+        Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
+
+        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
+
         // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
 
@@ -369,6 +384,9 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        checkLicenseDownload(content.getWorkspaceUUID());
+
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return responseEntity;
@@ -381,6 +399,9 @@ public class ContentService {
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        checkLicenseDownload(content.getWorkspaceUUID());
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
@@ -1078,5 +1099,39 @@ public class ContentService {
         }
 
         return meta;
+    }
+
+    private void checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
+        Long maxStorageSize = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+
+        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다.
+        Long workspaceSize = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
+
+        log.debug("{}", maxStorageSize);
+        log.debug("{}", uploadContentSize);
+
+        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
+        Long sumSize = workspaceSize +  uploadContentSize;
+
+        log.debug("{}", sumSize);
+
+        // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
+        if (maxStorageSize < sumSize) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        }
+    }
+
+    private void checkLicenseDownload(String workspaceUUID) {
+        // 라이센스 총 다운로드 횟수
+        Integer maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
+
+        // 현재 워크스페이스의 다운로드 횟수
+        Integer sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
+
+        if (maxDownload < sumDownload + 1) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }
+
     }
 }

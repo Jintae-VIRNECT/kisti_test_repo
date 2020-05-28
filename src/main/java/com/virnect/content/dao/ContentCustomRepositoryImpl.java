@@ -1,5 +1,8 @@
 package com.virnect.content.dao;
 
+import com.querydsl.core.QueryFactory;
+import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,4 +92,29 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         JPQLQuery<Content> query = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData));
         return query.fetchOne();
     }
+
+    @Override
+    public Long getWorkspaceStorageSize(String workspaceUUID) {
+        QContent qContent = QContent.content;
+
+        Long sumSize = from(qContent)
+            .select(qContent.size.sum())
+            .where(qContent.workspaceUUID.eq(workspaceUUID))
+            .fetchOne();
+
+        return sumSize;
+    }
+
+    @Override
+    public Integer getWorkspaceDownload(String workspaceUUID) {
+        QContent qContent = QContent.content;
+
+        Integer sumDownload = from(qContent)
+                .select(qContent.downloadHits.sum())
+                .where(qContent.workspaceUUID.eq(workspaceUUID))
+                .fetchOne();
+
+        return sumDownload;
+    }
+
 }
