@@ -245,7 +245,7 @@ public class WorkspaceService {
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
                     String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
                     if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                             return myLicenseInfoResponse.getProductName();
@@ -281,7 +281,7 @@ public class WorkspaceService {
                     memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
                     String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userInfoRestResponse.getUuid(), workspaceId).getData();
+                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
                     if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
                             return myLicenseInfoResponse.getProductName();
@@ -686,7 +686,7 @@ public class WorkspaceService {
         userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
 
         //사용자의 예전 라이선스정보 가져오기
-        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(userId, workspace.getUuid()).getData();
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspace.getUuid(), userId).getData();
         List<String> oldProductList = new ArrayList<>();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
             oldProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName()).collect(Collectors.toList());
@@ -968,12 +968,21 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //라이선스 삭제 처리
-        //workspace_user 삭제(history 테이블 기록)
+        //라이선스 해제
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, memberKickOutRequest.getKickedUserId()).getData();
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+            myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName()).getData();
+                if(!revokeResult){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
+            });
+        }
 
         //workspace_user_permission 삭제(history 테이블 기록)
         this.workspaceUserPermissionRepository.delete(kickedUserPermission);
 
+        //workspace_user 삭제(history 테이블 기록)
         this.workspaceUserRepository.delete(kickedUserPermission.getWorkspaceUser());
 
         //메일 발송
@@ -1011,7 +1020,16 @@ public class WorkspaceService {
         WorkspaceUser workspaceUser = this.workspaceUserRepository.findByUserIdAndWorkspace(userId, workspace);
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
 
-        //TODO: 라이선스 지우기
+        //라이선스 해제
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userId).getData();
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+            myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
+                if(!revokeResult){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
+            });
+        }
 
         this.workspaceUserPermissionRepository.delete(workspaceUserPermission);
         this.workspaceUserRepository.delete(workspaceUser);

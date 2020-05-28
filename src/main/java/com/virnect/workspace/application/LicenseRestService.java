@@ -23,7 +23,7 @@ public interface LicenseRestService {
     ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicenses(@PathVariable("workspaceId") String workspaceId);
 
     @GetMapping(value="/licenses/{workspaceId}/{userId}")
-    ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(@PathVariable("userId") String userId, @PathVariable("workspaceId") String workspaceId);
+    ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(@PathVariable("workspaceId") String workspaceId,@PathVariable("userId") String userId);
 
     @PutMapping(value="/licenses/{workspaceId}/{userId}/grant")
     ApiResponse<MyLicenseInfoResponse> grantWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
