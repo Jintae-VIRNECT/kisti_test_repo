@@ -484,7 +484,7 @@ public class TaskController {
      * @return
      */
     @ApiOperation(value = "작업종료", notes = "진행중인 작업을 종료합니다. 더이상 작업 수행을 할 수 없게 됩니다. 또한 활성화된 작업은 하나이기 때문에 작업이 종료되면 해당 컨텐츠를 삭제할 수 있습니다.")
-    @PutMapping("/closed/{taskId}")
+    @PutMapping("{taskId}/closed")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(
             @PathVariable(value="taskId") Long taskId,
             @RequestBody String actorUUID) {
