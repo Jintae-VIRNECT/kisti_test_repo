@@ -27,8 +27,8 @@ public class MemberInfoDTO {
     private Long roleId;
     private String createdDate;
     private String updatedDate;
-    private Integer countProgressing;
-    private Integer countAssigned;
+    //private Integer countProgressing;
+    //private Integer countAssigned;
     private LocalDateTime joinDate;
     private String[] LicenseProducts;
 
