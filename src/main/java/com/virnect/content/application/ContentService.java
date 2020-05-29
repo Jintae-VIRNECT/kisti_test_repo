@@ -107,7 +107,7 @@ public class ContentService {
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
-        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize);
+        checkLicenseStorage(workspaceUUID, contentSize);
 
         // 1. 콘텐츠 업로드 파일 저장
         try {
@@ -307,7 +307,7 @@ public class ContentService {
         // 기존 컨텐츠 크기와 수정하려는 컨텐츠의 크기를 뺀다.
         Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
 
-        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
+        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
 
         // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
@@ -1118,7 +1118,7 @@ public class ContentService {
         return meta;
     }
 
-    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+    private void checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
@@ -1142,12 +1142,6 @@ public class ContentService {
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
         if (maxStorageSize < sumSize) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
-        } else {
-            licenseInfoResponse.setMaxStorageSize(maxStorageSize);
-            licenseInfoResponse.setWorkspaceStorage(workspaceSize);
-            licenseInfoResponse.setUploadSize(uploadContentSize);
-
-            return licenseInfoResponse;
         }
     }
 
