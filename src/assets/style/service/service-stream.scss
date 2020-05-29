@@ -103,7 +103,7 @@
     line-height: 15px;
     border: solid 1px;
     border-radius: 17px;
-    @include status-color($dot: true);
+    @include status-color();
   }
 }
 .main-video__setting {

@@ -7,7 +7,7 @@
           :key="participant.id"
           :participant="participant"
         ></participant-video>
-        <article>
+        <article v-if="participants.length < max">
           <div class="participant-video more" @click="more">
             <p>추가 초대하기</p>
           </div>
@@ -26,10 +26,52 @@ export default {
     ParticipantVideo,
   },
   data() {
-    return {}
+    return {
+      max: 3,
+      participants: [
+        {
+          uuid: 'main',
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'default',
+          status: 'good',
+          mic: true,
+          audio: true,
+        },
+        {
+          uuid: 2,
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'default',
+          status: 'normal',
+          mic: true,
+          audio: true,
+          mute: true,
+        },
+        {
+          uuid: 3,
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'https://virnect.com/favicon.ico',
+          status: 'bad',
+          mic: false,
+          audio: false,
+          mute: true,
+        },
+      ],
+    }
   },
   computed: {
-    ...mapGetters(['participants', 'mainView']),
+    // ...mapGetters(['participants', 'mainView']),
   },
   watch: {
     'participants.length': {

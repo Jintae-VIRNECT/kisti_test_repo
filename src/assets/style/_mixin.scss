@@ -55,60 +55,15 @@
 }
 
 // 연결 상태값 색상 설정
-@mixin status-color($dot: false) {
+@mixin status-color($attr: "background-color") {
   &.good {
-    color: $color_state_good;
-    background-color: $color_state_good;
-    border-color: $color_state_good;
-    @if $dot {
-      &::after {
-        position: absolute;
-        top: 50%;
-        left: 8px;
-        width: 5px;
-        height: 5px;
-        background-color: $color_state_good;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        content: "";
-      }
-    }
+    #{$attr}: $color_state_good;
   }
   &.normal {
-    color: $color_state_normal;
-    background-color: $color_state_normal;
-    border-color: $color_state_normal;
-    @if $dot {
-      &::after {
-        position: absolute;
-        top: 50%;
-        left: 8px;
-        width: 5px;
-        height: 5px;
-        background-color: $color_state_normal;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        content: "";
-      }
-    }
+    #{$attr}: $color_state_normal;
   }
   &.bad {
-    color: $color_state_bad;
-    background-color: $color_state_bad;
-    border-color: $color_state_bad;
-    @if $dot {
-      &::after {
-        position: absolute;
-        top: 50%;
-        left: 8px;
-        width: 5px;
-        height: 5px;
-        background-color: $color_state_bad;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        content: "";
-      }
-    }
+    #{$attr}: $color_state_bad;
   }
 }
 

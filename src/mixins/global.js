@@ -17,6 +17,15 @@ export default {
         return dayjs(time).format('mm:ss')
       }
     },
+    networkStatus(status) {
+      if (status === 'good') {
+        return '우수'
+      } else if (status === 'normal') {
+        return '양호'
+      } else if (status === 'bad') {
+        return '약함'
+      }
+    },
     call_status: function(value) {
       if (value == 1) {
         return 'online'
@@ -89,6 +98,7 @@ export default {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
+      console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
       event.target.style.display = 'none'
       event.target.classList.add('default')
