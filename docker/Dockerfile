@@ -8,4 +8,4 @@ COPY ./build/libs/PF-Download-1.0.jar ./PF-Download-1.0.jar
 EXPOSE 8086
 
 ## Command executed when container is start up.
-CMD ["java", "-jar","PF-Download-1.0.jar"]
+CMD ["java", "-Xmx200M", "-jar","PF-Download-1.0.jar"]
