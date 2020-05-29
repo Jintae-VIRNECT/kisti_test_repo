@@ -33,18 +33,18 @@ import java.io.IOException;
 public class DownloadController {
     private final DownloadService downloadService;
 
-/*
+
 
     @ApiOperation(
             value = "어플리케이션 업로드",
             notes = "어플리케이션 파일을 업로드 합니다."
     )
-    @GetMapping("/upload/{productName}")
-    public ResponseEntity<ApiResponse<AppUploadResponse>> uploadFile(@RequestPart("file") MultipartFile file, @PathVariable("productName") String productName) throws IOException {
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<AppUploadResponse>> uploadFile(@RequestPart("file") MultipartFile file) throws IOException {
         ApiResponse<AppUploadResponse> apiResponse = this.downloadService.uploadFile(file);
         return ResponseEntity.ok(apiResponse);
     }
-*/
+
 
 
     @ApiOperation(

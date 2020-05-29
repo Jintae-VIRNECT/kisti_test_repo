@@ -1,11 +1,12 @@
 RELEASE
 
 New Features
-어플리케이션 다운로드
-어플리케이션 조회
+제품별 다운로드 항목 리스트 조회
 
 Bug Fixes
+없음
 
 Limitation
+없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

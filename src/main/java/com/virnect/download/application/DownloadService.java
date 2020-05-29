@@ -4,6 +4,7 @@ import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoListResponse;
+import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,10 +38,11 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
-    /*  public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
-          this.fileUploadService.upload(file);
-          return null;
-      }*/
+    public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
+        this.fileUploadService.upload(file);
+        return null;
+    }
+
     public ResponseEntity<byte[]> downloadApp(String id) {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
@@ -68,7 +71,7 @@ public class DownloadService {
             String fileName = FilenameUtils.getName(fileUrl);
 
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.add("Content-Disposition", "attatchment; filename=\"" +
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
                     new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
 
         } catch (IOException e) {
