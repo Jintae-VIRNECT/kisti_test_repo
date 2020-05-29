@@ -1,5 +1,6 @@
 package com.virnect.download.application;
 
+import com.netflix.ribbon.proxy.annotation.Http;
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
@@ -12,6 +13,7 @@ import com.virnect.download.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
@@ -21,8 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,11 +39,10 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
-    public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
-        this.fileUploadService.upload(file);
-        return null;
-    }
-
+      public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
+          this.fileUploadService.upload(file);
+          return null;
+      }
     public ResponseEntity<byte[]> downloadApp(String id) {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
@@ -66,8 +66,16 @@ public class DownloadService {
         try {
             URL url = new URL(fileUrl);
             InputStream inputStream = url.openStream();
-            media = IOUtils.toByteArray(inputStream);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
+            byte[] readBuffer = new byte[1024];
+
+            while (bufferedInputStream.read(readBuffer,0,readBuffer.length)!=-1){
+                byteArrayOutputStream.write(readBuffer);
+            }
+            //media = IOUtils.toByteArray(inputStream);
+            media = byteArrayOutputStream.toByteArray();
             String fileName = FilenameUtils.getName(fileUrl);
 
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
