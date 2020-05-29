@@ -47,26 +47,19 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
+
 export default {
+  mixins: [modalMixin],
   props: {
-    visible: Boolean,
     activeWorkspace: Object,
     myProfile: Object,
   },
   data() {
     return {
-      showMe: false,
       leaveCheck: false,
     }
-  },
-  watch: {
-    visible(val) {
-      this.showMe = val
-    },
-    showMe(val) {
-      this.$emit('update:visible', val)
-    },
   },
   methods: {
     async leaveWorkspace() {

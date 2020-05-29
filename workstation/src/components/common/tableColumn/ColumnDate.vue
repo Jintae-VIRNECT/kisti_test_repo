@@ -9,7 +9,10 @@
     <template slot-scope="scope">
       <div class="column-date">
         <span v-if="!scope.row[prop]">-</span>
-        <span v-if="scope.row[prop]">
+        <span
+          v-if="scope.row[prop]"
+          :style="type === 'time-narrow' ? { display: 'block' } : null"
+        >
           {{ format(scope.row[prop]) }}
         </span>
         <span v-if="scope.row[prop2]">-</span>
@@ -39,6 +42,7 @@ export default {
       if (!this.type) return filters.localDateFormat(date)
       if (this.type === 'date') return filters.localDateFormat(date)
       if (this.type === 'time') return filters.localTimeFormat(date)
+      if (this.type === 'time-narrow') return filters.localTimeFormat(date)
     },
   },
 }

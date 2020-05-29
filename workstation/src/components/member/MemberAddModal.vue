@@ -102,31 +102,23 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 
 export default {
-  props: {
-    visible: Boolean,
-  },
+  mixins: [modalMixin],
   data() {
     return {
-      showMe: false,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new InviteMember()],
     }
   },
-  watch: {
-    visible(val) {
-      this.showMe = val
-    },
-    showMe(val) {
-      this.$emit('update:visible', val)
+  methods: {
+    opened() {
       this.userInfoList = [new InviteMember()]
     },
-  },
-  methods: {
     addMember() {
       this.userInfoList.push(new InviteMember())
     },

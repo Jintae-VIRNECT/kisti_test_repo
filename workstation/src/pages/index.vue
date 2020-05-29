@@ -29,7 +29,7 @@
           </el-card>
           <current-member-list />
           <current-contents-list />
-          <current-report-list />
+          <current-result-list />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
@@ -58,7 +58,7 @@ import WorkspaceStorageInfo from '@/components/home/WorkspaceStorageInfo'
 import WorkspaceDownloadInfo from '@/components/home/WorkspaceDownloadInfo'
 import CurrentMemberList from '@/components/home/CurrentMemberList'
 import CurrentContentsList from '@/components/home/CurrentContentsList'
-import CurrentReportList from '@/components/home/CurrentReportList'
+import CurrentResultList from '@/components/home/CurrentResultList'
 import UserProfileCard from '@/components/home/UserProfileCard'
 import LinkListCard from '@/components/home/LinkListCard'
 
@@ -71,7 +71,7 @@ export default {
     WorkspaceDownloadInfo,
     CurrentMemberList,
     CurrentContentsList,
-    CurrentReportList,
+    CurrentResultList,
     UserProfileCard,
     LinkListCard,
   },

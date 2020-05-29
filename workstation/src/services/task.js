@@ -2,8 +2,20 @@ import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 import Task from '@/models/task/Task'
 import SubTask from '@/models/task/SubTask'
+import Step from '@/models/task/Step'
 
 export default {
+  /**
+   * 작업 통계
+   */
+  async getTaskStatistics() {
+    const data = await api('TASK_STATISTICS', {
+      params: {
+        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+      },
+    })
+    return data
+  },
   /**
    * 작업 검색
    * @param {Object} params
@@ -45,6 +57,47 @@ export default {
     })
   },
   /**
+   * 작업 편집
+   * @param {taskId} taskId
+   */
+  async updateTask(taskId, form) {
+    form.actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_UPDATE', {
+      route: { taskId },
+      params: form,
+    })
+  },
+  /**
+   * 작업 종료
+   * @param {taskId} taskId
+   */
+  async closeTask(taskId) {
+    const actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_CLOSE', {
+      route: { taskId },
+      params: { taskId, actorUUID },
+    })
+  },
+  /**
+   * 작업 삭제
+   * @param {taskId} taskId
+   */
+  async deleteTask(taskId) {
+    const actorUUID = store.getters['auth/myProfile'].uuid
+    return await api('TASK_DELETE', {
+      params: { taskId, actorUUID },
+    })
+  },
+  /**
+   * 작업 타겟 정보 조회
+   * @param {taskId} taskId
+   */
+  async getTargetInfo(taskId) {
+    return await api('TARGET_INFO', {
+      route: { taskId },
+    })
+  },
+  /**
    * 하위 작업 검색
    * @param {String} taskId
    * @param {Object} params
@@ -76,5 +129,38 @@ export default {
       route: { subTaskId },
     })
     return new SubTask(data)
+  },
+  /**
+   * 하위 작업 생성
+   * @param {String} subTaskId
+   * @param {form} form
+   */
+  async updateSubTask(subTaskId, form) {
+    return await api('SUB_TASK_UPDATE', {
+      route: { subTaskId },
+      params: form,
+    })
+  },
+  /**
+   * 단계 검색
+   * @param {String} subTaskId
+   * @param {Object} params
+   */
+  async searchSteps(subTaskId, params = {}) {
+    if (params.filter && params.filter[0] === 'ALL') {
+      delete params.filter
+    }
+    const data = await api('STEPS_LIST', {
+      route: { subTaskId },
+      params: {
+        size: 10,
+        sort: 'updated_at,desc',
+        ...params,
+      },
+    })
+    return {
+      list: data.steps.map(step => new Step(step)),
+      total: data.pageMeta.totalElements,
+    }
   },
 }

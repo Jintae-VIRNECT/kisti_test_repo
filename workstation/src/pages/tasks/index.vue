@@ -12,6 +12,9 @@
         </el-button>
       </div>
 
+      <!-- 대시보드 -->
+      <task-dashboard :stat="taskStatistics" />
+
       <!-- 탭 -->
       <el-row class="tab-wrapper searchbar">
         <el-tabs v-model="activeTab">
@@ -45,70 +48,21 @@
       </el-row>
 
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
             <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.list.taskCount') }}</span>
+              <span class="num">{{ taskStatistics.totalTasks }}</span>
+            </div>
           </div>
-          <el-table
-            class="clickable"
+          <tasks-list
             ref="table"
             :data="taskList"
-            v-loading="loading"
-            @row-click="moveToTaskDetail"
-          >
-            <column-default
-              :label="$t('task.list.column.id')"
-              prop="id"
-              :width="140"
-            />
-            <column-default
-              :label="$t('task.list.column.name')"
-              prop="name"
-              sortable="custom"
-            />
-            <column-count
-              :label="$t('task.list.column.endedSubTasks')"
-              prop="doneCount"
-              maxProp="subTaskTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.list.column.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.list.column.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.list.column.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.list.column.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.list.column.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.list.column.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
+            :clickable="true"
+            @updated="searchTasks"
+            @deleted="searchTasks"
+          />
         </el-card>
       </el-row>
       <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />
@@ -126,16 +80,24 @@ import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import taskService from '@/services/task'
 import workspaceService from '@/services/workspace'
+import TaskDashboard from '@/components/task/TaskDashboard'
+import TasksList from '@/components/task/TasksList'
 
 export default {
   mixins: [searchMixin, columnMixin],
+  components: {
+    TaskDashboard,
+    TasksList,
+  },
   async asyncData() {
     const promise = {
       tasks: taskService.searchTasks(),
+      stat: taskService.getTaskStatistics(),
     }
     return {
       taskList: (await promise.tasks).list,
       taskTotal: (await promise.tasks).total,
+      taskStatistics: await promise.stat,
     }
   },
   data() {
@@ -175,9 +137,6 @@ export default {
     },
     showAll() {},
     showMine() {},
-    moveToTaskDetail({ id }) {
-      this.$router.push(`/tasks/${id}`)
-    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, this.searchTasks)

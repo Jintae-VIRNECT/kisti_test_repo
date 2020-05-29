@@ -24,66 +24,12 @@
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
+            <router-link :to="`/tasks/${$route.params.taskId}`">
+              <img src="~assets/images/icon/ic-arrow-back.svg" />
+            </router-link>
             <h3>{{ $t('task.subTaskDetail.title') }}</h3>
           </div>
-          <el-table :data="[subTaskInfo]" v-loading="loading">
-            <column-default
-              :label="$t('task.detail.subTaskColumn.no')"
-              prop="priority"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.id')"
-              prop="subTaskId"
-              :width="140"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.name')"
-              prop="subTaskName"
-            />
-            <column-count
-              :label="$t('task.detail.subTaskColumn.endedSteps')"
-              prop="doneCount"
-              maxProp="stepTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.detail.subTaskColumn.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.detail.subTaskColumn.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.detail.subTaskColumn.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
+          <sub-tasks-list :data="[subTaskInfo]" @updated="subTaskUpdated" />
         </el-card>
       </el-row>
 
@@ -121,9 +67,13 @@
 
       <!-- 단계 리스트 -->
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <h3>{{ $t('task.subTaskDetail.stepsList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.subTaskDetail.stepsCount') }}</span>
+              <span class="num">{{ stepsTotal }}</span>
+            </div>
           </div>
           <el-table ref="table" :data="stepsList" v-loading="loading">
             <column-default
@@ -140,12 +90,6 @@
               :label="$t('task.subTaskDetail.stepsColumn.name')"
               prop="name"
               sortable="custom"
-            />
-            <column-count
-              :label="$t('task.subTaskDetail.stepsColumn.endedActions')"
-              prop="doneCount"
-              maxProp="actionTotal"
-              :width="120"
             />
             <column-progress
               :label="$t('task.subTaskDetail.stepsColumn.progressRate')"
@@ -170,7 +114,10 @@
               :width="90"
             >
               <template slot-scope="scope">
-                <el-button>
+                <el-button
+                  v-if="scope.row.issue"
+                  @click="moveToIssue(scope.row.issue.id)"
+                >
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
               </template>
@@ -181,7 +128,10 @@
               :width="130"
             >
               <template slot-scope="scope">
-                <el-button>
+                <el-button
+                  v-if="scope.row.paper"
+                  @click="moveToPaper(scope.row.paper.id)"
+                >
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>
               </template>
@@ -191,6 +141,7 @@
       </el-row>
       <searchbar-page ref="page" :value.sync="stepsPage" :total="stepsTotal" />
     </div>
+    <nuxt-child />
   </div>
 </template>
 
@@ -199,20 +150,23 @@ import {
   conditions as taskConditions,
   filter as taskFilter,
 } from '@/models/task/Task'
-import { tabs } from '@/models/step/Step'
+import { tabs } from '@/models/task/Step'
 import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
-import stepService from '@/services/step'
+import SubTasksList from '@/components/task/SubTasksList'
 
 export default {
   mixins: [searchMixin, columnMixin],
+  components: {
+    SubTasksList,
+  },
   async asyncData({ params }) {
     const promise = {
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
-      steps: stepService.searchSteps(params.subTaskId),
+      steps: taskService.searchSteps(params.subTaskId),
     }
     return {
       subTaskInfo: await promise.subTaskDetail,
@@ -243,11 +197,16 @@ export default {
     },
   },
   methods: {
+    async subTaskUpdated() {
+      this.subTaskInfo = await taskService.getSubTaskDetail(
+        this.subTaskInfo.subTaskId,
+      )
+    },
     changedSearchParams(searchParams) {
       this.searchSteps(searchParams)
     },
     async searchSteps() {
-      const { list, total } = await stepService.searchSteps(
+      const { list, total } = await taskService.searchSteps(
         this.subTaskInfo.subTaskId,
         this.searchParams,
       )
@@ -259,6 +218,16 @@ export default {
     },
     showAll() {},
     showMine() {},
+    moveToIssue(issueId) {
+      this.$router.replace(
+        `${this.$router.currentRoute.path}/issues/${issueId}`,
+      )
+    },
+    moveToPaper(paperId) {
+      this.$router.replace(
+        `${this.$router.currentRoute.path}/papers/${paperId}`,
+      )
+    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {

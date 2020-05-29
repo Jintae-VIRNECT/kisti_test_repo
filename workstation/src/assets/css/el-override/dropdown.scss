@@ -18,7 +18,8 @@ body .el-popper {
     line-height: 32px;
   }
   .el-select-dropdown__item.hover,
-  .el-select-dropdown__item:hover {
+  .el-select-dropdown__item:hover,
+  .el-dropdown-menu__item:hover {
     background-color: #f4f6fa;
   }
   .el-select-dropdown__item.selected {
@@ -53,6 +54,30 @@ body .el-popper {
       right: auto;
       left: 14px;
       color: #fff;
+    }
+  }
+
+  // dropdown
+  &.el-dropdown-menu {
+    min-width: 140px;
+    margin: 0;
+    padding: 4px 0;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);
+
+    .title {
+      display: block;
+      padding: 9px 12px;
+      color: $font-color-desc;
+      font-size: 12px;
+      line-height: 20px;
+    }
+    .el-dropdown-menu__item {
+      padding: 0 16px;
+      color: #566173;
+      line-height: 36px;
+      &.red {
+        color: #dd1717;
+      }
     }
   }
 }

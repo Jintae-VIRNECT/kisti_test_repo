@@ -78,19 +78,19 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import contentService from '@/services/content'
 import { sharedStatus } from '@/models/content/Content'
 import filters from '@/mixins/filters'
 
 export default {
-  mixins: [filters],
+  mixins: [modalMixin, filters],
   props: {
     visible: Boolean,
     contentId: String,
   },
   data() {
     return {
-      showMe: false,
       content: null,
       properties: null,
       sharedStatus,
@@ -107,15 +107,8 @@ export default {
       )
     },
   },
-  watch: {
-    visible(bool) {
-      this.showMe = bool
-    },
-    async showMe(bool) {
-      if (!bool) {
-        this.$emit('update:visible', bool)
-        return false
-      }
+  methods: {
+    async opened() {
       const promise = {
         content: contentService.getContentInfo(this.contentId),
         properties: contentService.getContentProperties(
@@ -127,7 +120,6 @@ export default {
       this.properties = await promise.properties
     },
   },
-  methods: {},
 }
 </script>
 

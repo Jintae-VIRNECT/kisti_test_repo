@@ -29,7 +29,6 @@
   background: none;
 }
 .el-button--info {
-  font-weight: 300;
   background: $color-info;
   &:hover {
     color: #fff;
@@ -45,7 +44,6 @@
 }
 .el-button--primary {
   color: #fff;
-  font-weight: 300;
   background: $color-primary;
   &:hover {
     color: #fff;
@@ -61,7 +59,6 @@
 }
 .el-button--danger {
   color: #fff;
-  font-weight: 300;
   background: $color-danger;
 
   &:hover {

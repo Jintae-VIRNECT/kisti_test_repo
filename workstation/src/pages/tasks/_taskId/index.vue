@@ -19,58 +19,21 @@
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
+            <router-link to="/tasks">
+              <img src="~assets/images/icon/ic-arrow-back.svg" />
+            </router-link>
             <h3>{{ $t('task.detail.title') }}</h3>
+            <div class="right">
+              <span>
+                {{ $t('task.detail.taskPosition') }} : {{ taskInfo.position }}
+              </span>
+            </div>
           </div>
-          <el-table :data="[taskInfo]" v-loading="loading">
-            <column-default
-              :label="$t('task.list.column.id')"
-              prop="id"
-              :width="140"
-            />
-            <column-default :label="$t('task.list.column.name')" prop="name" />
-            <column-count
-              :label="$t('task.list.column.endedSubTasks')"
-              prop="doneCount"
-              maxProp="subTaskTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.list.column.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.list.column.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.list.column.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.list.column.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.list.column.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.list.column.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
+          <tasks-list
+            :data="[taskInfo]"
+            @updated="taskUpdated"
+            @deleted="$router.push('/tasks')"
+          />
         </el-card>
       </el-row>
 
@@ -108,75 +71,21 @@
 
       <!-- 하위 작업 -->
       <el-row>
-        <el-card class="el-card--table">
+        <el-card class="el-card--table el-card--big">
           <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <h3>{{ $t('task.detail.subTaskList') }}</h3>
+            <div class="right">
+              <span>{{ $t('task.detail.subTaskCount') }}</span>
+              <span class="num">{{ subTaskTotal }}</span>
+            </div>
           </div>
-          <el-table
-            class="clickable"
+          <sub-tasks-list
             ref="table"
             :data="subTaskList"
-            v-loading="loading"
-            @row-click="moveToSubTaskDetail"
-          >
-            <column-default
-              :label="$t('task.detail.subTaskColumn.no')"
-              prop="priority"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.id')"
-              prop="subTaskId"
-              :width="140"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.name')"
-              prop="subTaskName"
-              sortable="custom"
-            />
-            <column-count
-              :label="$t('task.detail.subTaskColumn.endedSteps')"
-              prop="doneCount"
-              maxProp="stepTotal"
-              :width="120"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.schedule')"
-              type="time"
-              prop="startDate"
-              prop2="endDate"
-              :width="250"
-            />
-            <column-progress
-              :label="$t('task.detail.subTaskColumn.progressRate')"
-              prop="progressRate"
-              :width="150"
-            />
-            <column-status
-              :label="$t('task.detail.subTaskColumn.status')"
-              prop="conditions"
-              :statusList="taskConditions"
-              :width="100"
-            />
-            <column-date
-              :label="$t('task.detail.subTaskColumn.reportedDate')"
-              type="time"
-              prop="reportedDate"
-              :width="130"
-            />
-            <column-boolean
-              :label="$t('task.detail.subTaskColumn.issue')"
-              prop="issuesTotal"
-              :trueText="$t('task.list.hasIssue.yes')"
-              :falseText="$t('task.list.hasIssue.no')"
-              :width="80"
-            />
-            <column-default
-              :label="$t('task.detail.subTaskColumn.endStatus')"
-              prop="state"
-              :width="100"
-            />
-          </el-table>
+            :taskInfo="taskInfo"
+            :clickable="true"
+            @updated="searchSubTasks"
+          />
         </el-card>
       </el-row>
       <searchbar-page
@@ -199,9 +108,15 @@ import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
+import TasksList from '@/components/task/TasksList'
+import SubTasksList from '@/components/task/SubTasksList'
 
 export default {
   mixins: [searchMixin, columnMixin],
+  components: {
+    TasksList,
+    SubTasksList,
+  },
   async asyncData({ params }) {
     const promise = {
       taskDetail: taskService.getTaskDetail(params.taskId),
@@ -236,6 +151,9 @@ export default {
     },
   },
   methods: {
+    async taskUpdated() {
+      this.taskInfo = await taskService.getTaskDetail(this.taskInfo.id)
+    },
     changedSearchParams(searchParams) {
       this.searchSubTasks(searchParams)
     },
@@ -252,9 +170,6 @@ export default {
     },
     showAll() {},
     showMine() {},
-    moveToSubTaskDetail({ subTaskId }) {
-      this.$router.push(`/tasks/${this.taskInfo.id}/${subTaskId}`)
-    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {

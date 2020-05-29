@@ -20,12 +20,14 @@ body {
 }
 
 #__nuxt {
-  @import "@/assets/css/modules/title.scss";
-
   @import "@/assets/css/el-override/button.scss";
   @import "@/assets/css/el-override/card.scss";
   @import "@/assets/css/el-override/dialog.scss";
   @import "@/assets/css/el-override/pagination.scss";
+
+  @import "@/assets/css/modules/title.scss";
+  @import "@/assets/css/modules/info-modal.scss";
+  @import "@/assets/css/modules/result-modal.scss";
 
   .virnect-login-form {
     @import "@/assets/css/el-override/login-form.scss";
@@ -35,13 +37,6 @@ body {
   }
 }
 
-@import "@/assets/css/modules/common.scss";
-@import "@/assets/css/modules/column.scss";
-@import "@/assets/css/modules/searchbar.scss";
-@import "@/assets/css/modules/info-modal.scss";
-@import "@/assets/css/modules/color.scss";
-@import "@/assets/css/modules/task.scss";
-
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
 @import "@/assets/css/el-override/tooltip.scss";
@@ -49,3 +44,11 @@ body {
 @import "@/assets/css/el-override/dropdown.scss";
 @import "@/assets/css/el-override/tabs.scss";
 @import "@/assets/css/el-override/collapse.scss";
+
+@import "@/assets/css/modules/common.scss";
+@import "@/assets/css/modules/column.scss";
+@import "@/assets/css/modules/searchbar.scss";
+@import "@/assets/css/modules/color.scss";
+@import "@/assets/css/modules/task.scss";
+
+@import "billboard.js/dist/billboard.min.css";

@@ -7,11 +7,11 @@
       <nuxt-link to="/tasks" @click.native="$emit('closeCollapse')">
         <span>{{ $t('menu.collapse.tasks.list') }}</span>
       </nuxt-link>
-      <nuxt-link to="/tasks/reports" @click.native="$emit('closeCollapse')">
-        <span>{{ $t('menu.collapse.tasks.reports') }}</span>
+      <nuxt-link to="/tasks/results" @click.native="$emit('closeCollapse')">
+        <span>{{ $t('menu.collapse.tasks.results') }}</span>
       </nuxt-link>
-      <nuxt-link to="/tasks/tm" @click.native="$emit('closeCollapse')">
-        <span>{{ $t('menu.collapse.tasks.tm') }}</span>
+      <nuxt-link to="/tasks/troubles" @click.native="$emit('closeCollapse')">
+        <span>{{ $t('menu.collapse.tasks.troubles') }}</span>
       </nuxt-link>
     </div>
   </div>

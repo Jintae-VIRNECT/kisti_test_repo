@@ -21,25 +21,13 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
 
 export default {
+  mixins: [modalMixin],
   props: {
     data: Object,
-    visible: Boolean,
-  },
-  data() {
-    return {
-      showMe: false,
-    }
-  },
-  watch: {
-    visible(val) {
-      this.showMe = val
-    },
-    showMe(val) {
-      this.$emit('update:visible', val)
-    },
   },
   methods: {
     async submit() {

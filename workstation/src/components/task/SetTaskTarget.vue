@@ -60,30 +60,19 @@
 </template>
 
 <script>
+import modalMixin from '@/mixins/modal'
 import taskService from '@/services/task'
 
 export default {
+  mixins: [modalMixin],
   props: {
-    visible: Boolean,
     form: Object,
   },
   data() {
     return {
-      showMe: false,
       checkedDuplicate: false,
       checkedTransform: false,
     }
-  },
-  watch: {
-    visible(bool) {
-      this.showMe = bool
-    },
-    async showMe(bool) {
-      if (!bool) {
-        this.$emit('update:visible', bool)
-        return false
-      }
-    },
   },
   methods: {
     checkDuplicate() {
@@ -96,14 +85,14 @@ export default {
     },
     async submit() {
       const form = this.form
-      form.targetType = 'QR' // this.checkedDuplicate ? 'duplicate' : 'transform'
+      form.targetSetting = this.checkedDuplicate ? 'duplicate' : 'transform'
       try {
         const data = await taskService.createTask(form)
         this.$message.success({
           message: this.$t('task.target.message.registerSuccess'),
           showClose: true,
         })
-        this.$router.push(`/tasks/${data.id}`)
+        this.$router.push(`/tasks/${data.taskId}`)
       } catch (e) {
         this.$message.error({
           message: this.$t('task.target.message.registerFail'),

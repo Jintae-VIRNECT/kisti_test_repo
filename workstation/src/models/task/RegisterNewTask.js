@@ -12,12 +12,14 @@ export default class RegisterNewTask extends Model {
   constructor({ workspaceUUID, content, task, subTasks }) {
     super()
     this.workspaceUUID = workspaceUUID
+    this.ownerUUID = content.uploaderUUID
     this.contentUUID = content.contentUUID
     this.name = content.contentName
     this.startDate = dayjs.utc(task.schedule[0])
     this.endDate = dayjs.utc(task.schedule[1])
     this.position = task.position
-    this.targetType = null
+    this.targetType = 'QR'
+    this.targetSetting = task.targetSetting
     this.subTaskList = subTasks.map(subTask => {
       return {
         id: subTask.id,

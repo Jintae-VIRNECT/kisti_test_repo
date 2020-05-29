@@ -6,6 +6,8 @@ import ColumnRole from '@/components/common/tableColumn/ColumnRole'
 import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
 import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
 import ColumnCount from '@/components/common/tableColumn/ColumnCount'
+import ColumnDropdown from '@/components/common/tableColumn/ColumnDropdown'
+import ColumnClosed from '@/components/common/tableColumn/ColumnClosed'
 
 export default {
   components: {
@@ -17,5 +19,7 @@ export default {
     ColumnProgress,
     ColumnStatus,
     ColumnCount,
+    ColumnDropdown,
+    ColumnClosed,
   },
 }

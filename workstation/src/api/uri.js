@@ -61,32 +61,39 @@ module.exports = {
   TASK_LIST: ['GET', '/tasks'],
   // 작업상세조회
   TASK_INFO: ['GET', '/tasks/{taskId}'],
+  // 작업생성
+  TASK_CREATE: ['POST', '/tasks/task'],
   // 작업편집
   TASK_UPDATE: ['POST', '/tasks/{taskId}'],
   // 작업삭제
-  TASK_DELETE: ['DELETE', '/tasks/{taskId}'],
+  TASK_DELETE: ['DELETE', '/tasks'],
   // 작업마감
   TASK_CLOSE: ['PUT', '/tasks/{taskId}/closed'],
   // 하위작업목록조회
   SUB_TASK_LIST: ['GET', '/tasks/{taskId}/subTasks'],
-  // 이슈 목록을 조회
-  ISSUE_LIST: ['GET', '/tasks/issues'],
-  // 이슈상세조회
-  ISSUE_INFO: ['GET', '/tasks/issue/{issueId}'],
-  // 작업생성
-  TASK_CREATE: ['POST', '/tasks/task'],
-  // 리포트 목록 조회
-  REPORT_LIST: ['GET', '/tasks/reports'],
-  // 리포트상세조회
-  REPORT_INFO: ['GET', '/tasks/report/{reportId}'],
-  // 스마트툴 단계 목록 조회
-  SMART_TOOL_LIST: ['GET', '/tasks/smartToolSteps'],
-  // 워크스페이스의 전체 하위작업목록조회
-  SUB_TASK_ALL: ['GET', '/tasks/subTasks'],
   // 하위작업 상세조회
   SUB_TASK_INFO: ['GET', '/tasks/subTasks/{subTaskId}'],
   // 하위작업편집
   SUB_TASK_UPDATE: ['POST', '/tasks/subTasks/{subTaskId}'],
   // 단계목록조회
   STEPS_LIST: ['GET', '/tasks/subTasks/{subTaskId}/steps'],
+  // 타겟정보조회
+  TARGET_INFO: ['GET', '/tasks/task/content/{taskId}'],
+  /**
+   * results
+   */
+  // 워크스페이스의 전체 하위작업목록조회
+  SUB_TASK_ALL: ['GET', '/tasks/subTasks'],
+  // 이슈조회
+  ISSUES_ALL: ['GET', '/tasks/issues'],
+  // 페이퍼 조회
+  PAPERS_ALL: ['GET', '/tasks/papers'],
+  // 페이퍼 상세조회
+  ISSUE_INFO: ['GET', '/tasks/issue/{issueId}'],
+  // 페이퍼 상세조회
+  PAPER_INFO: ['GET', '/tasks/paper/{paperId}'],
+  // 트러블 메모 목록 조회
+  TROUBLES_LIST: ['GET', '/tasks/troubleMemos'],
+  // 트러블 메모 상세 조회
+  TROUBLE_INFO: ['GET', '/tasks/troubleMemo/{troubleMemoId}'],
 }

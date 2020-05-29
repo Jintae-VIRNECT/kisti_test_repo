@@ -6,7 +6,7 @@
     :title="$t('contents.info.title')"
     width="860px"
     top="11vh"
-    @close="close"
+    @close="closed"
   >
     <el-row type="flex">
       <el-col :span="9">
@@ -61,11 +61,11 @@
             <span>{{ target.type }}</span>
             <img
               src="~assets/images/icon/ic-print.svg"
-              @click="print(target.data)"
+              @click="print(target.imgPath)"
             />
             <img
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(target.data)"
+              @click="download(target.imgPath)"
             />
           </dd>
         </dl>
@@ -133,7 +133,7 @@ export default {
     },
   },
   methods: {
-    close() {
+    closed() {
       this.showMe = false
       this.$router.push('/contents')
     },

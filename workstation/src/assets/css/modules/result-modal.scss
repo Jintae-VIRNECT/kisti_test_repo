@@ -1,0 +1,59 @@
+.result-modal .el-dialog__body {
+  height: auto;
+  min-height: 528px;
+  padding: 0;
+  overflow-y: scroll;
+
+  // 리포트 이미지
+  .image-container {
+    position: relative;
+    display: inline-block;
+    padding: 30px;
+    border-bottom: solid 1px #eaedf3;
+
+    & > .el-image {
+      border-radius: 3px;
+    }
+    & > .el-icon-full-screen {
+      position: absolute;
+      right: 30px;
+      margin: 12px;
+      padding: 8px;
+      color: #fff;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .el-icon-circle-close {
+      padding: 8px;
+      color: #fff;
+      font-size: 22px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 100px;
+
+      &:before {
+        content: "\e6db";
+      }
+    }
+  }
+  & > dl {
+    padding: 26px 30px;
+
+    dt {
+      margin-bottom: 4px;
+      color: #445168;
+      font-size: 12px;
+    }
+    dd {
+      margin-bottom: 20px;
+      white-space: nowrap;
+
+      & > img {
+        float: right;
+        margin-left: 12px;
+        cursor: pointer;
+      }
+    }
+  }
+}
