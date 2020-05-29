@@ -27,10 +27,10 @@ public class MemberInfoDTO {
     private Long roleId;
     private String createdDate;
     private String updatedDate;
-    private Integer countProgressing;
-    private Integer countAssigned;
+    //private Integer countProgressing;
+    //private Integer countAssigned;
     private LocalDateTime joinDate;
-    //사용중인 플랜정보
+    private String[] LicenseProducts;
 
     @Override
     public String toString() {

@@ -54,7 +54,6 @@ public class WorkspaceController {
     )
     @GetMapping("/locale")
     public void locale(@ApiIgnore Locale locale, @ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang) {
-
     }
 
     @ApiOperation(
@@ -180,7 +179,7 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 멤버 권한 설정",
-            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능합니다."
+            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능하고 워크스페이스 내의 플랜은 마스터, 매니저유저만 가능합니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
@@ -255,7 +254,8 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "code", value = "워크스페이스 초대 코드", dataType = "string", defaultValue = "123456", paramType = "query", required = true)
     })
     @GetMapping("/{workspaceId}/invite/accept")
-    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code, @ApiIgnore Locale locale) {
+    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code,
+                                              @ApiIgnore Locale locale) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(code)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -300,6 +300,21 @@ public class WorkspaceController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(
+            value = "워크스페이스 멤버 조회",
+            notes = "워크스페이스 내의 마스터, 매니저를 포함한 모든 멤버를 조회합니다."
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+    })
+    @GetMapping("/{workspaceId}/members/simple")
+    public ResponseEntity<ApiResponse<MemberListResponse>> getSimpleWorkspaceUserList(@PathVariable("workspaceId") String workspaceId) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getSimpleWorkspaceUserList(workspaceId);
+        return ResponseEntity.ok(apiResponse);
+    }
 /*
     @ApiOperation(
             value = "(테스트용)워크스페이스 멤버 추가",
