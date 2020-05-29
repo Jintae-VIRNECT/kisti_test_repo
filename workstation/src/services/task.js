@@ -17,6 +17,19 @@ export default {
     return data
   },
   /**
+   * 작업 일별 통계 조회
+   * @param {String} month
+   */
+  async getTaskDailyRateAtMonth(month) {
+    const data = await api('TASK_DAILY', {
+      params: {
+        month,
+        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+      },
+    })
+    return data.dailyTotal
+  },
+  /**
    * 작업 검색
    * @param {Object} params
    */

@@ -2,11 +2,6 @@
 .el-card {
   margin-bottom: 30px;
   box-shadow: none;
-
-  &--big .el-card__header {
-    height: 60px;
-    padding-top: 19px;
-  }
 }
 .el-card__header {
   position: relative;
@@ -50,6 +45,23 @@
       color: #0065e0;
       font-size: 18px;
       line-height: 60px;
+    }
+  }
+}
+// 목록 테이블
+.el-card--big .el-card__header {
+  height: 60px;
+  padding-top: 19px;
+
+  & > div > button {
+    float: left;
+    margin: -4px 16px;
+    padding: 4px 10px;
+    color: $font-color-content;
+    font-size: 12.6px;
+
+    & img {
+      margin-right: 4px;
     }
   }
 }

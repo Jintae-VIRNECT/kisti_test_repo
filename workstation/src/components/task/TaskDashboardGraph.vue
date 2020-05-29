@@ -8,9 +8,9 @@ import colorMap from '@/models/color'
 
 // ssr error
 let bb = null
-try {
+if (process.client) {
   bb = require('billboard.js').bb
-} catch (e) {}
+}
 
 export default {
   props: {

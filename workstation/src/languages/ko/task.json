@@ -10,6 +10,8 @@
     "endTasks": "마감된 작업",
     "taskCount": "등록된 작업 수",
     "myTasks": "내 작업",
+    "dailyRateGraph": "일자별 작업 진행률 그래프",
+    "rate": "진행률",
     "close": "종료",
     "dashboard": {
       "title": "실시간 작업 진행 상태",

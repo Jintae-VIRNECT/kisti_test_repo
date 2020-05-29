@@ -57,6 +57,8 @@ module.exports = {
   TASK_STATISTICS: ['GET', '/tasks/statistics'],
   // 전체 작업 진행률 조회
   TASK_TOTAL_RATE: ['GET', '/tasks/totalRate'],
+  // 해당월의 일별 통계 조회
+  TASK_DAILY: ['GET', '/tasks/dailyTotalRateAtMonth'],
   // 전체 작업 목록 조회
   TASK_LIST: ['GET', '/tasks'],
   // 작업상세조회
