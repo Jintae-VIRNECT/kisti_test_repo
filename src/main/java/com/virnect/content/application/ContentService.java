@@ -1118,7 +1118,7 @@ public class ContentService {
         return meta;
     }
 
-    private void checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
@@ -1142,10 +1142,19 @@ public class ContentService {
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
         if (maxStorageSize < sumSize) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        } else {
+            licenseInfoResponse.setMaxStorageSize(maxStorageSize);
+            licenseInfoResponse.setWorkspaceStorage(workspaceSize);
+            licenseInfoResponse.setUploadSize(uploadContentSize);
         }
+
+        return licenseInfoResponse;
     }
 
-    private void checkLicenseDownload(String workspaceUUID) {
+    private LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
+
+        LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+
         // 라이센스 총 다운로드 횟수
         Long maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
 
@@ -1158,7 +1167,12 @@ public class ContentService {
 
         if (maxDownload < sumDownload + 1) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }else {
+            licenseInfoResponse.setMaxDownloadHit(maxDownload);
+            licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
         }
+
+        return licenseInfoResponse;
     }
 
     public String decodeData(String encodeURL){
