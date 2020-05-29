@@ -36,17 +36,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SwaggerConfiguration {
     private final ObjectMapper objectMapper;
-
     @Bean
-    public List<ResponseMessage> globalResponseMessage() {
-        ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
-        return responseMessages;
-    }
-
-    @Bean
-    public Docket userApi() throws JsonProcessingException {
+    public Docket docket() throws JsonProcessingException {
         // API 문서 관련 정보 입력
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .contact(new Contact("이주경", "https://virnect.com", "ljk@vinrect.com"))

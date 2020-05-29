@@ -1,11 +1,9 @@
 RELEASE
 
 New Features
-메일 발송 기능 추가
-헬스 체크 기능 추가
 
 Bug Fixes
-없음
+에러 응답 메세지에 서버명 추가
 
 Limitation
 없음
