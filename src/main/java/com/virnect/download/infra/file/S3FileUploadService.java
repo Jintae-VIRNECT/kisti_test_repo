@@ -26,8 +26,7 @@ import java.util.UUID;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-//@Profile({"staging","production"})
-@Profile("local")
+@Profile({"staging", "production"})
 @Slf4j
 @Service
 public class S3FileUploadService implements FileUploadService {
@@ -58,7 +57,7 @@ public class S3FileUploadService implements FileUploadService {
 
         String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
 
-        String fileName =  uniqueFileName + getFileExtension(multipartFile.getOriginalFilename());
+        String fileName = uniqueFileName + getFileExtension(multipartFile.getOriginalFilename());
 
         String uploadImageUrl = putS3(uploadFile, fileName);
 
@@ -91,7 +90,7 @@ public class S3FileUploadService implements FileUploadService {
     @Override
     public void delete(String fileName) {
 
-        String endPoint = bucketName ;
+        String endPoint = bucketName;
         amazonS3Client.deleteObject(endPoint, fileName);
         log.info(fileName + " 파일이 AWS S3(" + endPoint + ")에서 삭제되었습니다.");
 
@@ -123,8 +122,9 @@ public class S3FileUploadService implements FileUploadService {
 
         return Optional.empty();
     }
+
     @Override
-    public boolean doesFileExist(String fileName){
-        return amazonS3Client.doesObjectExist(bucketName,fileName);
+    public boolean doesFileExist(String fileName) {
+        return amazonS3Client.doesObjectExist(bucketName, fileName);
     }
 }

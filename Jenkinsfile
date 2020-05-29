@@ -24,8 +24,7 @@ pipeline {
 
         stage('Develop Branch') {
           when {
-            branch 'develop'                  
-            expression { return env.GIT_TAG_NAME }
+            branch 'develop'
           }
           steps {
             catchError() {
@@ -143,7 +142,7 @@ pipeline {
         stage('Master Branch') {
           when {
             branch 'master'
-            
+
           }
           steps {
             catchError() {
@@ -171,7 +170,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8086:8086 --restart=always -e 'SPRING_PROFILES_ACTIVE=master' -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_COMMIT}"
+                          execCommand: "docker run -p 8086:8086 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_COMMIT}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'

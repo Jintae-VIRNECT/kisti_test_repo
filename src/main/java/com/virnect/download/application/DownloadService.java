@@ -3,7 +3,7 @@ package com.virnect.download.application;
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
-import com.virnect.download.dto.response.AppInfoResponse;
+import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
@@ -12,11 +12,23 @@ import com.virnect.download.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,63 +42,62 @@ public class DownloadService {
         this.fileUploadService.upload(file);
         return null;
     }
-/*
-    public ApiResponse<String> downloadFile(String fileName) {
-        //TODO: 제품 체크
 
-        String uploadedUrl = "https://download.virnect.com/" + fileName;
+    public ResponseEntity<byte[]> downloadApp(String id) {
+        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
-        if (!this.fileUploadService.doesFileExist(fileName)) {
-            throw new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE);
-        }
-
-        App app = this.appRepository.findByUrlEquals(uploadedUrl);
-
-        if (app == null) {
-            throw new DownloadException(ErrorCode.ERR_NOT_UPLOADED_FILE);
-        }
-
-        app.setDownloadCount(app.getDownloadCount() + 1);
+        app.setAppDownloadCount(app.getAppDownloadCount() + 1);
         this.appRepository.save(app);
-
-        return new ApiResponse<>(uploadedUrl);
-
-    }*/
-
-
-    public ApiResponse<String> downloadFile(String productName) {
-        Product product = Product.valueOf(productName.toUpperCase());
-        App app = this.appRepository.findFirstByProductEqualsOrderByCreatedDateDesc(product);
-
-        //db 체크
-        if (app == null) {
-            throw new DownloadException(ErrorCode.ERR_NOT_UPLOADED_FILE);
-        }
-
-        //count 증가
-        app.setDownloadCount(app.getDownloadCount() + 1);
-        this.appRepository.save(app);
-
-        return new ApiResponse<>(app.getUrl());
-
+        return this.downloadFile(app.getAppUrl());
     }
 
-    public ApiResponse<AppInfoResponse> findFile(String productName) {
-        Product product = Product.valueOf(productName.toUpperCase());
-        App app = this.appRepository.findFirstByProductEqualsOrderByCreatedDateDesc(product);
-        //db 체크
-        if (app == null) {
-            throw new DownloadException(ErrorCode.ERR_NOT_UPLOADED_FILE);
-        }
+    public ResponseEntity<byte[]> downloadGuide(String id) {
+        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
-        AppInfoResponse appInfoResponse = new AppInfoResponse();
-        appInfoResponse.setProductName(app.getProduct().name());
-        appInfoResponse.setReleaseTime(app.getCreatedDate());
-        appInfoResponse.setVersion("v." + app.getVersion());
-        appInfoResponse.setDownloadCount(app.getDownloadCount());
-        appInfoResponse.setOs(app.getOs().name());
-        appInfoResponse.setDevice(app.getDevice().getName());
+        app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
+        this.appRepository.save(app);
 
-        return new ApiResponse<>(appInfoResponse);
+        return this.downloadFile(app.getGuideUrl());
     }
+
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) {
+        HttpHeaders headers = new HttpHeaders();
+        byte[] media;
+        try {
+            URL url = new URL(fileUrl);
+            InputStream inputStream = url.openStream();
+            media = IOUtils.toByteArray(inputStream);
+
+            String fileName = FilenameUtils.getName(fileUrl);
+
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
+                    new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+
+        } catch (IOException e) {
+            throw new DownloadException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(media);
+    }
+
+    public ApiResponse<AppInfoListResponse> getAppList(String productName) {
+        Product product = Product.valueOf(productName.toUpperCase());
+        List<App> apps = this.appRepository.getAppList(product);
+        Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
+
+        List<AppInfoListResponse.AppInfo> appInfoList = new ArrayList<>();
+        result.forEach((objects, appList) -> {
+            AppInfoListResponse.AppInfo appInfo = modelMapper.map(appList.get(0), AppInfoListResponse.AppInfo.class);
+            appInfo.setDevice(appList.get(0).getDevice().getName());
+            appInfo.setReleaseTime(appList.get(0).getCreatedDate());
+            appInfo.setOs(appList.get(0).getOs().getName());
+            appInfo.setVersion("v." + appList.get(0).getVersion());
+            appInfoList.add(appInfo);
+        });
+
+        return new ApiResponse<>(new AppInfoListResponse(appInfoList));
+    }
+
 }

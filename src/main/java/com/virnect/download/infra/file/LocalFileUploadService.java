@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Project: PF-Admin
@@ -21,8 +20,7 @@ import java.util.List;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-//@Profile({"local", "develop"})
-@Profile("!local")
+@Profile({"local", "develop"})
 @Slf4j
 @Service
 public class LocalFileUploadService implements FileUploadService {
