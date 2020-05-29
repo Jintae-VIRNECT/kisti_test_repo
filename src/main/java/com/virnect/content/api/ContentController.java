@@ -391,11 +391,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @GetMapping("/healthcheck")
-    public ResponseEntity<String> checkHealth() {
-        return ResponseEntity.ok("200 OK");
-    }
-
     @ApiOperation(value="프로퍼티 -> 메타데이터", tags="test")
     @GetMapping("/propertyToMetadata/{contentUUID}")
     @ApiImplicitParams({
