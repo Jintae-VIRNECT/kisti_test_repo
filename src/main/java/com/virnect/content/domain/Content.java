@@ -69,7 +69,7 @@ public class Content extends BaseTimeEntity {
     private YesOrNo converted = YesOrNo.NO;
 
     @Column(name = "download_hits")
-    private Integer downloadHits;
+    private Long downloadHits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
@@ -107,6 +107,6 @@ public class Content extends BaseTimeEntity {
         this.type = type;
         this.targetList = new ArrayList<>();
         this.sceneGroupList = new ArrayList<>();
-        this.downloadHits = 0;
+        this.downloadHits = 0L;
     }
 }

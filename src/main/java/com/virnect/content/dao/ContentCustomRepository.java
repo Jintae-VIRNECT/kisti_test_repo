@@ -21,5 +21,5 @@ public interface ContentCustomRepository {
 
     Long getWorkspaceStorageSize(String workspaceUUID);
  
-    Integer getWorkspaceDownload(String workspaceUUID);
+    Long getWorkspaceDownload(String workspaceUUID);
 }

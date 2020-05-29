@@ -47,6 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
@@ -985,17 +986,16 @@ public class ContentService {
             int i = 1;
 
             JsonArray metaSceneGroupArr = new JsonArray();
+
             while(sceneGroupsIter.hasNext()) {    // 2
                 String sceneGroupKey = sceneGroupsIter.next();
 
                 JsonObject sceneGroup = propertyInfo1.getAsJsonObject(sceneGroupKey);
 
-                JsonObject sceneGroupInfo  = sceneGroup.getAsJsonObject("PropertyInfo");    // 2-1
-                JsonObject sceneGroupChild = sceneGroup.getAsJsonObject("Child");           // 2-2
+                log.debug("{}", sceneGroup);
 
-                sceneGroupChild.keySet().size();
-
-                Iterator<String> scenesIter = sceneGroupChild.keySet().iterator();
+                JsonObject sceneGroupInfo = sceneGroup.getAsJsonObject("PropertyInfo");    // 2-1
+                JsonObject sceneGroupChild = null;
 
                 JsonObject metaSceneGroupsObj = new JsonObject();
 
@@ -1006,94 +1006,105 @@ public class ContentService {
                     sceneGroupId = sceneGroupInfo.get("identifier").getAsString();
                 }
 
-                if (Objects.isNull(sceneGroupName) || "".equals(sceneGroupName))
+                if (Objects.isNull(sceneGroupName) || "".equals(sceneGroupName)) {
                     sceneGroupName = "기본 하위 작업명";
-//                if (!sceneGroupInfo.get("sceneGroupTitle").isJsonNull()){
-//                    sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
-//                }
+                }
 
                 metaSceneGroupsObj.addProperty("id"      , sceneGroupId);
                 metaSceneGroupsObj.addProperty("priority", i);
                 metaSceneGroupsObj.addProperty("name"    , sceneGroupName);
-                metaSceneGroupsObj.addProperty("jobTotal", sceneGroupChild.size());
 
-                JsonArray metaScenesArr = new JsonArray();
-
-                int j = 1;
-
-                while (scenesIter.hasNext()) {
-                    JsonObject metaScenesObj = new JsonObject();
-
-                    String sceneKey = scenesIter.next();
-
-                    log.debug(">>>>>> {}", sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child"));
-
-                    JsonObject sceneInfo = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("PropertyInfo");   // 3-1
-                    JsonObject sceneChild = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child");          // 3-2
-
-                    Iterator<String> sceneIter =  sceneChild.keySet().iterator();
-
-                    JsonArray reportListItems = new JsonArray();
-
-                    JsonArray reportArr  = new JsonArray();
-                    JsonObject reportObj = new JsonObject();
-
-                    while (sceneIter.hasNext()){
-                        JsonObject scarch = sceneChild.getAsJsonObject(sceneIter.next()).getAsJsonObject("PropertyInfo");
-
-                        if (scarch.toString().contains("reportListItems")) {
-                            reportObj.addProperty("id", scarch.get("identifier").getAsString());
-                            reportListItems = scarch.getAsJsonArray("reportListItems");
-                        }
-                    }
-
-                    if (reportListItems.size() > 0) {
-                        int k = 1;
-
-                        JsonArray itemsArr = new JsonArray();
-                        for (JsonElement obj : reportListItems) {
-                            JsonObject metaItem = new JsonObject();
-
-                            JsonObject item = obj.getAsJsonObject();
-
-                            metaItem.addProperty("id", item.get("identifier").getAsString());
-                            metaItem.addProperty("priority",k);
-                            metaItem.addProperty("title", item.get("contents").getAsString());
-                            metaItem.addProperty("item", "NONE"); // 협의 필요
-                            itemsArr.add(metaItem);
-                            k++;
-                        }
-
-                        reportObj.add("items", itemsArr);
-                    }
-
-                    String stepName = sceneInfo.get("sceneTitle").getAsString();
-                    int subJobTotal = reportListItems.size();
-
-                    if (Objects.isNull(stepName) || "".equals(stepName)) {
-                        stepName = "기본 단계명";
-                    }
-
-                    if (subJobTotal == 0) {
-                        subJobTotal = 1;
-                    }
-
-                    reportArr.add(reportObj);
-
-                    metaScenesObj.addProperty("id", sceneInfo.get("identifier").getAsString());
-                    metaScenesObj.addProperty("priority", j);
-                    metaScenesObj.addProperty("name", stepName);
-                    metaScenesObj.addProperty("subJobTotal", subJobTotal);
-                    metaScenesObj.add("reportObjects", reportArr);
-
-                    metaScenesArr.add(metaScenesObj);
-                    j++;
+                // scenegroup이 있고 그 안에 scene이 없는 경우가 있다. scene이 있는 없는 경우.
+                if (!sceneGroup.has("Child")) {
+                    metaSceneGroupsObj.addProperty("jobTotal", 0);
+                    metaSceneGroupArr.add(metaSceneGroupsObj);
+                    i++;
                 }
-                metaSceneGroupsObj.add("scenes", metaScenesArr);
-                metaSceneGroupArr.add(metaSceneGroupsObj);
-                i++;
-            }
+                // scene이 없는 경우.
+                else {
+                    sceneGroupChild = sceneGroup.getAsJsonObject("Child");           // 2-2
 
+                    metaSceneGroupsObj.addProperty("jobTotal", sceneGroupChild.size());
+
+                    Iterator<String> scenesIter = sceneGroupChild.keySet().iterator();
+
+                    JsonArray metaScenesArr = new JsonArray();
+
+                    int j = 1;
+
+                    while (scenesIter.hasNext()) {
+                        JsonObject metaScenesObj = new JsonObject();
+
+                        String sceneKey = scenesIter.next();
+
+                        log.debug(">>>>>> {}", sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child"));
+
+                        JsonObject sceneInfo = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("PropertyInfo");   // 3-1
+                        JsonObject sceneChild = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child");          // 3-2
+
+                        Iterator<String> sceneIter =  sceneChild.keySet().iterator();
+
+                        JsonArray reportListItems = new JsonArray();
+
+                        JsonArray reportArr  = new JsonArray();
+                        JsonObject reportObj = new JsonObject();
+
+                        while (sceneIter.hasNext()){
+                            JsonObject scarch = sceneChild.getAsJsonObject(sceneIter.next()).getAsJsonObject("PropertyInfo");
+
+                            if (scarch.toString().contains("reportListItems")) {
+                                reportObj.addProperty("id", scarch.get("identifier").getAsString());
+                                reportListItems = scarch.getAsJsonArray("reportListItems");
+                            }
+                        }
+
+                        if (reportListItems.size() > 0) {
+                            int k = 1;
+
+                            JsonArray itemsArr = new JsonArray();
+                            for (JsonElement obj : reportListItems) {
+                                JsonObject metaItem = new JsonObject();
+
+                                JsonObject item = obj.getAsJsonObject();
+
+                                metaItem.addProperty("id", item.get("identifier").getAsString());
+                                metaItem.addProperty("priority",k);
+                                metaItem.addProperty("title", item.get("contents").getAsString());
+                                metaItem.addProperty("item", "NONE"); // 협의 필요
+                                itemsArr.add(metaItem);
+                                k++;
+                            }
+
+                            reportObj.add("items", itemsArr);
+                        }
+
+                        String stepName = sceneInfo.get("sceneTitle").getAsString();
+                        int subJobTotal = reportListItems.size();
+
+                        if (Objects.isNull(stepName) || "".equals(stepName)) {
+                            stepName = "기본 단계명";
+                        }
+
+                        if (subJobTotal == 0) {
+                            subJobTotal = 1;
+                        }
+
+                        reportArr.add(reportObj);
+
+                        metaScenesObj.addProperty("id", sceneInfo.get("identifier").getAsString());
+                        metaScenesObj.addProperty("priority", j);
+                        metaScenesObj.addProperty("name", stepName);
+                        metaScenesObj.addProperty("subJobTotal", subJobTotal);
+                        metaScenesObj.add("reportObjects", reportArr);
+
+                        metaScenesArr.add(metaScenesObj);
+                        j++;
+                    }
+                    metaSceneGroupsObj.add("scenes", metaScenesArr);
+                    metaSceneGroupArr.add(metaSceneGroupsObj);
+                    i++;
+                }
+            }
             taskObj.add("sceneGroups", metaSceneGroupArr);
 
             log.debug(">>>>> taskObj {}",taskObj);
@@ -1107,7 +1118,9 @@ public class ContentService {
         return meta;
     }
 
-    private void checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+        LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
         Long maxStorageSize = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
 
@@ -1129,23 +1142,37 @@ public class ContentService {
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
         if (maxStorageSize < sumSize) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        } else {
+            licenseInfoResponse.setMaxStorageSize(maxStorageSize);
+            licenseInfoResponse.setWorkspaceStorage(workspaceSize);
+            licenseInfoResponse.setUploadSize(uploadContentSize);
         }
+
+        return licenseInfoResponse;
     }
 
-    private void checkLicenseDownload(String workspaceUUID) {
+    private LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
+
+        LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+
         // 라이센스 총 다운로드 횟수
-        Integer maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
+        Long maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
 
         // 현재 워크스페이스의 다운로드 횟수
-        Integer sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
+        Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
 
         if (Objects.isNull(sumDownload)) {
-            sumDownload = 0;
+            sumDownload = 0L;
         }
 
         if (maxDownload < sumDownload + 1) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }else {
+            licenseInfoResponse.setMaxDownloadHit(maxDownload);
+            licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
         }
+
+        return licenseInfoResponse;
     }
 
     public String decodeData(String encodeURL){
