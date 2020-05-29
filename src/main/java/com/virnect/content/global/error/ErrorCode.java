@@ -29,6 +29,8 @@ public enum ErrorCode {
     ERR_OWNERSHIP(4015, "An error occurred in the request. Because it is NOT ownership."),
     ERROR_WORKSPACE(4016, "An error occurred in the request. Because Workspace is different."),
     ERR_CONTENT_DOWNLOAD(4017,"Content Download fail."),
+    ERR_CONTENT_UPLOAD_LICENSE(4018, "Content upload fail. Because provided capacity exceeded."),
+    ERR_CONTENT_DOWNLOAD_LICENSE(4019, "Content Download fail. Because the number of offers exceeded."),
 
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

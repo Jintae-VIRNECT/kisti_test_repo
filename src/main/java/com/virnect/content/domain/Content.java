@@ -1,6 +1,7 @@
 package com.virnect.content.domain;
 
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.List;
 @Setter
 @Audited
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "content")
 public class Content extends BaseTimeEntity {
     @Id

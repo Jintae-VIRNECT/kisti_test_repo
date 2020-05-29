@@ -2,6 +2,8 @@ package com.virnect.content.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.*;
+import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
@@ -20,13 +22,17 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.global.util.AES256EncryptUtils;
+import com.virnect.content.global.util.QRcodeGenerator;
 import com.virnect.content.infra.file.download.FileDownloadService;
 import com.virnect.content.infra.file.upload.FileUploadService;
+import com.virnect.content.infra.file.upload.S3UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.service.spi.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,7 +46,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,6 +78,7 @@ public class ContentService {
     private final UserRestService userRestService;
     private final ProcessRestService processRestService;
     private final WorkspaceRestService workspaceRestService;
+    private final LicenseRestService licenseRestService;
 
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -93,6 +103,11 @@ public class ContentService {
      */
     @Transactional
     public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
+        String workspaceUUID = uploadRequest.getWorkspaceUUID();
+        Long contentSize = uploadRequest.getContent().getSize();
+
+        checkLicenseStorage(workspaceUUID, contentSize);
+
         // 1. 콘텐츠 업로드 파일 저장
         try {
             String contentUUID = UUID.randomUUID().toString();
@@ -102,13 +117,16 @@ public class ContentService {
             // 파일명은 컨텐츠 식별자(contentUUID)와 동일
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
 
-            // 2. 업로드 컨텐츠 정보 수집
+            // 2-1. 프로퍼티로 메타데이터 생성
+            String metadata = makeMetadata(uploadRequest.getName(), uploadRequest.getUserUUID(), uploadRequest.getProperties()).toString();
+
+            // 2-2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
                     // TODO : 유효한 워크스페이스 인지 검증 필요.
                     .workspaceUUID(uploadRequest.getWorkspaceUUID())
                     .uuid(contentUUID)
                     .name(uploadRequest.getName())
-                    .metadata(uploadRequest.getMetadata())
+                    .metadata(metadata)
                     .properties(uploadRequest.getProperties())
                     .userUUID(uploadRequest.getUserUUID())
                     .shared(INIT_IS_SHARED)
@@ -166,10 +184,13 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
+        String imgPath = decodeData(targetData);
+
         Target target = Target.builder()
                 .type(targetType)
                 .content(content)
                 .data(targetData)
+                .imgPath(imgPath)
                 .build();
         content.addTarget(target);
 
@@ -179,10 +200,13 @@ public class ContentService {
     }
 
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
+        String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
+
         Target target = Target.builder()
                 .type(targetType)
                 .content(content)
                 .data(targetData)
+                .imgPath(imgPath)
                 .build();
         content.addTarget(target);
 
@@ -279,6 +303,11 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
+        // 기존 컨텐츠 크기와 수정하려는 컨텐츠의 크기를 뺀다.
+        Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
+
+        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
+
         // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
 
@@ -304,8 +333,12 @@ public class ContentService {
         // 6. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
-        // 7. 컨텐츠 메타데이터 변경
-        targetContent.setMetadata(updateRequest.getMetadata());
+        // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
+        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getMetadata());
+
+        String metadata = metaObject.toString();
+
+        targetContent.setMetadata(metadata);
 
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
@@ -354,6 +387,9 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        checkLicenseDownload(content.getWorkspaceUUID());
+
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return responseEntity;
@@ -366,6 +402,9 @@ public class ContentService {
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        checkLicenseDownload(content.getWorkspaceUUID());
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
@@ -684,10 +723,13 @@ public class ContentService {
     private ApiResponse<ContentInfoResponse> getContentInfoResponseApiResponse(Content content) {
         ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
         List<ContentTargetResponse> targetResponseList = new ArrayList<>();
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", content.getTargetList());
         for (Target target : content.getTargetList()) {
             ContentTargetResponse map = this.modelMapper.map(target, ContentTargetResponse.class);
             targetResponseList.add(map);
         }
+
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                 .workspaceUUID(content.getWorkspaceUUID())
                 .contentUUID(content.getUuid())
@@ -869,5 +911,282 @@ public class ContentService {
         if (!isWorkspaceMember) {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
+    }
+
+    // property 정보 -> metadata로 변환
+    public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID){
+
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        String contentName = content.getName();
+        String userUuid    = content.getUserUUID();
+        String properties = content.getProperties();
+
+        JsonObject metaObject = makeMetadata(contentName, userUuid, properties);
+
+        String metaString = metaObject.toString();
+
+        log.debug("metaString {}", metaString);
+
+        Gson gson = new Gson();
+
+        // Gson으로 json -> Class로 변환
+        MetadataInfoResponse metaResponse = gson.fromJson(metaObject, MetadataInfoResponse.class);
+
+        metaResponse.getContents().setUuid(content.getUuid());
+
+        log.debug("contentMeta {}", metaResponse.getContents());
+
+        //addSceneGroupToContent(content,metaString);
+
+        return new ApiResponse<>(metaResponse);
+    }
+
+    public JsonObject makeMetadata(String contentName, String userUuid, String properties){
+        JsonObject meta = new JsonObject();
+        // 테스트
+        try{
+            /*
+             * TargetID
+             * PropertyInfo - 1
+             *     - randomKey - sceneGroups -2
+             *         - PropertyInfo - sceneGroup 정보 - 2-1
+             *         - Child        - scenes - 2-2
+             *             - randomKey - 3
+             *                 - PropertyInfo - scene 정보 - 3-1
+             *                 - Child - 3-2
+             *                     - randomKey - 4
+             *                         - PropertyInfo - 4-1
+             *                             - reportListItems - JsonArray
+             *
+             * */
+
+            JsonParser jsonParse = new JsonParser();
+
+            JsonObject propertyObj = (JsonObject) jsonParse.parse(properties);
+
+            JsonObject propertyInfo1 = propertyObj.getAsJsonObject("PropertyInfo");
+
+            Iterator<String> sceneGroupsIter = propertyInfo1.keySet().iterator();
+
+            JsonObject taskObj = new JsonObject();        // task 정보를 담을 JsonObject
+            String taskId      = propertyObj.get("TargetID").getAsString();                      // taskId
+            String taskName    = contentName;       // DB에 저장된 ContentsName 사용
+            String managerUUID = userUuid;   // DB에 저장 된 uploaderUUID 사용
+            int subTaskTotal   = propertyInfo1.keySet().size();         // SceneGroups 하위에 있는 SceneGroup의 갯수
+
+            // task 정보 채우기
+            taskObj.addProperty("id"             , taskId);          // id
+            taskObj.addProperty("name"           , taskName);        // name
+            taskObj.addProperty("managerUUID"    , managerUUID);     // managerUUID
+            taskObj.addProperty("subProcessTotal", subTaskTotal);    // subProcessTotal
+
+            int i = 1;
+
+            JsonArray metaSceneGroupArr = new JsonArray();
+            while(sceneGroupsIter.hasNext()) {    // 2
+                String sceneGroupKey = sceneGroupsIter.next();
+
+                JsonObject sceneGroup = propertyInfo1.getAsJsonObject(sceneGroupKey);
+
+                JsonObject sceneGroupInfo  = sceneGroup.getAsJsonObject("PropertyInfo");    // 2-1
+                JsonObject sceneGroupChild = sceneGroup.getAsJsonObject("Child");           // 2-2
+
+                sceneGroupChild.keySet().size();
+
+                Iterator<String> scenesIter = sceneGroupChild.keySet().iterator();
+
+                JsonObject metaSceneGroupsObj = new JsonObject();
+
+                String sceneGroupId   = "";
+                String sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
+
+                if (!sceneGroupInfo.get("identifier").isJsonNull()){
+                    sceneGroupId = sceneGroupInfo.get("identifier").getAsString();
+                }
+
+                if (Objects.isNull(sceneGroupName) || "".equals(sceneGroupName))
+                    sceneGroupName = "기본 하위 작업명";
+//                if (!sceneGroupInfo.get("sceneGroupTitle").isJsonNull()){
+//                    sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
+//                }
+
+                metaSceneGroupsObj.addProperty("id"      , sceneGroupId);
+                metaSceneGroupsObj.addProperty("priority", i);
+                metaSceneGroupsObj.addProperty("name"    , sceneGroupName);
+                metaSceneGroupsObj.addProperty("jobTotal", sceneGroupChild.size());
+
+                JsonArray metaScenesArr = new JsonArray();
+
+                int j = 1;
+
+                while (scenesIter.hasNext()) {
+                    JsonObject metaScenesObj = new JsonObject();
+
+                    String sceneKey = scenesIter.next();
+
+                    log.debug(">>>>>> {}", sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child"));
+
+                    JsonObject sceneInfo = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("PropertyInfo");   // 3-1
+                    JsonObject sceneChild = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child");          // 3-2
+
+                    Iterator<String> sceneIter =  sceneChild.keySet().iterator();
+
+                    JsonArray reportListItems = new JsonArray();
+
+                    JsonArray reportArr  = new JsonArray();
+                    JsonObject reportObj = new JsonObject();
+
+                    while (sceneIter.hasNext()){
+                        JsonObject scarch = sceneChild.getAsJsonObject(sceneIter.next()).getAsJsonObject("PropertyInfo");
+
+                        if (scarch.toString().contains("reportListItems")) {
+                            reportObj.addProperty("id", scarch.get("identifier").getAsString());
+                            reportListItems = scarch.getAsJsonArray("reportListItems");
+                        }
+                    }
+
+                    if (reportListItems.size() > 0) {
+                        int k = 1;
+
+                        JsonArray itemsArr = new JsonArray();
+                        for (JsonElement obj : reportListItems) {
+                            JsonObject metaItem = new JsonObject();
+
+                            JsonObject item = obj.getAsJsonObject();
+
+                            metaItem.addProperty("id", item.get("identifier").getAsString());
+                            metaItem.addProperty("priority",k);
+                            metaItem.addProperty("title", item.get("contents").getAsString());
+                            metaItem.addProperty("item", "NONE"); // 협의 필요
+                            itemsArr.add(metaItem);
+                            k++;
+                        }
+
+                        reportObj.add("items", itemsArr);
+                    }
+
+                    String stepName = sceneInfo.get("sceneTitle").getAsString();
+                    int subJobTotal = reportListItems.size();
+
+                    if (Objects.isNull(stepName) || "".equals(stepName)) {
+                        stepName = "기본 단계명";
+                    }
+
+                    if (subJobTotal == 0) {
+                        subJobTotal = 1;
+                    }
+
+                    reportArr.add(reportObj);
+
+                    metaScenesObj.addProperty("id", sceneInfo.get("identifier").getAsString());
+                    metaScenesObj.addProperty("priority", j);
+                    metaScenesObj.addProperty("name", stepName);
+                    metaScenesObj.addProperty("subJobTotal", subJobTotal);
+                    metaScenesObj.add("reportObjects", reportArr);
+
+                    metaScenesArr.add(metaScenesObj);
+                    j++;
+                }
+                metaSceneGroupsObj.add("scenes", metaScenesArr);
+                metaSceneGroupArr.add(metaSceneGroupsObj);
+                i++;
+            }
+
+            taskObj.add("sceneGroups", metaSceneGroupArr);
+
+            log.debug(">>>>> taskObj {}",taskObj);
+
+            meta.add("contents", taskObj);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return meta;
+    }
+
+    private void checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
+        Long maxStorageSize = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+
+        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다.
+        Long workspaceSize = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
+
+        if (Objects.isNull(workspaceSize)) {
+            workspaceSize = 0L;
+        }
+
+        log.debug("{}", maxStorageSize);
+        log.debug("{}", uploadContentSize);
+
+        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
+        Long sumSize = workspaceSize + uploadContentSize;
+
+        log.debug("{}", sumSize);
+
+        // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
+        if (maxStorageSize < sumSize) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        }
+    }
+
+    private void checkLicenseDownload(String workspaceUUID) {
+        // 라이센스 총 다운로드 횟수
+        Integer maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
+
+        // 현재 워크스페이스의 다운로드 횟수
+        Integer sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
+
+        if (Objects.isNull(sumDownload)) {
+            sumDownload = 0;
+        }
+
+        if (maxDownload < sumDownload + 1) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }
+    }
+
+    public String decodeData(String encodeURL){
+        String imgPath = "";
+        try {
+            String decoder = URLDecoder.decode(encodeURL, "UTF-8");
+
+            log.debug("{}", decoder);
+
+            String targetData = AES256EncryptUtils.decryptByBytes("virnect", decoder);
+
+            log.debug("{}", targetData);
+
+            imgPath = getImgPath(targetData);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return imgPath;
+    }
+
+    private String getImgPath(String targetData) {
+
+        String qrString = "";
+
+        try{
+            BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            ImageIO.write(qrImage, "png", os);
+            os.toByteArray();
+
+            qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String imgPath = this.fileUploadService.base64ImageUpload(qrString);
+
+        return imgPath;
     }
 }

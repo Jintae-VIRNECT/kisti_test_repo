@@ -15,11 +15,11 @@ import java.awt.image.BufferedImage;
  * @since 2020.04.09
  */
 public class QRcodeGenerator {
-    private static BufferedImage generateQRCodeImage(String barcodeText, int width, int height) throws Exception {
+    public static BufferedImage generateQRCodeImage(String barcodeText, int width, int height) throws Exception {
         return MatrixToImageWriter.toBufferedImage(new QRCodeWriter().encode(barcodeText, BarcodeFormat.QR_CODE, width, height));
     }
 
-    public static BufferedImage generateEAN13BarcodeImage(String barcodeText, int width, int height) throws Exception {
+    private static BufferedImage generateEAN13BarcodeImage(String barcodeText, int width, int height) throws Exception {
         return MatrixToImageWriter.toBufferedImage(new EAN13Writer().encode(barcodeText, BarcodeFormat.EAN_13, width, height));
     }
 }
