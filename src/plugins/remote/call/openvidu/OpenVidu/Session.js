@@ -15,10 +15,35 @@
  * limitations under the License.
  *
  */
+var __extends =
+  (this && this.__extends) ||
+  (function() {
+    var extendStatics = function(d, b) {
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function(d, b) {
+            d.__proto__ = b
+          }) ||
+        function(d, b) {
+          for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+        }
+      return extendStatics(d, b)
+    }
+    return function(d, b) {
+      extendStatics(d, b)
+      function __() {
+        this.constructor = d
+      }
+      d.prototype =
+        b === null ? Object.create(b) : ((__.prototype = b.prototype), new __())
+    }
+  })()
 exports.__esModule = true
 var Connection_1 = require('./Connection')
 var Filter_1 = require('./Filter')
 var Subscriber_1 = require('./Subscriber')
+var EventDispatcher_1 = require('./EventDispatcher')
 var ConnectionEvent_1 = require('../OpenViduInternal/Events/ConnectionEvent')
 var FilterEvent_1 = require('../OpenViduInternal/Events/FilterEvent')
 var RecordingEvent_1 = require('../OpenViduInternal/Events/RecordingEvent')
@@ -28,8 +53,12 @@ var StreamEvent_1 = require('../OpenViduInternal/Events/StreamEvent')
 var StreamPropertyChangedEvent_1 = require('../OpenViduInternal/Events/StreamPropertyChangedEvent')
 var OpenViduError_1 = require('../OpenViduInternal/Enums/OpenViduError')
 var VideoInsertMode_1 = require('../OpenViduInternal/Enums/VideoInsertMode')
-var EventEmitter = require('wolfy87-eventemitter')
 var platform = require('platform')
+var OpenViduLogger_1 = require('../OpenViduInternal/Logger/OpenViduLogger')
+/**
+ * @hidden
+ */
+var logger = OpenViduLogger_1.OpenViduLogger.getInstance()
 /**
  * Represents a video call. It can also be seen as a videoconference room where multiple users can connect.
  * Participants who publish their videos to a session can be seen by the rest of users connected to that specific session.
@@ -52,50 +81,52 @@ var platform = require('platform')
  * - reconnected
  *
  */
-var Session = /** @class */ (function() {
+var Session = /** @class */ (function(_super) {
+  __extends(Session, _super)
   /**
    * @hidden
    */
   function Session(openvidu) {
+    var _this = _super.call(this) || this
     /**
      * Collection of all StreamManagers of this Session ([[Publisher]] and [[Subscriber]])
      */
-    this.streamManagers = []
+    _this.streamManagers = []
     // This map is only used to avoid race condition between 'joinRoom' response and 'onParticipantPublished' notification
     /**
      * @hidden
      */
-    this.remoteStreamsCreated = {}
+    _this.remoteStreamsCreated = {}
     /**
      * @hidden
      */
-    this.isFirstIonicIosSubscriber = true
+    _this.isFirstIonicIosSubscriber = true
     /**
      * @hidden
      */
-    this.countDownForIonicIosSubscribersActive = true
+    _this.countDownForIonicIosSubscribersActive = true
     /**
      * @hidden
      */
-    this.remoteConnections = {}
+    _this.remoteConnections = {}
     /**
      * @hidden
      */
-    this.startSpeakingEventsEnabled = false
+    _this.startSpeakingEventsEnabled = false
     /**
      * @hidden
      */
-    this.startSpeakingEventsEnabledOnce = false
+    _this.startSpeakingEventsEnabledOnce = false
     /**
      * @hidden
      */
-    this.stopSpeakingEventsEnabled = false
+    _this.stopSpeakingEventsEnabled = false
     /**
      * @hidden
      */
-    this.stopSpeakingEventsEnabledOnce = false
-    this.ee = new EventEmitter()
-    this.openvidu = openvidu
+    _this.stopSpeakingEventsEnabledOnce = false
+    _this.openvidu = openvidu
+    return _this
   }
   /**
    * Connects to the session using `token`. Parameter `metadata` allows you to pass extra data to share with other users when
@@ -124,11 +155,10 @@ var Session = /** @class */ (function() {
    * @returns A Promise to which you must subscribe that is resolved if the the connection to the Session was successful and rejected with an Error object if not
    *
    */
-  Session.prototype.connect = function(token, metadata, iceServer) {
+  Session.prototype.connect = function(token, metadata) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      console.log('[[session connect]] start')
-      _this.processToken(token, iceServer)
+      _this.processToken(token)
       if (_this.openvidu.checkSystemRequirements()) {
         // Early configuration to deactivate automatic subscription to streams
         _this.options = {
@@ -167,20 +197,20 @@ var Session = /** @class */ (function() {
    *
    * The [[Session]] object of the local participant will dispatch a `sessionDisconnected` event.
    * This event will automatically unsubscribe the leaving participant from every Subscriber object of the session (this includes closing the WebRTCPeer connection and disposing all MediaStreamTracks)
-   * and also deletes any HTML video element associated to each Subscriber (only those [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)).
+   * and also deletes any HTML video element associated to each Subscriber (only those [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)).
    * For every video removed, each Subscriber object will dispatch a `videoElementDestroyed` event.
    * Call `event.preventDefault()` upon event `sessionDisconnected` to avoid this behavior and take care of disposing and cleaning all the Subscriber objects yourself.
    * See [[SessionDisconnectedEvent]] and [[VideoElementEvent]] to learn more to learn more.
    *
    * The [[Publisher]] object of the local participant will dispatch a `streamDestroyed` event if there is a [[Publisher]] object publishing to the session.
-   * This event will automatically stop all media tracks and delete any HTML video element associated to it (only those [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)).
+   * This event will automatically stop all media tracks and delete any HTML video element associated to it (only those [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)).
    * For every video removed, the Publisher object will dispatch a `videoElementDestroyed` event.
    * Call `event.preventDefault()` upon event `streamDestroyed` if you want to clean the Publisher object on your own or re-publish it in a different Session (to do so it is a mandatory requirement to call `Session.unpublish()`
    * or/and `Session.disconnect()` in the previous session). See [[StreamEvent]] and [[VideoElementEvent]] to learn more.
    *
    * The [[Session]] object of every other participant connected to the session will dispatch a `streamDestroyed` event if the disconnected participant was publishing.
    * This event will automatically unsubscribe the Subscriber object from the session (this includes closing the WebRTCPeer connection and disposing all MediaStreamTracks)
-   * and also deletes any HTML video element associated to that Subscriber (only those [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)).
+   * and also deletes any HTML video element associated to that Subscriber (only those [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)).
    * For every video removed, the Subscriber object will dispatch a `videoElementDestroyed` event.
    * Call `event.preventDefault()` upon event `streamDestroyed` to avoid this default behavior and take care of disposing and cleaning the Subscriber object yourself.
    * See [[StreamEvent]] and [[VideoElementEvent]] to learn more.
@@ -196,13 +226,13 @@ var Session = /** @class */ (function() {
    * #### Events dispatched
    *
    * The [[Subscriber]] object will dispatch a `videoElementCreated` event once the HTML video element has been added to DOM (only if you
-   * [let OpenVidu take care of the video players](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)). See [[VideoElementEvent]] to learn more.
+   * [let OpenVidu take care of the video players](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)). See [[VideoElementEvent]] to learn more.
    *
    * The [[Subscriber]] object will dispatch a `streamPlaying` event once the remote stream starts playing. See [[StreamManagerEvent]] to learn more.
    *
    * @param stream Stream object to subscribe to
    * @param targetElement HTML DOM element (or its `id` attribute) in which the video element of the Subscriber will be inserted (see [[SubscriberProperties.insertMode]]). If *null* or *undefined* no default video will be created for this Subscriber.
-   * You can always call method [[Subscriber.addVideoElement]] or [[Subscriber.createVideoElement]] to manage the video elements on your own (see [Manage video players](/docs/how-do-i/manage-videos) section)
+   * You can always call method [[Subscriber.addVideoElement]] or [[Subscriber.createVideoElement]] to manage the video elements on your own (see [Manage video players](/en/stable/cheatsheet/manage-videos) section)
    * @param completionHandler `error` parameter is null if `subscribe` succeeds, and is defined if it fails.
    */
   Session.prototype.subscribe = function(
@@ -242,13 +272,11 @@ var Session = /** @class */ (function() {
     } else if (param4) {
       completionHandler = param4
     }
-    console.info('Subscribing to ' + stream.connection.connectionId)
+    logger.info('Subscribing to ' + stream.connection.connectionId)
     stream
       .subscribe()
       .then(function() {
-        console.info(
-          'Subscribed correctly to ' + stream.connection.connectionId,
-        )
+        logger.info('Subscribed correctly to ' + stream.connection.connectionId)
         if (completionHandler !== undefined) {
           completionHandler(undefined)
         }
@@ -304,21 +332,21 @@ var Session = /** @class */ (function() {
    * #### Events dispatched
    *
    * The [[Subscriber]] object will dispatch a `videoElementDestroyed` event for each video associated to it that was removed from DOM.
-   * Only videos [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)) will be automatically removed
+   * Only videos [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)) will be automatically removed
    *
    * See [[VideoElementEvent]] to learn more
    */
   Session.prototype.unsubscribe = function(subscriber) {
     var connectionId = subscriber.stream.connection.connectionId
-    console.info('Unsubscribing from ' + connectionId)
+    logger.info('Unsubscribing from ' + connectionId)
     this.openvidu.sendRequest(
       'unsubscribeFromVideo',
       { sender: subscriber.stream.connection.connectionId },
       function(error, response) {
         if (error) {
-          console.error('Error unsubscribing from ' + connectionId, error)
+          logger.error('Error unsubscribing from ' + connectionId, error)
         } else {
-          console.info('Unsubscribed correctly from ' + connectionId)
+          logger.info('Unsubscribed correctly from ' + connectionId)
         }
         subscriber.stream.disposeWebRtcPeer()
         subscriber.stream.disposeMediaStream()
@@ -384,13 +412,13 @@ var Session = /** @class */ (function() {
    *
    * The [[Publisher]] object of the local participant will dispatch a `streamDestroyed` event.
    * This event will automatically stop all media tracks and delete any HTML video element associated to this Publisher
-   * (only those videos [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)).
+   * (only those videos [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)).
    * For every video removed, the Publisher object will dispatch a `videoElementDestroyed` event.
    * Call `event.preventDefault()` upon event `streamDestroyed` if you want to clean the Publisher object on your own or re-publish it in a different Session.
    *
    * The [[Session]] object of every other participant connected to the session will dispatch a `streamDestroyed` event.
    * This event will automatically unsubscribe the Subscriber object from the session (this includes closing the WebRTCPeer connection and disposing all MediaStreamTracks) and
-   * delete any HTML video element associated to it (only those [created by OpenVidu Browser](/docs/how-do-i/manage-videos/#let-openvidu-take-care-of-the-video-players)).
+   * delete any HTML video element associated to it (only those [created by OpenVidu Browser](/en/stable/cheatsheet/manage-videos/#let-openvidu-take-care-of-the-video-players)).
    * For every video removed, the Subscriber object will dispatch a `videoElementDestroyed` event.
    * Call `event.preventDefault()` upon event `streamDestroyed` to avoid this default behavior and take care of disposing and cleaning the Subscriber object on your own.
    *
@@ -399,27 +427,27 @@ var Session = /** @class */ (function() {
   Session.prototype.unpublish = function(publisher) {
     var stream = publisher.stream
     if (!stream.connection) {
-      console.error(
+      logger.error(
         'The associated Connection object of this Publisher is null',
         stream,
       )
       return
     } else if (stream.connection !== this.connection) {
-      console.error(
+      logger.error(
         'The associated Connection object of this Publisher is not your local Connection.' +
           "Only moderators can force unpublish on remote Streams via 'forceUnpublish' method",
         stream,
       )
       return
     } else {
-      console.info(
+      logger.info(
         'Unpublishing local media (' + stream.connection.connectionId + ')',
       )
       this.openvidu.sendRequest('unpublishVideo', function(error, response) {
         if (error) {
-          console.error(error)
+          logger.error(error)
         } else {
-          console.info('Media unpublished correctly')
+          logger.info('Media unpublished correctly')
         }
       })
       stream.disposeWebRtcPeer()
@@ -455,7 +483,7 @@ var Session = /** @class */ (function() {
   Session.prototype.forceDisconnect = function(connection) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      console.info(
+      logger.info(
         'Forcing disconnect for connection ' + connection.connectionId,
       )
       _this.openvidu.sendRequest(
@@ -463,7 +491,7 @@ var Session = /** @class */ (function() {
         { connectionId: connection.connectionId },
         function(error, response) {
           if (error) {
-            console.error(
+            logger.error(
               'Error forcing disconnect for Connection ' +
                 connection.connectionId,
               error,
@@ -479,7 +507,7 @@ var Session = /** @class */ (function() {
               reject(error)
             }
           } else {
-            console.info(
+            logger.info(
               'Forcing disconnect correctly for Connection ' +
                 connection.connectionId,
             )
@@ -507,13 +535,13 @@ var Session = /** @class */ (function() {
   Session.prototype.forceUnpublish = function(stream) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      console.info('Forcing unpublish for stream ' + stream.streamId)
+      logger.info('Forcing unpublish for stream ' + stream.streamId)
       _this.openvidu.sendRequest(
         'forceUnpublish',
         { streamId: stream.streamId },
         function(error, response) {
           if (error) {
-            console.error(
+            logger.error(
               'Error forcing unpublish for Stream ' + stream.streamId,
               error,
             )
@@ -528,7 +556,7 @@ var Session = /** @class */ (function() {
               reject(error)
             }
           } else {
-            console.info(
+            logger.info(
               'Forcing unpublish correctly for Stream ' + stream.streamId,
             )
             resolve()
@@ -592,14 +620,12 @@ var Session = /** @class */ (function() {
    * See [[EventDispatcher.on]]
    */
   Session.prototype.on = function(type, handler) {
-    this.ee.on(type, function(event) {
-      if (event) {
-        console.info("Event '" + type + "' triggered by 'Session'", event)
-      } else {
-        console.info("Event '" + type + "' triggered by 'Session'")
-      }
-      handler(event)
-    })
+    _super.prototype.onAux.call(
+      this,
+      type,
+      "Event '" + type + "' triggered by 'Session'",
+      handler,
+    )
     if (type === 'publisherStartSpeaking') {
       this.startSpeakingEventsEnabled = true
       // If there are already available remote streams, enable hark 'speaking' event in all of them
@@ -626,14 +652,12 @@ var Session = /** @class */ (function() {
    * See [[EventDispatcher.once]]
    */
   Session.prototype.once = function(type, handler) {
-    this.ee.once(type, function(event) {
-      if (event) {
-        console.info("Event '" + type + "' triggered once by 'Session'", event)
-      } else {
-        console.info("Event '" + type + "' triggered once by 'Session'")
-      }
-      handler(event)
-    })
+    _super.prototype.onceAux.call(
+      this,
+      type,
+      "Event '" + type + "' triggered once by 'Session'",
+      handler,
+    )
     if (type === 'publisherStartSpeaking') {
       this.startSpeakingEventsEnabledOnce = true
       // If there are already available remote streams, enable hark 'speaking' event in all of them once
@@ -660,11 +684,7 @@ var Session = /** @class */ (function() {
    * See [[EventDispatcher.off]]
    */
   Session.prototype.off = function(type, handler) {
-    if (!handler) {
-      this.ee.removeAllListeners(type)
-    } else {
-      this.ee.off(type, handler)
-    }
+    _super.prototype.off.call(this, type, handler)
     if (type === 'publisherStartSpeaking') {
       var remainingStartSpeakingListeners = this.ee.getListeners(type).length
       if (remainingStartSpeakingListeners === 0) {
@@ -702,7 +722,7 @@ var Session = /** @class */ (function() {
     // Connection shouldn't exist
     this.getConnection(response.id, '')
       .then(function(connection) {
-        console.warn(
+        logger.warn(
           'Connection ' + response.id + ' already exists in connections list',
         )
       })
@@ -763,7 +783,7 @@ var Session = /** @class */ (function() {
         ])
       })
       ['catch'](function(openViduError) {
-        console.error(openViduError)
+        logger.error(openViduError)
       })
   }
   /**
@@ -851,7 +871,7 @@ var Session = /** @class */ (function() {
           connection.removeStream(streamId)
         })
         ['catch'](function(openViduError) {
-          console.error(openViduError)
+          logger.error(openViduError)
         })
     }
   }
@@ -871,7 +891,7 @@ var Session = /** @class */ (function() {
    */
   Session.prototype.onNewMessage = function(msg) {
     var _this = this
-    console.info('New signal: ' + JSON.stringify(msg))
+    logger.info('New signal: ' + JSON.stringify(msg))
     var strippedType = msg.type ? msg.type.replace(/^(signal:)/, '') : undefined
     if (msg.from) {
       // Signal sent by other client
@@ -905,7 +925,7 @@ var Session = /** @class */ (function() {
           }
         })
         ['catch'](function(openViduError) {
-          console.error(openViduError)
+          logger.error(openViduError)
         })
     } else {
       // Signal sent by server
@@ -991,7 +1011,7 @@ var Session = /** @class */ (function() {
           ])
         }
       } else {
-        console.error(
+        logger.error(
           "No stream with streamId '" +
             msg.streamId +
             "' found for connection '" +
@@ -1016,7 +1036,7 @@ var Session = /** @class */ (function() {
           callback(connection)
         })
         ['catch'](function(openViduError) {
-          console.error(openViduError)
+          logger.error(openViduError)
         })
     }
   }
@@ -1024,12 +1044,10 @@ var Session = /** @class */ (function() {
    * @hidden
    */
   Session.prototype.recvIceCandidate = function(msg) {
-    console.log(msg)
     var candidate = {
       candidate: msg.candidate,
       component: msg.component,
       foundation: msg.foundation,
-      ip: msg.ip,
       port: msg.port,
       priority: msg.priority,
       protocol: msg.protocol,
@@ -1044,7 +1062,6 @@ var Session = /** @class */ (function() {
         return { candidate: msg.candidate }
       },
     }
-    console.log('candidate::::::::', candidate)
     this.getConnection(
       msg.senderConnectionId,
       'Connection not found for connectionId ' +
@@ -1055,13 +1072,12 @@ var Session = /** @class */ (function() {
         candidate,
     )
       .then(function(connection) {
-        console.log('recvIceCandidate::::::', connection)
         var stream = connection.stream
         stream
           .getWebRtcPeer()
           .addIceCandidate(candidate)
           ['catch'](function(error) {
-            console.error(
+            logger.error(
               'Error adding candidate for ' +
                 stream.streamId +
                 ' stream of endpoint ' +
@@ -1072,14 +1088,14 @@ var Session = /** @class */ (function() {
           })
       })
       ['catch'](function(openViduError) {
-        console.error(openViduError)
+        logger.error(openViduError)
       })
   }
   /**
    * @hidden
    */
   Session.prototype.onSessionClosed = function(msg) {
-    console.info('Session closed: ' + JSON.stringify(msg))
+    logger.info('Session closed: ' + JSON.stringify(msg))
     var s = msg.sessionId
     if (s !== undefined) {
       this.ee.emitEvent('session-closed', [
@@ -1088,14 +1104,14 @@ var Session = /** @class */ (function() {
         },
       ])
     } else {
-      console.warn('Session undefined on session closed', msg)
+      logger.warn('Session undefined on session closed', msg)
     }
   }
   /**
    * @hidden
    */
   Session.prototype.onLostConnection = function(reason) {
-    console.warn('Lost connection in Session ' + this.sessionId)
+    logger.warn('Lost connection in Session ' + this.sessionId)
     if (!!this.sessionId && !this.connection.disposed) {
       this.leave(true, reason)
     }
@@ -1104,7 +1120,7 @@ var Session = /** @class */ (function() {
    * @hidden
    */
   Session.prototype.onRecoveredConnection = function() {
-    console.info('Recovered connection in Session ' + this.sessionId)
+    logger.info('Recovered connection in Session ' + this.sessionId)
     this.reconnectBrokenStreams()
     this.ee.emitEvent('reconnected', [])
   }
@@ -1112,7 +1128,7 @@ var Session = /** @class */ (function() {
    * @hidden
    */
   Session.prototype.onMediaError = function(params) {
-    console.error('Media error: ' + JSON.stringify(params))
+    logger.error('Media error: ' + JSON.stringify(params))
     var err = params.error
     if (err) {
       this.ee.emitEvent('error-media', [
@@ -1121,7 +1137,7 @@ var Session = /** @class */ (function() {
         },
       ])
     } else {
-      console.warn('Received undefined media error. Params:', params)
+      logger.warn('Received undefined media error. Params:', params)
     }
   }
   /**
@@ -1162,7 +1178,7 @@ var Session = /** @class */ (function() {
       connectionId,
       'No connection found for connectionId ' + connectionId,
     ).then(function(connection) {
-      console.info('Filter event dispatched')
+      logger.info('Filter event dispatched')
       var stream = connection.stream
       stream.filter.handlers[response.eventType](
         new FilterEvent_1.FilterEvent(
@@ -1177,14 +1193,14 @@ var Session = /** @class */ (function() {
    * @hidden
    */
   Session.prototype.reconnectBrokenStreams = function() {
-    console.info('Re-establishing media connections...')
+    logger.info('Re-establishing media connections...')
     var someReconnection = false
     // Re-establish Publisher stream
     if (
       !!this.connection.stream &&
       this.connection.stream.streamIceConnectionStateBroken()
     ) {
-      console.warn(
+      logger.warn(
         'Re-establishing Publisher ' + this.connection.stream.streamId,
       )
       this.connection.stream.initWebRtcPeerSend(true)
@@ -1201,7 +1217,7 @@ var Session = /** @class */ (function() {
         !!remoteConnection.stream &&
         remoteConnection.stream.streamIceConnectionStateBroken()
       ) {
-        console.warn(
+        logger.warn(
           'Re-establishing Subscriber ' + remoteConnection.stream.streamId,
         )
         remoteConnection.stream.initWebRtcPeerReceive(true)
@@ -1209,7 +1225,7 @@ var Session = /** @class */ (function() {
       }
     }
     if (!someReconnection) {
-      console.info('There were no media streams in need of a reconnection')
+      logger.info('There were no media streams in need of a reconnection')
     }
   }
   /**
@@ -1224,12 +1240,12 @@ var Session = /** @class */ (function() {
   Session.prototype.leave = function(forced, reason) {
     var _this = this
     forced = !!forced
-    console.info('Leaving Session (forced=' + forced + ')')
+    logger.info('Leaving Session (forced=' + forced + ')')
     if (this.connection) {
       if (!this.connection.disposed && !forced) {
         this.openvidu.sendRequest('leaveRoom', function(error, response) {
           if (error) {
-            console.error(error)
+            logger.error(error)
           }
           _this.openvidu.closeWs()
         })
@@ -1247,16 +1263,14 @@ var Session = /** @class */ (function() {
         sessionDisconnectEvent.callDefaultBehavior()
       }
     } else {
-      console.warn('You were not connected to the session ' + this.sessionId)
+      logger.warn('You were not connected to the session ' + this.sessionId)
     }
   }
   /* Private methods */
   Session.prototype.connectAux = function(token) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      console.log('[[session connect]] connectAux')
       _this.openvidu.startWs(function(error) {
-        console.log('[[session connect]] startWs')
         if (error) {
           reject(error)
         } else {
@@ -1267,9 +1281,7 @@ var Session = /** @class */ (function() {
             metadata: _this.options.metadata ? _this.options.metadata : '',
             secret: _this.openvidu.getSecret(),
             recorder: _this.openvidu.getRecorder(),
-            device: 0,
           }
-          console.log(joinParams)
           _this.openvidu.sendRequest('joinRoom', joinParams, function(
             error,
             response,
@@ -1404,7 +1416,7 @@ var Session = /** @class */ (function() {
       }
     })
   }
-  Session.prototype.processToken = function(token, iceServer) {
+  Session.prototype.processToken = function(token) {
     var match = token.match(
       /^(wss?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/,
     )
@@ -1457,20 +1469,10 @@ var Session = /** @class */ (function() {
             credential: turnCredential,
           },
         ]
-        console.log('STUN/TURN server IP: ' + coturnIp)
-        console.log(
+        logger.log('STUN/TURN server IP: ' + coturnIp)
+        logger.log(
           'TURN temp credentials [' + turnUsername + ':' + turnCredential + ']',
         )
-      }
-      console.log(this.openvidu)
-      console.log(this.openvidu.iceServers)
-      if (iceServer) {
-        this.openvidu.iceServers = iceServer
-        console.log('coturn Server: ', iceServer)
-        // console.log('STUN/TURN server IP: ' + coturnIp)
-        // console.log(
-        //   'TURN temp credentials [' + turnUsername + ':' + turnCredential + ']',
-        // )
       }
       if (role) {
         this.openvidu.role = role
@@ -1479,9 +1481,9 @@ var Session = /** @class */ (function() {
         this.openvidu.webrtcStatsInterval = +webrtcStatsInterval
       }
       if (openviduServerVersion) {
-        console.info('openvidu-server version: ' + openviduServerVersion)
+        logger.info('openvidu-server version: ' + openviduServerVersion)
         if (openviduServerVersion !== this.openvidu.libraryVersion) {
-          console.error(
+          logger.error(
             'OpenVidu Server (' +
               openviduServerVersion +
               ') and OpenVidu Browser (' +
@@ -1491,13 +1493,12 @@ var Session = /** @class */ (function() {
         }
       }
       this.openvidu.wsUri = 'wss://' + url.host + '/openvidu'
-      // this.openvidu.wsUri = 'wss://192.168.6.3:8073/media'
       this.openvidu.httpUri = 'https://' + url.host
     } else {
-      console.error('Token "' + token + '" is not valid')
+      logger.error('Token "' + token + '" is not valid')
     }
   }
   return Session
-})()
+})(EventDispatcher_1.EventDispatcher)
 exports.Session = Session
 //# sourceMappingURL=Session.js.map

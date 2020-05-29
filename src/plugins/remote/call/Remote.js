@@ -1,6 +1,6 @@
 import { OpenVidu } from './openvidu-browser'
-import openviduStore from './OpenviduStore'
-import { addSessionEventListener } from './OpenviduUtils'
+import remoteStore from './RemoteStore'
+import { addSessionEventListener } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 
 export default {
@@ -9,7 +9,7 @@ export default {
     if (!Store) {
       throw new Error('Can not find vuex store')
     } else {
-      Store.registerModule('openvidu', openviduStore)
+      Store.registerModule('remote', remoteStore)
     }
     let OV
 

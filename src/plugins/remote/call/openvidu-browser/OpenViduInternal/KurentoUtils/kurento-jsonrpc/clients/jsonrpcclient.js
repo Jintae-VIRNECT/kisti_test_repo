@@ -1,4 +1,4 @@
-var RpcBuilder = require('../')
+var RpcBuilder = require('..')
 var WebSocketWithReconnection = require('./transports/webSocketWithReconnection')
 Date.now =
   Date.now ||

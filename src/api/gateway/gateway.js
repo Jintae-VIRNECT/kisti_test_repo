@@ -20,14 +20,15 @@ const axios = Axios.create({
     'Content-Type': 'application/json',
     Authorization: `Bearer ${TOKEN}`,
   },
-  baseURL: urls.api[process.env.TARGET_ENV],
+  // baseURL: urls.api[process.env.TARGET_ENV],
+  baseURL: 'https://192.168.6.4:4443',
 })
 
 const URL = {
   /* Account */
-  LOGIN: ['POST', '/auth/signin'],
-  TOKEN: ['POST', '/auth/oauth/token'],
-  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
+  LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
+  TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
+  ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* CONFIGURATION */

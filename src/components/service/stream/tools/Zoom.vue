@@ -1,7 +1,7 @@
 <template>
   <div class="zoom">
     <tool-button
-      :text="$t('상대방 영상 확대/축소')"
+      :text="'상대방 영상 확대/축소'"
       :active="picker"
       :src="require('assets/image/ic_zoom.svg')"
       :activeSrc="require('assets/image/ic_zoom.svg')"
