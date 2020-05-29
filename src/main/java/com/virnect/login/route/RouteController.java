@@ -3,6 +3,7 @@ package com.virnect.login.route;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,16 @@ public class RouteController {
     @RequestMapping("/")
     public String login() {
         return "index";
+    }
+
+    @GetMapping("/find/email")
+    public String userFindEmailRedirect() {
+        return "/find/email";
+    }
+
+    @GetMapping("/find/reset_password")
+    public String userFindPasswordRedirect() {
+        return "/find/reset_password";
     }
 
     @RequestMapping(value = "{_:^(?!api).*$}")
