@@ -17,6 +17,7 @@
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
+    "js-file-download": "^0.4.12",
     "nuxt": "^2.0.0",
     "nuxt-env": "^0.1.0",
     "nuxt-i18n": "^6.6.1"

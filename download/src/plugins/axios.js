@@ -6,7 +6,7 @@ export default function({ app, $axios }, inject) {
   // Create a custom axios instance
   const axios = $axios.create({
     baseURL: app.$env.API_GATEWAY_URL,
-    timeout: app.$env.API_TIMEOUT,
+    // timeout: app.$env.API_TIMEOUT,
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,

@@ -6,5 +6,5 @@ module.exports = {
   /**
    * Download
    */
-  DOWNLOAD: ['GET', '/download/{productName}'],
+  DOWNLOAD: ['GET', '/download/app/{id}'],
 }

@@ -8,9 +8,12 @@
       <p v-html="$t('home.visual.desc')" />
     </div>
     <el-divider />
-    <el-tabs>
+    <el-tabs v-model="activeTab">
+      <!-- remote -->
+      <el-tab-pane name="remote" :label="$t('home.remote')" disabled>
+      </el-tab-pane>
       <!-- make -->
-      <el-tab-pane :label="$t('home.make')">
+      <el-tab-pane name="make" :label="$t('home.make')">
         <el-card>
           <h6 v-html="$t('home.pc')" />
           <h5 v-html="$t('home.windowsInstall')" />
@@ -19,7 +22,7 @@
             {{ `${$t('home.release')}: ${make.release}` }}
           </span>
           <span class="version">{{ make.version }}</span>
-          <el-button type="primary" @click="download(make.downloadUrl)">
+          <el-button type="primary" @click="download(make.appId)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <!-- <el-button type="text" @click="link(make.guideUrl)">
@@ -28,7 +31,7 @@
         </el-card>
       </el-tab-pane>
       <!-- view -->
-      <el-tab-pane :label="$t('home.view')">
+      <el-tab-pane name="view" :label="$t('home.view')">
         <el-card>
           <h6 v-html="$t('home.realwear')" />
           <h5 v-html="$t('home.hmt-1')" />
@@ -37,7 +40,7 @@
             {{ `${$t('home.release')}: ${viewHmt1.release}` }}
           </span>
           <span class="version">{{ viewHmt1.version }}</span>
-          <el-button type="primary" @click="download(viewHmt1.downloadUrl)">
+          <el-button type="primary" @click="download(viewHmt1.appId)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <!-- <el-button type="text" @click="link(viewHmt1.guideUrl)">
@@ -52,50 +55,53 @@
             {{ `${$t('home.release')}: ${viewApp.release}` }}
           </span>
           <span class="version">{{ viewApp.version }}</span>
-          <el-button type="primary" @click="link(viewApp.downloadUrl)" disabled>
+          <el-button type="primary" @click="link(viewApp.link)" disabled>
             {{ $t('home.downloadLink') }}
           </el-button>
-          <!-- <el-button type="text" @click="link(viewApp.guideUrl)">
+          <!-- <el-button type="text" @click="link(viewApp.link)">
             {{ $t('home.guideDownload') }}
           </el-button> -->
         </el-card>
       </el-tab-pane>
-      <!-- remote -->
-      <el-tab-pane :label="$t('home.remote')" disabled> </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
-const downloadApi = `${urls.api[process.env.TARGET_ENV]}/download/app`
+import fileDownload from 'js-file-download'
 
 export default {
   data() {
     return {
+      activeTab: 'make',
       make: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        downloadUrl: `${downloadApi}/8`,
+        appId: `8`,
         guideUrl: '',
       },
       viewHmt1: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        downloadUrl: `${downloadApi}/1`,
+        appId: `1`,
         guideUrl: '',
       },
       viewApp: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        downloadUrl: '',
+        link: '',
         guideUrl: '',
       },
     }
   },
   methods: {
-    download(url) {
-      window.open(url)
+    async download(id) {
+      const data = await this.$api('DOWNLOAD', {
+        headers: { 'Content-Type': 'application/octet-stream' },
+        route: { id },
+      })
+      console.log(data)
+      // fileDownload(data)
     },
     link(url) {
       window.open(url)
