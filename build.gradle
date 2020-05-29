@@ -23,7 +23,7 @@ ext {
     set('springCloudVersion', "Hoxton.SR1")
 }
 
-ext.profile = (!project.hasProperty('profile') || !profile) ? 'development' : profile
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'develop' : profile
 
 
 node {
