@@ -1,5 +1,10 @@
 package com.virnect.message.global.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.message.global.error.ErrorCode;
+import com.virnect.message.global.error.ErrorResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -28,17 +33,11 @@ import java.util.List;
 @Profile({"local", "develop"})
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfiguration {
+    private final ObjectMapper objectMapper;
     @Bean
-    public List<ResponseMessage> globalResponseMessage() {
-        ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
-        return responseMessages;
-    }
-
-    @Bean
-    public Docket userApi() {
+    public Docket docket() throws JsonProcessingException {
         // API 문서 관련 정보 입력
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .contact(new Contact("이주경", "https://virnect.com", "ljk@vinrect.com"))
@@ -47,11 +46,18 @@ public class SwaggerConfiguration {
                 .title("VIRNECT Message Service API Document.")
                 .license("VIRNECT INC All rights reserved.")
                 .build();
-
+        List<ResponseMessage> responseMessages = new ArrayList<>();
+        for (ErrorCode errorCode : ErrorCode.values()) {
+            responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode()).message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode))).build());
+        }
+        responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
         // API 문서 생성 시 필요한 설정 정보
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.GET, responseMessages)
+                .globalResponseMessage(RequestMethod.POST, responseMessages)
+                .globalResponseMessage(RequestMethod.PUT, responseMessages)
+                .globalResponseMessage(RequestMethod.DELETE, responseMessages)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.message.api"))
                 .paths(PathSelectors.any())

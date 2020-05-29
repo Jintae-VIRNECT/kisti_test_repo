@@ -1,0 +1,11 @@
+RELEASE
+
+New Features
+
+Bug Fixes
+에러 응답 메세지에 서버명 추가
+
+Limitation
+없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
