@@ -9,12 +9,13 @@ export default class EditTaskFrom extends Model {
    */
   constructor({ task, subTasks }) {
     super()
+    this.taskId = task.id
     this.startDate = dayjs.utc(task.schedule[0])
     this.endDate = dayjs.utc(task.schedule[1])
     this.position = task.position
     this.subTaskList = subTasks.map(subTask => {
       return {
-        id: subTask.id,
+        subTaskId: subTask.id,
         name: subTask.name,
         startDate: dayjs.utc(subTask.schedule[0]),
         endDate: dayjs.utc(subTask.schedule[1]),

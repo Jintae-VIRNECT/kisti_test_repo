@@ -94,6 +94,7 @@
     <set-task-manage
       :taskId="activeTask.id"
       :visible.sync="showSetTaskManageModal"
+      @updated="updated"
     />
   </div>
 </template>
@@ -144,6 +145,10 @@ export default {
     edit(task) {
       this.activeTask = task
       this.showSetTaskManageModal = true
+    },
+    updated() {
+      this.showSetTaskManageModal = false
+      this.$emit('updated')
     },
     // 종료
     async close(taskId) {

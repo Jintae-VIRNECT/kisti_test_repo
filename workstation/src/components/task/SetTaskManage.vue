@@ -233,7 +233,7 @@ export default {
     },
     async update() {
       const form = new EditTaskFrom({
-        task: this.mainForm,
+        task: { id: this.taskId, ...this.mainForm },
         subTasks: this.subForm,
       })
       try {
