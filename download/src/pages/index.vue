@@ -19,7 +19,7 @@
             {{ `${$t('home.release')}: ${make.release}` }}
           </span>
           <span class="version">{{ make.version }}</span>
-          <el-button type="primary" @click="download(make.productName)">
+          <el-button type="primary" @click="download(make.downloadUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <!-- <el-button type="text" @click="link(make.guideUrl)">
@@ -37,7 +37,7 @@
             {{ `${$t('home.release')}: ${viewHmt1.release}` }}
           </span>
           <span class="version">{{ viewHmt1.version }}</span>
-          <el-button type="primary" @click="download(viewHmt1.productName)">
+          <el-button type="primary" @click="download(viewHmt1.downloadUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <!-- <el-button type="text" @click="link(viewHmt1.guideUrl)">
@@ -67,7 +67,8 @@
 </template>
 
 <script>
-// import api from '@/api/gateway'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+const downloadApi = `${urls.api[process.env.TARGET_ENV]}/download/app`
 
 export default {
   data() {
@@ -75,29 +76,26 @@ export default {
       make: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        productName: 'make',
+        downloadUrl: `${downloadApi}/8`,
         guideUrl: '',
       },
       viewHmt1: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        productName: 'view',
+        downloadUrl: `${downloadApi}/1`,
         guideUrl: '',
       },
       viewApp: {
         release: '2020.02.02',
         version: 'v.1.0.1',
-        downloadUrl: 'view',
+        downloadUrl: '',
         guideUrl: '',
       },
     }
   },
   methods: {
-    async download(productName) {
-      const data = await this.$api('DOWNLOAD', {
-        route: { productName },
-      })
-      window.open(data)
+    download(url) {
+      window.open(url)
     },
     link(url) {
       window.open(url)
