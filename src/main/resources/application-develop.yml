@@ -61,6 +61,7 @@ spring:
             - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "ADMIN_SERVER"
                 preLogger: true
                 postLogger: true
 
