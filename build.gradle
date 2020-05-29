@@ -73,6 +73,9 @@ dependencies {
     // QR
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'com.google.zxing:javase:3.4.0'
+
+    // aws s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
 }
 
 test {

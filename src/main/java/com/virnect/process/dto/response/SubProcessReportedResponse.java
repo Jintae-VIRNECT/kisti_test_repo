@@ -13,25 +13,25 @@ import java.time.LocalDateTime;
 @Setter
 public class SubProcessReportedResponse {
     @NotBlank
-    @ApiModelProperty(value = "공정식별자", notes = "공정식별자(UUID)", example = "1")
-    private final long processId;
+    @ApiModelProperty(value = "작업 식별자", notes = "작업 식별자(UUID)", example = "1")
+    private final long taskId;
 
     @NotBlank
-    @ApiModelProperty(value = "공정명", notes = "공정명", position = 1, example = "공정이름")
-    private final String processName;
+    @ApiModelProperty(value = "작업명", notes = "작업명", position = 1, example = "작업이름")
+    private final String taskName;
 
     @NotBlank
-    @ApiModelProperty(value = "세부공정식별자", notes = "세부공정식별자", position = 2, example = "1")
-    private final long subProcessId;
+    @ApiModelProperty(value = "세부 작업 식별자", notes = "세부 작업 식별자", position = 2, example = "1")
+    private final long subTaskId;
 
     @NotBlank
-    @ApiModelProperty(value = "세부공정명", notes = "세부공정명(씬그룹명)", position = 3, example = "자제 절단")
-    private final String name;
+    @ApiModelProperty(value = "세부 작업명", notes = "세부 작업명(씬그룹명)", position = 3, example = "자제 절단")
+    private final String subTaskName;
 
-    @ApiModelProperty(value = "세부 공정 상태", notes = "세부 공정의 작업진행 상태", position = 4, example = "progress")
+    @ApiModelProperty(value = "세부 작업 상태", notes = "세부 작업의 작업진행 상태", position = 4, example = "progress")
     private final Conditions conditions;
 
-    @ApiModelProperty(value = "세부 공정 보고일", notes = "세부 공정 작업 보고일", position = 5, example = "2020-01-16 14:14:02")
+    @ApiModelProperty(value = "세부 작업 보고일", notes = "세부 작업 작업 보고일", position = 5, example = "2020-01-16 14:14:02")
     private final LocalDateTime reportedDate;
 
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 6, example = "498b1839dc29ed7bb2ee90ad6985c608")
@@ -44,11 +44,11 @@ public class SubProcessReportedResponse {
     private String workerProfile;
 
     @Builder
-    public SubProcessReportedResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, Conditions conditions, LocalDateTime reportedDate, String workerUUID, String workerName, String workerProfile) {
-        this.processId = processId;
-        this.processName = processName;
-        this.subProcessId = subProcessId;
-        this.name = name;
+    public SubProcessReportedResponse(@NotBlank long taskId, @NotBlank String taskName, @NotBlank long subTaskId, @NotBlank String subTaskName, Conditions conditions, LocalDateTime reportedDate, String workerUUID, String workerName, String workerProfile) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.subTaskId = subTaskId;
+        this.subTaskName = subTaskName;
         this.conditions = conditions;
         this.reportedDate = reportedDate;
         this.workerUUID = workerUUID;

@@ -41,7 +41,7 @@ public class SwaggerConfiguration {
     public Docket processApi() throws JsonProcessingException {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .contact(new Contact("허지용", "https://virnect.com", "jiyong.heo@virnect.com"))
-                .description("공정 서버 API 정보 입니다.")
+                .description("작업 서버 API 정보 입니다.")
                 .version("v0.0.1")
                 .title("VIRNECT PRODUCT - Process Service API Document.")
                 .license("VIRNECT INC All rights reserved.")

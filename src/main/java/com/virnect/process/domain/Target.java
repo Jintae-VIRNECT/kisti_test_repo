@@ -34,14 +34,18 @@ public class Target extends BaseTimeEntity {
     @Column(name = "data", unique = true)
     private String data;
 
+    @Column(name = "img_path")
+    private String imgPath;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id")
     private Process process;
 
     @Builder
-    public Target(TargetType type, String data, Process process) {
+    public Target(TargetType type, String data, Process process, String imgPath) {
         this.type = type;
         this.data = data;
+        this.imgPath = imgPath;
         this.process = process;
     }
 
@@ -51,6 +55,7 @@ public class Target extends BaseTimeEntity {
                 "id=" + id +
                 ", type=" + type +
                 ", data='" + data + '\'' +
+                ", imgPath='" + imgPath + '\'' +
 //                ", process=" + process +  // 무한 toString 방지
                 '}';
     }

@@ -10,8 +10,8 @@ import javax.validation.constraints.NotBlank;
 public class SubProcessAssignedResponse {
 
     @NotBlank
-    @ApiModelProperty(value = "세부공정식별자", notes = "세부공정식별자", example = "1")
-    private final long subProcessId;
+    @ApiModelProperty(value = "세부작업식별자", notes = "세부작업식별자", example = "1")
+    private final long subTaskId;
 
     @NotBlank
     @ApiModelProperty(value = "작업자 식별자", notes = "작업자의 식별자(UUID)", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
@@ -26,8 +26,8 @@ public class SubProcessAssignedResponse {
     private String workerProfile;
 
     @Builder
-    public SubProcessAssignedResponse(@NotBlank long subProcessId, @NotBlank String workerUUID, @NotBlank String workerName, @NotBlank String workerProfile) {
-        this.subProcessId = subProcessId;
+    public SubProcessAssignedResponse(@NotBlank long subTaskId, @NotBlank String workerUUID, @NotBlank String workerName, @NotBlank String workerProfile) {
+        this.subTaskId = subTaskId;
         this.workerUUID = workerUUID;
         this.workerName = workerName;
         this.workerProfile = workerProfile;

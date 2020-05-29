@@ -12,6 +12,9 @@ public enum SearchType {
     SUBPROCESS_NAME,
     JOB_NAME,
     USER_NAME,
+    TASK_NAME,
+    SUBTASK_NAME,
+    STEP_NAME,
     NONE;
 
     @Override

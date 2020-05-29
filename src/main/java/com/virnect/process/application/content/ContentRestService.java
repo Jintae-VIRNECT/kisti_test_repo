@@ -1,6 +1,7 @@
 package com.virnect.process.application.content;
 
 import com.virnect.process.domain.YesOrNo;
+import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.global.common.ApiResponse;
@@ -19,7 +20,7 @@ public interface ContentRestService {
     ApiResponse<ContentUploadResponse> taskToContentConvertHandler(@PathVariable("taskId") Long taskId, @RequestParam(value = "userUUID") String userUUID);
 
     @DeleteMapping("/contents")
-    ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(@RequestParam(value = "contentUUID") String[] contentUUIDs, @RequestParam(value = "workerUUID") String workerUUID);
+    ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(ContentDeleteRequest contentDeleteRequest);
 
     @PostMapping("/contents/status")
     ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest);

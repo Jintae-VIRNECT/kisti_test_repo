@@ -14,8 +14,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ProcessRegisterRequest {
+public class ProcessDuplicateRequest {
 
+    @NotNull
+    private Long taskId;
     @NotBlank
     @ApiModelProperty(value = "작업으로 등록될 컨텐츠의 식별자", notes = "컨텐츠를 구별하기 위해 사용되는 식별자", required = true, example = "da67f860-8462-11ea-bc55-0242ac130003")
     private String contentUUID;
@@ -47,7 +49,7 @@ public class ProcessRegisterRequest {
     private String workspaceUUID;
 
     @NotNull
-    @ApiModelProperty(value = "타겟 설정", notes = "작업 타겟 설정(duplicate, transform)", required = true, position = 8, example = "duplicate")
+    @ApiModelProperty(value = "타겟 설정", notes = "작업 타겟 설정(duplicate, closed)", required = true, position = 8, example = "duplicate")
     private String targetSetting;
 
     @NotNull
