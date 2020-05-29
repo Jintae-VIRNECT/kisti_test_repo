@@ -106,10 +106,10 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Integer getWorkspaceDownload(String workspaceUUID) {
+    public Long getWorkspaceDownload(String workspaceUUID) {
         QContent qContent = QContent.content;
 
-        Integer sumDownload = from(qContent)
+        Long sumDownload = from(qContent)
                 .select(qContent.downloadHits.sum())
                 .where(qContent.workspaceUUID.eq(workspaceUUID))
                 .fetchOne();

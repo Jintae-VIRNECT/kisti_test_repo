@@ -1147,13 +1147,13 @@ public class ContentService {
 
     private void checkLicenseDownload(String workspaceUUID) {
         // 라이센스 총 다운로드 횟수
-        Integer maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
+        Long maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
 
         // 현재 워크스페이스의 다운로드 횟수
-        Integer sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
+        Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
 
         if (Objects.isNull(sumDownload)) {
-            sumDownload = 0;
+            sumDownload = 0L;
         }
 
         if (maxDownload < sumDownload + 1) {
