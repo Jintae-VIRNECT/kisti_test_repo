@@ -100,8 +100,7 @@ export default {
         headers: { 'Content-Type': 'application/octet-stream' },
         route: { id },
       })
-      console.log(data)
-      // fileDownload(data)
+      fileDownload(data)
     },
     link(url) {
       window.open(url)
