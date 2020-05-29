@@ -116,5 +116,4 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         return sumDownload;
     }
-
 }
