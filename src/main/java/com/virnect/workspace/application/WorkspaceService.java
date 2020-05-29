@@ -365,24 +365,24 @@ public class WorkspaceService {
         long makePlanCount = 0L;
         long viewPlanCount = 0L;
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-        if(workspaceLicensePlanInfoResponse!=null){
-        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
-            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
-                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                remotePlanCount = licenseInfoResponseList.size();
+        if (workspaceLicensePlanInfoResponse != null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+            for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
+                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
+                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                    remotePlanCount = licenseInfoResponseList.size();
+                }
+                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("MAKE")) {
+                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                    makePlanCount = licenseInfoResponseList.size();
+                }
+                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("VIEW")) {
+                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
+                    viewPlanCount = licenseInfoResponseList.size();
+                }
             }
-            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("MAKE")) {
-                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                makePlanCount = licenseInfoResponseList.size();
-            }
-            if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("VIEW")) {
-                List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                        .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                viewPlanCount = licenseInfoResponseList.size();
-            }
-        }
         }
         return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount, remotePlanCount, makePlanCount, viewPlanCount));
     }
