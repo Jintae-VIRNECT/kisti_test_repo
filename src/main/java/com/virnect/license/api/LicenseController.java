@@ -4,6 +4,7 @@ import com.virnect.license.application.LicenseService;
 import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
+import com.virnect.license.dto.request.LicenseProductAllocateRequest;
 import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.dto.response.biling.ProductInfoListResponse;
@@ -174,6 +175,12 @@ public class LicenseController {
     public ResponseEntity<ApiResponse<ProductTypeInfoListResponse>> getAllProductTypeInRequest() {
         ApiResponse<ProductTypeInfoListResponse> responseMessage = this.licenseService.getAllProductTypeInfo();
         return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "상품 지급", tags = "BillingSystem", hidden = true)
+    @PostMapping("/allocate")
+    public ResponseEntity<ApiResponse<LicenseProductAllocateResponse>> licenseProductAllocateToUser(@RequestBody @Valid LicenseProductAllocateRequest licensePRoductAllocateRequest, BindingResult result) {
+        return null;
     }
 }
 
