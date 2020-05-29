@@ -575,7 +575,6 @@ public class TaskController {
      */
     @ApiOperation(value = "작업편집")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "actorUUID", value = "행위자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
             @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
     @PostMapping("/{taskId}")

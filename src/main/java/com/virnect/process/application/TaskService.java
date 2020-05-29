@@ -400,6 +400,7 @@ public class TaskService {
         }
     }
 
+    // TODO 수정필요.
     @Transactional
     public ApiResponse<ProcessRegisterResponse> duplicateTheProcess(ProcessDuplicateRequest duplicateRequest) {
         // 공정 생성 요청 처리
@@ -468,6 +469,8 @@ public class TaskService {
         // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
         else {
             log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", duplicateRequest.getContentUUID());
+            Process targetProcess = this.processRepository.findById(duplicateRequest.getTaskId())
+                    .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
             ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(duplicateRequest.getContentUUID());
 
             ContentTargetResponse contentTarget = contentTransfrom.getData().getTargets().get(0);
@@ -479,8 +482,11 @@ public class TaskService {
             // 컨텐츠의 전환상태 변경
             this.contentRestService.contentConvertHandler(contentTransfrom.getData().getContentUUID(), YesOrNo.YES);
 
-            // 작업 저장
+            // 새로운 작업 저장
             this.processRepository.save(newProcess);
+
+            // 기존의 작업은 CLOSED
+            this.setClosedProcess(targetProcess.getId(), targetProcess.getContentManagerUUID());
 
             // 컨텐츠의 타겟 정보를 가져옴
             getTargetFromContent(newProcess, contentTarget);

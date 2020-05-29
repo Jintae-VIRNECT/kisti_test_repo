@@ -17,7 +17,7 @@ import java.util.List;
 public class ProcessDuplicateRequest {
 
     @NotNull
-    private String taskId;
+    private Long taskId;
     @NotBlank
     @ApiModelProperty(value = "작업으로 등록될 컨텐츠의 식별자", notes = "컨텐츠를 구별하기 위해 사용되는 식별자", required = true, example = "da67f860-8462-11ea-bc55-0242ac130003")
     private String contentUUID;
