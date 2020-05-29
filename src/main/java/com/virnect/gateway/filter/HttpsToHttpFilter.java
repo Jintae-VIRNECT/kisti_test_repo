@@ -33,6 +33,11 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpRequest.Builder mutate = request.mutate();
         String forwardedUri = request.getURI().toString();
+
+        if(request.getURI().toString().startsWith("/media")){
+            return chain.filter(exchange);
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("[HTTPS REDIRECT TO HTTP]: ").append("[").append(forwardedUri).append("] => ");
         if (forwardedUri != null && forwardedUri.startsWith("https")) {

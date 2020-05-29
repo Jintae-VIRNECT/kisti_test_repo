@@ -61,6 +61,7 @@ spring:
             - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
+                messagePrefix: "ADMIN_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -130,8 +131,8 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: media-server
-          uri: lb:https://media-server
+        - id: remote-service-server
+          uri: lb:https://remote-service-server
           predicates:
             - Path=/media/**
           filters:
@@ -139,20 +140,19 @@ spring:
             - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "MEDIA_SERVER"
+                messagePrefix: "REMOTE_SERVICE_SERVER"
                 preLogger: true
                 postLogger: true
 
         - id: media-server-websocket
-          uri: lb:wss://media-server
+          uri: lb:wss://192.168.6.3:8882
           predicates:
             - Header=Sec-WebSocket-Version, \d+
             - Header=Sec-WebSocket-Key, \s+
             - Header=Upgrade, websocket
             - Path=/media/**
           filters:
-            - StripPrefix=0
-            - RewritePath=/media/(?<segment>.*), /openvidu/$\{segment}
+            - StripPrefix=1
             - name: Logging
               args:
                 messagePrefix: "MEDIA_WEBSOCKET"
