@@ -365,6 +365,7 @@ public class WorkspaceService {
         long makePlanCount = 0L;
         long viewPlanCount = 0L;
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if(workspaceLicensePlanInfoResponse!=null){
         for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
             if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
                 List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
@@ -381,6 +382,7 @@ public class WorkspaceService {
                         .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
                 viewPlanCount = licenseInfoResponseList.size();
             }
+        }
         }
         return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount, remotePlanCount, makePlanCount, viewPlanCount));
     }
