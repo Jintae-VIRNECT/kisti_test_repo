@@ -43,7 +43,7 @@ public class DownloadService {
           this.fileUploadService.upload(file);
           return null;
       }
-    public ResponseEntity<byte[]> downloadApp(String id) {
+    public ResponseEntity<byte[]> downloadApp(String id) throws InterruptedException {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
@@ -51,7 +51,7 @@ public class DownloadService {
         return this.downloadFile(app.getAppUrl());
     }
 
-    public ResponseEntity<byte[]> downloadGuide(String id) {
+    public ResponseEntity<byte[]> downloadGuide(String id) throws InterruptedException {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
@@ -60,10 +60,12 @@ public class DownloadService {
         return this.downloadFile(app.getGuideUrl());
     }
 
-    public ResponseEntity<byte[]> downloadFile(String fileUrl) {
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws InterruptedException {
         HttpHeaders headers = new HttpHeaders();
         byte[] media;
         try {
+            Thread.sleep(20000);
+
             URL url = new URL(fileUrl);
             InputStream inputStream = url.openStream();
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
