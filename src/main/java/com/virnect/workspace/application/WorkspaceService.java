@@ -239,11 +239,6 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-
-                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
-                    memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
-
                     String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
                     if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
@@ -275,10 +270,6 @@ public class WorkspaceService {
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-
-                    SubProcessCountResponse subProcessCountResponse = this.processRestService.getSubProcessCount(userInfoRestResponse.getUuid()).getData();
-                    memberInfoDTO.setCountAssigned(subProcessCountResponse.getCountAssigned());
-                    memberInfoDTO.setCountProgressing(subProcessCountResponse.getCountProgressing());
 
                     String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
