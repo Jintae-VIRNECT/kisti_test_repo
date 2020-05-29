@@ -69,8 +69,14 @@ public class DownloadService {
             media = IOUtils.toByteArray(inputStream);
 
             String fileName = FilenameUtils.getName(fileUrl);
+            String extension = FilenameUtils.getExtension(fileUrl);
 
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            if(extension.equalsIgnoreCase("zip")){
+                headers.setContentType(MediaType.parseMediaType("application/zip"));
+            }else{
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            }
+
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
                     new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
 
