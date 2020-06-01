@@ -44,6 +44,8 @@ public enum ErrorCode {
     ERR_TARGET_REGISTER(5905, "Target Registration failed."),
     ERR_DELETE_PROCES(5906, "Process Deletion failed."),
 
+    ERR_NO_CONTENT_TARGET(5920, "No Content Target Found. Transform failed."),
+    ERR_ALREADY_TRANSFORMED(5921, "This Content is already Transformed. Transform failed"),
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
 
