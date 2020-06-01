@@ -52,33 +52,7 @@ export default {
     // Tooltip,
   },
   data() {
-    return {
-      // chatList: [{
-      //   type: 'me',
-      //   name: '참여자1',
-      //   text: '하이염^^',
-      //   date: new Date()
-      // },{
-      //   type: 'opponent',
-      //   name: '참여자2',
-      //   text: '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
-      //   date: new Date()
-      // }, {
-      //   type: 'opponent',
-      //   name: '참여자2',
-      //   text: '하이하이',
-      //   date: new Date()
-      // }, {
-      //   type: 'opponent',
-      //   name: '참여자3',
-      //   text: '파일 전달합니다.',
-      //   file: [{
-      //     filename: 'Webex.png',
-      //     filesize: '10MB'
-      //   }],
-      //   date: new Date()
-      // }]
-    }
+    return {}
   },
   computed: {
     ...mapGetters(['chatList']),
@@ -86,9 +60,10 @@ export default {
   watch: {
     chatList: {
       handler() {
+        console.log('chatList changed')
         this.$nextTick(() => {
           if (this.$refs['chatListScrollbar']) {
-            this.$refs['chatListScrollbar'].scrollToY(999999999)
+            this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
           }
         })
       },
@@ -98,6 +73,40 @@ export default {
   methods: {},
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.chatList.push(
+      {
+        type: 'me',
+        name: '참여자1',
+        text: '하이염^^',
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '참여자2',
+        text:
+          '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '참여자2',
+        text: '하이하이',
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '참여자3',
+        text: '파일 전달합니다.',
+        file: [
+          {
+            filename: 'Webex.png',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+    )
+  },
 }
 </script>
