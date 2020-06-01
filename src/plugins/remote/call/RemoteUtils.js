@@ -1,7 +1,6 @@
-let $store
+import Store from 'stores/remote/store'
 
-export const addSessionEventListener = (session, Store) => {
-  $store = Store
+export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
     console.log('[session] stream created')
 
@@ -10,10 +9,8 @@ export const addSessionEventListener = (session, Store) => {
       console.log(event.stream.mediaStream)
       // streamObj.stream = subscriber.stream.mediaStream
       // $store.commit('setStream', streamObj)
-      const streamObj = getUserObject(
-        subscriber.stream,
-        Store.getters['roomParticipants'],
-      )
+      const streamObj = getUserObject(subscriber.stream)
+      console.log(streamObj)
       Store.commit('addStream', streamObj)
     })
     console.log(subscriber)
@@ -25,7 +22,9 @@ export const addSessionEventListener = (session, Store) => {
 
   // On every Stream destroyed...
   session.on('streamDestroyed', event => {
-    console.log(event)
+    console.log('[session] stream destroyed')
+    const connectionId = event.stream.connection.connectionId
+    Store.commit('removeStream', connectionId)
   })
 
   session.on('signal:audio', event => {
@@ -41,7 +40,8 @@ export const addSessionEventListener = (session, Store) => {
   })
 }
 
-export const getUserObject = (stream, participants) => {
+export const getUserObject = stream => {
+  const participants = Store.getters['roomParticipants']
   console.log(participants)
   let streamObj
   let connection = stream.connection
@@ -53,11 +53,11 @@ export const getUserObject = (stream, participants) => {
     console.log(uuid)
     return user.uuid === uuid
   })
-  console.log(participant)
 
   streamObj = {
     id: uuid,
     stream: stream.mediaStream,
+    connectionId: stream.connection.connectionId,
     nickname: participant.nickname,
     path: participant.path,
     audio: stream.audioActive,
@@ -92,19 +92,16 @@ export const getStream = async constraints => {
 
 const setStream = (streamObj, subscriber, idx) => {
   console.log('[subscriber] finding stream....')
-  console.log(subscriber)
   if (idx > 10) {
     console.log('스트림을 못찾았습니다.')
     return
   }
   setTimeout(() => {
     if (!subscriber.stream.mediaStream) {
-      console.log(subscriber.stream.mediaStream)
       setStream(streamObj, subscriber, idx++)
     } else {
-      console.log(subscriber.stream.mediaStream)
       streamObj.stream = subscriber.stream.mediaStream
-      $store.commit('setStream', streamObj)
+      Store.commit('setStream', streamObj)
     }
   }, 1000)
 }

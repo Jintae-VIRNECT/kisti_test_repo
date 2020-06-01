@@ -98,7 +98,7 @@ export default {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
     onImageError(event) {
-      console.log(event.target)
+      // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
       event.target.style.display = 'none'
       event.target.classList.add('default')

@@ -2,7 +2,7 @@ const getDefaultState = () => {
   return {
     call: {
       mainView: {
-        // nickName: nickName,
+        // nickname: nickname,
         // userName: name
         // stream: '',
         // uuid: ''
@@ -11,7 +11,7 @@ const getDefaultState = () => {
         // {
         //   uuid: null,
         //   stream: null,
-        //   nickName: '이름',
+        //   nickname: '이름',
         //   sessionName: '세션이름',
         //   path: 'default',
         //   status: 'good',
@@ -52,7 +52,7 @@ const mutations = {
     }
     state.call.participants.push(payload)
     state.chat.chatList.push({
-      text: payload.nickName + '님이 대화에 참여하셨습니다.',
+      text: payload.nickname + '님이 대화에 참여하셨습니다.',
       name: 'people',
       date: new Date(),
       uuid: null,
@@ -86,13 +86,15 @@ const mutations = {
     }
     state.call.participants.splice(idx, 1, updateSession)
   },
-  removeStream(state, payload) {
-    const idx = state.call.participants.findIndex(obj => obj.uuid === payload)
+  removeStream(state, connectionId) {
+    const idx = state.call.participants.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
     if (idx < 0) return
-    let nickName = state.call.participants[idx].nickName
+    let nickname = state.call.participants[idx].nickname
     state.call.participants.splice(idx, 1)
     state.chat.chatList.push({
-      text: nickName + '님이 대화에서 나가셨습니다.',
+      text: nickname + '님이 대화에서 나가셨습니다.',
       name: 'people',
       date: new Date(),
       uuid: null,

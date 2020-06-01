@@ -1,9 +1,10 @@
 import { OpenVidu } from './openvidu'
-import { addSessionEventListener } from './RemoteUtils'
+import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 
 let OV
+let session
 
 const setStream = (uuid, stream) => {
   Store.commit('setStream', {
@@ -12,7 +13,7 @@ const setStream = (uuid, stream) => {
   })
 }
 
-export default {
+const Remote = {
   session: null,
   join: async (roomInfo, account, users, screen) => {
     try {
@@ -25,10 +26,10 @@ export default {
       const rtnValue = await getToken(params)
 
       OV = new OpenVidu()
-      this.session = OV.initSession()
+      console.log(OV)
+      session = OV.initSession()
 
-      addSessionEventListener(this.session, Store)
-      console.log('[session] add event listener')
+      addSessionEventListener(session, Store)
       const metaData = {
         clientData: account.uuid,
         serverData: users,
@@ -47,11 +48,7 @@ export default {
         },
       ]
 
-      await this.session.connect(
-        rtnValue.token,
-        JSON.stringify(metaData),
-        iceServer,
-      )
+      await session.connect(rtnValue.token, JSON.stringify(metaData), iceServer)
       console.log('[session] connection success')
 
       const publisher = OV.initPublisher('', {
@@ -68,18 +65,19 @@ export default {
         console.log('[session] publisher stream created success')
         setStream('main', publisher.stream.getMediaStream())
 
-        Store.commit('setMainView', {
-          stream: publisher.stream.getMediaStream(),
-          // session: session,
-          // connection: publisher.connection,
-          nickname: account.nickname,
-          name: account.name,
-          id: account.uuid,
-        })
+        Store.commit('setMainView', getUserObject(publisher.stream))
+        // {
+        //   stream: publisher.stream.getMediaStream(),
+        //   // session: session,
+        //   // connection: publisher.connection,
+        //   nickname: account.nickname,
+        //   name: account.name,
+        //   uuid: account.uuid,
+        // })
       })
       console.log(publisher.stream.streamId)
 
-      this.session.publish(publisher)
+      session.publish(publisher)
       console.log('[session] init publisher success')
       return true
     } catch (err) {
@@ -90,8 +88,8 @@ export default {
   leave: () => {
     try {
       Store.commit('clearStreams')
-      this.session.disconnect()
-      this.session = null
+      session.disconnect()
+      session = null
     } catch (err) {
       throw err
     }
@@ -107,3 +105,5 @@ export default {
   stop: () => {},
   active: () => {},
 }
+
+export default Remote
