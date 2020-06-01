@@ -78,7 +78,11 @@ public class S3UploadService implements FileUploadService {
         String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
         String uploadFileUrl = putS3(uploadFile, saveFileName);
 
+        // S3에서 다운로드 받은 파일
+        File downlodedFile = new File("upload/" + uploadFile.getName());
+
         removeNewFile(uploadFile);
+        removeNewFile(downlodedFile);
 
         return uploadFileUrl;
     }
@@ -141,6 +145,8 @@ public class S3UploadService implements FileUploadService {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>> {}", convertFile);
+
             return Optional.of(convertFile);
         }
 

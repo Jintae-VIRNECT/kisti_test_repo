@@ -794,7 +794,12 @@ public class ContentService {
 
     private MultipartFile convertFileToMultipart(String fileUrl) {
         File file = new File(fileUrl);
+
+        // S3저장소를 쓰는 경우 S3에서 해당 ares파일을 다운받는다.
+        fileDownloadService.copyFileS3ToLocal(file.getName());
+
         log.debug("MULTIPART FILE SOURCE - fileUrl: {}, path: {}", fileUrl, file.getPath());
+
         try {
             FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
             try (InputStream inputStream = new FileInputStream(file)) {

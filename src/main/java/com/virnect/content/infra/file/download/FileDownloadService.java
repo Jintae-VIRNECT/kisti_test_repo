@@ -12,4 +12,6 @@ import org.springframework.http.ResponseEntity;
  */
 public interface FileDownloadService {
     ResponseEntity<byte[]> fileDownload(final String fileName);
+
+    void copyFileS3ToLocal(String fileName);
 }
