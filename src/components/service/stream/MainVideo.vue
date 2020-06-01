@@ -5,7 +5,7 @@
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
     >
-      <template v-if="(mainView && mainView.stream) || true">
+      <template v-if="mainView && mainView.stream">
         <video
           ref="mainVideo"
           id="main-video"
@@ -35,7 +35,7 @@
       </template>
       <template v-else>
         <div class="main-video__empty">
-          <div class="main-video__empty-inner" v-if="false">
+          <div class="main-video__empty-inner" v-if="true">
             <img src="~assets/image/img_video_connecting.svg" />
             <p>영상 연결 중…</p>
           </div>
