@@ -32,6 +32,7 @@ public class LicenseRestFallbackFactory implements FallbackFactory<LicenseRestSe
             @Override
             public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(String userId, String workspaceId) {
                 MyLicenseInfoListResponse myLicenseInfoListResponse = new MyLicenseInfoListResponse();
+
                 List<MyLicenseInfoResponse> licenseInfoList = new ArrayList<>();
                 myLicenseInfoListResponse.setLicenseInfoList(licenseInfoList);
                 return new ApiResponse<>(myLicenseInfoListResponse);

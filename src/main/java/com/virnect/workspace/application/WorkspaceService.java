@@ -240,7 +240,7 @@ public class WorkspaceService {
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
 
-                   /* String[] licenseProducts = new String[0];
+                    String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
                     if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
@@ -248,7 +248,7 @@ public class WorkspaceService {
                         }).toArray(String[]::new);
                         memberInfoDTO.setLicenseProducts(licenseProducts);
                     }
-                    memberInfoDTO.setLicenseProducts(licenseProducts);*/
+                    memberInfoDTO.setLicenseProducts(licenseProducts);
 
                     memberInfoDTOList.add(memberInfoDTO);
                 }
@@ -272,7 +272,7 @@ public class WorkspaceService {
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
 
-                    /*String[] licenseProducts = new String[0];
+                    String[] licenseProducts = new String[0];
                     MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
                     if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
                         licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
@@ -280,7 +280,7 @@ public class WorkspaceService {
                         }).toArray(String[]::new);
                         memberInfoDTO.setLicenseProducts(licenseProducts);
                     }
-                    memberInfoDTO.setLicenseProducts(licenseProducts);*/
+                    memberInfoDTO.setLicenseProducts(licenseProducts);
 
                     memberInfoDTOList.add(memberInfoDTO);
                 }

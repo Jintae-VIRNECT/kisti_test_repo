@@ -17,7 +17,7 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
  */
 @Configuration
 @EnableFeignClients(basePackages = "com.virnect.workspace.application")
-public class NetflixFeignConfiguration {
+public class FeignConfiguration {
 
     // Feign retry set
     @Bean
