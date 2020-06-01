@@ -20,6 +20,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import ParticipantVideo from './ParticipantVideo'
+import { maxParticipants } from 'utils/callOptions'
 export default {
   name: 'ParticipantList',
   components: {
@@ -27,47 +28,47 @@ export default {
   },
   data() {
     return {
-      max: 3,
-      // participants: [
-      //   {
-      //     uuid: 'main',
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'default',
-      //     status: 'good',
-      //     mic: true,
-      //     audio: true,
-      //   },
-      //   {
-      //     uuid: 2,
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'default',
-      //     status: 'normal',
-      //     mic: true,
-      //     audio: true,
-      //     mute: true,
-      //   },
-      //   {
-      //     uuid: 3,
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'https://virnect.com/favicon.ico',
-      //     status: 'bad',
-      //     mic: false,
-      //     audio: false,
-      //     mute: true,
-      //   },
-      // ],
+      max: maxParticipants,
+      participants: [
+        {
+          uuid: 'main',
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'default',
+          status: 'good',
+          mic: true,
+          audio: true,
+        },
+        {
+          uuid: 2,
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'default',
+          status: 'normal',
+          mic: true,
+          audio: true,
+          mute: true,
+        },
+        {
+          uuid: 3,
+          email: 'wooka@virnect.com',
+          name: 'wooka',
+          nickname: 'wuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwu',
+          device: 'web',
+          role: 'MASTER',
+          path: 'https://virnect.com/favicon.ico',
+          status: 'bad',
+          mic: false,
+          audio: false,
+          mute: true,
+        },
+      ],
     }
   },
   computed: {

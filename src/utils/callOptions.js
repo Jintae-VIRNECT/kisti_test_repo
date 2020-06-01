@@ -1,3 +1,7 @@
+// Service Options
+export const maxParticipants = 3
+
+// Tool Options
 export const color = [
   '#ff4141',
   '#ff843e',
