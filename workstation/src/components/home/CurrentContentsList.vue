@@ -14,7 +14,7 @@
     </el-tabs>
     <!-- 컨텐츠 -->
     <el-table
-      v-if="activeTab === 'contents'"
+      v-show="activeTab === 'contents'"
       :data="contents"
       class="clickable"
       @row-click="moveToContent"
@@ -55,7 +55,7 @@
     </el-table>
     <!-- 작업 -->
     <el-table
-      v-if="activeTab === 'task'"
+      v-show="activeTab === 'task'"
       :data="tasks"
       class="clickable"
       @row-click="moveToTask"

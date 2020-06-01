@@ -23,6 +23,7 @@ export default {
     }
     const data = await api('SUB_TASK_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'reportedDate,desc',
         ...params,
@@ -43,6 +44,7 @@ export default {
     }
     const data = await api('ISSUES_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updated_at,desc',
         ...params,
@@ -63,6 +65,7 @@ export default {
     }
     const data = await api('PAPERS_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'reported_date,desc',
         ...params,
@@ -83,6 +86,7 @@ export default {
     }
     const data = await api('TROUBLES_LIST', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updated_at,desc',
         ...params,

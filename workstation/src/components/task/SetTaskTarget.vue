@@ -8,9 +8,9 @@
   >
     <p>{{ $t('task.target.targetSetting') }}</p>
     <!-- 복제 -->
-    <el-row class="box" type="flex" @click.native="checkDuplicate">
+    <el-row class="box" type="flex" @click.native="checkedDuplicate = true">
       <el-col>
-        <el-checkbox v-model="checkedDuplicate" />
+        <el-checkbox v-model="checkedDuplicate" @click.native.stop />
       </el-col>
       <el-col>
         <h6>{{ $t('task.target.duplicate') }}</h6>
@@ -26,9 +26,9 @@
       </el-col>
     </el-row>
     <!-- 전환 -->
-    <el-row class="box" type="flex" @click.native="checkTransform">
+    <el-row class="box" type="flex" @click.native="checkedTransform = true">
       <el-col>
-        <el-checkbox v-model="checkedTransform" />
+        <el-checkbox v-model="checkedTransform" @click.native.stop />
       </el-col>
       <el-col>
         <h6>{{ $t('task.target.transform') }}</h6>
@@ -74,15 +74,15 @@ export default {
       checkedTransform: false,
     }
   },
+  watch: {
+    checkedDuplicate(val) {
+      this.checkedTransform = !val
+    },
+    checkedTransform(val) {
+      this.checkedDuplicate = !val
+    },
+  },
   methods: {
-    checkDuplicate() {
-      this.checkedDuplicate = !this.checkedDuplicate
-      this.checkedTransform = !this.checkedDuplicate
-    },
-    checkTransform() {
-      this.checkedTransform = !this.checkedTransform
-      this.checkedDuplicate = !this.checkedTransform
-    },
     async submit() {
       const form = this.form
       form.targetSetting = this.checkedDuplicate ? 'duplicate' : 'transform'
