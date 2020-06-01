@@ -93,6 +93,7 @@ export default {
   },
   data() {
     return {
+      taskName: '',
       taskSchedule: [],
       form: {
         schedule: [],

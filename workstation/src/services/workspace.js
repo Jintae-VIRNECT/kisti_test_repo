@@ -5,9 +5,6 @@ import { store } from '@/plugins/context'
 import Workspace from '@/models/workspace/Workspace'
 import Member from '@/models/workspace/Member'
 
-function myWorkspacesGetter() {
-  return store.getters['workspace/myWorkspaces']
-}
 function activeWorkspaceGetter() {
   return store.getters['workspace/activeWorkspace']
 }
@@ -24,12 +21,6 @@ export default {
   watchActiveWorkspace(that, func) {
     const watch = store.watch(activeWorkspaceGetter, func)
     that.$on('hook:beforeDestroy', watch)
-  },
-  /**
-   * 내가 속한 워크스페이스 리스트
-   */
-  getMyWorkspaces() {
-    return myWorkspacesGetter()
   },
   async getWorkspaceInfo(workspaceId) {
     const data = await api('WORKSPACE_INFO', {

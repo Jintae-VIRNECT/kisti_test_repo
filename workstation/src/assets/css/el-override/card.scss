@@ -49,6 +49,9 @@
   }
 }
 // 목록 테이블
+.el-card--big {
+  overflow: visible;
+}
 .el-card--big .el-card__header {
   height: 60px;
   padding-top: 19px;

@@ -62,6 +62,7 @@
     "endSubTasks": "마감된 하위 작업",
     "subTaskCount": "등록된 하위 작업 수",
     "mySubTasks": "내 하위 작업",
+    "subTasksProgressGraph": "하위 작업 진행률 그래프",
     "subTaskColumn": {
       "no": "순번",
       "id": "하위 작업 ID",
@@ -77,6 +78,11 @@
     },
     "dropdown": {
       "subTaskEdit": "하위 작업 편집"
+    },
+    "subTaskTooltip": {
+      "title": "하위 작업 정보",
+      "issue": "하위 작업 이슈 유무",
+      "more": "더보기"
     }
   },
   "subTaskDetail": {
@@ -88,6 +94,7 @@
     "endSteps": "마감된 단계",
     "stepsCount": "등록된 단계 수",
     "mySteps": "내 단계",
+    "stepsProgressGraph": "단계 진행률 그래프",
     "stepsColumn": {
       "no": "순번",
       "id": "단계 ID",
@@ -100,7 +107,10 @@
       "paper": "페이퍼 정보"
     },
     "showIssue": "이슈 보기",
-    "showPaper": "페이퍼 보기"
+    "showPaper": "페이퍼 보기",
+    "stepTooltip": {
+      "title": "단계 정보"
+    }
   },
   "new": {
     "title": "신규 작업 등록",

@@ -68,14 +68,40 @@
       <!-- 단계 리스트 -->
       <el-row>
         <el-card class="el-card--table el-card--big">
-          <div slot="header">
+          <!-- 테이블 -->
+          <div slot="header" v-if="!isGraph">
             <h3>{{ $t('task.subTaskDetail.stepsList') }}</h3>
+            <el-button @click="isGraph = true">
+              <img src="~assets/images/icon/ic-graph.svg" />
+              <span>{{ $t('common.graph') }}</span>
+            </el-button>
             <div class="right">
               <span>{{ $t('task.subTaskDetail.stepsCount') }}</span>
               <span class="num">{{ stepsTotal }}</span>
             </div>
           </div>
-          <el-table ref="table" :data="stepsList" v-loading="loading">
+          <!-- 차트 -->
+          <div slot="header" v-else>
+            <h3>{{ $t('task.subTaskDetail.stepsProgressGraph') }}</h3>
+            <el-button @click="isGraph = false">
+              <img src="~assets/images/icon/ic-list.svg" />
+              <span>{{ $t('common.list') }}</span>
+            </el-button>
+            <div class="right">
+              <span>{{ $t('task.subTaskDetail.stepsCount') }}</span>
+              <span class="num">{{ stepsTotal }}</span>
+            </div>
+          </div>
+
+          <!-- 차트 -->
+          <tasks-list-graph v-if="isGraph" :data="stepsList" type="step" />
+          <!-- 테이블 -->
+          <el-table
+            v-if="!isGraph"
+            ref="table"
+            :data="stepsList"
+            v-loading="loading"
+          >
             <column-default
               :label="$t('task.subTaskDetail.stepsColumn.no')"
               prop="priority"
@@ -157,11 +183,13 @@ import columnMixin from '@/mixins/columns'
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
 import SubTasksList from '@/components/task/SubTasksList'
+import TasksListGraph from '@/components/task/TasksListGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
   components: {
     SubTasksList,
+    TasksListGraph,
   },
   async asyncData({ params }) {
     const promise = {
@@ -183,6 +211,7 @@ export default {
       stepsSearch: '',
       stepsPage: 1,
       loading: false,
+      isGraph: false,
     }
   },
   watch: {

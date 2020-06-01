@@ -1,8 +1,16 @@
+import { store } from '@/plugins/context'
 import { api } from '@/plugins/axios'
 import SubTask from '@/models/task/SubTask'
 import Issue from '@/models/result/Issue'
 import Paper from '@/models/result/Paper'
 import Trouble from '@/models/result/Trouble'
+
+function activeWorkspaceGetter() {
+  return store.getters['workspace/activeWorkspace']
+}
+function myProfileGetter() {
+  return store.getters['auth/myProfile']
+}
 
 export default {
   /**
