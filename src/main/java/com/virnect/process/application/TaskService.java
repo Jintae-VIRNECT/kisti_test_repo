@@ -304,8 +304,11 @@ public class TaskService {
                         this.subProcessRepository.save(subProcess);
                         newProcess.addSubProcess(subProcess);
 
-                        // SubProcess 에 job 정보 추가
-                        addJobToSubProcess(sceneGroup, subProcess, newProcess);
+                        // SceneGroup(subTask)에 Job(Step)이 있을 경우
+                        if (sceneGroup.getJobTotal() > 0) {
+                            // SubProces 에 job 정보 추가
+                            addJobToSubProcess(sceneGroup, subProcess, newProcess);
+                        }
                     });
         } catch (Exception e) {
             e.printStackTrace();
@@ -364,14 +367,11 @@ public class TaskService {
      */
     private void addJobToReport(ContentRestDto.Scene scene, Job job, Process newProcess) {
         try {
-            log.info(">>>>>>>>>>>>>>> scene {}", scene);
-            log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
-
             // 널체크 추가..
             if (scene.getReportObjects() != null) {
                 scene.getReportObjects().forEach(reportObject -> {
                     log.info(">>>>>>>>>>>>>>> reportObject.getItems() {}", reportObject.getItems());
-                    // Item이 잇다면 (널 체크 추가)
+                    // Item이 있다면 (널 체크 추가)
                     if (reportObject.getItems() != null) {
                         Report report = new Report();
                         reportObject.getItems().forEach(reportObjectItem -> {

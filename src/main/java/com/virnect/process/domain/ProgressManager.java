@@ -251,8 +251,9 @@ public class ProgressManager {
     // 세부공정의 공정률
     public static Integer getSubProcessProgressRate(SubProcess subProcess) {
         AtomicInteger rate = new AtomicInteger(0);
+        int count = 0;
+
         if (subProcess.getJobList().size() > 0) {
-            int count = 0;
             // 세부공정들의 공정률을 합산
             for (Job job : subProcess.getJobList()) {
                 rate.set(job.getProgressRate() + rate.get());
@@ -260,6 +261,8 @@ public class ProgressManager {
             }
             // 세부공정들의 통계
             rate.set((int) Math.floor(count == 0 ? 0 : (double) rate.get() / (double) count));
+        } else {    // 단계가 없는 경우
+            rate.set(100);
         }
 
         return rate.get();
