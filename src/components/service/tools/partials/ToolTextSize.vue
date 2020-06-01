@@ -33,7 +33,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { size } from 'utils/toolOption'
+import { size } from 'utils/callOptions'
 
 export default {
   name: 'ToolTextSize',

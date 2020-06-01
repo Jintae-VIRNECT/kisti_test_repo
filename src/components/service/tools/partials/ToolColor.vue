@@ -40,7 +40,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { color } from 'utils/toolOption'
+import { color } from 'utils/callOptions'
 
 export default {
   name: 'ToolLineColor',

@@ -66,25 +66,6 @@ export default {
   },
 
   /* Lifecycles */
-  async created() {
-    // this.updateAccount({
-    //   userId: '123456',
-    //   profile: require('assets/image/profile.png'),
-    //   description: null,
-    //   email: 'remote@remote.com',
-    //   name: '리모트',
-    //   serviceInfo: null,
-    //   userType: 'Manager',
-    //   uuid: null,
-    // })
-    // try {
-    //   const datas = await getAccount()
-    //   console.log(datas)
-    // } catch (err) {
-    //   // 에러처리
-    //   console.error(err)
-    // }
-  },
   mounted() {
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
   },

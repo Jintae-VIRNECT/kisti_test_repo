@@ -7,7 +7,7 @@ function Participant(info) {
   this.nickname = info.nickname
   this.device = info.device
   this.role = info.role
-  this.profile = info.profile
+  this.path = info.path
 }
 
 function getDefaultRoomInfo() {
