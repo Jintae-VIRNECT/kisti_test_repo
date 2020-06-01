@@ -227,7 +227,7 @@ public class WorkspaceService {
 
 
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
+        if (workspaceLicensePlanInfoResponse!= null) {
             worksapcePlanExist = true;
         }
 
