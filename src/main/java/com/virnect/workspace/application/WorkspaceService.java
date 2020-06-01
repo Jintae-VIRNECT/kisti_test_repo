@@ -198,6 +198,8 @@ public class WorkspaceService {
      * @return - 멤버 정보 리스트
      */
     public ApiResponse<MemberListResponse> getMembers(String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest) {
+        boolean worksapcePlanExist = false;
+
         //Pageable로 Sort처리를 할 수 없기때문에 sort값을 제외한 Pageable을 만든다.
         Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
 
@@ -223,6 +225,12 @@ public class WorkspaceService {
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
 
+
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
+            worksapcePlanExist = true;
+        }
+
         //불러온 정보들에서 userId 가지고 페이징 처리를 한다. (+ filter)
         if (!workspaceRoleList.isEmpty()) {
             List<WorkspaceUser> workspaceUsers = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
@@ -232,7 +240,7 @@ public class WorkspaceService {
             Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(workspace, workspaceUsers, workspaceRoleList, newPageable);
             List<WorkspaceUserPermission> filterdWorkspaceUserList = workspaceUserPermissionPage.toList();
 
-            userInfoListRestResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+            for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
                 WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userInfoRestResponse.getUuid());
                 if (filterdWorkspaceUserList.contains(workspaceUserPermission)) {
                     MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
@@ -241,18 +249,20 @@ public class WorkspaceService {
                     memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
 
                     String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-                        licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
-                            return myLicenseInfoResponse.getProductName();
-                        }).toArray(String[]::new);
-                        memberInfoDTO.setLicenseProducts(licenseProducts);
+                    if (worksapcePlanExist) {
+                        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
+                        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+                            licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
+                                return myLicenseInfoResponse.getProductName();
+                            }).toArray(String[]::new);
+                            memberInfoDTO.setLicenseProducts(licenseProducts);
+                        }
                     }
                     memberInfoDTO.setLicenseProducts(licenseProducts);
 
                     memberInfoDTOList.add(memberInfoDTO);
                 }
-            });
+            }
 
             pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
             pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
@@ -264,7 +274,8 @@ public class WorkspaceService {
             Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByWorkspace_UuidAndUserIdIn(workspaceId, userIdList, newPageable);
             List<WorkspaceUser> resultWorkspaceUser = workspaceUserPage.toList();
 
-            userInfoListRestResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+            for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
+
                 WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userInfoRestResponse.getUuid());
                 if (resultWorkspaceUser.contains(workspaceUserPermission.getWorkspaceUser())) {
                     MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
@@ -273,18 +284,20 @@ public class WorkspaceService {
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
 
                     String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-                        licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
-                            return myLicenseInfoResponse.getProductName();
-                        }).toArray(String[]::new);
-                        memberInfoDTO.setLicenseProducts(licenseProducts);
+                    if (worksapcePlanExist) {
+                        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userInfoRestResponse.getUuid()).getData();
+                        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+                            licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
+                                return myLicenseInfoResponse.getProductName();
+                            }).toArray(String[]::new);
+                            memberInfoDTO.setLicenseProducts(licenseProducts);
+                        }
                     }
                     memberInfoDTO.setLicenseProducts(licenseProducts);
 
                     memberInfoDTOList.add(memberInfoDTO);
                 }
-            });
+            }
             pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
             pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
