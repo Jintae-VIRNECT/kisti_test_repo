@@ -4,18 +4,12 @@ import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 
 let OV
-let session
 
-const setStream = (uuid, stream) => {
-  Store.commit('setStream', {
-    uuid: uuid,
-    stream: stream,
-  })
-}
-
-const Remote = {
+const _ = {
   session: null,
-  join: async (roomInfo, account, users, screen) => {
+  publisher: null,
+  subscribers: [],
+  join: async (roomInfo, account, users) => {
     try {
       const params = {
         sessionId: roomInfo.sessionId,
@@ -26,10 +20,9 @@ const Remote = {
       const rtnValue = await getToken(params)
 
       OV = new OpenVidu()
-      console.log(OV)
-      session = OV.initSession()
+      _.session = OV.initSession()
 
-      addSessionEventListener(session, Store)
+      addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: account.uuid,
         serverData: users,
@@ -48,10 +41,14 @@ const Remote = {
         },
       ]
 
-      await session.connect(rtnValue.token, JSON.stringify(metaData), iceServer)
+      await _.session.connect(
+        rtnValue.token,
+        JSON.stringify(metaData),
+        iceServer,
+      )
       console.log('[session] connection success')
 
-      const publisher = OV.initPublisher('', {
+      _.publisher = OV.initPublisher('', {
         audioSource: undefined, // The source of audio. If undefined default microphone
         videoSource: undefined, //screen ? 'screen' : undefined, // The source of video. If undefined default webcam
         publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
@@ -61,23 +58,14 @@ const Remote = {
         insertMode: 'PREPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       })
-      publisher.on('streamCreated', event => {
+      _.publisher.on('streamCreated', event => {
         console.log('[session] publisher stream created success')
-        setStream('main', publisher.stream.getMediaStream())
 
-        Store.commit('setMainView', getUserObject(publisher.stream))
-        // {
-        //   stream: publisher.stream.getMediaStream(),
-        //   // session: session,
-        //   // connection: publisher.connection,
-        //   nickname: account.nickname,
-        //   name: account.name,
-        //   uuid: account.uuid,
-        // })
+        Store.commit('setMainView', getUserObject(_.publisher.stream))
       })
-      console.log(publisher.stream.streamId)
+      console.log(_.publisher.stream.streamId)
 
-      session.publish(publisher)
+      _.session.publish(_.publisher)
       console.log('[session] init publisher success')
       return true
     } catch (err) {
@@ -88,22 +76,53 @@ const Remote = {
   leave: () => {
     try {
       Store.commit('clearStreams')
-      session.disconnect()
-      session = null
+      _.session.disconnect()
+      _.session = null
     } catch (err) {
       throw err
     }
   },
-  sendChat: text => {},
+  sendChat: text => {
+    if (text.trim().length === 0) return
+    _.session.signal({
+      data: text.trim(),
+      to: _.session.connection,
+      type: 'signal:chat',
+    })
+  },
   getDevices: () => {},
   getState: () => {},
-  streamOnOff: active => {},
-  micOnOff: active => {},
-  audioOnOff: (id, statue) => {},
+  streamOnOff: active => {
+    _.publisher.publishVideo(active)
+  },
+  micOnOff: active => {
+    _.publisher.publishAudio(active)
+  },
+  audioOnOff: (id, statue) => {
+    let idx = _.subscribers.findIndex(
+      subscriber => subscriber.id.indexOf(id) > -1,
+    )
+    if (idx < 0) {
+      console.log('can not find user')
+      return
+    }
+    _.subscribers[idx].subscribeToAudio(statue)
+  },
   disconnect: id => {},
   record: () => {},
   stop: () => {},
   active: () => {},
 }
 
-export default Remote
+export const addSubscriber = subscriber => {
+  console.log(subscriber)
+  _.subscribers.push(subscriber)
+}
+
+export const removeSubscriber = streamId => {
+  const idx = _.subscribers.findIndex(user => user.stream.streamId === streamId)
+  if (idx < 0) return
+  _.subscribers.splice(idx, 1)
+}
+
+export default _

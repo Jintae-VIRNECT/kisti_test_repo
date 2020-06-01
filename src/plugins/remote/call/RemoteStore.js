@@ -18,17 +18,15 @@ const getDefaultState = () => {
         // }
       ],
     },
-    chat: {
-      chatList: [
-        {
-          text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
-          name: 'alarm',
-          date: new Date(),
-          uuid: null,
-          type: 'system',
-        },
-      ],
-    },
+    chatList: [
+      {
+        text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
+        name: 'alarm',
+        date: new Date(),
+        uuid: null,
+        type: 'system',
+      },
+    ],
     isBackground: false,
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
@@ -51,7 +49,7 @@ const mutations = {
       return
     }
     state.call.participants.push(payload)
-    state.chat.chatList.push({
+    state.chatList.push({
       text: payload.nickname + '님이 대화에 참여하셨습니다.',
       name: 'people',
       date: new Date(),
@@ -64,7 +62,6 @@ const mutations = {
       obj => obj.uuid === payload.uuid,
     )
     if (idx < 0) return
-    console.log('>>setstream', payload.stream)
     state.call.participants[idx].stream = payload.stream
   },
   updateStreamInfo(state, payload) {
@@ -93,7 +90,7 @@ const mutations = {
     if (idx < 0) return
     let nickname = state.call.participants[idx].nickname
     state.call.participants.splice(idx, 1)
-    state.chat.chatList.push({
+    state.chatList.push({
       text: nickname + '님이 대화에서 나가셨습니다.',
       name: 'people',
       date: new Date(),
@@ -108,15 +105,15 @@ const mutations = {
 
   // chat
   addChat(state, payload) {
-    state.chat.chatList.push(payload)
+    state.chatList.push(payload)
   },
   removeChat(state, payload) {
-    const idx = state.chat.chatList.findIndex(obj => obj.uuid === payload)
+    const idx = state.chatList.findIndex(obj => obj.uuid === payload)
     if (idx < 0) return
-    state.chat.chatList.splice(idx, 1)
+    state.chatList.splice(idx, 1)
   },
   clearChat(state) {
-    state.chat.chatList = []
+    state.chatList = []
   },
   deviceUpdate(state, object) {
     for (let key in object) {
@@ -128,7 +125,7 @@ const mutations = {
 const getters = {
   mainView: state => state.call.mainView,
   participants: state => state.call.participants,
-  chatList: state => state.chat.chatList,
+  chatList: state => state.chatList,
 }
 
 export default {

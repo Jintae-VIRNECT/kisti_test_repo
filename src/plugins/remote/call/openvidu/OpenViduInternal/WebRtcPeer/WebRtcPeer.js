@@ -61,25 +61,8 @@ var WebRtcPeer = /** @class */ (function() {
       this.configuration.iceServers.length > 0
         ? this.configuration.iceServers
         : freeice()
-    // this.pc = new RTCPeerConnection({
-    //   iceServers: this.configuration.iceServers,
-    // })
     this.pc = new RTCPeerConnection({
-      iceServers: [
-        // {
-        //   url: 'stun:stun.l.google.com:19302',
-        // },
-        {
-          url: 'turn:turn.virnectremote.com:3478?transport=udp',
-          username: 'virnectremote',
-          credential: 'qjsprxmflahxm01!',
-        },
-        {
-          url: 'turn:turn.virnectremote.com:3478?transport=tcp',
-          username: 'virnectremote',
-          credential: 'qjsprxmflahxm01!',
-        },
-      ],
+      iceServers: this.configuration.iceServers,
     })
     this.id = configuration.id ? configuration.id : uuid.v4()
     this.pc.onicecandidate = function(event) {

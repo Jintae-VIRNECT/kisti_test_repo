@@ -155,10 +155,10 @@ var Session = /** @class */ (function(_super) {
    * @returns A Promise to which you must subscribe that is resolved if the the connection to the Session was successful and rejected with an Error object if not
    *
    */
-  Session.prototype.connect = function(token, metadata) {
+  Session.prototype.connect = function(token, metadata, iceServers) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      _this.processToken(token)
+      _this.processToken(token, iceServers)
       if (_this.openvidu.checkSystemRequirements()) {
         // Early configuration to deactivate automatic subscription to streams
         _this.options = {
@@ -1417,7 +1417,7 @@ var Session = /** @class */ (function(_super) {
       }
     })
   }
-  Session.prototype.processToken = function(token) {
+  Session.prototype.processToken = function(token, iceServers) {
     var match = token.match(
       /^(wss?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/,
     )
@@ -1474,6 +1474,9 @@ var Session = /** @class */ (function(_super) {
         logger.log(
           'TURN temp credentials [' + turnUsername + ':' + turnCredential + ']',
         )
+      }
+      if (iceServers) {
+        this.openvidu.iceServers = iceServers
       }
       if (role) {
         this.openvidu.role = role

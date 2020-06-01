@@ -1,30 +1,25 @@
 import Store from 'stores/remote/store'
+import { addSubscriber, removeSubscriber } from './Remote'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
     console.log('[session] stream created')
 
-    // let nodeId = event.stream.connection.connectionId
     const subscriber = session.subscribe(event.stream, '', () => {
-      console.log(event.stream.mediaStream)
-      // streamObj.stream = subscriber.stream.mediaStream
-      // $store.commit('setStream', streamObj)
       const streamObj = getUserObject(subscriber.stream)
-      console.log(streamObj)
       Store.commit('addStream', streamObj)
     })
-    console.log(subscriber)
-    subscriber.on('streamPlaying', e => {
-      console.log('[subscriber] stream playing')
-      console.log(e)
-    })
+    addSubscriber(subscriber)
+    // subscriber.on('streamPlaying', e => {
+    //   console.log('[subscriber] stream playing')
+    // })
   })
 
-  // On every Stream destroyed...
   session.on('streamDestroyed', event => {
     console.log('[session] stream destroyed')
     const connectionId = event.stream.connection.connectionId
     Store.commit('removeStream', connectionId)
+    removeSubscriber(event.stream.streamId)
   })
 
   session.on('signal:audio', event => {
@@ -37,20 +32,30 @@ export const addSessionEventListener = session => {
 
   session.on('signal:chat', event => {
     console.log(event)
+    let data = event.data
+    let chat = {
+      text: data.replace(/\</g, '&lt;'),
+      name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
+      date: new Date(),
+      nodeId: event.from.connectionId,
+      type: false,
+    }
+    if (session.connection.connectionId === event.from.connectionId) {
+      // 본인
+      chat.type = 'me'
+    }
+    Store.commit('addChat', chat)
   })
 }
 
 export const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
-  console.log(participants)
   let streamObj
   let connection = stream.connection
 
   let uuid = JSON.parse(connection.data.split('%/%')[0]).clientData
 
   const participant = participants.find(user => {
-    console.log(user)
-    console.log(uuid)
     return user.uuid === uuid
   })
 
@@ -88,20 +93,4 @@ export const getStream = async constraints => {
   } catch (err) {
     console.error(err)
   }
-}
-
-const setStream = (streamObj, subscriber, idx) => {
-  console.log('[subscriber] finding stream....')
-  if (idx > 10) {
-    console.log('스트림을 못찾았습니다.')
-    return
-  }
-  setTimeout(() => {
-    if (!subscriber.stream.mediaStream) {
-      setStream(streamObj, subscriber, idx++)
-    } else {
-      streamObj.stream = subscriber.stream.mediaStream
-      Store.commit('setStream', streamObj)
-    }
-  }, 1000)
 }
