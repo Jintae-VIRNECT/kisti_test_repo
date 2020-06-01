@@ -1281,6 +1281,7 @@ var Session = /** @class */ (function(_super) {
             metadata: _this.options.metadata ? _this.options.metadata : '',
             secret: _this.openvidu.getSecret(),
             recorder: _this.openvidu.getRecorder(),
+            device: 0,
           }
           _this.openvidu.sendRequest('joinRoom', joinParams, function(
             error,
@@ -1492,7 +1493,7 @@ var Session = /** @class */ (function(_super) {
           )
         }
       }
-      this.openvidu.wsUri = 'wss://' + url.host + '/openvidu'
+      this.openvidu.wsUri = 'wss://' + url.host + '/media/websocket'
       this.openvidu.httpUri = 'https://' + url.host
     } else {
       logger.error('Token "' + token + '" is not valid')

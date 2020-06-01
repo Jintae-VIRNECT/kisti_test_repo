@@ -45,7 +45,9 @@ platform['isIonicAndroid'] =
 /**
  * @hidden
  */
-var packageJson = require('../../package.json')
+var packageJson = {
+  version: '2.14.0',
+}
 /**
  * @hidden
  */
@@ -81,7 +83,7 @@ var OpenVidu = /** @class */ (function() {
      * @hidden
      */
     this.ee = new EventEmitter()
-    this.libraryVersion = '2.14.0'
+    this.libraryVersion = packageJson.version
     logger.info("'OpenVidu' initialized")
     logger.info('openvidu-browser version: ' + this.libraryVersion)
     if (platform.os.family === 'iOS' || platform.os.family === 'Android') {
