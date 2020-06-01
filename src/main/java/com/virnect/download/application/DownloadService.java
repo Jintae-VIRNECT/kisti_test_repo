@@ -43,7 +43,7 @@ public class DownloadService {
           this.fileUploadService.upload(file);
           return null;
       }
-    public ResponseEntity<byte[]> downloadApp(String id) throws InterruptedException {
+    public ResponseEntity<byte[]> downloadApp(String id) {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
@@ -51,7 +51,7 @@ public class DownloadService {
         return this.downloadFile(app.getAppUrl());
     }
 
-    public ResponseEntity<byte[]> downloadGuide(String id) throws InterruptedException {
+    public ResponseEntity<byte[]> downloadGuide(String id) {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
@@ -60,24 +60,14 @@ public class DownloadService {
         return this.downloadFile(app.getGuideUrl());
     }
 
-    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws InterruptedException {
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) {
         HttpHeaders headers = new HttpHeaders();
         byte[] media;
         try {
-            Thread.sleep(20000);
-
             URL url = new URL(fileUrl);
             InputStream inputStream = url.openStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            byte[] readBuffer = new byte[1024];
-
-            while (bufferedInputStream.read(readBuffer,0,readBuffer.length)!=-1){
-                byteArrayOutputStream.write(readBuffer);
-            }
-            //media = IOUtils.toByteArray(inputStream);
-            media = byteArrayOutputStream.toByteArray();
+            media = IOUtils.toByteArray(inputStream);
             String fileName = FilenameUtils.getName(fileUrl);
 
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);

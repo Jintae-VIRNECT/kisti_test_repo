@@ -55,7 +55,7 @@ public class DownloadController {
             @ApiImplicitParam(name = "id", value = "어플리케이션 id", dataType = "string", defaultValue = "1", required = true)
     })
     @GetMapping("/app/{id}")
-    public ResponseEntity<byte[]> downloadApp(@PathVariable("id") String id) throws InterruptedException {
+    public ResponseEntity<byte[]> downloadApp(@PathVariable("id") String id) {
         if (!StringUtils.hasText(id)) {
             throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -70,7 +70,7 @@ public class DownloadController {
             @ApiImplicitParam(name = "id", value = "가이드 id", dataType = "string", defaultValue = "1", required = true)
     })
     @GetMapping("/guide/{id}")
-    public ResponseEntity<byte[]> downloadGuide(@PathVariable("id") String id) throws InterruptedException {
+    public ResponseEntity<byte[]> downloadGuide(@PathVariable("id") String id) {
         if (!StringUtils.hasText(id)) {
             throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
