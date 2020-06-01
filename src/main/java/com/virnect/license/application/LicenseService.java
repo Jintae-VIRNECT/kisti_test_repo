@@ -384,17 +384,19 @@ public class LicenseService {
         for (LicenseProduct licenseProduct : licensePlan.getLicenseProductList()) {
             Product product = licenseProduct.getProduct();
             ProductType productType = product.getProductType();
-            licenseProduct.getLicenseList().stream().filter(license -> license.getUserId().equals(userId)).forEach(license -> {
-                MyLicenseInfoResponse licenseInfo = new MyLicenseInfoResponse();
-                licenseInfo.setId(license.getId());
-                licenseInfo.setSerialKey(license.getSerialKey());
-                licenseInfo.setCreatedDate(license.getCreatedDate());
-                licenseInfo.setProductName(product.getName());
-                licenseInfo.setUpdatedDate(license.getUpdatedDate());
-                licenseInfo.setLicenseType(productType.getName());
-                licenseInfo.setStatus(license.getStatus());
-                myLicenseInfoResponseList.add(licenseInfo);
-            });
+            if (licenseProduct.getLicenseList() != null && !licenseProduct.getLicenseList().isEmpty()) {
+                licenseProduct.getLicenseList().stream().filter(license -> license.getUserId().equals(userId)).forEach(license -> {
+                    MyLicenseInfoResponse licenseInfo = new MyLicenseInfoResponse();
+                    licenseInfo.setId(license.getId());
+                    licenseInfo.setSerialKey(license.getSerialKey());
+                    licenseInfo.setCreatedDate(license.getCreatedDate());
+                    licenseInfo.setProductName(product.getName());
+                    licenseInfo.setUpdatedDate(license.getUpdatedDate());
+                    licenseInfo.setLicenseType(productType.getName());
+                    licenseInfo.setStatus(license.getStatus());
+                    myLicenseInfoResponseList.add(licenseInfo);
+                });
+            }
         }
         return new ApiResponse<>(new MyLicenseInfoListResponse(myLicenseInfoResponseList));
     }
