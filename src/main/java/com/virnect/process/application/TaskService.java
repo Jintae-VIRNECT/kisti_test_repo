@@ -146,6 +146,21 @@ public class TaskService {
             log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", registerNewProcess.getContentUUID());
             ApiResponse<ContentInfoResponse> contentTransform = this.contentRestService.getContentInfo(registerNewProcess.getContentUUID());
 
+            log.debug("line 149 : {}", contentTransform.getData());
+            log.debug("line 150 : {}", contentTransform.getData().getTargets());
+
+            ContentInfoResponse contentInfo = contentTransform.getData();
+
+            // 이미 컨텐츠에서 작업으로 변환 된 경우
+            if (YesOrNo.YES.equals(contentInfo.getConverted())) {
+                throw new ProcessServiceException(ErrorCode.ERR_ALREADY_TRANSFORMED);
+            }
+
+            // 컨텐츠의 타겟이 없을 경우
+            if (contentInfo.getTargets().isEmpty()) {
+                throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
+            }
+
             // 컨텐츠의 타겟값을 가져옴
             ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
 
@@ -304,8 +319,11 @@ public class TaskService {
                         this.subProcessRepository.save(subProcess);
                         newProcess.addSubProcess(subProcess);
 
-                        // SubProcess 에 job 정보 추가
-                        addJobToSubProcess(sceneGroup, subProcess, newProcess);
+                        // SceneGroup(subTask)에 Job(Step)이 있을 경우
+                        if (sceneGroup.getJobTotal() > 0) {
+                            // SubProces 에 job 정보 추가
+                            addJobToSubProcess(sceneGroup, subProcess, newProcess);
+                        }
                     });
         } catch (Exception e) {
             e.printStackTrace();
@@ -364,14 +382,11 @@ public class TaskService {
      */
     private void addJobToReport(ContentRestDto.Scene scene, Job job, Process newProcess) {
         try {
-            log.info(">>>>>>>>>>>>>>> scene {}", scene);
-            log.info(">>>>>>>>>>>>>>> scene.getReportObjects() {}", scene.getReportObjects());
-
             // 널체크 추가..
             if (scene.getReportObjects() != null) {
                 scene.getReportObjects().forEach(reportObject -> {
                     log.info(">>>>>>>>>>>>>>> reportObject.getItems() {}", reportObject.getItems());
-                    // Item이 잇다면 (널 체크 추가)
+                    // Item이 있다면 (널 체크 추가)
                     if (reportObject.getItems() != null) {
                         Report report = new Report();
                         reportObject.getItems().forEach(reportObjectItem -> {
@@ -445,7 +460,7 @@ public class TaskService {
                     , duplicateRequest.getWorkspaceUUID()
                     , duplicateRequest.getOwnerUUID());
             try {
-                log.info("CREATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", duplicateRequest.getContentUUID(), contentDuplicate.getData().getContentUUID());
+                log.info("DUPLICATE THE PROCESS - sourceContentUUID : [{}], createContentUUID : [{}]", duplicateRequest.getContentUUID(), contentDuplicate.getData().getContentUUID());
 
                 // 복제된 컨텐츠 식별자 등록
                 newProcess.setContentUUID(contentDuplicate.getData().getContentUUID());
@@ -468,7 +483,7 @@ public class TaskService {
         }
         // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
         else {
-            log.info("CREATE THE PROCESS  - transform sourceContentUUID : [{}]", duplicateRequest.getContentUUID());
+            log.info("DUPLICATE THE PROCESS  - transform sourceContentUUID : [{}]", duplicateRequest.getContentUUID());
             Process targetProcess = this.processRepository.findById(duplicateRequest.getTaskId())
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
             ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(duplicateRequest.getContentUUID());
