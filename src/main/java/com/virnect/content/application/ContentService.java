@@ -185,7 +185,11 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = decodeData(targetData);
+        String imgPath = null;
+
+        if (Objects.nonNull(targetData)) {
+          imgPath = decodeData(targetData);
+        }
 
         Target target = Target.builder()
                 .type(targetType)
@@ -193,6 +197,7 @@ public class ContentService {
                 .data(targetData)
                 .imgPath(imgPath)
                 .build();
+
         content.addTarget(target);
 
         this.targetRepository.save(target);
