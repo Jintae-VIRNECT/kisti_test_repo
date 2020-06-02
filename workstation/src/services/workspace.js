@@ -2,7 +2,7 @@ import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
 // model
-import Workspace from '@/models/workspace/Workspace'
+import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 
 function activeWorkspaceGetter() {
@@ -26,13 +26,7 @@ export default {
     const data = await api('WORKSPACE_INFO', {
       route: { workspaceId },
     })
-    const members = data.workspaceUserInfo.map(user => new Member(user))
-    return {
-      info: new Workspace(data.workspaceInfo),
-      master: members.find(member => member.role === 'MASTER'),
-      managers: members.filter(member => member.role === 'MANAGER'),
-      members: members.filter(member => member.role === 'MEMBER'),
-    }
+    return new WorkspaceInfo(data)
   },
   /**
    * 신규 참여 멤버

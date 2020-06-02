@@ -25,15 +25,15 @@
       <dd class="plans">-</dd>
       <dt>{{ $t('members.card.links') }}</dt>
       <dd class="column-links">
-        <router-link to="/">
+        <router-link to="/contents">
           <img src="~assets/images/icon/ic-contents.svg" />
           <span>{{ $t('members.card.contents') }}</span>
         </router-link>
-        <router-link to="/">
+        <router-link to="/tasks">
           <img src="~assets/images/icon/ic-work.svg" />
           <span>{{ $t('members.card.work') }}</span>
         </router-link>
-        <router-link to="/">
+        <router-link to="/tasks/results">
           <img src="~assets/images/icon/ic-report.svg" />
           <span>{{ $t('members.card.report') }}</span>
         </router-link>

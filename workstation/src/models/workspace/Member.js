@@ -19,6 +19,7 @@ export default class Member extends Model {
     this.createdDate = json.createdDate
     this.updatedDate = json.updatedDate
     this.joinDate = json.joinDate
+    this.licenseProducts = json.licenseProducts
   }
 }
 
