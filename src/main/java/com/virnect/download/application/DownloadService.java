@@ -1,6 +1,5 @@
 package com.virnect.download.application;
 
-import com.netflix.ribbon.proxy.annotation.Http;
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
@@ -13,9 +12,7 @@ import com.virnect.download.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,11 +38,12 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
-      public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
-          this.fileUploadService.upload(file);
-          return null;
-      }
-    public ResponseEntity<byte[]> downloadApp(String id) {
+    public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
+        this.fileUploadService.upload(file);
+        return null;
+    }
+
+    public ResponseEntity<byte[]> downloadApp(String id) throws IOException {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
@@ -51,7 +51,7 @@ public class DownloadService {
         return this.downloadFile(app.getAppUrl());
     }
 
-    public ResponseEntity<byte[]> downloadGuide(String id) {
+    public ResponseEntity<byte[]> downloadGuide(String id) throws IOException {
         App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
@@ -60,23 +60,29 @@ public class DownloadService {
         return this.downloadFile(app.getGuideUrl());
     }
 
-    public ResponseEntity<byte[]> downloadFile(String fileUrl) {
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws IOException {
+        String fileName = FilenameUtils.getName(fileUrl);
         HttpHeaders headers = new HttpHeaders();
         byte[] media;
+        InputStream inputStream = new URL(fileUrl).openStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            URL url = new URL(fileUrl);
-            InputStream inputStream = url.openStream();
+            byte[] readBuffer = new byte[4096];
+            while (inputStream.read(readBuffer, 0, readBuffer.length) != -1) {
+                byteArrayOutputStream.write(readBuffer);
+            }
 
-            media = IOUtils.toByteArray(inputStream);
-            String fileName = FilenameUtils.getName(fileUrl);
-
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
-                    new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
-
+            media = byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
             throw new DownloadException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        } finally {
+            inputStream.close();
+            byteArrayOutputStream.close();
         }
+
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
+                new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(media);
