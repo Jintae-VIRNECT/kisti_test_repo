@@ -3,28 +3,35 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <img
+    <profile class="profile" v-if="!hideProfile"></profile>
+    <!-- <img
       class="profile"
       src="~assets/image/call/chat_img_user.svg"
       v-if="!hideProfile"
-    />
+    /> -->
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
         <div v-if="chat.file && chat.file.length > 0" class="file">
-          <p class="file__name">{{ chat.file[0].filename }}</p>
+          <p class="file__name">
+            {{ chat.file[0].filename }}
+          </p>
           <p class="file__size">{{ chat.file[0].filesize }}</p>
         </div>
         <p
+          v-if="chat.text !== undefined"
           class="text"
           :class="{
             alarm: type === 'system' && chat.name === 'alarm',
             people: type === 'system' && chat.name === 'people',
+            cancel: type === 'system' && chat.name === 'cancel',
+            ar: type === 'system' && chat.name === 'ar',
+            board: type === 'system' && chat.name === 'board',
           }"
           v-html="chat.text"
         ></p>
         <button v-if="chat.file && chat.file.length > 0" class="file__button">
-          다운로드
+          <p class="button__text">다운로드</p>
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
@@ -36,9 +43,12 @@
 </template>
 
 <script>
+import Profile from 'profile'
 export default {
   name: 'ChatItem',
-  components: {},
+  components: {
+    Profile,
+  },
   data() {
     return {}
   },

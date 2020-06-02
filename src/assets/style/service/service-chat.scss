@@ -9,34 +9,97 @@
     // height: calc(100% - 120px);
     height: 100%;
     margin-right: auto;
+    margin-bottom: 0px;
   }
 }
 
 .chat-header {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-  height: 4.286rem;
-  padding: 0.714rem 22px;
+  // height: 4.286rem;
   background-color: $color_chat_header;
   &__title {
-    position: relative;
-    width: fit-content;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.714rem 22px 16px;
     color: rgba($color_text, 0.87);
     font-weight: 500;
-    // &::after {
-    //   content: '';
-    //   position: absolute;
-    //   right: -27px;
-    //   width: 20px;
-    //   height: 20px;
-    //   background: url(~assets/image/call/chat_icn_moreinfor.svg) right no-repeat;
-    // }
+    font-size: 1rem;
+
+    .title-text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
     .show-list {
       margin-left: 0.357rem;
       background: url(~assets/image/call/chat_icn_moreinfor.svg) center/1.429rem
         no-repeat;
 
       @include ir();
+    }
+  }
+  // &__count {
+  //   > p {
+  //     &::before {
+  //       position: absolute;
+  //       top: 0.214rem;
+  //       left: -1.429rem;
+  //       width: 1rem;
+  //       height: 1rem;
+  //       background: url(~assets/image/call/mdpi_icon_userthumb_2.svg) center
+  //         no-repeat;
+  //       content: "";
+  //     }
+  //   }
+  // }
+  &__menu {
+    display: flex;
+    height: 100%;
+
+    .menu-selector {
+      display: flex;
+      flex-grow: 0.5;
+      align-items: center;
+      justify-content: center;
+      height: 2.625rem;
+
+      .text {
+        color: #5f5f5f;
+      }
+    }
+
+    .active {
+      background: rgba(169, 169, 169, 0.2);
+      border-radius: 0px;
+
+      .text {
+        color: rgba(255, 255, 255, 0.87);
+      }
+    }
+
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+
+      margin-right: 0.375rem;
+
+      &.chat {
+        background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
+      }
+      &.file {
+        background: url(~assets/image/call/chat_ic_file_b.svg) center no-repeat;
+      }
+
+      &.active__chat {
+        background: url(~assets/image/call/chat_ic_chat_w.svg) center no-repeat;
+      }
+      &.active__file {
+        background: url(~assets/image/call/chat_ic_file_w.svg) center no-repeat;
+      }
     }
   }
 }
@@ -123,7 +186,7 @@
         border-radius: 7px 7px 0 7px;
         .text {
           color: rgba($color_darkgray_1000, 0.78);
-          white-space: pre-wrap;
+          word-break: break-word;
         }
       }
     }
@@ -132,7 +195,7 @@
       margin: 0.429rem 0 0.571rem;
       color: $color_text_main;
       font-size: 0.8rem;
-      text-align: right;
+      text-align: left;
       opacity: 0.5;
     }
   }
@@ -149,7 +212,7 @@
       border-radius: 50%;
     }
     .chat-item__body {
-      width: 100%;
+      //width: 100%;
       margin-left: 0.714rem;
       .chatbox {
         padding: 7px 0.929rem;
@@ -166,6 +229,7 @@
         }
         .text {
           color: rgba($color_darkgray_1000, 0.78);
+          word-break: break-word;
         }
       }
       .time {
@@ -173,7 +237,7 @@
         margin: 0.429rem 0 0.571rem;
         color: $color_text_main;
         font-size: 0.8rem;
-        text-align: left;
+        text-align: right;
         opacity: 0.5;
       }
 
@@ -189,6 +253,14 @@
     margin: 0.5rem;
     border-radius: 4px;
 
+    .emphasize {
+      width: 20ch;
+      overflow: hidden;
+      color: #6bb4f9;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
     .profile,
     .name {
       display: none;
@@ -197,6 +269,7 @@
       .text {
         color: rgba($color_text_sub, 0.9);
         line-height: 1.57;
+        text-align: center;
         &.alarm {
           transform: translateX(14px);
           &::after {
@@ -205,7 +278,7 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/chat_ic_remote.svg) center
+            background: url(~assets/image/call/mdpi_ic_start_cowork.svg) center
               no-repeat;
             content: "";
           }
@@ -219,6 +292,44 @@
             width: 1rem;
             height: 1rem;
             background: url(~assets/image/call/chat_ic_ppl.svg) center no-repeat;
+            content: "";
+          }
+        }
+        &.ar {
+          transform: translateX(14px);
+          &::after {
+            position: absolute;
+            top: 0.214rem;
+            left: -1.429rem;
+            width: 1rem;
+            height: 1rem;
+            background: url(~assets/image/call/chat_ic_ar.svg) center no-repeat;
+            content: "";
+          }
+        }
+        &.board {
+          transform: translateX(14px);
+          &::after {
+            position: absolute;
+            top: 0.214rem;
+            left: -1.429rem;
+            width: 1rem;
+            height: 1rem;
+            background: url(~assets/image/call/chat_ic_board.svg) center
+              no-repeat;
+            content: "";
+          }
+        }
+        &.cancel {
+          transform: translateX(14px);
+          &::after {
+            position: absolute;
+            top: 0.214rem;
+            left: -1.429rem;
+            width: 1rem;
+            height: 1rem;
+            background: url(~assets/image/call/chat_ic_filecancel.svg) center
+              no-repeat;
             content: "";
           }
         }
@@ -248,18 +359,28 @@
     }
 
     &__size {
-      color: rgba($color_darkgray_1000, 0.78);
-      font-size: 0.857rem;
+      color: rgb(122, 122, 122);
+      font-size: 0.75rem;
     }
 
     &__button {
-      width: calc(100% + 1.857rem);
-      height: 44px;
-      margin: 0 -0.929rem -0.5rem -0.929rem;
-      color: rgba(0, 0, 0, 0.78);
-      font-weight: 500;
-      background-color: transparent;
-      border-top: solid 1px #d8d8d8;
+      // width: calc(100% + 1.857rem);
+      // height: 44px;
+      // margin: 0 -0.929rem -0.5rem -0.929rem;
+      // color: rgba(0, 0, 0, 0.78);
+      // font-weight: 500;
+      // background-color: transparent;
+      // border-top: solid 1px #d8d8d8;
+      width: 10.125rem;
+      height: 2.125rem;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+      .button__text {
+        color: rgba(0, 0, 0, 0.78);
+        font-weight: 500;
+        font-size: 14px;
+        text-align: center;
+      }
     }
   }
 }
@@ -278,6 +399,7 @@
   > .vue-scrollbar__wrapper {
     height: 100%;
     margin-right: auto;
+    margin-bottom: 0px;
     > .vue-scrollbar__area {
       display: flex;
       height: 100%;
@@ -354,4 +476,15 @@
   font-size: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color_primary_700;
+  }
+  &:active {
+    background-color: $color_primary_dark;
+  }
+  &:focus {
+    background-color: $color_primary_dark;
+  }
 }

@@ -43,6 +43,7 @@
         @keydown.shift.enter.exact="newLine()"
         @keydown.enter.exact="doSend($event)"
       />
+
       <button class="chat-input__form-button" @click="doSend()">보내기</button>
     </div>
   </div>
@@ -122,9 +123,9 @@ export default {
       }
       this.$call.sendChat(this.inputText)
 
-      if (this.inputText) {
-        this.addChatItem('me', this.inputText.replace(/</g, '&lt;'))
-      }
+      // if (this.inputText) {
+      //   this.addChatItem('me', this.inputText.replace(/</g, '&lt;'))
+      // }
 
       this.inputText = ''
     },
@@ -217,7 +218,7 @@ export default {
     //console.log(this.$dayjs)
     // const message = `${this.opponent.name || '알수없는 사용자'}님과 통화를 시작합니다.`
     // const message = this.$t('service.chat_call_start', { name: `${this.opponent.name || this.$t('service.chat_anonymous_user')}` })
-    this.addChatItem('system', '알수없는 누군가와 통신하겠소')
+    // this.addChatItem('system', '알수없는 누군가와 통신하겠소')
   },
   beforeDestroy() {
     //this.$remoteSDK.removeMessageListener(this.receiveMessage)
