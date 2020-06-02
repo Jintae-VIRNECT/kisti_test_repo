@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,6 @@ import java.io.IOException;
 public class DownloadController {
     private final DownloadService downloadService;
 
-
-
     @ApiOperation(
             value = "어플리케이션 업로드",
             notes = "어플리케이션 파일을 업로드 합니다."
@@ -44,8 +43,6 @@ public class DownloadController {
         ApiResponse<AppUploadResponse> apiResponse = this.downloadService.uploadFile(file);
         return ResponseEntity.ok(apiResponse);
     }
-
-
 
     @ApiOperation(
             value = "어플리케이션 다운로드",

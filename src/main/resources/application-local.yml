@@ -23,7 +23,7 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
+  upload-path: "app/"
   url: "http://localhost:${server.port}/"
   allow-extension: "exe,apk"
 

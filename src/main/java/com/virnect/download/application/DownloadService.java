@@ -8,7 +8,7 @@ import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.FileUploadService;
+import com.virnect.download.infra.file.S3FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DownloadService {
-    private final FileUploadService fileUploadService;
+    private final S3FileUploadService fileUploadService;
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
@@ -62,30 +59,15 @@ public class DownloadService {
 
     public ResponseEntity<byte[]> downloadFile(String fileUrl) throws IOException {
         String fileName = FilenameUtils.getName(fileUrl);
+
         HttpHeaders headers = new HttpHeaders();
-        byte[] media;
-        InputStream inputStream = new URL(fileUrl).openStream();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try {
-            byte[] readBuffer = new byte[4096];
-            while (inputStream.read(readBuffer, 0, readBuffer.length) != -1) {
-                byteArrayOutputStream.write(readBuffer);
-            }
-
-            media = byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            throw new DownloadException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        } finally {
-            inputStream.close();
-            byteArrayOutputStream.close();
-        }
-
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
                 new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(media);
+                .body(this.fileUploadService.fileDownload(fileName));
     }
 
     public ApiResponse<AppInfoListResponse> getAppList(String productName) {

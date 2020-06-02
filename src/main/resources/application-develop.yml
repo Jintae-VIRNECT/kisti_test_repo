@@ -27,9 +27,9 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
+  upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
-  allow-extension: "exe,apk"
+  allow-extension: "exe,apk,zip"
 
 ## Eureka Server Configuration
 eureka:

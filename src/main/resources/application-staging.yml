@@ -23,9 +23,9 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "/"
+  upload-path: "app/"
   url: "https://file.virnect.com"
-  allow-extension: "exe,apk"
+  allow-extension: "exe,apk,zip"
 
 ## Eureka Server Configuration
 eureka:
