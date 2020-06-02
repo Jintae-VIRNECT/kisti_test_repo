@@ -1290,13 +1290,12 @@ public class TaskService {
         // 공정조회
         Process process = this.processRepository.findById(taskId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        // 마감 상태로 변경
 
-        if (actorUUID.equals(process.getContentManagerUUID())) {
+        if (!actorUUID.equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
         }
 
+        // 마감 상태로 변경
         process.setState(State.CLOSED);
         this.processRepository.save(process);
 
