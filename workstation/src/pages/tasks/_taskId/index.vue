@@ -22,7 +22,9 @@
             <router-link to="/tasks">
               <img src="~assets/images/icon/ic-arrow-back.svg" />
             </router-link>
-            <h3>{{ $t('task.detail.title') }}</h3>
+            <h3>
+              <span>{{ $t('task.detail.title') }}</span>
+            </h3>
             <div class="right">
               <span>
                 {{ $t('task.detail.taskPosition') }} : {{ taskInfo.position }}
@@ -74,7 +76,9 @@
         <el-card class="el-card--table el-card--big">
           <!-- 테이블 -->
           <div slot="header" v-if="!isGraph">
-            <h3>{{ $t('task.detail.subTaskList') }}</h3>
+            <h3>
+              <span>{{ $t('task.detail.subTaskList') }}</span>
+            </h3>
             <el-button @click="isGraph = true">
               <img src="~assets/images/icon/ic-graph.svg" />
               <span>{{ $t('common.graph') }}</span>
@@ -86,7 +90,9 @@
           </div>
           <!-- 차트 -->
           <div slot="header" v-else>
-            <h3>{{ $t('task.detail.subTasksProgressGraph') }}</h3>
+            <h3>
+              <span>{{ $t('task.detail.subTasksProgressGraph') }}</span>
+            </h3>
             <el-button @click="isGraph = false">
               <img src="~assets/images/icon/ic-list.svg" />
               <span>{{ $t('common.list') }}</span>

@@ -9,8 +9,18 @@
   >
     <el-row type="flex">
       <el-col :span="12">
-        <h4 v-if="taskId">{{ $t('task.manage.taskEditNotice') }}</h4>
-        <h4 v-else>{{ $t('task.manage.registerNewTaskInfo') }}</h4>
+        <h4 v-if="taskId">
+          <span>{{ $t('task.manage.taskEditNotice') }}</span>
+          <el-tooltip
+            :content="$t('task.manage.taskEditNoticeDesc')"
+            placement="right"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
+        </h4>
+        <h4 v-else>
+          <span>{{ $t('task.manage.registerNewTaskInfo') }}</span>
+        </h4>
         <el-divider />
         <p>{{ $t('task.manage.registerTaskInfo') }}</p>
         <dl>
@@ -56,7 +66,9 @@
       </el-col>
       <!-- 하위 작업 -->
       <el-col :span="12">
-        <h4>{{ $t('task.manage.subTaskCount') }}</h4>
+        <h4>
+          <span>{{ $t('task.manage.subTaskCount') }}</span>
+        </h4>
         <el-divider />
         <el-collapse v-model="activeSubForms">
           <el-collapse-item

@@ -51,7 +51,9 @@
         <el-card class="el-card--table el-card--big">
           <!-- 테이블 -->
           <div slot="header" v-if="!isGraph">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+            <h3>
+              <span>{{ $t('task.list.allTasksList') }}</span>
+            </h3>
             <el-button @click="isGraph = true">
               <img src="~assets/images/icon/ic-graph.svg" />
               <span>{{ $t('task.list.dailyRateGraph') }}</span>
@@ -63,7 +65,15 @@
           </div>
           <!-- 차트 -->
           <div slot="header" v-else>
-            <h3>{{ $t('task.list.dailyRateGraph') }}</h3>
+            <h3>
+              <span>{{ $t('task.list.dailyRateGraph') }}</span>
+              <el-tooltip
+                :content="$t('task.list.dailyRateGraphDesc')"
+                placement="bottom-start"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
+            </h3>
             <el-button @click="isGraph = false">
               <img src="~assets/images/icon/ic-list.svg" />
               <span>{{ $t('common.list') }}</span>

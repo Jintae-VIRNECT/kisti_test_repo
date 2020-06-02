@@ -13,7 +13,10 @@
     float: left;
     color: $font-color-content;
     font-size: 14px;
-    line-height: 20px;
+    line-height: 1;
+    & > * {
+      vertical-align: middle;
+    }
   }
   & > div > span {
     margin-left: 20px;
@@ -54,8 +57,9 @@
 }
 .el-card--big .el-card__header {
   height: 60px;
-  padding-top: 19px;
-
+  & > div > h3 {
+    line-height: 18px;
+  }
   & > div > button {
     float: left;
     margin: -4px 16px;
@@ -148,7 +152,9 @@
 // 카드 - 정보 테이블
 .el-card--table--info {
   margin-bottom: 40px;
-
+  & > div > h3 {
+    line-height: 18px;
+  }
   .el-card__header {
     height: 48px;
     padding-top: 13px;

@@ -27,7 +27,9 @@
             <router-link :to="`/tasks/${$route.params.taskId}`">
               <img src="~assets/images/icon/ic-arrow-back.svg" />
             </router-link>
-            <h3>{{ $t('task.subTaskDetail.title') }}</h3>
+            <h3>
+              <span>{{ $t('task.subTaskDetail.title') }}</span>
+            </h3>
           </div>
           <sub-tasks-list :data="[subTaskInfo]" @updated="subTaskUpdated" />
         </el-card>
@@ -70,7 +72,9 @@
         <el-card class="el-card--table el-card--big">
           <!-- 테이블 -->
           <div slot="header" v-if="!isGraph">
-            <h3>{{ $t('task.subTaskDetail.stepsList') }}</h3>
+            <h3>
+              <span>{{ $t('task.subTaskDetail.stepsList') }}</span>
+            </h3>
             <el-button @click="isGraph = true">
               <img src="~assets/images/icon/ic-graph.svg" />
               <span>{{ $t('common.graph') }}</span>
@@ -82,7 +86,9 @@
           </div>
           <!-- 차트 -->
           <div slot="header" v-else>
-            <h3>{{ $t('task.subTaskDetail.stepsProgressGraph') }}</h3>
+            <h3>
+              <span>{{ $t('task.subTaskDetail.stepsProgressGraph') }}</span>
+            </h3>
             <el-button @click="isGraph = false">
               <img src="~assets/images/icon/ic-list.svg" />
               <span>{{ $t('common.list') }}</span>

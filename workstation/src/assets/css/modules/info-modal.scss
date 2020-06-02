@@ -43,6 +43,9 @@
   h4 {
     margin-bottom: 16px;
     color: #445168;
+    & > * {
+      vertical-align: middle;
+    }
   }
   dt {
     margin-bottom: 4px;
