@@ -145,8 +145,6 @@ public class S3UploadService implements FileUploadService {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
-            log.debug(">>>>>>>>>>>>>>>>>>>>>>>> {}", convertFile);
-
             return Optional.of(convertFile);
         }
 
