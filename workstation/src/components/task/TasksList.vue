@@ -73,7 +73,7 @@
         <el-dropdown-item @click.native="edit(row)">
           {{ $t('task.list.dropdown.taskEdit') }}
         </el-dropdown-item>
-        <el-dropdown-item @click.native="add(row.id)">
+        <el-dropdown-item @click.native="add(row)">
           {{ $t('task.list.dropdown.taskAdd') }}
         </el-dropdown-item>
         <el-dropdown-item
@@ -92,9 +92,17 @@
       :visible.sync="showTaskTargetInfoModal"
     />
     <set-task-manage
+      :type="taskManageModalType"
       :taskId="activeTask.id"
       :visible.sync="showSetTaskManageModal"
       @updated="updated"
+      @next="taskManageEnded"
+    />
+    <set-task-target
+      type="add"
+      :form="registerTaskForm"
+      :visible.sync="showAddTaskTargetModal"
+      @prev="canceledManageTarget"
     />
   </div>
 </template>
@@ -105,12 +113,14 @@ import { conditions as taskConditions } from '@/models/task/Task'
 import taskService from '@/services/task'
 import TaskTargetInfo from '@/components/task/TaskTargetInfo'
 import SetTaskManage from '@/components/task/SetTaskManage'
+import SetTaskTarget from '@/components/task/SetTaskTarget'
 
 export default {
   mixins: [columnMixin],
   components: {
     TaskTargetInfo,
     SetTaskManage,
+    SetTaskTarget,
   },
   props: {
     data: Array,
@@ -122,6 +132,9 @@ export default {
       activeTask: {},
       showTaskTargetInfoModal: false,
       showSetTaskManageModal: false,
+      showAddTaskTargetModal: false,
+      taskManageModalType: '',
+      registerTaskForm: null,
     }
   },
   computed: {
@@ -144,11 +157,27 @@ export default {
     // 편집
     edit(task) {
       this.activeTask = task
+      this.taskManageModalType = 'edit'
       this.showSetTaskManageModal = true
     },
     updated() {
       this.showSetTaskManageModal = false
       this.$emit('updated')
+    },
+    // 추가 생성
+    add(task) {
+      this.activeTask = task
+      this.taskManageModalType = 'add'
+      this.showSetTaskManageModal = true
+    },
+    taskManageEnded(form) {
+      this.registerTaskForm = form
+      this.showAddTaskTargetModal = true
+      setTimeout(() => (this.showSetTaskManageModal = false), 100)
+    },
+    canceledManageTarget() {
+      this.showSetTaskManageModal = true
+      setTimeout(() => (this.showAddTaskTargetModal = false), 100)
     },
     // 종료
     async close(taskId) {

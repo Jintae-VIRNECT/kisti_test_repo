@@ -126,6 +126,9 @@
     "registerTaskInfo": "작업 정보 등록",
     "taskInfo": "작업 정보",
     "taskEdit": "작업 편집",
+    "taskAdd": "작업 추가 생성",
+    "taskAddNotice": "작업 추가 등록 안내",
+    "taskAddNoticeDesc": "기존 작업에 등록된 정보에 기반해 작업 일정과 담당자를 새롭게 설정하여 일정에 기반한 작업 보고 데이터를 기록합니다.",
     "taskEditNotice": "작업 편집 안내",
     "taskEditNoticeDesc": "설정된 작업 정보를 변경합니다",
     "taskName": "작업 이름",
@@ -154,10 +157,10 @@
       "subTaskUpdateFail": "하위 작업 편집에 실패했습니다. 잠시 후 다시 이용해 주세요."
     }
   },
-  "target": {
+  "newTarget": {
     "targetSetting": "타겟 설정",
-    "contentTarget": "콘텐츠 타겟",
-    "taskTarget": "작업 타겟",
+    "beforeTarget": "콘텐츠 타겟",
+    "afterTarget": "작업 타겟",
     "duplicate": "콘텐츠를 작업으로 복제하여 등록",
     "duplicateDesc": "콘텐츠를 작업 관리 항목으로 복제합니다. <br>복제된 콘텐츠에 새로운 작업 타겟을 발급하여 작업을 관리합니다.",
     "transform": "콘텐츠를 작업으로 전환하여 등록",
@@ -168,6 +171,22 @@
       "registerSuccess": "신규 작업이 등록되었습니다.",
       "registerFail": "작업 등록에 실패했습니다. 잠시 후 다시 이용해 주세요.",
       "registerStroageFail": "스토리지 용량이 부족하여 작업 등록에 실패했습니다. 스토리지 용량을 구매해 주세요."
+    }
+  },
+  "addTarget": {
+    "targetSetting": "작업 타겟 설정",
+    "beforeTarget": "작업 타겟",
+    "afterTarget": "작업 추가 타겟",
+    "duplicate": "새로운 작업 타겟을 발급",
+    "duplicateDesc": "기존 작업에 사용된 콘텐츠를 새로운 작업 콘텐츠로 복제합니다. 복제된 콘텐츠 구성 정보의 새로운 작업 타겟을 발급합니다.",
+    "transform": "기존 작업 타겟을 이용",
+    "transformDesc": "기존 작업은 종료되며 더 이상 작업 보고를 진행하지 않습니다. 새로 등록되는 작업의 보고를 받습니다. 기존 작업의 타겟을 그대로 사용합니다.",
+    "register": "추가 생성",
+    "registerComment": "입력하신 정보로 작업을 추가 생성합니다.",
+    "message": {
+      "registerSuccess": "추가 생성이 완료되었습니다.",
+      "registerFail": "작업 추가 생성에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "registerStroageFail": "스토리지 용량이 부족하여 작업 추가 생성에 실패했습니다. 스토리지 용량을 구매해 주세요."
     }
   },
   "targetInfo": {

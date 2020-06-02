@@ -1,6 +1,7 @@
 export default async function({ req, store, redirect, error }) {
   // nuxt undefined url bug
-  if (req && req.url.match('undefined')) redirect('/')
+  if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
+    redirect('/')
 
   if (process.server) {
     // chrome only

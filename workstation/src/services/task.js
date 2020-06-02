@@ -77,6 +77,15 @@ export default {
     })
   },
   /**
+   * 작업 추가생성
+   * @param {RegisterNewTask} form
+   */
+  async duplicateTask(form) {
+    return await api('TASK_DUPLICATE', {
+      params: form,
+    })
+  },
+  /**
    * 작업 편집
    * @param {taskId} taskId
    */

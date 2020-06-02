@@ -65,6 +65,8 @@ module.exports = {
   TASK_INFO: ['GET', '/tasks/{taskId}'],
   // 작업생성
   TASK_CREATE: ['POST', '/tasks/task'],
+  // 작업 추가생성
+  TASK_DUPLICATE: ['POST', '/tasks/duplicate'],
   // 작업편집
   TASK_UPDATE: ['POST', '/tasks/{taskId}'],
   // 작업삭제

@@ -94,12 +94,14 @@
       @next="taskInfoEnded"
     />
     <set-task-manage
+      type="new"
       :contentInfo="selectedContentInfo"
       :properties="selectedContentProperties"
       :visible.sync="showNewTaskManage"
       @next="taskManageEnded"
     />
     <set-task-target
+      type="new"
       :form="registerTaskForm"
       :visible.sync="showNewTaskTarget"
       @prev="canceledManageTarget"

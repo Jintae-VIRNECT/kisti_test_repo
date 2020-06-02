@@ -2,26 +2,26 @@
   <el-dialog
     id="set-task-target-modal"
     :visible.sync="showMe"
-    :title="$t('task.new.title')"
+    :title="$t(type === 'new' ? 'task.new.title' : 'task.manage.taskAdd')"
     width="580px"
     top="11vh"
   >
-    <p>{{ $t('task.target.targetSetting') }}</p>
+    <p>{{ $t(`${targetI18n}.targetSetting`) }}</p>
     <!-- 복제 -->
     <el-row class="box" type="flex" @click.native="checkedDuplicate = true">
       <el-col>
         <el-checkbox v-model="checkedDuplicate" @click.native.stop />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.duplicate') }}</h6>
-        <p v-html="$t('task.target.duplicateDesc')" />
+        <h6>{{ $t(`${targetI18n}.duplicate`) }}</h6>
+        <p v-html="$t(`${targetI18n}.duplicateDesc`)" />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.contentTarget') }}</h6>
+        <h6>{{ $t(`${targetI18n}.beforeTarget`) }}</h6>
         <i class="circle" />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.taskTarget') }}</h6>
+        <h6>{{ $t(`${targetI18n}.afterTarget`) }}</h6>
         <i class="circle" />
       </el-col>
     </el-row>
@@ -31,19 +31,19 @@
         <el-checkbox v-model="checkedTransform" @click.native.stop />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.transform') }}</h6>
-        <p v-html="$t('task.target.transformDesc')" />
+        <h6>{{ $t(`${targetI18n}.transform`) }}</h6>
+        <p v-html="$t(`${targetI18n}.transformDesc`)" />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.contentTarget') }}</h6>
+        <h6>{{ $t(`${targetI18n}.beforeTarget`) }}</h6>
         <i class="el-icon-close" />
       </el-col>
       <el-col>
-        <h6>{{ $t('task.target.taskTarget') }}</h6>
+        <h6>{{ $t(`${targetI18n}.afterTarget`) }}</h6>
         <i class="circle" />
       </el-col>
     </el-row>
-    <p>{{ $t('task.target.registerComment') }}</p>
+    <p>{{ $t(`${targetI18n}.registerComment`) }}</p>
     <template slot="footer">
       <el-button @click="$emit('prev')">
         {{ $t('common.prev') }}
@@ -53,7 +53,7 @@
         type="primary"
         :disabled="!checkedDuplicate && !checkedTransform"
       >
-        {{ $t('task.target.register') }}
+        {{ $t(`${targetI18n}.register`) }}
       </el-button>
     </template>
   </el-dialog>
@@ -66,6 +66,7 @@ import taskService from '@/services/task'
 export default {
   mixins: [modalMixin],
   props: {
+    type: String,
     form: Object,
   },
   data() {
@@ -73,6 +74,14 @@ export default {
       checkedDuplicate: false,
       checkedTransform: false,
     }
+  },
+  computed: {
+    targetI18n() {
+      return {
+        new: 'task.newTarget',
+        add: 'task.addTarget',
+      }[this.type]
+    },
   },
   watch: {
     checkedDuplicate(val) {
@@ -87,15 +96,20 @@ export default {
       const form = this.form
       form.targetSetting = this.checkedDuplicate ? 'duplicate' : 'transform'
       try {
-        const data = await taskService.createTask(form)
+        const data =
+          this.type === 'new'
+            ? await taskService.createTask(form)
+            : await taskService.duplicateTask(form)
         this.$message.success({
-          message: this.$t('task.target.message.registerSuccess'),
+          message: this.$t(`${this.targetI18n}.message.registerSuccess`),
           showClose: true,
         })
         this.$router.push(`/tasks/${data.taskId}`)
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.target.message.registerFail'),
+          message: /^Error: 4018/.test(e)
+            ? this.$t(`${this.targetI18n}.message.registerStroageFail`)
+            : this.$t(`${this.targetI18n}.message.registerFail`),
           showClose: true,
         })
       }
@@ -149,7 +163,7 @@ export default {
       }
     }
     .el-col:nth-child(n + 3) {
-      flex-basis: 22%;
+      flex-basis: 23%;
       align-self: center;
       text-align: center;
       .el-icon-close {
