@@ -1,6 +1,8 @@
 package com.virnect.content.infra.file.download;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -17,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -27,7 +31,7 @@ import java.io.IOException;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"local", "staging", "production"})
+@Profile({"local", "develop", "staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {
@@ -61,5 +65,30 @@ public class S3FileDownloadService implements FileDownloadService {
             log.error(e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
+    }
+
+    @Override
+    public void copyFileS3ToLocal(String fileName) {
+        try {
+            String resourcePath = "contents/" + fileName;
+            GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
+            S3Object o = amazonS3Client.getObject(getObjectRequest);
+            S3ObjectInputStream s3is = o.getObjectContent();
+
+
+            File file = new File("upload/" + fileName);
+
+            FileOutputStream fos = new FileOutputStream(file);
+            byte[] read_buf = new byte[1024];
+            int read_len = 0;
+            while ((read_len = s3is.read(read_buf)) > 0) {
+                fos.write(read_buf, 0, read_len);
+            }
+            s3is.close();
+            fos.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

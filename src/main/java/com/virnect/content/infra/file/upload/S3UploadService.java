@@ -31,7 +31,7 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "staging", "production"})
+@Profile({"local", "develop", "staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {
@@ -78,7 +78,11 @@ public class S3UploadService implements FileUploadService {
         String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
         String uploadFileUrl = putS3(uploadFile, saveFileName);
 
+        // S3에서 다운로드 받은 파일
+        File downlodedFile = new File("upload/" + uploadFile.getName());
+
         removeNewFile(uploadFile);
+        removeNewFile(downlodedFile);
 
         return uploadFileUrl;
     }

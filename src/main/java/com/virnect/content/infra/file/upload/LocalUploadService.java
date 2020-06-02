@@ -25,9 +25,7 @@ import java.util.Objects;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Local Directory File Upload Service
  */
-@Profile("develop")
 @Slf4j
-@Service
 public class LocalUploadService implements FileUploadService {
     @Value("${upload.dir}")
     private String path;

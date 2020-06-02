@@ -27,9 +27,6 @@ import java.nio.file.Paths;
  */
 
 @Slf4j
-@Profile({"develop"})
-@Component
-@RequiredArgsConstructor
 public class LocalFileDownloadService implements FileDownloadService {
 
     @Value("${upload.dir}")
@@ -60,4 +57,7 @@ public class LocalFileDownloadService implements FileDownloadService {
         Path rootLocation = Paths.get(uploadPath);
         return rootLocation.resolve(fileName);
     }
+
+    @Override
+    public void copyFileS3ToLocal(String fileName) {}
 }

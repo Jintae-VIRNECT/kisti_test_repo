@@ -107,7 +107,7 @@ public class ContentService {
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
-        checkLicenseStorage(workspaceUUID, contentSize);
+        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize);
 
         // 1. 콘텐츠 업로드 파일 저장
         try {
@@ -335,7 +335,7 @@ public class ContentService {
         targetContent.setName(updateRequest.getName());
 
         // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
-        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getMetadata());
+        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getProperties());
 
         String metadata = metaObject.toString();
 
@@ -794,7 +794,12 @@ public class ContentService {
 
     private MultipartFile convertFileToMultipart(String fileUrl) {
         File file = new File(fileUrl);
+
+        // S3저장소를 쓰는 경우 S3에서 해당 ares파일을 다운받는다.
+        fileDownloadService.copyFileS3ToLocal(file.getName());
+
         log.debug("MULTIPART FILE SOURCE - fileUrl: {}, path: {}", fileUrl, file.getPath());
+
         try {
             FileItem fileItem = new DiskFileItem("targetFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
             try (InputStream inputStream = new FileInputStream(file)) {
@@ -1131,13 +1136,12 @@ public class ContentService {
             workspaceSize = 0L;
         }
 
-        log.debug("{}", maxStorageSize);
-        log.debug("{}", uploadContentSize);
+        log.info("WorkspaceUUID : {}", workspaceUUID);
+        log.info("WorkspaceMaxStorage : {}", maxStorageSize);
+        log.info("ContentSize : {}", uploadContentSize);
 
         // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
         Long sumSize = workspaceSize + uploadContentSize;
-
-        log.debug("{}", sumSize);
 
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
         if (maxStorageSize < sumSize) {
