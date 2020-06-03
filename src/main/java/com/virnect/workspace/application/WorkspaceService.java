@@ -603,7 +603,9 @@ public class WorkspaceService {
             //이미 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 최대 개수 9개 체크하기
             if (this.workspaceUserRepository.findAllByUserId(userId).size() > 9) {
                 //TODO: 메일 발송(D-005. 워크스페이스 참여 수 초과로 인한 참여 실패)
-                redirectUrl = redirectUrl + "?message=abortJoinWorkspace";
+                redirectUrl = redirectUrl + "/?message=members.add.message.overflow";
+
+                this.userInviteRepository.deleteById(userId);
 
             } else {
                 //라이선스 플랜 - 멤버 제한 수 체크
