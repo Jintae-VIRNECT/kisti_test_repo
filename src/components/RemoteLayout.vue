@@ -1,9 +1,6 @@
 <template>
-  <section class="remote-layout">
-    <!-- <div class="service-wrapper">Hello World</div> -->
-    <header-section></header-section>
-    <router-view></router-view>
-  </section>
+  <!-- <div class="service-wrapper">Hello World</div> -->
+  <router-view></router-view>
 </template>
 
 <script>
