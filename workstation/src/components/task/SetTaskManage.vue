@@ -175,6 +175,7 @@ export default {
     },
     leftHeaderTooltip() {
       return {
+        new: 'task.manage.registerNewTaskInfoDesc',
         add: 'task.manage.taskAddNoticeDesc',
         edit: 'task.manage.taskEditNoticeDesc',
       }[this.type]

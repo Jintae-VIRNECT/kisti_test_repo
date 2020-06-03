@@ -92,6 +92,12 @@
           <div slot="header" v-else>
             <h3>
               <span>{{ $t('task.detail.subTasksProgressGraph') }}</span>
+              <el-tooltip
+                :content="$t('task.detail.subTasksProgressGraphDesc')"
+                placement="right"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
             </h3>
             <el-button @click="isGraph = false">
               <img src="~assets/images/icon/ic-list.svg" />

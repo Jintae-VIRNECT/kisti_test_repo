@@ -23,6 +23,7 @@
       />
       <column-count
         :label="$t('task.detail.subTaskColumn.endedSteps')"
+        :tooltip="$t('task.detail.subTaskColumn.endedStepsTooltip')"
         prop="doneCount"
         maxProp="stepTotal"
         :width="120"

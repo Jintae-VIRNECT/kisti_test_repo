@@ -108,6 +108,10 @@
     overflow: visible;
     color: $font-color-desc;
     font-size: 12px;
+
+    & > .cell > img {
+      vertical-align: sub;
+    }
   }
   .el-table td {
     padding: 0;

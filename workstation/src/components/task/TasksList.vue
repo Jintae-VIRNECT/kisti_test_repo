@@ -18,6 +18,7 @@
       />
       <column-count
         :label="$t('task.list.column.endedSubTasks')"
+        :tooltip="$t('task.list.column.endedSubTasksTooltip')"
         prop="doneCount"
         maxProp="subTaskTotal"
         :width="120"
