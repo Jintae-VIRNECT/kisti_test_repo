@@ -3,7 +3,11 @@
     <dl>
       <dt>
         <span>{{ $t('members.card.profile') }}</span>
-        <span class="dropdown" @click="openMemberSettingModal">
+        <span
+          v-if="canSettingMemberInfo"
+          class="dropdown"
+          @click="openMemberSettingModal"
+        >
           <img src="~assets/images/icon/ic-more-horiz.svg" />
         </span>
       </dt>
@@ -22,7 +26,12 @@
       </dd>
       <el-divider />
       <dt>{{ $t('members.card.usingPlans') }}</dt>
-      <dd class="plans">-</dd>
+      <dd class="plans">
+        <div class="plan" v-for="plan in data.licenseProducts" :key="plan">
+          <img :src="plans[plan].logo" />
+          <span>{{ plans[plan].label }}</span>
+        </div>
+      </dd>
       <dt>{{ $t('members.card.links') }}</dt>
       <dd class="column-links">
         <router-link to="/contents">
@@ -57,6 +66,8 @@
 <script>
 import MemberSettingModal from '@/components/member/MemberSettingModal'
 import MemberKickModal from '@/components/member/MemberKickModal'
+import { mapGetters } from 'vuex'
+import plans from '@/models/workspace/plans'
 
 export default {
   components: {
@@ -71,7 +82,19 @@ export default {
       myInfo: this.data,
       showMemberSettingModal: false,
       showMemberKickModal: false,
+      plans: Object.values(plans).reduce((o, n) => {
+        o[n.value] = n
+        return o
+      }, {}),
     }
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'workspace/activeWorkspace',
+    }),
+    canSettingMemberInfo() {
+      return this.activeWorkspace.role !== 'MEMBER'
+    },
   },
   methods: {
     openMemberSettingModal() {

@@ -28,7 +28,11 @@
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
-          <el-button type="primary" @click="showAddModal = true">
+          <el-button
+            type="primary"
+            @click="showAddModal = true"
+            v-if="canAddMember"
+          >
             {{ $t('members.allMembers.addMember') }}
           </el-button>
         </el-col>
@@ -71,6 +75,9 @@ export default {
       myProfile: 'auth/myProfile',
       activeWorkspace: 'workspace/activeWorkspace',
     }),
+    canAddMember() {
+      return this.activeWorkspace.role !== 'MEMBER'
+    },
   },
   data() {
     return {

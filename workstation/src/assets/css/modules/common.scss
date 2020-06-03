@@ -60,3 +60,22 @@ main {
     mask-size: 100%;
   }
 }
+
+.plan {
+  display: inline-block;
+  margin-right: 12px;
+  &:last-child {
+    margin-right: 0;
+  }
+
+  & > img {
+    box-sizing: border-box;
+    margin-right: 4px;
+    border: solid 1px #dde1ea;
+    border-radius: 100px;
+  }
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

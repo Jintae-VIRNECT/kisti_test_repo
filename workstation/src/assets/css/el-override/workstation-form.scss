@@ -47,6 +47,17 @@ $input-background-color: rgba(233, 237, 244, 0.5);
     opacity: 0.8;
   }
 }
+.el-form-item.is-required .el-form-item__label {
+  position: relative;
+  &:before {
+    float: right;
+    margin-left: 4px;
+  }
+  & > img {
+    position: absolute;
+    margin: 2px 12px;
+  }
+}
 .el-select .el-input .el-select__caret {
   color: #000;
   font-weight: bold;
@@ -153,5 +164,11 @@ $input-background-color: rgba(233, 237, 244, 0.5);
     background: #fff;
     border-color: $color-primary;
     transition: border-color 0.3s, background 0.3s;
+  }
+}
+.el-form-item.is-error {
+  .el-input__inner,
+  .el-textarea__inner {
+    border-color: #f31312;
   }
 }

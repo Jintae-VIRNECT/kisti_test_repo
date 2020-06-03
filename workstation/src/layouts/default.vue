@@ -52,7 +52,7 @@ export default {
     }),
   },
   mounted() {
-    // 툴팁이벤트
+    // 서버 메세지 푸시
     const message = this.$route.query.message
     if (message) {
       this.$message.error({
