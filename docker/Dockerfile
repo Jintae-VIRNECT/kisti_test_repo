@@ -11,4 +11,4 @@ EXPOSE 8078
 VOLUME ["/data/content", "/usr/app/upload"]
 
 ## Command executed when container is start up.
-CMD ["java", "-Xmx200M", "-jar","PF-ContentManagement-1.0.0.jar"]
+CMD ["java", "-Xmx500M", "-jar","PF-ContentManagement-1.0.0.jar"]
