@@ -1,23 +1,21 @@
 const getDefaultState = () => {
   return {
-    call: {
-      mainView: {
-        // nickname: nickname,
-        // userName: name
-        // stream: '',
-        // uuid: ''
-      },
-      participants: [
-        // {
-        //   uuid: null,
-        //   stream: null,
-        //   nickname: '이름',
-        //   sessionName: '세션이름',
-        //   path: 'default',
-        //   status: 'good',
-        // }
-      ],
+    mainView: {
+      // nickname: nickname,
+      // userName: name
+      // stream: '',
+      // uuid: ''
     },
+    participants: [
+      // {
+      //   uuid: null,
+      //   stream: null,
+      //   nickname: '이름',
+      //   sessionName: '세션이름',
+      //   path: 'default',
+      //   status: 'good',
+      // }
+    ],
     chatList: [
       {
         text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
@@ -39,16 +37,18 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const mutations = {
-  setMainView(state, payload) {
-    state.call.mainView = payload
-    state.call.participants.push(payload)
+  setMainView(state, participantId) {
+    const idx = state.participants.findIndex(obj => obj.id === participantId)
+    if (idx < 0) return
+    state.mainView = state.participants[idx]
   },
   addStream(state, payload) {
-    if (payload.uuid === 'main') {
-      state.call.participants.splice(0, 0, payload)
+    if (state.me) {
+      state.participants.splice(0, 0, payload)
+      state.mainView = payload
       return
     }
-    state.call.participants.push(payload)
+    state.participants.push(payload)
     state.chatList.push({
       text: payload.nickname + '님이 대화에 참여하셨습니다.',
       name: 'people',
@@ -56,40 +56,39 @@ const mutations = {
       uuid: null,
       type: 'system',
     })
+    if (!state.mainView || !state.mainView.stream) {
+      state.mainView = payload
+    }
   },
   setStream(state, payload) {
-    const idx = state.call.participants.findIndex(
-      obj => obj.uuid === payload.uuid,
-    )
+    const idx = state.participants.findIndex(obj => obj.id === payload.id)
     if (idx < 0) return
-    state.call.participants[idx].stream = payload.stream
+    state.participants[idx].stream = payload.stream
   },
   updateStreamInfo(state, payload) {
-    const idx = state.call.participants.findIndex(
-      obj => obj.uuid === payload.uuid,
-    )
+    const idx = state.participants.findIndex(obj => obj.id === payload.id)
     if (idx < 0) return
 
-    let updateSession = state.call.participants[idx]
+    let updateSession = state.participants[idx]
 
     for (let key in payload) {
       if (
         key in updateSession &&
         payload[key] !== null &&
-        payload[key] !== 'uuid'
+        payload[key] !== 'id'
       ) {
         updateSession[key] = payload[key]
       }
     }
-    state.call.participants.splice(idx, 1, updateSession)
+    state.participants.splice(idx, 1, updateSession)
   },
   removeStream(state, connectionId) {
-    const idx = state.call.participants.findIndex(
+    const idx = state.participants.findIndex(
       obj => obj.connectionId === connectionId,
     )
     if (idx < 0) return
-    let nickname = state.call.participants[idx].nickname
-    state.call.participants.splice(idx, 1)
+    let nickname = state.participants[idx].nickname
+    state.participants.splice(idx, 1)
     state.chatList.push({
       text: nickname + '님이 대화에서 나가셨습니다.',
       name: 'people',
@@ -99,8 +98,8 @@ const mutations = {
     })
   },
   clearStreams(state) {
-    state.call.participants = []
-    state.call.mainView = null
+    state.participants = []
+    state.mainView = null
   },
 
   // chat
@@ -123,8 +122,8 @@ const mutations = {
 }
 
 const getters = {
-  mainView: state => state.call.mainView,
-  participants: state => state.call.participants,
+  mainView: state => state.mainView,
+  participants: state => state.participants,
   chatList: state => state.chatList,
 }
 

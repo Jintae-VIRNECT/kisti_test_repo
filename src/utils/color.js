@@ -17,6 +17,11 @@ export const hexToAHEX = function hexToAHEX(hex, alpha) {
   return '#' + a.toString(16) + hex.slice(1, 7)
 }
 
+export const ahexToHEX = function ahexToHEX(ahex) {
+  console.log(ahex)
+  return ahex.substr(0, 1) + ahex.substr(3)
+}
+
 export const hexToHEXA = function hexToHEXA(hex, alpha) {
   var a = alpha * 255 || 255
 

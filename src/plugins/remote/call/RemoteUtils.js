@@ -46,6 +46,10 @@ export const addSessionEventListener = session => {
     }
     Store.commit('addChat', chat)
   })
+
+  session.on('signal:pointing', event => {
+    console.log(event)
+  })
 }
 
 export const getUserObject = stream => {
@@ -67,6 +71,10 @@ export const getUserObject = stream => {
     path: participant.path,
     audio: stream.audioActive,
     video: stream.videoActive,
+    status: 'good',
+  }
+  if (Store.getters['account'].uuid === uuid) {
+    streamObj.me = true
   }
 
   return streamObj
