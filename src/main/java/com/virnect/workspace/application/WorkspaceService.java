@@ -42,10 +42,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -214,7 +211,7 @@ public class WorkspaceService {
             workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
         }
 
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         //USER-SERVER : 워크스페이스에 해당하는 유저들에 대한 정보만 불러온다. (+ search)
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
@@ -350,7 +347,7 @@ public class WorkspaceService {
      */
     public ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(String workspaceId) {
         //workspace 정보 set
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceInfoDTO workspaceInfo = modelMapper.map(workspace, WorkspaceInfoDTO.class);
         workspaceInfo.setMasterUserId(workspace.getUserId());
 
@@ -428,7 +425,7 @@ public class WorkspaceService {
         }
 
         // 요청한 사람이 마스터유저 또는 매니저유저인지 체크
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, workspaceInviteRequest.getUserId());
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
@@ -569,7 +566,7 @@ public class WorkspaceService {
         if (userInvite == null) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO);
         }
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         //초대 또는 수락 결과에 대한 메일을 받을 사용자 LIST
         List<String> emailReceiverList = new ArrayList<>();
@@ -737,7 +734,7 @@ public class WorkspaceService {
 
     public ApiResponse<Boolean> reviseMemberInfo(String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale) {
 
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission userPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getUserId());
 
         WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(memberUpdateRequest.getRole().toUpperCase());
@@ -936,9 +933,10 @@ public class WorkspaceService {
      * @return - 소속 된 워크스페이스 유저 객체
      */
     public WorkspaceUser setWorkspaceUserInfo(String workspaceId, String userId) {
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUser workspaceUser = WorkspaceUser.builder()
                 .userId(userId)
-                .workspace(this.workspaceRepository.findByUuid(workspaceId))
+                .workspace(workspace)
                 .build();
         this.workspaceUserRepository.save(workspaceUser);
         return workspaceUser;
@@ -966,7 +964,7 @@ public class WorkspaceService {
         }
 
         //마스터 유저 체크
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceUpdateRequest.getWorkspaceId());
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceUpdateRequest.getWorkspaceId()).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         String oldWorkspaceName = workspace.getName();
         if (!workspace.getUserId().equals(workspaceUpdateRequest.getUserId())) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -1016,7 +1014,7 @@ public class WorkspaceService {
     }
 
     public ApiResponse<UserInfoDTO> getMemberInfo(String workspaceId, String userId) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId);
         UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(userId).getData();
 
@@ -1027,7 +1025,7 @@ public class WorkspaceService {
     }
 
     public ApiResponse<Boolean> kickOutMember(String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
 
         //내쫓는 자의 권한 확인(마스터, 매니저만 가능)
@@ -1085,7 +1083,7 @@ public class WorkspaceService {
     }
 
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId, Locale locale) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         if (workspace.getUserId().equals(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
@@ -1122,7 +1120,7 @@ public class WorkspaceService {
     }
 
     public ApiResponse<Boolean> testSetMember(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId);
+        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(()->new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         List<String> emailList = new ArrayList<>();
         workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
             emailList.add(userInfo.getEmail());
