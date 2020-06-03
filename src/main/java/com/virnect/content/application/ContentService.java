@@ -231,7 +231,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건 (공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
@@ -264,7 +264,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건(공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
@@ -304,7 +304,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
