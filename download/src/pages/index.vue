@@ -9,58 +9,26 @@
     </div>
     <el-divider />
     <el-tabs v-model="activeTab">
-      <!-- remote -->
-      <el-tab-pane name="remote" :label="$t('home.remote')" disabled>
-      </el-tab-pane>
-      <!-- make -->
-      <el-tab-pane name="make" :label="$t('home.make')">
-        <el-card>
-          <h6 v-html="$t('home.pc')" />
-          <h5 v-html="$t('home.windowsInstall')" />
-          <img src="~assets/images/img-make-pc.svg" />
+      <el-tab-pane
+        v-for="(product, name) in products"
+        :label="$t(`home.${name}`)"
+        :name="name"
+        :key="name"
+      >
+        <el-card v-for="app in product" :key="app.id">
+          <h6 v-html="app.os" />
+          <h5 v-html="app.device" />
+          <img :src="app.imgUrl" />
           <span class="release">
-            {{ `${$t('home.release')}: ${make.release}` }}
+            {{ $t('home.release') }}: {{ app.releaseTime | dateFormat }}
           </span>
-          <span class="version">{{ make.version }}</span>
-          <el-button type="primary" @click="download(make.appId)">
+          <span class="version">{{ app.version }}</span>
+          <el-button type="primary" @click="download(app.appUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <!-- <el-button type="text" @click="link(make.guideUrl)">
+          <el-button type="text" @click="download(app.guideUrl)">
             {{ $t('home.guideDownload') }}
-          </el-button> -->
-        </el-card>
-      </el-tab-pane>
-      <!-- view -->
-      <el-tab-pane name="view" :label="$t('home.view')">
-        <el-card>
-          <h6 v-html="$t('home.realwear')" />
-          <h5 v-html="$t('home.hmt-1')" />
-          <img src="~assets/images/img-view-realwear.png" />
-          <span class="release">
-            {{ `${$t('home.release')}: ${viewHmt1.release}` }}
-          </span>
-          <span class="version">{{ viewHmt1.version }}</span>
-          <el-button type="primary" @click="download(viewHmt1.appId)">
-            {{ $t('home.installFileDownload') }}
           </el-button>
-          <!-- <el-button type="text" @click="link(viewHmt1.guideUrl)">
-            {{ $t('home.guideDownload') }}
-          </el-button> -->
-        </el-card>
-        <el-card>
-          <h6 v-html="$t('home.googlePlay')" />
-          <h5 v-html="$t('home.mobile')" />
-          <img src="~assets/images/img-view-google-play.png" />
-          <span class="release">
-            {{ `${$t('home.release')}: ${viewApp.release}` }}
-          </span>
-          <span class="version">{{ viewApp.version }}</span>
-          <el-button type="primary" @click="link(viewApp.link)" disabled>
-            {{ $t('home.downloadLink') }}
-          </el-button>
-          <!-- <el-button type="text" @click="link(viewApp.link)">
-            {{ $t('home.guideDownload') }}
-          </el-button> -->
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -69,42 +37,43 @@
 
 <script>
 import fileDownload from 'js-file-download'
+import { filters } from '@/plugins/dayjs'
 
 export default {
   data() {
     return {
-      activeTab: 'make',
-      make: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        appId: `8`,
-        guideUrl: '',
-      },
-      viewHmt1: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        appId: `1`,
-        guideUrl: '',
-      },
-      viewApp: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        link: '',
-        guideUrl: '',
+      activeTab: null,
+      products: {
+        remote: [],
+        make: [],
+        view: [],
       },
     }
   },
-  methods: {
-    async download(id) {
-      const data = await this.$api('DOWNLOAD', {
-        headers: { 'Content-Type': 'application/octet-stream' },
-        route: { id },
+  watch: {
+    async activeTab(tab) {
+      const data = await this.$api('APP_LIST', {
+        route: { productName: tab },
       })
-      fileDownload(data)
+      this.products[tab] = data.appInfoList
+    },
+  },
+  filters,
+  methods: {
+    async download(url) {
+      window.open(url)
+      // const data = await this.$api('DOWNLOAD', {
+      //   headers: { 'Content-Type': 'application/octet-stream' },
+      //   route: { id },
+      // })
+      // fileDownload(data)
     },
     link(url) {
       window.open(url)
     },
+  },
+  mounted() {
+    this.activeTab = 'remote'
   },
 }
 </script>
