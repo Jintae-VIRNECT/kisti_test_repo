@@ -13,25 +13,20 @@
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
         <div v-if="chat.file && chat.file.length > 0" class="file">
-          <p class="file__name">
-            {{ chat.file[0].filename }}
-          </p>
+          <div class="file__wrapper">
+            <div class="file__icon" :class="fileIconClass"></div>
+            <div class="file__name">{{ chat.file[0].filename }}</div>
+          </div>
           <p class="file__size">{{ chat.file[0].filesize }}</p>
         </div>
         <p
           v-if="chat.text !== undefined"
           class="text"
-          :class="{
-            alarm: type === 'system' && chat.name === 'alarm',
-            people: type === 'system' && chat.name === 'people',
-            cancel: type === 'system' && chat.name === 'cancel',
-            ar: type === 'system' && chat.name === 'ar',
-            board: type === 'system' && chat.name === 'board',
-          }"
+          :class="systemIconClass"
           v-html="chat.text"
         ></p>
         <button v-if="chat.file && chat.file.length > 0" class="file__button">
-          <p class="button__text">다운로드</p>
+          <span class="button__text">다운로드</span>
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
@@ -106,6 +101,37 @@ export default {
       }
 
       return false
+    },
+    extension() {
+      let ext = ''
+      if (this.chat.file && this.chat.file.length > 0) {
+        ext = this.chat.file[0].filename.split('.').pop()
+      }
+
+      if (ext === 'avi' || ext === 'mp4') {
+        ext = 'video'
+      }
+
+      return ext
+    },
+    fileIconClass() {
+      return {
+        txt: this.extension === 'txt',
+        png: this.extension === 'png',
+        pdf: this.extension === 'pdf',
+        mp3: this.extension === 'mp3',
+        jpg: this.extension === 'jpg',
+        video: this.extension === 'video',
+      }
+    },
+    systemIconClass() {
+      return {
+        alarm: this.type === 'system' && this.chat.name === 'alarm',
+        people: this.type === 'system' && this.chat.name === 'people',
+        cancel: this.type === 'system' && this.chat.name === 'cancel',
+        ar: this.type === 'system' && this.chat.name === 'ar',
+        board: this.type === 'system' && this.chat.name === 'board',
+      }
     },
   },
   watch: {},

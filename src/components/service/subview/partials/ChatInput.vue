@@ -103,7 +103,7 @@ export default {
           }
         }
       }
-      console.log(this.chatList.message)
+
       this.chatList.push({
         text: msg,
         date: new Date(),
@@ -122,10 +122,6 @@ export default {
         e.preventDefault()
       }
       this.$call.sendChat(this.inputText)
-
-      // if (this.inputText) {
-      //   this.addChatItem('me', this.inputText.replace(/</g, '&lt;'))
-      // }
 
       this.inputText = ''
     },

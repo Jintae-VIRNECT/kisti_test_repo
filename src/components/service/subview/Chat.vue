@@ -45,7 +45,7 @@
           :key="idx"
           :beforeChat="idx === 0 ? null : chatList[idx - 1]"
           :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
-          :chat="hyliter(chat)"
+          :chat="textProcessor(chat)"
         ></chat-item>
       </ol>
     </vue2-scrollbar>
@@ -60,7 +60,8 @@ import { mapState } from 'vuex'
 
 import ChatItem from './partials/ChatItem'
 import ChatInput from './partials/ChatInput'
-import Popover from 'Popover'
+// import Popover from 'Popover'
+import linkifyHtml from 'linkifyjs/html'
 // import Tooltip from 'Tooltip'
 
 export default {
@@ -68,7 +69,7 @@ export default {
   components: {
     ChatItem,
     ChatInput,
-    Popover,
+    // Popover,
     // Tooltip,
   },
   data() {
@@ -76,7 +77,7 @@ export default {
       showChat: true,
       showFile: false,
 
-      roomTitle: ' ',
+      roomTitle: '',
       participantsCount: 1,
     }
   },
@@ -89,7 +90,7 @@ export default {
   },
   watch: {
     chatList: {
-      handler(newVal, oldVal) {
+      handler() {
         this.$nextTick(() => {
           if (this.$refs['chatListScrollbar']) {
             this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
@@ -99,7 +100,7 @@ export default {
       deep: true,
     },
     viewMode: {
-      handler(newVal, oldVal) {
+      handler(newVal) {
         switch (newVal) {
           case 'stream':
             console.log('실시간 공유')
@@ -144,66 +145,116 @@ export default {
     },
 
     /**
-     * @author ykmo
-     * Change span tag to p tag for hylite text
-     * if span tag changed for other tag. please modifiy this method
-     *
+     * process chat text
      */
-    hyliter(chat) {
-      let replaced = null
+    textProcessor(chat) {
+      if (chat.text === undefined || chat.text === null) {
+        return chat
+      }
+
+      if (chat.type === undefined || chat.type === null) {
+        return chat
+      }
+
+      //hyliter for system message
+      if (chat.type === 'system') {
+        chat.text = this.sysHyliter(chat.text)
+      } else {
+        chat.text = this.urlHyliter(chat.text)
+      }
+      return chat
+    },
+
+    /**
+     *
+     * Change span tag to p tag for hylite text
+     * if <span></span> tag changed for other tag. please modifiy this method
+     */
+    sysHyliter(chatText) {
+      let replaced = chatText
 
       try {
-        let chatText = chat.text
-
-        if (chat.text === undefined && chat.text === null) {
-          return chat
-        }
-
-        if (chat.type === undefined && chat.type === null) {
-          return chat
-        }
-
         //check system type, and text length over 10
-        if (chat.type === 'system' && chatText.indexOf('</span>') > 34) {
+        if (chatText.indexOf('</span>') > 34) {
           replaced = chatText.replace('<span', '<p').replace('</span>', '</p>')
-          chat.text = replaced
         }
       } catch (e) {
         console.log(e)
       }
 
-      return chat
+      return replaced
+    },
+
+    urlHyliter(chatText) {
+      let replaced = chatText
+
+      try {
+        replaced = linkifyHtml(chatText, {
+          defaultProtocol: 'https',
+          className: 'chat-url',
+        })
+      } catch (e) {
+        console.log(e)
+      }
+      return replaced
     },
   },
 
   /* Lifecycles */
   mounted() {
-    this.roomTitle = this.room.title
+    this.roomTitle = this.room.title ? this.room.title : ''
 
+    //test message.
     this.chatList.push(
       {
         type: 'opponent',
         name: '참여자2',
         text:
-          '안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까안녕하심미까',
+          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다. https://remote.virnect.com/ 감사합니다.',
         date: new Date(),
       },
       {
         type: 'opponent',
         name: '참여자2',
-        text: '안녕하셔',
+        text:
+          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다.https://remote.virnect.com/감사합니다.',
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '참여자2',
+        text:
+          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다.https://remote.virnect.com/감사합니다.',
         date: new Date(),
       },
       {
         type: 'opponent',
         name: '참여자2',
-        text: '그래',
+        text: 'https://remote.virnect.com/',
         date: new Date(),
       },
       {
         type: 'opponent',
         name: '참여자2',
-        text: '피곤하네 오늘따라 속도 안좋고 애초에 좋았던적이 있던가?',
+        text: 'http://localhost',
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '참여자2',
+        text: '반가워요',
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '고리3발 ENG 팀',
+        text: '펭하',
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '참여자2',
+        text: '안녕하세요.',
         date: new Date(),
       },
       {
@@ -218,11 +269,150 @@ export default {
         date: new Date(),
       },
       {
+        type: 'opponent',
+        name: '한전 제1 발전처장',
+        file: [
+          {
+            filename: '3분기 전력수요량 자료.txt',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '한전 제2 발전처장',
+        file: [
+          {
+            filename: '명상에 좋은 음악.mp3',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '고리3발 시설관리팀장',
+        file: [
+          {
+            filename: '흡연실 사용규칙 준수.jpg',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '고리3발 ENG 팀',
+        file: [
+          {
+            filename: '가스터빈 도면.pdf',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'opponent',
+        name: '신규사업부 팀장',
+        file: [
+          {
+            filename: '도면2.jpg',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '신규사업부 팀장',
+        file: [
+          {
+            filename: 'Webex.png',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '한전 제1 발전처장',
+        file: [
+          {
+            filename: '3분기 전력수요량 자료.txt',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '한전 제2 발전처장',
+        file: [
+          {
+            filename: '명상에 좋은 음악.mp3',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '고리3발 시설관리팀장',
+        file: [
+          {
+            filename: '흡연실 사용규칙 준수.jpg',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '고리3발 ENG 팀',
+        file: [
+          {
+            filename: '가스터빈 도면.pdf',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '신규사업부 팀장',
+        file: [
+          {
+            filename: '도면2.jpg',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
+      },
+      {
+        type: 'me',
+        name: '참여자2',
+        text: 'ㅎㅇ',
+        date: new Date(),
+      },
+      {
         text: '<span class="emphasize">테스트</span>님이 입장하셨습니다.',
         name: 'people',
         date: new Date(),
         uuid: null,
         type: 'system',
+      },
+
+      {
+        type: 'me',
+        name: '고리3발 ENG 팀',
+        file: [
+          {
+            filename: '가스터빈 도면(최종).pdf',
+            filesize: '10MB',
+          },
+        ],
+        date: new Date(),
       },
       {
         text:
