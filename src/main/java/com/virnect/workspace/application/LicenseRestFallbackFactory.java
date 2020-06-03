@@ -8,9 +8,6 @@ import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Project: PF-Workspace
  * DATE: 2020-04-29
@@ -26,16 +23,12 @@ public class LicenseRestFallbackFactory implements FallbackFactory<LicenseRestSe
         return new LicenseRestService() {
             @Override
             public ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicenses(String workspaceId) {
-                return new ApiResponse<>(null);
+                return new ApiResponse<>(new WorkspaceLicensePlanInfoResponse());//license 서버에 응답이 없을 때 빈객체 전달.
             }
 
             @Override
             public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(String userId, String workspaceId) {
-                MyLicenseInfoListResponse myLicenseInfoListResponse = new MyLicenseInfoListResponse();
-
-                List<MyLicenseInfoResponse> licenseInfoList = new ArrayList<>();
-                myLicenseInfoListResponse.setLicenseInfoList(licenseInfoList);
-                return new ApiResponse<>(myLicenseInfoListResponse);
+                return new ApiResponse<>( new MyLicenseInfoListResponse());
             }
 
             @Override

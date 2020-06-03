@@ -107,7 +107,6 @@ public class WorkspaceService {
         if (userHasWorkspace) {
             throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
         }
-
         //워크스페이스 생성
         String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
@@ -220,17 +219,16 @@ public class WorkspaceService {
         //USER-SERVER : 워크스페이스에 해당하는 유저들에 대한 정보만 불러온다. (+ search)
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
         String[] workspaceUserIdList = workspaceUserList.stream().map(workspaceUser -> workspaceUser.getUserId()).toArray(String[]::new);
-        UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(search, workspaceUserIdList).getData();
 
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
 
-
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-        if (workspaceLicensePlanInfoResponse!= null) {
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
             worksapcePlanExist = true;
         }
 
+        UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(search, workspaceUserIdList).getData();
         //불러온 정보들에서 userId 가지고 페이징 처리를 한다. (+ filter)
         if (!workspaceRoleList.isEmpty()) {
             List<WorkspaceUser> workspaceUsers = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
@@ -259,15 +257,14 @@ public class WorkspaceService {
                         }
                     }
                     memberInfoDTO.setLicenseProducts(licenseProducts);
-
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             }
-
             pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
             pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
+
         } else {
             List<String> userIdList = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> userInfoRestResponse.getUuid()).collect(Collectors.toList());
 
@@ -294,7 +291,6 @@ public class WorkspaceService {
                         }
                     }
                     memberInfoDTO.setLicenseProducts(licenseProducts);
-
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             }
