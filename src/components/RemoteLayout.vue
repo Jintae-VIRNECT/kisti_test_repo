@@ -4,13 +4,8 @@
 </template>
 
 <script>
-import HeaderSection from 'components/header/Header'
-
 export default {
   name: 'RemoteLayout',
-  components: {
-    HeaderSection,
-  },
   data() {
     return {}
   },
