@@ -89,6 +89,19 @@ export default {
     await api('WORKSPACE_START', options)
   },
   /**
+   * 멤버 정보 상세 조회
+   * @param {string} userId
+   */
+  async getMemberInfo(userId) {
+    const data = await api('MEMBER_INFO', {
+      route: {
+        workspaceId: activeWorkspaceGetter().uuid,
+      },
+      params: { userId },
+    })
+    return new Member(data)
+  },
+  /**
    * 워크스페이스 프로필 설정 변경
    * @param {form} form
    */

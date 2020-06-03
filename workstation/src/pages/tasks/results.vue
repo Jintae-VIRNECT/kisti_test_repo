@@ -136,9 +136,9 @@ export default {
     else if (tab === 'papers') this.activeTab = 'paper'
 
     workspaceService.watchActiveWorkspace(this, () => {
-      if (this.activeTab === 'results') this.searchSubTasks()
-      else if (this.activeTab === 'issues') this.searchIssues()
-      else if (this.activeTab === 'papers') this.searchPapers()
+      if (this.activeTab === 'task') this.searchSubTasks()
+      else if (this.activeTab === 'issue') this.searchIssues()
+      else if (this.activeTab === 'paper') this.searchPapers()
     })
   },
 }

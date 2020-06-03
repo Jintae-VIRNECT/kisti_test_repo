@@ -22,6 +22,11 @@ export default {
       cursorData: null,
     }
   },
+  watch: {
+    data() {
+      this.initProcessGraph()
+    },
+  },
   methods: {
     initProcessGraph() {
       const xAxisColors = conditions.map(condition => condition.color)

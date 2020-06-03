@@ -170,7 +170,10 @@ export default {
     showMine() {},
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, this.searchTasks)
+    workspaceService.watchActiveWorkspace(this, async () => {
+      this.searchTasks()
+      this.taskStatistics = await taskService.getTaskStatistics()
+    })
   },
 }
 </script>
