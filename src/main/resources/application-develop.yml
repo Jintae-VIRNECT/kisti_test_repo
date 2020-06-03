@@ -83,7 +83,7 @@ hystrix:
       circuitBreaker.requestVolumeThreshold: 5
       circuitBreaker.errorThresholdPercentage: 50
     "LicenseRestService":
-      execution.isolation.thread.timeoutInMilliseconds: 500
+      execution.isolation.thread.timeoutInMilliseconds: 1000
       metrics.rollingStats.timeInMilliseconds: 60000
       circuitBreaker.requestVolumeThreshold: 5
       circuitBreaker.errorThresholdPercentage: 50

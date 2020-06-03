@@ -375,7 +375,7 @@ public class WorkspaceService {
         long makePlanCount = 0L;
         long viewPlanCount = 0L;
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-        if (workspaceLicensePlanInfoResponse != null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList()!=null) {
             for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
                 if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
                     List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
