@@ -1,45 +1,57 @@
 <template>
   <div class="share">
-    <div class="share__title">
-      <p>공유 목록</p>
-    </div>
-    <div class="share__body">
-      <vue2-scrollbar>
-        <ol class="upload-list">
-          <li><button class="upload-list__button">파일추가</button></li>
-          <sharing-image
-            v-for="(image, idx) of sharingList"
-            :key="'sharing' + idx"
-          ></sharing-image>
-        </ol>
-      </vue2-scrollbar>
-    </div>
-    <button class="share__save">저장하기</button>
+    <ul class="share-title">
+      <li>
+        <button
+          class="share-title__button"
+          :class="{ active: ['file', 'pdfview'].indexOf(list) > -1 }"
+          @click="changeTab('file')"
+        >
+          파일목록
+        </button>
+      </li>
+      <li>
+        <button
+          class="share-title__button"
+          :class="{ active: list === 'history' }"
+          @click="changeTab('history')"
+        >
+          히스토리
+        </button>
+      </li>
+    </ul>
+    <file-list v-show="list === 'file'" @pdfView="changePdfView"></file-list>
+    <history-list v-show="list === 'history'"></history-list>
+    <pdf-view v-show="list === 'pdfview'" :id="fileId"></pdf-view>
   </div>
 </template>
 
 <script>
-import SharingImage from './partials/SharingImage'
+import FileList from './partials/ShareFileList'
+import HistoryList from './partials/ShareHistoryList'
+import PdfView from './partials/SharePdfView'
 export default {
   name: 'Share',
   components: {
-    SharingImage,
+    FileList,
+    HistoryList,
+    PdfView,
   },
   data() {
     return {
-      sharingList: [
-        {
-          title: '화면설계.png',
-        },
-        {
-          title: '화면설계.png',
-        },
-      ],
+      list: 'file',
+      fileId: 0,
     }
   },
-  computed: {},
-  watch: {},
-  methods: {},
+  methods: {
+    changePdfView(id) {
+      this.fileId = id
+      this.changeTab('pdfview')
+    },
+    changeTab(val) {
+      this.list = val
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
