@@ -11,20 +11,26 @@
 
       <div class="chat-header__menu">
         <div
-          class="menu-selector"
+          class="selector"
           :class="{ active: showChat }"
           @click="toggleChatMenu"
         >
-          <div class="icon chat" :class="{ active__chat: showChat }"></div>
-          <span class="text">채팅</span>
+          <div
+            class="selector__icon--chat"
+            :class="{ chat__active: showChat }"
+          ></div>
+          <span class="selector__text" :class="{ active: showChat }">채팅</span>
         </div>
         <div
-          class="menu-selector"
+          class="selector"
           :class="{ active: showFile }"
           @click="toggleFileMenu"
         >
-          <div class="icon file" :class="{ active__file: showFile }"></div>
-          <span class="text">파일</span>
+          <div
+            class="selector__icon--file"
+            :class="{ file__active: showFile }"
+          ></div>
+          <span class="selector__text" :class="{ active: showFile }">파일</span>
         </div>
       </div>
       <!-- <p class="chat-header__description">6명의 작업자</p> -->
