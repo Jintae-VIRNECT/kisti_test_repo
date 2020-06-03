@@ -137,6 +137,7 @@
 
 <script>
 import resultService from '@/services/result'
+import workspaceService from '@/services/workspace'
 import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
 
@@ -167,18 +168,8 @@ export default {
     }
   },
   watch: {
-    async activeTab(tab) {
-      if (tab === 'task') {
-        this.subTasks = (
-          await resultService.searchCurrentSubTasks({ size: 4 })
-        ).list
-      }
-      if (tab === 'paper') {
-        this.papers = (await resultService.searchPapers({ size: 4 })).list
-      }
-      if (tab === 'issue') {
-        this.issues = (await resultService.searchIssues({ size: 4 })).list
-      }
+    async activeTab() {
+      this.searchTabItems()
     },
   },
   methods: {
@@ -191,9 +182,23 @@ export default {
     moveToIssue({ taskId, subTaskId, issueId }) {
       this.$router.push(`/tasks/${taskId}/${subTaskId}/issues/${issueId}`)
     },
+    async searchTabItems() {
+      if (this.activeTab === 'task') {
+        this.subTasks = (
+          await resultService.searchCurrentSubTasks({ size: 4 })
+        ).list
+      }
+      if (this.activeTab === 'paper') {
+        this.papers = (await resultService.searchPapers({ size: 4 })).list
+      }
+      if (this.activeTab === 'issue') {
+        this.issues = (await resultService.searchIssues({ size: 4 })).list
+      }
+    },
   },
   mounted() {
     this.activeTab = 'task'
+    workspaceService.watchActiveWorkspace(this, this.searchTabItems)
   },
 }
 </script>

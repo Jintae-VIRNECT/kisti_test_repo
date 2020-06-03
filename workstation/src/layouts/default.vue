@@ -51,6 +51,18 @@ export default {
       activeWorkspace: 'workspace/activeWorkspace',
     }),
   },
+  mounted() {
+    // 툴팁이벤트
+    const message = this.$route.query.message
+    if (message) {
+      this.$message.error({
+        message: this.$t(message),
+        showClose: true,
+        duration: 0,
+      })
+      this.$router.replace(this.$route.path)
+    }
+  },
 }
 </script>
 
