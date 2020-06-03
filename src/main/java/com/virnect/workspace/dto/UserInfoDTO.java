@@ -24,6 +24,7 @@ public class UserInfoDTO {
     private String createdDate;
     private String updatedDate;
     private String nickName;
+    private String[] licenseProducts;
 
     @Override
     public String toString() {

@@ -614,7 +614,7 @@ public class WorkspaceService {
             } else {
                 //라이선스 플랜 - 멤버 제한 수 체크
                 WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-                if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList()==null) {
+                if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
                     throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
                 }
                 int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
@@ -738,6 +738,18 @@ public class WorkspaceService {
 
     }
 
+    /**
+     * 권한 변경 기능
+     * 권한 변경에는 워크스페이스 내의 유저 권한 변경, 플랜 변경이 있음.
+     * 유저 권한 변경은 해당 워크스페이스의 '마스터'유저만 가능함.('매니저' to '멤버', '멤버' to '매니저')
+     * 플랜 변경은 해당 워크스페이스 '마스터', '매니저'유저 가 가능함.
+     * 이때 주의점은 어느 유저든지 간에 최소 1개 이상의 제품라이선스를 보유하고 있어야 함.
+     *
+     * @param workspaceId         - 권한 변경이 이루어지는 워크스페이스의 식별자
+     * @param memberUpdateRequest - 권한 변경 요청 정보
+     * @param locale              - 언어 정보
+     * @return - 변경 성공 여부
+     */
     public ApiResponse<Boolean> reviseMemberInfo(String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale) {
 
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
@@ -1024,8 +1036,18 @@ public class WorkspaceService {
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId);
         UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(userId).getData();
 
+
         UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
         userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+
+        String[] licenseProducts = new String[0];
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userId).getData();
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+            licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
+                return myLicenseInfoResponse.getProductName();
+            }).toArray(String[]::new);
+            userInfoDTO.setLicenseProducts(licenseProducts);
+        }
 
         return new ApiResponse<>(userInfoDTO);
     }
