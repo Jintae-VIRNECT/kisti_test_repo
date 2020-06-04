@@ -518,8 +518,8 @@ public class WorkspaceService {
                         log.info("REDIS SET - {}", newUserInvite.toString());
                     }
                     //메일은 이미 초대한 것 여부와 관계없이 발송한다.
-                    String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/reject?userId=" + inviteUserResponse.getUserUUID();
-                    String acceptUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID();
+                    String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID()+"&accept=false";
+                    String acceptUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId=" + inviteUserResponse.getUserUUID()+"&accept=true";
                     context.setVariable("rejectUrl", rejectUrl);
                     context.setVariable("acceptUrl", acceptUrl);
                     context.setVariable("responseUserName", inviteUserResponse.getName());
