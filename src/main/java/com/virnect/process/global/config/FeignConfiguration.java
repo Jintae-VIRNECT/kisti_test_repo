@@ -16,7 +16,7 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
  * DESCRIPTION:
  */
 @Configuration
-@EnableFeignClients(basePackages = {"com.virnect.process.application.content", "com.virnect.process.application.user"})
+@EnableFeignClients(basePackages = {"com.virnect.process.application.content", "com.virnect.process.application.user", "com.virnect.process.application.workspace"})
 public class FeignConfiguration {
 
     // Feign retry set

@@ -12,6 +12,7 @@ import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
+import com.virnect.process.dto.rest.response.workspace.MemberInfoDTO;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
@@ -284,6 +285,29 @@ public class TaskService {
     }
 
     /**
+     * 작업을 추가 작업으로 변환(Transform)할 때 - 기존 작업의 타겟을 작업 타겟으로 설정.
+     * @param newProcess
+     * @param contentTargetResponse
+     */
+    private void getTargetFromTask(Process newProcess, Target taskTarget) {
+        try {
+            if (Objects.isNull(taskTarget)) {
+                throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
+            }
+
+            Target target = taskTarget;
+
+            this.targetRepository.save(target);
+
+            newProcess.addTarget(target);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("ERROR : GET TARGET FROM CONTENT getMessage: {}, getCause: {}", e.getMessage(), e.getCause());
+            throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
+        }
+    }
+
+    /**
      * 신규 공정에 세부 공정 내역 추가 처리
      *
      * @param registerNewProcess - 신규 공정 생성 요청 데이터
@@ -306,15 +330,9 @@ public class TaskService {
                                 .progressRate(INIT_PROGRESS_RATE)
                                 .isRecent(INIT_IS_RECENT)
                                 .reportedDate(null)
-                                .workerUUID("")
+                                .workerUUID(newSubProcess.getWorkerUUID())
                                 .jobList(new ArrayList<>())
                                 .build();
-
-                        if (registerNewProcess.getOwnerUUID() == null) {
-                            subProcess.setWorkerUUID(newSubProcess.getWorkerUUID());
-                        } else {
-                            subProcess.setWorkerUUID(registerNewProcess.getOwnerUUID());
-                        }
 
                         this.subProcessRepository.save(subProcess);
                         newProcess.addSubProcess(subProcess);
@@ -488,7 +506,6 @@ public class TaskService {
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
             ApiResponse<ContentInfoResponse> contentTransfrom = this.contentRestService.getContentInfo(duplicateRequest.getContentUUID());
 
-            ContentTargetResponse contentTarget = contentTransfrom.getData().getTargets().get(0);
 
             // 기존 컨텐츠 식별자 등록
             newProcess.setContentUUID(duplicateRequest.getContentUUID());
@@ -503,8 +520,14 @@ public class TaskService {
             // 기존의 작업은 CLOSED
             this.setClosedProcess(targetProcess.getId(), targetProcess.getContentManagerUUID());
 
-            // 컨텐츠의 타겟 정보를 가져옴
-            getTargetFromContent(newProcess, contentTarget);
+            Target target = null;
+
+            if (!targetProcess.getTargetList().isEmpty()){
+                target = targetProcess.getTargetList().get(0);
+            }
+
+            // 기존 작업의 타겟 정보를 가져옴
+            getTargetFromTask(newProcess, target);
         }
 
         // 5. 세부 공정 정보 리스트 생성
@@ -1290,13 +1313,12 @@ public class TaskService {
         // 공정조회
         Process process = this.processRepository.findById(taskId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        //Process process = this.processRepository.getProcessInfo(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        // 마감 상태로 변경
 
-        if (actorUUID.equals(process.getContentManagerUUID())) {
+        if (!actorUUID.equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
         }
 
+        // 마감 상태로 변경
         process.setState(State.CLOSED);
         this.processRepository.save(process);
 
