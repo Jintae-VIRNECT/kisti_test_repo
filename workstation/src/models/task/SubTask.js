@@ -22,7 +22,10 @@ export default class SubTask extends Model {
     this.isRecent = json.isRecent
     this.workerUUID = json.workerUUID
     this.workerName = json.workerName
-    this.workerProfile = json.workerProfile
+    this.workerProfile =
+      json.workerProfile === 'default'
+        ? require('assets/images/icon/ic-user-profile.svg')
+        : json.workerProfile
     this.issuesTotal = json.issuesTotal
     this.doneCount = json.doneCount
   }

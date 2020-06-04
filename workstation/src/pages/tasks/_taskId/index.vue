@@ -85,7 +85,7 @@
             </el-button>
             <div class="right">
               <span>{{ $t('task.detail.subTaskCount') }}</span>
-              <span class="num">{{ subTaskTotal }}</span>
+              <span class="num">{{ taskInfo.subTaskTotal }}</span>
             </div>
           </div>
           <!-- 차트 -->
@@ -105,7 +105,7 @@
             </el-button>
             <div class="right">
               <span>{{ $t('task.detail.subTaskCount') }}</span>
-              <span class="num">{{ subTaskTotal }}</span>
+              <span class="num">{{ taskInfo.subTaskTotal }}</span>
             </div>
           </div>
 

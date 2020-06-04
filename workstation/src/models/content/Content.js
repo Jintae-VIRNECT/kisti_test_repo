@@ -15,7 +15,10 @@ export default class Content extends Model {
     this.contentSize = json.contentSize
     this.uploaderUUID = json.uploaderUUID
     this.uploaderName = json.uploaderName
-    this.uploaderProfile = json.uploaderProfile
+    this.uploaderProfile =
+      json.uploaderProfile === 'default'
+        ? require('assets/images/icon/ic-user-profile.svg')
+        : json.uploaderProfile
     this.path = json.path
     this.converted = json.converted
     this.targets = json.targets
