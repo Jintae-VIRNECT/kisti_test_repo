@@ -1,5 +1,6 @@
 package com.virnect.content.dao;
 
+import com.querydsl.core.Tuple;
 import com.virnect.content.domain.Content;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,7 @@ public interface ContentCustomRepository {
     Long getWorkspaceStorageSize(String workspaceUUID);
  
     Long getWorkspaceDownload(String workspaceUUID);
+
+    List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
+
 }

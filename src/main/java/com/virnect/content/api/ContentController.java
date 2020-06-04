@@ -1,5 +1,6 @@
 package com.virnect.content.api;
 
+import com.querydsl.core.Tuple;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.*;
@@ -22,6 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: PF-ContentManagement
@@ -80,6 +82,23 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, null, pageable.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스테이션 기준 사용자별 업로드한 컨텐츠 수 ", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "")
+    })
+    @GetMapping("/countContents")
+    public ResponseEntity<ApiResponse<List<ContentCountResponse>>> countContents(
+            @RequestParam(value = "workspaceUUID") String workspaceUUID
+            , @RequestParam(value = "userUUIDList") List<String> userUUIDList){
+        if (userUUIDList.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<List<ContentCountResponse>> responseMessage = this.contentService.countMyContents(workspaceUUID, userUUIDList);
         return ResponseEntity.ok(responseMessage);
     }
 

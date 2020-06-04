@@ -39,7 +39,6 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
 
     Page<Content> findByWorkspaceUUID(String workspaceUUID, Pageable pageable);
 
-
 //    @Transactional(readOnly = true)
 //    List<Content> findByStatus(ContentStatus contentStatus);
 

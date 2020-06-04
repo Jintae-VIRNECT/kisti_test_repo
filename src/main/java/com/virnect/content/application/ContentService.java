@@ -3,6 +3,7 @@ package com.virnect.content.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
+import com.querydsl.core.Tuple;
 import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
@@ -922,6 +923,25 @@ public class ContentService {
         if (!isWorkspaceMember) {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
+    }
+
+    public ApiResponse<List<ContentCountResponse>> countMyContents(String workspaceUUID, List<String> userUUIDList) {
+
+        List<Tuple> tupleList = this.contentRepository.countByUsers(workspaceUUID, userUUIDList);
+
+        log.debug(">>>>> : {}", tupleList);
+
+        List<ContentCountResponse> countList  = tupleList.stream().map(tuple -> {
+            ContentCountResponse response = new ContentCountResponse();
+
+            response.setUserUUID(tuple.get(0, String.class));
+            response.setCountContents(tuple.get(1, Long.class));
+
+            return response;
+        }).collect(Collectors.toList());
+
+        return new ApiResponse<>(countList);
+
     }
 
     // property 정보 -> metadata로 변환
