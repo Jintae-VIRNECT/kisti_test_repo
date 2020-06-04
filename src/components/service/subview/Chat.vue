@@ -144,10 +144,10 @@ export default {
     },
     toggleFileMenu() {
       console.log('파일 clicked')
-      if (!this.showFile) {
-        this.showChat = false
-        this.showFile = true
-      }
+      // if (!this.showFile) {
+      //   this.showChat = false
+      //   this.showFile = true
+      // }
     },
 
     /**
@@ -162,7 +162,6 @@ export default {
         return chat
       }
 
-      //hyliter for system message
       if (chat.type === 'system') {
         chat.text = this.sysHyliter(chat.text)
       } else {
@@ -210,7 +209,7 @@ export default {
   mounted() {
     this.roomTitle = this.room.title ? this.room.title : ''
 
-    //test message.
+    //test message. delete if you need
     this.chatList.push(
       {
         type: 'opponent',
