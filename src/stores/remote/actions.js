@@ -56,17 +56,13 @@ export default {
     commit(types.CALL_ACTION_SET, state)
   },
 
-  callStream({ commit }, state) {
-    commit(types.CALL_STREAM, state)
-  },
   callMic({ commit }, state) {
+    localStorage.setItem('mic', state)
     commit(types.CALL_MIC, state)
   },
   callSpeaker({ commit }, state) {
+    localStorage.setItem('speaker', state)
     commit(types.CALL_SPEAKER, state)
-  },
-  muteOnOff({ commit }) {
-    commit(types.MUTE_ON_OFF)
   },
 
   /**
@@ -86,15 +82,14 @@ export default {
   },
 
   /** workspace-settings **/
-
   /**
    *
    * @param {*} param0
    * @param {String} payload deviceId
    */
-  setMic({ commit }, payload) {
-    localStorage.setItem('mic', payload)
-    commit(types.SETTINGS.SET_MIC, payload)
+  setMicDevice({ commit }, payload) {
+    localStorage.setItem('micDevice', payload)
+    commit(types.SETTINGS.SET_MIC_DEVICE, payload)
   },
 
   /**
@@ -102,9 +97,9 @@ export default {
    * @param {*} param0
    * @param {String} payload deviceId
    */
-  setSpeaker({ commit }, payload) {
-    localStorage.setItem('speaker', payload)
-    commit(types.SETTINGS.SET_SPEAKER, payload)
+  setSpeakerDevice({ commit }, payload) {
+    localStorage.setItem('speakerDevice', payload)
+    commit(types.SETTINGS.SET_SPEAKER_DEVICE, payload)
   },
 
   /**

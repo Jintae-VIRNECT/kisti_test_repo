@@ -2,8 +2,8 @@
 import { SETTINGS } from '../mutation-types'
 
 const state = {
-  mic: null,
-  speaker: null,
+  micDevice: null,
+  speakerDevice: null,
   videoDevice: null,
   language: null,
   localRecordLength: null,
@@ -11,11 +11,11 @@ const state = {
 }
 
 const mutations = {
-  [SETTINGS.SET_MIC](state, mic) {
-    state.mic = mic
+  [SETTINGS.SET_MIC_DEVICE](state, mic) {
+    state.micDevice = mic
   },
-  [SETTINGS.SET_SPEAKER](state, speaker) {
-    state.speaker = speaker
+  [SETTINGS.SET_SPEAKER_DEVICE](state, speaker) {
+    state.speakerDevice = speaker
   },
   [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
     state.videoDevice = videoDevice

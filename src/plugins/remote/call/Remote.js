@@ -28,7 +28,7 @@ const _ = {
         clientData: account.uuid,
         serverData: users,
       }
-      console.log(JSON.stringify(metaData))
+
       const iceServer = [
         {
           url: 'turn:turn.virnectremote.com:3478?transport=udp',
@@ -47,7 +47,6 @@ const _ = {
         JSON.stringify(metaData),
         iceServer,
       )
-      console.log('[session] connection success')
 
       _.publisher = OV.initPublisher('', {
         audioSource: undefined, // The source of audio. If undefined default microphone
@@ -60,14 +59,11 @@ const _ = {
         mirror: false, // Whether to mirror your local video or not
       })
       _.publisher.on('streamCreated', event => {
-        console.log('[session] publisher stream created success')
-
         Store.commit('addStream', getUserObject(_.publisher.stream))
+        _.micOnOff(Store.getters['mic'])
       })
-      console.log(_.publisher.stream.streamId)
 
       _.session.publish(_.publisher)
-      console.log('[session] init publisher success')
       return true
     } catch (err) {
       console.error(err)
@@ -79,6 +75,7 @@ const _ = {
       Store.commit('clearStreams')
       _.session.disconnect()
       _.session = null
+      _.publisher = null
     } catch (err) {
       throw err
     }
@@ -126,9 +123,10 @@ const _ = {
     _.publisher.publishVideo(active)
   },
   micOnOff: active => {
+    if (!_.publisher) return
     _.publisher.publishAudio(active)
   },
-  audioOnOff: (id, statue) => {
+  muteOnOff: (id, statue) => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.id.indexOf(id) > -1,
     )

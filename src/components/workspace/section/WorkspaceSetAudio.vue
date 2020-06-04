@@ -7,10 +7,10 @@
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="setMic"
-          :options="mics"
+          :options="micDevices"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="mic"
+          :defaultValue="micDevice"
         >
         </r-select>
       </figure>
@@ -21,10 +21,10 @@
           ref="settingOutput"
           class="setting__r-selecter"
           v-on:changeValue="setSpeaker"
-          :options="speakers"
+          :options="speakerDevices"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="speaker"
+          :defaultValue="speakerDevice"
         >
         </r-select>
       </figure>
@@ -33,15 +33,14 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
-import { mapState } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   props: {
-    //device list
-    mics: {
+    micDevices: {
       type: Array,
       default: () => [],
     },
-    speakers: {
+    speakerDevices: {
       type: Array,
       default: () => [],
     },
@@ -50,10 +49,7 @@ export default {
     RSelect,
   },
   computed: {
-    ...mapState({
-      mic: state => state.settings.mic,
-      speaker: state => state.settings.speaker,
-    }),
+    ...mapGetters(['micDevice', 'speakerDevice']),
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
@@ -61,18 +57,25 @@ export default {
         return 0
       }
     },
-    ...mapState({
-      mic: state => state.settings.mic,
-      speaker: state => state.settings.speaker,
-    }),
   },
   methods: {
+    ...mapActions(['setMicDevice', 'setSpeakerDevice']),
     setMic(newMic) {
-      this.$store.dispatch('setMic', newMic.deviceId)
+      this.setMicDevice(newMic.deviceId)
     },
     setSpeaker(newSpeaker) {
-      this.$store.dispatch('setSpeaker', newSpeaker.deviceId)
+      this.setSpeakerDevice(newSpeaker.deviceId)
     },
+  },
+  created() {
+    const micDefault = localStorage.getItem('micDevice')
+    if (micDefault) {
+      this.setMic(micDefault)
+    }
+    const speakerDefault = localStorage.getItem('speakerDevice')
+    if (speakerDefault) {
+      this.setSpeaker(speakerDefault)
+    }
   },
 }
 </script>

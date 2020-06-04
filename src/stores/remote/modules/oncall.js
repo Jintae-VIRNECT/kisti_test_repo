@@ -5,6 +5,8 @@ import {
   TOOL_DRAWING_OPACITY,
   TOOL_TEXT_SIZE,
   TOOL_LINE_WIDTH,
+  CALL_MIC,
+  CALL_SPEAKER,
 } from '../mutation-types'
 
 import { reset } from 'utils/callOptions'
@@ -16,6 +18,9 @@ const state = {
   lineWidth: reset.width,
   fontSize: reset.size,
   action: 'default', // default, pointing, drawing
+
+  mic: false,
+  speaker: true,
 }
 
 const mutations = {
@@ -39,6 +44,12 @@ const mutations = {
   },
   [TOOL_LINE_WIDTH](state, mode) {
     state.lineWidth = mode
+  },
+  [CALL_MIC](state, mode) {
+    state.mic = mode
+  },
+  [CALL_SPEAKER](state, mode) {
+    state.speaker = mode
   },
 }
 

@@ -6,7 +6,7 @@
         <p class="setting__label">최대 녹화 시간</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setRecLength"
+          @changeValue="setRecLength"
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
@@ -19,7 +19,7 @@
         <p class="setting__label">녹화 영상 해상도</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setRecResolution"
+          @changeValue="setRecResolution"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
@@ -32,14 +32,10 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
-import { mapState } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
-  props: {},
-  data: function() {
+  data() {
     return {
-      localRecordingTime: '',
-      localRecordingResolution: '',
-
       localRecTimeOpt: [
         {
           value: '5',
@@ -79,18 +75,26 @@ export default {
     RSelect,
   },
   computed: {
-    ...mapState({
-      localRecordLength: state => state.settings.localRecordLength,
-      recordResolution: state => state.settings.recordResolution,
-    }),
+    ...mapGetters(['localRecordLength', 'recordResolution']),
   },
   methods: {
-    setRecLength: function(newRecLength) {
-      this.$store.dispatch('setLocalRecordLength', newRecLength.value)
+    ...mapActions(['setLocalRecordLength', 'setRecordResolution']),
+    setRecLength(newRecLength) {
+      this.setLocalRecordLength(newRecLength.value)
     },
-    setRecResolution: function(newResolution) {
-      this.$store.dispatch('setRecordResolution', newResolution.value)
+    setRecResolution(newResolution) {
+      this.setRecordResolution(newResolution.value)
     },
+  },
+  created() {
+    const time = localStorage.getItem('recordingTime')
+    if (time) {
+      this.setLocalRecordLength(time)
+    }
+    const resolution = localStorage.getItem('recordingResolution')
+    if (resolution) {
+      this.setRecResolution(resolution)
+    }
   },
 }
 </script>

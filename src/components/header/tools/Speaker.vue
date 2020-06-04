@@ -31,11 +31,17 @@ export default {
     speakerOnOff() {
       let speaker = !this.speaker
       this.callSpeaker(speaker)
-      // this.onMic = !this.onMic
+
+      // this.$call.speakerOnOff(speaker)
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    let speaker = localStorage.getItem('speaker')
+    if (typeof speaker === Boolean) {
+      this.callSpeaker(speaker)
+    }
+  },
 }
 </script>
