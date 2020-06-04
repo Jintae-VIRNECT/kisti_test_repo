@@ -134,15 +134,6 @@ export default {
         board: this.type === 'system' && this.chat.name === 'board',
       }
     },
-    getChatItemClass() {
-      if (false === this.chat.type || this.chat.type === 'opponent') {
-        return 'chat-item__opponent'
-      } else if (this.chat.type === 'me') {
-        return 'chat-item__me'
-      } else {
-        return 'chat-item__system'
-      }
-    },
   },
   watch: {},
   methods: {},
