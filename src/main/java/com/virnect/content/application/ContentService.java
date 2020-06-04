@@ -185,7 +185,11 @@ public class ContentService {
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = decodeData(targetData);
+        String imgPath = null;
+
+        if (Objects.nonNull(targetData)) {
+          imgPath = decodeData(targetData);
+        }
 
         Target target = Target.builder()
                 .type(targetType)
@@ -193,6 +197,7 @@ public class ContentService {
                 .data(targetData)
                 .imgPath(imgPath)
                 .build();
+
         content.addTarget(target);
 
         this.targetRepository.save(target);
@@ -226,7 +231,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건 (공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
@@ -259,7 +264,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건(공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
@@ -299,7 +304,7 @@ public class ContentService {
         if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-        // 수정할 수 없는 조건
+        // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
@@ -1019,13 +1024,15 @@ public class ContentService {
                 metaSceneGroupsObj.addProperty("priority", i);
                 metaSceneGroupsObj.addProperty("name"    , sceneGroupName);
 
-                // scenegroup이 있고 그 안에 scene이 없는 경우가 있다. scene이 있는 없는 경우.
+                // scenegroup이 있고 그 안에 scene이 없는 경우가 있다. scene이 없는 경우.
+                // scenegroup - 하위작업 / scene - 단계
                 if (!sceneGroup.has("Child")) {
                     metaSceneGroupsObj.addProperty("jobTotal", 0);
+                    metaSceneGroupsObj.add("scenes", new JsonArray());
                     metaSceneGroupArr.add(metaSceneGroupsObj);
                     i++;
                 }
-                // scene이 없는 경우.
+                // scene이 있는 경우.
                 else {
                     sceneGroupChild = sceneGroup.getAsJsonObject("Child");           // 2-2
 
@@ -1042,66 +1049,83 @@ public class ContentService {
 
                         String sceneKey = scenesIter.next();
 
-                        log.debug(">>>>>> {}", sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child"));
+                        JsonObject scene = sceneGroupChild.getAsJsonObject(sceneKey);
 
                         JsonObject sceneInfo = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("PropertyInfo");   // 3-1
-                        JsonObject sceneChild = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child");          // 3-2
 
-                        Iterator<String> sceneIter =  sceneChild.keySet().iterator();
-
-                        JsonArray reportListItems = new JsonArray();
-
-                        JsonArray reportArr  = new JsonArray();
-                        JsonObject reportObj = new JsonObject();
-
-                        while (sceneIter.hasNext()){
-                            JsonObject scarch = sceneChild.getAsJsonObject(sceneIter.next()).getAsJsonObject("PropertyInfo");
-
-                            if (scarch.toString().contains("reportListItems")) {
-                                reportObj.addProperty("id", scarch.get("identifier").getAsString());
-                                reportListItems = scarch.getAsJsonArray("reportListItems");
-                            }
-                        }
-
-                        if (reportListItems.size() > 0) {
-                            int k = 1;
-
-                            JsonArray itemsArr = new JsonArray();
-                            for (JsonElement obj : reportListItems) {
-                                JsonObject metaItem = new JsonObject();
-
-                                JsonObject item = obj.getAsJsonObject();
-
-                                metaItem.addProperty("id", item.get("identifier").getAsString());
-                                metaItem.addProperty("priority",k);
-                                metaItem.addProperty("title", item.get("contents").getAsString());
-                                metaItem.addProperty("item", "NONE"); // 협의 필요
-                                itemsArr.add(metaItem);
-                                k++;
-                            }
-
-                            reportObj.add("items", itemsArr);
-                        }
-
+                        String stepId = sceneInfo.get("identifier").getAsString();
                         String stepName = sceneInfo.get("sceneTitle").getAsString();
-                        int subJobTotal = reportListItems.size();
 
                         if (Objects.isNull(stepName) || "".equals(stepName)) {
                             stepName = "기본 단계명";
                         }
 
-                        if (subJobTotal == 0) {
-                            subJobTotal = 1;
+                        log.debug(">>>>>>>>>>>>>>>>>>>>>>>> : {}", scene);
+
+                        // scene 하위에 Child가 없는 경우
+                        if (!scene.has("Child")) {
+                            metaScenesObj.addProperty("id", stepId);
+                            metaScenesObj.addProperty("priority", j);
+                            metaScenesObj.addProperty("name", stepName);
+                            metaScenesObj.addProperty("subJobTotal", 1);
+                            metaScenesObj.add("reportObjects", new JsonArray());
                         }
+                        // scene 하위에 Child가 있는 경우
+                        else {
+                            JsonObject sceneChild = sceneGroupChild.getAsJsonObject(sceneKey).getAsJsonObject("Child");          // 3-2
 
-                        reportArr.add(reportObj);
+                            Iterator<String> sceneIter = sceneChild.keySet().iterator();
 
-                        metaScenesObj.addProperty("id", sceneInfo.get("identifier").getAsString());
-                        metaScenesObj.addProperty("priority", j);
-                        metaScenesObj.addProperty("name", stepName);
-                        metaScenesObj.addProperty("subJobTotal", subJobTotal);
-                        metaScenesObj.add("reportObjects", reportArr);
+                            JsonArray reportListItems = new JsonArray();
 
+                            JsonArray reportArr = new JsonArray();
+                            JsonObject reportObj = new JsonObject();
+
+                            while (sceneIter.hasNext()) {
+                                JsonObject search = sceneChild.getAsJsonObject(sceneIter.next()).getAsJsonObject("PropertyInfo");
+
+
+                                if (search.toString().contains("reportListItems")) {
+                                    reportObj.addProperty("id", search.get("identifier").getAsString());
+                                    reportListItems = search.getAsJsonArray("reportListItems");
+                                }
+                            }
+
+                            if (reportListItems.size() > 0) {
+                                int k = 1;
+
+                                JsonArray itemsArr = new JsonArray();
+                                for (JsonElement obj : reportListItems) {
+                                    JsonObject metaItem = new JsonObject();
+
+                                    JsonObject item = obj.getAsJsonObject();
+
+                                    metaItem.addProperty("id", item.get("identifier").getAsString());
+                                    metaItem.addProperty("priority", k);
+                                    metaItem.addProperty("title", item.get("contents").getAsString());
+                                    metaItem.addProperty("item", "NONE"); // 협의 필요
+                                    itemsArr.add(metaItem);
+                                    k++;
+                                }
+
+                                reportObj.add("items", itemsArr);
+                            }
+
+                            int subJobTotal = reportListItems.size();
+
+                            if (subJobTotal == 0) {
+                                subJobTotal = 1;
+                            }
+
+                            reportArr.add(reportObj);
+
+                            metaScenesObj.addProperty("id", stepId);
+                            metaScenesObj.addProperty("priority", j);
+                            metaScenesObj.addProperty("name", stepName);
+                            metaScenesObj.addProperty("subJobTotal", subJobTotal);
+                            metaScenesObj.add("reportObjects", reportArr);
+
+                        }
                         metaScenesArr.add(metaScenesObj);
                         j++;
                     }
