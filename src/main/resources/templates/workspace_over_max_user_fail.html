@@ -47,7 +47,7 @@
                         Basic Plan을 이용한 Public 서비스는 하나의 워크스페이스에 마스터를 포함한 <br>
                         최대 9명의 사용자가 참여할 수 있습니다. 더 많은 사용자와 VIRNECT 제품 및 서비스를 <br>
                         이용하고 싶으시다면 서비스 변경이 필요합니다.<br><br>
-                        <a th:href="@{${contactUrl}}" th:style="font-size:14px;color:#0054f7;font-weight:bold;text-decoration:underline;" >문의하기</a>를 통해 더 넓고 강력한 VIRNECT 제품과 서비스를 경험해 보세요.
+                        <a th:href="@{${contactUrl}}" th:style="'font-size:14px;color:#0054f7;font-weight:bold;text-decoration:underline;'" >문의하기</a>를 통해 더 넓고 강력한 VIRNECT 제품과 서비스를 경험해 보세요.
                     </p>
 
                     <table
@@ -172,7 +172,7 @@
                                       th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
                                     [[${planRemoteType}]]
                                 </span>
-                                &nbsp;<div th:if="${#strings.contains(plan,'REMOTE')}"> &nbsp;/&nbsp;&nbsp;</div>
+                                <span th:if="${#strings.contains(plan,'REMOTE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
 
                                 <img th:if="${#strings.contains(plan,'MAKE')}"
                                      th:style="'vertical-align:middle;'"
@@ -181,7 +181,7 @@
                                       th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
                                     [[${planMakeType}]]
                                 </span>
-                                &nbsp;<div th:if="${#strings.contains(plan,'MAKE')}"> &nbsp;/&nbsp;&nbsp;</div>
+                                <span th:if="${#strings.contains(plan,'MAKE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
 
                                 <img th:if="${#strings.contains(plan,'VIEW')}"
                                      th:style="'vertical-align:middle;'"
@@ -212,7 +212,7 @@
                     </table>
 
                     <p>
-                        <a th:href="@{${contactUrl}}" style="margin: 0 4px;"><img src="http://image.virnect.com/images/mailling_service/inquiry.png"></a>
+                        <a th:href="@{${contactUrl}}" th:style="'margin: 0 4px;'"><img src="http://image.virnect.com/images/mailling_service/inquiry.png"></a>
                     </p>
 
                 </td>
