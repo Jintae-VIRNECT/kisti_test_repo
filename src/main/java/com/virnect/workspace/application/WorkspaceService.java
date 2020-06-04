@@ -608,140 +608,150 @@ public class WorkspaceService {
 
             String html = springTemplateEngine.process("workspace_over_join_fail", context);
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_JOIN_FAIL);
-            redirectUrl = redirectUrl + "/?message=members.add.message.overflow";
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
-        } else {
-            //라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
-            WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
-            if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
-                throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
-            }
 
-            int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl + "/?message=members.add.message.overflow");
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
 
-            if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + 1) {
-                Context context = new Context();
-                context.setVariable("workspaceName", workspace.getName());
-                context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-                context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-                context.setVariable("userNickName", userInvite.getResponseUserNickName());
-                context.setVariable("userEmail", userInvite.getResponseUserEmail());
-                context.setVariable("plan", generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView()));
-                context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
-                context.setVariable("planMakeType", userInvite.getPlanMakeType());
-                context.setVariable("planViewType", userInvite.getPlanViewType());
-                context.setVariable("contactUrl", contactUrl);
-                context.setVariable("workstationHomeUrl", redirectUrl);
+        //라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+        }
 
-                String html = springTemplateEngine.process("workspace_over_max_user_fail", context);
-                this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_MAX_USER_FAIL);
-                redirectUrl = redirectUrl + "/?message=members.add.message.memberOverflow";
-                this.userInviteRepository.deleteById(userId + "-" + workspaceId);
+        int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
+
+        if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + 1) {
+            Context context = new Context();
+            context.setVariable("workspaceName", workspace.getName());
+            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+            context.setVariable("userNickName", userInvite.getResponseUserNickName());
+            context.setVariable("userEmail", userInvite.getResponseUserEmail());
+            context.setVariable("plan", generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView()));
+            context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
+            context.setVariable("planMakeType", userInvite.getPlanMakeType());
+            context.setVariable("planViewType", userInvite.getPlanViewType());
+            context.setVariable("contactUrl", contactUrl);
+            context.setVariable("workstationHomeUrl", redirectUrl);
+
+            String html = springTemplateEngine.process("workspace_over_max_user_fail", context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_MAX_USER_FAIL);
+            this.userInviteRepository.deleteById(userId + "-" + workspaceId);
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl + "/?message=members.add.message.overflow");
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+        //플랜 할당.
+        Boolean planRemoteGrantResult = true;
+        Boolean planMakeGrantResult = true;
+        Boolean planViewGrantResult = true;
+        StringBuilder successPlan = new StringBuilder();
+        StringBuilder failPlan = new StringBuilder();
+
+        if (userInvite.getPlanRemote()) {
+            MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.REMOTE.toString()).getData();
+            if (!grantResult.getProductName().equals(LicenseProduct.REMOTE.toString())) {
+                planRemoteGrantResult = false;
+                failPlan.append("REMOTE");
             } else {
-                //플랜 할당.
-                Boolean planRemoteGrantResult = true;
-                Boolean planMakeGrantResult = true;
-                Boolean planViewGrantResult = true;
-                StringBuilder successPlan = new StringBuilder();
-                StringBuilder failPlan = new StringBuilder();
-
-                if (userInvite.getPlanRemote()) {
-                    MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.REMOTE.toString()).getData();
-                    if (!grantResult.getProductName().equals(LicenseProduct.REMOTE.toString())) {
-                        planRemoteGrantResult = false;
-                        failPlan.append("REMOTE");
-                    } else {
-                        successPlan.append("REMOTE");
-                    }
-                }
-                if (userInvite.getPlanMake()) {
-                    MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.MAKE.toString()).getData();
-                    if (!grantResult.getProductName().equals(LicenseProduct.MAKE.toString())) {
-                        planMakeGrantResult = false;
-                        failPlan.append(",MAKE");
-                    } else {
-                        successPlan.append(",MAKE");
-                    }
-                }
-                if (userInvite.getPlanView()) {
-                    MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.VIEW.toString()).getData();
-                    if (!grantResult.getProductName().equals(LicenseProduct.VIEW.toString())) {
-                        planViewGrantResult = false;
-                        failPlan.append(",VIEW");
-                    } else {
-                        successPlan.append(",VIEW");
-                    }
-                }
-
-                if (!planRemoteGrantResult || !planMakeGrantResult || !planViewGrantResult) {
-                    //어느 한개라도 플랜할당이 실패하면 초대 롤백한다.
-                    Context context = new Context();
-                    context.setVariable("workspaceName", workspace.getName());
-                    context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-                    context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-                    context.setVariable("userNickName", userInvite.getResponseUserNickName());
-                    context.setVariable("userEmail", userInvite.getResponseUserEmail());
-                    context.setVariable("successPlan", successPlan);
-                    context.setVariable("failPlan", failPlan);
-                    context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
-                    context.setVariable("planMakeType", userInvite.getPlanMakeType());
-                    context.setVariable("planViewType", userInvite.getPlanViewType());
-                    context.setVariable("workstationHomeUrl", redirectUrl);
-                    context.setVariable("workstationMembersUrl", redirectUrl + "/members");
-
-                    String html = springTemplateEngine.process("workspace_over_plan_fail", context);
-                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_PLAN_FAIL);
-
-                    this.userInviteRepository.deleteById(userId + "-" + workspaceId);
-                    redirectUrl = redirectUrl + "/?message=members.add.message.enoughPlan";
-                } else {
-                    //워크스페이스 소속 넣기 (workspace_user)
-                    WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
-                    this.workspaceUserRepository.save(workspaceUser);
-
-                    //워크스페이스 권한 부여하기 (workspace_user_permission)
-                    WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(userInvite.getRole().toUpperCase());
-                    WorkspacePermission workspacePermission = WorkspacePermission.builder().id(Permission.ALL.getValue()).build();
-                    WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
-                            .workspaceUser(workspaceUser)
-                            .workspaceRole(workspaceRole)
-                            .workspacePermission(workspacePermission)
-                            .build();
-                    this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
-
-                    //MAIL 발송
-                    Context context = new Context();
-                    context.setVariable("workspaceName", workspace.getName());
-                    context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-                    context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-                    context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
-                    context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
-                    context.setVariable("role", userInvite.getRole());
-                    context.setVariable("workstationHomeUrl", redirectUrl);
-                    context.setVariable("plan", generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView()));
-
-                    String html = springTemplateEngine.process("workspace_invite_accept", context);
-                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
-
-                    //redis 에서 삭제
-                    this.userInviteRepository.deleteById(userId);
-
-                    //history 저장
-                    String message;
-                    if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
-                        message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName(), generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView())}, locale);
-                    } else {
-                        message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName(), generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView())}, locale);
-                    }
-                    History history = History.builder()
-                            .message(message)
-                            .userId(userInvite.getResponseUserId())
-                            .workspace(workspace)
-                            .build();
-                    this.historyRepository.save(history);
-                }
+                successPlan.append("REMOTE");
             }
         }
+        if (userInvite.getPlanMake()) {
+            MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.MAKE.toString()).getData();
+            if (!grantResult.getProductName().equals(LicenseProduct.MAKE.toString())) {
+                planMakeGrantResult = false;
+                failPlan.append(",MAKE");
+            } else {
+                successPlan.append(",MAKE");
+            }
+        }
+        if (userInvite.getPlanView()) {
+            MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, LicenseProduct.VIEW.toString()).getData();
+            if (!grantResult.getProductName().equals(LicenseProduct.VIEW.toString())) {
+                planViewGrantResult = false;
+                failPlan.append(",VIEW");
+            } else {
+                successPlan.append(",VIEW");
+            }
+        }
+
+        if (!planRemoteGrantResult || !planMakeGrantResult || !planViewGrantResult) {
+            Context context = new Context();
+            context.setVariable("workspaceName", workspace.getName());
+            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+            context.setVariable("userNickName", userInvite.getResponseUserNickName());
+            context.setVariable("userEmail", userInvite.getResponseUserEmail());
+            context.setVariable("successPlan", successPlan);
+            context.setVariable("failPlan", failPlan);
+            context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
+            context.setVariable("planMakeType", userInvite.getPlanMakeType());
+            context.setVariable("planViewType", userInvite.getPlanViewType());
+            context.setVariable("workstationHomeUrl", redirectUrl);
+            context.setVariable("workstationMembersUrl", redirectUrl + "/members");
+
+            String html = springTemplateEngine.process("workspace_over_plan_fail", context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_PLAN_FAIL);
+
+            this.userInviteRepository.deleteById(userId + "-" + workspaceId);
+
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl + "/?message=members.add.message.enoughPlan");
+            redirectView.setContentType("application/json");
+            return redirectView;
+
+        }
+        //워크스페이스 소속 넣기 (workspace_user)
+        WorkspaceUser workspaceUser = setWorkspaceUserInfo(workspaceId, userId);
+        this.workspaceUserRepository.save(workspaceUser);
+
+        //워크스페이스 권한 부여하기 (workspace_user_permission)
+        WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole(userInvite.getRole().toUpperCase());
+        WorkspacePermission workspacePermission = WorkspacePermission.builder().id(Permission.ALL.getValue()).build();
+        WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
+                .workspaceUser(workspaceUser)
+                .workspaceRole(workspaceRole)
+                .workspacePermission(workspacePermission)
+                .build();
+        this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+
+        //MAIL 발송
+        Context context = new Context();
+        context.setVariable("workspaceName", workspace.getName());
+        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
+        context.setVariable("acceptUserNickName", userInvite.getResponseUserNickName());
+        context.setVariable("acceptUserEmail", userInvite.getResponseUserEmail());
+        context.setVariable("role", userInvite.getRole());
+        context.setVariable("workstationHomeUrl", redirectUrl);
+        context.setVariable("plan", generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView()));
+
+        String html = springTemplateEngine.process("workspace_invite_accept", context);
+        this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
+
+        //redis 에서 삭제
+        this.userInviteRepository.deleteById(userId);
+
+        //history 저장
+        String message;
+        if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
+            message = this.messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{userInvite.getResponseUserNickName(), generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView())}, locale);
+        } else {
+            message = this.messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{userInvite.getResponseUserNickName(), generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView())}, locale);
+        }
+        History history = History.builder()
+                .message(message)
+                .userId(userInvite.getResponseUserId())
+                .workspace(workspace)
+                .build();
+        this.historyRepository.save(history);
+
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl(redirectUrl);
         redirectView.setContentType("application/json");
