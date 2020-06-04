@@ -3,7 +3,7 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <profile class="profile" v-if="!hideProfile"></profile> -->
+    <profile class="profile" v-if="!hideProfile"></profile>
     <!-- <img
       class="profile"
       src="~assets/image/call/chat_img_user.svg"
