@@ -495,7 +495,7 @@ public class WorkspaceService {
                                 .responseUserId(inviteUserResponse.getUserUUID())
                                 .responseUserEmail(inviteUserResponse.getEmail())
                                 .responseUserName(inviteUserResponse.getName())
-                                .responseUserNickName(inviteUserResponse.getNickName())
+                                .responseUserNickName(inviteUserResponse.getNickname())
                                 .requestUserId(materUser.getUuid())
                                 .requestUserEmail(materUser.getEmail())
                                 .requestUserName(materUser.getName())
@@ -524,7 +524,7 @@ public class WorkspaceService {
                     context.setVariable("acceptUrl", acceptUrl);
                     context.setVariable("responseUserName", inviteUserResponse.getName());
                     context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
-                    context.setVariable("responseUserNickName", inviteUserResponse.getNickName());
+                    context.setVariable("responseUserNickName", inviteUserResponse.getNickname());
                     context.setVariable("role", userInfo.getRole());
                     StringBuilder plan = new StringBuilder();
                     if (userInfo.getPlanRemote()) {
