@@ -35,7 +35,7 @@ export async function api(name, option = {}) {
   // default header
   const accessToken = process.client
     ? Cookies.get('accessToken')
-    : headers && headers.cookie.match('accessToken=(.*?);')[1]
+    : headers && headers.cookie.match(/accessToken=(.*?)(?![^;])/)[1]
   if (accessToken) {
     axios.defaults.headers.common = {
       Authorization: `Bearer ${accessToken}`,

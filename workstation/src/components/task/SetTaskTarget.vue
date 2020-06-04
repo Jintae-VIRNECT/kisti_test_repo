@@ -71,7 +71,7 @@ export default {
   },
   data() {
     return {
-      checkedDuplicate: false,
+      checkedDuplicate: true,
       checkedTransform: false,
     }
   },
@@ -92,6 +92,9 @@ export default {
     },
   },
   methods: {
+    opened() {
+      this.checkedDuplicate = true
+    },
     async submit() {
       const form = this.form
       form.targetSetting = this.checkedDuplicate ? 'duplicate' : 'transform'

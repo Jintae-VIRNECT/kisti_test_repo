@@ -145,12 +145,17 @@ export default {
     float: right;
     width: 70px;
     height: 70px;
+    margin-left: 10px;
   }
   .name {
     display: block;
     margin: 24px 0 4px;
+    overflow: hidden;
     font-size: 20px;
     line-height: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
   }
   .email {
     display: block;
