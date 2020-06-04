@@ -37,3 +37,11 @@ export const ROOM_CLEAR = 'ROOM_CLEAR'
 //list search
 export const SEARCH_SORT = 'SEARCH_SORT'
 export const SEARCH_FILTER = 'SEARCH_FILTER'
+
+// file sharing
+export const ADD_HISTORY = 'ADD_HISTORY'
+export const REMOVE_HISTORY = 'REMOVE_HISTORY'
+export const ADD_FILE = 'ADD_FILE'
+export const REMOVE_FILE = 'REMOVE_FILE'
+export const ADD_PDF_PAGE = 'ADD_PDF_PAGE'
+export const REMOVE_PDF_PAGE = 'REMOVE_PDF_PAGE'

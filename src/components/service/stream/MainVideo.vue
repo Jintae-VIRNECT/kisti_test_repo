@@ -23,7 +23,7 @@
         </div>
 
         <pointing
-          v-if="false"
+          v-if="action === 'pointing'"
           :scale="1"
           class="main-video__pointing"
         ></pointing>
@@ -55,16 +55,6 @@
           </div>
         </div>
       </template>
-      <!-- 
-      <div class="main-video__info">
-        <img class="profile" src="~assets/image/call/chat_img_user.svg" />
-        <span class="name">{{ mainView.nickName }}</span>
-        <span class="status" :class="status">연결상태</span>
-      </div> -->
-      <!-- 
-      <button v-if="mainView.uuid === 'main'" class="main-video__setting">
-        화면 설정
-      </button> -->
     </div>
   </div>
 </template>
@@ -90,6 +80,7 @@ export default {
     ...mapGetters({
       mainView: 'mainView',
       speaker: 'speaker',
+      action: 'action',
     }),
   },
   watch: {

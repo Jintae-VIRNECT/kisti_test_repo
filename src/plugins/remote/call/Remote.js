@@ -61,7 +61,7 @@ const _ = {
       _.publisher.on('streamCreated', event => {
         console.log('[session] publisher stream created success')
 
-        Store.commit('setMainView', getUserObject(_.publisher.stream))
+        Store.commit('addStream', getUserObject(_.publisher.stream))
       })
       console.log(_.publisher.stream.streamId)
 
@@ -89,6 +89,24 @@ const _ = {
       to: _.session.connection,
       type: 'signal:chat',
     })
+  },
+  pointing: message => {
+    console.log(_.session.connection)
+    _.session.signal({
+      data: JSON.stringify(message),
+      to: _.session.connection,
+      type: 'signal:pointing',
+    })
+  },
+  /**
+   * append message channel listener
+   * @param {Function} customFunc
+   */
+  addListener: (type, func) => {
+    _.session.on(type, func)
+  },
+  removeListener: (type, func) => {
+    _.session.off(type, func)
   },
   getDevices: () => {},
   getState: () => {},

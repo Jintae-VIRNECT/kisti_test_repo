@@ -1,7 +1,8 @@
-import { getAccount, tokenRequest } from 'api/common/account'
+import { getAccount, tokenRequest } from 'api/common'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
+import jwtDecode from 'jwt-decode'
 
 /**
  * 상태
@@ -13,6 +14,9 @@ let accessToken = null
 let refreshToken = null
 let myInfo = {}
 let myWorkspaces = []
+const intervalTime = 5 * 60 * 1000 // 5 minutes
+const renewvalTime = 5 * 60 // 5 minutes
+let interval
 
 /**
  * 메소드
@@ -22,11 +26,38 @@ function getTokensFromCookies() {
   refreshToken = Cookies.get('refreshToken')
   return accessToken
 }
-function setTokensToCookies(accessToken, refreshToken) {
-  Cookies.set('accessToken', accessToken)
-  Cookies.set('refreshToken', refreshToken)
-  return accessToken
+function setTokensToCookies(response) {
+  Cookies.set('accessToken', response.accessToken)
+  Cookies.set('refreshToken', response.refreshToken)
+  accessToken = response.accessToken
+  refreshToken = response.refreshToken
 }
+
+const tokenInterval = async () => {
+  let expireTime = jwtDecode(accessToken).exp,
+    now = parseInt(Date.now() / 1000)
+
+  // check expire time
+  if (expireTime - now < renewvalTime) {
+    let params = {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    }
+
+    let response = await tokenRequest(params)
+
+    setTokensToCookies(response)
+  }
+}
+
+const tokenRenewal = () => {
+  if (interval) {
+    clearInterval(interval)
+  }
+  interval = setInterval(tokenInterval, intervalTime)
+  tokenInterval()
+}
+
 async function getMyInfo() {
   try {
     const res = await getAccount()
@@ -40,18 +71,6 @@ async function getMyInfo() {
     }
     throw err
   }
-}
-
-export const tokenRenewal = async () => {
-  // console.log('[[ TOKEN INTERVAL ]]')
-  let params = {
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  }
-
-  const response = await tokenRequest(params)
-
-  setTokensToCookies(response.accessToken, response.refreshToken)
 }
 
 /**
@@ -78,6 +97,7 @@ class Auth {
 
   async init() {
     env = process.env.TARGET_ENV
+    console.log(env)
     if (env === undefined) {
       env = 'local'
     }
@@ -86,6 +106,7 @@ class Auth {
       try {
         await getMyInfo(api)
         isLogin = true
+        tokenRenewal()
       } catch (e) {
         console.log(e)
         console.error('Token is expired')

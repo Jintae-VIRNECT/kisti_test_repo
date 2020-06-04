@@ -152,4 +152,41 @@ export default {
   roomClear({ commit }) {
     commit(types.ROOM_CLEAR)
   },
+
+  /**
+   * add file history
+   * @param {Object} fileInfo
+   */
+  addHistory({ commit }, fileInfo) {
+    commit(types.ADD_HISTORY, fileInfo)
+  },
+  /**
+   * remove file history
+   * @param {String} fileId
+   */
+  removeHistory({ commit }, fileId) {
+    commit(types.REMOVE_HISTORY, fileId)
+  },
+  /**
+   * add file
+   * @param {Object} fileInfo
+   */
+  addFile({ commit }, fileInfo) {
+    commit(types.ADD_FILE, fileInfo)
+  },
+  /**
+   * add file history
+   * @param {String} fileId
+   */
+  removeFile({ commit }, fileId) {
+    commit(types.REMOVE_PDF_PAGE, fileId)
+    commit(types.REMOVE_FILE, fileId)
+  },
+  /**
+   * add file history
+   * @param {Object} pdfImageInfo
+   */
+  addPdfPage({ commit }, pdfImageInfo) {
+    commit(types.ADD_PDF_PAGE, pdfImageInfo)
+  },
 }

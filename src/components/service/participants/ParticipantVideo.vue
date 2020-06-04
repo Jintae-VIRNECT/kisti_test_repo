@@ -3,7 +3,7 @@
     <div
       class="participant-video"
       :class="{ current: isCurrent }"
-      @click="changeMain"
+      @dblclick="changeMain"
     >
       <div class="participant-video__stream" v-if="participant.stream">
         <video
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import Profile from 'Profile'
 import Popover from 'Popover'
 
@@ -112,13 +112,13 @@ export default {
   computed: {
     ...mapGetters(['mainView', 'speaker']),
     isMe() {
-      if (this.participant.uuid === 'main') {
+      if (this.participant.id === this.account.uuid) {
         return true
       }
       return false
     },
     isCurrent() {
-      if (this.mainView.uuid === this.participant.uuid) return true
+      if (this.mainView.id === this.participant.id) return true
       return false
     },
   },
@@ -130,12 +130,13 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['setMainView']),
     visible(val) {
       this.btnActive = val
     },
-    // ...mapActions(['setMainSession']),
     changeMain() {
-      // this.setMainSession(this.participant)
+      if (!this.participant.stream) return
+      this.setMainView(this.participant.id)
     },
     profileImageError(event) {
       event.target.style.display = 'none'
@@ -150,8 +151,6 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    console.log(this.participant)
-  },
+  mounted() {},
 }
 </script>
