@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import Profile from 'profile'
+import Profile from 'Profile'
 export default {
   name: 'ChatItem',
   components: {
