@@ -22,12 +22,8 @@
           <p class="local">{{ 0 | timeFilter }}</p>
         </div>
 
-        <pointing
-          v-if="action === 'pointing'"
-          :scale="1"
-          class="main-video__pointing"
-        ></pointing>
-        <template v-else>
+        <pointing :scale="1" class="main-video__pointing"></pointing>
+        <template v-if="action !== 'pointing'">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>
@@ -74,6 +70,7 @@ export default {
     return {
       status: 'good', // good, normal, bad
       showTools: false,
+      loaded: false,
     }
   },
   computed: {
@@ -86,7 +83,6 @@ export default {
   watch: {
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
-      console.log(this.$refs['mainVideo'].muted)
     },
     mainView: {
       deep: true,
@@ -119,6 +115,18 @@ export default {
         videoEl.style.height = 'auto'
         videoHeight = videoEl.offsetHeight
         videoBox.style.height = videoHeight + 'px'
+      }
+
+      if (!this.loaded && this.mainView.me && this.mainView.stream) {
+        console.log({
+          width: videoEl.offsetWidth,
+          height: videoEl.offsetHeight,
+        })
+        this.$call.sendResolution({
+          width: videoEl.offsetWidth,
+          height: videoEl.offsetHeight,
+        })
+        this.loaded = true
       }
     },
     capture() {
@@ -159,7 +167,6 @@ export default {
     this.$eventBus.$on('capture', this.capture)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
-  mounted() {},
 }
 </script>
 

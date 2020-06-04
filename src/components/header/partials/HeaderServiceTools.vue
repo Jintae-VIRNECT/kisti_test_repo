@@ -42,16 +42,15 @@ export default {
     mainView: {
       deep: true,
       handler: function(val) {
-        if (val.stream) {
-          // let state = this.$call.getState()
-          // this.callMic(state.audio)
-          // this.callStream(state.video)
+        if (val && val.stream) {
+          let state = this.$call.getState()
+          this.callMic(state.audio)
         }
       },
     },
   },
   methods: {
-    ...mapActions(['callMic', 'callStream']),
+    ...mapActions(['callMic']),
     leave() {
       try {
         this.$call.leave()
