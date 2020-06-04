@@ -12,6 +12,7 @@ import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
+import com.virnect.process.dto.rest.response.workspace.MemberInfoDTO;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
@@ -329,15 +330,9 @@ public class TaskService {
                                 .progressRate(INIT_PROGRESS_RATE)
                                 .isRecent(INIT_IS_RECENT)
                                 .reportedDate(null)
-                                .workerUUID("")
+                                .workerUUID(newSubProcess.getWorkerUUID())
                                 .jobList(new ArrayList<>())
                                 .build();
-
-                        if (registerNewProcess.getOwnerUUID() == null) {
-                            subProcess.setWorkerUUID(newSubProcess.getWorkerUUID());
-                        } else {
-                            subProcess.setWorkerUUID(registerNewProcess.getOwnerUUID());
-                        }
 
                         this.subProcessRepository.save(subProcess);
                         newProcess.addSubProcess(subProcess);
