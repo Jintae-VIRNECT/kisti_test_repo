@@ -566,14 +566,14 @@ public class WorkspaceService {
         this.messageRestService.sendMail(mailRequest);
     }
 
-    /**
-     * 워크스페이스 초대 수락(소속 권한 부여)
-     *
-     * @param workspaceId - 수락한 워크스페이스 uuid
-     * @param userId      - 수락한 사용자 uuid
-     * @param code        - 초대 시 받은 코드
-     * @return
-     */
+    public RedirectView inviteWorkspaceResult(String workspaceId, String userId, Boolean accept, Locale locale) {
+        if (accept) {
+            return this.inviteWorkspaceAccept(workspaceId, userId, locale);
+        } else {
+            return this.inviteWorkspaceReject(workspaceId, userId, locale);
+        }
+    }
+
     public RedirectView inviteWorkspaceAccept(String workspaceId, String userId, Locale locale) {
         UserInvite userInvite = this.userInviteRepository.findById(userId + "-" + workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO));
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
@@ -762,7 +762,6 @@ public class WorkspaceService {
             plan.append(",VIEW");
         }
         return plan.toString();
-
     }
 
     public RedirectView inviteWorkspaceReject(String workspaceId, String userId, Locale locale) {
