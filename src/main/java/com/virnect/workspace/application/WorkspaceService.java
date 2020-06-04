@@ -692,7 +692,10 @@ public class WorkspaceService {
 
                 this.userInviteRepository.deleteById(userId + "-" + workspaceId);
 
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                if (!planRemoteGrantResult && !planMakeGrantResult && !planViewGrantResult) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
+
             }
 
             //워크스페이스 소속 넣기 (workspace_user)
