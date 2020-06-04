@@ -39,6 +39,9 @@ public class UserInvite implements Serializable {
     private Boolean planRemote;
     private Boolean planMake;
     private Boolean planView;
+    private String planRemoteType;
+    private String planMakeType;
+    private String planViewType;
     private LocalDateTime invitedDate;
     private LocalDateTime updatedDate;
 
@@ -47,7 +50,7 @@ public class UserInvite implements Serializable {
 
     @Builder
     public UserInvite(String inviteId, String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
-                      String workspaceId, String workspaceName, String role, Boolean planRemote, Boolean planMake, Boolean planView, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
+                      String workspaceId, String workspaceName, String role, Boolean planRemote, Boolean planMake, Boolean planView, String planRemoteType, String planMakeType, String planViewType, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
         this.inviteId = inviteId;
         this.responseUserId = responseUserId;
         this.responseUserEmail = responseUserEmail;
@@ -63,6 +66,9 @@ public class UserInvite implements Serializable {
         this.planRemote = planRemote;
         this.planMake = planMake;
         this.planView = planView;
+        this.planRemoteType = planRemoteType;
+        this.planMakeType = planMakeType;
+        this.planViewType = planViewType;
         this.invitedDate = invitedDate;
         this.updatedDate = updatedDate;
         this.expireTime = expireTime;

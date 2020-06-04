@@ -66,11 +66,10 @@ cloud:
         name: "virnect-platform-qa"
         resource: "workspace/profile"
 
-## server url (use send workspace invite mail)
+## Mail send rediect Url
 serverUrl: "https://stgapi.virnect.com"
-
-## client url (use send workspace invite mail)
 redirectUrl: "https://stgworkstation.virnect.com"
+contactUrl: "https://stgwww.virnect.com/contact/inquiry"
 
 ## Feign
 feign:

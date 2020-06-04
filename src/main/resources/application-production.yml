@@ -62,11 +62,10 @@ cloud:
         name: "virnect-platform"
         resource: "workspace/profile"
 
-## server url (use send workspace invite mail)
+## Mail send rediect Url
 serverUrl: "https://api.virnect.com"
-
-## client url (use send workspace invite mail)
-redirectUrl: "http://workstation.virnect.com"
+redirectUrl: "https://workstation.virnect.com"
+contactUrl: "https://virnect.com/contact/inquiry"
 
 ## Feign
 feign:
