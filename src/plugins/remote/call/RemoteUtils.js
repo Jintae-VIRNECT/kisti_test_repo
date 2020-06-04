@@ -1,5 +1,5 @@
 import Store from 'stores/remote/store'
-import { addSubscriber, removeSubscriber } from './Remote'
+import _, { addSubscriber, removeSubscriber } from './Remote'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -8,6 +8,7 @@ export const addSessionEventListener = session => {
     const subscriber = session.subscribe(event.stream, '', () => {
       const streamObj = getUserObject(subscriber.stream)
       Store.commit('addStream', streamObj)
+      _.sendResolution()
     })
     addSubscriber(subscriber)
     // subscriber.on('streamPlaying', e => {
@@ -28,6 +29,13 @@ export const addSessionEventListener = session => {
 
   session.on('signal:video', event => {
     console.log(event)
+  })
+
+  session.on('signal:resolution', event => {
+    Store.commit('updateResolution', {
+      ...JSON.parse(event.data),
+      connectionId: event.from.connectionId,
+    })
   })
 
   session.on('signal:chat', event => {
@@ -72,6 +80,7 @@ export const getUserObject = stream => {
     audio: stream.audioActive,
     video: stream.videoActive,
     status: 'good',
+    resolution: {},
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

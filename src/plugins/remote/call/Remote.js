@@ -9,6 +9,7 @@ const _ = {
   session: null,
   publisher: null,
   subscribers: [],
+  resolution: null,
   join: async (roomInfo, account, users) => {
     try {
       const params = {
@@ -90,26 +91,37 @@ const _ = {
       type: 'signal:chat',
     })
   },
+  sendResolution: resolution => {
+    if (resolution) {
+      _.resolution = resolution
+    } else {
+      resolution = _.resolution
+    }
+    if (!resolution || !resolution.width) return
+    _.session.signal({
+      data: JSON.stringify(resolution),
+      to: _.session.connection,
+      type: 'signal:resolution',
+    })
+  },
   pointing: message => {
-    console.log(_.session.connection)
     _.session.signal({
       data: JSON.stringify(message),
       to: _.session.connection,
       type: 'signal:pointing',
     })
   },
-  /**
-   * append message channel listener
-   * @param {Function} customFunc
-   */
-  addListener: (type, func) => {
-    _.session.on(type, func)
-  },
-  removeListener: (type, func) => {
-    _.session.off(type, func)
-  },
   getDevices: () => {},
-  getState: () => {},
+  getState: () => {
+    if (_.publisher) {
+      return {
+        audio: _.publisher.stream.audioActive,
+        video: _.publisher.stream.videoActive,
+      }
+    } else {
+      return {}
+    }
+  },
   streamOnOff: active => {
     _.publisher.publishVideo(active)
   },
@@ -130,6 +142,16 @@ const _ = {
   record: () => {},
   stop: () => {},
   active: () => {},
+  /**
+   * append message channel listener
+   * @param {Function} customFunc
+   */
+  addListener: (type, func) => {
+    _.session.on(type, func)
+  },
+  removeListener: (type, func) => {
+    // _.session.off(type, func)
+  },
 }
 
 export const addSubscriber = subscriber => {

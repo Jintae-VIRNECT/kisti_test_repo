@@ -1,5 +1,5 @@
 <template>
-  <li class="sharing-image" @dblclick="pdfPageView">
+  <li class="sharing-image" @click="pdfPageView">
     <button class="sharing-image__item pdf">
       <img :src="thumbnail" />
     </button>
