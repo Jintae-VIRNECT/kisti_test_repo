@@ -16,15 +16,7 @@ const getDefaultState = () => {
       //   status: 'good',
       // }
     ],
-    chatList: [
-      {
-        text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
-        name: 'alarm',
-        date: new Date(),
-        uuid: null,
-        type: 'system',
-      },
-    ],
+    chatList: [],
     isBackground: false,
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
