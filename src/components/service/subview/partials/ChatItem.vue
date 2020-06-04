@@ -3,7 +3,7 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <profile class="profile" v-if="!hideProfile"></profile>
+    <profile class="profile" v-if="!hideProfile"></profile> -->
     <!-- <img
       class="profile"
       src="~assets/image/call/chat_img_user.svg"
@@ -12,12 +12,14 @@
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
-        <div v-if="chat.file && chat.file.length > 0" class="file">
-          <div class="file__wrapper">
-            <div class="file__icon" :class="getClass"></div>
-            <div class="file__name">{{ chat.file[0].filename }}</div>
+        <div v-if="chat.file && chat.file.length > 0" class="chat-item__file">
+          <div class="chat-item__file--wrapper">
+            <div class="chat-item__file--icon" :class="getClass"></div>
+            <div class="chat-item__file--name">
+              {{ chat.file[0].filename }}
+            </div>
           </div>
-          <p class="file__size">{{ chat.file[0].filesize }}</p>
+          <p class="chat-item__file--size">{{ chat.file[0].filesize }}</p>
         </div>
         <p
           v-if="chat.text !== undefined"
@@ -25,8 +27,11 @@
           :class="getClass"
           v-html="chat.text"
         ></p>
-        <button v-if="chat.file && chat.file.length > 0" class="file__button">
-          <span class="button__text">다운로드</span>
+        <button
+          v-if="chat.file && chat.file.length > 0"
+          class="chat-item__file--button"
+        >
+          <span class="button-text">다운로드</span>
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
@@ -38,7 +43,7 @@
 </template>
 
 <script>
-import Profile from 'profile'
+import Profile from 'Profile'
 export default {
   name: 'ChatItem',
   components: {
@@ -127,6 +132,15 @@ export default {
         cancel: this.type === 'system' && this.chat.name === 'cancel',
         ar: this.type === 'system' && this.chat.name === 'ar',
         board: this.type === 'system' && this.chat.name === 'board',
+      }
+    },
+    getChatItemClass() {
+      if (false === this.chat.type || this.chat.type === 'opponent') {
+        return 'chat-item__opponent'
+      } else if (this.chat.type === 'me') {
+        return 'chat-item__me'
+      } else {
+        return 'chat-item__system'
       }
     },
   },

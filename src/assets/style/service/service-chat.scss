@@ -18,58 +18,34 @@
   flex-direction: column;
   flex-shrink: 0;
   background-color: $color_chat_header;
-  &__title {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.714rem 22px 16px;
-    color: rgba($color_text, 0.87);
-    font-weight: 500;
-    font-size: 1rem;
+}
 
-    .title-text {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
+.chat-header__title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.714rem 22px 16px;
+  color: rgba($color_text, 0.87);
+  font-weight: 500;
+  font-size: 1rem;
 
-    .show-list {
-      margin-left: 0.357rem;
-      background: url(~assets/image/call/chat_icn_moreinfor.svg) center/1.429rem
-        no-repeat;
+  // .show-list {
+  //   margin-left: 0.357rem;
+  //   background: url(~assets/image/call/chat_icn_moreinfor.svg) center/1.429rem
+  //     no-repeat;
 
-      @include ir();
-    }
-  }
+  //   @include ir();
+  // }
+}
+.chat-header__title--text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .chat-header__menu {
   display: flex;
   height: 100%;
-
-  .selector {
-    display: flex;
-    flex-grow: 0.5;
-    align-items: center;
-    justify-content: center;
-    height: 2.8rem;
-
-    &.active {
-      background: rgba(169, 169, 169, 0.2);
-    }
-
-    // &:hover {
-    //   cursor: pointer;
-    // }
-  }
-
-  .selector__text {
-    color: #5f5f5f;
-
-    &.active {
-      color: rgba(255, 255, 255, 0.87);
-    }
-  }
 
   .selector__icon--chat {
     width: 1.25rem;
@@ -91,6 +67,48 @@
     &.file__active {
       background: url(~assets/image/call/chat_ic_folder_w.svg) center no-repeat;
     }
+  }
+}
+
+.chat-header__selector {
+  display: flex;
+  flex-grow: 0.5;
+  align-items: center;
+  justify-content: center;
+  height: 2.8rem;
+
+  &.active {
+    background: rgba(169, 169, 169, 0.2);
+  }
+}
+
+.chat-header__selector--text {
+  color: #5f5f5f;
+
+  &.active {
+    color: rgba(255, 255, 255, 0.87);
+  }
+}
+
+.selector__icon--chat {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.375rem;
+  background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
+
+  &.active {
+    background: url(~assets/image/call/chat_ic_chat_w.svg) center no-repeat;
+  }
+}
+
+.selector__icon--file {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.375rem;
+  background: url(~assets/image/call/chat_ic_folder_b.svg) center no-repeat;
+
+  &.active {
+    background: url(~assets/image/call/chat_ic_folder_w.svg) center no-repeat;
   }
 }
 
@@ -346,77 +364,76 @@
   &.file-share {
     width: auto;
   }
+}
 
-  .file {
-    white-space: pre-line;
-    &__wrapper {
-      display: flex;
-      margin-top: 0.6875rem;
-    }
+.chat-item__file {
+  white-space: pre-line;
+}
 
-    &__icon {
-      width: 1.5rem;
-      height: 1.5rem;
-      margin-right: 0.375rem;
-      &.pdf {
-        background: url(~assets/image/call/chat_ic_pdf_b.svg) center no-repeat;
-      }
-      &.txt {
-        background: url(~assets/image/call/chat_ic_file_b.svg) center no-repeat;
-      }
-      &.jpg {
-        background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center
-          no-repeat;
-      }
-      &.png {
-        background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center
-          no-repeat;
-      }
-      &.mp3 {
-        background: url(~assets/image/call/chat_ic_mp3_b.svg) center no-repeat;
-      }
-      &.video {
-        background: url(~assets/image/call/chat_ic_video_b.svg) center no-repeat;
-      }
-    }
+.chat-item__file--wrapper {
+  display: flex;
+  margin-top: 0.6875rem;
+}
 
-    &__name {
-      width: 8.5rem;
-      overflow: hidden;
-      color: rgba($color_darkgray_1000, 0.78);
-      font-weight: 500;
-      font-size: 1.071rem;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      background: url() no-repeat;
-    }
+.chat-item__file--icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.375rem;
+  &.pdf {
+    background: url(~assets/image/call/chat_ic_pdf_b.svg) center no-repeat;
+  }
+  &.txt {
+    background: url(~assets/image/call/chat_ic_file_b.svg) center no-repeat;
+  }
+  &.jpg {
+    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center no-repeat;
+  }
+  &.png {
+    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center no-repeat;
+  }
+  &.mp3 {
+    background: url(~assets/image/call/chat_ic_mp3_b.svg) center no-repeat;
+  }
+  &.video {
+    background: url(~assets/image/call/chat_ic_video_b.svg) center no-repeat;
+  }
+}
 
-    &__size {
-      margin: 0.3125rem 0;
-      color: rgb(122, 122, 122);
-      font-size: 0.75rem;
-    }
+.chat-item__file--name {
+  width: 8.5rem;
+  overflow: hidden;
+  color: rgba($color_darkgray_1000, 0.78);
+  font-weight: 500;
+  font-size: 1.071rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: url() no-repeat;
+}
 
-    &__button {
-      width: 100%;
-      height: 2.125rem;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 3px;
-      &:hover {
-        background: rgba(0, 0, 0, 0.2);
-      }
+.chat-item__file--size {
+  margin: 0.3125rem 0;
+  color: rgb(122, 122, 122);
+  font-size: 0.75rem;
+}
 
-      &:active {
-        background: rgba(0, 0, 0, 0.3);
-      }
+.chat-item__file--button {
+  width: 100%;
+  height: 2.125rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  &:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
 
-      .button__text {
-        color: rgba(0, 0, 0, 0.78);
-        font-weight: 500;
-        font-size: 0.875rem;
-        text-align: center;
-      }
-    }
+  &:active {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .button-text {
+    color: rgba(0, 0, 0, 0.78);
+    font-weight: 500;
+    font-size: 0.875rem;
+    text-align: center;
   }
 }
 
