@@ -210,234 +210,209 @@ export default {
     this.roomTitle = this.room.title ? this.room.title : ''
 
     //test message. delete if you need
-    this.chatList.push(
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text:
-          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다. https://remote.virnect.com/ 감사합니다.',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text:
-          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다.https://remote.virnect.com/감사합니다.',
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '참여자2',
-        text:
-          '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다.https://remote.virnect.com/감사합니다.',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text: 'https://remote.virnect.com/',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text: 'http://localhost',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text: '반가워요',
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '고리3발 ENG 팀',
-        text: '펭하',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '참여자2',
-        text: '안녕하세요.',
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '신규사업부 팀장',
-        file: [
-          {
-            filename: 'Webex.png',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '한전 제1 발전처장',
-        file: [
-          {
-            filename: '3분기 전력수요량 자료.txt',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '한전 제2 발전처장',
-        file: [
-          {
-            filename: '명상에 좋은 음악.mp3',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '고리3발 시설관리팀장',
-        file: [
-          {
-            filename: '흡연실 사용규칙 준수.jpg',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '고리3발 ENG 팀',
-        file: [
-          {
-            filename: '가스터빈 도면.pdf',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'opponent',
-        name: '신규사업부 팀장',
-        file: [
-          {
-            filename: '도면2.jpg',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '신규사업부 팀장',
-        file: [
-          {
-            filename: 'Webex.png',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '한전 제1 발전처장',
-        file: [
-          {
-            filename: '3분기 전력수요량 자료.txt',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '한전 제2 발전처장',
-        file: [
-          {
-            filename: '명상에 좋은 음악.mp3',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '고리3발 시설관리팀장',
-        file: [
-          {
-            filename: '흡연실 사용규칙 준수.jpg',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '고리3발 ENG 팀',
-        file: [
-          {
-            filename: '가스터빈 도면.pdf',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '신규사업부 팀장',
-        file: [
-          {
-            filename: '도면2.jpg',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        type: 'me',
-        name: '참여자2',
-        text: 'ㅎㅇ',
-        date: new Date(),
-      },
-      {
-        text: '<span class="emphasize">테스트</span>님이 입장하셨습니다.',
-        name: 'people',
-        date: new Date(),
-        uuid: null,
-        type: 'system',
-      },
+    // this.chatList.push(
+    //   {
+    //     type: 'opponent',
+    //     name: '참여자2',
+    //     text:
+    //       '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다. https://remote.virnect.com/ 감사합니다.',
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '참여자2',
+    //     text:
+    //       '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다.https://remote.virnect.com/감사합니다.',
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '고리3발 ENG 팀',
+    //     text: '펭하',
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '참여자2',
+    //     text: '안녕하세요.',
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '신규사업부 팀장',
+    //     file: [
+    //       {
+    //         filename: 'Webex.png',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '한전 제1 발전처장',
+    //     file: [
+    //       {
+    //         filename: '3분기 전력수요량 자료.txt',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '한전 제2 발전처장',
+    //     file: [
+    //       {
+    //         filename: '명상에 좋은 음악.mp3',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '고리3발 시설관리팀장',
+    //     file: [
+    //       {
+    //         filename: '흡연실 사용규칙 준수.jpg',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '고리3발 ENG 팀',
+    //     file: [
+    //       {
+    //         filename: '가스터빈 도면.pdf',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'opponent',
+    //     name: '신규사업부 팀장',
+    //     file: [
+    //       {
+    //         filename: '도면2.jpg',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '신규사업부 팀장',
+    //     file: [
+    //       {
+    //         filename: 'Webex.png',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '한전 제1 발전처장',
+    //     file: [
+    //       {
+    //         filename: '3분기 전력수요량 자료.txt',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '한전 제2 발전처장',
+    //     file: [
+    //       {
+    //         filename: '명상에 좋은 음악.mp3',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '고리3발 시설관리팀장',
+    //     file: [
+    //       {
+    //         filename: '흡연실 사용규칙 준수.jpg',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '고리3발 ENG 팀',
+    //     file: [
+    //       {
+    //         filename: '가스터빈 도면.pdf',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '신규사업부 팀장',
+    //     file: [
+    //       {
+    //         filename: '도면2.jpg',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     type: 'me',
+    //     name: '참여자2',
+    //     text: 'ㅎㅇ',
+    //     date: new Date(),
+    //   },
+    //   {
+    //     text: '<span class="emphasize">테스트</span>님이 입장하셨습니다.',
+    //     name: 'people',
+    //     date: new Date(),
+    //     uuid: null,
+    //     type: 'system',
+    //   },
 
-      {
-        type: 'me',
-        name: '고리3발 ENG 팀',
-        file: [
-          {
-            filename: '가스터빈 도면(최종).pdf',
-            filesize: '10MB',
-          },
-        ],
-        date: new Date(),
-      },
-      {
-        text:
-          '<span class="emphasize">이름이 엄청긴분이 오셨습니다.으어어어어어어어어</span>' +
-          '님이 입장하셨습니다.',
-        name: 'people',
-        date: new Date(),
-        uuid: null,
-        type: 'system',
-      },
-      {
-        text:
-          '<span class="emphasize">테스트 팀장</span>' +
-          '님이 전송을 취소했습니다.',
-        name: 'cancel',
-        date: new Date(),
-        uuid: null,
-        type: 'system',
-      },
-    )
+    //   {
+    //     type: 'me',
+    //     name: '고리3발 ENG 팀',
+    //     file: [
+    //       {
+    //         filename: '가스터빈 도면(최종).pdf',
+    //         filesize: '10MB',
+    //       },
+    //     ],
+    //     date: new Date(),
+    //   },
+    //   {
+    //     text:
+    //       '<span class="emphasize">이름이 엄청긴분이 오셨습니다.으어어어어어어어어</span>' +
+    //       '님이 입장하셨습니다.',
+    //     name: 'people',
+    //     date: new Date(),
+    //     uuid: null,
+    //     type: 'system',
+    //   },
+    //   {
+    //     text:
+    //       '<span class="emphasize">테스트 팀장</span>' +
+    //       '님이 전송을 취소했습니다.',
+    //     name: 'cancel',
+    //     date: new Date(),
+    //     uuid: null,
+    //     type: 'system',
+    //   },
+    // )
   },
 }
 </script>
