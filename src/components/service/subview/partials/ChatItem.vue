@@ -14,7 +14,7 @@
         <span class="name">{{ chat.name }}</span>
         <div v-if="chat.file && chat.file.length > 0" class="file">
           <div class="file__wrapper">
-            <div class="file__icon" :class="fileIconClass"></div>
+            <div class="file__icon" :class="getClass"></div>
             <div class="file__name">{{ chat.file[0].filename }}</div>
           </div>
           <p class="file__size">{{ chat.file[0].filesize }}</p>
@@ -22,7 +22,7 @@
         <p
           v-if="chat.text !== undefined"
           class="text"
-          :class="systemIconClass"
+          :class="getClass"
           v-html="chat.text"
         ></p>
         <button v-if="chat.file && chat.file.length > 0" class="file__button">
@@ -114,7 +114,7 @@ export default {
 
       return ext
     },
-    fileIconClass() {
+    getClass() {
       return {
         txt: this.extension === 'txt',
         png: this.extension === 'png',
@@ -122,10 +122,6 @@ export default {
         mp3: this.extension === 'mp3',
         jpg: this.extension === 'jpg',
         video: this.extension === 'video',
-      }
-    },
-    systemIconClass() {
-      return {
         alarm: this.type === 'system' && this.chat.name === 'alarm',
         people: this.type === 'system' && this.chat.name === 'people',
         cancel: this.type === 'system' && this.chat.name === 'cancel',

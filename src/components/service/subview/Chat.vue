@@ -208,6 +208,12 @@ export default {
   /* Lifecycles */
   mounted() {
     this.roomTitle = this.room.title ? this.room.title : ''
+    this.chatList.push({
+      type: 'system',
+      name: 'alarm',
+      text: '협업이 생성 되었습니다.',
+      date: new Date(),
+    })
 
     //test message. delete if you need
     // this.chatList.push(
