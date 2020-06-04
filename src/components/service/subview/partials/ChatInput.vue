@@ -16,6 +16,7 @@
         </div>
       </vue2-scrollbar>
     </div>
+
     <div
       class="chat-input__form"
       @dragenter.stop.prevent="dragenterHandler"
@@ -39,14 +40,17 @@
         class="chat-input__form-write"
         v-model="inputText"
         placeholder="메시지를 입력하세요."
-        @keydown.enter="doSend()"
+        @keydown.shift.enter.exact="newLine()"
+        @keydown.enter.exact="doSend($event)"
       />
+
       <button class="chat-input__form-button" @click="doSend()">보내기</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'ChatInput',
   components: {},
@@ -59,13 +63,15 @@ export default {
   props: {
     chat: Object,
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['chatList']),
+  },
   watch: {
     fileList: {
       handler() {
         this.$nextTick(() => {
           if (this.$refs['chatUploadScrollbar']) {
-            this.$refs['chatUploadScrollbar'].scrollToY(999999999)
+            this.$refs['chatUploadScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
           }
         })
       },
@@ -73,9 +79,56 @@ export default {
     },
   },
   methods: {
-    doSend() {
+    /**
+     * 채팅 object 추가
+     * @param {String} chatType : 'system' | 'me' | 'opponent'
+     * @param {Object | String} msg
+     *        'system' : { type: 'start'|'file'|'document'|'camera'|'ar', name: filename|username }
+     *        'me'|'opponent' : text message
+     */
+    addChatItem(chatType, msg) {
+      // const datetime = this.$moment()
+      const datetime = this.$dayjs()
+      // 작성시간 노출 계산
+      if (this.chatList.length > 0) {
+        const pastChat = this.chatList[0]
+        if (pastChat) {
+          if (pastChat.chatType === chatType) {
+            if (
+              this.$dayjs(pastChat.datetime).format('HHmm') ===
+              datetime.format('HHmm')
+            ) {
+              this.$set(pastChat, 'datetime', false)
+            }
+          }
+        }
+      }
+
+      this.chatList.push({
+        text: msg,
+        date: new Date(),
+        type: 'me',
+      })
+      // this.$nextTick(() => {
+      //   if (this.$refs['chatScrollbar']) {
+      //     this.$refs['chatScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+      //   }
+      // })
+    },
+
+    doSend(e) {
+      console.log(e)
+      if (e) {
+        e.preventDefault()
+      }
       this.$call.sendChat(this.inputText)
+
       this.inputText = ''
+    },
+    newLine() {
+      console.log('newline')
+      console.log(this.inputText)
+      this.inputText = this.inputText + '\n'
     },
     clickUpload() {
       this.$refs['inputFile'].click()
@@ -157,6 +210,15 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    //console.log(this.$dayjs)
+    // const message = `${this.opponent.name || '알수없는 사용자'}님과 통화를 시작합니다.`
+    // const message = this.$t('service.chat_call_start', { name: `${this.opponent.name || this.$t('service.chat_anonymous_user')}` })
+    // this.addChatItem('system', '알수없는 누군가와 통신하겠소')
+  },
+  beforeDestroy() {
+    //this.$remoteSDK.removeMessageListener(this.receiveMessage)
+    this.$eventBus.$off('addChatItem', this.addChatItem)
+  },
 }
 </script>
