@@ -6,6 +6,7 @@ WORKDIR $APP_HOME
 
 
 ADD ./workstation $APP_HOME/workstation
+ADD ./WC-Modules $APP_HOME/WC-Modules
 ADD ./package.json $APP_HOME/package.json
 
 RUN yarn install --production
