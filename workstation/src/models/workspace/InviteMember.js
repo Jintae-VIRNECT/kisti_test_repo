@@ -9,5 +9,8 @@ export default class InviteMember extends Model {
     super()
     this.email = ''
     this.role = 'MEMBER'
+    this.planRemote = false
+    this.planMake = false
+    this.planView = true
   }
 }

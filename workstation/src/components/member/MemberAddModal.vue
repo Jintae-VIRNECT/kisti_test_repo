@@ -19,13 +19,14 @@
         :key="index"
         class="virnect-workstation-form"
         :model="form"
+        :rules="rules"
       >
         <el-divider />
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
         </h6>
-        <el-form-item class="horizon">
+        <el-form-item class="horizon" prop="email" required>
           <template slot="label">
             <span>{{ $t('members.add.email') }}</span>
             <el-tooltip
@@ -77,13 +78,21 @@
         </label>
         <el-row>
           <el-col :span="12">
-            <el-form-item class="horizon" label="Make">
-              <el-select v-model="form.makeType" disabled />
+            <el-form-item class="horizon" :label="plans.make.label">
+              <el-select v-model="form.planMake">
+                <el-option
+                  :value="false"
+                  :label="$t('members.setting.givePlansEmpty')"
+                />
+                <el-option :value="true" :label="plans.make.label" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item class="horizon" label="View">
-              <el-select v-model="form.viewType" disabled />
+            <el-form-item class="horizon" :label="plans.view.label">
+              <el-select v-model="form.planView" disabled>
+                <el-option :value="true" :label="plans.view.label" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -106,13 +115,18 @@ import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
+import plans from '@/models/workspace/plans'
 
 export default {
   mixins: [modalMixin],
   data() {
     return {
+      plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new InviteMember()],
+      rules: {
+        email: [{ required: true, trigger: 'blur' }],
+      },
     }
   },
   methods: {

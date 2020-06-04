@@ -11,4 +11,10 @@ export default {
         : Math.round(mb * 100) / 100 + 'MB'
     },
   },
+  methods: {
+    boolCheck(bool) {
+      if (bool > 0) return true
+      else return bool && bool.toLowerCase() !== 'no'
+    },
+  },
 }

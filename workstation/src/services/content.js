@@ -7,6 +7,13 @@ import ContentStatistics from '@/models/content/ContentStatistics'
 import SceneGroup from '@/models/content/SceneGroup'
 import Properties from '@/models/content/Properties'
 
+function activeWorkspaceGetter() {
+  return store.getters['workspace/activeWorkspace']
+}
+function myProfileGetter() {
+  return store.getters['auth/myProfile']
+}
+
 export default {
   /**
    * 컨텐츠 통계
@@ -25,8 +32,8 @@ export default {
       delete params.filter
     }
 
-    const userUUID = store.getters['auth/myProfile'].uuid
-    const workspaceUUID = store.getters['workspace/activeWorkspace'].uuid
+    const userUUID = myProfileGetter().uuid
+    const workspaceUUID = activeWorkspaceGetter().uuid
     let data = null
     // 내 컨텐츠
     if (params.mine) {
@@ -44,7 +51,7 @@ export default {
     else {
       data = await api('CONTENTS_LIST', {
         params: {
-          workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+          workspaceUUID: activeWorkspaceGetter().uuid,
           size: 10,
           ...params,
         },
@@ -101,7 +108,7 @@ export default {
     return await api('CONTENT_DELETE', {
       params: {
         contentUUIDs,
-        workerUUID: store.getters['auth/myProfile'].uuid,
+        workerUUID: myProfileGetter().uuid,
       },
     })
   },
@@ -115,7 +122,7 @@ export default {
       route: { contentUUID },
       params: {
         contentUUID,
-        userUUID: store.getters['auth/myProfile'].uuid,
+        userUUID: myProfileGetter().uuid,
         ...form,
       },
     })

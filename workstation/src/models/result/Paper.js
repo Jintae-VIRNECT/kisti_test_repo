@@ -17,7 +17,7 @@ export default class Paper extends Model {
     this.stepName = json.stepName
     this.workerUUID = json.workerUUID
     this.workerName = json.workerName
-    this.workerProfile = json.workerProfile
+    this.workerProfile = json.workerProfile === 'default' ? require('assets/images/icon/ic-user-profile.svg') : json.workerProfile 
     this.paperActions = json.paperActions
   }
 }

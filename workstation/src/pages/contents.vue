@@ -19,7 +19,7 @@
           <el-button @click="showMine">
             {{ $t('contents.allContents.myContents') }}
           </el-button>
-          <el-button @click="remove" type="text">
+          <el-button @click="remove" type="text" :disabled="!canRemove">
             <img src="~assets/images/icon/ic-delete.svg" />
             <span>{{ $t('contents.allContents.delete') }}</span>
           </el-button>
@@ -40,6 +40,7 @@
             :data="contentsList"
             v-loading="loading"
             @row-click="rowClick"
+            @selection-change="selectionChanged"
           >
             <el-table-column type="selection" width="55" />
             <column-default
@@ -116,6 +117,7 @@ export default {
       contentsSort,
       contentsSearch: '',
       contentsPage: 1,
+      canRemove: false,
     }
   },
   methods: {
@@ -137,6 +139,9 @@ export default {
     showMine() {
       this.searchParams.mine = true
       this.emitChangedSearchParams()
+    },
+    selectionChanged(selection) {
+      this.canRemove = selection.length ? true : false
     },
     async remove() {
       try {

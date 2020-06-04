@@ -49,20 +49,48 @@
 
       <el-row>
         <el-card class="el-card--table el-card--big">
-          <div slot="header">
-            <h3>{{ $t('task.list.allTasksList') }}</h3>
+          <!-- 테이블 -->
+          <div slot="header" v-if="!isGraph">
+            <h3>
+              <span>{{ $t('task.list.allTasksList') }}</span>
+            </h3>
+            <el-button @click="isGraph = true">
+              <img src="~assets/images/icon/ic-graph.svg" />
+              <span>{{ $t('task.list.dailyRateGraph') }}</span>
+            </el-button>
             <div class="right">
               <span>{{ $t('task.list.taskCount') }}</span>
               <span class="num">{{ taskStatistics.totalTasks }}</span>
             </div>
           </div>
+          <!-- 차트 -->
+          <div slot="header" v-else>
+            <h3>
+              <span>{{ $t('task.list.dailyRateGraph') }}</span>
+              <el-tooltip
+                :content="$t('task.list.dailyRateGraphDesc')"
+                placement="bottom-start"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
+            </h3>
+            <el-button @click="isGraph = false">
+              <img src="~assets/images/icon/ic-list.svg" />
+              <span>{{ $t('common.list') }}</span>
+            </el-button>
+          </div>
+
+          <!-- 테이블 -->
           <tasks-list
+            v-if="!isGraph"
             ref="table"
             :data="taskList"
             :clickable="true"
             @updated="searchTasks"
             @deleted="searchTasks"
           />
+          <!-- 차트 -->
+          <task-daily-graph v-else />
         </el-card>
       </el-row>
       <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />
@@ -82,11 +110,13 @@ import taskService from '@/services/task'
 import workspaceService from '@/services/workspace'
 import TaskDashboard from '@/components/task/TaskDashboard'
 import TasksList from '@/components/task/TasksList'
+import TaskDailyGraph from '@/components/task/TaskDailyGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
   components: {
     TaskDashboard,
+    TaskDailyGraph,
     TasksList,
   },
   async asyncData() {
@@ -110,6 +140,7 @@ export default {
       taskPage: 1,
       taskTotal: 0,
       loading: false,
+      isGraph: false,
     }
   },
   watch: {
@@ -139,7 +170,10 @@ export default {
     showMine() {},
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, this.searchTasks)
+    workspaceService.watchActiveWorkspace(this, async () => {
+      this.searchTasks()
+      this.taskStatistics = await taskService.getTaskStatistics()
+    })
   },
 }
 </script>

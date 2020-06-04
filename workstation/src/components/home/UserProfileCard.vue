@@ -12,18 +12,23 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${myProfile.image})`"
+            :style="`background-image: url(${profile.profile})`"
           />
         </div>
-        <span class="name">{{ myProfile.nickname }}</span>
-        <span class="email">{{ myProfile.email }}</span>
+        <span class="name">{{ profile.nickname }}</span>
+        <span class="email">{{ profile.email }}</span>
       </dd>
       <dt>{{ $t('home.profile.workspaceRole') }}</dt>
       <dd class="column-role">
-        <el-tag :class="myRole">{{ myRole }}</el-tag>
+        <el-tag :class="profile.role">{{ profile.role }}</el-tag>
       </dd>
       <dt>{{ $t('home.profile.usingPlans') }}</dt>
-      <dd>-</dd>
+      <dd class="plans">
+        <div class="plan" v-for="plan in profile.licenseProducts" :key="plan">
+          <img :src="plans[plan].logo" />
+          <span>{{ plans[plan].label }}</span>
+        </div>
+      </dd>
     </dl>
   </el-card>
 </template>
@@ -31,24 +36,33 @@
 <script>
 import { mapGetters } from 'vuex'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import workspaceService from '@/services/workspace'
+import plans from '@/models/workspace/plans'
 
 export default {
   data() {
     return {
       profileUpdatePage: `${urls.account[process.env.TARGET_ENV]}/profile`,
+      profile: {},
+      plans: Object.values(plans).reduce((o, n) => {
+        o[n.value] = n
+        return o
+      }, {}),
     }
   },
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
-      myWorkspaces: 'auth/myWorkspaces',
-      activeWorkspace: 'workspace/activeWorkspace',
     }),
-    myRole() {
-      return this.myWorkspaces.find(
-        workspace => workspace.uuid === this.activeWorkspace.uuid,
-      ).role
+  },
+  methods: {
+    async getMyInfo() {
+      this.profile = await workspaceService.getMemberInfo(this.myProfile.uuid)
     },
+  },
+  beforeMount() {
+    this.getMyInfo()
+    workspaceService.watchActiveWorkspace(this, this.getMyInfo)
   },
 }
 </script>
@@ -86,6 +100,9 @@ export default {
   }
   .column-role {
     margin-bottom: 28px;
+  }
+  .plans {
+    margin-bottom: 8px;
   }
 }
 </style>

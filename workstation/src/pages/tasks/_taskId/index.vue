@@ -22,7 +22,9 @@
             <router-link to="/tasks">
               <img src="~assets/images/icon/ic-arrow-back.svg" />
             </router-link>
-            <h3>{{ $t('task.detail.title') }}</h3>
+            <h3>
+              <span>{{ $t('task.detail.title') }}</span>
+            </h3>
             <div class="right">
               <span>
                 {{ $t('task.detail.taskPosition') }} : {{ taskInfo.position }}
@@ -72,20 +74,52 @@
       <!-- 하위 작업 -->
       <el-row>
         <el-card class="el-card--table el-card--big">
-          <div slot="header">
-            <h3>{{ $t('task.detail.subTaskList') }}</h3>
+          <!-- 테이블 -->
+          <div slot="header" v-if="!isGraph">
+            <h3>
+              <span>{{ $t('task.detail.subTaskList') }}</span>
+            </h3>
+            <el-button @click="isGraph = true">
+              <img src="~assets/images/icon/ic-graph.svg" />
+              <span>{{ $t('common.graph') }}</span>
+            </el-button>
             <div class="right">
               <span>{{ $t('task.detail.subTaskCount') }}</span>
-              <span class="num">{{ subTaskTotal }}</span>
+              <span class="num">{{ taskInfo.subTaskTotal }}</span>
             </div>
           </div>
+          <!-- 차트 -->
+          <div slot="header" v-else>
+            <h3>
+              <span>{{ $t('task.detail.subTasksProgressGraph') }}</span>
+              <el-tooltip
+                :content="$t('task.detail.subTasksProgressGraphDesc')"
+                placement="right"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
+            </h3>
+            <el-button @click="isGraph = false">
+              <img src="~assets/images/icon/ic-list.svg" />
+              <span>{{ $t('common.list') }}</span>
+            </el-button>
+            <div class="right">
+              <span>{{ $t('task.detail.subTaskCount') }}</span>
+              <span class="num">{{ taskInfo.subTaskTotal }}</span>
+            </div>
+          </div>
+
+          <!-- 테이블 -->
           <sub-tasks-list
+            v-if="!isGraph"
             ref="table"
             :data="subTaskList"
             :taskInfo="taskInfo"
             :clickable="true"
             @updated="searchSubTasks"
           />
+          <!-- 차트 -->
+          <tasks-list-graph v-else :data="subTaskList" type="subTask" />
         </el-card>
       </el-row>
       <searchbar-page
@@ -110,12 +144,14 @@ import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
 import TasksList from '@/components/task/TasksList'
 import SubTasksList from '@/components/task/SubTasksList'
+import TasksListGraph from '@/components/task/TasksListGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
   components: {
     TasksList,
     SubTasksList,
+    TasksListGraph,
   },
   async asyncData({ params }) {
     const promise = {
@@ -137,6 +173,7 @@ export default {
       subTaskSearch: '',
       subTaskPage: 1,
       loading: false,
+      isGraph: false,
     }
   },
   watch: {

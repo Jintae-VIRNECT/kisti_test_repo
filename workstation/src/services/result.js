@@ -1,8 +1,16 @@
+import { store } from '@/plugins/context'
 import { api } from '@/plugins/axios'
 import SubTask from '@/models/task/SubTask'
 import Issue from '@/models/result/Issue'
 import Paper from '@/models/result/Paper'
 import Trouble from '@/models/result/Trouble'
+
+function activeWorkspaceGetter() {
+  return store.getters['workspace/activeWorkspace']
+}
+function myProfileGetter() {
+  return store.getters['auth/myProfile']
+}
 
 export default {
   /**
@@ -15,6 +23,7 @@ export default {
     }
     const data = await api('SUB_TASK_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'reportedDate,desc',
         ...params,
@@ -35,6 +44,7 @@ export default {
     }
     const data = await api('ISSUES_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updated_at,desc',
         ...params,
@@ -55,6 +65,7 @@ export default {
     }
     const data = await api('PAPERS_ALL', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'reported_date,desc',
         ...params,
@@ -75,6 +86,7 @@ export default {
     }
     const data = await api('TROUBLES_LIST', {
       params: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updated_at,desc',
         ...params,

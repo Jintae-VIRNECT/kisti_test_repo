@@ -54,6 +54,7 @@
 <script>
 import search from '@/mixins/search'
 import resultService from '@/services/result'
+import workspaceService from '@/services/workspace'
 import { filter as taskFilter } from '@/models/task/Task'
 
 export default {
@@ -133,6 +134,12 @@ export default {
     if (tab === 'results') this.activeTab = 'task'
     else if (tab === 'issues') this.activeTab = 'issue'
     else if (tab === 'papers') this.activeTab = 'paper'
+
+    workspaceService.watchActiveWorkspace(this, () => {
+      if (this.activeTab === 'task') this.searchSubTasks()
+      else if (this.activeTab === 'issue') this.searchIssues()
+      else if (this.activeTab === 'paper') this.searchPapers()
+    })
   },
 }
 </script>

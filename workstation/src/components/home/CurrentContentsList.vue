@@ -14,7 +14,7 @@
     </el-tabs>
     <!-- 컨텐츠 -->
     <el-table
-      v-if="activeTab === 'contents'"
+      v-show="activeTab === 'contents'"
       :data="contents"
       class="clickable"
       @row-click="moveToContent"
@@ -55,7 +55,7 @@
     </el-table>
     <!-- 작업 -->
     <el-table
-      v-if="activeTab === 'task'"
+      v-show="activeTab === 'task'"
       :data="tasks"
       class="clickable"
       @row-click="moveToTask"
@@ -108,6 +108,7 @@
 <script>
 import contentService from '@/services/content'
 import taskService from '@/services/task'
+import workspaceService from '@/services/workspace'
 import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
 
@@ -132,12 +133,8 @@ export default {
     }
   },
   watch: {
-    async activeTab(tab) {
-      if (tab === 'contents') {
-        this.contents = (await contentService.searchContents({ size: 4 })).list
-      } else if (tab === 'task') {
-        this.tasks = (await taskService.searchTasks({ size: 4 })).list
-      }
+    async activeTab() {
+      this.searchTabItems()
     },
   },
   methods: {
@@ -147,9 +144,18 @@ export default {
     moveToTask({ id }) {
       this.$router.push(`/tasks/${id}`)
     },
+    async searchTabItems() {
+      if (this.activeTab === 'contents') {
+        this.contents = (await contentService.searchContents({ size: 4 })).list
+      } else if (this.activeTab === 'task') {
+        this.tasks = (await taskService.searchTasks({ size: 4 })).list
+      }
+    },
   },
   mounted() {
     this.activeTab = 'contents'
+
+    workspaceService.watchActiveWorkspace(this, this.searchTabItems)
   },
 }
 </script>

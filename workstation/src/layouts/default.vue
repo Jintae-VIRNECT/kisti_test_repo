@@ -51,6 +51,18 @@ export default {
       activeWorkspace: 'workspace/activeWorkspace',
     }),
   },
+  mounted() {
+    // 서버 메세지 푸시
+    const message = this.$route.query.message
+    if (message) {
+      this.$message.error({
+        message: this.$t(message),
+        showClose: true,
+        duration: 0,
+      })
+      this.$router.replace(this.$route.path)
+    }
+  },
 }
 </script>
 

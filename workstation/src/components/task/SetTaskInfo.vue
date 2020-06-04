@@ -54,8 +54,17 @@
           </dd>
         </dl>
       </el-col>
+      <!-- 작업 구성 정보 -->
       <el-col :span="15">
-        <h4>{{ $t('task.new.sceneGroupInfo') }}</h4>
+        <h4>
+          <span>{{ $t('task.new.sceneGroupInfo') }}</span>
+          <el-tooltip
+            :content="$t('task.new.sceneGroupInfoDesc')"
+            placement="right-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
+        </h4>
         <div class="properties">
           <el-tree
             :data="properties"

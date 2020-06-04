@@ -42,7 +42,7 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <el-select v-model="form.role" :disabled="form.role === 'MASTER'">
+              <el-select v-model="form.role" :disabled="!canChangeRole">
                 <el-option
                   class="column-role"
                   v-for="role in roles"
@@ -66,13 +66,25 @@
         </dt>
         <el-row>
           <el-col :span="12">
-            <el-form-item class="horizon" label="Make">
-              <el-select disabled />
+            <el-form-item class="horizon" :label="plans.make.label">
+              <el-select v-model="form.licenseMake">
+                <el-option
+                  :value="false"
+                  :label="$t('members.setting.givePlansEmpty')"
+                />
+                <el-option :value="true" :label="plans.make.label" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item class="horizon" label="View">
-              <el-select disabled />
+            <el-form-item class="horizon" :label="plans.view.label">
+              <el-select v-model="form.licenseView" disabled>
+                <el-option
+                  :value="false"
+                  :label="$t('members.setting.givePlansEmpty')"
+                />
+                <el-option :value="true" :label="plans.view.label" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -93,6 +105,9 @@
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
+import { mapGetters } from 'vuex'
+import EditMember from '@/models/workspace/EditMember'
+import plans from '@/models/workspace/plans'
 
 export default {
   mixins: [modalMixin],
@@ -101,12 +116,20 @@ export default {
   },
   data() {
     return {
+      plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
-      form: {
-        uuid: this.data.uuid,
-        role: this.data.role,
-      },
+      form: new EditMember(this.data),
     }
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'workspace/activeWorkspace',
+    }),
+    canChangeRole() {
+      return (
+        this.form.role !== 'MASTER' && this.activeWorkspace.role === 'MASTER'
+      )
+    },
   },
   methods: {
     async submit() {

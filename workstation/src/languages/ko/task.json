@@ -10,11 +10,16 @@
     "endTasks": "마감된 작업",
     "taskCount": "등록된 작업 수",
     "myTasks": "내 작업",
+    "dailyRateGraph": "일자별 작업 진행률 그래프",
+    "dailyRateGraphDesc": "일자별 작업 진행률을 안내합니다. 일자별 작업 진행률은 시작된 작업의 각 작업 일간 진행률 평균 정보를 제공합니다.",
+    "rate": "진행률",
     "close": "종료",
     "dashboard": {
       "title": "실시간 작업 진행 상태",
+      "titleDesc": "접속하신 시간 기준의 작업 진행 상태 정보를 제공합니다.",
       "allProgress": "전체 작업 진행률",
       "countOfConditions": "진행 상태별 작업 수",
+      "countOfConditionsDesc": "작업 관리의 작업 / 하위 작업 / 단계는 작업 일정과 작업 진행률에 따라 작업 진행 상태를 갖게 됩니다.",
       "graphOn": "그래프 펼치기",
       "graphOff": "그래프 접기"
     },
@@ -22,6 +27,7 @@
       "id": "작업 ID",
       "name": "작업 이름",
       "endedSubTasks": "하위 작업 완료",
+      "endedSubTasksTooltip": "완료된 하위 작업 / 하위 작업 수",
       "schedule": "작업 일정",
       "progressRate": "진행률",
       "status": "진행 상태",
@@ -60,11 +66,14 @@
     "endSubTasks": "마감된 하위 작업",
     "subTaskCount": "등록된 하위 작업 수",
     "mySubTasks": "내 하위 작업",
+    "subTasksProgressGraph": "하위 작업 진행률 그래프",
+    "subTasksProgressGraphDesc": "하위 작업 진행률은 하위 작업 내 전체 단계 진행률을 계산하여 제공합니다.",
     "subTaskColumn": {
       "no": "순번",
       "id": "하위 작업 ID",
       "name": "하위 작업 이름",
       "endedSteps": "단계 완료",
+      "endedStepsTooltip": "완료된 단계 / 단계 수",
       "schedule": "하위 작업 일정",
       "progressRate": "진행률",
       "status": "진행 상태",
@@ -75,6 +84,11 @@
     },
     "dropdown": {
       "subTaskEdit": "하위 작업 편집"
+    },
+    "subTaskTooltip": {
+      "title": "하위 작업 정보",
+      "issue": "하위 작업 이슈 유무",
+      "more": "더보기"
     }
   },
   "subTaskDetail": {
@@ -86,6 +100,8 @@
     "endSteps": "마감된 단계",
     "stepsCount": "등록된 단계 수",
     "mySteps": "내 단계",
+    "stepsProgressGraph": "단계 진행률 그래프",
+    "stepsProgressGraphDesc": "단계 진행률은 단계 내 전체 행동 진행률을 계산하여 제공합니다.",
     "stepsColumn": {
       "no": "순번",
       "id": "단계 ID",
@@ -98,20 +114,29 @@
       "paper": "페이퍼 정보"
     },
     "showIssue": "이슈 보기",
-    "showPaper": "페이퍼 보기"
+    "showPaper": "페이퍼 보기",
+    "stepTooltip": {
+      "title": "단계 정보"
+    }
   },
   "new": {
     "title": "신규 작업 등록",
     "contentsInfo": "신규 작업 등록 콘텐츠 정보",
     "sceneGroupInfo": "작업 구성 정보",
+    "sceneGroupInfoDesc": "선택하신 콘텐츠가 작업으로 등록됩니다. 콘텐츠의 씬그룹이 하위 작업으로 변환되며, 담당자 및 일정을 설정하여 관리할 수 있습니다.",
     "moveContentInfo": "콘텐츠 정보 바로가기"
   },
   "manage": {
     "registerNewTaskInfo": "신규 작업 정보 등록",
+    "registerNewTaskInfoDesc": "작업 일정과 담당자를 설정하여 일정에 기반한 작업 보고 데이터를 기록합니다.",
     "registerTaskInfo": "작업 정보 등록",
     "taskInfo": "작업 정보",
     "taskEdit": "작업 편집",
+    "taskAdd": "작업 추가 생성",
+    "taskAddNotice": "작업 추가 등록 안내",
+    "taskAddNoticeDesc": "기존 작업에 등록된 정보에 기반해 작업 일정과 담당자를 새롭게 설정하여 일정에 기반한 작업 보고 데이터를 기록합니다.",
     "taskEditNotice": "작업 편집 안내",
+    "taskEditNoticeDesc": "설정된 작업 정보를 변경합니다",
     "taskName": "작업 이름",
     "taskSchedule": "작업 일정",
     "taskWorker": "작업 담당자",
@@ -124,6 +149,7 @@
     "subTaskSetting": "하위 작업 {n} 설정",
     "subTaskName": "하위 작업 {n} 이름",
     "subTaskSchedule": "하위 작업 {n} 일정",
+    "subTaskScheduleDesc": "작업 기간 내 하위 작업 일정 변경이 가능합니다.",
     "subTaskWorker": "하위 작업 {n} 담당자",
     "subTaskWorkerPlaceholder": "하위 작업 담당자를 선택해 주세요",
     "scheduleStart": "시작일",
@@ -138,10 +164,10 @@
       "subTaskUpdateFail": "하위 작업 편집에 실패했습니다. 잠시 후 다시 이용해 주세요."
     }
   },
-  "target": {
+  "newTarget": {
     "targetSetting": "타겟 설정",
-    "contentTarget": "콘텐츠 타겟",
-    "taskTarget": "작업 타겟",
+    "beforeTarget": "콘텐츠 타겟",
+    "afterTarget": "작업 타겟",
     "duplicate": "콘텐츠를 작업으로 복제하여 등록",
     "duplicateDesc": "콘텐츠를 작업 관리 항목으로 복제합니다. <br>복제된 콘텐츠에 새로운 작업 타겟을 발급하여 작업을 관리합니다.",
     "transform": "콘텐츠를 작업으로 전환하여 등록",
@@ -152,6 +178,22 @@
       "registerSuccess": "신규 작업이 등록되었습니다.",
       "registerFail": "작업 등록에 실패했습니다. 잠시 후 다시 이용해 주세요.",
       "registerStroageFail": "스토리지 용량이 부족하여 작업 등록에 실패했습니다. 스토리지 용량을 구매해 주세요."
+    }
+  },
+  "addTarget": {
+    "targetSetting": "작업 타겟 설정",
+    "beforeTarget": "작업 타겟",
+    "afterTarget": "작업 추가 타겟",
+    "duplicate": "새로운 작업 타겟을 발급",
+    "duplicateDesc": "기존 작업에 사용된 콘텐츠를 새로운 작업 콘텐츠로 복제합니다. 복제된 콘텐츠 구성 정보의 새로운 작업 타겟을 발급합니다.",
+    "transform": "기존 작업 타겟을 이용",
+    "transformDesc": "기존 작업은 종료되며 더 이상 작업 보고를 진행하지 않습니다. 새로 등록되는 작업의 보고를 받습니다. 기존 작업의 타겟을 그대로 사용합니다.",
+    "register": "추가 생성",
+    "registerComment": "입력하신 정보로 작업을 추가 생성합니다.",
+    "message": {
+      "registerSuccess": "추가 생성이 완료되었습니다.",
+      "registerFail": "작업 추가 생성에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+      "registerStroageFail": "스토리지 용량이 부족하여 작업 추가 생성에 실패했습니다. 스토리지 용량을 구매해 주세요."
     }
   },
   "targetInfo": {

@@ -50,7 +50,33 @@
       <span class="count">{{ workspaceInfo.members.length }}</span>
     </div>
     <el-divider />
-    <div class="plans"></div>
+    <!-- 플랜 별 사용자 수 -->
+    <div class="plans">
+      <h6>{{ $t('workspace.info.planMemberCount') }}</h6>
+      <el-row>
+        <el-col :span="20">
+          <div class="plan">
+            <img :src="plans.remote.logo" />
+            <span>{{ plans.remote.label }}</span>
+          </div>
+        </el-col>
+        <el-col :span="4">{{ workspaceInfo.plansCount.remote }}</el-col>
+        <el-col :span="20">
+          <div class="plan">
+            <img :src="plans.make.logo" />
+            <span>{{ plans.make.label }}</span>
+          </div>
+        </el-col>
+        <el-col :span="4">{{ workspaceInfo.plansCount.make }}</el-col>
+        <el-col :span="20">
+          <div class="plan">
+            <img :src="plans.view.logo" />
+            <span>{{ plans.view.label }}</span>
+          </div>
+        </el-col>
+        <el-col :span="4">{{ workspaceInfo.plansCount.view }}</el-col>
+      </el-row>
+    </div>
     <el-button @click="addMember">
       {{ $t('workspace.info.addMember') }}
     </el-button>
@@ -60,6 +86,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
+import plans from '@/models/workspace/plans'
 
 export default {
   computed: {
@@ -70,11 +97,13 @@ export default {
   data() {
     return {
       loading: false,
+      plans,
       workspaceInfo: {
         info: {},
         master: [],
         managers: [],
         members: [],
+        plansCount: [],
       },
     }
   },
@@ -126,7 +155,7 @@ export default {
   .members {
     & > h6 {
       margin-bottom: 16px;
-      font-size: 13.6px;
+      font-size: 12.6px;
       line-height: 20px;
     }
     & > span {
@@ -148,9 +177,22 @@ export default {
       }
     }
   }
+  .plans {
+    & > h6 {
+      margin-bottom: 16px;
+      font-size: 12.6px;
+      line-height: 20px;
+    }
+    .el-col:nth-child(2n) {
+      margin-bottom: 14px;
+      line-height: 34px;
+      text-align: right;
+    }
+  }
 }
 #__nuxt .workspace-info .el-button {
   width: 100%;
+  margin-top: 7px;
   padding: 12px;
 }
 </style>

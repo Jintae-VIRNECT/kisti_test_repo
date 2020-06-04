@@ -25,6 +25,8 @@ module.exports = {
   MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members'],
   // 워크스페이스 멤버 전체 리스트
   MEMBER_LIST_ALL: ['GET', '/workspaces/{workspaceId}/members/simple'],
+  // 워크스페이스 사용자 상세 조회
+  MEMBER_INFO: ['GET', '/workspaces/{workspaceId}/members/info'],
   // 워크스페이스 사용자 - 멤버 권한 설정
   MEMBER_ROLE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
   // 워크스페이스 사용자 - 멤버 내보내기
@@ -57,12 +59,16 @@ module.exports = {
   TASK_STATISTICS: ['GET', '/tasks/statistics'],
   // 전체 작업 진행률 조회
   TASK_TOTAL_RATE: ['GET', '/tasks/totalRate'],
+  // 해당월의 일별 통계 조회
+  TASK_DAILY: ['GET', '/tasks/dailyTotalRateAtMonth'],
   // 전체 작업 목록 조회
   TASK_LIST: ['GET', '/tasks'],
   // 작업상세조회
   TASK_INFO: ['GET', '/tasks/{taskId}'],
   // 작업생성
   TASK_CREATE: ['POST', '/tasks/task'],
+  // 작업 추가생성
+  TASK_DUPLICATE: ['POST', '/tasks/duplicate'],
   // 작업편집
   TASK_UPDATE: ['POST', '/tasks/{taskId}'],
   // 작업삭제

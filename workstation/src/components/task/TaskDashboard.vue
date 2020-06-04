@@ -1,7 +1,15 @@
 <template>
   <el-card id="task-dashboard" class="el-card--table">
     <div slot="header">
-      <h3>{{ $t('task.list.dashboard.title') }}</h3>
+      <h3>
+        <span>{{ $t('task.list.dashboard.title') }}</span>
+        <el-tooltip
+          :content="$t('task.list.dashboard.titleDesc')"
+          placement="right"
+        >
+          <img src="~assets/images/icon/ic-error.svg" />
+        </el-tooltip>
+      </h3>
       <div class="right">
         <el-button @click="graphToggle">
           <img src="~assets/images/icon/ic-timeline.svg" />
@@ -36,7 +44,15 @@
       </el-col>
       <!-- 작업 수 -->
       <el-col :span="20" class="tasks">
-        <h4>{{ $t('task.list.dashboard.countOfConditions') }}</h4>
+        <h4>
+          <span>{{ $t('task.list.dashboard.countOfConditions') }}</span>
+          <el-tooltip
+            :content="$t('task.list.dashboard.countOfConditionsDesc')"
+            placement="right"
+          >
+            <img src="~assets/images/icon/ic-help.svg" />
+          </el-tooltip>
+        </h4>
         <el-row type="flex" v-if="!isGraph">
           <dl>
             <dt>{{ $t('task.list.waitTasks') }}</dt>
@@ -163,6 +179,9 @@ export default {
     }
     h4 {
       margin-bottom: 16px;
+      & > * {
+        vertical-align: middle;
+      }
     }
   }
   .el-col,

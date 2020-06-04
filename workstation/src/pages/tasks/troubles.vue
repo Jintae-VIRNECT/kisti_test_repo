@@ -75,6 +75,7 @@
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
 import resultService from '@/services/result'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [searchMixin, columnsMixin],
@@ -106,6 +107,11 @@ export default {
     },
     showAll() {},
     showMine() {},
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.searchTroubles(this.searchParams)
+    })
   },
 }
 </script>

@@ -2,11 +2,6 @@
 .el-card {
   margin-bottom: 30px;
   box-shadow: none;
-
-  &--big .el-card__header {
-    height: 60px;
-    padding-top: 19px;
-  }
 }
 .el-card__header {
   position: relative;
@@ -18,7 +13,10 @@
     float: left;
     color: $font-color-content;
     font-size: 14px;
-    line-height: 20px;
+    line-height: 1;
+    & > * {
+      vertical-align: middle;
+    }
   }
   & > div > span {
     margin-left: 20px;
@@ -50,6 +48,27 @@
       color: #0065e0;
       font-size: 18px;
       line-height: 60px;
+    }
+  }
+}
+// 목록 테이블
+.el-card--big {
+  overflow: visible;
+}
+.el-card--big .el-card__header {
+  height: 60px;
+  & > div > h3 {
+    line-height: 18px;
+  }
+  & > div > button {
+    float: left;
+    margin: -4px 16px;
+    padding: 4px 10px;
+    color: $font-color-content;
+    font-size: 12.6px;
+
+    & img {
+      margin-right: 4px;
     }
   }
 }
@@ -89,6 +108,10 @@
     overflow: visible;
     color: $font-color-desc;
     font-size: 12px;
+
+    & > .cell > img {
+      vertical-align: sub;
+    }
   }
   .el-table td {
     padding: 0;
@@ -133,7 +156,9 @@
 // 카드 - 정보 테이블
 .el-card--table--info {
   margin-bottom: 40px;
-
+  & > div > h3 {
+    line-height: 18px;
+  }
   .el-card__header {
     height: 48px;
     padding-top: 13px;

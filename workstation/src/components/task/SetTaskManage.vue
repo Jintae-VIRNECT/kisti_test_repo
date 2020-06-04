@@ -3,14 +3,23 @@
     id="set-task-manage-modal"
     class="info-modal"
     :visible.sync="showMe"
-    :title="$t(taskId ? 'task.manage.taskEdit' : 'task.new.title')"
+    :title="$t(title)"
     width="860px"
     top="11vh"
   >
     <el-row type="flex">
       <el-col :span="12">
-        <h4 v-if="taskId">{{ $t('task.manage.taskEditNotice') }}</h4>
-        <h4 v-else>{{ $t('task.manage.registerNewTaskInfo') }}</h4>
+        <h4>
+          <span>{{ $t(leftHeader) }}</span>
+          <el-tooltip
+            v-if="leftHeaderTooltip"
+            :content="$t(leftHeaderTooltip)"
+            placement="right"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
+        </h4>
+
         <el-divider />
         <p>{{ $t('task.manage.registerTaskInfo') }}</p>
         <dl>
@@ -56,7 +65,9 @@
       </el-col>
       <!-- 하위 작업 -->
       <el-col :span="12">
-        <h4>{{ $t('task.manage.subTaskCount') }}</h4>
+        <h4>
+          <span>{{ $t('task.manage.subTaskCount') }}</span>
+        </h4>
         <el-divider />
         <el-collapse v-model="activeSubForms">
           <el-collapse-item
@@ -105,14 +116,9 @@
         </el-collapse>
       </el-col>
     </el-row>
-    <template slot="footer">
-      <!-- 변경 -->
-      <el-button v-if="taskId" @click="update" type="primary">
-        {{ $t('task.manage.update') }}
-      </el-button>
-      <!-- 생성 -->
-      <el-button v-else @click="next" type="primary">
-        {{ $t('common.next') }}
+    <template slot="footer" v-if="submitFunc">
+      <el-button @click="submitFunc" type="primary">
+        {{ $t(submitText) }}
       </el-button>
     </template>
   </el-dialog>
@@ -122,14 +128,17 @@
 import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
+import contentService from '@/services/content'
 import RegisterNewTask from '@/models/task/RegisterNewTask'
 import EditTaskFrom from '@/models/task/EditTaskFrom'
+import DuplicateTask from '@/models/task/DuplicateTask'
 import dayjs from '@/plugins/dayjs'
 
 export default {
   mixins: [modalMixin],
   props: {
     taskId: Number,
+    type: String,
     contentInfo: Object,
     properties: Array,
   },
@@ -145,7 +154,46 @@ export default {
       activeSubForms: [],
       workerList: [],
       searchLoading: false,
+      taskInfo: null,
     }
+  },
+  // 모달 타입별 분기
+  computed: {
+    title() {
+      return {
+        new: 'task.new.title',
+        add: 'task.manage.taskAdd',
+        edit: 'task.manage.taskEdit',
+      }[this.type]
+    },
+    leftHeader() {
+      return {
+        new: 'task.manage.registerNewTaskInfo',
+        add: 'task.manage.taskAddNotice',
+        edit: 'task.manage.taskEditNotice',
+      }[this.type]
+    },
+    leftHeaderTooltip() {
+      return {
+        new: 'task.manage.registerNewTaskInfoDesc',
+        add: 'task.manage.taskAddNoticeDesc',
+        edit: 'task.manage.taskEditNoticeDesc',
+      }[this.type]
+    },
+    submitFunc() {
+      return {
+        new: this.newNext,
+        add: this.addNext,
+        edit: this.update,
+      }[this.type]
+    },
+    submitText() {
+      return {
+        new: 'common.next',
+        add: 'common.next',
+        edit: 'task.manage.update',
+      }[this.type]
+    },
   },
   watch: {
     'mainForm.schedule'(date) {
@@ -183,12 +231,23 @@ export default {
   },
   methods: {
     async opened() {
-      // 편집
-      if (this.taskId) {
+      // 신규
+      if (this.type === 'new') {
+        this.contentName = this.contentInfo.contentName
+        this.subForm = this.properties[0].children.map(sceneGroup => ({
+          id: sceneGroup.id,
+          name: sceneGroup.label,
+          schedule: [],
+          worker: '',
+        }))
+      }
+      // 편집 & 추가 생성
+      if (this.type === 'edit' || this.type === 'add') {
         const [taskInfo, subTasks] = await Promise.all([
           taskService.getTaskDetail(this.taskId),
           taskService.searchSubTasks(this.taskId, { size: 50 }),
         ])
+        this.taskInfo = taskInfo
         this.contentName = taskInfo.name
         this.mainForm = {
           schedule: [
@@ -208,24 +267,35 @@ export default {
           worker: subTask.workerUUID,
         }))
       }
-      // 생성
-      else {
-        this.contentName = this.contentInfo.contentName
-        this.subForm = this.properties[0].children.map(sceneGroup => ({
-          id: sceneGroup.id,
-          name: sceneGroup.label,
-          schedule: [],
-          worker: '',
+      // 추가 생성 only
+      if (this.type === 'add') {
+        const sceneGroups = await contentService.getContentSceneGroups(
+          this.taskInfo.contentUUID,
+        )
+        this.subForm = this.subForm.map((subTask, index) => ({
+          ...subTask,
+          id: sceneGroups[index].id,
         }))
       }
       // 공통
       this.activeSubForms = this.subForm.map(form => form.id)
       this.workerList = await workspaceService.allMembers()
     },
-    next() {
+    // 신규
+    newNext() {
       const form = new RegisterNewTask({
         workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
         content: this.contentInfo,
+        task: this.mainForm,
+        subTasks: this.subForm,
+      })
+      this.$emit('next', form)
+    },
+    // 추가 생성
+    addNext() {
+      const form = new DuplicateTask({
+        workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
+        originTask: this.taskInfo,
         task: this.mainForm,
         subTasks: this.subForm,
       })

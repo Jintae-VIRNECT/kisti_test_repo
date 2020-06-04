@@ -5,5 +5,7 @@
   "yes": "네",
   "no": "아니요",
   "download": "다운로드",
-  "delete": "삭제"
+  "delete": "삭제",
+  "graph": "그래프",
+  "list": "리스트"
 }

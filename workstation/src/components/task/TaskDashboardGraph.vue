@@ -8,9 +8,9 @@ import colorMap from '@/models/color'
 
 // ssr error
 let bb = null
-try {
+if (process.client) {
   bb = require('billboard.js').bb
-} catch (e) {}
+}
 
 export default {
   props: {
@@ -21,6 +21,11 @@ export default {
       barChart: null,
       cursorData: null,
     }
+  },
+  watch: {
+    data() {
+      this.initProcessGraph()
+    },
   },
   methods: {
     initProcessGraph() {

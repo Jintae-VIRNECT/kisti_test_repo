@@ -1,8 +1,16 @@
-export default async function({ req, store, redirect }) {
+export default async function({ req, store, redirect, error }) {
   // nuxt undefined url bug
-  if (req && req.url.match('undefined')) redirect('/')
+  if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
+    redirect('/')
 
   if (process.server) {
+    // chrome only
+    const hasChrome = req.headers['user-agent'].indexOf('Chrome') !== -1
+    const hasEdge = req.headers['user-agent'].indexOf('Edge') !== -1
+    if (!hasChrome || hasEdge) {
+      return error({ message: 'BrowserNotSupport' })
+    }
+
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(

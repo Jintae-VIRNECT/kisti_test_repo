@@ -36,10 +36,16 @@
             <dt>{{ $tc('task.manage.subTaskName', subTaskInfo.priority) }}</dt>
             <dd>{{ subTaskInfo.subTaskName }}</dd>
           </dl>
-          <el-form-item
-            class="horizon"
-            :label="$tc('task.manage.subTaskSchedule', subTaskInfo.priority)"
-          >
+          <el-form-item class="horizon">
+            <template slot="label">
+              {{ $tc('task.manage.subTaskSchedule', subTaskInfo.priority) }}
+              <el-tooltip
+                :content="$t('task.manage.subTaskScheduleDesc')"
+                placement="right"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
+            </template>
             <el-date-picker
               v-model="form.schedule"
               type="datetimerange"
@@ -93,6 +99,7 @@ export default {
   },
   data() {
     return {
+      taskName: '',
       taskSchedule: [],
       form: {
         schedule: [],

@@ -16,12 +16,10 @@
 </template>
 
 <script>
-function check(bool) {
-  if (bool > 0) return true
-  else return bool && bool.toLowerCase() !== 'no'
-}
+import filters from '@/mixins/filters'
 
 export default {
+  mixins: [filters],
   props: {
     label: String,
     prop: String,
@@ -32,10 +30,10 @@ export default {
   },
   methods: {
     booleanText(bool) {
-      return check(bool) ? this.trueText : this.falseText
+      return this.boolCheck(bool) ? this.trueText : this.falseText
     },
     booleanClass(bool) {
-      return check(bool) ? 'true' : 'false'
+      return this.boolCheck(bool) ? 'true' : 'false'
     },
   },
 }

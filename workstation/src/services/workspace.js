@@ -2,12 +2,9 @@ import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
 // model
-import Workspace from '@/models/workspace/Workspace'
+import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 
-function myWorkspacesGetter() {
-  return store.getters['workspace/myWorkspaces']
-}
 function activeWorkspaceGetter() {
   return store.getters['workspace/activeWorkspace']
 }
@@ -25,23 +22,11 @@ export default {
     const watch = store.watch(activeWorkspaceGetter, func)
     that.$on('hook:beforeDestroy', watch)
   },
-  /**
-   * 내가 속한 워크스페이스 리스트
-   */
-  getMyWorkspaces() {
-    return myWorkspacesGetter()
-  },
   async getWorkspaceInfo(workspaceId) {
     const data = await api('WORKSPACE_INFO', {
       route: { workspaceId },
     })
-    const members = data.workspaceUserInfo.map(user => new Member(user))
-    return {
-      info: new Workspace(data.workspaceInfo),
-      master: members.find(member => member.role === 'MASTER'),
-      managers: members.filter(member => member.role === 'MANAGER'),
-      members: members.filter(member => member.role === 'MEMBER'),
-    }
+    return new WorkspaceInfo(data)
   },
   /**
    * 신규 참여 멤버
@@ -104,6 +89,19 @@ export default {
     await api('WORKSPACE_START', options)
   },
   /**
+   * 멤버 정보 상세 조회
+   * @param {string} userId
+   */
+  async getMemberInfo(userId) {
+    const data = await api('MEMBER_INFO', {
+      route: {
+        workspaceId: activeWorkspaceGetter().uuid,
+      },
+      params: { userId },
+    })
+    return new Member(data)
+  },
+  /**
    * 워크스페이스 프로필 설정 변경
    * @param {form} form
    */
@@ -150,7 +148,7 @@ export default {
       },
       params: {
         ...form,
-        masterUserId: myProfileGetter().uuid,
+        requestUserId: myProfileGetter().uuid,
       },
     })
   },

@@ -4,6 +4,13 @@ import Task from '@/models/task/Task'
 import SubTask from '@/models/task/SubTask'
 import Step from '@/models/task/Step'
 
+function activeWorkspaceGetter() {
+  return store.getters['workspace/activeWorkspace']
+}
+function myProfileGetter() {
+  return store.getters['auth/myProfile']
+}
+
 export default {
   /**
    * 작업 통계
@@ -11,10 +18,23 @@ export default {
   async getTaskStatistics() {
     const data = await api('TASK_STATISTICS', {
       params: {
-        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
       },
     })
     return data
+  },
+  /**
+   * 작업 일별 통계 조회
+   * @param {String} month
+   */
+  async getTaskDailyRateAtMonth(month) {
+    const data = await api('TASK_DAILY', {
+      params: {
+        month,
+        workspaceUUID: activeWorkspaceGetter().uuid,
+      },
+    })
+    return data.dailyTotal
   },
   /**
    * 작업 검색
@@ -26,7 +46,7 @@ export default {
     }
     const data = await api('TASK_LIST', {
       params: {
-        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updatedDate,desc',
         ...params,
@@ -57,11 +77,20 @@ export default {
     })
   },
   /**
+   * 작업 추가생성
+   * @param {RegisterNewTask} form
+   */
+  async duplicateTask(form) {
+    return await api('TASK_DUPLICATE', {
+      params: form,
+    })
+  },
+  /**
    * 작업 편집
    * @param {taskId} taskId
    */
   async updateTask(taskId, form) {
-    form.actorUUID = store.getters['auth/myProfile'].uuid
+    form.actorUUID = myProfileGetter().uuid
     return await api('TASK_UPDATE', {
       route: { taskId },
       params: form,
@@ -72,7 +101,7 @@ export default {
    * @param {taskId} taskId
    */
   async closeTask(taskId) {
-    const actorUUID = store.getters['auth/myProfile'].uuid
+    const actorUUID = myProfileGetter().uuid
     return await api('TASK_CLOSE', {
       route: { taskId },
       params: { taskId, actorUUID },
@@ -83,7 +112,7 @@ export default {
    * @param {taskId} taskId
    */
   async deleteTask(taskId) {
-    const actorUUID = store.getters['auth/myProfile'].uuid
+    const actorUUID = myProfileGetter().uuid
     return await api('TASK_DELETE', {
       params: { taskId, actorUUID },
     })
@@ -109,7 +138,7 @@ export default {
     const data = await api('SUB_TASK_LIST', {
       route: { taskId },
       params: {
-        workspaceUUID: store.getters['workspace/activeWorkspace'].uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
         sort: 'updated_at,desc',
         ...params,
