@@ -28,7 +28,7 @@ public class InviteUserInfoRestResponse {
         private String name;
 
         @ApiModelProperty(value = "사용자 닉네임", position = 3, example = "홍길동")
-        private String nickName;
+        private String nickname;
 
         @ApiModelProperty(value = "유저 타입", position = 4, example = "USER")
         private String userType;
