@@ -31,6 +31,9 @@ function setTokensToCookies(response) {
   Cookies.set('refreshToken', response.refreshToken)
   accessToken = response.accessToken
   refreshToken = response.refreshToken
+  api.defaults.headers.common = {
+    Authorization: `Bearer ${accessToken}`,
+  }
 }
 
 const tokenInterval = async () => {
