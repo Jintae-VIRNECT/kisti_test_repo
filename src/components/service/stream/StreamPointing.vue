@@ -13,6 +13,9 @@
 /* eslint-disable one-var */
 import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/pointer.lottie.json'
+import { mapGetters } from 'vuex'
+import { reset } from 'utils/callOptions'
+import { hexToAHEX, ahexToHEX } from 'utils/color'
 
 function hexToLottie(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16) / 255,
@@ -41,6 +44,7 @@ export default {
       radius: '60',
       lottieOption: {
         animationData,
+        loop: false,
       },
       pointList: [],
       idle: true,
@@ -49,33 +53,16 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters([
-    //   'tools',
-    //   'remote'
-    // ]),
+    ...mapGetters(['tools', 'mainView']),
     pointingColor() {
-      return '#0c73f2'
+      return this.tools ? this.tools.color : reset.color
     },
     pointingOpacity() {
-      return 1
+      return this.tools ? this.tools.opacity : reset.opacity
     },
     // resolution() {
     //     const width = this.remote.opponentScreenWidth || this.$el.offsetWidth;
     //     return width / this.$el.offsetWidth;
-    // }
-  },
-  watch: {
-    // 'tools.pointingColor': function (color) {
-    //   this.lottieOption.animationData.layers.forEach((layer) => {
-    //     layer.shapes[0].it[1].c.k = hexToLottie(color, this.pointingOpacity)
-    //     layer.shapes[0].it[1].o.k = this.opacity * 100
-    //   })
-    // },
-    // 'tools.pointingOpacity': function (opacity) {
-    //   this.lottieOption.animationData.layers.forEach((layer) => {
-    //     layer.shapes[0].it[1].c.k = hexToLottie(this.tools.pointingColor, opacity)
-    //     layer.shapes[0].it[1].o.k = this.opacity * 100
-    //   })
     // }
   },
   methods: {
@@ -87,25 +74,33 @@ export default {
       }, 1050)
     },
     doPointing(event) {
-      // console.log(event);
-
+      this.$call.pointing({
+        to: this.mainView.id,
+        from: this.account.uuid,
+        color: hexToAHEX(this.pointingColor, 1),
+        opacity: this.pointingOpacity,
+        width: this.radius,
+        posX: event.offsetX.toFixed(2),
+        posY: event.offsetY.toFixed(2),
+      })
+    },
+    receivePointing(receive) {
+      const data = JSON.parse(receive.data)
+      if (data.to !== this.mainView.id) return
+      let color = ahexToHEX(data.color)
+      this.pointList.push({
+        // coords: [(message.posX * this.videoScale), (message.posY * this.videoScale)],
+        coords: [data.posX, data.posY],
+        color: color,
+        opacity: data.opacity,
+        label: 'opponent',
+      })
       this.stateControl()
 
-      this.pointList.push({
-        coords: [event.offsetX, event.offsetY],
-        color: this.pointingColor,
-        opacity: this.pointingOpacity,
-        label: 'me!',
+      this.lottieOption.animationData.layers.forEach(layer => {
+        layer.shapes[0].it[1].c.k = hexToLottie(color, data.opacity)
+        layer.shapes[0].it[1].o.k = data.opacity * 100
       })
-
-      // this.$remoteSDK.message('pointing', {
-      //   color: hexToAHEX(this.color, 1),
-      //   opacity: this.opacity,
-      //   width: this.radius,
-      //   posX: (event.offsetX * this.scale).toFixed(2),
-      //   posY: (event.offsetY * this.scale).toFixed(2)
-      // })
-      // console.log({color: hexToAHEX(this.color,1),opacity: this.opacity,width: this.radius,posX: (event.offsetX * this.scale).toFixed(2),posY: (event.offsetY * this.scale).toFixed(2)})
 
       this.$nextTick(() => {
         const container = this.$el.lastChild
@@ -115,57 +110,19 @@ export default {
         })
 
         lottie.addEventListener('complete', () => {
-          // this.pointList.shift();
           lottie.destroy()
           if (this.idle === true) {
-            this.pointList = []
+            this.pointList.shift()
           }
         })
       })
-    },
-    receivePointing(receive) {
-      if (receive.indexOf('{') > -1) {
-        this.fullMessage = ''
-      }
-      if (receive.indexOf('}') < 0) {
-        this.fullMessage += receive
-        return
-      }
-      this.fullMessage += receive
-      const message = JSON.parse(this.fullMessage)
-      this.fullMessage = ''
-
-      if ('type' in message && message.type === 'pointing') {
-        this.pointList.push({
-          // coords: [(message.posX * this.videoScale), (message.posY * this.videoScale)],
-          coords: [message.posX, message.posY],
-          color: message.color,
-          opacity: message.opacity,
-          label: 'opponent',
-        })
-
-        this.$nextTick(() => {
-          const container = this.$el.lastChild
-          const lottie = Lottie.loadAnimation({
-            ...this.lottieOption,
-            container,
-          })
-
-          lottie.addEventListener('complete', () => {
-            // this.pointList.shift();
-            lottie.destroy()
-            if (this.idle === true) {
-              this.pointList = []
-            }
-          })
-        })
-      }
+      return
     },
   },
 
   /* Lifecycling */
   created() {
-    // this.$remoteSDK && this.$remoteSDK.addMessageListener(this.receivePointing)
+    this.$call.addListener('signal:pointing', this.receivePointing)
   },
   mounted() {
     this.lottieOption.animationData.layers.forEach(layer => {
@@ -177,21 +134,20 @@ export default {
     })
   },
   beforeDestroy() {
-    // this.$remoteSDK && this.$remoteSDK.removeMessageListener(this.receivePointing)
+    this.$call.removeListener('signal:pointing', this.receivePointing)
   },
 }
 </script>
 <style lang="scss">
 .pointing {
   position: relative;
-
-  &--item {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    margin-top: -40px;
-    margin-left: -40px;
-    pointer-events: none;
-  }
+}
+.pointing--item {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  margin-top: -40px;
+  margin-left: -40px;
+  pointer-events: none;
 }
 </style>

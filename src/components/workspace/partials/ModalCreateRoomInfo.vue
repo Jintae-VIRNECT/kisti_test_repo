@@ -144,12 +144,12 @@ export default {
       this.description = ''
     },
     async start() {
-      if (this.btnDisabled) {
-        this.confirmDefault(
-          '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
-        )
-        return
-      }
+      // if (this.btnDisabled) {
+      //   this.confirmDefault(
+      //     '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
+      //   )
+      //   return
+      // }
       try {
         const selectedUser = []
 

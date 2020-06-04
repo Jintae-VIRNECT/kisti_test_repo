@@ -22,20 +22,18 @@
           @error="onImageErrorGroup"
         /> -->
         <p class="profile__name">{{ room.title }}</p>
-        <p class="profile__description">
-          {{ room.description }}
-        </p>
         <p class="profile__leader">리더 : {{ room.leaderNickName }}</p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            {{ `총 멤버: ${room.participantsCount}명` }}
+            <b>{{ `접속 멤버: ${room.participantsCount} / ` }}</b>
+            {{ room.participantsCount }}
           </p>
         </div>
         <div class="info__section">
-          <p class="info__title">접속한 회원</p>
+          <p class="info__title">접속한 멤버</p>
           <profile-list
             :customStyle="{
               width: '2rem',

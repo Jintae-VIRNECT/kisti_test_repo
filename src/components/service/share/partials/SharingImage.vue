@@ -1,13 +1,10 @@
 <template>
   <li class="sharing-image">
-    <div v-if="!isPdf" class="sharing-image">
-      <img src="" />
-      <span>파일명.png</span>
-    </div>
-    <button v-else class="sharing-image">
-      <img src="" />
-      <span>파일명.png</span>
+    <button class="sharing-image__item">
+      <img :src="imageData" />
     </button>
+    <p class="sharing-image__name">{{ fileData.name }}</p>
+    <button class="sharing-image__remove">이미지 삭제</button>
   </li>
 </template>
 
@@ -17,14 +14,40 @@ export default {
   components: {},
   data() {
     return {
-      isPdf: false,
+      imageData: '',
     }
   },
-  computed: {},
-  watch: {},
-  methods: {},
+  props: {
+    isPdf: {
+      type: Boolean,
+      default: false,
+    },
+    fileInfo: {
+      type: Object,
+    },
+  },
+  computed: {
+    fileData() {
+      if (this.fileInfo && this.fileInfo.filedata) {
+        return this.fileInfo.filedata
+      } else {
+        return {}
+      }
+    },
+  },
+  methods: {
+    init() {
+      const fileReader = new FileReader()
+      fileReader.onload = e => {
+        this.imageData = e.target.result
+      }
+      fileReader.readAsDataURL(this.fileData)
+    },
+  },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.init()
+  },
 }
 </script>

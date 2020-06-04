@@ -7,7 +7,7 @@ import {
   TOOL_LINE_WIDTH,
 } from '../mutation-types'
 
-import { reset } from 'utils/toolOption'
+import { reset } from 'utils/callOptions'
 
 const state = {
   view: 'stream', // stream, sharing, ar
@@ -15,7 +15,7 @@ const state = {
   drawOpacity: reset.opacity,
   lineWidth: reset.width,
   fontSize: reset.size,
-  action: 'pointing', // pointing, drawing
+  action: 'default', // default, pointing, drawing
 }
 
 const mutations = {

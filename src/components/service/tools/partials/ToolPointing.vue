@@ -20,7 +20,11 @@ export default {
   methods: {
     pointing() {
       this.isPointing = !this.isPointing
-      // this.setAction('pointing')
+      if (this.isPointing) {
+        this.setAction('pointing')
+      } else {
+        this.setAction('default')
+      }
     },
   },
 

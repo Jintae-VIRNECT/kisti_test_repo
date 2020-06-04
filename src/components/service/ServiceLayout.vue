@@ -1,24 +1,28 @@
 <template>
-  <div class="remote-wrapper service-wrapper">
-    <sub-view></sub-view>
+  <section class="remote-layout">
+    <header-section></header-section>
+    <div class="remote-wrapper service-wrapper">
+      <sub-view></sub-view>
 
-    <transition name="share" mode="out-in">
-      <share v-if="view === 'drawing'"></share>
-    </transition>
+      <transition name="share" mode="out-in">
+        <share v-if="view === 'drawing'"></share>
+      </transition>
 
-    <transition name="main" mode="out-in">
-      <stream-view v-if="view === 'stream'"></stream-view>
-      <drawing-view v-if="view === 'drawing'"></drawing-view>
-      <ar-view v-if="view === 'ar'"></ar-view>
-    </transition>
+      <transition name="main" mode="out-in">
+        <stream-view v-if="view === 'stream'"></stream-view>
+        <drawing-view v-if="view === 'drawing'"></drawing-view>
+        <ar-view v-if="view === 'ar'"></ar-view>
+      </transition>
 
-    <user-list :class="{ draw: view === 'drawing' }"></user-list>
+      <user-list :class="{ draw: view === 'drawing' }"></user-list>
 
-    <!-- <component :is="viewComponent"></component> -->
-  </div>
+      <!-- <component :is="viewComponent"></component> -->
+    </div>
+  </section>
 </template>
 
 <script>
+import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 
@@ -26,6 +30,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
   components: {
+    HeaderSection,
     SubView,
     UserList,
     StreamView: () => import('./ServiceStream'),

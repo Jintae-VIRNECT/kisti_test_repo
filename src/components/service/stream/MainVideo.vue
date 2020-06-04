@@ -1,6 +1,10 @@
 <template>
   <div class="main-video">
-    <div class="main-video__box">
+    <div
+      class="main-video__box"
+      @mouseenter="showTools = true"
+      @mouseleave="showTools = false"
+    >
       <template v-if="mainView && mainView.stream">
         <video
           ref="mainVideo"
@@ -13,19 +17,44 @@
           playsinline
           loop
         ></video>
-      </template>
+        <div class="main-video__recording">
+          <p class="server">{{ 0 | timeFilter }}</p>
+          <p class="local">{{ 0 | timeFilter }}</p>
+        </div>
 
-      <pointing v-if="true" :scale="1" class="main-video__pointing"></pointing>
-      <!-- 
-      <div class="main-video__info">
-        <img class="profile" src="~assets/image/call/chat_img_user.svg" />
-        <span class="name">{{ mainView.nickName }}</span>
-        <span class="status" :class="status">연결상태</span>
-      </div> -->
-      <!-- 
-      <button v-if="mainView.uuid === 'main'" class="main-video__setting">
-        화면 설정
-      </button> -->
+        <pointing
+          v-if="action === 'pointing'"
+          :scale="1"
+          class="main-video__pointing"
+        ></pointing>
+        <template v-else>
+          <transition name="opacity">
+            <video-tools v-if="showTools"></video-tools>
+          </transition>
+        </template>
+      </template>
+      <template v-else>
+        <div class="main-video__empty">
+          <div class="main-video__empty-inner" v-if="true">
+            <img src="~assets/image/img_video_connecting.svg" />
+            <p>영상 연결 중…</p>
+          </div>
+          <div class="main-video__empty-inner" v-else-if="true">
+            <img src="~assets/image/img_video_stop.svg" />
+            <p>영상을 정지하였습니다.</p>
+            <p class="inner-discription" v-if="true">
+              작업자의 Remote App이<br />백그라운드 상태입니다.
+            </p>
+            <p class="inner-discription" v-else>
+              작업자의 영상이 일시정지 상태입니다.
+            </p>
+          </div>
+          <div class="main-video__empty-inner" v-else>
+            <img src="~assets/image/img_novideo.svg" />
+            <p>출력 할 영상이 없습니다.</p>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -34,20 +63,24 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import Pointing from './StreamPointing'
+import VideoTools from './MainVideoTools'
 export default {
   name: 'MainVideo',
   components: {
     Pointing,
+    VideoTools,
   },
   data() {
     return {
       status: 'good', // good, normal, bad
+      showTools: false,
     }
   },
   computed: {
     ...mapGetters({
       mainView: 'mainView',
       speaker: 'speaker',
+      action: 'action',
     }),
   },
   watch: {
@@ -129,3 +162,22 @@ export default {
   mounted() {},
 }
 </script>
+
+<style>
+.opacity-enter-active,
+.opacity-leave-active {
+  transition: opacity ease 0.4s;
+}
+.opacity-enter {
+  opacity: 0;
+}
+.opacity-enter-to {
+  opacity: 1;
+}
+.opacity-leave {
+  opacity: 1;
+}
+.opacity-leave-to {
+  opacity: 0;
+}
+</style>
