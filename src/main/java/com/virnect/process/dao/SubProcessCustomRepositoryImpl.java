@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements SubProcessCustomRepository {
@@ -73,5 +74,35 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 
         return new PageImpl<>(subProcessList, pageable, query.fetchCount());
     }
+
+    @Override
+    public LocalDateTime getLastestReportedTime(String workspaceUUID, String userUUID) {
+        QSubProcess qSubProcess = QSubProcess.subProcess;
+        QProcess qProcess = QProcess.process;
+        LocalDateTime reportedTime = from(qSubProcess)
+                .select(qSubProcess.reportedDate.max())
+                .join(qSubProcess.process, qProcess)
+                .where(qSubProcess.workerUUID.eq(userUUID))
+                .where(qProcess.workspaceUUID.eq(workspaceUUID))
+                .fetchOne();
+
+        return reportedTime;
+    }
+
+    @Override
+    public List<SubProcess> getSubProcessList(String workspaceUUID, String userUUID) {
+        QSubProcess qSubProcess = QSubProcess.subProcess;
+        QProcess qProcess = QProcess.process;
+
+        JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
+
+        query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+        query.where(qSubProcess.workerUUID.eq(userUUID));
+
+        List<SubProcess> subProcessList = query.fetch();
+
+        return subProcessList;
+    }
+
 
 }

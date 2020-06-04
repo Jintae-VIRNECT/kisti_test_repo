@@ -1,11 +1,14 @@
 package com.virnect.process.application.content;
 
 import com.virnect.process.domain.YesOrNo;
+import com.virnect.process.dto.rest.response.content.ContentCountResponse;
 import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
 import com.virnect.process.dto.rest.request.content.ContentStatusChangeRequest;
 import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.global.common.ApiResponse;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ContentFallbackService implements ContentRestService {
@@ -43,4 +46,7 @@ public class ContentFallbackService implements ContentRestService {
     public ApiResponse<ContentInfoResponse> getContentInfo(String contentUUID) {
         return null;
     }
+
+    @Override
+    public ApiResponse<List<ContentCountResponse>> countContents(String workspaceUUID, List<String> userUUIDList) { return null; }
 }

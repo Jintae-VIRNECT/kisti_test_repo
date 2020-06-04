@@ -5,6 +5,7 @@ import com.virnect.process.domain.YesOrNo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -14,4 +15,8 @@ public interface SubProcessCustomRepository {
     boolean existsByIsRecentAndWorkerUUIDAndWorkspaceUUID(YesOrNo newWork, String workspaceUUID, String workerUUID);
 
     Page<SubProcess> getSubProcesses(String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable);
+
+    LocalDateTime getLastestReportedTime(String workspaceUUID, String userUUID);
+
+    List<SubProcess> getSubProcessList(String workspaceUUID, String userUUID);
 }

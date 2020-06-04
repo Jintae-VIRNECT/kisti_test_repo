@@ -2,6 +2,7 @@ package com.virnect.process.application;
 
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
+import com.virnect.process.application.workspace.WorkspaceRestService;
 import com.virnect.process.dao.*;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Process;
@@ -13,6 +14,7 @@ import com.virnect.process.dto.rest.response.content.*;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
 import com.virnect.process.dto.rest.response.workspace.MemberInfoDTO;
+import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
@@ -72,6 +74,7 @@ public class TaskService {
 
     private final ContentRestService contentRestService;
     private final UserRestService userRestService;
+    private final WorkspaceRestService workspaceRestService;
 
     private final ModelMapper modelMapper;
     private final FileUploadService fileUploadService;
@@ -863,25 +866,29 @@ public class TaskService {
         }
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchUserName(String workspaceUUID, String search, Pageable pageable) {
+    public ApiResponse<IssuesResponse> getIssuesInSearchUserName(String userUUID, String workspaceUUID, String search, Pageable pageable) {
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
         if (userUUIDList.size() == 0) userUUIDList = null;
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchUserName(workspaceUUID, userUUIDList, pageable);
+//        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchUserName(workspaceUUID, userUUIDList, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesIn(userUUID, workspaceUUID, userUUIDList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesOutSearchUserName(String search, Pageable pageable) {
-        List<UserInfoResponse> userInfos = getUserInfoSearch(search);
-        List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
-        // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
-        if (userUUIDList.size() == 0) userUUIDList = null;
-        Page<Issue> issuePage = this.issueRepository.getIssuesOutSearchUserName(userUUIDList, pageable);
-        //Page<Issue> issuePage = this.issueRepository.getTroubleMemoSearchUserName(userUUIDList, pageable);
+    public ApiResponse<IssuesResponse> getIssuesOutSearchUserName(String search, String workspaceUUID, Pageable pageable) {
+        List<MemberInfoDTO> memberList = this.workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData().getMemberInfoList();
 
+        List<String> userUUIDList = new ArrayList<>();
 
+        for (MemberInfoDTO t: memberList) {
+            userUUIDList.add(t.getUuid());
+        }
+
+        List<String> filteredList =userUUIDList.stream().filter(s -> s.contains(search)).collect(Collectors.toList());
+
+        Page<Issue> issuePage = this.issueRepository.getIssuesOut(null, filteredList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -896,15 +903,30 @@ public class TaskService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesIn(String workspaceUUID, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesIn(workspaceUUID, pageable);
+    public ApiResponse<IssuesResponse> getIssuesIn(String userUUID, String workspaceUUID, Pageable pageable) {
+        Page<Issue> issuePage = this.issueRepository.getIssuesIn(userUUID, workspaceUUID, null, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesOut(String userUUID, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesOut(pageable);
-        //Page<Issue> issuePage = this.issueRepository.getTroubleMemo(userUUID, pageable);
+    public ApiResponse<IssuesResponse> getIssuesOut(String userUUID, String workspaceUUID, Pageable pageable) {
+        // 로그인한 워크스페이스에 소속된 사용자 목록을 불러옴.
+        ApiResponse<MemberListResponse> response = this.workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID);
+
+        if (response.getCode() != 200) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        List<MemberInfoDTO> memberList = response.getData().getMemberInfoList();
+        List<String> userUUIDList = new ArrayList<>();
+
+        for (MemberInfoDTO t: memberList) {
+            userUUIDList.add(t.getUuid());
+        }
+
+        log.debug("{}", userUUIDList);
+
+        Page<Issue> issuePage = this.issueRepository.getIssuesOut(userUUID, userUUIDList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -916,19 +938,19 @@ public class TaskService {
     }
 
     public ApiResponse<IssuesResponse> getIssuesInSearchProcessTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchProcessTitle(workspaceUUID, title, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchProcessTitle(null, workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
     public ApiResponse<IssuesResponse> getIssuesInSearchSubProcessTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchSubProcessTitle(workspaceUUID, title, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchSubProcessTitle(null, workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
     public ApiResponse<IssuesResponse> getIssuesInSearchJobTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchJobTitle(workspaceUUID, title, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchJobTitle(null, workspaceUUID, title, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
@@ -1695,12 +1717,13 @@ public class TaskService {
         Process process = this.processRepository.findById(subProcess.getProcess().getId())
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         Page<Job> jobPage = null;
+
+        jobPage = this.jobRepository.getJobPage(subProcessId, search, pageable);
+
         if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
-            List<Job> jobList = Optional.ofNullable(this.jobRepository.getJobList(subProcessId, search, pageable.getSort())).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
-            jobPage = filterConditionsJobPage(jobList, filter, pageable);
-        } else {
-            jobPage = Optional.ofNullable(this.jobRepository.getJobs(subProcessId, search, pageable)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
+            jobPage = filterConditionsJobPage(jobPage, filter, pageable);
         }
+
         List<JobResponse> jobList = jobPage.getContent().stream().map(job -> {
             JobResponse jobResponse = JobResponse.builder()
                     .id(job.getId())
@@ -1744,17 +1767,16 @@ public class TaskService {
         return new ApiResponse<>(jobListResponse);
     }
 
-    private Page<Job> filterConditionsJobPage(List<Job> jobList, List<Conditions> filter, Pageable pageable) {
+    private Page<Job> filterConditionsJobPage(Page<Job> jobPage, List<Conditions> filter, Pageable pageable) {
         List<Job> jobs = new ArrayList<>();
-        for (Job job : jobList) {
+        for (Job job : jobPage) {
             // 상태가 일치하는 공정만 필터링
             if (filter.contains(job.getConditions())) {
                 jobs.add(job);
             }
         }
-        int start = (int) pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > jobs.size() ? jobs.size() : (start + pageable.getPageSize());
-        return new PageImpl<>(jobs.subList(start, end), pageable, jobs.size());
+
+        return new PageImpl<>(jobs, pageable, jobs.size());
     }
 
     public ApiResponse<IssueInfoResponse> getIssueInfo(Long issueId) {
@@ -2071,5 +2093,69 @@ public class TaskService {
         String imgPath = this.fileUploadService.base64ImageUpload(qrString);
 
         return imgPath;
+    }
+
+    public ApiResponse<List<WorkspaceUserInfoResponse>> getWorkspaceUserInfo(String workspaceUUID) {
+        log.debug(workspaceUUID);
+        List<MemberInfoDTO> memberList = this.workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData().getMemberInfoList();
+
+        List<String> userUUIDList = new ArrayList<>();
+
+        for (MemberInfoDTO t : memberList) {
+            userUUIDList.add(t.getUuid());
+        }
+
+        List<WorkspaceUserInfoResponse> resultList = new ArrayList<>();
+
+        for (MemberInfoDTO memberInfo : memberList) {
+
+            String userUUID = memberInfo.getUuid();
+
+            List<ContentCountResponse> countList = this.contentRestService.countContents(workspaceUUID, userUUIDList).getData();
+            List<SubProcess> subProcessList = this.subProcessRepository.getSubProcessList(workspaceUUID, userUUID);
+            LocalDateTime lastestTime = this.subProcessRepository.getLastestReportedTime(workspaceUUID, userUUID);
+
+            int ing = 0;
+            for (SubProcess subProcess : subProcessList) {
+                Process process = subProcess.getProcess();
+                State state = process.getState();
+                String processWorkspaceUUID = process.getWorkspaceUUID();
+                // 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때, 마지막으로 워크스페이스가 동일한 프로세스에 대해 필터
+                if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT && (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID))) {
+                    ing++;
+                }
+            }
+
+            long countContent = 0L;
+
+            for (ContentCountResponse response : countList) {
+                if (memberInfo.getUuid().equals(response.getUserUUID())) {
+                    countContent = response.getCountContents();
+                }
+            }
+
+            int percent = 0;
+
+            if (subProcessList.size() > 0) {
+                percent = (int)(((double) ing / (double) subProcessList.size()) * 100);
+            }
+
+            log.debug(">>>>>>>>>>>>>>> {} ", percent);
+
+            WorkspaceUserInfoResponse response = WorkspaceUserInfoResponse.builder()
+                    .workerUUID(memberInfo.getUuid())
+                    .workerName(memberInfo.getName())
+                    .workerProfile(memberInfo.getProfile())
+                    .countAssigned(subProcessList.size())
+                    .countProgressing(ing)
+                    .percent(percent)
+                    .countContent(countContent)
+                    .lastestReportedTime(lastestTime)
+                    .build();
+
+            resultList.add(response);
+        }
+
+        return new ApiResponse<>(resultList);
     }
 }

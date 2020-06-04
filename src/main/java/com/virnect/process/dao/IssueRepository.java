@@ -17,7 +17,7 @@ import java.util.Optional;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public interface IssueRepository extends JpaRepository<Issue, Long> {
+public interface IssueRepository extends JpaRepository<Issue, Long>, IssueCustomRepository {
 
     // JPQL
     @Query(value = "select I from Issue I where I.id = :issueId")
@@ -25,8 +25,8 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
 //    Optional<Issue> findById(Long issueId);
 
-    @Query(value = "select count(i.issue_id) from issue i join job j on j.job_id = i.job_id join sub_process s on s.sub_process_id = j.sub_process_id and s.sub_process_id = :subProcessId", nativeQuery = true)
-    Long countIssuesInSubProcess(@Param("subProcessId") Long subProcessId);
+//    @Query(value = "select count(i.issue_id) from issue i join job j on j.job_id = i.job_id join sub_process s on s.sub_process_id = j.sub_process_id and s.sub_process_id = :subProcessId", nativeQuery = true)
+//    Long countIssuesInSubProcess(@Param("subProcessId") Long subProcessId);
 
     @Query(value = "select i.issue_id as issue_id, i.content as content, i.photo_file_path as photo_file_path, i.worker_uuid as worker_uuid, i.created_at as created_at, i.updated_at as updated_at, i.job_id as job_id from issue i join job j on j.job_id = i.job_id join sub_process s on s.sub_process_id = j.sub_process_id join process p on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and i.worker_uuid in (:userUUIDList)"
             , countQuery = "select count(*) from issue i join job j on j.job_id = i.job_id join sub_process s on s.sub_process_id = j.sub_process_id join process p on p.process_id = s.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) where 1=1 and i.worker_uuid in (:userUUIDList)"
