@@ -60,7 +60,7 @@ const _ = {
       })
       _.publisher.on('streamCreated', event => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
-        _.micOnOff(Store.getters['mic'])
+        _.mic(Store.getters['mic'])
       })
 
       _.session.publish(_.publisher)
@@ -122,11 +122,11 @@ const _ = {
   streamOnOff: active => {
     _.publisher.publishVideo(active)
   },
-  micOnOff: active => {
+  mic: active => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
   },
-  muteOnOff: (id, statue) => {
+  mute: (id, statue) => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.id.indexOf(id) > -1,
     )

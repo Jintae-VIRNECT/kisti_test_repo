@@ -98,7 +98,7 @@ const mutations = {
     if (idx >= 0) {
       let participant = state.participants.splice(idx, 1)
       state.chatList.push({
-        text: participant.nickname + '님이 대화에서 나가셨습니다.',
+        text: participant[0].nickname + '님이 대화에서 나가셨습니다.',
         name: 'people',
         date: new Date(),
         uuid: null,

@@ -32,7 +32,7 @@ export default {
       let mic = !this.mic
       this.callMic(mic)
 
-      this.$call.micOnOff(mic)
+      this.$call.mic(mic)
     },
   },
 
