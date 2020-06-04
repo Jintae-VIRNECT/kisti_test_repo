@@ -28,17 +28,17 @@ public class LicenseRestFallbackFactory implements FallbackFactory<LicenseRestSe
 
             @Override
             public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(String userId, String workspaceId) {
-                return new ApiResponse<>( new MyLicenseInfoListResponse());
+                return new ApiResponse<>(new MyLicenseInfoListResponse());
             }
 
             @Override
             public ApiResponse<MyLicenseInfoResponse> grantWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
-                return null;
+                return new ApiResponse<>(new MyLicenseInfoResponse());
             }
 
             @Override
             public ApiResponse<Boolean> revokeWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
-                return null;
+                return new ApiResponse<>(false);
             }
         };
     }

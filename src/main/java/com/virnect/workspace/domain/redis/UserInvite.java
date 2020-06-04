@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Project: PF-Workspace
@@ -23,7 +24,7 @@ import java.io.Serializable;
 @ToString
 public class UserInvite implements Serializable {
     @Id
-    private String inviteId;
+    private String inviteId;//userId + workspaceId
     private String responseUserId;
     private String responseUserEmail;
     private String responseUserName;
@@ -34,18 +35,19 @@ public class UserInvite implements Serializable {
     private String requestUserNickName;
     private String workspaceId;
     private String workspaceName;
-    private String code;
     private String role;
     private Boolean planRemote;
     private Boolean planMake;
     private Boolean planView;
+    private LocalDateTime invitedDate;
+    private LocalDateTime updatedDate;
 
     @TimeToLive
     private Long expireTime;
 
     @Builder
     public UserInvite(String inviteId, String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
-                      String workspaceId, String workspaceName, String code, String role, Boolean planRemote, Boolean planMake, Boolean planView, Long expireTime) {
+                      String workspaceId, String workspaceName, String role, Boolean planRemote, Boolean planMake, Boolean planView, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
         this.inviteId = inviteId;
         this.responseUserId = responseUserId;
         this.responseUserEmail = responseUserEmail;
@@ -57,11 +59,12 @@ public class UserInvite implements Serializable {
         this.requestUserNickName = requestUserNickName;
         this.workspaceId = workspaceId;
         this.workspaceName = workspaceName;
-        this.code = code;
         this.role = role;
         this.planRemote = planRemote;
         this.planMake = planMake;
         this.planView = planView;
+        this.invitedDate = invitedDate;
+        this.updatedDate = updatedDate;
         this.expireTime = expireTime;
     }
 }
