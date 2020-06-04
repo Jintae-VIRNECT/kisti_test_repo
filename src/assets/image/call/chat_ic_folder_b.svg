@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>C49F963E-31F1-401D-83D6-4957E3FDD287@1.00x</title>
+    <defs>
+        <path d="M8.4,4 L3.6,4 C2.72,4 2.008,4.73125 2.008,5.625 L2,15.375 C2,16.26875 2.72,17 3.6,17 L16.4,17 C17.28,17 18,16.26875 18,15.375 L18,7.25 C18,6.35625 17.28,5.625 16.4,5.625 L10,5.625 L8.4,4 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_02" transform="translate(-1017.000000, -93.000000)">
+            <g id="message" transform="translate(773.000000, 28.000000)">
+                <g id="texting-area">
+                    <g id="top">
+                        <g id="Group-4" transform="translate(22.000000, 14.000000)">
+                            <g id="icon_file" transform="translate(222.000000, 51.000000)">
+                                <g>
+                                    <rect id="tr" x="0" y="0" width="20" height="20"></rect>
+                                    <mask id="mask-2" fill="white">
+                                        <use xlink:href="#path-1"></use>
+                                    </mask>
+                                    <use id="icon/file/folder_24px" fill="#5F5F5F" fill-rule="nonzero" xlink:href="#path-1"></use>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
