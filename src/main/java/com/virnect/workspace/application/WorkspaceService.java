@@ -870,8 +870,8 @@ public class WorkspaceService {
             if (!oldProductList.contains(LicenseProduct.REMOTE.toString())) {
                 //CASE1 : 기존에 없던 라이선스인데 사용하는 경우면
                 newProductList.add(LicenseProduct.REMOTE);
-                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
-                if (myLicenseInfoResponse.getProductName() == null) {
+                MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
+                if (!grantResult.getProductName().equals(LicenseProduct.REMOTE.toString())) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
                 }
             }
@@ -891,8 +891,8 @@ public class WorkspaceService {
         if (makeLicense) {
             if (!oldProductList.contains(LicenseProduct.MAKE.toString())) {
                 newProductList.add(LicenseProduct.MAKE);
-                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
-                if (myLicenseInfoResponse.getProductName() == null) {
+                MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
+                if (!grantResult.getProductName().equals(LicenseProduct.MAKE.toString())) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
                 }
             }
@@ -909,8 +909,8 @@ public class WorkspaceService {
         if (viewLicense) {
             if (!oldProductList.contains(LicenseProduct.VIEW.toString())) {
                 newProductList.add(LicenseProduct.VIEW);
-                MyLicenseInfoResponse myLicenseInfoResponse = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
-                if (myLicenseInfoResponse.getProductName() == null) {
+                MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
+                if (!grantResult.getProductName().equals(LicenseProduct.VIEW.toString())) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
                 }
             }

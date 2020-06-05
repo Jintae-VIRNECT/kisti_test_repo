@@ -264,7 +264,6 @@ public class WorkspaceController {
         return redirectView;
     }
 
-
     @ApiOperation(
             value = "워크스페이스 나가기",
             notes = "본인이 매니저 또는 멤버로 소속되어 있는 워크스페이스에서 나갑니다."
