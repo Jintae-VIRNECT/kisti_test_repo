@@ -379,23 +379,24 @@ public class WorkspaceService {
         long remotePlanCount = 0L;
         long makePlanCount = 0L;
         long viewPlanCount = 0L;
+
+        //수정해야 됨.
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
         if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
             for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
-                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("REMOTE")) {
-                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                    remotePlanCount = licenseInfoResponseList.size();
+
+                if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.REMOTE.toString())) {
+                    remotePlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
                 }
-                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("MAKE")) {
-                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                    makePlanCount = licenseInfoResponseList.size();
+                if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.MAKE.toString())) {
+
+                    makePlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
                 }
-                if (licenseProductInfoResponse.getProductName().equalsIgnoreCase("VIEW")) {
-                    List<WorkspaceLicensePlanInfoResponse.LicenseInfoResponse> licenseInfoResponseList = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList());
-                    viewPlanCount = licenseInfoResponseList.size();
+                if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.VIEW.toString())) {
+                    viewPlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
                 }
             }
         }
@@ -758,7 +759,7 @@ public class WorkspaceService {
         this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
 
         //redis 에서 삭제
-        this.userInviteRepository.deleteById(userId);
+        this.userInviteRepository.deleteById(userId + "-" + workspaceId);
 
         //history 저장
         String message;
@@ -1167,9 +1168,9 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //내쫓기는 자의 권한 확인(멤버만 가능)
+        //내쫓기는 자의 권한 확인(매니저, 멤버만 가능)
         WorkspaceUserPermission kickedUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberKickOutRequest.getKickedUserId());
-        if (!kickedUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
+        if (kickedUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
@@ -1212,6 +1213,7 @@ public class WorkspaceService {
                 .workspace(workspace)
                 .build();
         this.historyRepository.save(history);
+
         return new ApiResponse<>(true);
     }
 
