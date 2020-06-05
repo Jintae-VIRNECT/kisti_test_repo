@@ -27,8 +27,8 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         QSubProcess qSubProcess = QSubProcess.subProcess;
         
         JPQLQuery<Issue> query = from(qIssue)
-                .join(qJob.issueList, qIssue)
-                .join(qSubProcess.jobList, qJob)
+                .join(qIssue.job, qJob)
+                .join(qJob.subProcess, qSubProcess)
                 .where(qSubProcess.id.eq(subProgressId));
 
         Long result = query.fetchCount();
@@ -63,7 +63,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         return new PageImpl<>(issueList, pageable, query.fetchCount());
     }
 
-    // 완료
     @Override
     public Page<Issue> getIssuesIn(String userUUID, String workspaceUUID, List<String> userUUIDList, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
@@ -77,7 +76,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         return new PageImpl<>(issueList, pageable, query.fetchCount());
     }
 
-    // 완료
     @Override
     public Page<Issue> getIssuesInSearchProcessTitle(String userUUID, String workspaceUUID, String title, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
@@ -89,7 +87,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         return new PageImpl<>(issueList, pageable, query.fetchCount());
     }
 
-    // 완료
     @Override
     public Page<Issue> getIssuesInSearchSubProcessTitle(String userUUID, String workspaceUUID, String title, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
@@ -101,7 +98,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         return new PageImpl<>(issueList, pageable, query.fetchCount());
     }
 
-    // 완료
     @Override
     public Page<Issue> getIssuesInSearchJobTitle(String userUUID, String workspaceUUID, String title, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
@@ -113,7 +109,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
         return new PageImpl<>(issueList, pageable, query.fetchCount());
     }
 
-    // 더 보기
     @Override
     public Page<Issue> getIssuesOut(String userUUID, List<String> workspaceUserList, Pageable pageable) {
         QIssue qIssue = QIssue.issue;

@@ -14,9 +14,11 @@ public interface SubProcessCustomRepository {
 
     boolean existsByIsRecentAndWorkerUUIDAndWorkspaceUUID(YesOrNo newWork, String workspaceUUID, String workerUUID);
 
-    Page<SubProcess> getSubProcesses(String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable);
+    Page<SubProcess> getSubProcessPage(String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable);
 
     LocalDateTime getLastestReportedTime(String workspaceUUID, String userUUID);
 
     List<SubProcess> getSubProcessList(String workspaceUUID, String userUUID);
+
+    Page<SubProcess> getMyWorksInProcess(String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable);
 }

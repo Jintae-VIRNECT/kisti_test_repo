@@ -13,5 +13,5 @@ import org.springframework.data.domain.Pageable;
  */
 public interface JobCustomRepository {
 
-    Page<Job> getJobPage(Long subProcessId, String search, Pageable pageable);
+    Page<Job> getJobPage(String userUUID, Long subProcessId, String search, Pageable pageable);
 }

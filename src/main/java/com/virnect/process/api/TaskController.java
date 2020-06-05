@@ -393,7 +393,7 @@ public class TaskController {
             @ApiImplicitParam(name = "reported", value = "보고일 필터링 여부(true, false)", dataType = "Boolean", paramType = "query", defaultValue = "false"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건) - ex)reported_date,desc", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건) - ex)reported_date,desc", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
     })
     @GetMapping("/papers")
     public ResponseEntity<ApiResponse<ReportsResponse>> getPapers(
@@ -618,7 +618,7 @@ public class TaskController {
             @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - start_date, end_date, name, priority, reported_date)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - startDate, endDate, name, priority, reportedDate)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자(내 작업)", dataType="string", paramType="query")
     })
     @GetMapping("{taskId}/subTasks")
@@ -692,7 +692,7 @@ public class TaskController {
             @ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명) - 미개발", dataType = "string", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
     })
     @GetMapping("/myWorks/{workerUUID}")
     public ResponseEntity<ApiResponse<MyWorkListResponse>> getMyWorks(
@@ -765,19 +765,21 @@ public class TaskController {
             @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, isReported)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, isReported)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query")
     })
     @GetMapping("/subTasks/{subTaskId}/steps")
     public ResponseEntity<ApiResponse<JobListResponse>> getJobs(
             @PathVariable("subTaskId") Long subTaskId
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "filter", required = false) List<Conditions> filter
+            , @RequestParam(value = "userUUID", required = false) String userUUID
             , @ApiIgnore PageRequest pageable) {
         if (subTaskId == null) {
             log.info("[subTaskId] => [{}]", subTaskId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<JobListResponse> jobListResponseApiResponse = this.taskService.getJobs(subTaskId, search, filter, pageable.of());
+        ApiResponse<JobListResponse> jobListResponseApiResponse = this.taskService.getJobs(userUUID, subTaskId, search, filter, pageable.of());
         return ResponseEntity.ok(jobListResponseApiResponse);
     }
 

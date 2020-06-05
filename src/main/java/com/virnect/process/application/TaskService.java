@@ -1434,11 +1434,10 @@ public class TaskService {
         // 세부공정 목록
         Page<SubProcess> subProcessPage = null;
 
+        subProcessPage = this.subProcessRepository.getSubProcessPage(workspaceUUID, processId, search, userUUIDList, pageable);
+
         if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
-            List<SubProcess> subProcessList = this.subProcessRepository.selectSubProcessList(workspaceUUID, processId, search, userUUIDList, pageable.getSort());
-            subProcessPage = filterConditionsSubProcessPage(subProcessList, filter, pageable);
-        } else {
-            subProcessPage = this.subProcessRepository.selectSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
+            subProcessPage = filterConditionsSubProcessPage(subProcessPage, filter, pageable);
         }
 
         List<EditSubProcessResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
@@ -1471,7 +1470,7 @@ public class TaskService {
         return new ApiResponse<>(new SubProcessListResponse(processId, processName, processState, editSubProcessResponseList, pageMetadataResponse));
     }
 
-    private Page<SubProcess> filterConditionsSubProcessPage(List<SubProcess> subProcessList, List<Conditions> filter, Pageable pageable) {
+    private Page<SubProcess> filterConditionsSubProcessPage(Page<SubProcess> subProcessList, List<Conditions> filter, Pageable pageable) {
         List<SubProcess> subProcesses = new ArrayList<>();
         for (SubProcess subProcess : subProcessList) {
             // 상태가 일치하는 공정만 필터링
@@ -1479,9 +1478,8 @@ public class TaskService {
                 subProcesses.add(subProcess);
             }
         }
-        int start = (int) pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > subProcesses.size() ? subProcesses.size() : (start + pageable.getPageSize());
-        return new PageImpl<>(subProcesses.subList(start, end), pageable, subProcesses.size());
+
+        return new PageImpl<>(subProcesses, pageable, subProcesses.size());
     }
 
     public ApiResponse<SubProcessesResponse> getSubProcesses(String workspaceUUID, Long processId, String search, Pageable pageable) {
@@ -1489,7 +1487,7 @@ public class TaskService {
         // 검색어로 사용자 목록 조회
         List<UserInfoResponse> userInfos = getUserInfoSearch(search);
         List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
-        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcesses(workspaceUUID, processId, search, userUUIDList, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(workspaceUUID, processId, search, userUUIDList, pageable);
         List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return SubProcessReportedResponse.builder()
@@ -1592,7 +1590,8 @@ public class TaskService {
     public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
         // 타겟데이터로 공정을 조회
         Process process = this.processRepository.getProcessUnClosed(workspaceUUID, targetData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
-        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
+//        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(null, process.getId(), null, null, pageable);
         SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
                 .taskId(process.getId())
                 .taskName(process.getName())
@@ -1708,7 +1707,7 @@ public class TaskService {
         return jobs;
     }
 
-    public ApiResponse<JobListResponse> getJobs(Long subProcessId, String search, List<Conditions> filter, Pageable pageable) {
+    public ApiResponse<JobListResponse> getJobs(String userUUID, Long subProcessId, String search, List<Conditions> filter, Pageable pageable) {
         // 작업목록조회
         // 세부공정조회
         SubProcess subProcess = this.subProcessRepository.findById(subProcessId)
@@ -1718,7 +1717,7 @@ public class TaskService {
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
         Page<Job> jobPage = null;
 
-        jobPage = this.jobRepository.getJobPage(subProcessId, search, pageable);
+        jobPage = this.jobRepository.getJobPage(userUUID, subProcessId, search, pageable);
 
         if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
             jobPage = filterConditionsJobPage(jobPage, filter, pageable);
