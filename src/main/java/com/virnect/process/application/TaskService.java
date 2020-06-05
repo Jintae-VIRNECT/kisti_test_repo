@@ -322,6 +322,11 @@ public class TaskService {
             registerNewProcess.getSubTaskList().forEach(
                     newSubProcess -> {
 
+                        // 작업자가 지정되지 않았을 때 에러.
+                        if (Objects.isNull(newSubProcess.getWorkerUUID())) {
+                            throw new ProcessServiceException(ErrorCode.ERR_SUB_PROCESS_REGISTER_NO_WORKER);
+                        }
+
                         ContentRestDto.SceneGroup sceneGroup = sceneGroupMap.get(newSubProcess.getId());
                         SubProcess subProcess = SubProcess.builder()
                                 .process(newProcess)

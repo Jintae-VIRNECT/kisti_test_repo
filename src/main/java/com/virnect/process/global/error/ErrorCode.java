@@ -43,6 +43,7 @@ public enum ErrorCode {
     ERR_REPORT_REGISTER(5904, "Report Registration failed."),
     ERR_TARGET_REGISTER(5905, "Target Registration failed."),
     ERR_DELETE_PROCES(5906, "Process Deletion failed."),
+    ERR_SUB_PROCESS_REGISTER_NO_WORKER(5907, "SubProcess Registration failed. No worker selected."),
 
     ERR_NO_CONTENT_TARGET(5920, "Not found Content Target. Transform failed."),
     ERR_ALREADY_TRANSFORMED(5921, "This Content is already Transformed. Transform failed"),
