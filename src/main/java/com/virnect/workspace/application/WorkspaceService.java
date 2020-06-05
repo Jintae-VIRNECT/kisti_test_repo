@@ -611,7 +611,7 @@ public class WorkspaceService {
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
 
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=members.add.message.overflow");
+            redirectView.setUrl(redirectUrl + "/?message=members.add.message.workspaceOverflow");
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -642,7 +642,7 @@ public class WorkspaceService {
             this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_MAX_USER_FAIL);
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=members.add.message.overflow");
+            redirectView.setUrl(redirectUrl + "/?message=members.add.message.memberOverflow");
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -758,7 +758,6 @@ public class WorkspaceService {
         return redirectView;
 
     }
-
 
     private String generatePlanString(Boolean remote, Boolean make, Boolean view) {
         StringBuilder plan = new StringBuilder();
