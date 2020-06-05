@@ -54,6 +54,10 @@ export const addSessionEventListener = session => {
     }
     Store.commit('addChat', chat)
   })
+
+  session.on('forceDisconnectByUser', event => {
+    console.log(event)
+  })
 }
 
 export const getUserObject = stream => {
@@ -70,13 +74,13 @@ export const getUserObject = stream => {
   streamObj = {
     id: uuid,
     stream: stream.mediaStream,
+    // connection: stream.connection,
     connectionId: stream.connection.connectionId,
     nickname: participant.nickname,
     path: participant.path,
     audio: stream.audioActive,
     video: stream.videoActive,
     status: 'good',
-    resolution: {},
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

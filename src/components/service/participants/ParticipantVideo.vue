@@ -79,7 +79,7 @@
               </button>
             </li>
             <li>
-              <button class="video-pop__button" @click="">
+              <button class="video-pop__button" @click="disconnectUser">
                 내보내기
               </button>
             </li>
@@ -149,6 +149,9 @@ export default {
 
       this.onSpeaker = !this.onSpeaker
       // this.$call.audioOnOff(this.participant.uuid, this.onSpeaker)
+    },
+    disconnectUser() {
+      this.$call.disconnect(this.participant.connectionId)
     },
   },
 

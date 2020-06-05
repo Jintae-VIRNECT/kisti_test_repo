@@ -102,6 +102,7 @@ const _ = {
     })
   },
   pointing: message => {
+    console.log('send pointing: ', JSON.stringify(message))
     _.session.signal({
       data: JSON.stringify(message),
       to: _.session.connection,
@@ -136,7 +137,16 @@ const _ = {
     }
     _.subscribers[idx].subscribeToAudio(statue)
   },
-  disconnect: id => {},
+  disconnect: connectionId => {
+    let idx = _.subscribers.findIndex(
+      subscriber => subscriber.stream.connection.connectionId === connectionId,
+    )
+    if (idx < 0) {
+      console.log('can not find user')
+      return
+    }
+    _.session.forceDisconnect(_.subscribers[idx].stream.connection)
+  },
   record: () => {},
   stop: () => {},
   active: () => {},
