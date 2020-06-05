@@ -14,7 +14,7 @@
       </div>
       <div class="modalless__content">
         <div class="modalless__icon">
-          <img src="~assets/image/back/mdpi_video_icon.svg" />
+          <img src="~assets/image/call/gnb_ic_video_on.svg" />
         </div>
         <div class="modalless__vbar"></div>
         <div class="modalless__text">

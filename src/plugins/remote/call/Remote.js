@@ -9,6 +9,7 @@ const _ = {
   session: null,
   publisher: null,
   subscribers: [],
+  resolution: null,
   join: async (roomInfo, account, users) => {
     try {
       const params = {
@@ -27,7 +28,7 @@ const _ = {
         clientData: account.uuid,
         serverData: users,
       }
-      console.log(JSON.stringify(metaData))
+
       const iceServer = [
         {
           url: 'turn:turn.virnectremote.com:3478?transport=udp',
@@ -46,7 +47,6 @@ const _ = {
         JSON.stringify(metaData),
         iceServer,
       )
-      console.log('[session] connection success')
 
       _.publisher = OV.initPublisher('', {
         audioSource: undefined, // The source of audio. If undefined default microphone
@@ -59,14 +59,11 @@ const _ = {
         mirror: false, // Whether to mirror your local video or not
       })
       _.publisher.on('streamCreated', event => {
-        console.log('[session] publisher stream created success')
-
         Store.commit('addStream', getUserObject(_.publisher.stream))
+        _.mic(Store.getters['mic'])
       })
-      console.log(_.publisher.stream.streamId)
 
       _.session.publish(_.publisher)
-      console.log('[session] init publisher success')
       return true
     } catch (err) {
       console.error(err)
@@ -78,6 +75,7 @@ const _ = {
       Store.commit('clearStreams')
       _.session.disconnect()
       _.session = null
+      _.publisher = null
     } catch (err) {
       throw err
     }
@@ -90,33 +88,46 @@ const _ = {
       type: 'signal:chat',
     })
   },
+  sendResolution: resolution => {
+    if (resolution) {
+      _.resolution = resolution
+    } else {
+      resolution = _.resolution
+    }
+    if (!resolution || !resolution.width) return
+    _.session.signal({
+      data: JSON.stringify(resolution),
+      to: _.session.connection,
+      type: 'signal:resolution',
+    })
+  },
   pointing: message => {
-    console.log(_.session.connection)
+    console.log('send pointing: ', JSON.stringify(message))
     _.session.signal({
       data: JSON.stringify(message),
       to: _.session.connection,
       type: 'signal:pointing',
     })
   },
-  /**
-   * append message channel listener
-   * @param {Function} customFunc
-   */
-  addListener: (type, func) => {
-    _.session.on(type, func)
-  },
-  removeListener: (type, func) => {
-    _.session.off(type, func)
-  },
   getDevices: () => {},
-  getState: () => {},
+  getState: () => {
+    if (_.publisher) {
+      return {
+        audio: _.publisher.stream.audioActive,
+        video: _.publisher.stream.videoActive,
+      }
+    } else {
+      return {}
+    }
+  },
   streamOnOff: active => {
     _.publisher.publishVideo(active)
   },
-  micOnOff: active => {
+  mic: active => {
+    if (!_.publisher) return
     _.publisher.publishAudio(active)
   },
-  audioOnOff: (id, statue) => {
+  mute: (id, statue) => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.id.indexOf(id) > -1,
     )
@@ -126,10 +137,29 @@ const _ = {
     }
     _.subscribers[idx].subscribeToAudio(statue)
   },
-  disconnect: id => {},
+  disconnect: connectionId => {
+    let idx = _.subscribers.findIndex(
+      subscriber => subscriber.stream.connection.connectionId === connectionId,
+    )
+    if (idx < 0) {
+      console.log('can not find user')
+      return
+    }
+    _.session.forceDisconnect(_.subscribers[idx].stream.connection)
+  },
   record: () => {},
   stop: () => {},
   active: () => {},
+  /**
+   * append message channel listener
+   * @param {Function} customFunc
+   */
+  addListener: (type, func) => {
+    _.session.on(type, func)
+  },
+  removeListener: (type, func) => {
+    // _.session.off(type, func)
+  },
 }
 
 export const addSubscriber = subscriber => {

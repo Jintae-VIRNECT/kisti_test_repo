@@ -7,16 +7,32 @@ const getDefaultState = () => {
       // uuid: ''
     },
     participants: [
+      // id: uuid,
+      // stream: MediaStream,
+      // connectionId: stream.connection.connectionId,
+      // nickname: nickname,
+      // path: path,
+      // audio: stream.audioActive,
+      // video: stream.videoActive,
+      // status: 'good',
+      // resolution: { width, height }
+    ],
+    chatList: [
       // {
+      //   text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
+      //   name: 'alarm',
+      //   date: new Date(),
       //   uuid: null,
-      //   stream: null,
-      //   nickname: '이름',
-      //   sessionName: '세션이름',
-      //   path: 'default',
-      //   status: 'good',
+      //   type: 'system',
+      // },
+    ],
+    resolutions: [
+      // {
+      //   connectionId: '',
+      //   width: 300,
+      //   height: 600
       // }
     ],
-    chatList: [],
     isBackground: false,
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
@@ -35,7 +51,8 @@ const mutations = {
     state.mainView = state.participants[idx]
   },
   addStream(state, payload) {
-    if (state.me) {
+    if (payload.me) {
+      console.log(state.mainView, payload)
       state.participants.splice(0, 0, payload)
       state.mainView = payload
       return
@@ -78,20 +95,35 @@ const mutations = {
     const idx = state.participants.findIndex(
       obj => obj.connectionId === connectionId,
     )
-    if (idx < 0) return
-    let nickname = state.participants[idx].nickname
-    state.participants.splice(idx, 1)
-    state.chatList.push({
-      text: nickname + '님이 대화에서 나가셨습니다.',
-      name: 'people',
-      date: new Date(),
-      uuid: null,
-      type: 'system',
-    })
+    if (idx >= 0) {
+      let participant = state.participants.splice(idx, 1)
+      state.chatList.push({
+        text: participant[0].nickname + '님이 대화에서 나가셨습니다.',
+        name: 'people',
+        date: new Date(),
+        uuid: null,
+        type: 'system',
+      })
+      // 메인뷰를 보고있으면 메인뷰 변경
+      if (participant[0].connectionId === state.mainView.connectionId) {
+        if (state.participants.length > 0) {
+          state.mainView = state.participants[0]
+        } else {
+          state.mainView = {}
+        }
+        console.log(state.mainView)
+      }
+    }
+    // resolution 데이터 제거
+    const rIdx = state.resolutions.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
+    if (rIdx < 0) return
+    state.resolutions.splice(idx, 1)
   },
   clearStreams(state) {
     state.participants = []
-    state.mainView = null
+    state.mainView = {}
   },
 
   // chat
@@ -111,12 +143,23 @@ const mutations = {
       state[key] = object[key]
     }
   },
+  updateResolution(state, payload) {
+    const idx = state.resolutions.findIndex(
+      resolution => resolution.connectionId === payload.connectionId,
+    )
+    if (idx < 0) {
+      state.resolutions.push(payload)
+      return
+    }
+    Object.assign(state.resolutions[idx], payload)
+  },
 }
 
 const getters = {
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,
+  resolutions: state => state.resolutions,
 }
 
 export default {

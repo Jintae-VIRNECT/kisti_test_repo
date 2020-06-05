@@ -73,7 +73,7 @@ export default {
 
         this.setRoomInfo(roomInfo)
 
-        const joinRtn = await this.$call.join(room, this.account, '', true)
+        const joinRtn = await this.$call.join(room, this.account, '')
         if (joinRtn) {
           console.log('>>>join room 성공')
           this.$nextTick(() => {

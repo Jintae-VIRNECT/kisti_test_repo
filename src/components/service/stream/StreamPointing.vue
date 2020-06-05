@@ -10,7 +10,6 @@
 </template>
 
 <script>
-/* eslint-disable one-var */
 import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
@@ -32,7 +31,7 @@ function hexToLottie(hex, alpha) {
     return [r, g, b]
   }
 }
-// TODO: 좌표값 nomalize된 좌표로 변경 필요함.
+
 export default {
   name: 'Pointing',
   props: {
@@ -53,17 +52,37 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView']),
+    ...mapGetters(['tools', 'mainView', 'action', 'resolutions']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
     pointingOpacity() {
       return this.tools ? this.tools.opacity : reset.opacity
     },
-    // resolution() {
-    //     const width = this.remote.opponentScreenWidth || this.$el.offsetWidth;
-    //     return width / this.$el.offsetWidth;
-    // }
+    resolution() {
+      const idx = this.resolutions.findIndex(
+        data => data.connectionId === this.mainView.connectionId,
+      )
+      if (idx < 0) {
+        return {
+          width: 0,
+          height: 0,
+        }
+      }
+      return this.resolutions[idx]
+    },
+    widthScale() {
+      if (this.resolution && this.resolution.width > 0) {
+        return this.$el.offsetWidth / this.resolution.width
+      }
+      return 1
+    },
+    heightScale() {
+      if (this.resolution && this.resolution.height > 0) {
+        return this.$el.offsetHeight / this.resolution.height
+      }
+      return 1
+    },
   },
   methods: {
     stateControl() {
@@ -74,14 +93,15 @@ export default {
       }, 1050)
     },
     doPointing(event) {
+      if (this.action !== 'pointing') return
       this.$call.pointing({
         to: this.mainView.id,
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: this.pointingOpacity,
         width: this.radius,
-        posX: event.offsetX.toFixed(2),
-        posY: event.offsetY.toFixed(2),
+        posX: (event.offsetX / this.widthScale).toFixed(2),
+        posY: (event.offsetY / this.heightScale).toFixed(2),
       })
     },
     receivePointing(receive) {
@@ -89,8 +109,7 @@ export default {
       if (data.to !== this.mainView.id) return
       let color = ahexToHEX(data.color)
       this.pointList.push({
-        // coords: [(message.posX * this.videoScale), (message.posY * this.videoScale)],
-        coords: [data.posX, data.posY],
+        coords: [data.posX * this.widthScale, data.posY * this.heightScale],
         color: color,
         opacity: data.opacity,
         label: 'opponent',

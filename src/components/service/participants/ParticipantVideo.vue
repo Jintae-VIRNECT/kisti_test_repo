@@ -30,9 +30,11 @@
         class="participant-video__status"
         :class="[participant.status, { hover: hover }]"
       >
-        <span :class="participant.status">{{
-          participant.status | networkStatus
-        }}</span>
+        <div class="participant-video__status-hover">
+          <span :class="participant.status">{{
+            participant.status | networkStatus
+          }}</span>
+        </div>
       </div>
       <div class="participant-video__device">
         <img
@@ -77,7 +79,7 @@
               </button>
             </li>
             <li>
-              <button class="video-pop__button" @click="">
+              <button class="video-pop__button" @click="disconnectUser">
                 내보내기
               </button>
             </li>
@@ -147,6 +149,9 @@ export default {
 
       this.onSpeaker = !this.onSpeaker
       // this.$call.audioOnOff(this.participant.uuid, this.onSpeaker)
+    },
+    disconnectUser() {
+      this.$call.disconnect(this.participant.connectionId)
     },
   },
 

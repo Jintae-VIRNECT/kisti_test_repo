@@ -1,18 +1,14 @@
 import Store from 'stores/remote/store'
-import { addSubscriber, removeSubscriber } from './Remote'
+import _, { addSubscriber, removeSubscriber } from './Remote'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
-    console.log('[session] stream created')
-
     const subscriber = session.subscribe(event.stream, '', () => {
       const streamObj = getUserObject(subscriber.stream)
       Store.commit('addStream', streamObj)
+      _.sendResolution()
     })
     addSubscriber(subscriber)
-    // subscriber.on('streamPlaying', e => {
-    //   console.log('[subscriber] stream playing')
-    // })
   })
 
   session.on('streamDestroyed', event => {
@@ -30,12 +26,24 @@ export const addSessionEventListener = session => {
     console.log(event)
   })
 
+  session.on('signal:resolution', event => {
+    Store.commit('updateResolution', {
+      ...JSON.parse(event.data),
+      connectionId: event.from.connectionId,
+    })
+  })
+
   session.on('signal:chat', event => {
-    console.log(event)
+    const connectionId = event.from.connectionId
+    const participants = Store.getters['participants']
+    const idx = participants.findIndex(
+      user => user.connectionId === connectionId,
+    )
+    if (idx < 0) return
     let data = event.data
     let chat = {
       text: data.replace(/\</g, '&lt;'),
-      name: JSON.parse(event.from.data.split('%/%')[0]).clientData,
+      name: participants[idx].nickname,
       date: new Date(),
       nodeId: event.from.connectionId,
       type: false,
@@ -47,7 +55,7 @@ export const addSessionEventListener = session => {
     Store.commit('addChat', chat)
   })
 
-  session.on('signal:pointing', event => {
+  session.on('forceDisconnectByUser', event => {
     console.log(event)
   })
 }
@@ -66,6 +74,7 @@ export const getUserObject = stream => {
   streamObj = {
     id: uuid,
     stream: stream.mediaStream,
+    // connection: stream.connection,
     connectionId: stream.connection.connectionId,
     nickname: participant.nickname,
     path: participant.path,

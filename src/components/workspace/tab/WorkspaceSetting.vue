@@ -35,24 +35,24 @@
           <device-denied :visible.sync="showDenied"></device-denied>
 
           <template v-if="tabview === 'audio-video'">
-            <workspace-set-audio
-              :mics="mics"
-              :speakers="speakers"
-            ></workspace-set-audio>
+            <set-audio
+              :micDevices="micDevices"
+              :speakerDevices="speakerDevices"
+            ></set-audio>
 
-            <workspace-mic-test> </workspace-mic-test>
+            <mic-test> </mic-test>
           </template>
 
           <template v-else-if="tabview === 'video-record'">
-            <!-- <workspace-set-video
-            :videos="videos"
+            <!-- <set-video
+            :videos="videoDevices"
             @setVideo="setVideo"
-          ></workspace-set-video> -->
+          ></set-video> -->
 
-            <workspace-set-record></workspace-set-record>
+            <set-record></set-record>
           </template>
           <template v-else-if="tabview === 'language'">
-            <workspace-set-language></workspace-set-language>
+            <set-language></set-language>
           </template>
         </div>
       </div>
@@ -60,27 +60,21 @@
   </div>
 </template>
 <script>
-import WorkspaceSetAudio from '../section/WorkspaceSetAudio'
-import WorkspaceSetLanguage from '../section/WorkspaceSetLanguage'
-import WorkspaceSetRecord from '../section/WorkspaceSetRecord'
-import WorkspaceMicTest from '../section/WorkspaceMicTest'
-//import WorkspaceSetVideo from '../section/WorkspaceSetVideo'
+import SetAudio from '../section/WorkspaceSetAudio'
+import SetLanguage from '../section/WorkspaceSetLanguage'
+import SetRecord from '../section/WorkspaceSetRecord'
+import MicTest from '../section/WorkspaceMicTest'
+//import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import { mapState } from 'vuex'
-import {
-  getConfiguration,
-  putLanguage,
-  updateConfiguration,
-} from 'api/workspace/settings'
 
 export default {
   name: 'WorkspaceSetting',
   components: {
-    WorkspaceSetAudio,
-    WorkspaceSetLanguage,
-    WorkspaceSetRecord,
-    WorkspaceMicTest,
-    //WorkspaceSetVideo,
+    SetAudio,
+    SetLanguage,
+    SetRecord,
+    MicTest,
+    //SetVideo,
     DeviceDenied,
   },
   data() {
@@ -91,54 +85,10 @@ export default {
       showDenied: false,
 
       //device list
-      videos: [],
-      mics: [],
-      speakers: [],
-
-      //settings
-      settings: {
-        speaker: '',
-        mic: '',
-        language: '',
-        recordingTime: '',
-        recordingResolution: '',
-        device: '',
-      },
+      videoDevices: [],
+      micDevices: [],
+      speakerDevices: [],
     }
-  },
-
-  computed: {
-    ...mapState({
-      mic: state => state.settings.mic,
-      speaker: state => state.settings.speaker,
-      localRecordLength: state => state.settings.localRecordLength,
-      recordResolution: state => state.settings.recordResolution,
-      language: state => state.settings.language,
-    }),
-  },
-  watch: {
-    settings: {
-      deep: true,
-      handler() {
-        this.updateSetting()
-      },
-    },
-    mic(mic) {
-      this.settings.mic = mic
-    },
-    speaker(speaker) {
-      this.settings.speaker = speaker
-    },
-    localRecordLength(recordingTime) {
-      this.settings.recordingTime = recordingTime
-    },
-    recordResolution(recordResolution) {
-      this.settings.recordingResolution = recordResolution
-    },
-    language(language) {
-      this.settings.language = language
-      putLanguage(language)
-    },
   },
   methods: {
     tabChange(view, headerText) {
@@ -159,8 +109,7 @@ export default {
         const [cameraState, micState] = result
 
         if (cameraState.state === 'denied' || micState.state === 'denied') {
-          console.log('device access deined')
-          return false
+          throw 'device access deined'
         }
 
         if (cameraState.state === 'prompt' || micState.state === 'prompt') {
@@ -171,7 +120,7 @@ export default {
         }
         return true
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     },
     async getMediaDevice() {
@@ -180,26 +129,22 @@ export default {
           !navigator.mediaDevices ||
           !navigator.mediaDevices.enumerateDevices
         ) {
-          console.log('enumerateDevices() is not supported')
-          return
+          throw 'enumerateDevices() is not supported'
         }
 
         const devices = await navigator.mediaDevices.enumerateDevices()
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
-            this.videos.push(device)
+            this.videoDevices.push(device)
           } else if (device.kind === 'audioinput') {
-            this.mics.push(device)
+            this.micDevices.push(device)
           } else if (device.kind === 'audiooutput') {
-            this.speakers.push(device)
+            this.speakerDevices.push(device)
           }
         })
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
-    },
-    async updateSetting() {
-      await updateConfiguration(this.settings)
     },
   },
 
@@ -213,18 +158,7 @@ export default {
       } else {
         this.showDenied = true
       }
-
-      const datas = await getConfiguration()
-      this.$store.dispatch('setLanguage', datas.data.language)
-      this.$store.dispatch('setMic', datas.data.mic)
-      this.$store.dispatch('setSpeaker', datas.data.speaker)
-      this.$store.dispatch('setLocalRecordLength', datas.data.recordingTime)
-      this.$store.dispatch(
-        'setRecordResolution',
-        datas.data.recordingResolution,
-      )
     } catch (err) {
-      // Handle Error
       console.error(err)
     }
   },

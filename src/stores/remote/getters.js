@@ -28,4 +28,11 @@ export default {
   historyList: state => state.files.historyList,
   fileList: state => state.files.fileList,
   pdfPages: state => state.files.pdfPages,
+
+  // setting
+  micDevice: state => state.settings.micDevice,
+  speakerDevice: state => state.settings.speakerDevice,
+  language: state => state.settings.language,
+  localRecordLength: state => state.settings.localRecordLength,
+  recordResolution: state => state.settings.recordResolution,
 }
