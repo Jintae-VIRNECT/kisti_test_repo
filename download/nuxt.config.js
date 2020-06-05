@@ -85,4 +85,28 @@ module.exports = {
       cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
     },
   },
+  /**
+   * custom router
+   */
+  router: {
+    mode: `history`,
+    extendRoutes(routes, resolve) {
+      routes.length = 0
+      routes.push({
+        path: '/remote',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'Remote',
+      })
+      routes.push({
+        path: '/make',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'Make',
+      })
+      routes.push({
+        path: '/view',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'View',
+      })
+    },
+  },
 }

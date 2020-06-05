@@ -18,7 +18,7 @@
         <el-card v-for="app in product" :key="app.id">
           <h6 v-html="app.os" />
           <h5 v-html="app.device" />
-          <img :src="app.imgUrl" />
+          <img :src="app.imageUrl" />
           <span class="release">
             {{ $t('home.release') }}: {{ app.releaseTime | dateFormat }}
           </span>
@@ -26,7 +26,11 @@
           <el-button type="primary" @click="download(app.appUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <el-button type="text" @click="download(app.guideUrl)">
+          <el-button
+            type="text"
+            @click="download(app.guideUrl)"
+            :disabled="!app.guideUrl"
+          >
             {{ $t('home.guideDownload') }}
           </el-button>
         </el-card>
@@ -52,6 +56,8 @@ export default {
   },
   watch: {
     async activeTab(tab) {
+      if (this.products[tab].length) return false
+
       const data = await this.$api('APP_LIST', {
         route: { productName: tab },
       })
@@ -73,7 +79,12 @@ export default {
     },
   },
   mounted() {
-    this.activeTab = 'remote'
+    this.activeTab =
+      {
+        '/remote': 'remote',
+        '/make': 'make',
+        '/view': 'view',
+      }[this.$route.path] || 'remote'
   },
 }
 </script>
@@ -143,7 +154,7 @@ export default {
   .el-tabs__content .el-card {
     display: inline-block;
     width: 372px;
-    margin: 0 18px;
+    margin: 0 18px 32px;
     box-shadow: none;
   }
   .el-card .el-card__body {
