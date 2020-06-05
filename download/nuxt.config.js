@@ -91,7 +91,6 @@ module.exports = {
   router: {
     mode: `history`,
     extendRoutes(routes, resolve) {
-      routes.length = 0
       routes.push({
         path: '/remote',
         component: resolve(__dirname, 'src/pages/index.vue'),
