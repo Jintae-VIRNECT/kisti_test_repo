@@ -71,9 +71,15 @@ export default {
       }
       return this.resolutions[idx]
     },
-    videoScale() {
+    widthScale() {
       if (this.resolution && this.resolution.width > 0) {
         return this.$el.offsetWidth / this.resolution.width
+      }
+      return 1
+    },
+    heightScale() {
+      if (this.resolution && this.resolution.height > 0) {
+        return this.$el.offsetHeight / this.resolution.height
       }
       return 1
     },
@@ -94,8 +100,8 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: this.pointingOpacity,
         width: this.radius,
-        posX: (event.offsetX / this.videoScale).toFixed(2),
-        posY: (event.offsetY / this.videoScale).toFixed(2),
+        posX: (event.offsetX / this.widthScale).toFixed(2),
+        posY: (event.offsetY / this.heightScale).toFixed(2),
       })
     },
     receivePointing(receive) {
@@ -103,7 +109,7 @@ export default {
       if (data.to !== this.mainView.id) return
       let color = ahexToHEX(data.color)
       this.pointList.push({
-        coords: [data.posX * this.videoScale, data.posY * this.videoScale],
+        coords: [data.posX * this.widthScale, data.posY * this.heightScale],
         color: color,
         opacity: data.opacity,
         label: 'opponent',
