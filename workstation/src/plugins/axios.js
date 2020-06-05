@@ -45,13 +45,15 @@ export async function api(name, option = {}) {
   if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
   try {
     const response = await axios[method](uri, params, { headers })
-    const { code, data, message } = response.data
+    const { code, data, message, service } = response.data
     if (process.client) $nuxt.$loading.finish()
 
     if (code === 200) {
       return data
     } else {
-      throw new Error(`${code}: ${message}`)
+      const error = new Error(`${code}: ${message}`)
+      console.error(error)
+      throw error
     }
   } catch (e) {
     if (process.client) {

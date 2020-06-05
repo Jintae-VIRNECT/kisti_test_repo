@@ -190,6 +190,7 @@ export default {
   methods: {
     async taskUpdated() {
       this.taskInfo = await taskService.getTaskDetail(this.taskInfo.id)
+      this.searchSubTasks()
     },
     changedSearchParams(searchParams) {
       this.searchSubTasks(searchParams)

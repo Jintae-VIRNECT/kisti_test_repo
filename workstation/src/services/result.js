@@ -8,9 +8,6 @@ import Trouble from '@/models/result/Trouble'
 function activeWorkspaceGetter() {
   return store.getters['workspace/activeWorkspace']
 }
-function myProfileGetter() {
-  return store.getters['auth/myProfile']
-}
 
 export default {
   /**
@@ -46,7 +43,7 @@ export default {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
-        sort: 'updated_at,desc',
+        sort: 'updatedDate,desc',
         ...params,
       },
     })
@@ -88,7 +85,7 @@ export default {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
-        sort: 'updated_at,desc',
+        sort: 'updatedDate,desc',
         ...params,
       },
     })

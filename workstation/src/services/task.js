@@ -140,7 +140,7 @@ export default {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
-        sort: 'updated_at,desc',
+        sort: 'priority,asc',
         ...params,
       },
     })
@@ -183,7 +183,7 @@ export default {
       route: { subTaskId },
       params: {
         size: 10,
-        sort: 'updated_at,desc',
+        sort: 'updatedDate,desc',
         ...params,
       },
     })

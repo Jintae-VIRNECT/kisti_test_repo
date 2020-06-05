@@ -147,7 +147,7 @@ export default {
         this.showMe = false
       } catch (e) {
         this.$message.error({
-          message: this.$t('members.add.message.inviteFail'),
+          message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
           showClose: true,
         })
       }

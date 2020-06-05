@@ -142,7 +142,7 @@ export default {
         this.$emit('updated', this.form)
       } catch (e) {
         this.$message.error({
-          message: this.$t('members.setting.message.updateFail'),
+          message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
           showClose: true,
         })
       }

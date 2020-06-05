@@ -15,19 +15,19 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${data.profile})`"
+            :style="`background-image: url(${myInfo.profile})`"
           />
         </div>
         <div class="column-role">
-          <el-tag :class="data.role">{{ data.role }}</el-tag>
+          <el-tag :class="myInfo.role">{{ myInfo.role }}</el-tag>
         </div>
-        <span class="name">{{ data.nickname }}</span>
-        <span class="email">{{ data.email }}</span>
+        <span class="name">{{ myInfo.nickname }}</span>
+        <span class="email">{{ myInfo.email }}</span>
       </dd>
       <el-divider />
       <dt>{{ $t('members.card.usingPlans') }}</dt>
       <dd class="plans">
-        <div class="plan" v-for="plan in data.licenseProducts" :key="plan">
+        <div class="plan" v-for="plan in myInfo.licenseProducts" :key="plan">
           <img :src="plans[plan].logo" />
           <span>{{ plans[plan].label }}</span>
         </div>
@@ -102,6 +102,11 @@ export default {
     },
     updated(form) {
       this.myInfo.role = form.role
+      this.myInfo.licenseProducts = [
+        form.licenseRemote && plans.remote.value,
+        form.licenseMake && plans.make.value,
+        form.licenseView && plans.view.value,
+      ].filter(_ => _)
       this.showMemberSettingModal = false
     },
     kicked() {

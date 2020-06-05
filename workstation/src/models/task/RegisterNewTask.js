@@ -24,6 +24,7 @@ export default class RegisterNewTask extends Model {
       return {
         id: subTask.id,
         name: subTask.name,
+        priority: subTask.priority,
         startDate: dayjs.utc(subTask.schedule[0]),
         endDate: dayjs.utc(subTask.schedule[1]),
         workerUUID: subTask.worker,

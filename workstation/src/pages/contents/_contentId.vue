@@ -165,7 +165,7 @@ export default {
         this.$router.replace('/contents')
       } catch (e) {
         this.$message.error({
-          message: this.$t('contents.info.message.deleteFail'),
+          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
           showClose: true,
         })
       }
@@ -181,7 +181,7 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('contents.info.message.updateFail'),
+          message: this.$t('contents.info.message.updateFail') + `\n(${e})`,
           showClose: true,
         })
       }

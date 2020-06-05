@@ -99,7 +99,7 @@ export default {
         location.href = '/'
       } catch (e) {
         this.$message.error({
-          message: e,
+          message: this.$t('workspace.setting.message.updateFail') + `\n(${e})`,
           showClose: true,
         })
       }

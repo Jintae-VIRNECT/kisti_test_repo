@@ -164,7 +164,7 @@ export default {
         this.emitChangedSearchParams()
       } catch (e) {
         this.$message.error({
-          message: this.$t('contents.info.message.deleteFail'),
+          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
           showClose: true,
         })
       }

@@ -79,7 +79,7 @@
       <el-button @click="$router.push(`/contents/${content.contentUUID}`)">
         {{ $t('task.new.moveContentInfo') }}
       </el-button>
-      <el-button @click="$emit('next', content, properties)" type="primary">
+      <el-button @click="$emit('next', content)" type="primary">
         {{ $t('common.next') }}
       </el-button>
     </template>

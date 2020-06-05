@@ -203,7 +203,7 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.list.message.closeFail'),
+          message: this.$t('task.list.message.closeFail') + `\n(${e})`,
           showClose: true,
         })
       }
@@ -231,7 +231,7 @@ export default {
         this.$emit('deleted')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.list.message.deleteFail'),
+          message: this.$t('task.list.message.deleteFail') + `\n(${e})`,
           showClose: true,
         })
       }

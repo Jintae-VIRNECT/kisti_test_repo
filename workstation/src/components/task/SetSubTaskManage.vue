@@ -142,7 +142,8 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.manage.message.subTaskUpdateFail'),
+          message:
+            this.$t('task.manage.message.subTaskUpdateFail') + `\n(${e})`,
           showClose: true,
         })
       }

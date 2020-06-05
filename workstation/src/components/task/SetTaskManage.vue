@@ -140,7 +140,6 @@ export default {
     taskId: Number,
     type: String,
     contentInfo: Object,
-    properties: Array,
   },
   data() {
     return {
@@ -233,10 +232,14 @@ export default {
     async opened() {
       // 신규
       if (this.type === 'new') {
+        const sceneGroups = await contentService.getContentSceneGroups(
+          this.contentInfo.contentUUID,
+        )
         this.contentName = this.contentInfo.contentName
-        this.subForm = this.properties[0].children.map(sceneGroup => ({
+        this.subForm = sceneGroups.map(sceneGroup => ({
           id: sceneGroup.id,
-          name: sceneGroup.label,
+          name: sceneGroup.name,
+          priority: sceneGroup.priority,
           schedule: [],
           worker: '',
         }))
@@ -260,6 +263,7 @@ export default {
         this.subForm = subTasks.list.map(subTask => ({
           id: subTask.subTaskId,
           name: subTask.subTaskName,
+          priority: subTask.priority,
           schedule: [
             dayjs.utc(subTask.startDate).local(),
             dayjs.utc(subTask.endDate).local(),
@@ -315,7 +319,7 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.manage.message.taskUpdateFail'),
+          message: this.$t('task.manage.message.taskUpdateFail') + `\n(${e})`,
           showClose: true,
         })
       }

@@ -196,9 +196,8 @@ export default {
           showClose: true,
         })
       } catch (e) {
-        console.error(e)
         this.$message.error({
-          message: this.$t('workspace.setting.message.updateFail'),
+          message: this.$t('workspace.setting.message.updateFail') + `\n(${e})`,
           showClose: true,
         })
       }

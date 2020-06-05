@@ -96,7 +96,6 @@
     <set-task-manage
       type="new"
       :contentInfo="selectedContentInfo"
-      :properties="selectedContentProperties"
       :visible.sync="showNewTaskManage"
       @next="taskManageEnded"
     />
@@ -143,7 +142,6 @@ export default {
       // 생성
       selectedContentId: null,
       selectedContentInfo: null,
-      selectedContentProperties: null,
       registerTaskForm: null,
       showNewTaskInfo: false,
       showNewTaskManage: false,
@@ -173,9 +171,8 @@ export default {
       this.emitChangedSearchParams()
     },
     // 생성
-    taskInfoEnded(contentInfo, properties) {
+    taskInfoEnded(contentInfo) {
       this.selectedContentInfo = contentInfo
-      this.selectedContentProperties = properties
       this.showNewTaskManage = true
       setTimeout(() => (this.showNewTaskInfo = false), 100)
     },

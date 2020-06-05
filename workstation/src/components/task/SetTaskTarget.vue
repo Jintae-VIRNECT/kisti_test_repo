@@ -112,7 +112,7 @@ export default {
         this.$message.error({
           message: /^Error: 4018/.test(e)
             ? this.$t(`${this.targetI18n}.message.registerStroageFail`)
-            : this.$t(`${this.targetI18n}.message.registerFail`),
+            : this.$t(`${this.targetI18n}.message.registerFail`) + `\n(${e})`,
           showClose: true,
         })
       }
