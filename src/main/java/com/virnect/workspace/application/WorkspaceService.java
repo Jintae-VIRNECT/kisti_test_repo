@@ -1174,6 +1174,14 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
+        //매니저 유저는 멤버만 쫓아낼 수 있다.
+        if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
+            if (kickedUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+
+
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, memberKickOutRequest.getKickedUserId()).getData();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null) {

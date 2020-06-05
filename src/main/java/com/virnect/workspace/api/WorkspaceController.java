@@ -212,7 +212,7 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 멤버 내보내기",
-            notes = "마스터 또는 매니저 유저가 워크스페이스 내에서 해당 멤버를 내보내기합니다."
+            notes = "마스터 또는 매니저 유저가 워크스페이스 내에서 해당 멤버 또는 매니저를 내보내기합니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
