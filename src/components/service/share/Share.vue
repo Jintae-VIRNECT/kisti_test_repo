@@ -22,7 +22,11 @@
     </ul>
     <file-list v-show="list === 'file'" @pdfView="changePdfView"></file-list>
     <history-list v-show="list === 'history'"></history-list>
-    <pdf-view v-show="list === 'pdfview'" :id="fileId"></pdf-view>
+    <pdf-view
+      v-show="list === 'pdfview'"
+      :id="fileId"
+      @back="changeTab('file')"
+    ></pdf-view>
   </div>
 </template>
 
@@ -45,10 +49,11 @@ export default {
   },
   methods: {
     changePdfView(id) {
-      this.fileId = id
-      this.changeTab('pdfview')
+      this.changeTab('pdfview', id)
     },
-    changeTab(val) {
+    changeTab(val, id) {
+      if (!id) id = 0
+      this.fileId = id
       this.list = val
     },
   },

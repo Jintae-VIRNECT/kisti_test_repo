@@ -30,9 +30,11 @@
         class="participant-video__status"
         :class="[participant.status, { hover: hover }]"
       >
-        <span :class="participant.status">{{
-          participant.status | networkStatus
-        }}</span>
+        <div class="participant-video__status-hover">
+          <span :class="participant.status">{{
+            participant.status | networkStatus
+          }}</span>
+        </div>
       </div>
       <div class="participant-video__device">
         <img

@@ -37,7 +37,11 @@
 
 .share-body {
   position: relative;
-  height: 100%;
+  height: calc(100% - 38px);
+  &.pdf {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .share-save.btn.small {
@@ -71,6 +75,16 @@
 .upload-list {
   padding: 20px;
   padding-left: 24px;
+  &.inner {
+    padding-top: 0;
+  }
+  > li {
+    position: relative;
+    width: 100%;
+  }
+  > li:first-child {
+    margin-top: 0;
+  }
 }
 
 .upload-list__button {
@@ -177,8 +191,15 @@
 }
 
 .share-body__backbutton {
+  flex: 0;
+  width: calc(100% - 40px);
+  margin: 20px;
   background-color: #38383a;
+  // background: url(~assets/image/) center 10px/12px no-repeat;
   > p {
-    // font-size:
+    padding: 5px 0 5px 32px;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
   }
 }

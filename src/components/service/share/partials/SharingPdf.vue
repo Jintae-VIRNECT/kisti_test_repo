@@ -7,7 +7,7 @@
     <button class="sharing-image__remove">파일 삭제</button>
     <div
       class="sharing-image__loading"
-      v-if="loadCount > 0 && loadCount !== totalPages"
+      v-if="loadCount === 0 || loadCount !== totalPages"
     >
       <div class="loading-box">
         <p class="loading-box__title">변환중</p>
@@ -71,15 +71,12 @@ export default {
   },
   watch: {
     loadCount(val) {
-      console.log('document loading...', val)
-      console.log(this.pdfPages)
-      console.log(this.docPages)
       if (val === this.totalPages) {
         const fileReader = new FileReader()
         fileReader.onload = e => {
           this.thumbnail = e.target.result
         }
-        fileReader.readAsDataURL(this.docPages[0].data)
+        fileReader.readAsDataURL(this.docPages[0].filedata)
       }
     },
   },
@@ -119,10 +116,11 @@ export default {
         renderTask.promise.then(() => {
           canvas.toBlob(
             blobData => {
+              blobData.name = fileReader.pageNumber
               const docPage = {
                 id: this.fileInfo.id,
                 pageNum: fileReader.pageNumber,
-                data: blobData,
+                filedata: blobData,
               }
 
               this.loadCount += 1
