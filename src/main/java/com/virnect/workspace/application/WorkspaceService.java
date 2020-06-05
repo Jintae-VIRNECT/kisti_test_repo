@@ -453,7 +453,7 @@ public class WorkspaceService {
         long requestRemote = 0, requestMake = 0, requestView = 0;
 
         for (WorkspaceInviteRequest.UserInfo userInfo : workspaceInviteRequest.getUserInfoList()) {
-            //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크
+            //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크x
             if (userInfo.getRole().equals("MASTER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
@@ -476,7 +476,6 @@ public class WorkspaceService {
 
         //라이선스 플랜 타입 구하기 -- basic, pro..(한 워크스페이스에서 다른 타입의 라이선스 플랜을 동시에 가지고 있을 수 없으므로, 아무 플랜이나 잡고 타입을 구함.)
         String licensePlanType = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().map(licenseProductInfoResponse -> licenseProductInfoResponse.getLicenseType()).collect(Collectors.toList()).get(0);
-
 
         // 요청한 사람이 마스터유저 또는 매니저유저인지 체크
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
