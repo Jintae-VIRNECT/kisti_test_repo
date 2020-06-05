@@ -15,8 +15,6 @@ spring:
           envers:
             audit_table_suffix: _history
   redis:
-    port: 6379
-    database: 0
     host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
   cloud:
     loadbalancer:
