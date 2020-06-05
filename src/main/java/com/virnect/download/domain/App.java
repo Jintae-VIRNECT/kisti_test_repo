@@ -23,10 +23,13 @@ public class App extends TimeEntity {
     @Column(name = "app_id")
     private Long id;
 
-    @Column(name = "app_url", nullable = false, unique = true)
+    @Column(name = "uuid", nullable = false, unique = true)
+    private String uuid;
+
+    @Column(name = "app_url", nullable = false)
     private String appUrl;
 
-    @Column(name = "guide_url", nullable = false, unique = true)
+    @Column(name = "guide_url")
     private String guideUrl;
 
     @Column(name = "product", nullable = false)
@@ -44,9 +47,12 @@ public class App extends TimeEntity {
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
-    @Column(name = "app_download_count", columnDefinition  = "BIGINT default 0")
+    @Column(name = "image_url", nullable = false)
+    private String image;
+
+    @Column(name = "app_download_count", columnDefinition = "BIGINT default 0")
     private Long appDownloadCount;
 
-    @Column(name = "guide_download_count", columnDefinition  = "BIGINT default 0")
+    @Column(name = "guide_download_count", columnDefinition = "BIGINT default 0")
     private Long guideDownloadCount;
 }

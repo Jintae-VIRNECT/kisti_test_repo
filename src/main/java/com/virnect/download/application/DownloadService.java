@@ -15,12 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,25 +43,39 @@ public class DownloadService {
         return null;
     }
 
-    public ResponseEntity<byte[]> downloadApp(String id) throws IOException {
-        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+    public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
+        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
         this.appRepository.save(app);
-        return this.downloadFile(app.getAppUrl());
+
+        if (app.getDevice().getType().equals("Google Play")) {
+            //링크 리턴
+            URI redirectUri = new URI(app.getAppUrl());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(redirectUri);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+        } else {
+            String fileName = FilenameUtils.getName(app.getAppUrl());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
+                    new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(this.fileUploadService.fileDownload(fileName));
+        }
     }
 
-    public ResponseEntity<byte[]> downloadGuide(String id) throws IOException {
-        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+    public ResponseEntity<byte[]> downloadGuide(String uuid) throws IOException {
+        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
         this.appRepository.save(app);
 
-        return this.downloadFile(app.getGuideUrl());
-    }
-
-    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws IOException {
-        String fileName = FilenameUtils.getName(fileUrl);
+        String fileName = FilenameUtils.getName(app.getGuideUrl());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -82,6 +99,8 @@ public class DownloadService {
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
             appInfo.setOs(appList.get(0).getOs().getName());
             appInfo.setVersion("v." + appList.get(0).getVersion());
+
+            appInfo.setImageUrl(appList.get(0).getImage());
             appInfoList.add(appInfo);
         });
 
