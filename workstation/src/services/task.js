@@ -183,7 +183,7 @@ export default {
       route: { subTaskId },
       params: {
         size: 10,
-        sort: 'updatedDate,desc',
+        sort: 'priority,asc',
         ...params,
       },
     })

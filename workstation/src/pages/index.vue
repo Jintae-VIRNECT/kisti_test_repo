@@ -110,7 +110,7 @@ export default {
     }
   }
   .el-card--table .el-table__body-wrapper {
-    min-height: 250px;
+    min-height: 256px;
   }
 }
 </style>

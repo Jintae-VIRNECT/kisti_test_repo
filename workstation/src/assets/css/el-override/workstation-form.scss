@@ -167,8 +167,9 @@ $input-background-color: rgba(233, 237, 244, 0.5);
   }
 }
 .el-form-item.is-error {
-  .el-input__inner,
-  .el-textarea__inner {
+  .el-input .el-input__inner,
+  .el-select .el-input__inner,
+  .el-range-editor .el-range-input {
     border-color: #f31312;
   }
 }

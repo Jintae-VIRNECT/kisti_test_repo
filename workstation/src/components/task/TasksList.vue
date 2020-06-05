@@ -95,6 +95,7 @@
     <set-task-manage
       :type="taskManageModalType"
       :taskId="activeTask.id"
+      :contentInfo="{ contentUUID: activeTask.contentUUID }"
       :visible.sync="showSetTaskManageModal"
       @updated="updated"
       @next="taskManageEnded"

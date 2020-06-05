@@ -88,6 +88,11 @@ export default {
       }, {}),
     }
   },
+  watch: {
+    data(val) {
+      this.myInfo = val
+    },
+  },
   computed: {
     ...mapGetters({
       activeWorkspace: 'workspace/activeWorkspace',
