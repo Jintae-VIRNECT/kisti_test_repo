@@ -40,11 +40,11 @@
   }
 
   &.more {
-    background: url(~assets/image/call/smvideo_ic_addppl@2x.png) center 21px/36px
+    background: url(~assets/image/call/smvideo_ic_addppl@2x.png) center 1.5rem/2.571rem
       no-repeat $color_darkgray_500;
     cursor: pointer;
     > p {
-      margin-top: 62px;
+      margin-top: 4.429rem;
       color: $color_text_sub;
       font-weight: 500;
       text-align: center;
@@ -56,10 +56,9 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transform: translate3d(0, 0, 0);
   > video {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 
@@ -75,33 +74,86 @@
 
 .participant-video__profile-background {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 45%;
+  left: 50%;
+  min-width: 106%;
+  min-height: 106%;
   object-fit: cover;
   background-color: #fff;
-  filter: blur(5px);
+  transform: translate(-50%, -50%);
+  filter: blur(0.357rem);
+  & + .participant-video__profile-dim {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(#000, 0.6);
+  }
+  &.default {
+    & + .participant-video__profile-dim {
+      display: none;
+    }
+  }
 }
 
-.participant-video__speaker {
+.participant-video__device {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0.571rem;
+  right: 0.571rem;
+  > img {
+    width: 1.286rem;
+    height: 1.286rem;
+    margin-left: 0.143rem;
+  }
 }
 
 .participant-video__status {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 12px;
-  height: 12px;
+  top: 0.571rem;
+  left: 0.571rem;
+  width: 0.857rem;
+  height: 0.857rem;
   // padding: 2px 9px 3px 9px;
   font-weight: 500;
   border-radius: 50%;
 
-  @include ir();
   @include status-color();
+  .participant-video__status-hover {
+    position: absolute;
+    top: 50%;
+    left: 1.643rem;
+    padding: 0 8px 3px;
+    background-color: #000;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: -4px;
+      width: 0;
+      height: 0;
+      margin-left: -4px;
+      border-color: transparent #000 transparent transparent;
+      border-style: solid;
+      border-width: 4px;
+      transform: translateY(-50%);
+      content: "";
+    }
+    > span {
+      font-weight: 500;
+      font-size: 0.857rem;
+      line-height: 0.857rem;
+      @include status-color(color);
+    }
+  }
+  &.hover {
+    .participant-video__status-hover {
+      opacity: 1;
+    }
+  }
 }
 
 .participant-video__name {
@@ -114,7 +166,7 @@
   font-size: 0.929rem;
   line-height: 2.143rem;
   text-align: center;
-  background-color: rgba($color_darkgray_1000, 0.39);
+  background-color: rgba($color_darkgray_1000, 0.3);
 
   > .active {
     position: relative;
@@ -122,8 +174,8 @@
       position: absolute;
       top: 50%;
       left: -10px;
-      width: 5px;
-      height: 5px;
+      width: 0.357rem;
+      height: 0.357rem;
       background-color: $color_primary;
       border-radius: 50%;
       transform: translateY(-50%);
@@ -133,20 +185,52 @@
 
   > .popover--wrapper {
     position: absolute;
-    right: 4px;
-    width: 20px;
+    top: 0;
+    right: 0.286rem;
+    width: 1.429rem;
     height: 100%;
+  }
+}
+.participant-video__name-text {
+  height: 1.429rem;
+  height: 100%;
+  padding: 0 1.786rem 0 1.429rem;
+  overflow: hidden;
+  line-height: 2.143rem;
+  white-space: nowrap;
+  text-align: center;
+  text-overflow: ellipsis;
+  &.mine {
+    padding-right: 1.429rem;
+    &:after {
+      content: "(나)";
+    }
   }
 }
 .participant-video__setting {
   position: absolute;
   right: 0;
-  width: 20px;
+  width: 1.714rem;
   height: 100%;
   overflow: hidden;
   text-indent: -999px;
   background: url(~assets/image/ic_more_vertical.svg) 50% no-repeat;
+  opacity: 0.7;
   @include ir();
+  &.hover {
+    opacity: 1;
+  }
+  &.active:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.714rem;
+    height: 1.714rem;
+    background-color: rgba($color_white, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+  }
 }
 
 .popover.participant-video__menu {
@@ -154,7 +238,8 @@
   min-width: 8.571em;
   background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
-  border-radius: 6px;
+  border-radius: 0.429em;
+  transform: translateX(0.857em);
   > .popover--body {
     padding: 0;
   }
@@ -163,7 +248,7 @@
   padding: 0.286em 0;
   .video-pop__button {
     width: 100%;
-    padding: 0.929em 1.429em;
+    padding: 0.786em 1.429em;
     color: #fff;
     text-align: left;
     &:focus {
@@ -176,4 +261,14 @@
       background-color: rgba($color_bg_item, 0.5);
     }
   }
+}
+
+.participant-video__mute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url(~assets/image/ic_speaker_off.svg) center/40px no-repeat;
+  background-color: rgba(#000, 0.5);
 }

@@ -15,7 +15,7 @@ import VueToasted from 'plugins/remote/toasted'
 import Alarm from 'plugins/remote/alarm'
 import DayJS from 'plugins/remote/dayjs'
 
-import openvidu from 'plugins/remote/openvidu'
+import call from 'plugins/remote/call'
 
 Vue.use(DayJS)
 Vue.use(VueToasted)
@@ -28,7 +28,7 @@ Vue.use(ElementUI, {
 Vue.mixin(globalMixin)
 Vue.use(Vue2Scrollbar)
 
-Vue.use(openvidu, { Store })
+Vue.use(call, { Store })
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus

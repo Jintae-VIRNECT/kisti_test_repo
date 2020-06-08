@@ -8,7 +8,7 @@ $welcome_height: 17.143rem; //156px + 64px + 64px
 $subview_width: 360px;
 $video_height: 100px;
 $videolist_height: $video_height + 60px;
-$share_width: 156px;
+$share_width: 200px;
 
 /* Primary Color */
 $color_primary_dark: #003986;
@@ -63,9 +63,9 @@ $color_bg_shadow: rgba(16, 16, 17, 0.2);
 $color_bg_shadow_border: 1px solid #040810;
 
 $color_chat_bg_default: #26262a;
-$color_chat_header: rgba(#a9a9a9, 0.2);
-$color_chat_bg_me: #d1dffa;
-$color_chat_bg_opponent: $color_white;
+$color_chat_header: #38383a;
+$color_chat_bg_me: #bfddff;
+$color_chat_bg_opponent: #fafafa;
 
 $color_state_good_bg: rgba(#0e2805, 0.6);
 $color_state_normal_bg: rgba(#1a1e00, 0.6);

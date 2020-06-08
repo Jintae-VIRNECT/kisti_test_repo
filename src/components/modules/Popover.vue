@@ -146,8 +146,8 @@ export default {
 
       //Popover 이동
       if (this.$refs['popover']) {
-        this.$root.$el.append(this.$refs['popover'])
-        // document.body.append(this.$refs['popover'])
+        //this.$root.$el.append(this.$refs['popover'])
+        document.body.append(this.$refs['popover'])
       }
       this.visible = true
 

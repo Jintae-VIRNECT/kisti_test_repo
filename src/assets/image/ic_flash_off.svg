@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 62 (101010) - https://sketch.com -->
+    <title>D17BCC1A-E639-4A05-8EAD-03F47D6DF422@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <filter x="-31.0%" y="-29.5%" width="161.9%" height="159.1%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="web-v-1.4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.952376302">
+        <g id="4-1.-화면-공유-모드-(통화-연결-시-디폴트)-추가기능_마우스-오버-[add]" transform="translate(-859.000000, -434.000000)">
+            <g id="icn-상태-설명" transform="translate(714.000000, 255.000000)">
+                <g id="icn_flash**-copy" transform="translate(145.000000, 179.000000)">
+                    <g id="ic_highlight_off">
+                        <g id="icn" filter="url(#filter-1)" transform="translate(14.901550, 14.296837)">
+                            <path d="M8.03747559,7.4739152 L4.26408773,7.4739152 L4.26408773,12.4555293 L7.26408773,15.4444977 L7.26408773,21.437111 L13.2640877,21.437111 L13.2640877,15.4444977 L14.6383332,14.0753056 M16.1421814,12.5765458 L16.2640877,12.4555293 L16.2640877,7.4739152 L11.1046753,7.4739152" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                            <line x1="1.3890686" y1="2.02393351" x2="19.59375" y2="20.2605668" id="Path-2" stroke="#FFFFFF" stroke-width="1.8"></line>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

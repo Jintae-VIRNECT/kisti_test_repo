@@ -33,7 +33,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { width } from 'utils/toolOption'
+import { width } from 'utils/callOptions'
 
 export default {
   name: 'ToolLineWidth',

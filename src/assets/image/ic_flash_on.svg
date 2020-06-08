@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 62 (101010) - https://sketch.com -->
+    <title>BC455281-9116-483A-A964-DAADE506C5AA@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <filter x="-32.5%" y="-28.3%" width="165.0%" height="156.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="web-v-1.4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="4-1.-화면-공유-모드-(통화-연결-시-디폴트)-추가기능_마우스-오버-[add]" transform="translate(-859.000000, -314.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="icn-상태-설명" transform="translate(714.000000, 255.000000)">
+                <g id="icn_flash**-copy-2" transform="translate(145.000000, 59.000000)">
+                    <g id="ic_highlight_on">
+                        <g id="icn" filter="url(#filter-1)" transform="translate(15.165638, 13.000000)">
+                            <path d="M8.75,-2.2470914e-13 L11.0833333,-2.2470914e-13 L11.0833333,3.78876202 L8.75,3.78876202 L8.75,-2.2470914e-13 Z M-1.32782674e-13,4.52666667 L1.645,2.88166667 L4.27353265,5.355 L2.62853265,7 L-1.32782674e-13,4.52666667 Z M15.5545733,5.355 L18.1766667,2.88166667 L19.8216667,4.52666667 L17.21124,7 L15.5545733,5.355 Z" id="Shape"></path>
+                            <polygon id="Combined-Shape" points="4 13.752366 7 16.7413345 7 22.7339478 13 22.7339478 13 16.7413345 16 13.752366 16 8.77075195 4 8.77075195"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

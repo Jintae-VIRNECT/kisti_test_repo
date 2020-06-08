@@ -8,45 +8,198 @@
   border-right: solid 1px rgba(#fff, 0.09);
 }
 
-.share__title {
+.share-title {
+  display: flex;
   flex-shrink: 0;
   width: 100%;
   height: 38px;
-  background-color: rgba($color_bg_item, 0.3);
-  > p {
-    font-size: 12px;
-    line-height: 38px;
-    text-align: center;
+  > li {
+    flex: 1;
+  }
+}
+.share-title__button {
+  width: 100%;
+  margin: auto;
+  color: rgba(#fff, 0.5);
+  font-size: 12px;
+  line-height: 38px;
+  text-align: center;
+  background-color: #181818;
+  &:hover,
+  &:active {
+    color: #fff;
+  }
+  &.active {
+    color: #fff;
+    background-color: transparent;
   }
 }
 
-.share__body {
-  height: 100%;
+.share-body {
+  position: relative;
+  height: calc(100% - 38px);
+  &.pdf {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
-.share__save {
+.share-save.btn.small {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   flex-shrink: 0;
-  width: 100%;
-  height: 38px;
+  width: calc(100% - 28px);
+  height: 41px;
+  margin: 14px;
+  font-weight: normal;
   font-size: 12px;
-  background-color: transparent;
-  border-top: solid 1px rgba(#fff, 0.09);
+  background-color: #213d62;
+
+  > span {
+    display: flex;
+    width: fit-content;
+    margin: auto;
+    line-height: 20px;
+    &:before {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+      background: url(~assets/image/ic_save_down.svg) no-repeat;
+      content: "";
+    }
+  }
 }
 
 .upload-list {
-  padding: 20px 15px;
+  padding: 20px;
+  padding-left: 24px;
+  &.inner {
+    padding-top: 0;
+  }
+  > li {
+    position: relative;
+    width: 100%;
+  }
+  > li:first-child {
+    margin-top: 0;
+  }
 }
 
 .upload-list__button {
-  width: calc(100% - 6px);
-  height: 86px;
-  background: url(~assets/image/call/ic-add-circle-outline.svg) center/38px
-    no-repeat rgba($color_bg_item, 0.28);
-  background-color: rgba($color_bg_item, 0.28);
+  width: 100%;
+  height: 110px;
+  background: url(~assets/image/call/ic-add-circle-outline.svg) center/40px
+    no-repeat #4c5259;
+  opacity: 0.28;
 
   @include ir();
 }
 
 .sharing-image {
+  position: relative;
+  width: 100%;
   margin-top: 18px;
+  .sharing-image__remove {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  &:hover {
+    .sharing-image__remove {
+      opacity: 1;
+    }
+  }
+}
+.sharing-image__item {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  overflow: hidden;
+  &.pdf:after {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 24px;
+    height: 24px;
+    background: url(~assets/image/img_pdf.png) center/100% no-repeat;
+    content: "";
+  }
+  > img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+.sharing-image__name {
+  width: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 15px;
+  white-space: nowrap;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.sharing-image__remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  background: url(~assets/image/ic-close-w.svg) center/15px no-repeat
+    rgba(#2a2a2a, 0.7);
+  border-radius: 50%;
+  @include ir();
+}
+
+.sharing-image__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 110px;
+  background: rgba(#000, 0.5);
+}
+.loading-box {
+  margin: auto;
+}
+.loading-box__title {
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
+}
+.loading-box__progress {
+  position: relative;
+  width: 92px;
+  height: 4px;
+  background: #f8f8f8;
+  border-radius: 2px;
+}
+.loading-box__progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #0f75f5;
+  border-radius: 2px;
+}
+.loading-box__dash {
+  font-size: 12px;
+  text-align: center;
+}
+
+.share-body__backbutton {
+  flex: 0;
+  width: calc(100% - 40px);
+  margin: 20px;
+  background-color: #38383a;
+  // background: url(~assets/image/) center 10px/12px no-repeat;
+  > p {
+    padding: 5px 0 5px 32px;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
+  }
 }

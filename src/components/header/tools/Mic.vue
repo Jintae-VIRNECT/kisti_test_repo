@@ -32,12 +32,16 @@ export default {
       let mic = !this.mic
       this.callMic(mic)
 
-      // TODO: openvidu
-      // this.$call.micOnOff(mic)
+      this.$call.mic(mic)
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    let mic = localStorage.getItem('mic')
+    if (typeof mic === Boolean) {
+      this.callMic(mic)
+    }
+  },
 }
 </script>

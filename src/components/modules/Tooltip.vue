@@ -4,7 +4,7 @@
     <transition name="fade-in-linear">
       <div class="tooltiptext" :class="placement + ' ' + effect" v-show="show">
         {{ content }}
-        <div class="arrow"></div>
+        <div class="arrow" style="display: none;"></div>
       </div>
     </transition>
   </div>
@@ -142,6 +142,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+
 .tooltip {
   position: relative;
 }
@@ -153,9 +155,10 @@ export default {
   width: max-content;
   padding: 0.714em 1.429em;
   font-size: 0.929em;
-  border-radius: 6px;
+  border-radius: 4px;
   .arrow {
     position: absolute;
+    display: none;
     border-color: transparent;
     border-style: solid;
     border-width: 6px;
@@ -173,9 +176,9 @@ export default {
     }
   }
   &.black {
-    color: #fff;
-    background-color: #333;
-    border: solid 1px rgba(#d2d2d2, 0.3);
+    color: $color_text_sub;
+    background-color: #121517;
+    // border: solid 1px rgba(#d2d2d2, 0.3);
     &.top .arrow,
     &.top-start .arrow,
     &.top-end .arrow {

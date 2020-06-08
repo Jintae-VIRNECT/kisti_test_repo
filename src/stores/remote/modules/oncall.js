@@ -5,9 +5,11 @@ import {
   TOOL_DRAWING_OPACITY,
   TOOL_TEXT_SIZE,
   TOOL_LINE_WIDTH,
+  CALL_MIC,
+  CALL_SPEAKER,
 } from '../mutation-types'
 
-import { reset } from 'utils/toolOption'
+import { reset } from 'utils/callOptions'
 
 const state = {
   view: 'stream', // stream, sharing, ar
@@ -15,7 +17,10 @@ const state = {
   drawOpacity: reset.opacity,
   lineWidth: reset.width,
   fontSize: reset.size,
-  action: 'pointing', // pointing, drawing
+  action: 'default', // default, pointing, drawing
+
+  mic: false,
+  speaker: true,
 }
 
 const mutations = {
@@ -39,6 +44,12 @@ const mutations = {
   },
   [TOOL_LINE_WIDTH](state, mode) {
     state.lineWidth = mode
+  },
+  [CALL_MIC](state, mode) {
+    state.mic = mode
+  },
+  [CALL_SPEAKER](state, mode) {
+    state.speaker = mode
   },
 }
 

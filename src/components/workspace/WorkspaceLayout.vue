@@ -1,40 +1,48 @@
 <template>
-  <vue2-scrollbar
-    classes="remote-wrapper"
-    ref="wrapperScroller"
-    @onScroll="onScroll"
-  >
-    <div class="workspace-wrapper">
-      <workspace-welcome ref="welcomeSection"></workspace-welcome>
-      <workspace-tab
-        ref="tabSection"
-        :fix="tabFix"
-        @tabChange="tabChange"
-      ></workspace-tab>
-    </div>
-    <cookie-policy v-if="showCookie" :visible.sync="showCookie"></cookie-policy>
-  </vue2-scrollbar>
+  <section class="remote-layout">
+    <header-section></header-section>
+    <vue2-scrollbar
+      classes="remote-wrapper"
+      ref="wrapperScroller"
+      @onScroll="onScroll"
+    >
+      <div class="workspace-wrapper">
+        <workspace-welcome ref="welcomeSection"></workspace-welcome>
+        <workspace-tab
+          ref="tabSection"
+          :fix="tabFix"
+          @tabChange="tabChange"
+        ></workspace-tab>
+      </div>
+      <cookie-policy
+        v-if="showCookie"
+        :visible.sync="showCookie"
+      ></cookie-policy>
+    </vue2-scrollbar>
+  </section>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-// import { getAccount } from 'api/common/account'
+import { mapActions } from 'vuex'
 import auth from 'utils/auth'
 
 export default {
   name: 'WorkspaceLayout',
-  async beforeMount() {
+  async beforeRouteEnter(to, from, next) {
     const account = await auth.init()
     if (!auth.isLogin) {
       auth.login()
     } else {
-      this.updateAccount(account.myInfo)
-      this.initWorkspace(account.myWorkspaces)
+      next(vm => {
+        vm.init(account)
+      })
     }
   },
   components: {
+    HeaderSection,
     WorkspaceWelcome,
     WorkspaceTab,
     CookiePolicy: () => import('CookiePolicy'),
@@ -52,6 +60,10 @@ export default {
   },
   methods: {
     ...mapActions(['updateAccount', 'initWorkspace']),
+    init(account) {
+      this.updateAccount(account.myInfo)
+      this.initWorkspace(account.myWorkspaces)
+    },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
         this.tabFix = true
@@ -66,25 +78,6 @@ export default {
   },
 
   /* Lifecycles */
-  async created() {
-    // this.updateAccount({
-    //   userId: '123456',
-    //   profile: require('assets/image/profile.png'),
-    //   description: null,
-    //   email: 'remote@remote.com',
-    //   name: '리모트',
-    //   serviceInfo: null,
-    //   userType: 'Manager',
-    //   uuid: null,
-    // })
-    // try {
-    //   const datas = await getAccount()
-    //   console.log(datas)
-    // } catch (err) {
-    //   // 에러처리
-    //   console.error(err)
-    // }
-  },
   mounted() {
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
   },

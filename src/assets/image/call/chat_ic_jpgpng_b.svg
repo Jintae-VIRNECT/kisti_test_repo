@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>AECE456B-6B8E-4F65-B776-A26665F28FFB@1.00x</title>
+    <defs>
+        <path d="M21,19 L21,5 C21,3.9 20.1,3 19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 Z M8.5,13.5 L11,16.51 L14.5,12 L19,18 L5,18 L8.5,13.5 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_02" transform="translate(-49.000000, -156.000000)">
+            <g id="Group" transform="translate(30.000000, 111.000000)">
+                <g id="Group-7" transform="translate(19.000000, 45.000000)">
+                    <g id="icon_JPG">
+                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/image/photo_24px" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

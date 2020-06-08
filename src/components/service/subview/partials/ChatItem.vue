@@ -3,28 +3,35 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <img
+    <profile class="profile" v-if="!hideProfile"></profile>
+    <!-- <img
       class="profile"
       src="~assets/image/call/chat_img_user.svg"
       v-if="!hideProfile"
-    />
+    /> -->
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
-        <div v-if="chat.file && chat.file.length > 0" class="file">
-          <p class="file__name">{{ chat.file[0].filename }}</p>
-          <p class="file__size">{{ chat.file[0].filesize }}</p>
+        <div v-if="chat.file && chat.file.length > 0" class="chat-item__file">
+          <div class="chat-item__file--wrapper">
+            <div class="chat-item__file--icon" :class="getClass"></div>
+            <div class="chat-item__file--name">
+              {{ chat.file[0].filename }}
+            </div>
+          </div>
+          <p class="chat-item__file--size">{{ chat.file[0].filesize }}</p>
         </div>
         <p
+          v-if="chat.text !== undefined"
           class="text"
-          :class="{
-            alarm: type === 'system' && chat.name === 'alarm',
-            people: type === 'system' && chat.name === 'people',
-          }"
+          :class="getClass"
           v-html="chat.text"
         ></p>
-        <button v-if="chat.file && chat.file.length > 0" class="file__button">
-          다운로드
+        <button
+          v-if="chat.file && chat.file.length > 0"
+          class="chat-item__file--button"
+        >
+          <span class="button-text">다운로드</span>
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
@@ -36,9 +43,12 @@
 </template>
 
 <script>
+import Profile from 'Profile'
 export default {
   name: 'ChatItem',
-  components: {},
+  components: {
+    Profile,
+  },
   data() {
     return {}
   },
@@ -96,6 +106,33 @@ export default {
       }
 
       return false
+    },
+    extension() {
+      let ext = ''
+      if (this.chat.file && this.chat.file.length > 0) {
+        ext = this.chat.file[0].filename.split('.').pop()
+      }
+
+      if (ext === 'avi' || ext === 'mp4') {
+        ext = 'video'
+      }
+
+      return ext
+    },
+    getClass() {
+      return {
+        txt: this.extension === 'txt',
+        png: this.extension === 'png',
+        pdf: this.extension === 'pdf',
+        mp3: this.extension === 'mp3',
+        jpg: this.extension === 'jpg',
+        video: this.extension === 'video',
+        alarm: this.type === 'system' && this.chat.subType === 'alarm',
+        people: this.type === 'system' && this.chat.subType === 'people',
+        cancel: this.type === 'system' && this.chat.subType === 'cancel',
+        ar: this.type === 'system' && this.chat.subType === 'ar',
+        board: this.type === 'system' && this.chat.subType === 'board',
+      }
     },
   },
   watch: {},
