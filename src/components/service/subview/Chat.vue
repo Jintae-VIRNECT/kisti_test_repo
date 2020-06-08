@@ -71,8 +71,9 @@ import { mapState } from 'vuex'
 import ChatItem from './partials/ChatItem'
 import ChatInput from './partials/ChatInput'
 // import Popover from 'Popover'
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
 // import Tooltip from 'Tooltip'
+
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
 
 export default {
   name: 'Chat',
@@ -117,16 +118,30 @@ export default {
             break
           case 'drawing':
             console.log('협업 보드')
-            this.chatList.push({
-              text: '협업 보드를 사용합니다.',
-              name: 'board',
-              date: new Date(),
-              uuid: null,
-              type: 'system',
-            })
+            // this.chatList.push({
+            //   text: '협업 보드를 사용합니다.',
+            //   name: 'board',
+            //   date: new Date(),
+            //   uuid: null,
+            //   type: 'system',
+            // })
+
+            this.chatList.push(
+              new ChatMsgBuilder()
+                .setType('system')
+                .setSubType('board')
+                .setText('협업 보드를 사용합니다.')
+                .build(),
+            )
             break
           case 'ar':
-            this.chatList.push(ChatMsgBuilder.sysMsgBuilder('ar'))
+            this.chatList.push(
+              new ChatMsgBuilder()
+                .setType('system')
+                .setSubType('ar')
+                .setText('AR 기능을 사용합니다.')
+                .build(),
+            )
             break
         }
       },
@@ -154,36 +169,58 @@ export default {
     this.roomTitle = this.room.title ? this.room.title : ''
 
     this.chatList.push(
-      ChatMsgBuilder.sysMsgBuilder('alarm', '협업이 생성 되었습니다.'),
+      new ChatMsgBuilder()
+        .setType('system')
+        .setSubType('alarm')
+        .setText('협업이 생성 되었습니다.')
+        .build(),
     )
 
-    this.chatList.push(ChatMsgBuilder.normalMsgBuilder('me', 'hi', 'hihi'))
-    this.chatList.push(
-      ChatMsgBuilder.fileMsgBuilder('me', 'hi', [
-        {
-          filename: 'Webex.png',
-          filesize: '10MB',
-        },
-      ]),
-    )
-    this.chatList.push(
-      ChatMsgBuilder.normalMsgBuilder(
-        'opponent',
-        '참여자2',
-        '안녕하세요 고객님. VIRNECT 고객센터입니다. 다음 링크에 접속 부탁드립니다. https://remote.virnect.com/ 감사합니다.',
-      ),
-    )
-    this.chatList.push(ChatMsgBuilder.normalMsgBuilder('me', 'hi', 'hihi'))
-    this.chatList.push(
-      ChatMsgBuilder.sysMsgBuilder('cancel', null, '테스트 팀장'),
-    )
-    this.chatList.push(
-      ChatMsgBuilder.sysMsgBuilder(
-        'cancel',
-        'cancel File Transfer ',
-        '테스트 팀장',
-      ),
-    )
+    //test messages.
+    // this.chatList.push(
+    //   new ChatMsgBuilder()
+    //     .setType('me')
+    //     .setName('펭수')
+    //     .setText('hihi')
+    //     .build(),
+    // )
+
+    // this.chatList.push(
+    //   new ChatMsgBuilder()
+    //     .setType('me')
+    //     .setName('펭수')
+    //     .setText('hihi')
+    //     .setFile([
+    //       {
+    //         filename: 'Webex.png',
+    //         filesize: '10MB',
+    //       },
+    //     ])
+    //     .build(),
+    // )
+
+    // this.chatList.push(
+    //   new ChatMsgBuilder()
+    //     .setType('opponent')
+    //     .setName('펭수')
+    //     .setText('hihi')
+    //     .setFile([
+    //       {
+    //         filename: 'Webex.png',
+    //         filesize: '10MB',
+    //       },
+    //     ])
+    //     .build(),
+    // )
+
+    // this.chatList.push(
+    //   new ChatMsgBuilder()
+    //     .setType('system')
+    //     .setName('테스트2', true)
+    //     .setSubType('cancel')
+    //     .setText('cancel File Transfer')
+    //     .build(),
+    // )
   },
 }
 </script>
