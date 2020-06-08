@@ -78,16 +78,29 @@ export default {
       mainView: 'mainView',
       speaker: 'speaker',
       action: 'action',
+      resolutions: 'resolutions',
     }),
+    resolution() {
+      const idx = this.resolutions.findIndex(
+        data => data.connectionId === this.mainView.connectionId,
+      )
+      if (idx < 0) {
+        return {
+          width: 0,
+          height: 0,
+        }
+      }
+      return this.resolutions[idx]
+    },
   },
   watch: {
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
     },
-    mainView: {
+    resolution: {
       deep: true,
-      handler(e) {
-        console.log(e)
+      handler() {
+        this.optimizeVideoSize()
       },
     },
   },
@@ -97,36 +110,29 @@ export default {
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.main-video__box')
       const videoEl = this.$el.querySelector('#main-video')
-
-      let videoWidth = videoEl.offsetWidth,
-        videoHeight = videoEl.offsetHeight,
-        wrapperWidth = mainWrapper.offsetWidth,
-        wrapperHeight = mainWrapper.offsetHeight
-
-      if (videoHeight / videoWidth > wrapperHeight / wrapperWidth) {
-        videoBox.style.width = 'auto'
-        videoEl.style.width = 'auto'
-        videoEl.style.height = '100%'
-        videoWidth = videoEl.offsetWidth
-        videoBox.style.width = videoWidth + 'px'
-      } else {
-        videoBox.style.height = 'auto'
-        videoEl.style.width = '100%'
-        videoEl.style.height = 'auto'
-        videoHeight = videoEl.offsetHeight
-        videoBox.style.height = videoHeight + 'px'
-      }
-
       if (!this.loaded && this.mainView.me && this.mainView.stream) {
-        console.log({
-          width: videoEl.offsetWidth,
-          height: videoEl.offsetHeight,
-        })
         this.$call.sendResolution({
           width: videoEl.offsetWidth,
           height: videoEl.offsetHeight,
         })
         this.loaded = true
+      }
+      if (this.resolution.width === 0 || this.resolution.height === 0) return
+
+      let maxWidth = mainWrapper.offsetWidth
+      let maxHeight = mainWrapper.offsetHeight
+      let scale = this.resolution.width / this.resolution.height
+      if (
+        this.resolution.width / this.resolution.height <
+        maxWidth / maxHeight
+      ) {
+        // height에 맞춤
+        videoBox.style.height = maxHeight + 'px'
+        videoBox.style.width = maxHeight * scale + 'px'
+      } else {
+        // width에 맞춤
+        videoBox.style.height = maxWidth / scale + 'px'
+        videoBox.style.width = maxWidth + 'px'
       }
     },
     capture() {

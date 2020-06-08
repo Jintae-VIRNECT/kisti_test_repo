@@ -75,7 +75,6 @@ export default {
 
         const joinRtn = await this.$call.join(room, this.account, '')
         if (joinRtn) {
-          console.log('>>>join room 성공')
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })

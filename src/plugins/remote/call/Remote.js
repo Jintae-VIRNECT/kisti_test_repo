@@ -26,7 +26,6 @@ const _ = {
       addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: account.uuid,
-        serverData: users,
       }
 
       const iceServer = [
