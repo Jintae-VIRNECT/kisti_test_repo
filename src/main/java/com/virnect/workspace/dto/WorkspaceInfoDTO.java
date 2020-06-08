@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class WorkspaceInfoDTO {
-    private String id;
+    private long id;
     private String uuid;
     private String masterUserId;
     private String pinNumber;

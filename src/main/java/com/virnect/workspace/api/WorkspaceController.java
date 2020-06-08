@@ -212,11 +212,11 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 멤버 내보내기",
-            notes = "워크스페이스 내에서 해당 멤버를 내보내기합니다."
+            notes = "마스터 또는 매니저 유저가 워크스페이스 내에서 해당 멤버 또는 매니저를 내보내기합니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
-            @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "form", required = true),
+            @ApiImplicitParam(name = "userId", value = "요청 유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "form", required = true),
             @ApiImplicitParam(name = "kickedUserId", value = "내보내기 대상 유저 uuid", dataType = "string", defaultValue = "", paramType = "form", required = true)
     })
     @DeleteMapping("/{workspaceId}/members/info")
@@ -251,15 +251,16 @@ public class WorkspaceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "userId", value = "초대받은 사용자 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c60", paramType = "query", required = true),
-            @ApiImplicitParam(name = "code", value = "워크스페이스 초대 코드", dataType = "string", defaultValue = "123456", paramType = "query", required = true)
+            @ApiImplicitParam(name = "accept", value = "초대 수락 또는 거절 선택값", paramType = "query", required = true),
     })
     @GetMapping("/{workspaceId}/invite/accept")
-    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @RequestParam("code") String code,
+    public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId,
+                                              @RequestParam("accept") Boolean accept,
                                               @ApiIgnore Locale locale) {
-        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(code)) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RedirectView redirectView = this.workspaceService.inviteWorkspaceAccept(workspaceId, userId, code, locale);
+        RedirectView redirectView = this.workspaceService.inviteWorkspaceResult(workspaceId, userId, accept, locale);
         return redirectView;
     }
 
@@ -269,7 +270,7 @@ public class WorkspaceController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
-            @ApiImplicitParam(name = "userId", value = "유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "param", required = true),
+            @ApiImplicitParam(name = "userId", value = "유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "query", required = true),
     })
     @DeleteMapping("/{workspaceId}/exit")
     public ResponseEntity<ApiResponse<Boolean>> exitWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @ApiIgnore Locale locale) {
