@@ -140,22 +140,22 @@ spring:
             - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "REMOTE_SERVICE_SERVER"
+                messagePrefix: "REMOTE_SERVICE_SERVER_REST"
                 preLogger: true
                 postLogger: true
 
         - id: media-server-websocket
-          uri: lb:wss://192.168.6.3:8882
+          uri: lb:wss://remote-service-server
           predicates:
             - Header=Sec-WebSocket-Version, \d+
             - Header=Sec-WebSocket-Key, \s+
             - Header=Upgrade, websocket
-            - Path=/media/**
+            - Path=/media/websocket/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=0
             - name: Logging
               args:
-                messagePrefix: "MEDIA_WEBSOCKET"
+                messagePrefix: "REMOTE_SERVICE_SERVER_WEBSOCKET"
                 preLogger: true
                 postLogger: true
 
@@ -175,6 +175,8 @@ spring:
       httpclient:
         ssl:
           use-insecure-trust-manager: true
+  zipkin:
+    base-url: http://192.168.6.3:9411
 
 eureka:
   instance:
