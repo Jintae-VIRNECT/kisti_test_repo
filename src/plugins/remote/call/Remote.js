@@ -11,6 +11,7 @@ const _ = {
   subscribers: [],
   resolution: null,
   join: async (roomInfo, account, users) => {
+    Store.commit('clear')
     try {
       const params = {
         sessionId: roomInfo.sessionId,
@@ -61,6 +62,11 @@ const _ = {
         Store.commit('addStream', getUserObject(_.publisher.stream))
         _.mic(Store.getters['mic'])
       })
+      _.publisher.on('streamPropertyChanged', event => {
+        console.log(event)
+        // Store.commit('addStream', getUserObject(_.publisher.stream))
+        // _.mic(Store.getters['mic'])
+      })
 
       _.session.publish(_.publisher)
       return true
@@ -71,7 +77,7 @@ const _ = {
   },
   leave: () => {
     try {
-      Store.commit('clearStreams')
+      Store.commit('clear')
       _.session.disconnect()
       _.session = null
       _.publisher = null
@@ -125,16 +131,35 @@ const _ = {
   mic: active => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
+    _.session.signal({
+      data: active ? 'true' : 'false',
+      to: _.session.connection,
+      type: 'signal:mic',
+    })
   },
-  mute: (id, statue) => {
+  speaker: active => {
+    for (let subscriber of _.subscribers) {
+      subscriber.subscribeToAudio(active)
+    }
+    _.session.signal({
+      data: active ? 'true' : 'false',
+      to: _.session.connection,
+      type: 'signal:audio',
+    })
+  },
+  mute: (connectionId, mute) => {
     let idx = _.subscribers.findIndex(
-      subscriber => subscriber.id.indexOf(id) > -1,
+      subscriber => subscriber.stream.connection.connectionId === connectionId,
     )
     if (idx < 0) {
       console.log('can not find user')
       return
     }
-    _.subscribers[idx].subscribeToAudio(statue)
+    _.subscribers[idx].subscribeToAudio(!mute)
+    Store.commit('propertyChanged', {
+      connectionId: connectionId,
+      mute: mute,
+    })
   },
   disconnect: connectionId => {
     let idx = _.subscribers.findIndex(

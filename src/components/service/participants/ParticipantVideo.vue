@@ -39,14 +39,14 @@
       <div class="participant-video__device">
         <img
           :src="
-            participant.mic
+            participant.audio
               ? require('assets/image/ic_mic_on.svg')
               : require('assets/image/ic_mic_off.svg')
           "
         />
         <img
           :src="
-            participant.audio
+            participant.speaker
               ? require('assets/image/ic_volume_on.svg')
               : require('assets/image/ic_volume_off.svg')
           "
@@ -74,7 +74,7 @@
 
           <ul class="video-popover">
             <li>
-              <button class="video-pop__button" @click="">
+              <button class="video-pop__button" @click="mute">
                 음소거
               </button>
             </li>
@@ -103,7 +103,6 @@ export default {
   },
   data() {
     return {
-      onSpeaker: true,
       hover: false,
       btnActive: false,
     }
@@ -143,12 +142,9 @@ export default {
     profileImageError(event) {
       event.target.style.display = 'none'
     },
-    mute(e) {
-      e.preventDefault()
-      e.stopPropagation()
-
-      this.onSpeaker = !this.onSpeaker
-      // this.$call.audioOnOff(this.participant.uuid, this.onSpeaker)
+    mute() {
+      const mute = this.participant.mute
+      this.$call.mute(this.participant.connectionId, !mute)
     },
     disconnectUser() {
       this.$call.disconnect(this.participant.connectionId)

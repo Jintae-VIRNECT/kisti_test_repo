@@ -32,7 +32,7 @@ export default {
       let speaker = !this.speaker
       this.callSpeaker(speaker)
 
-      // this.$call.speakerOnOff(speaker)
+      this.$call.speaker(speaker)
     },
   },
 

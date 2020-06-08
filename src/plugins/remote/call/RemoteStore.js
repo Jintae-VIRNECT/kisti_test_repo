@@ -91,6 +91,17 @@ const mutations = {
     }
     state.participants.splice(idx, 1, updateSession)
   },
+  propertyChanged(state, payload) {
+    const idx = state.participants.findIndex(
+      obj => obj.connectionId === payload.connectionId,
+    )
+    if (idx < 0) return
+
+    for (let key in payload) {
+      if (key === 'connectionId') continue
+      state.participants[idx][key] = payload[key]
+    }
+  },
   removeStream(state, connectionId) {
     const idx = state.participants.findIndex(
       obj => obj.connectionId === connectionId,
@@ -121,9 +132,10 @@ const mutations = {
     if (rIdx < 0) return
     state.resolutions.splice(idx, 1)
   },
-  clearStreams(state) {
-    state.participants = []
-    state.mainView = {}
+  clear() {
+    Object.assign(state, getDefaultState())
+
+    return true
   },
 
   // chat

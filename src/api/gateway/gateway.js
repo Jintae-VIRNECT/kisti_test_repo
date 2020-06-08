@@ -214,6 +214,7 @@ export const setAuthorization = accessToken => {
   axios.defaults.headers.common = {
     Authorization: `Bearer ${accessToken}`,
   }
+  console.log(axios.defaults.headers)
 }
 
 export default sender
