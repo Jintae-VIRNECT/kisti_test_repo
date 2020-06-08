@@ -49,3 +49,17 @@
     background: #7ac1fc;
   }
 }
+
+.column-status {
+  & > span {
+    display: inline-block;
+    box-sizing: border-box;
+    min-width: 74px;
+    margin: -10px 0;
+    padding: 4px 10px;
+    font-size: 12.6px;
+    text-align: center;
+    border: solid 1px;
+    border-radius: 100px;
+  }
+}

@@ -21,7 +21,8 @@
           />
           <column-user
             :label="$t('workspace.column.master')"
-            prop="masterName"
+            prop="masterNickName"
+            nameProp="masterNickName"
             imageProp="masterProfile"
             :width="120"
             sortable
@@ -60,21 +61,10 @@
 
 <script>
 import workspaceService from '@/services/workspace'
-
-import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
-import ColumnUser from '@/components/common/tableColumn/ColumnUser'
-import ColumnDate from '@/components/common/tableColumn/ColumnDate'
-import ColumnRole from '@/components/common/tableColumn/ColumnRole'
-import ColumnPlan from '@/components/common/tableColumn/ColumnPlan'
+import columnMixin from '@/mixins/columns'
 
 export default {
-  components: {
-    ColumnDefault,
-    ColumnUser,
-    ColumnDate,
-    ColumnRole,
-    ColumnPlan,
-  },
+  mixins: [columnMixin],
   data() {
     return {
       searchParams: {

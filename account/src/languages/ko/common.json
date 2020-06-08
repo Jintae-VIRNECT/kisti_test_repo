@@ -1,5 +1,9 @@
 
 {
   "link": "바로가기",
-  "confirm": "확인"
+  "confirm": "확인",
+  "delete": "삭제",
+  "more": "더보기",
+  "change": "변경",
+  "price": "가격"
 }
