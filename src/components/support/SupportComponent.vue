@@ -29,7 +29,7 @@
     <footer class="footer">
       <div class="footer__inner">
         <p class="footer__copyright">
-          Copyright&copy; <strong>VIRNECT INC</strong>. All Rights Reserved.
+          &copy; VIRNECT CO., LTD. All Rights Reserved.
         </p>
       </div>
     </footer>
