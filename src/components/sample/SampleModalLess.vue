@@ -12,18 +12,42 @@
         </div>
       </div>
     </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">Modal</h2>
+      <div class="action-box">
+        <div class="component">
+          <button @click="modalTest2 = true" style="color: #fff;">
+            레코드 테스트
+          </button>
+          <local-record-list :visible.sync="modalTest2"></local-record-list>
+        </div>
+      </div>
+    </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">테이블</h2>
+      <div class="action-box">
+        <div class="component">
+          <remote-table></remote-table>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 <script>
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
+import LocalRecordList from 'components/workspace/modal/LocalRecordList'
+import RemoteTable from 'RemoteTable'
 export default {
   data: function() {
     return {
       modalTest: false,
+      modalTest2: false,
     }
   },
   components: {
     DeviceDenied,
+    LocalRecordList,
+    RemoteTable,
   },
 }
 </script>
