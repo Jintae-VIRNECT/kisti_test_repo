@@ -168,6 +168,7 @@ export default {
   }
 }
 #__nuxt #task-daily-graph-chart {
+  min-height: 400px;
   margin: 0 20px 20px;
 
   .bb-tooltip {

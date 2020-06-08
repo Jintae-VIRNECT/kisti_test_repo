@@ -93,7 +93,12 @@
           <task-daily-graph v-else />
         </el-card>
       </el-row>
-      <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />
+      <searchbar-page
+        v-if="!isGraph"
+        ref="page"
+        :value.sync="taskPage"
+        :total="taskTotal"
+      />
     </div>
   </div>
 </template>
