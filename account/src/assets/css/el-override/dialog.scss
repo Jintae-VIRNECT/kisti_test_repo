@@ -22,9 +22,39 @@
       color: $font-color-content;
       line-height: 1.71;
     }
+    .mail-box {
+      padding: 28px 0;
+      color: #333333;
+      text-align: center;
+      background-color: #f5f7fa;
+    }
   }
   .el-form {
     margin: 30px 0 54px;
+    &.secession-form {
+      margin: 28px 0 24px;
+    }
+  }
+  .secession-notice {
+    margin-bottom: 20px;
+    font-size: 12.6px;
+    dt {
+      margin-bottom: 6px;
+      color: #0b1f48;
+    }
+    li {
+      position: relative;
+      padding-left: 8px;
+      &:before {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        content: "-";
+      }
+      p {
+        color: #5e6b81;
+      }
+    }
   }
   .el-form-item {
     margin-bottom: 30px;
