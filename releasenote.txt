@@ -4,10 +4,7 @@ New Features
 - 없음
 
 Bug Fixes
-- 워크스페이스 초대 url API 인증 검사 제외 로직 추가
-- 계정 정보 찾기 관련 url API 인증 검사 제외 로직 추가
-- 로깅 포맷 수정 및 정보 추가
-- 공정 서버 이름 변경 ( 공정 -> 작업 ) 및 request predicate 조건 수정(/processes -> /tasks)
+- 워크스페이스 초대 url 확인 정규 표현식 수정
 
 Limitation
 - 없음
