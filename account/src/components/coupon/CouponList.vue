@@ -1,6 +1,11 @@
 <template>
   <div class="coupon-list">
-    <el-table :data="coupons" @row-click="select" @sort-change="sort">
+    <el-table
+      class="clickable"
+      :data="coupons"
+      @row-click="select"
+      @sort-change="sort"
+    >
       <column-default
         :label="$t('coupon.column.couponName')"
         prop="name"

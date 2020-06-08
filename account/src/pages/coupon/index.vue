@@ -281,9 +281,6 @@ export default {
   }
 
   .coupon-list {
-    tr {
-      cursor: pointer;
-    }
     th:nth-last-child(2) {
       text-align: center;
     }

@@ -6,7 +6,7 @@ dayjs.extend(utc)
 export default dayjs
 export const filters = {
   dateFormat(param) {
-    return dayjs(param).format('YYYY.MM.DD')
+    return dayjs(param).format('YY.MM.DD')
   },
   localTimeFormat(param) {
     return dayjs

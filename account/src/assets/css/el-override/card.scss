@@ -35,18 +35,31 @@
 .el-card__body {
   padding-right: 30px;
   padding-left: 30px;
+
+  .el-divider {
+    margin: 20px 0;
+    background: #eaedf3;
+  }
 }
 // 카드 - 테이블
 .el-card--table .el-card__body {
   padding: 0;
 
+  .el-table__body-wrapper {
+    min-height: 640px;
+  }
+  .el-table .el-table__row {
+    height: 64px;
+  }
+  .el-table.clickable .el-table__row {
+    cursor: pointer;
+  }
   .el-table th {
     padding: 8px 0;
     color: $font-color-desc;
     font-size: 12px;
   }
   .el-table td {
-    padding: 20px 0;
     color: $font-color-content;
   }
   th:first-child,

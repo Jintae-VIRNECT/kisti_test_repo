@@ -7,6 +7,7 @@ import ColumnProgress from '@/components/common/tableColumn/ColumnProgress'
 import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
 import ColumnCount from '@/components/common/tableColumn/ColumnCount'
 import ColumnDropdown from '@/components/common/tableColumn/ColumnDropdown'
+import ColumnPrice from '@/components/common/tableColumn/ColumnPrice'
 
 export default {
   components: {
@@ -19,5 +20,6 @@ export default {
     ColumnStatus,
     ColumnCount,
     ColumnDropdown,
+    ColumnPrice,
   },
 }
