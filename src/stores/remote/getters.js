@@ -35,4 +35,5 @@ export default {
   language: state => state.settings.language,
   localRecordLength: state => state.settings.localRecordLength,
   recordResolution: state => state.settings.recordResolution,
+  localRecordInterval: state => state.settings.localRecordInterval,
 }

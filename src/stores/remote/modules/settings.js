@@ -8,6 +8,7 @@ const state = {
   language: null,
   localRecordLength: null,
   recordResolution: null,
+  recordInterval: null,
 }
 
 const mutations = {
@@ -28,6 +29,9 @@ const mutations = {
   },
   [SETTINGS.SET_RECORD_RESOLUTION](state, recordResolution) {
     state.recordResolution = recordResolution
+  },
+  [SETTINGS.SET_LOCAL_RECORD_INTERVAL](state, recordInterval) {
+    state.recordResolution = recordInterval
   },
 }
 export default {
