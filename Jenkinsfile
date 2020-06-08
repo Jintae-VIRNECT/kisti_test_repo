@@ -10,7 +10,7 @@ pipeline {
             echo 'Pre-Build Stage'
             catchError() {
               sh 'yarn cache clean'
-              sh '"echo <password> | sudo -S rm yarn.lock" || true'
+              sh 'rm -f yarn.lock'
               sh 'yarn install'
               sh 'cp docker/Dockerfile ./'
             }    
