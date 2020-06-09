@@ -306,7 +306,11 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
-        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
+        // 2020/06/08 공유 상태 조건은 제거 (공유 상태 제한을 건 이유 :
+        // [오전 10:23] 김수환
+        // 네 ~ 승호님이 말씀하신 상태는 SMIC 사업때 작업 관리 중인 상태에서 콘텐츠 업데이트 시 문제 발생하여 막아두자고 해서 임의로 막아둔 것
+        // 이여서 승호님 말씀대로 변경하는 것이 제품 적용에 맞는 방향입니다 (smile))
+        if (targetContent.getConverted() != YesOrNo.NO  || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
