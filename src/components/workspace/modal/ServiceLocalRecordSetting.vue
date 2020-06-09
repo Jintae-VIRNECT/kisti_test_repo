@@ -101,7 +101,7 @@ import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 
 export default {
-  name: 'LocalRecordSetting',
+  name: 'ServiceLocalRecordSetting',
   components: {
     Modal,
     RSelect,

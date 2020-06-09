@@ -19,7 +19,9 @@
           <button @click="modalTest2 = true" style="color: #fff;">
             레코드 테스트
           </button>
-          <local-record-list :visible.sync="modalTest2"></local-record-list>
+          <service-local-record-list
+            :visible.sync="modalTest2"
+          ></service-local-record-list>
         </div>
       </div>
     </section>
@@ -59,7 +61,7 @@
 </template>
 <script>
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import LocalRecordList from 'components/workspace/modal/LocalRecordList'
+import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecordList'
 import IconButton from 'components/workspace/modules/IconButton'
 import RemoteTable from 'RemoteTable'
 export default {
@@ -152,7 +154,7 @@ export default {
   },
   components: {
     DeviceDenied,
-    LocalRecordList,
+    ServiceLocalRecordList,
     RemoteTable,
     IconButton,
   },

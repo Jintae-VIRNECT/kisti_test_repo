@@ -452,9 +452,9 @@
             모달 테스트
           </button>
 
-          <local-record-setting
+          <service-local-record-setting
             :visible.sync="customModal.visible"
-          ></local-record-setting>
+          ></service-local-record-setting>
         </div>
       </div>
     </section>
@@ -515,7 +515,7 @@ import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
 import Search from 'components/workspace/modules/Search'
 import IconButton from 'components/workspace/modules/IconButton'
-import LocalRecordSetting from 'components/workspace/modal/LocalRecordSetting'
+import ServiceLocalRecordSetting from 'components/workspace/modal/ServiceLocalRecordSetting'
 import RCheck from 'RemoteCheckBox'
 export default {
   components: {
@@ -539,7 +539,7 @@ export default {
     ToggleButton,
     Search,
     IconButton,
-    LocalRecordSetting,
+    ServiceLocalRecordSetting,
     RCheck,
   },
   data() {
