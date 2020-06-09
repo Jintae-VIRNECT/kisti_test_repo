@@ -398,12 +398,13 @@ public class TaskController {
     @GetMapping("/papers")
     public ResponseEntity<ApiResponse<ReportsResponse>> getPapers(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam(value = "userUUID", required = false) String userUUID
             , @RequestParam(value = "taskId", required = false) Long taskId
             , @RequestParam(value = "subTaskId", required = false) Long subTaskId
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "reported", required = false) Boolean reported
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(workspaceUUID, taskId, subTaskId, search, reported, pageable.of());
+        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(userUUID, workspaceUUID, taskId, subTaskId, search, reported, pageable.of());
         return ResponseEntity.ok(reportsResponseApiResponse);
     }
 
@@ -840,6 +841,12 @@ public class TaskController {
     ) {
         ApiResponse<List<WorkspaceUserInfoResponse>> apiResponse = this.taskService.getWorkspaceUserInfo(workspaceUUID);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/temp")
+    public ResponseEntity<String> temp(){
+        this.taskService.temp();
+        return ResponseEntity.ok("200");
     }
 
 }

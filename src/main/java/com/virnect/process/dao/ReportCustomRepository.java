@@ -1,8 +1,11 @@
 package com.virnect.process.dao;
 
 import com.virnect.process.domain.Report;
+import com.virnect.process.dto.response.HourlyReportCountOfaDayResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * @author jiyong.heo
@@ -12,5 +15,7 @@ import org.springframework.data.domain.Pageable;
  * @since 2020.05.20
  */
 public interface ReportCustomRepository {
-    Page<Report> getPages(String workspaceUUID, Long processId, Long subProcessId, String workerUUID, Boolean reported, Pageable pageable);
+    Page<Report> getPages(String userUUID, String workspaceUUID, Long processId, Long subProcessId, String workerUUID, Boolean reported, Pageable pageable);
+
+    List<HourlyReportCountOfaDayResponse> selectHourlyReportsTemp(String targetDate);
 }

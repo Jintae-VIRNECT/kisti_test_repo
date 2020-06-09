@@ -835,12 +835,12 @@ public class TaskService {
 
     public ApiResponse<HourlyReportCountListResponse> getHourlyReports(String targetDate, String status) {
         // 해당일의 상태의 조건으로 리포트 개수를 시간대별로 조회
-        List<HourlyReportCountOfaDayResponse> hourlyReportCountOfaDayResponses = this.reportRepository.selectHourlyReports(targetDate);
+        List<HourlyReportCountOfaDayResponse> hourlyReportCountOfaDayResponses = this.reportRepository.selectHourlyReportsTemp(targetDate);
         return new ApiResponse<>(new HourlyReportCountListResponse(hourlyReportCountOfaDayResponses));
     }
 
     public ApiResponse<MonthlyStatisticsResponse> getDailyTotalRateAtMonth(String workspaceUUID, String month) {
-        if (workspaceUUID.isEmpty()) {
+        if (Objects.isNull(workspaceUUID)) {
             List<DailyTotal> dailyTotals = this.dailyTotalRepository.getDailyTotalRateAtMonth(month);
 
             return new ApiResponse<>(MonthlyStatisticsResponse.builder()
@@ -855,7 +855,8 @@ public class TaskService {
                     }).collect(Collectors.toList()))
                     .build());
         } else {
-            List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.getDailyTotalRateAtMonthWithWorkspace(workspaceUUID, month);
+//            List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.getDailyTotalRateAtMonthWithWorkspace(workspaceUUID, month);
+            List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalRepository.getDailyTotalRateAtMonthWithWorkspace(workspaceUUID, month);
 
             return new ApiResponse<>(MonthlyStatisticsResponse.builder()
                     .dailyTotal(dailyTotalWorkspaceList.stream().map(dailyTotalWorkspace -> {
@@ -996,10 +997,10 @@ public class TaskService {
         return new ApiResponse<>(new IssuesResponse(issueInfoResponseList, pageMetadataResponse));
     }
 
-    public ApiResponse<ReportsResponse> getReports(String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
+    public ApiResponse<ReportsResponse> getReports(String userUUID, String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
         // 리포트 목록을 category 내에서 조회
-        Page<Report> reportPage = this.reportRepository.getReports(workspaceUUID, processId, subProcessId/*, search*/, reported, pageable);
-        //Page<Report> reportPage = this.reportRepository.getPages(workspaceUUID, processId, subProcessId, userUUID, reported, pageable);
+//        Page<Report> reportPage = this.reportRepository.getReports(workspaceUUID, processId, subProcessId/*, search*/, reported, pageable);
+        Page<Report> reportPage = this.reportRepository.getPages(userUUID, workspaceUUID, processId, subProcessId, search, reported, pageable);
 
         List<ReportInfoResponse> reportInfoResponseList = reportPage.stream().map(report -> {
             List<Item> items = Optional.ofNullable(this.itemRepository.findByReport(report)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT_ITEM));
@@ -1785,7 +1786,7 @@ public class TaskService {
 
     public ApiResponse<IssueInfoResponse> getIssueInfo(Long issueId) {
         // 이슈상세조회
-        Issue issue = this.issueRepository.getIssue(issueId)
+        Issue issue = this.issueRepository.findById(issueId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_ISSUE));
         Job job = issue.getJob();
         IssueInfoResponse issueInfoResponse = null;
@@ -1829,7 +1830,7 @@ public class TaskService {
 
     public ApiResponse<ReportInfoResponse> getReportInfo(Long reportId) {
         // 리포트상세조회
-        Report report = this.reportRepository.getReport(reportId)
+        Report report = this.reportRepository.findById(reportId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT));
         Job job = Optional.of(report).map(Report::getJob).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_JOB));
         SubProcess subProcess = Optional.ofNullable(job).map(Job::getSubProcess).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
@@ -2161,5 +2162,9 @@ public class TaskService {
         }
 
         return new ApiResponse<>(resultList);
+    }
+
+    public void temp() {
+        List<HourlyReportCountOfaDayResponse> resultList = this.reportRepository.selectHourlyReportsTemp("2020-05-19");
     }
 }

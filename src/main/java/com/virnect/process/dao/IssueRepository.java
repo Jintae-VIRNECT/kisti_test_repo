@@ -20,10 +20,10 @@ import java.util.Optional;
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueCustomRepository {
 
     // JPQL
-    @Query(value = "select I from Issue I where I.id = :issueId")
-    Optional<Issue> getIssue(Long issueId);
+//    @Query(value = "select I from Issue I where I.id = :issueId")
+//    Optional<Issue> getIssue(Long issueId);
 
-//    Optional<Issue> findById(Long issueId);
+    Optional<Issue> findById(Long issueId);
 
 //    @Query(value = "select count(i.issue_id) from issue i join job j on j.job_id = i.job_id join sub_process s on s.sub_process_id = j.sub_process_id and s.sub_process_id = :subProcessId", nativeQuery = true)
 //    Long countIssuesInSubProcess(@Param("subProcessId") Long subProcessId);
