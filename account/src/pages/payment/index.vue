@@ -12,11 +12,11 @@
       <el-row>
         <el-col class="container__left">
           <!-- 결제 예정 정보 -->
-          <el-card class="will">
+          <el-card>
             <div slot="header">
               <h3>{{ $t('payment.will.title') }}</h3>
             </div>
-            <dl>
+            <dl class="horizon">
               <dt>{{ $t('payment.will.price') }}</dt>
               <dd class="price">
                 <span>{{ (200000).toLocaleString() }}</span>
@@ -29,7 +29,7 @@
               <dt>{{ $t('payment.will.way') }}</dt>
               <dd>
                 <span>{{ '신용카드' }}</span>
-                <span class="desc">
+                <span class="sub">
                   {{ $t('payment.will.autoPaymentEveryMonth') }}
                 </span>
               </dd>
@@ -52,7 +52,10 @@
               <dt>{{ $t('payment.way.autoPayment') }}</dt>
               <dd class="auto-payment">
                 <span>{{ $t('payment.way.autoPaymentNow') }}</span>
-                <el-button type="simple">
+                <el-button
+                  type="simple"
+                  @click="showAutoPaymentCancelModal = true"
+                >
                   {{ $t('payment.way.autoPaymentCancel') }}
                 </el-button>
               </dd>
@@ -65,7 +68,11 @@
             <div slot="header">
               <h3>{{ $t('payment.log.title') }}</h3>
             </div>
-            <el-table :data="paymentLogs" class="clickable">
+            <el-table
+              :data="paymentLogs"
+              class="clickable"
+              @row-click="showPaymentLogDetailModal = true"
+            >
               <column-default
                 :label="$t('payment.log.column.no')"
                 prop="no"
@@ -101,6 +108,9 @@
         </el-col>
       </el-row>
     </div>
+    <!-- 모달 -->
+    <auto-payment-cancel-modal :visible.sync="showAutoPaymentCancelModal" />
+    <payment-log-detail-modal :visible.sync="showPaymentLogDetailModal" />
   </div>
 </template>
 
@@ -108,14 +118,26 @@
 import columnMixin from '@/mixins/columns'
 import filterMixin from '@/mixins/filters'
 import paymentService from '@/services/payment'
+import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
+import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
 
 export default {
   mixins: [columnMixin, filterMixin],
+  components: {
+    AutoPaymentCancelModal,
+    PaymentLogDetailModal,
+  },
   async asyncData() {
     const { list, total } = await paymentService.searchPaymentLogs()
     return {
       paymentLogs: list,
       paymentLogsTotal: total,
+    }
+  },
+  data() {
+    return {
+      showAutoPaymentCancelModal: false,
+      showPaymentLogDetailModal: false,
     }
   },
 }
@@ -128,30 +150,27 @@ export default {
     height: 36px;
     font-size: 14px;
   }
-  .will {
+  dl.horizon {
     dt {
-      display: inline-block;
+      float: left;
     }
     dd {
-      float: right;
       text-align: right;
     }
     .price {
-      display: block;
-      float: none;
-      margin-top: 8px;
+      padding-top: 28px;
       & > span:first-child {
         color: #0b5bd8;
         font-size: 24px;
         line-height: 28px;
       }
     }
-    .desc {
+    .sub {
       display: block;
       color: $font-color-desc;
       font-size: 12.6px;
     }
-    .el-button {
+    & + .el-button {
       margin: 30px 0 10px;
     }
   }
@@ -170,6 +189,34 @@ export default {
         float: right;
         margin-top: -5px;
       }
+    }
+  }
+  // 모달 테이블
+  .el-dialog .el-table {
+    margin: 24px 0;
+    .el-table__body-wrapper {
+      margin: 8px 0;
+    }
+    thead tr {
+      height: 40px;
+    }
+    .cell:first-child {
+      padding-left: 0;
+    }
+    .cell:last-child {
+      padding-right: 0;
+    }
+    .el-table__row {
+      height: 56px;
+    }
+    th {
+      padding: 8px 0;
+      color: $font-color-desc;
+      font-size: 12px;
+    }
+    td {
+      color: $font-color-content;
+      border-bottom: none;
     }
   }
 }

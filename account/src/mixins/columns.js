@@ -8,6 +8,7 @@ import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
 import ColumnCount from '@/components/common/tableColumn/ColumnCount'
 import ColumnDropdown from '@/components/common/tableColumn/ColumnDropdown'
 import ColumnPrice from '@/components/common/tableColumn/ColumnPrice'
+import ColumnPlan from '@/components/common/tableColumn/ColumnPlan'
 
 export default {
   components: {
@@ -21,5 +22,6 @@ export default {
     ColumnCount,
     ColumnDropdown,
     ColumnPrice,
+    ColumnPlan,
   },
 }

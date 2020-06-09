@@ -1,6 +1,6 @@
 import Model from '@/models/Model'
 
-export default class Coupon extends Model {
+export default class PayemntLog extends Model {
   constructor(json) {
     super()
     this.no = 1

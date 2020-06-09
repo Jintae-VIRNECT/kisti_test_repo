@@ -9,8 +9,7 @@
     <template slot-scope="scope">
       <div class="column-price">
         <span>
-          {{ scope.row[prop].toLocaleString() }}
-          {{ $t('payment.monetaryUnit') }}
+          {{ toPriceString(scope.row[prop]) }}
         </span>
       </div>
     </template>
@@ -18,7 +17,10 @@
 </template>
 
 <script>
+import filters from '@/mixins/filters'
+
 export default {
+  mixins: [filters],
   props: {
     prop: String,
     label: String,

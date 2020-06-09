@@ -12,6 +12,17 @@
 }
 
 .column-plan {
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & > img {
+    box-sizing: border-box;
+    margin-top: 1px;
+    margin-right: 4px;
+    border: solid 1px #dde1ea;
+    border-radius: 100px;
+  }
   & > .el-tag {
     height: auto;
     margin: 0 6px;

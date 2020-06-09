@@ -18,8 +18,8 @@
   }
   &__body {
     padding: 24px 30px;
+    color: $font-color-content;
     p {
-      color: $font-color-content;
       line-height: 1.71;
     }
     .mail-box {
@@ -27,6 +27,10 @@
       color: #333333;
       text-align: center;
       background-color: #f5f7fa;
+    }
+    .el-divider {
+      margin: 20px 0;
+      background: #eaedf3;
     }
   }
   .el-form {

@@ -8,6 +8,9 @@ export const filters = {
   dateFormat(param) {
     return dayjs(param).format('YY.MM.DD')
   },
+  fullYearDateFormat(param) {
+    return dayjs(param).format('YYYY.MM.DD')
+  },
   localTimeFormat(param) {
     return dayjs
       .utc(param)
