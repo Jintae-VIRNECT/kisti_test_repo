@@ -2,14 +2,14 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    :width="568"
-    :height="462"
+    :height="showPoiniting ? modalHeight : modalSmallHeight"
+    :width="modalWidth"
     :beforeClose="beforeClose"
     :class="'local-recsetting-modal'"
   >
     <div class="rec-setting">
-      <div class="rec-setting__header">포인팅 설정</div>
-      <div class="rec-setting__row">
+      <div v-if="showPoiniting" class="rec-setting__header">포인팅 설정</div>
+      <div v-if="showPoiniting" class="rec-setting__row">
         <p class="rec-setting__text">참가자 포인팅</p>
 
         <r-check
@@ -19,7 +19,7 @@
         ></r-check>
       </div>
 
-      <div class="rec-setting__underbar" />
+      <div v-if="showPoiniting" class="rec-setting__underbar" />
 
       <div class="rec-setting__header">로컬 녹화 설정</div>
 
@@ -40,6 +40,32 @@
           class="rec-setting__selector"
           v-on:changeValue="setRecLength"
           :options="localRecTimeOpt"
+          :value="'value'"
+          :text="'text'"
+        >
+        </r-select>
+      </div>
+      <div class="rec-setting__row">
+        <div class="rec-setting__text custom">
+          <p>
+            녹화간격
+          </p>
+          <div
+            class="rec-setting--tooltip-icon"
+            @mouseover="displayTooltip"
+            @mouseleave="hideTooltip"
+          ></div>
+        </div>
+        <div class="rec-setting__tooltip--body" v-show="showTooltip">
+          <p class="rec-setting__tooltip--text">
+            장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에 녹화
+            파일을 시간 간격으로 나눠서 생성합니다.
+          </p>
+        </div>
+        <r-select
+          class="rec-setting__selector"
+          v-on:changeValue="setRecInterval"
+          :options="localRecIntervalOpt"
           :value="'value'"
           :text="'text'"
         >
@@ -84,13 +110,18 @@ export default {
   },
   data() {
     return {
+      showTooltip: false,
       selectRecTarget: 'workerOnly',
       selectParticipantRecTarget: 'workerOnly',
       visibleFlag: false,
 
+      modalWidth: 568,
+      modalHeight: 510,
+
+      modalSmallHeight: 376,
+
       localRecordingTime: '',
       localRecordingResolution: '',
-
       joinerPointingApprove: false,
 
       localRecTimeOpt: [
@@ -141,12 +172,22 @@ export default {
         text: 'text',
         value: 'value',
       },
+      localRecIntervalOpt: [
+        {
+          value: '60',
+          text: '1분',
+        },
+      ],
     }
   },
   props: {
     visible: {
       type: Boolean,
       default: false,
+    },
+    showPoiniting: {
+      type: Boolean,
+      default: true,
     },
   },
   computed: {
@@ -171,17 +212,24 @@ export default {
       this.$emit('update:visible', false)
     },
 
-    setRecLength: function(newRecLength) {
+    setRecLength(newRecLength) {
       console.log(newRecLength)
       //this.$store.dispatch('setLocalRecordLength', newRecLength.value)
     },
 
-    setRecResolution: function(newResolution) {
+    setRecResolution(newResolution) {
       console.log(newResolution)
       //this.$store.dispatch('setRecordResolution', newResolution.value)
     },
+    setRecInterval() {},
     updateCheckBox(value) {
       console.log(value)
+    },
+    displayTooltip() {
+      this.showTooltip = true
+    },
+    hideTooltip() {
+      this.showTooltip = false
     },
   },
 }
@@ -224,6 +272,16 @@ export default {
   width: 12.875rem;
   color: $color_text_main;
   font-size: 0.875rem;
+
+  &.custom {
+    display: flex;
+  }
+
+  > p {
+    margin: 0px 4px 0px 0px;
+    color: $color_text_main;
+    font-size: 0.875rem;
+  }
 }
 
 .rec-setting__selector {
@@ -237,6 +295,25 @@ export default {
   border-bottom-color: #454548;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+}
+.rec-setting--tooltip-icon {
+  width: 18px;
+  height: 18px;
+  background: url('~assets/image/ic_tool_tip.svg') center no-repeat;
+}
+.rec-setting__tooltip--body {
+  position: absolute;
+  left: 110px;
+  z-index: 9999;
+  width: 342px;
+  height: 68px;
+  padding: 16px 24px 16px 28px;
+  background: url('~assets/image/img_tooltip_big.svg') center no-repeat;
+}
+
+.rec-setting__tooltip--text {
+  color: #ffffff;
+  font-size: 12px;
 }
 
 /*custom remote radio */

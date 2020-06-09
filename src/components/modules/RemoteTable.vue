@@ -1,11 +1,20 @@
 <template>
   <div class="table">
-    <div class="table__header">
-      <div class="table__header--toggle" v-if="showToggleHeader">
-        <div>버튼 들어올꺼임</div>
+    <slot></slot>
+
+    <div class="table__column">
+      <div class="table__column--toggle" v-if="showToggleHeader">
+        <toggle-button
+          slot="body"
+          :size="34"
+          :active="toggleAllFlag"
+          :activeSrc="require('assets/image/ic_check.svg')"
+          :inactiveSrc="require('assets/image/ic_uncheck.svg')"
+          @action="toggleAll"
+        ></toggle-button>
       </div>
       <div
-        class="table__header--cell"
+        class="table__column--cell"
         v-for="(headerCell, index) in headers"
         :key="index"
       >
@@ -14,15 +23,19 @@
     </div>
     <div class="table__body">
       <scroller>
-        <div v-for="(data, index) in datas" class="table__row" :key="index">
+        <div
+          v-for="(data, index) in renderArray"
+          class="table__row"
+          :key="index"
+        >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
               slot="body"
               :size="34"
-              :active="activeArray[index]"
+              :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_uncheck.svg')"
-              @action="toggleCheck($event, index)"
+              @action="toggleItem($event, index)"
             ></toggle-button>
           </div>
           <div
@@ -47,144 +60,113 @@ export default {
     Scroller,
     ToggleButton,
   },
+  watch: {
+    selectedArray: {
+      handler(newArray) {
+        this.$eventBus.$emit('table:selectedarray', newArray)
+      },
+      deep: true,
+    },
+    datas: {
+      handler() {
+        this.setRenderArray()
+        this.setSelectedArray()
+      },
+      deep: true,
+    },
+  },
   data() {
     return {
-      activeArray: [],
+      selectedArray: [],
       renderArray: [],
+      toggleAllFlag: false,
     }
   },
   props: {
     showToggleHeader: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     headers: {
       type: Array,
-      default: () => ['파일명', '녹화된 시간', '파일 용량', '녹화 계정'],
+      default: () => [],
     },
-    columnList: {
+    columns: {
       type: Array,
-      default: () => ['fileName', 'recordLength', 'fileSize', 'accountName'],
+      default: () => [],
     },
     datas: {
       type: Array,
-      default: () => [
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '12분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '2',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '3',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '1시간 50분 30초',
-          fileSize: '12332052.5MB',
-          accountName: '가나다라마바사아자카타파하',
-          uuid: '4',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '5',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '6',
-        },
-        {
-          fileName: '집에보내줘.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '7',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '8',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '9',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '10',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '11',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '12',
-        },
-      ],
+      default: () => [],
     },
   },
   methods: {
-    toggleCheck(event, index) {
-      const toggleData = !this.activeArray[index]
-      this.activeArray.splice(index, 1, toggleData)
+    toggleItem(event, index) {
+      const toggleData = !this.selectedArray[index]
+      this.selectedArray.splice(index, 1, toggleData)
+    },
+    toggleAll() {
+      const tArray = []
+
+      this.toggleAllFlag = !this.toggleAllFlag
+
+      this.datas.forEach(() => {
+        tArray.push(this.toggleAllFlag)
+      })
+
+      this.selectedArray = tArray
+    },
+    //for display only columns
+    setRenderArray() {
+      this.renderArray = []
+
+      this.datas.forEach(obj => {
+        const newObj = {}
+
+        if (obj !== null) {
+          this.columns.forEach(key => {
+            newObj[key] = obj[key]
+          })
+
+          this.renderArray.push(newObj)
+        }
+      })
+    },
+    setSelectedArray() {
+      this.selectedArray = []
+      if (this.showToggleHeader) {
+        this.datas.forEach(() => {
+          this.selectedArray.push(false)
+        })
+      }
     },
   },
+
   created() {
-    this.datas.forEach(() => {
-      this.activeArray.push(true)
-    })
+    this.setSelectedArray()
+    this.setRenderArray()
   },
-  mounted() {
-    console.log('table mounted')
-    console.log(this)
-  },
+  mounted() {},
 }
 </script>
 
 <style lang="scss">
 .table {
-  height: 500px;
+  height: 100%;
 }
-.table__header {
+.table__column {
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
+  height: 56px;
+  border-top: solid;
+  border-top-color: rgb(49, 49, 53);
+  border-top-width: 1px;
 }
-.table__header--toggle {
+.table__column--toggle {
+  margin: 19px 19px 19px 22px;
 }
-.table__header--cell {
+.table__column--cell {
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
@@ -196,7 +178,7 @@ export default {
 }
 
 .table__body {
-  height: 250px;
+  height: 500px;
 }
 
 .table__row {
@@ -211,7 +193,6 @@ export default {
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
-
   overflow: hidden;
   color: #d3d3d3;
   font-size: 15px;
@@ -219,5 +200,8 @@ export default {
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
+}
+.table__cell--toggle {
+  margin: 19px 19px 19px 22px;
 }
 </style>
