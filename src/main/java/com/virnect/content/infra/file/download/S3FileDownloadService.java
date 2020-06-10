@@ -60,6 +60,8 @@ public class S3FileDownloadService implements FileDownloadService {
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             httpHeaders.setContentLength(bytes.length);
             httpHeaders.setContentDispositionFormData("attachment", resources[1]);
+            objectInputStream.close();
+
             return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
         } catch (IOException e) {
             log.error(e.getMessage());
