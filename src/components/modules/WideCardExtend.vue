@@ -83,6 +83,7 @@ export default {
     }
   }
   .card-item:first-of-type {
+    display: inherit;
     flex-grow: 0.8;
     min-width: 20rem;
     padding-right: 10px;

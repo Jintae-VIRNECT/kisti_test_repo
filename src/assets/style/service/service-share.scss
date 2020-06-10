@@ -21,7 +21,7 @@
   width: 100%;
   margin: auto;
   color: rgba(#fff, 0.5);
-  font-size: 12px;
+  font-size: 0.857rem;
   line-height: 38px;
   text-align: center;
   background-color: #181818;
@@ -61,7 +61,7 @@
   height: 41px;
   margin: 14px;
   font-weight: normal;
-  font-size: 12px;
+  font-size: 0.857rem;
   background-color: #213d62;
 
   > span {
@@ -165,14 +165,14 @@
   height: 30px;
   color: #fff;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.071rem;
   background-color: rgba(#0f75f5, 0.8);
 }
 .sharing-image__name {
   width: 100%;
   margin-top: 5px;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 1.071rem;
   line-height: 20px;
   white-space: nowrap;
   text-align: center;
@@ -185,7 +185,7 @@
   right: 3px;
   width: 22px;
   height: 22px;
-  background: url(~assets/image/ic-close-w.svg) center/15px no-repeat
+  background: url(~assets/image/ic-close-w.svg) center/1.071rem no-repeat
     rgba(#2a2a2a, 0.7);
   border-radius: 50%;
   @include ir();
@@ -205,7 +205,7 @@
 }
 .loading-box__title {
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.071rem;
   text-align: center;
 }
 .loading-box__progress {
@@ -224,7 +224,7 @@
   border-radius: 2px;
 }
 .loading-box__dash {
-  font-size: 12px;
+  font-size: 0.857rem;
   text-align: center;
 }
 
@@ -237,7 +237,7 @@
   > p {
     padding: 5px 0 5px 32px;
     font-weight: 500;
-    font-size: 13px;
+    font-size: 0.929rem;
     text-align: left;
   }
 }

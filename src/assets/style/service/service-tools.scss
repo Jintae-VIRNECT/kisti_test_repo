@@ -6,6 +6,9 @@
   background-color: #313135;
   border: solid 1px rgba(#4c5259, 0.42);
   border-radius: 2px;
+  > div {
+    position: relative;
+  }
 }
 .menus {
   position: absolute;

@@ -145,6 +145,9 @@ export default {
     mute() {
       const mute = this.participant.mute
       this.$call.mute(this.participant.connectionId, !mute)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('popover:close')
+      })
     },
     disconnectUser() {
       this.$call.disconnect(this.participant.connectionId)
