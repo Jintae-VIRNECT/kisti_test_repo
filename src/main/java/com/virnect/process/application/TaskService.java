@@ -18,6 +18,7 @@ import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
+import com.virnect.process.global.common.PageRequest;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.global.util.QRcodeGenerator;
@@ -1252,7 +1253,6 @@ public class TaskService {
     public ApiResponse<ProcessListResponse> getProcessList(String workspaceUUID, String search, String userUUID, List<Conditions> filter, Pageable pageable) {
         // 전체 공정의 목록을 조회
         // 사용자 검색
-
         List<String> userUUIDList = new ArrayList<>();
 
         if (Objects.nonNull(search)) {
@@ -1264,15 +1264,38 @@ public class TaskService {
 
         Page<Process> processPage = null;
 
-        if (Objects.nonNull(userUUID)) {
-            processPage = this.processRepository.getMyWork(search, userUUID, pageable);
-        }
-        else {
-            processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
-        }
+        // 정렬에 Conditions가 들어왔을 경우 - Table의 Column이 아니기 때문에 List를 조작하여 처리.
+        if ("Conditions".equals(pageable.getSort().toList().get(0).getProperty())) {
+            List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
 
-        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
-            processPage = filterConditionsProcessPage(processPage, filter, pageable);
+            List<Process> edit = new ArrayList<Process>(processList);
+
+            edit.sort(new Comparator<Process>() {
+                @Override
+                public int compare(Process arg0, Process arg1) {
+                    String condition1 = arg0.getConditions().getMessage();
+                    String condition2 = arg1.getConditions().getMessage();
+
+                    log.debug("cond1 : {}", condition1);
+                    log.debug("cond2 : {}", condition2);
+
+                    return condition1.compareTo(condition2);
+                }
+            });
+
+            processPage = new PageImpl<>(edit, pageable, edit.size());
+        }
+        // 그 외 컬럼은 쿼리로 처리 가능 (단, issuesTotal은 처리 불가)
+        else {
+            if (Objects.nonNull(userUUID)) {
+                processPage = this.processRepository.getMyWork(search, userUUID, pageable);
+            } else {
+                processPage = this.processRepository.getProcessPageSearchUser(workspaceUUID, search, userUUIDList, pageable);
+            }
+
+            if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
+                processPage = filterConditionsProcessPage(processPage, filter, pageable);
+            }
         }
 //
 //        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
