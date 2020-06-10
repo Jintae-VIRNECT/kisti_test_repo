@@ -5,19 +5,18 @@
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
     >
-      <template v-if="mainView && mainView.stream">
-        <video
-          ref="mainVideo"
-          id="main-video"
-          :srcObject.prop="mainView.stream"
-          @resize="optimizeVideoSize"
-          @loadeddata="optimizeVideoSize"
-          :muted="!speaker"
-          autoplay
-          playsinline
-          loop
-        ></video>
-        <div class="main-video__recording">
+      <video
+        ref="mainVideo"
+        id="main-video"
+        :srcObject.prop="mainView.stream"
+        @play="mediaPlay"
+        :muted="!speaker"
+        autoplay
+        playsinline
+        loop
+      ></video>
+      <template v-if="loaded">
+        <div class="main-video__recording" v-if="false">
           <p class="server">{{ 0 | timeFilter }}</p>
           <p class="local">{{ 0 | timeFilter }}</p>
         </div>
@@ -31,11 +30,11 @@
       </template>
       <template v-else>
         <div class="main-video__empty">
-          <div class="main-video__empty-inner" v-if="true">
+          <div class="main-video__empty-inner" v-if="resolutions.length > 0">
             <img src="~assets/image/img_video_connecting.svg" />
             <p>영상 연결 중…</p>
           </div>
-          <div class="main-video__empty-inner" v-else-if="true">
+          <div class="main-video__empty-inner" v-else-if="false">
             <img src="~assets/image/img_video_stop.svg" />
             <p>영상을 정지하였습니다.</p>
             <p class="inner-discription" v-if="true">
@@ -103,27 +102,43 @@ export default {
         this.optimizeVideoSize()
       },
     },
+    mainView: {
+      deep: true,
+      handler(view) {
+        if (!view.id) {
+          this.loaded = false
+          const videoBox = this.$el.querySelector('.main-video__box')
+          videoBox.style.height = '100%'
+          videoBox.style.width = '100%'
+        }
+      },
+    },
   },
   methods: {
     ...mapActions(['updateAccount']),
-    optimizeVideoSize() {
-      const mainWrapper = this.$el
-      const videoBox = this.$el.querySelector('.main-video__box')
-      const videoEl = this.$el.querySelector('#main-video')
-      if (!this.loaded && this.mainView.me && this.mainView.stream) {
+    mediaPlay() {
+      if (this.mainView.me && this.mainView.stream) {
+        const videoEl = this.$el.querySelector('#main-video')
         this.$call.sendResolution({
           width: videoEl.offsetWidth,
           height: videoEl.offsetHeight,
         })
-        this.loaded = true
       }
+      this.loaded = true
+      this.optimizeVideoSize()
+    },
+    optimizeVideoSize() {
+      console.log('OPTIMIZE VIDEO!!!!')
+      const mainWrapper = this.$el
+      const videoBox = this.$el.querySelector('.main-video__box')
       if (this.resolution.width === 0 || this.resolution.height === 0) return
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
+      console.log(maxWidth)
       let scale = this.resolution.width / this.resolution.height
       if (
-        this.resolution.width / this.resolution.height <
+        this.resolution.width / this.resolution.height >
         maxWidth / maxHeight
       ) {
         // height에 맞춤

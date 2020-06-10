@@ -1,8 +1,15 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
+import { EXPERT_LEADER, EXPERT, WORKER } from 'utils/role'
 
 export default {
-  components: {},
+  data() {
+    return {
+      EXPERT_LEADER: EXPERT_LEADER,
+      EXPERT: EXPERT,
+      WORKER: WORKER,
+    }
+  },
   filters: {
     timeFilter(time) {
       if (time === 0) {
@@ -26,22 +33,13 @@ export default {
         return '약함'
       }
     },
-    call_status: function(value) {
+    callStatus: function(value) {
       if (value == 1) {
         return 'online'
       } else if (value == 2) {
         return 'busy'
       } else {
         return 'offline'
-      }
-    },
-    level: function(value) {
-      if (value == 1) {
-        return 'master'
-      } else if (value == 2) {
-        return 'manager'
-      } else if (value == 3) {
-        return 'member'
       }
     },
     levelChange: function(value) {

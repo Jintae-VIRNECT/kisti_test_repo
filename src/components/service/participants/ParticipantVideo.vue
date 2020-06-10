@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.stream">
+      <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -14,9 +14,15 @@
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
+        <audio
+          :srcObject.prop="participant.stream"
+          autoplay
+          playsinline
+          loop
+        ></audio>
         <img
           class="participant-video__profile-background"
-          :src="participant.path"
+          :src="participant.path ? participant.path : 'default'"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -78,7 +84,7 @@
                 음소거
               </button>
             </li>
-            <li>
+            <li v-if="myRole === EXPERT_LEADER">
               <button class="video-pop__button" @click="disconnectUser">
                 내보내기
               </button>
@@ -111,7 +117,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker']),
+    ...mapGetters(['myRole', 'mainView', 'speaker']),
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -136,7 +142,7 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.stream) return
+      if (!this.participant.video) return
       this.setMainView(this.participant.id)
     },
     profileImageError(event) {
@@ -155,6 +161,8 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    console.log(this.myRole)
+  },
 }
 </script>

@@ -79,11 +79,15 @@ export const addSessionEventListener = session => {
 }
 
 export const getUserObject = stream => {
+  console.log(stream)
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
 
-  let uuid = JSON.parse(connection.data.split('%/%')[0]).clientData
+  const metaData = JSON.parse(connection.data.split('%/%')[0])
+
+  let uuid = metaData.clientData
+  let role = metaData.roleType
 
   const participant = participants.find(user => {
     return user.uuid === uuid
@@ -105,9 +109,11 @@ export const getUserObject = stream => {
     speaker: true,
     mute: false,
     status: 'good',
+    role: role,
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true
+    Store.commit('myRole', role)
   }
 
   return streamObj

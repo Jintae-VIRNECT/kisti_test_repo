@@ -10,7 +10,7 @@ const _ = {
   publisher: null,
   subscribers: [],
   resolution: null,
-  join: async (roomInfo, account, users) => {
+  join: async (roomInfo, account, role) => {
     Store.commit('clear')
     try {
       const params = {
@@ -27,6 +27,7 @@ const _ = {
       addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: account.uuid,
+        roleType: role,
       }
 
       const iceServer = [
@@ -52,13 +53,13 @@ const _ = {
         audioSource: undefined, // The source of audio. If undefined default microphone
         videoSource: undefined, //screen ? 'screen' : undefined, // The source of video. If undefined default webcam
         publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+        publishVideo: role !== 'LEADER', // Whether you want to start publishing with your video enabled or not
         resolution: '1280x720', // The resolution of your video
         frameRate: 30, // The frame rate of your video
         insertMode: 'PREPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       })
-      _.publisher.on('streamCreated', event => {
+      _.publisher.on('streamCreated', () => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
         _.mic(Store.getters['mic'])
       })
@@ -104,6 +105,16 @@ const _ = {
       data: JSON.stringify(resolution),
       to: _.session.connection,
       type: 'signal:resolution',
+    })
+  },
+  sendMessage: (type, params) => {
+    const account = Store.getters['account']
+    params['from'] = account.uuid
+    params['to'] = []
+    _.session.signal({
+      type: `signal:${type}`,
+      to: _.session.connection,
+      data: JSON.stringify(params),
     })
   },
   pointing: message => {

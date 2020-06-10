@@ -1,12 +1,13 @@
 <template>
   <div class="stream-tools tools">
     <pointing></pointing>
-    <color></color>
+    <color v-if="myRole === EXPERT_LEADER"></color>
   </div>
 </template>
 
 <script>
 import { Pointing, Color } from './partials'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'StreamTools',
@@ -20,7 +21,9 @@ export default {
       isRecording: false,
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['myRole']),
+  },
   watch: {},
   methods: {},
 

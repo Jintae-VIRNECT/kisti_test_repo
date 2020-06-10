@@ -1,5 +1,6 @@
 const getDefaultState = () => {
   return {
+    role: '', // 'LEADER' / 'EXPERT'
     mainView: {
       // nickname: nickname,
       // userName: name
@@ -16,6 +17,7 @@ const getDefaultState = () => {
       // video: stream.videoActive,
       // status: 'good',
       // resolution: { width, height }
+      // role: 'LEADER' / 'EXPERT'
     ],
     chatList: [
       // {
@@ -45,6 +47,7 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const mutations = {
+  // stream
   setMainView(state, participantId) {
     const idx = state.participants.findIndex(obj => obj.id === participantId)
     if (idx < 0) return
@@ -54,7 +57,9 @@ const mutations = {
     if (payload.me) {
       console.log(state.mainView, payload)
       state.participants.splice(0, 0, payload)
-      state.mainView = payload
+      if (payload.video) {
+        state.mainView = payload
+      }
       return
     }
     state.participants.push(payload)
@@ -117,7 +122,8 @@ const mutations = {
       })
       // 메인뷰를 보고있으면 메인뷰 변경
       if (participant[0].connectionId === state.mainView.connectionId) {
-        if (state.participants.length > 0) {
+        const pIdx = state.participants.find(user => user.video === true)
+        if (pIdx > -1) {
           state.mainView = state.participants[0]
         } else {
           state.mainView = {}
@@ -125,30 +131,14 @@ const mutations = {
         console.log(state.mainView)
       }
     }
+    console.log(state.resolutions)
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(
       obj => obj.connectionId === connectionId,
     )
     if (rIdx < 0) return
-    state.resolutions.splice(idx, 1)
-  },
-  clear() {
-    Object.assign(state, getDefaultState())
-
-    return true
-  },
-
-  // chat
-  addChat(state, payload) {
-    state.chatList.push(payload)
-  },
-  removeChat(state, payload) {
-    const idx = state.chatList.findIndex(obj => obj.uuid === payload)
-    if (idx < 0) return
-    state.chatList.splice(idx, 1)
-  },
-  clearChat(state) {
-    state.chatList = []
+    state.resolutions.splice(rIdx, 1)
+    console.log(state.resolutions)
   },
   deviceUpdate(state, object) {
     for (let key in object) {
@@ -165,9 +155,32 @@ const mutations = {
     }
     Object.assign(state.resolutions[idx], payload)
   },
+  myRole(state, payload) {
+    state.role = payload
+  },
+
+  // chat
+  addChat(state, payload) {
+    state.chatList.push(payload)
+  },
+  removeChat(state, payload) {
+    const idx = state.chatList.findIndex(obj => obj.uuid === payload)
+    if (idx < 0) return
+    state.chatList.splice(idx, 1)
+  },
+  clearChat(state) {
+    state.chatList = []
+  },
+
+  clear() {
+    Object.assign(state, getDefaultState())
+
+    return true
+  },
 }
 
 const getters = {
+  myRole: state => state.role,
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,
