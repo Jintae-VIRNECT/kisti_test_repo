@@ -1,5 +1,7 @@
 import {
+  SHOW_IMAGE,
   ADD_HISTORY,
+  UPDATE_HISTORY,
   REMOVE_HISTORY,
   ADD_FILE,
   REMOVE_FILE,
@@ -12,11 +14,28 @@ const state = {
   fileList: [],
   pdfPages: {},
   selected: null,
+  shareFile: {},
 }
 
 const mutations = {
-  [ADD_HISTORY](state, file) {
-    state.historyList.push(file)
+  [SHOW_IMAGE](state, imgInfo) {
+    state.shareFile = Object.assign({}, imgInfo)
+  },
+  [ADD_HISTORY](state, imgInfo) {
+    // const idx = state.historyList.findIndex(history => history.id === file.id)
+    // if (idx < 0) {
+    // }
+    state.historyList.push(imgInfo)
+    state.shareFile = Object.assign({}, imgInfo)
+    console.log(imgInfo)
+  },
+  [UPDATE_HISTORY](state, info) {
+    const idx = state.historyList.findIndex(history => history.id === info.id)
+    if (idx < 0) return
+    for (let key in info) {
+      if (key === 'id') continue
+      state.historyList[idx][key] = info[key]
+    }
   },
   [REMOVE_HISTORY](state, fileId) {
     const idx = state.historyList.findIndex(file => file.id === fileId)

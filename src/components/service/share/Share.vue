@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import FileList from './partials/ShareFileList'
 import HistoryList from './partials/ShareHistoryList'
 import PdfView from './partials/SharePdfView'
@@ -46,6 +47,19 @@ export default {
       list: 'file',
       fileId: 0,
     }
+  },
+  computed: {
+    ...mapGetters(['shareFile']),
+  },
+  watch: {
+    shareFile: {
+      deep: true,
+      handler(e) {
+        if (e && e.id) {
+          this.changeTab('history')
+        }
+      },
+    },
   },
   methods: {
     changePdfView(id) {

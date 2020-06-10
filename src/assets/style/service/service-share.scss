@@ -37,17 +37,25 @@
 
 .share-body {
   position: relative;
+  display: flex;
+  flex-direction: column;
   height: calc(100% - 38px);
   &.pdf {
     display: flex;
     flex-direction: column;
   }
+  > .vue-scrollbar__wrapper {
+    left: -10px;
+    flex: 1;
+    width: 100%;
+    margin-bottom: 0;
+  }
 }
 
 .share-save.btn.small {
-  position: absolute;
   bottom: 0;
   left: 0;
+  flex: 0;
   flex-shrink: 0;
   width: calc(100% - 28px);
   height: 41px;
@@ -115,7 +123,7 @@
   position: relative;
   width: 100%;
   height: 110px;
-  overflow: hidden;
+  // overflow: hidden;
   &.pdf:after {
     position: absolute;
     right: 6px;
@@ -129,13 +137,43 @@
     max-width: 100%;
     max-height: 100%;
   }
+  &.active {
+    pointer-events: none;
+    &:before {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      border: solid 1px #0f75f5;
+      content: "";
+    }
+    > .sharing-image__item-active {
+      display: block;
+    }
+    & + .sharing-image__remove {
+      display: none;
+    }
+  }
+}
+.sharing-image__item-active {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 30px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 15px;
+  background-color: rgba(#0f75f5, 0.8);
 }
 .sharing-image__name {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 5px;
   overflow: hidden;
   font-size: 15px;
-  line-height: 15px;
+  line-height: 20px;
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;

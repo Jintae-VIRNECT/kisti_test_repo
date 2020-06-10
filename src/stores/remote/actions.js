@@ -149,11 +149,25 @@ export default {
   },
 
   /**
+   * show image
+   * @param {Object} fileInfo
+   */
+  showImage({ commit }, fileInfo) {
+    commit(types.SHOW_IMAGE, fileInfo)
+  },
+  /**
    * add file history
    * @param {Object} fileInfo
    */
   addHistory({ commit }, fileInfo) {
     commit(types.ADD_HISTORY, fileInfo)
+  },
+  /**
+   * add file history
+   * @param {Object} fileInfo
+   */
+  updateHistory({ commit }, fileInfo) {
+    commit(types.UPDATE_HISTORY, fileInfo)
   },
   /**
    * remove file history
