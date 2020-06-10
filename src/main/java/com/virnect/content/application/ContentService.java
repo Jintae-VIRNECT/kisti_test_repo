@@ -482,7 +482,6 @@ public class ContentService {
             if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
-                deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
             // 파일을 실제 삭제하지 않을 경우. 복구 프로세스가 필요할 수도 있어 일부 구현해 놓음.
@@ -567,7 +566,7 @@ public class ContentService {
                     .contentSize(content.getSize())
                     .path(content.getPath())
                     .converted(content.getConverted())
-                    .createdDate(content.getUpdatedDate())
+                    .createdDate(content.getCreatedDate())
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
@@ -754,7 +753,7 @@ public class ContentService {
                 .path(content.getPath())
                 .converted(content.getConverted())
                 .targets(targetResponseList)
-                .createdDate(content.getUpdatedDate())
+                .createdDate(content.getCreatedDate())
                 .build();
         return new ApiResponse<>(contentInfoResponse);
     }
@@ -878,7 +877,7 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .createdDate(content.getUpdatedDate())
+                .createdDate(content.getCreatedDate())
                 .propertiesMetadata(content.getProperties())
                 .build());
     }
@@ -914,7 +913,7 @@ public class ContentService {
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(returnContent.getPath())
                 .converted(returnContent.getConverted())
-                .createdDate(returnContent.getUpdatedDate())
+                .createdDate(returnContent.getCreatedDate())
                 .propertiesMetadata(returnContent.getProperties())
                 .build());
     }
