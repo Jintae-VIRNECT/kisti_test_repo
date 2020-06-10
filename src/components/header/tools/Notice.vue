@@ -9,7 +9,7 @@
       customClass="header-tools__notice"
       slot="reference"
       description="알림"
-      :size="34"
+      size="2.429rem"
       :toggle="false"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"

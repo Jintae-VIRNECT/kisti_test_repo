@@ -3,7 +3,7 @@
     <toggle-button
       slot="body"
       description="마이크 on/off"
-      :size="34"
+      size="2.429rem"
       :active="mic"
       :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
       :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
