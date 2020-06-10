@@ -17,7 +17,9 @@ const axios = Axios.create({
   headers: {
     'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${TOKEN}`,
+    common: {
+      Authorization: `Bearer ${TOKEN}`,
+    },
   },
   // baseURL: urls.api[process.env.TARGET_ENV],
   baseURL: 'https://192.168.6.4:4443',
@@ -211,9 +213,7 @@ const errorHandler = function(err) {
 }
 
 export const setAuthorization = accessToken => {
-  axios.defaults.headers.common = {
-    Authorization: `Bearer ${accessToken}`,
-  }
+  axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
   console.log(axios.defaults.headers)
 }
 

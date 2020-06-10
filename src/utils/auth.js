@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
 import jwtDecode from 'jwt-decode'
-import { setAuthorization } from 'api/gateway'
+import { setAuthorization } from 'api/gateway/gateway'
 
 /**
  * 상태
