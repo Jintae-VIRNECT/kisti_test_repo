@@ -61,7 +61,7 @@
       @row-click="moveToTask"
     >
       <column-default :label="$t('task.list.column.name')" prop="name" />
-      <column-count
+      <column-done
         :label="$t('task.list.column.endedSubTasks')"
         prop="doneCount"
         maxProp="subTaskTotal"

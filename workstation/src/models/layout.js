@@ -9,11 +9,13 @@ export const sideMenus = [
   },
   {
     path: '/members',
+    collapse: 'collapseMember',
     image: require('assets/images/icon/ic-supervisor-account.svg'),
     label: 'menu.members',
   },
   {
     path: '/contents',
+    collapse: 'collapseContents',
     image: require('assets/images/icon/ic-description.svg'),
     label: 'menu.contents',
   },

@@ -11,6 +11,13 @@
       "manager": "워크스페이스 매니저",
       "member": "워크스페이스 멤버"
     },
+    "members": {
+      "list": "전체 워크스페이스 멤버",
+      "activity": "워크스페이스 멤버 활동"
+    },
+    "contents": {
+      "list": "전체 콘텐츠 목록"
+    },
     "tasks": {
       "list": "작업 목록",
       "results": "작업 보고 관리",

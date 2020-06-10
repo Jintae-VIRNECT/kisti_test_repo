@@ -13,7 +13,7 @@
       <dd>{{ data.subTaskName }}</dd>
       <el-divider />
       <dt>{{ $t('task.detail.subTaskColumn.endedSteps') }}</dt>
-      <dd class="column-count">
+      <dd class="column-done">
         <div>
           <span>{{ data.doneCount }}</span>
           <span>/{{ data.stepTotal }}</span>

@@ -30,6 +30,8 @@
 <script>
 import collapseWorkspace from '@/components/layout/collapses/TheSidebarCollapseWorkspace'
 import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
+import collapseMember from '@/components/layout/collapses/TheSidebarCollapseMember'
+import collapseContents from '@/components/layout/collapses/TheSidebarCollapseContents'
 import TheSidebarMenuList from './TheSidebarMenuList.vue'
 import { mapGetters } from 'vuex'
 
@@ -38,6 +40,8 @@ export default {
     TheSidebarMenuList,
     collapseWorkspace,
     collapseTask,
+    collapseMember,
+    collapseContents,
   },
   props: {
     menus: Array,
@@ -139,6 +143,48 @@ $the-sidebar-border: solid 1px #0d1d39;
   }
   &__body {
     margin: 12px;
+  }
+}
+.the-sidebar__collapse--default .the-sidebar__collapse__header {
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & > img {
+    width: 18px;
+    margin-right: 4px;
+  }
+}
+.the-sidebar__collapse--default .the-sidebar__collapse__body {
+  & > a {
+    display: block;
+    width: 100%;
+    height: 38px;
+    margin: 4px 0;
+    padding: 0 12px;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.75);
+    text-align: left;
+    border-radius: 4px;
+
+    & > span {
+      display: inline-block;
+      width: 144px;
+      overflow: hidden;
+      line-height: 38px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+    &:hover {
+      color: #fff;
+      background: rgba(44, 62, 93, 0.6);
+    }
+    &:active,
+    &.nuxt-link-exact-active {
+      color: #fff;
+      background: #324461;
+    }
   }
 }
 

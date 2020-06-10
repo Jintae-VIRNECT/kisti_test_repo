@@ -64,7 +64,7 @@ export default {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
         size: 10,
-        sort: 'reported_date,desc',
+        sort: 'updatedDate,desc',
         ...params,
       },
     })
