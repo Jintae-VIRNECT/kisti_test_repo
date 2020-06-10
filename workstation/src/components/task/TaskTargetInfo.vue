@@ -71,7 +71,7 @@ export default {
       const popup = window.open('', '_blank')
       popup.document.write(`<img src="${url}" />`)
       popup.document.close()
-      popup.print()
+      setTimeout(() => popup.print(), 1)
     },
   },
 }

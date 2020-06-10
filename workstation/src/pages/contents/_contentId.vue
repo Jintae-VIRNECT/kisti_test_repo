@@ -60,10 +60,12 @@
           <dd v-for="target in content.targets" :key="target.id">
             <span>{{ target.type }}</span>
             <img
+              v-if="target.imgPath"
               src="~assets/images/icon/ic-print.svg"
               @click="print(target.imgPath)"
             />
             <img
+              v-if="target.imgPath"
               src="~assets/images/icon/ic-file-download.svg"
               @click="download(target.imgPath)"
             />
@@ -144,7 +146,7 @@ export default {
       const popup = window.open('', '_blank')
       popup.document.write(`<img src="${url}" />`)
       popup.document.close()
-      popup.print()
+      setTimeout(() => popup.print(), 1)
     },
     async remove() {
       try {
