@@ -59,17 +59,6 @@
               {{ $t('profile.info.nicknameChange') }}
             </el-button>
           </div>
-          <div class="profile__info">
-            <h4>{{ $t('profile.additional.birth') }}</h4>
-            <div class="content">
-              <span class="value">
-                {{ myBirth }}
-              </span>
-            </div>
-            <el-button type="text" @click="visible.birthChangeModal = true">
-              {{ $t('profile.additional.birthChange') }}
-            </el-button>
-          </div>
         </div>
       </el-card>
       <!-- 계정 정보 -->
@@ -103,6 +92,17 @@
             </div>
             <el-button type="text" @click="visible.passwordChangeModal = true">
               {{ $t('profile.account.passwordChange') }}
+            </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <div class="content">
+              <span class="value">
+                {{ myBirth }}
+              </span>
+            </div>
+            <el-button type="text" @click="visible.birthChangeModal = true">
+              {{ $t('profile.additional.birthChange') }}
             </el-button>
           </div>
           <div class="profile__info">
