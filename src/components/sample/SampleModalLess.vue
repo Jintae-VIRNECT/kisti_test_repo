@@ -65,7 +65,7 @@ import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecor
 import IconButton from 'components/workspace/modules/IconButton'
 import RemoteTable from 'RemoteTable'
 export default {
-  data: function() {
+  data() {
     return {
       modalTest: false,
       modalTest2: false,

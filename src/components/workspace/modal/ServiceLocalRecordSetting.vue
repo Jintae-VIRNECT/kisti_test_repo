@@ -14,8 +14,8 @@
 
         <r-check
           :text="'참가자 포인팅 허용'"
-          :value="'AllowJoinerPointing'"
-          @toggle="updateCheckBox"
+          :value="'allowPointing'"
+          @toggle="toggleAllowPointing"
         ></r-check>
       </div>
 
@@ -86,8 +86,8 @@
         <div class="rec-setting__text">참가자 로컬 녹화</div>
         <r-check
           :text="'참가자 로컬 녹화 허용'"
-          :value="'AllowJoinerLocalRecording'"
-          @toggle="updateCheckBox"
+          :value="'allowLocalRecording'"
+          @toggle="toggleLocalRecording"
         ></r-check>
       </div>
     </div>
@@ -100,6 +100,8 @@ import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'ServiceLocalRecordSetting',
   components: {
@@ -111,8 +113,8 @@ export default {
   data() {
     return {
       showTooltip: false,
-      selectRecTarget: 'workerOnly',
-      selectParticipantRecTarget: 'workerOnly',
+
+      selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
       modalWidth: 568,
@@ -162,11 +164,11 @@ export default {
         options: [
           {
             text: '영상 녹화',
-            value: 'workerOnly',
+            value: 'recordWorker',
           },
           {
             text: '화면 녹화',
-            value: 'recordAll',
+            value: 'recordScreen',
           },
         ],
         text: 'text',
@@ -190,47 +192,159 @@ export default {
       default: true,
     },
   },
+
   computed: {
-    // ...mapState({
-    //   localRecordLength: state => state.settings.localRecordLength,
-    //   recordResolution: state => state.settings.recordResolution,
-    // }),
+    ...mapGetters([
+      'localRecordLength',
+      'localRecordInterval',
+      'micDevice',
+      'speakerDevice',
+      'recordResolution',
+      'allowPointing',
+      'allowLocalRecording',
+      'screenStream',
+    ]),
   },
+
   watch: {
     visible(flag) {
       this.visibleFlag = flag
     },
-    selectRecTarget(value) {
-      console.log(value)
-    },
-    selectParticipantRecTarget(value) {
-      console.log(value)
+
+    selectParticipantRecTarget(recordTarget) {
+      console.log(recordTarget)
+      //참여자의 스트림은 ㄴparticipants에서 가지고 오면 됨.
+      switch (recordTarget) {
+        case 'recordWorker':
+          //set worker stream(main view + participants)
+          this.setLocalRecordTarget(recordTarget)
+
+          //don't need screen stream when record worker.
+          this.setScreenStream(null)
+          break
+        case 'recordScreen':
+          //set screen stream for local record
+          this.setLocalRecordTarget(recordTarget)
+          this.setScreenCapture()
+          break
+        default:
+          console.log('unknown value')
+          break
+      }
     },
   },
   methods: {
+    ...mapActions([
+      'setLocalRecordLength',
+      'setLocalRecordInterval',
+      'setMicDevice',
+      'setSpeakerDevice',
+      'setRecordResolution',
+      'setAllowPointing',
+      'setAllowLocalRecording',
+      'setScreenStream',
+      'setLocalRecordTarget',
+    ]),
+
+    setRecLength(newRecLength) {
+      this.setLocalRecordLength(newRecLength.value)
+    },
+    setRecInterval(newInterval) {
+      this.setLocalRecordInterval(newInterval.value)
+    },
+    setMic(newMic) {
+      this.setMicDevice(newMic.deviceId)
+    },
+    setSpeaker(newSpeaker) {
+      this.setSpeakerDevice(newSpeaker.deviceId)
+    },
+
+    setRecResolution(newResolution) {
+      if (newResolution.value) {
+        this.setRecordResolution(newResolution.value)
+      } else {
+        this.setRecordResolution(newResolution)
+      }
+    },
+
     beforeClose() {
       this.$emit('update:visible', false)
     },
 
-    setRecLength(newRecLength) {
-      console.log(newRecLength)
-      //this.$store.dispatch('setLocalRecordLength', newRecLength.value)
+    toggleAllowPointing(value) {
+      if (value) {
+        this.setAllowPointing(true)
+      } else {
+        this.setAllowPointing(false)
+      }
     },
 
-    setRecResolution(newResolution) {
-      console.log(newResolution)
-      //this.$store.dispatch('setRecordResolution', newResolution.value)
+    toggleLocalRecording(value) {
+      if (value) {
+        this.setAllowLocalRecording(true)
+      } else {
+        this.setAllowLocalRecording(false)
+      }
     },
-    setRecInterval() {},
-    updateCheckBox(value) {
-      console.log(value)
-    },
+
     displayTooltip() {
       this.showTooltip = true
     },
     hideTooltip() {
       this.showTooltip = false
     },
+
+    init() {
+      const time = localStorage.getItem('recordingTime')
+      if (time) {
+        this.setLocalRecordLength(time)
+      }
+
+      const interval = localStorage.getItem('recordingInterval')
+      if (interval) {
+        this.setLocalRecordInterval(interval)
+      }
+
+      const micDefault = localStorage.getItem('micDevice')
+      if (micDefault) {
+        this.setMic(micDefault)
+      }
+
+      const speakerDefault = localStorage.getItem('speakerDevice')
+      if (speakerDefault) {
+        this.setSpeaker(speakerDefault)
+      }
+
+      const resolution = localStorage.getItem('recordingResolution')
+      if (resolution) {
+        this.setRecResolution(resolution)
+      }
+
+      const allowPointing = localStorage.getItem('setAllowPointing')
+      if (allowPointing) {
+        this.setAllowPointing(allowPointing)
+      }
+
+      const allowLocalRecording = localStorage.getItem('allowLocalRecording')
+      if (allowLocalRecording) {
+        this.setAllowLocalRecording(allowLocalRecording)
+      }
+    },
+
+    async setScreenCapture() {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: {
+          width: this.width,
+          height: this.height,
+        },
+      })
+      this.setScreenStream(displayStream)
+    },
+  },
+
+  created() {
+    this.init()
   },
 }
 </script>
@@ -238,13 +352,13 @@ export default {
 <style lang="scss">
 @import '~assets/style/vars';
 /** custom mdoal */
-.local-recsetting-modal .modal--inner {
+.modal.local-recsetting-modal .modal--inner {
   background-color: $color_darkgray_500;
   // box-shadow: 0 0 0.714em 0 rgba(255, 255, 255, 0.07),
   //   0 0.857em 0.857em 0 rgba(255, 255, 255, 0.3);
   box-shadow: none;
 }
-.local-recsetting-modal .modal--header {
+.modal.local-recsetting-modal .modal--header {
   height: 2.813rem;
   padding: 0.75rem 0.688rem 0 0;
   background-color: $color_darkgray_500;

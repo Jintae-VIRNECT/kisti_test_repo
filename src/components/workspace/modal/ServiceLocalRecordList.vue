@@ -55,90 +55,93 @@
 import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
+import IDBHelper from 'utils/idbHelper'
 
 export default {
+  name: 'ServiceLocalRecordList',
   data() {
     return {
       visibleFlag: false,
       headers: ['파일명', '녹화된 시간', '파일 용량', '녹화 계정'],
-      columns: ['fileName', 'recordLength', 'fileSize', 'accountName'],
-      datas: [
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '123123213',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '12분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: '456456465',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '1시간 50분 30초',
-          fileSize: '12332052.5MB',
-          accountName: '가나다라마바사아자카타파하',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '집에보내줘.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: 'ㅎㅎ 일하셈.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '오늘도 내일도 힘내다가 말라죽겠지.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-        },
-        {
-          fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordLength: '9분 54초',
-          fileSize: '320.5MB',
-          accountName: 'Harry Ha',
-          uuid: 'asdfsadf',
-        },
-      ],
+      columns: ['fileName', 'playTime', 'fileSize', 'accountName'],
+      datas: [],
+      // datas: [
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //     uuid: '123123213',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '12분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //     uuid: '456456465',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '1시간 50분 30초',
+      //     fileSize: '12332052.5MB',
+      //     accountName: '가나다라마바사아자카타파하',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '집에보내줘.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: 'ㅎㅎ 일하셈.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '오늘도 내일도 힘내다가 말라죽겠지.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //   },
+      //   {
+      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
+      //     recordLength: '9분 54초',
+      //     fileSize: '320.5MB',
+      //     accountName: 'Harry Ha',
+      //     uuid: 'asdfsadf',
+      //   },
+      // ],
       tableTitle: '로컬 녹화 파일 리스트',
       selectedArray: [],
     }
@@ -155,8 +158,11 @@ export default {
     },
   },
   watch: {
-    visible(flag) {
+    async visible(flag) {
       this.visibleFlag = flag
+      if (flag) {
+        this.datas = await this.getList()
+      }
     },
   },
   methods: {
@@ -182,9 +188,17 @@ export default {
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
     },
-  },
 
-  created() {
+    async getList() {
+      return await IDBHelper.getAllDataArray()
+    },
+  },
+  updated() {},
+  mounted() {
+    console.log('mounted')
+  },
+  async created() {
+    await IDBHelper.initIDB()
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   beforeDestroy() {

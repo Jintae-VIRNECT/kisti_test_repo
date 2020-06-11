@@ -143,6 +143,44 @@ export default {
   },
 
   /**
+   * set allow pointing
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setAllowPointing({ commit }, payload) {
+    localStorage.setItem('allowPointing', payload)
+    commit(types.SETTINGS.SET_ALLOW_POINTING, payload)
+  },
+
+  /**
+   * set allow local recording
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setAllowLocalRecording({ commit }, payload) {
+    localStorage.setItem('allowLocalRecording', payload)
+    commit(types.SETTINGS.SET_ALLOW_LOCAL_RECORDING, payload)
+  },
+
+  /**
+   * set screen stream for local recording
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setScreenStream({ commit }, payload) {
+    commit(types.SETTINGS.SET_SCREEN_STREAM, payload)
+  },
+
+  /**
+   * set local record target
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setLocalRecordTarget({ commit }, payload) {
+    commit(types.SETTINGS.SET_LOCAL_RECORD_TARGET, payload)
+  },
+
+  /**
    * set room info
    * @param {Object} payload // room info
    */
