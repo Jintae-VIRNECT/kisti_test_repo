@@ -19,7 +19,7 @@
             v-if="file.pdf"
             :key="'sharing' + idx"
             :fileInfo="file"
-            @pdfView="id => $emit('pdfView', id)"
+            @pdfView="pdfView(file)"
           ></sharing-pdf>
           <sharing-image
             v-else
@@ -56,6 +56,9 @@ export default {
   watch: {},
   methods: {
     ...mapActions(['addFile']),
+    pdfView(file) {
+      this.$emit('pdfView', { id: file.id, name: file.filedata.name })
+    },
     addFileClick() {
       this.$refs['uploadFile'].click()
     },

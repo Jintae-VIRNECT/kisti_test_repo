@@ -83,7 +83,11 @@
   -ms-user-select: none;
   user-select: none;
 }
-
+@mixin ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 @mixin image {
   position: relative;
   overflow: hidden;

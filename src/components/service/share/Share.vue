@@ -24,7 +24,7 @@
     <history-list v-show="list === 'history'"></history-list>
     <pdf-view
       v-show="list === 'pdfview'"
-      :id="fileId"
+      :file="file"
       @back="changeTab('file')"
     ></pdf-view>
   </div>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       list: 'file',
-      fileId: 0,
+      file: {},
     }
   },
   computed: {
@@ -62,12 +62,12 @@ export default {
     },
   },
   methods: {
-    changePdfView(id) {
-      this.changeTab('pdfview', id)
+    changePdfView(fileInfo) {
+      this.changeTab('pdfview', fileInfo)
     },
-    changeTab(val, id) {
-      if (!id) id = 0
-      this.fileId = id
+    changeTab(val, fileInfo) {
+      if (!fileInfo) fileInfo = {}
+      this.file = fileInfo
       this.list = val
     },
   },

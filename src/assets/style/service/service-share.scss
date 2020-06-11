@@ -123,6 +123,7 @@
   position: relative;
   width: 100%;
   height: 110px;
+  margin-bottom: 25px;
   // overflow: hidden;
   &.pdf:after {
     position: absolute;
@@ -169,14 +170,21 @@
   background-color: rgba(#0f75f5, 0.8);
 }
 .sharing-image__name {
+  position: absolute;
+  top: 110px;
+  z-index: 5;
   width: 100%;
   margin-top: 5px;
-  overflow: hidden;
   font-size: 1.071rem;
   line-height: 20px;
-  white-space: nowrap;
   text-align: center;
-  text-overflow: ellipsis;
+  background: #242427;
+  @include ellipsis();
+  transition: all 3s;
+  &:hover {
+    height: auto;
+    white-space: pre-wrap;
+  }
 }
 
 .sharing-image__remove {
@@ -232,12 +240,14 @@
   flex: 0;
   width: calc(100% - 40px);
   margin: 20px;
-  background-color: #38383a;
-  // background: url(~assets/image/) center 10px/12px no-repeat;
-  > p {
-    padding: 5px 0 5px 32px;
-    font-weight: 500;
-    font-size: 0.929rem;
-    text-align: left;
-  }
+}
+.share-body__backbutton-text {
+  height: 30px;
+  padding: 5px 0 5px 32px;
+  font-weight: 500;
+  font-size: 0.929rem;
+  text-align: left;
+  background: url(~assets/image/call/ic_back.svg) 6px center/20px no-repeat
+    #38383a;
+  @include ellipsis();
 }

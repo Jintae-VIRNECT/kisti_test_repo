@@ -192,10 +192,17 @@ export default {
     commit(types.REMOVE_FILE, fileId)
   },
   /**
-   * add file history
+   * add pdf pages
    * @param {Object} pdfImageInfo
    */
   addPdfPage({ commit }, pdfImageInfo) {
     commit(types.ADD_PDF_PAGE, pdfImageInfo)
+  },
+  /**
+   * add remove pdf pages
+   * @param {Object} pdfId
+   */
+  removePdfPage({ commit }, pdfId) {
+    commit(types.REMOVE_PDF_PAGE, pdfId)
   },
 }
