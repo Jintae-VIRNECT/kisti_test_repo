@@ -18,7 +18,6 @@ async function initIDB() {
     RemoteMediaChunk:
       '++id, groupId, uuid, fileName, playTime, fileSize,  blob, accountName',
   })
-  // await db.open()
 }
 
 async function addMediaChunk(
