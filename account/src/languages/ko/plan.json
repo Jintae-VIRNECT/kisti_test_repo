@@ -1,9 +1,0 @@
-{
-  "column": {
-    "planName": "플랜 이름",
-    "usingMember": "사용 멤버",
-    "usingWorkspace": "사용 중인 워크스페이스",
-    "purchasedDate": "플랜 구매일",
-    "expireDate": "플랜 만료일"
-  }
-}

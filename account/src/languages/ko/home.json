@@ -9,11 +9,6 @@
     "desc": "워크스페이스 설명",
     "descEmpty": "워크스페이스 설명이 없습니다."
   },
-  "payment": {
-    "title": "구독 결제 정보",
-    "willPaymentPlans": "결제 예정 플랜 수",
-    "storageVolume": "스토리지 용량"
-  },
   "usingPlan": {
     "title": "사용 중인 플랜",
     "desc": "회원님이 사용 중인 플랜 정보입니다."

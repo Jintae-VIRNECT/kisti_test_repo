@@ -4,8 +4,7 @@
   "profile": "개인 정보",
   "workspace": "워크스페이스 정보",
   "security": "보안 설정",
-  "usedPlan": "사용 중인 플랜",
-  "plan": "플랜 관리",
+  "purchases": "구매 사용 관리",
   "payment": "결제 관리",
   "coupon": "쿠폰 관리"
 }
