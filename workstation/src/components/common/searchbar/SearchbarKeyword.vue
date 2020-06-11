@@ -47,7 +47,7 @@ export default {
     margin: auto 0;
   }
   .el-input__inner {
-    text-indent: 18px;
+    padding-left: 30px;
   }
 }
 .searchbar__keyword__popper .el-select-dropdown__list {

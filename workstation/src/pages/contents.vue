@@ -108,24 +108,34 @@ import {
 
 export default {
   mixins: [searchMixin, columnsMixin],
+  async asyncData({ query }) {
+    const contentsSearch = query.search || ''
+    const { list, total } = await contentService.searchContents({
+      search: contentsSearch,
+    })
+    return {
+      contentsList: list,
+      contentsTotal: total,
+      contentsSearch,
+    }
+  },
   data() {
     return {
       loading: false,
-      contentsList: [],
-      contentsTotal: 0,
       contentsFilter,
       contentsSort,
-      contentsSearch: '',
       contentsPage: 1,
       canRemove: false,
     }
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchContents(searchParams)
+    changedSearchParams() {
+      this.searchContents()
     },
-    async searchContents(params) {
-      const { list, total } = await contentService.searchContents(params)
+    async searchContents() {
+      const { list, total } = await contentService.searchContents(
+        this.searchParams,
+      )
       this.contentsList = list
       this.contentsTotal = total
     },
@@ -171,10 +181,7 @@ export default {
     },
   },
   beforeMount() {
-    this.searchContents()
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchContents(this.searchParams),
-    )
+    workspaceService.watchActiveWorkspace(this, this.searchContents)
   },
 }
 </script>

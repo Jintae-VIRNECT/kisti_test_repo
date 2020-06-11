@@ -34,15 +34,15 @@
       </dd>
       <dt>{{ $t('members.card.links') }}</dt>
       <dd class="column-links">
-        <router-link to="/contents">
+        <router-link :to="`/contents?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-contents.svg" />
           <span>{{ $t('members.card.contents') }}</span>
         </router-link>
-        <router-link to="/tasks">
+        <router-link :to="`/tasks?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-work.svg" />
           <span>{{ $t('members.card.work') }}</span>
         </router-link>
-        <router-link to="/tasks/results">
+        <router-link :to="`/tasks/results/papers?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-report.svg" />
           <span>{{ $t('members.card.report') }}</span>
         </router-link>

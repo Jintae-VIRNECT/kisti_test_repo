@@ -102,8 +102,8 @@ export default {
     },
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchSubTasks(searchParams)
+    changedSearchParams() {
+      this.searchSubTasks()
     },
     async searchSubTasks() {
       const { list, total } = await resultService.searchCurrentSubTasks(
@@ -130,6 +130,9 @@ export default {
     showMine() {},
   },
   beforeMount() {
+    this.resultsSearch = this.$route.query.search
+    this.searchParams.search = this.$route.query.search
+
     const tab = this.$route.path.match(/[a-z]*?$/)[0]
     if (tab === 'results') this.activeTab = 'task'
     else if (tab === 'issues') this.activeTab = 'issue'

@@ -124,15 +124,17 @@ export default {
     TaskDailyGraph,
     TasksList,
   },
-  async asyncData() {
+  async asyncData({ query }) {
+    const taskSearch = query.search || ''
     const promise = {
-      tasks: taskService.searchTasks(),
+      tasks: taskService.searchTasks({ search: taskSearch }),
       stat: taskService.getTaskStatistics(),
     }
     return {
       taskList: (await promise.tasks).list,
       taskTotal: (await promise.tasks).total,
       taskStatistics: await promise.stat,
+      taskSearch,
     }
   },
   data() {
@@ -141,7 +143,6 @@ export default {
       activeTab: 'allTasks',
       taskConditions,
       taskFilter: { ...taskFilter },
-      taskSearch: '',
       taskPage: 1,
       taskTotal: 0,
       loading: false,

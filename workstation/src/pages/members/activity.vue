@@ -28,7 +28,7 @@
           >
             <column-user
               :label="$t('members.activity.column.member')"
-              prop="uploaderUUID"
+              prop="workerName"
               nameProp="workerName"
               imageProp="workerProfile"
             />
@@ -61,15 +61,17 @@
             >
               <template slot-scope="scope">
                 <div class="column-links">
-                  <router-link to="/contents">
+                  <router-link :to="`/contents?search=${scope.row.workerUUID}`">
                     <img src="~assets/images/icon/ic-contents.svg" />
                     <span>{{ $t('members.card.contents') }}</span>
                   </router-link>
-                  <router-link to="/tasks">
+                  <router-link :to="`/tasks?search=${scope.row.workerUUID}`">
                     <img src="~assets/images/icon/ic-work.svg" />
                     <span>{{ $t('members.card.work') }}</span>
                   </router-link>
-                  <router-link to="/tasks/results">
+                  <router-link
+                    :to="`/tasks/results/papers?search=${scope.row.workerUUID}`"
+                  >
                     <img src="~assets/images/icon/ic-report.svg" />
                     <span>{{ $t('members.card.report') }}</span>
                   </router-link>
