@@ -1045,7 +1045,7 @@ public class TaskService {
             List<UserInfoResponse> userInfos = getUserInfo(search, workspaceUUID);
             userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         }
-        Page<Report> reportPage = this.reportRepository.getPages(myUUID, workspaceUUID, processId, subProcessId, userUUIDList, reported, pageable);
+        Page<Report> reportPage = this.reportRepository.getPages(myUUID, workspaceUUID, processId, subProcessId, search, userUUIDList, reported, pageable);
 
         List<ReportInfoResponse> reportInfoResponseList = reportPage.stream().map(report -> {
             List<Item> items = Optional.ofNullable(this.itemRepository.findByReport(report)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT_ITEM));

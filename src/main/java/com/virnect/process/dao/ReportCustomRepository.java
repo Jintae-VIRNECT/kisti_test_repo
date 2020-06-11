@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2020.05.20
  */
 public interface ReportCustomRepository {
-    Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, List<String> userUUIDList, Boolean reported, Pageable pageable);
+    Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, List<String> userUUIDList, Boolean reported, Pageable pageable);
 
     List<HourlyReportCountOfaDayResponse> selectHourlyReportsTemp(String targetDate);
 }
