@@ -175,7 +175,7 @@ Fabric.Object.prototype.cornerStrokeColor = '#000000'
 Fabric.Object.prototype.transparentCorners = false
 
 // Object - Select options.
-Fabric.Object.prototype.selection = true
+Fabric.Object.prototype.selectable = true
 Fabric.Object.prototype.hasControls = true
 Fabric.Object.prototype.hasBorders = true
 Fabric.Object.prototype.borderColor = '#0054f7'

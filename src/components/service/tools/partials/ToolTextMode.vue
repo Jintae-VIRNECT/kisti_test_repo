@@ -3,7 +3,7 @@
     text="텍스트 모드"
     :active="action === 'text'"
     :src="require('assets/image/ic-tool-txt.svg')"
-    @action="clickHandler"
+    @click.stop="clickHandler"
   ></tool-button>
 </template>
 
@@ -14,17 +14,21 @@ export default {
   name: 'ToolTextMode',
   mixins: [toolMixin],
   data() {
-    return {}
+    return {
+      status: false,
+    }
   },
   methods: {
     clickHandler() {
       this.status = !this.status
       this.$eventBus.$emit(
-        `control:${this.callViewMode}:mode`,
+        `control:document:mode`,
         this.status ? 'text' : false,
       )
       if (!!this.status === true) {
         this.setAction('text')
+      } else {
+        this.setAction('')
       }
     },
     changeStatus(mode) {

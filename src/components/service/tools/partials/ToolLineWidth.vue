@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     pick() {
-      return this.tools.width
+      return this.tools.lineWidth
     },
   },
   methods: {
@@ -56,6 +56,7 @@ export default {
         target: 'lineWidth',
         value,
       }
+      console.log(params)
       this.setTool(params)
     },
     clickHandler() {

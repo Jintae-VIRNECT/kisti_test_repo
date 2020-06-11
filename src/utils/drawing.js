@@ -1,4 +1,7 @@
 import { hexToAHEX } from './color'
+// tId: targetId
+// oId: objectId
+// aId: undolist 아이디
 
 export const getCanvasSize = function getCanvasSize(
   containerWidth,
@@ -206,6 +209,64 @@ export const getSignalParams = function getSignalParams(
       params[key] = params[key] * 1.25
     }
   }
+  console.log(params)
 
   return params
+}
+
+export const getReceiveParams = function getReceiveParams(type, params) {
+  //calculate scale
+  if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
+  for (let key in params) {
+    if (['posX', 'posY', 'width', 'height', 'size'].indexOf(key) >= 0) {
+      params[key] = parseFloat(params[key]) / params.scale
+    }
+    if (key === 'size') {
+      params[key] = params[key] / 1.25
+    }
+  }
+  switch (type) {
+    case 'lineStart':
+      console.log(['M', params.posX, params.posY])
+      return ['M', params.posX, params.posY]
+    case 'lineMove':
+      console.log(['Q', params.posX, params.posY, params.posX, params.posY])
+      return ['Q', params.posX, params.posY, params.posX, params.posY]
+    case 'lineEnd':
+      console.log(['L', params.posX, params.posY])
+      return ['L', params.posX, params.posY]
+    case 'drawMove':
+      return {
+        top: params.posY,
+        left: params.posX,
+      }
+    case 'drawText':
+      return params
+    default:
+      return []
+  }
+}
+
+export const calcPosition = function calcPosition(paths, width) {
+  let left = -1
+  let top = -1
+  for (let i = 0; i < paths.length; i++) {
+    if (i === 0) {
+      left = paths[i][1]
+      top = paths[i][2]
+      continue
+    }
+    if (left > paths[i - 1][1]) {
+      left = paths[i - 1][1]
+    }
+    if (top > paths[i - 1][2]) {
+      top = paths[i - 1][2]
+    }
+  }
+  top -= width / 2
+  left -= width / 2
+  return {
+    top: top,
+    left: left,
+  }
 }

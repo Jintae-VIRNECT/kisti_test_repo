@@ -5,19 +5,18 @@
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
     >
-      <template v-if="mainView && mainView.stream">
-        <video
-          ref="mainVideo"
-          id="main-video"
-          :srcObject.prop="mainView.stream"
-          @resize="optimizeVideoSize"
-          @loadeddata="optimizeVideoSize"
-          :muted="!speaker"
-          autoplay
-          playsinline
-          loop
-        ></video>
-        <div class="main-video__recording">
+      <video
+        ref="mainVideo"
+        id="main-video"
+        :srcObject.prop="mainView.stream"
+        @play="mediaPlay"
+        :muted="!speaker"
+        autoplay
+        playsinline
+        loop
+      ></video>
+      <template v-if="loaded">
+        <div class="main-video__recording" v-if="false">
           <p class="server">{{ 0 | timeFilter }}</p>
           <p class="local">{{ 0 | timeFilter }}</p>
         </div>
@@ -31,11 +30,11 @@
       </template>
       <template v-else>
         <div class="main-video__empty">
-          <div class="main-video__empty-inner" v-if="true">
+          <div class="main-video__empty-inner" v-if="resolutions.length > 0">
             <img src="~assets/image/img_video_connecting.svg" />
             <p>영상 연결 중…</p>
           </div>
-          <div class="main-video__empty-inner" v-else-if="true">
+          <div class="main-video__empty-inner" v-else-if="false">
             <img src="~assets/image/img_video_stop.svg" />
             <p>영상을 정지하였습니다.</p>
             <p class="inner-discription" v-if="true">
@@ -78,55 +77,77 @@ export default {
       mainView: 'mainView',
       speaker: 'speaker',
       action: 'action',
+      resolutions: 'resolutions',
     }),
+    resolution() {
+      const idx = this.resolutions.findIndex(
+        data => data.connectionId === this.mainView.connectionId,
+      )
+      if (idx < 0) {
+        return {
+          width: 0,
+          height: 0,
+        }
+      }
+      return this.resolutions[idx]
+    },
   },
   watch: {
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
     },
+    resolution: {
+      deep: true,
+      handler() {
+        this.optimizeVideoSize()
+      },
+    },
     mainView: {
       deep: true,
-      handler(e) {
-        console.log(e)
+      handler(view) {
+        if (!view.id) {
+          this.loaded = false
+          const videoBox = this.$el.querySelector('.main-video__box')
+          videoBox.style.height = '100%'
+          videoBox.style.width = '100%'
+        }
       },
     },
   },
   methods: {
     ...mapActions(['updateAccount']),
-    optimizeVideoSize() {
-      const mainWrapper = this.$el
-      const videoBox = this.$el.querySelector('.main-video__box')
-      const videoEl = this.$el.querySelector('#main-video')
-
-      let videoWidth = videoEl.offsetWidth,
-        videoHeight = videoEl.offsetHeight,
-        wrapperWidth = mainWrapper.offsetWidth,
-        wrapperHeight = mainWrapper.offsetHeight
-
-      if (videoHeight / videoWidth > wrapperHeight / wrapperWidth) {
-        videoBox.style.width = 'auto'
-        videoEl.style.width = 'auto'
-        videoEl.style.height = '100%'
-        videoWidth = videoEl.offsetWidth
-        videoBox.style.width = videoWidth + 'px'
-      } else {
-        videoBox.style.height = 'auto'
-        videoEl.style.width = '100%'
-        videoEl.style.height = 'auto'
-        videoHeight = videoEl.offsetHeight
-        videoBox.style.height = videoHeight + 'px'
-      }
-
-      if (!this.loaded && this.mainView.me && this.mainView.stream) {
-        console.log({
-          width: videoEl.offsetWidth,
-          height: videoEl.offsetHeight,
-        })
+    mediaPlay() {
+      if (this.mainView.me && this.mainView.stream) {
+        const videoEl = this.$el.querySelector('#main-video')
         this.$call.sendResolution({
           width: videoEl.offsetWidth,
           height: videoEl.offsetHeight,
         })
-        this.loaded = true
+      }
+      this.loaded = true
+      this.optimizeVideoSize()
+    },
+    optimizeVideoSize() {
+      console.log('OPTIMIZE VIDEO!!!!')
+      const mainWrapper = this.$el
+      const videoBox = this.$el.querySelector('.main-video__box')
+      if (this.resolution.width === 0 || this.resolution.height === 0) return
+
+      let maxWidth = mainWrapper.offsetWidth
+      let maxHeight = mainWrapper.offsetHeight
+      console.log(maxWidth)
+      let scale = this.resolution.width / this.resolution.height
+      if (
+        this.resolution.width / this.resolution.height >
+        maxWidth / maxHeight
+      ) {
+        // height에 맞춤
+        videoBox.style.height = maxHeight + 'px'
+        videoBox.style.width = maxHeight * scale + 'px'
+      } else {
+        // width에 맞춤
+        videoBox.style.height = maxWidth / scale + 'px'
+        videoBox.style.width = maxWidth + 'px'
       }
     },
     capture() {

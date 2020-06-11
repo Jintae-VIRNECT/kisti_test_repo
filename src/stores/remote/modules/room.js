@@ -1,13 +1,15 @@
 import { ROOM_SET, ROOM_CLEAR } from '../mutation-types'
 
-function Participant(info) {
-  this.uuid = info.id
-  this.email = info.email
-  this.name = info.name
-  this.nickname = info.nickname
-  this.device = info.device
-  this.role = info.role
-  this.path = info.path
+function newParticipant(info) {
+  return {
+    uuid: info.id,
+    email: info.email,
+    name: info.name,
+    nickname: info.nickname,
+    device: info.device,
+    role: info.role,
+    path: info.path,
+  }
 }
 
 function getDefaultRoomInfo() {
@@ -36,10 +38,10 @@ const mutations = {
     state.leaderId = payload.leaderId
     state.maxParticipantCount = payload.maxParticipantCount
     if (payload.participants.length > 0) {
+      state.participants = []
       for (let participant of payload.participants) {
-        state.participants.push(new Participant(participant))
+        state.participants.push(newParticipant(participant))
       }
-      console.log(state.participants)
     }
   },
 

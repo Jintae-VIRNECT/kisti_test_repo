@@ -17,7 +17,7 @@
         <toggle-button
           class="mic-radius"
           :description="''"
-          :size="24"
+          size="2.429rem"
           :active="micTestMode"
           :activeSrc="require('assets/image/setting/ic_mic.svg')"
           :inactiveSrc="require('assets/image/setting/ic_mic_mute.svg')"

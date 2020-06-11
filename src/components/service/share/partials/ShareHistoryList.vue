@@ -2,12 +2,11 @@
   <div class="share-body">
     <vue2-scrollbar>
       <ol class="upload-list">
-        <sharing-image
-          v-for="(file, idx) of historyList"
-          :key="'sharing' + idx"
-          :fileInfo="file"
-          :isPdf="file.pdf"
-        ></sharing-image>
+        <history-image
+          v-for="img of historyList"
+          :key="img.id"
+          :imgInfo="img"
+        ></history-image>
       </ol>
     </vue2-scrollbar>
     <button class="share-save btn small"><span>저장하기</span></button>
@@ -15,18 +14,21 @@
 </template>
 
 <script>
-import SharingImage from './SharingImage'
+import HistoryImage from './ShareHistoryImage'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ShareHistoryList',
   components: {
-    SharingImage,
+    HistoryImage,
   },
   data() {
     return {
-      historyList: [],
+      // historyList: [],
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['historyList']),
+  },
   watch: {},
   methods: {},
 

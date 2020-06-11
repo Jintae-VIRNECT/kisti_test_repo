@@ -69,6 +69,7 @@ import { createRoom, getRoomInfo } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
+import { EXPERT_LEADER } from 'utils/role'
 
 export default {
   name: 'ModalCreateRoomInfo',
@@ -153,15 +154,11 @@ export default {
       try {
         const selectedUser = []
 
-        // 필요없어지면 삭제할거임!!!!!!!!!!!!!
-        let selectedUserEmail = ''
         for (let select of this.selection) {
           selectedUser.push(select.uuid)
-          selectedUserEmail += select.email + ','
         }
         selectedUser.push(this.account.uuid)
-        selectedUserEmail += this.account.email
-        // 여기까지!!!!!!!!!!!!!!!!!!!!!!!!
+
         const createdRoom = await createRoom({
           file: this.imageFile,
           title: this.title,
@@ -174,17 +171,15 @@ export default {
         const joinRtn = await this.$call.join(
           createdRoom,
           this.account,
-          selectedUserEmail,
+          EXPERT_LEADER,
         )
         if (joinRtn) {
-          console.log('>>>join room 성공')
           this.$eventBus.$emit('popover:close')
 
           const roomInfo = await getRoomInfo({
             roomId: createdRoom.roomId,
           })
 
-          console.log(roomInfo)
           this.setRoomInfo(roomInfo)
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })

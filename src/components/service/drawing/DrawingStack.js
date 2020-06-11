@@ -1,4 +1,12 @@
 /* eslint-disable no-undef */
+/**
+ * undoList
+ * {
+ *  type: 'add',
+ *  ids: [id],
+ *  objects: [objects]
+ * }
+ */
 export default {
   methods: {
     /**
@@ -32,7 +40,7 @@ export default {
               this.stackAdd('text', [_.id])
             }
 
-            setTimeout(_ => {
+            setTimeout(() => {
               this.editingMode = false
             }, 100)
           })
@@ -40,25 +48,32 @@ export default {
       })
     },
 
-    stackAdd(type, ids) {
+    stackAdd(type, id) {
       const stack = {
         type,
-        ids,
-        objects: [],
-      }
-
-      // Remove만 ids가 들어오는것 같으나..사실 for문은 필요 없어보임.. 개별 선택 삭제 외에 여러개 선택 삭제하는 기능은 없으므로..
-      for (const id of ids) {
-        stack.objects.push(
-          fabric.util.object.clone(
-            this.canvas.getObjects().find(_ => _.id === id),
-            true,
-          ),
-        )
+        id,
+        object: fabric.util.object.clone(
+          this.canvas.getObjects().find(_ => _.id === id),
+          true,
+        ),
       }
 
       this.$set(this, 'redoList', [])
       this.undoList.push(stack)
+    },
+
+    receiveStackAdd(type, id, owner) {
+      const stack = {
+        type,
+        id,
+        object: fabric.util.object.clone(
+          this.canvas.getObjects().find(_ => _.id === id),
+          true,
+        ),
+      }
+
+      this.receiveRedoList[owner] = []
+      this.receiveUndoList[owner].push(stack)
     },
 
     /**
@@ -75,81 +90,10 @@ export default {
       const tempActiveObj = this.canvas.getActiveObject()
       this.canvas.discardActiveObject()
 
-      const objTarget = this.canvas.getObjects()
+      // const objTarget = this.canvas.getObjects()
       const objHist = this.undoList.pop()
 
-      objHist.ids.forEach(id => {
-        // remove, add는 문제 없음.
-        if (objHist.type === 'remove') {
-          const obj = objTarget.find(_ => _.id === id)
-
-          if (obj) {
-            obj.visible = true
-          }
-        } else if (objHist.type === 'add') {
-          const obj = objTarget.find(_ => _.id === id)
-
-          if (obj) {
-            obj.visible = false
-          }
-        } else if (['scale', 'move'].indexOf(objHist.type) >= 0) {
-          let obj
-          for (let idx = this.undoList.length - 1; idx >= 0; idx--) {
-            const stack = this.undoList[idx]
-            if (stack.objects[0].id === id) {
-              obj = stack.objects[0]
-              break
-            }
-          }
-
-          for (let idx = objTarget.length - 1; idx >= 0; idx--) {
-            if (id === objTarget[idx].id) {
-              objTarget[idx].set({
-                top: obj.top,
-                left: obj.left,
-                width: obj.width,
-                height: obj.height,
-                scaleX: obj.scaleX || 1,
-                scaleY: obj.scaleY || 1,
-                aCoords: obj.aCoords,
-                oCoords: obj.oCoords,
-                // zoom은 scale 전 상태인 듯 싶다.
-                // "zoomX": obj.zoomX,
-                // "zoomY": obj.zoomY,
-              })
-              break
-            }
-          }
-        } else if (objHist.type === 'text') {
-          // const obj = this.undoList[this.undoList.length-1].objects.find(_=>_.id===id);
-
-          // for(let idx=objTarget.length-1; idx>=0; idx--) {
-          //     if( id === objTarget[idx].id ) {
-          //         objTarget[idx].set({
-          //             "text": obj.text
-          //         });
-          //         break;
-          //     }
-          // }
-          let obj
-          for (let idx = this.undoList.length - 1; idx >= 0; idx--) {
-            const stack = this.undoList[idx]
-            if (stack.objects[0].id === id) {
-              obj = stack.objects[0]
-              break
-            }
-          }
-
-          for (let idx = objTarget.length - 1; idx >= 0; idx--) {
-            if (id === objTarget[idx].id) {
-              objTarget[idx].set({
-                text: obj.text,
-              })
-              break
-            }
-          }
-        }
-      })
+      this.updateObjTarget('undo', objHist)
 
       this.redoList.unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
@@ -157,6 +101,30 @@ export default {
       this._sendAction('undo')
 
       return this.undoList.length
+    },
+    receiveStackUndo(owner) {
+      if (
+        !(owner in this.receiveUndoList) ||
+        this.receiveUndoList[owner].length === 0
+      )
+        return
+
+      const tempActiveObj = this.canvas.getActiveObject()
+      this.canvas.discardActiveObject()
+
+      // const objTarget = this.canvas
+      //   .getObjects()
+      //   .filter(obj => obj.owner === owner)
+
+      const objHist = this.receiveUndoList[owner].pop()
+
+      this.updateObjTarget('undo', objHist)
+
+      this.receiveRedoList[owner].unshift(objHist)
+      this.canvas.setActiveObject(tempActiveObj)
+      this.canvas.renderAll()
+
+      return this.receiveUndoList[owner].length
     },
 
     /**
@@ -171,50 +139,7 @@ export default {
       const tempActiveObj = this.canvas.getActiveObject()
       this.canvas.discardActiveObject()
 
-      const objTarget = this.canvas._objects
-      objHist.ids.forEach(id => {
-        const obj = objTarget.find(_ => _.id === id)
-        if (objHist.type === 'add') {
-          if (obj) {
-            obj.visible = true
-          }
-        } else if (objHist.type === 'remove') {
-          if (obj) {
-            obj.visible = false
-          }
-        } else if (['scale', 'move'].indexOf(objHist.type) >= 0) {
-          const obj = objHist.objects.find(_ => _.id === id)
-
-          for (let idx = objTarget.length - 1; idx >= 0; idx--) {
-            if (id === objTarget[idx].id) {
-              objTarget[idx].set({
-                top: obj.top,
-                left: obj.left,
-                width: obj.width,
-                height: obj.height,
-                scaleX: obj.scaleX || 1,
-                scaleY: obj.scaleY || 1,
-                aCoords: obj.aCoords,
-                oCoords: obj.oCoords,
-                // zoomX: obj.zoomX,
-                // zoomY: obj.zoomY,
-              })
-              break
-            }
-          }
-        } else if (objHist.type === 'text') {
-          const obj = objHist.objects.find(_ => _.id === id)
-
-          for (let idx = objTarget.length - 1; idx >= 0; idx--) {
-            if (id === objTarget[idx].id) {
-              objTarget[idx].set({
-                text: obj.text,
-              })
-              break
-            }
-          }
-        }
-      })
+      this.updateObjTarget('redo', objHist)
 
       this.undoList.push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
@@ -223,6 +148,29 @@ export default {
 
       return this.redoList.length
     },
+    receiveStackRedo(owner) {
+      if (
+        !(owner in this.receiveRedoList) ||
+        this.receiveRedoList[owner].length === 0
+      )
+        return
+      const objHist = this.receiveRedoList[owner].shift()
+      if (undefined === objHist) {
+        return this.receiveRedoList[owner].length
+      }
+
+      const tempActiveObj = this.canvas.getActiveObject()
+      this.canvas.discardActiveObject()
+
+      this.updateObjTarget('redo', objHist)
+
+      this.receiveUndoList[owner].push(objHist)
+      this.canvas.setActiveObject(tempActiveObj)
+      this.canvas.renderAll()
+      this._sendAction('redo')
+
+      return this.receiveRedoList[owner].length
+    },
 
     /**
      * 드로잉 히스토리 초기화 메소드
@@ -230,6 +178,46 @@ export default {
     stackClear() {
       this.$set(this, 'undoList', [])
       this.$set(this, 'redoList', [])
+    },
+
+    updateObjTarget(_do, objHist) {
+      const objTarget = this.canvas.getObjects()
+      const id = objHist.id
+      const obj = objTarget.find(_ => _.id === id)
+      if (objHist.type === 'add') {
+        if (obj) {
+          if (_do === 'undo') {
+            obj.visible = false
+          } else {
+            obj.visible = true
+          }
+        }
+      } else if (objHist.type === 'remove') {
+        if (obj) {
+          if (_do === 'undo') {
+            obj.visible = true
+          } else {
+            obj.visible = false
+          }
+        }
+      } else if (['scale', 'move'].indexOf(objHist.type) >= 0) {
+        const idx = objTarget.findIndex(target => target.id === id)
+        objTarget[idx].set({
+          top: obj.top,
+          left: obj.left,
+          width: obj.width,
+          height: obj.height,
+          scaleX: obj.scaleX || 1,
+          scaleY: obj.scaleY || 1,
+          aCoords: obj.aCoords,
+          oCoords: obj.oCoords,
+        })
+      } else if (objHist.type === 'text') {
+        const idx = objTarget.findIndex(target => target.id === id)
+        objTarget[idx].set({
+          text: obj.text,
+        })
+      }
     },
   },
 }
