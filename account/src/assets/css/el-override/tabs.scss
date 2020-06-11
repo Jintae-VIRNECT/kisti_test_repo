@@ -1,0 +1,24 @@
+.el-tabs {
+  .el-tabs__header {
+    margin-bottom: 0;
+  }
+  .el-tabs__item {
+    height: 60px;
+    padding: 0 15px;
+    color: $font-color-content;
+    line-height: 60px;
+    opacity: 0.45;
+  }
+  .el-tabs__item.is-active,
+  .el-tabs__item:hover {
+    color: $font-color-content;
+    opacity: 1;
+  }
+  .el-tabs__active-bar {
+    background-color: #186ae2;
+  }
+  .el-tabs__nav-wrap::after {
+    height: 1px;
+    background-color: #eaedf3;
+  }
+}

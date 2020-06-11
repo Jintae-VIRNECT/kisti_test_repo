@@ -11,6 +11,6 @@ export default class PlanMember extends Model {
     this.grade = 'BASIC'
     this.memberUUID = 123
     this.memberName = '버넥트'
-    this.memberProfile = ''
+    this.memberProfile = require('assets/images/icon/ic-user-profile.svg')
   }
 }

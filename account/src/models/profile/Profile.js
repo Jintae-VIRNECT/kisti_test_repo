@@ -6,7 +6,10 @@ export default class Profile extends Model {
     this.uuid = json.uuid
     this.lastName = json.lastName
     this.firstName = json.firstName
-    this.image = json.profile
+    this.image =
+      json.profile === 'default'
+        ? require('assets/images/icon/ic-user-profile.svg')
+        : json.profile
     this.nickname = json.nickname
     this.email = json.email
     this.recoveryEmail = json.recoveryEmail

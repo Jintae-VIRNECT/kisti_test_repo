@@ -124,9 +124,6 @@ export default {
     .el-progress {
       margin-bottom: 11px;
     }
-    .el-progress-bar__inner {
-      background: #007cfe;
-    }
     .column-plan {
       display: inline-block;
     }

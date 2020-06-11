@@ -49,16 +49,7 @@
             </el-row>
           </el-card>
           <!-- 사용량 -->
-          <el-card class="used">
-            <el-tabs slot="header" v-model="activeTab">
-              <el-tab-pane
-                v-for="tab in tabs"
-                :key="tab.name"
-                :name="tab.name"
-                :label="$t(tab.label)"
-              />
-            </el-tabs>
-          </el-card>
+          <purchases-used />
         </el-col>
       </el-row>
     </div>
@@ -68,37 +59,20 @@
 <script>
 import purchasesService from '@/services/purchases'
 import purchasesInfo from '@/components/purchases/PurchasesInfo'
+import PurchasesUsed from '@/components/purchases/PurchasesUsed'
 import columnMixin from '@/mixins/columns'
 
 export default {
   mixins: [columnMixin],
   components: {
     purchasesInfo,
+    PurchasesUsed,
   },
   async asyncData() {
     const { list, total } = await purchasesService.searchPlanMembers()
     return {
       planMembers: list,
       planMembersTotal: total,
-    }
-  },
-  data() {
-    return {
-      activeTab: '',
-      tabs: [
-        {
-          name: 'storage',
-          label: 'purchases.info.arStorageCapacity',
-        },
-        {
-          name: 'contents',
-          label: 'purchases.info.arContentsViewCount',
-        },
-        {
-          name: 'call',
-          label: 'purchases.info.callTime',
-        },
-      ],
     }
   },
   methods: {
@@ -113,21 +87,14 @@ export default {
 
 <style lang="scss">
 #__nuxt #purchases {
+  .container__right.el-col-24 {
+    width: 830px;
+  }
   .el-table__body-wrapper {
     min-height: 512px;
   }
-  .used {
-    .el-card__header {
-      padding-top: 0;
-      padding-bottom: 0;
-      .el-tabs .el-tabs__item {
-        height: 64px;
-        line-height: 64px;
-      }
-      .el-tabs__nav-wrap::after {
-        display: none;
-      }
-    }
+  .el-progress-bar__inner {
+    background: #007cfe;
   }
 }
 </style>

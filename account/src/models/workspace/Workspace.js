@@ -11,7 +11,10 @@ export default class Workspace extends Model {
     this.uuid = json.uuid
     this.masterUserId = json.masterUserId
     this.masterNickName = json.masterNickName
-    this.masterProfile = json.masterProfile
+    this.masterProfile =
+      json.masterProfile === 'default'
+        ? require('assets/images/icon/ic-user-profile.svg')
+        : json.masterProfile
     this.pinNumber = json.pinNumber
     this.name = json.name
     this.description = json.description
