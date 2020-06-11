@@ -47,9 +47,16 @@ async function getMediaChunkArray(fileName) {
     .toArray()
 }
 
-async function deleteMediaChunk(fileNames) {
-  await db.RemoteMediaChunk.where('fileName')
-    .anyOf(fileNames)
+async function getMediaChunkArrays(uuids) {
+  return await db.RemoteMediaChunk.where('uuid')
+    .anyOf(uuids)
+    .toArray()
+}
+
+async function deleteMediaChunk(uuids) {
+  console.log('deleteMediaChunk :: ', uuids)
+  await db.RemoteMediaChunk.where('uuid')
+    .anyOf(uuids)
     .delete()
 }
 
@@ -57,6 +64,7 @@ const IDBHelper = {
   initIDB: initIDB,
   addMediaChunk: addMediaChunk,
   getMediaChunkArray: getMediaChunkArray,
+  getMediaChunkArrays: getMediaChunkArrays,
   deleteMediaChunk: deleteMediaChunk,
   getAllDataArray: getAllDataArray,
 }

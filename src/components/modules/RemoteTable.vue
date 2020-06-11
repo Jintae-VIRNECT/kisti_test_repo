@@ -3,10 +3,13 @@
     <slot></slot>
 
     <div class="table__column">
-      <div class="table__column--toggle" v-if="showToggleHeader">
+      <div
+        class="table__column--toggle"
+        v-if="showToggleHeader && datas.length > 0"
+      >
         <toggle-button
           slot="body"
-          :size="34"
+          :size="'34px'"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
           :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -22,7 +25,7 @@
       </div>
     </div>
     <div class="table__body">
-      <scroller>
+      <scroller v-if="datas.length > 0">
         <div
           v-for="(data, index) in renderArray"
           class="table__row"
@@ -31,7 +34,7 @@
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
               slot="body"
-              :size="34"
+              :size="'34px'"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -47,6 +50,9 @@
           </div>
         </div>
       </scroller>
+      <div v-else class="table__body--empty">
+        <p class="table__body--empty-text">{{ emptyText }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +77,7 @@ export default {
       handler() {
         this.setRenderArray()
         this.setSelectedArray()
+        this.toggleAllFlag = false
       },
       deep: true,
     },
@@ -99,6 +106,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    renderOpts: {
+      type: Array,
+      default: () => [],
+    },
+    emptyText: {
+      type: String,
+      default: '',
+    },
   },
   methods: {
     toggleItem(event, index) {
@@ -126,6 +141,15 @@ export default {
         if (obj !== null) {
           this.columns.forEach(key => {
             newObj[key] = obj[key]
+          })
+
+          //adjust render function
+          this.renderOpts.forEach(renderObj => {
+            if (newObj.hasOwnProperty(renderObj.column)) {
+              newObj[renderObj.column] = renderObj.render(
+                newObj[renderObj.column],
+              )
+            }
           })
 
           this.renderArray.push(newObj)
@@ -178,7 +202,7 @@ export default {
 }
 
 .table__body {
-  height: 500px;
+  height: 342px;
 }
 
 .table__row {
@@ -203,5 +227,18 @@ export default {
 }
 .table__cell--toggle {
   margin: 19px 19px 19px 22px;
+}
+
+.table__body--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 342px;
+  background-color: #29292c;
+}
+
+.table__body--empty-text {
+  color: #a7a7a7;
+  font-size: 16px;
 }
 </style>

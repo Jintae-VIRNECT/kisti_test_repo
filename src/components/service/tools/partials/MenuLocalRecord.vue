@@ -10,6 +10,8 @@
 </template>
 
 <script>
+// @TODO:detach related record logics - ykmo
+
 import toolMixin from './toolMixin'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 
@@ -215,6 +217,7 @@ export default {
       return streamArray
     },
     getWH(resolution) {
+      //default
       const video = {
         width: 1280,
         height: 720,

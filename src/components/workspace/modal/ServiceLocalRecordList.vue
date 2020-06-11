@@ -28,6 +28,8 @@
           :columns="columns"
           :datas="datas"
           :showTools="true"
+          :renderOpts="getRenderOpts()"
+          :emptyText="'녹화 파일이 없습니다.'"
         >
           <div class="table__header">
             <div class="table__title">
@@ -56,6 +58,9 @@ import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
+import RecordRTC from 'recordrtc'
+import JSZip from 'jszip'
+import FileSaver from 'file-saver'
 
 export default {
   name: 'ServiceLocalRecordList',
@@ -65,83 +70,6 @@ export default {
       headers: ['파일명', '녹화된 시간', '파일 용량', '녹화 계정'],
       columns: ['fileName', 'playTime', 'fileSize', 'accountName'],
       datas: [],
-      // datas: [
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //     uuid: '123123213',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '12분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //     uuid: '456456465',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '1시간 50분 30초',
-      //     fileSize: '12332052.5MB',
-      //     accountName: '가나다라마바사아자카타파하',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '집에보내줘.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: 'ㅎㅎ 일하셈.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '오늘도 내일도 힘내다가 말라죽겠지.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //   },
-      //   {
-      //     fileName: '2020-06-11 HH-MM-SS_00.mp4​',
-      //     recordLength: '9분 54초',
-      //     fileSize: '320.5MB',
-      //     accountName: 'Harry Ha',
-      //     uuid: 'asdfsadf',
-      //   },
-      // ],
       tableTitle: '로컬 녹화 파일 리스트',
       selectedArray: [],
     }
@@ -170,20 +98,49 @@ export default {
       this.$emit('update:visible', false)
     },
 
-    download() {
+    async download() {
       console.log('download :: called')
+
+      const uuids = []
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          uuids.push(this.datas[index].uuid)
+        }
+      })
+
+      let chunks = await IDBHelper.getMediaChunkArrays(uuids)
+      if (chunks && chunks.length > 0) {
+        if (chunks.length === 1) {
+          RecordRTC.invokeSaveAsDialog(chunks.blob, chunks.fileName)
+        } else {
+          let zip = new JSZip()
+
+          chunks.forEach(chunk => {
+            zip.file(chunk.fileName, chunk.blob)
+          })
+
+          zip.generateAsync({ type: 'blob' }).then(function(content) {
+            FileSaver.saveAs(content, 'compressed.zip')
+          })
+        }
+      }
     },
     deleteItems() {
       console.log('deleteItems :: called')
 
+      const uuids = []
       this.selectedArray.forEach((selected, index) => {
         if (selected) {
+          uuids.push(this.datas[index].uuid)
           this.datas[index] = null
         }
       })
+
       this.datas = this.datas.filter(obj => {
         return obj !== null
       })
+
+      IDBHelper.deleteMediaChunk(uuids)
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
@@ -191,6 +148,52 @@ export default {
 
     async getList() {
       return await IDBHelper.getAllDataArray()
+    },
+
+    //for record render
+    getRenderOpts() {
+      const renderOpts = []
+
+      //display h hour m min s sec
+      const playTimeRender = playTime => {
+        let sec_num = Number.parseInt(playTime, 10)
+        let hours = Math.floor(sec_num / 3600)
+        let minutes = Math.floor((sec_num - hours * 3600) / 60)
+        let seconds = sec_num - hours * 3600 - minutes * 60
+
+        let hText = '시간'
+        let mText = '분'
+        let sText = '초'
+
+        if (hours === 0) {
+          hours = ''
+          hText = ''
+        }
+        if (minutes === 0) {
+          minutes = ''
+          mText = ''
+        }
+        if (seconds === 0) {
+          seconds = ''
+        }
+        return hours + hText + minutes + mText + seconds + sText
+      }
+
+      const fileSizeRender = fileSize => {
+        let fileSizeMB = (fileSize / 1024 / 1204).toFixed(1)
+
+        return `${fileSizeMB}MB`
+      }
+
+      renderOpts.push(
+        {
+          column: 'playTime',
+          render: playTimeRender,
+        },
+        { column: 'fileSize', render: fileSizeRender },
+      )
+
+      return renderOpts
     },
   },
   updated() {},

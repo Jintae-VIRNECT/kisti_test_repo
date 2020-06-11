@@ -24,6 +24,8 @@
     "dotenv-webpack": "^1.7.0",
     "element-ui": "^2.13.0",
     "express": "^4.17.1",
+    "file-saver": "^2.0.2",
+    "jszip": "^3.4.0",
     "linkifyjs": "^2.1.9",
     "log4js": "^6.1.0",
     "vue": "^2.6.11",
