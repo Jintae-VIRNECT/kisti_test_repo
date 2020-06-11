@@ -64,10 +64,18 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public Page<Issue> getIssuesIn(String userUUID, String workspaceUUID, List<String> userUUIDList, Pageable pageable) {
-        JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
+    public Page<Issue> getIssuesIn(String myUUID, String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable) {
+        JPQLQuery<Issue> query = defaultQuery(myUUID, workspaceUUID);
 
-        if (Objects.nonNull(userUUIDList)) {
+        // 문제의 소지가 될 수 있는 쿼리.
+        if (Objects.nonNull(search)) {
+            query.where(QJob.job.name.contains(search));
+            query.where(QIssue.issue.content.contains(search));
+            query.where(QSubProcess.subProcess.name.contains(search));
+            query.where(QProcess.process.name.contains(search));
+        }
+
+        if (!userUUIDList.isEmpty()) {
             query.where(QIssue.issue.workerUUID.in(userUUIDList));
         }
 
@@ -110,19 +118,23 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public Page<Issue> getIssuesOut(String userUUID, List<String> workspaceUserList, Pageable pageable) {
+    public Page<Issue> getIssuesOut(String myUUID, String search, List<String> workspaceUserList, Pageable pageable) {
         QIssue qIssue = QIssue.issue;
 
         JPQLQuery<Issue> query = from(qIssue);
 
         query.where(qIssue.job.isNull());
 
+        if (Objects.nonNull(search)) {
+            query.where(qIssue.content.contains(search));
+        }
+
         if (Objects.nonNull(workspaceUserList)){
             query.where(qIssue.workerUUID.in(workspaceUserList));
         }
 
-        if (Objects.nonNull(userUUID)) {
-            query.where(qIssue.workerUUID.eq(userUUID));
+        if (Objects.nonNull(myUUID)) {
+            query.where(qIssue.workerUUID.eq(myUUID));
         }
 
         List<Issue> issueList = getQuerydsl().applyPagination(pageable, query).fetch();

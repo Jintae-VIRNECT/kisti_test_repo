@@ -23,7 +23,7 @@ public interface IssueCustomRepository {
 //
 //    Page<Issue> getIssuesInSearchUserName(String workspaceUUID, List<String> userUUIDList, Pageable pageable);
 //
-    Page<Issue> getIssuesIn(String userUUID, String workspaceUUID, List<String> userUUIDList, Pageable pageable);
+    Page<Issue> getIssuesIn(String userUUID, String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable);
 
     Page<Issue> getIssuesInSearchProcessTitle(String userUUID, String workspaceUUID, String title, Pageable pageable);
 
@@ -31,5 +31,5 @@ public interface IssueCustomRepository {
 
     Page<Issue> getIssuesInSearchJobTitle(String userUUID, String workspaceUUID, String title, Pageable pageable);
 
-    Page<Issue> getIssuesOut(String userUUID, List<String> workspaceUserList, Pageable pageable);
+    Page<Issue> getIssuesOut(String myUUID, String search, List<String> workspaceUserList, Pageable pageable);
 }

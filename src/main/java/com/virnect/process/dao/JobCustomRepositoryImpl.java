@@ -24,15 +24,15 @@ public class JobCustomRepositoryImpl extends QuerydslRepositorySupport implement
     public JobCustomRepositoryImpl() { super(Job.class); }
 
     @Override
-    public Page<Job> getJobPage(String userUUID, Long subProcessId, String search, Pageable pageable) {
+    public Page<Job> getJobPage(String myUUID, Long subProcessId, String search, Pageable pageable) {
         QJob qJob = QJob.job;
 
         JPQLQuery<Job> query = from(qJob);
 
         query.where(qJob.subProcess.id.eq(subProcessId));
 
-        if (Objects.nonNull(userUUID)) {
-            query.where(qJob.subProcess.workerUUID.eq(userUUID));
+        if (Objects.nonNull(myUUID)) {
+            query.where(qJob.subProcess.workerUUID.eq(myUUID));
         }
 
         if (Objects.nonNull(search)) {

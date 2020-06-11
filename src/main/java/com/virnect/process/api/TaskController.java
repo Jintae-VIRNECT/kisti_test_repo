@@ -44,29 +44,6 @@ public class TaskController {
     private final TaskService taskService;
 
     /**
-     * 신규 할당된 하위작업 유무 조회
-     *
-     * @param workerUUID 사용자 식별자
-     * @return
-     */
-    @ApiOperation(value = "신규 할당된 하위작업 유무 조회")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
-    })
-    @GetMapping("/newWork")
-    public ResponseEntity<ApiResponse<RecentSubProcessResponse>> getNewWork(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
-            @RequestParam(value = "workerUUID") String workerUUID) {
-        if (workerUUID.isEmpty()) {
-            log.info("[workerUUID] => [{}]", workerUUID);
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<RecentSubProcessResponse> responseMessage = this.taskService.getNewWork(workspaceUUID, workerUUID);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    /**
      * 컨텐츠 파일의 작업 조회
      *
      * @param contentUUID 콘텐츠 식별자
@@ -112,6 +89,10 @@ public class TaskController {
         ApiResponse<ProcessContentAndTargetResponse> responseMessage = this.taskService.getRelatedInfoOfProcess(taskId);
         return ResponseEntity.ok(responseMessage);
     }
+
+    /**
+     * Metadata API Remark
+     */
 
     /**
      * 작업들의 메타데이터 가져오기
@@ -177,61 +158,22 @@ public class TaskController {
     }
 
     /**
-     * 해당일의 시간대별 하위작업보고수 조회
-     *
-     * @param targetDate 조회할 날짜
-     * @param status     조회할 상태
-     * @return
+     *  ISSUES API Remark
      */
-    @ApiOperation(value = "해당일의 시간대별 하위작업보고수 조회", tags = "unused")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetDate", value = "조회할 날짜", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "status", value = "조회할 상태", dataType = "string", paramType = "query", required = false)
-    })
-    @GetMapping("/hourlyReports/{targetDate}")
-    public ResponseEntity<ApiResponse<HourlyReportCountListResponse>> getHourlyReports(@PathVariable("targetDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String targetDate, @RequestParam(required = false, value = "status") String status) {
-        if (targetDate.isEmpty()) {
-            log.info("[targetDate] => [{}]", targetDate);
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<HourlyReportCountListResponse> apiResponse = this.taskService.getHourlyReports(targetDate, status);
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @ApiOperation(value = "해당월의 일별 통계 조회", tags = "Statistics")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "month", value = "연월(YYYY-MM)", dataType = "string", paramType = "query", required = true, example = "2020-03")
-    })
-    @GetMapping("/dailyTotalRateAtMonth")
-    public ResponseEntity<ApiResponse<MonthlyStatisticsResponse>> getDailyTotalRateAtMonth(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @RequestParam("month") String month) {
-        if (month.isEmpty()) {
-            log.info("[workspaceUUID] => [{}], [month] => [{}]", workspaceUUID, month);
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<MonthlyStatisticsResponse> dailyTotalApiResponse = this.taskService.getDailyTotalRateAtMonth(workspaceUUID, month);
-        return ResponseEntity.ok(dailyTotalApiResponse);
-    }
-
-    /**********************************************************************
-     *  ISSUES ************************************************************
-     **********************************************************************/
 
     /**
      * 이슈 목록 조회 (이전 /tasks/issues?inout=IN)
-     *
-     * @param searchType 검색분류
-     * @param search     검색어
+     * @param workspaceUUID
+     * @param search
+     * @param myUUID
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "이슈 목록 조회", tags = "Issues", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate")
+    @ApiOperation(value = "이슈 목록 조회", tags = "Issues", notes = "searchType 없앰. 정렬 컬럼명은 updatedDate")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "searchType", value = "검색분류(TASK_NAME, SUBTASK_NAME, STEP_NAME, USER_NAME, NONE)", dataType = "object", paramType = "query", defaultValue = "NONE"),
-            @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "search", value = "검색어(사용자 이메일, 닉네임, 작업명, 하위 작업명, 이슈 내용, 단계명)", dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 이슈용)", dataType = "string", paramType = "query", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
@@ -239,44 +181,44 @@ public class TaskController {
     @GetMapping("/issues")
     public ResponseEntity<ApiResponse<IssuesResponse>> getIssues(
             @RequestParam(value = "workspaceUUID", required = false, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8") String workspaceUUID
-            , @RequestParam(value = "searchType", required = false, defaultValue = "NONE") SearchType searchType
             , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "myUUID", required = false) String myUUID
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<IssuesResponse> issuesResponseApiResponse = null;
+        ApiResponse<IssuesResponse> issuesResponseApiResponse = this.taskService.getIssuesIn(myUUID, workspaceUUID, search, pageable.of());
         // 검색어가 없다면 검색분류도 없는 것으로 처리.
-        if (search == null || search.isEmpty()) {
-            searchType = SearchType.NONE;
-        }
-        switch (searchType) {
-            // 사용자명 검색시
-            case USER_NAME:
-                // 작업내에서의 사용자명 검색시
-                issuesResponseApiResponse = this.taskService.getIssuesInSearchUserName(null, workspaceUUID, search, pageable.of());
-                break;
-            // 검색어가 비어 있을 경우
-            case NONE:
-                issuesResponseApiResponse = this.taskService.getIssuesIn(null, workspaceUUID, pageable.of());
-                break;
-            // 작업, 하위작업, 단계으로 검색시
-            default:
-                // 단계 내에서 작업, 하위작업, 단계을 검색
-                switch (searchType) {
-                    // 작업으로 검색시
-                    case TASK_NAME:
-                        issuesResponseApiResponse = this.taskService.getIssuesInSearchProcessTitle(workspaceUUID, search, pageable.of());
-                        break;
-                    // 하위 작업으로 검색시
-                    case SUBTASK_NAME:
-                        issuesResponseApiResponse = this.taskService.getIssuesInSearchSubProcessTitle(workspaceUUID, search, pageable.of());
-                        break;
-                    // 단계로 검색시
-                    case STEP_NAME:
-                        issuesResponseApiResponse = this.taskService.getIssuesInSearchJobTitle(workspaceUUID, search, pageable.of());
-                        break;
-                    default:
-                        throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-                }
-        }
+//        if (search == null || search.isEmpty()) {
+//            searchType = SearchType.NONE;
+//        }
+//        switch (searchType) {
+//            // 사용자명 검색시
+//            case USER_NAME:
+//                // 작업내에서의 사용자명 검색시
+//                issuesResponseApiResponse = this.taskService.getIssuesInSearchUserName(null, workspaceUUID, search, pageable.of());
+//                break;
+//            // 검색어가 비어 있을 경우
+//            case NONE:
+//                issuesResponseApiResponse = this.taskService.getIssuesIn(null, workspaceUUID, pageable.of());
+//                break;
+//            // 작업, 하위작업, 단계으로 검색시
+//            default:
+//                // 단계 내에서 작업, 하위작업, 단계을 검색
+//                switch (searchType) {
+//                    // 작업으로 검색시
+//                    case TASK_NAME:
+//                        issuesResponseApiResponse = this.taskService.getIssuesInSearchProcessTitle(workspaceUUID, search, pageable.of());
+//                        break;
+//                    // 하위 작업으로 검색시
+//                    case SUBTASK_NAME:
+//                        issuesResponseApiResponse = this.taskService.getIssuesInSearchSubProcessTitle(workspaceUUID, search, pageable.of());
+//                        break;
+//                    // 단계로 검색시
+//                    case STEP_NAME:
+//                        issuesResponseApiResponse = this.taskService.getIssuesInSearchJobTitle(workspaceUUID, search, pageable.of());
+//                        break;
+//                    default:
+//                        throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+//                }
+//        }
 
         return ResponseEntity.ok(issuesResponseApiResponse);
     }
@@ -302,6 +244,37 @@ public class TaskController {
     }
 
     /**
+     * 트러블 메모 목록 조회 (이전 /tasks/issues?inout=OUT)
+     * @param workspaceUUID
+     * @param search
+     * @param myUUID
+     * @param pageable
+     * @return
+     */
+    @ApiOperation(value = "트러블 메모 목록 조회", tags = "Issues", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate.\n 특정 작업 등에 얽매이지 않는다. 현재는 JOB_ID가 null인 것을 리턴.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+    })
+    @GetMapping("/troubleMemos")
+    public ResponseEntity<ApiResponse<IssuesResponse>> getTroubleMemo(
+            @RequestParam(value = "workspaceUUID", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8") String workspaceUUID
+            , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "myUUID", required = false) String myUUID
+            , @ApiIgnore PageRequest pageable) {
+        if (Objects.isNull(workspaceUUID)) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<IssuesResponse> issuesResponseApiResponse =  this.taskService.getIssuesOut(myUUID, workspaceUUID, search, pageable.of());
+
+        return ResponseEntity.ok(issuesResponseApiResponse);
+    }
+
+    /**
      * 트러블 메모 상세 조회
      *
      * @param troubleMemoId
@@ -322,59 +295,8 @@ public class TaskController {
     }
 
     /**
-     * 트러블 메모 목록 조회 (이전 /tasks/issues?inout=OUT)
-     *
-     * @param searchType 검색분류
-     * @param search     검색어
-     * @param pageable
-     * @return
+     * PAPERS API Remark
      */
-    @ApiOperation(value = "트러블 메모 목록 조회", tags = "Issues", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate.\n 특정 작업 등에 얽매이지 않는다. 현재는 JOB_ID가 null인 것을 리턴.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "searchType", value = "검색분류(USER_NAME, NONE)", dataType = "object", paramType = "query", defaultValue = "NONE"),
-            @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
-    })
-    @GetMapping("/troubleMemos")
-    public ResponseEntity<ApiResponse<IssuesResponse>> getTroubleMemo(
-            @RequestParam(value = "workspaceUUID", required = true) String workspaceUUID
-            , @RequestParam(value = "searchType", required = false, defaultValue = "NONE") SearchType searchType
-            , @RequestParam(value = "search", required = false) String search
-            , @RequestParam(value = "userUUID", required = false) String userUUID
-            , @ApiIgnore PageRequest pageable) {
-        if (Objects.isNull(workspaceUUID)) {
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<IssuesResponse> issuesResponseApiResponse = null;
-
-        // 검색어가 없다면 검색분류도 없는 것으로 처리.
-        if (search == null || search.isEmpty()) {
-            searchType = SearchType.NONE;
-        }
-        switch (searchType) {
-            // 사용자명 검색시
-            case USER_NAME:
-                // 작업외에서의 사용자명 검색시
-                issuesResponseApiResponse = this.taskService.getIssuesOutSearchUserName(search, workspaceUUID, pageable.of());
-                break;
-            // 검색어가 비어 있을 경우
-            case NONE:
-                issuesResponseApiResponse = this.taskService.getIssuesOut(userUUID, workspaceUUID, pageable.of());
-                break;
-            default:
-                throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        return ResponseEntity.ok(issuesResponseApiResponse);
-    }
-
-    /***********************************************************************
-     * PAPERS **************************************************************
-     ***********************************************************************/
 
     /**
      * 페이퍼 목록 조회 (이전 리포트 목록 조회)
@@ -389,22 +311,23 @@ public class TaskController {
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "taskId", value = "작업 식별자 - 작업내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "subTaskId", value = "하위작업 식별자 - 하위작업내에서 조회", dataType = "string", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "search", value = "검색어 - 현재 사용하지 않음.", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어 - 사용자 이메일, 사용자 닉네임.", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "reported", value = "보고일 필터링 여부(true, false)", dataType = "Boolean", paramType = "query", defaultValue = "false"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건) - ex)reported_date,desc", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건) - ex)reported_date,desc", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
+            @ApiImplicitParam(name = "myUUID", value="사용자 식별자 (내 페이퍼 보기용)", dataType="String", paramType="query")
     })
     @GetMapping("/papers")
     public ResponseEntity<ApiResponse<ReportsResponse>> getPapers(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @RequestParam(value = "userUUID", required = false) String userUUID
             , @RequestParam(value = "taskId", required = false) Long taskId
             , @RequestParam(value = "subTaskId", required = false) Long subTaskId
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "reported", required = false) Boolean reported
+            , @RequestParam(value = "myUUID", required = false) String myUUID
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(userUUID, workspaceUUID, taskId, subTaskId, search, reported, pageable.of());
+        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(myUUID, workspaceUUID, taskId, subTaskId, search, reported, pageable.of());
         return ResponseEntity.ok(reportsResponseApiResponse);
     }
 
@@ -429,8 +352,8 @@ public class TaskController {
         return ResponseEntity.ok(reportInfoResponseApiResponse);
     }
 
-    /*
-    Statics
+    /**
+     * Statics API Remark
      */
 
     /**
@@ -466,33 +389,100 @@ public class TaskController {
     }
 
     /**
-     * 전체 작업의 목록을 조회
+     * 해당 월의 일별 통계 조회
+     * @param workspaceUUID
+     * @param month
+     * @return
+     */
+    @ApiOperation(value = "해당월의 일별 통계 조회", tags = "Statistics")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "month", value = "연월(YYYY-MM)", dataType = "string", paramType = "query", required = true, example = "2020-03")
+    })
+    @GetMapping("/dailyTotalRateAtMonth")
+    public ResponseEntity<ApiResponse<MonthlyStatisticsResponse>> getDailyTotalRateAtMonth(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam("month") String month) {
+        if (month.isEmpty()) {
+            log.info("[workspaceUUID] => [{}], [month] => [{}]", workspaceUUID, month);
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MonthlyStatisticsResponse> dailyTotalApiResponse = this.taskService.getDailyTotalRateAtMonth(workspaceUUID, month);
+        return ResponseEntity.ok(dailyTotalApiResponse);
+    }
+
+    /**
+     * 해당일의 시간대별 하위작업보고수 조회
      *
-     * @param search   검색어
-     * @param pageable - 페이징 요청
+     * @param targetDate 조회할 날짜
+     * @param status     조회할 상태
+     * @return
+     */
+    @ApiOperation(value = "해당일의 시간대별 하위작업보고수 조회", tags = "unused")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetDate", value = "조회할 날짜", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "status", value = "조회할 상태", dataType = "string", paramType = "query", required = false)
+    })
+    @GetMapping("/hourlyReports/{targetDate}")
+    public ResponseEntity<ApiResponse<HourlyReportCountListResponse>> getHourlyReports(@PathVariable("targetDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String targetDate, @RequestParam(required = false, value = "status") String status) {
+        if (targetDate.isEmpty()) {
+            log.info("[targetDate] => [{}]", targetDate);
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<HourlyReportCountListResponse> apiResponse = this.taskService.getHourlyReports(targetDate, status);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Process API Remark
+     */
+
+    /**
+     * 전체 작업의 목록을 조회
+     * @param workspaceUUID
+     * @param search
+     * @param myUUID
+     * @param filter
+     * @param pageable
      * @return
      */
     @ApiOperation(value = "전체 작업 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "searchType", value = "검색 타입 현재 안 씀.", dataType="string", paramType = "query"),
-            @ApiImplicitParam(name = "search", value = "검색어 - 해당 검색어로 작업 제목 및 사용자 이름 검색", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "검색어 - 작업 제목, 사용자 이메일, 닉네임 검색", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 작업)", dataType="string", paramType = "query"),
             @ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reportedDate, name, startDate, endDate, state)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자 (내 작업)", dataType="string", paramType = "query")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reportedDate, name, startDate, endDate, state)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc")
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ProcessListResponse>> getProcessList(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @RequestParam(value = "searchType", required = false) SearchType searchType
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "filter", required = false) List<Conditions> filter
-            , @RequestParam(value = "userUUID", required = false) String userUUID
+            , @RequestParam(value = "myUUID", required = false) String myUUID
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(workspaceUUID, search, userUUID, filter, pageable.of());
+        ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(myUUID, workspaceUUID, search, filter, pageable.of());
         return ResponseEntity.ok(processListApiResponse);
+    }
+
+    /**
+     * 타겟 데이터로 활성화 된 작업 조회
+     * @param targetData
+     * @return
+     */
+    @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
+    })
+    @GetMapping("/created/target/{targetData}")
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {
+        if (targetData.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
+        }
+        ApiResponse<ProcessInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetData);
+        return ResponseEntity.ok(responseMessage);
     }
 
     /**
@@ -511,26 +501,6 @@ public class TaskController {
 //            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 //        }
         ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(taskId, actorUUID);
-        return ResponseEntity.ok(processInfoResponseApiResponse);
-    }
-
-    /**
-     * 작업상세조회
-     *
-     * @param taskId 작업 식별자
-     * @return
-     */
-    @ApiOperation(value = "작업상세조회", notes = "작업 상세내용을 조회합니다.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
-    })
-    @GetMapping("/{taskId}")
-    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfo(@PathVariable("taskId") Long taskId) {
-        if (Objects.isNull(taskId)) {
-            log.info("[taskId] => [{}]", taskId);
-            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.getProcessInfo(taskId);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
@@ -604,6 +574,30 @@ public class TaskController {
         ResponseMessage responseMessage = this.taskService.updateProcess(editTaskRequest);
         return ResponseEntity.ok(responseMessage);
     }
+
+    /**
+     * 작업상세조회
+     *
+     * @param taskId 작업 식별자
+     * @return
+     */
+    @ApiOperation(value = "작업상세조회", notes = "작업 상세내용을 조회합니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "path", required = true, example = "1")
+    })
+    @GetMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfo(@PathVariable("taskId") Long taskId) {
+        if (Objects.isNull(taskId)) {
+            log.info("[taskId] => [{}]", taskId);
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.getProcessInfo(taskId);
+        return ResponseEntity.ok(processInfoResponseApiResponse);
+    }
+
+    /**
+     * SubTask API Remark
+     */
 
     /**
      * 하위작업목록조회
@@ -710,6 +704,29 @@ public class TaskController {
         return ResponseEntity.ok(myWorkListResponseApiResponse);
     }
 
+    /**
+     * 신규 할당된 하위작업 유무 조회
+     *
+     * @param workerUUID 사용자 식별자
+     * @return
+     */
+    @ApiOperation(value = "신규 할당된 하위작업 유무 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
+    })
+    @GetMapping("/newWork")
+    public ResponseEntity<ApiResponse<RecentSubProcessResponse>> getNewWork(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
+            @RequestParam(value = "workerUUID") String workerUUID) {
+        if (workerUUID.isEmpty()) {
+            log.info("[workerUUID] => [{}]", workerUUID);
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RecentSubProcessResponse> responseMessage = this.taskService.getNewWork(workspaceUUID, workerUUID);
+        return ResponseEntity.ok(responseMessage);
+    }
+
     @ApiOperation(value = "타겟 데이터의 하위작업 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
@@ -753,7 +770,11 @@ public class TaskController {
     }
 
     /**
-     * 단계목록조회
+     * Step API Remark
+     */
+
+    /**
+     * 단계 목록 조회
      *
      * @param subTaskId
      * @param pageable
@@ -767,34 +788,21 @@ public class TaskController {
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건- priority, name, result, isReported)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자(내 단계용)", dataType = "string", paramType = "query")
     })
     @GetMapping("/subTasks/{subTaskId}/steps")
     public ResponseEntity<ApiResponse<JobListResponse>> getJobs(
             @PathVariable("subTaskId") Long subTaskId
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "filter", required = false) List<Conditions> filter
-            , @RequestParam(value = "userUUID", required = false) String userUUID
+            , @RequestParam(value = "myUUID", required = false) String myUUID
             , @ApiIgnore PageRequest pageable) {
         if (subTaskId == null) {
             log.info("[subTaskId] => [{}]", subTaskId);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<JobListResponse> jobListResponseApiResponse = this.taskService.getJobs(userUUID, subTaskId, search, filter, pageable.of());
+        ApiResponse<JobListResponse> jobListResponseApiResponse = this.taskService.getJobs(myUUID, subTaskId, search, filter, pageable.of());
         return ResponseEntity.ok(jobListResponseApiResponse);
-    }
-
-    @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
-    })
-    @GetMapping("/created/target/{targetData}")
-    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {
-        if (targetData.isEmpty()) {
-            throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
-        }
-        ApiResponse<ProcessInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetData);
-        return ResponseEntity.ok(responseMessage);
     }
 
     @ApiOperation(value = "사용자에게 할당된 하위작업수 및 진행중인 하위작업수 조회")
@@ -844,8 +852,11 @@ public class TaskController {
     }
 
     @GetMapping("/temp")
-    public ResponseEntity<String> temp(){
-        this.taskService.temp();
+    public ResponseEntity<String> temp(
+            @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+    ){
+        this.taskService.temp(search, workspaceUUID);
         return ResponseEntity.ok("200");
     }
 

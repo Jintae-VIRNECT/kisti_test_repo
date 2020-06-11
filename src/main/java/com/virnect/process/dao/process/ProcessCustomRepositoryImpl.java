@@ -109,7 +109,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Process> getMyWork(String title, String workerUUID, Pageable pageable) {
+    public Page<Process> getMyTask(String myUUID, String workspaceUUID, String title, Pageable pageable) {
         QProcess qProcess = QProcess.process;
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QTarget qTarget = QTarget.target;
@@ -118,11 +118,11 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
         query.join(qProcess.subProcessList, qSubProcess);
         query.join(qProcess.targetList, qTarget);
 
-        query.where(qSubProcess.workerUUID.eq(workerUUID));
+        query.where(qSubProcess.workerUUID.eq(myUUID));
 
         // 검색어가 들어왔을 경우
         if (Objects.nonNull(title)) {
-            query.where(qProcess.name.contains("title"));
+            query.where(qProcess.name.contains(title));
         }
 
         query.groupBy(qProcess.id);

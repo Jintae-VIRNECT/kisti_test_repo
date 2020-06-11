@@ -41,5 +41,5 @@ public interface ProcessCustomRepository {
      */
     Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 
-    Page<Process> getMyWork(String title, String workerUUID, Pageable pageable);
+    Page<Process> getMyTask(String myUUID, String workspaceUUID, String title, Pageable pageable);
 }

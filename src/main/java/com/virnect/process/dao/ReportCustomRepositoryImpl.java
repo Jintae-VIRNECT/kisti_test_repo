@@ -28,7 +28,7 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public ReportCustomRepositoryImpl() { super(Report.class); }
 
     @Override
-    public Page<Report> getPages(String userUUID, String workspaceUUID, Long processId, Long subProcessId, String workerUUID, Boolean reported, Pageable pageable) {
+    public Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, List<String> userUUIDList, Boolean reported, Pageable pageable) {
         QProcess qProcess = QProcess.process;
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QJob qJob = QJob.job;
@@ -40,8 +40,8 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
         query.join(qJob.subProcess, qSubProcess);
         query.join(qSubProcess.process, qProcess);
 
-        if (Objects.nonNull(userUUID)) {
-            query = query.where(qSubProcess.workerUUID.eq(userUUID));
+        if (Objects.nonNull(myUUID)) {
+            query = query.where(qSubProcess.workerUUID.eq(myUUID));
         }
 
         if (Objects.nonNull(workspaceUUID)) {
@@ -50,11 +50,13 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
         if (Objects.nonNull(processId)) {
             query = query.where(qProcess.id.eq(processId));
         }
+
         if (Objects.nonNull(subProcessId)) {
             query = query.where(qSubProcess.id.eq(subProcessId));
         }
-        if (Objects.nonNull(workerUUID)) {
-            query = query.where(qSubProcess.workerUUID.eq(workerUUID));
+
+        if (!userUUIDList.isEmpty()) {
+            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
         }
 
         if (Objects.nonNull(reported)) {
