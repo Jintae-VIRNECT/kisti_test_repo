@@ -50,6 +50,7 @@
           ></set-video> -->
 
             <set-record></set-record>
+            <set-resolution></set-resolution>
           </template>
           <template v-else-if="tabview === 'language'">
             <set-language></set-language>
@@ -64,6 +65,7 @@ import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
+import SetResolution from '../section/WorkspaceSetResolution'
 //import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 
@@ -73,6 +75,7 @@ export default {
     SetAudio,
     SetLanguage,
     SetRecord,
+    SetResolution,
     MicTest,
     //SetVideo,
     DeviceDenied,

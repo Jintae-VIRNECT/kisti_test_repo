@@ -28,6 +28,8 @@ export default {
     checked() {
       if (this.checked) {
         this.$emit('toggle', this.value)
+      } else {
+        this.$emit('toggle', false)
       }
     },
   },

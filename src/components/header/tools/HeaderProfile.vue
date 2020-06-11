@@ -25,6 +25,9 @@
         </button>
       </div>
       <div class="popover-profile__link">
+        <button @click="fileList">로컬 녹화 파일</button>
+      </div>
+      <div class="popover-profile__link">
         <button @click="logout">로그아웃</button>
       </div>
       <div class="popover-profile__version">web v.2.0</div>
@@ -59,6 +62,12 @@ export default {
         auth.logout()
         // auth.login()
       })
+    },
+    fileList() {
+      this.$eventBus.$emit('popover:close')
+
+      //show media chunk list
+      this.$eventBus.$emit('filelist:open')
     },
   },
 

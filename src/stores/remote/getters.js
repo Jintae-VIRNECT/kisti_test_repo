@@ -36,4 +36,11 @@ export default {
   language: state => state.settings.language,
   localRecordLength: state => state.settings.localRecordLength,
   recordResolution: state => state.settings.recordResolution,
+  localRecordInterval: state => state.settings.localRecordInterval,
+  allowPointing: state => state.settings.allowPointing,
+  allowLocalRecording: state => state.settings.allowLocalRecording,
+
+  //screen stream for local recording
+  screenStream: state => state.settings.screenStream,
+  localRecordTarget: state => state.settings.localRecordTarget,
 }

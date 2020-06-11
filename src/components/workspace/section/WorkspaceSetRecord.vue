@@ -16,16 +16,20 @@
       </figure>
 
       <figure class="setting__figure">
-        <p class="setting__label">녹화 영상 해상도</p>
+        <p class="setting__label">녹화 간격</p>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setRecResolution"
-          :options="localRecResOpt"
+          @changeValue="setRecInterval"
+          :options="localRecIntervalOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="recordResolution"
+          :defaultValue="localRecordInterval"
         >
         </r-select>
+        <p class="setting__label">
+          ᛫ 장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에 녹화
+          파일을 시간 간격으로 나눠서 생성합니다.
+        </p>
       </figure>
     </div>
   </section>
@@ -55,18 +59,10 @@ export default {
         },
       ],
 
-      localRecResOpt: [
+      localRecIntervalOpt: [
         {
-          value: '360p',
-          text: '360p',
-        },
-        {
-          value: '480p',
-          text: '480p',
-        },
-        {
-          value: '720p',
-          text: '720p',
+          value: '60',
+          text: '1분',
         },
       ],
     }
@@ -75,15 +71,15 @@ export default {
     RSelect,
   },
   computed: {
-    ...mapGetters(['localRecordLength', 'recordResolution']),
+    ...mapGetters(['localRecordLength', 'localRecordInterval']),
   },
   methods: {
-    ...mapActions(['setLocalRecordLength', 'setRecordResolution']),
+    ...mapActions(['setLocalRecordLength', 'setLocalRecordInterval']),
     setRecLength(newRecLength) {
       this.setLocalRecordLength(newRecLength.value)
     },
-    setRecResolution(newResolution) {
-      this.setRecordResolution(newResolution.value)
+    setRecInterval(newInterval) {
+      this.setLocalRecordInterval(newInterval.value)
     },
   },
   created() {
@@ -91,9 +87,10 @@ export default {
     if (time) {
       this.setLocalRecordLength(time)
     }
-    const resolution = localStorage.getItem('recordingResolution')
-    if (resolution) {
-      this.setRecResolution(resolution)
+
+    const interval = localStorage.getItem('recordingInterval')
+    if (interval) {
+      this.setLocalRecordInterval(interval)
     }
   },
 }

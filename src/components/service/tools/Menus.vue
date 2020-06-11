@@ -3,12 +3,19 @@
     <capture></capture>
     <record></record>
     <local-record></local-record>
+    <local-record-list></local-record-list>
     <setting></setting>
   </div>
 </template>
 
 <script>
-import { Capture, Record, LocalRecord, Setting } from './partials'
+import {
+  Capture,
+  Record,
+  LocalRecord,
+  Setting,
+  LocalRecordList,
+} from './partials'
 
 export default {
   name: 'Menus',
@@ -16,6 +23,7 @@ export default {
     Capture,
     Record,
     LocalRecord,
+    LocalRecordList,
     Setting,
   },
   data() {
