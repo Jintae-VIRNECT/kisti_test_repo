@@ -113,7 +113,6 @@ export const getUserObject = stream => {
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true
-    Store.commit('myRole', role)
   }
 
   return streamObj
