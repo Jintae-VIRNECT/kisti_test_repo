@@ -90,6 +90,8 @@ export default {
       this.recorder.mimeType = this.mimeType
 
       //db 인서트
+      let today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
+
       this.recorder.ondataavailable = blob => {
         //RecordRTC.invokeSaveAsDialog(blob, 'test.mp4')
 
@@ -97,7 +99,6 @@ export default {
         let privateId = uuid()
 
         //make file name
-        let today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
         let fileNumber = this.getFileNumberString(this.fileCount)
         this.fileName = today + '_' + fileNumber + '.mp4'
 

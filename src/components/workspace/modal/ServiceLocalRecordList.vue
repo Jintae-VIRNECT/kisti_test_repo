@@ -111,7 +111,7 @@ export default {
       let chunks = await IDBHelper.getMediaChunkArrays(uuids)
       if (chunks && chunks.length > 0) {
         if (chunks.length === 1) {
-          RecordRTC.invokeSaveAsDialog(chunks.blob, chunks.fileName)
+          RecordRTC.invokeSaveAsDialog(chunks[0].blob, chunks[0].fileName)
         } else {
           let zip = new JSZip()
 
