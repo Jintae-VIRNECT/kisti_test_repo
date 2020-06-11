@@ -10,7 +10,7 @@
             :style="`background-image: url('${me.image}')`"
           />
         </div>
-        <span class="name">{{ me.lastName }} {{ me.firstName }}</span>
+        <span class="name">{{ me.nickname }}</span>
         <span class="email">{{ me.email }}</span>
         <el-form ref="form" :model="form" @submit.native.prevent="submit">
           <el-form-item :label="$t('certification.password')">
