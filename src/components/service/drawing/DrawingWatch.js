@@ -1,14 +1,18 @@
-import { getCanvasSize } from 'utils/drawing'
+// import { getCanvasSize } from 'utils/drawing'
 import { hexToRGBA } from 'utils/color'
 
 export default {
   watch: {
-    fileReader(value) {
-      if (value) {
-        setTimeout(() => {
-          this.initCanvas()
-        }, 500)
-      }
+    file: {
+      deep: true,
+      handler(value) {
+        console.log(value)
+        if (value && value.id) {
+          setTimeout(() => {
+            this.initCanvas()
+          }, 500)
+        }
+      },
     },
     canUseChannel(value) {
       if (this.canvas) {
@@ -42,29 +46,29 @@ export default {
         this.canvas.renderAll()
       }
     },
-    'tools.drawingColor'(color) {
+    'tools.color'(color) {
       if (this.canvas) {
         this.canvas.freeDrawingBrush.color = hexToRGBA(
           color,
-          this.tools.drawingOpacity,
+          this.tools.opacity,
         )
       }
       if (this.cursor) {
-        this.cursor.setColor(hexToRGBA(color, this.tools.drawingOpacity))
+        this.cursor.setColor(hexToRGBA(color, this.tools.opacity))
       }
     },
-    'tools.drawingOpacity'(opacity) {
+    'tools.opacity'(opacity) {
       if (this.canvas) {
         this.canvas.freeDrawingBrush.color = hexToRGBA(
-          this.tools.drawingColor,
+          this.tools.color,
           opacity,
         )
       }
       if (this.cursor) {
-        this.cursor.setColor(hexToRGBA(this.tools.drawingColor, opacity))
+        this.cursor.setColor(hexToRGBA(this.tools.color, opacity))
       }
     },
-    'tools.lineSize'(size) {
+    'tools.lineWidth'(size) {
       if (this.canvas) {
         this.canvas.freeDrawingBrush.width = size
       }
@@ -72,48 +76,48 @@ export default {
         this.cursor.setRadius(size / 2)
       }
     },
-    shareDocSelect: {
-      handler(select, oldSelect) {
-        if (select && oldSelect && select.id !== oldSelect.id) {
-          if (this.canvas) {
-            this.canvas.discardActiveObject()
-          }
-        }
+    // shareDocSelect: {
+    //   handler(select, oldSelect) {
+    //     if (select && oldSelect && select.id !== oldSelect.id) {
+    //       if (this.canvas) {
+    //         this.canvas.discardActiveObject()
+    //       }
+    //     }
 
-        if (select) {
-          const canvas = this.canvas
-          const json = select.json
+    //     if (select) {
+    //       const canvas = this.canvas
+    //       const json = select.json
 
-          if (
-            oldSelect === null ||
-            JSON.stringify(canvas.toJSON()) !== JSON.stringify(json)
-          ) {
-            canvas.loadFromJSON(json, () => {
-              const parent = this.$el.parentNode
-              const canvasSize = getCanvasSize(
-                parent.offsetWidth,
-                parent.offsetHeight,
-                json.backgroundImage.width,
-                json.backgroundImage.height,
-              )
-              canvas.setWidth(canvasSize.width)
-              canvas.setHeight(canvasSize.height)
-              canvas.backgroundImage.set({
-                scaleX: canvasSize.scale,
-                scaleY: canvasSize.scale,
-              })
-              canvas.renderAll.bind(canvas)()
+    //       if (
+    //         oldSelect === null ||
+    //         JSON.stringify(canvas.toJSON()) !== JSON.stringify(json)
+    //       ) {
+    //         canvas.loadFromJSON(json, () => {
+    //           const parent = this.$el.parentNode
+    //           const canvasSize = getCanvasSize(
+    //             parent.offsetWidth,
+    //             parent.offsetHeight,
+    //             json.backgroundImage.width,
+    //             json.backgroundImage.height,
+    //           )
+    //           canvas.setWidth(canvasSize.width)
+    //           canvas.setHeight(canvasSize.height)
+    //           canvas.backgroundImage.set({
+    //             scaleX: canvasSize.scale,
+    //             scaleY: canvasSize.scale,
+    //           })
+    //           canvas.renderAll.bind(canvas)()
 
-              this.stackClear()
+    //           this.stackClear()
 
-              if (this.canvas.getObjects().length > 0) {
-                this.stackAddFirst()
-              }
-            })
-          }
-        }
-      },
-      deep: true,
-    },
+    //           if (this.canvas.getObjects().length > 0) {
+    //             this.stackAddFirst()
+    //           }
+    //         })
+    //       }
+    //     }
+    //   },
+    //   deep: true,
+    // },
   },
 }

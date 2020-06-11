@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     pick() {
-      return this.tools.size
+      return this.tools.fontSize
     },
   },
   methods: {

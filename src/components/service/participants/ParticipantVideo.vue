@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.stream">
+      <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -14,9 +14,15 @@
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
+        <audio
+          :srcObject.prop="participant.stream"
+          autoplay
+          playsinline
+          loop
+        ></audio>
         <img
           class="participant-video__profile-background"
-          :src="participant.path"
+          :src="participant.path ? participant.path : 'default'"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -39,14 +45,14 @@
       <div class="participant-video__device">
         <img
           :src="
-            participant.mic
+            participant.audio
               ? require('assets/image/ic_mic_on.svg')
               : require('assets/image/ic_mic_off.svg')
           "
         />
         <img
           :src="
-            participant.audio
+            participant.speaker
               ? require('assets/image/ic_volume_on.svg')
               : require('assets/image/ic_volume_off.svg')
           "
@@ -74,11 +80,11 @@
 
           <ul class="video-popover">
             <li>
-              <button class="video-pop__button" @click="">
+              <button class="video-pop__button" @click="mute">
                 음소거
               </button>
             </li>
-            <li>
+            <li v-if="myRole === EXPERT_LEADER">
               <button class="video-pop__button" @click="disconnectUser">
                 내보내기
               </button>
@@ -103,7 +109,6 @@ export default {
   },
   data() {
     return {
-      onSpeaker: true,
       hover: false,
       btnActive: false,
     }
@@ -112,7 +117,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker']),
+    ...mapGetters(['myRole', 'mainView', 'speaker']),
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -137,18 +142,18 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.stream) return
+      if (!this.participant.video) return
       this.setMainView(this.participant.id)
     },
     profileImageError(event) {
       event.target.style.display = 'none'
     },
-    mute(e) {
-      e.preventDefault()
-      e.stopPropagation()
-
-      this.onSpeaker = !this.onSpeaker
-      // this.$call.audioOnOff(this.participant.uuid, this.onSpeaker)
+    mute() {
+      const mute = this.participant.mute
+      this.$call.mute(this.participant.connectionId, !mute)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('popover:close')
+      })
     },
     disconnectUser() {
       this.$call.disconnect(this.participant.connectionId)
@@ -156,6 +161,8 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    console.log(this.myRole)
+  },
 }
 </script>

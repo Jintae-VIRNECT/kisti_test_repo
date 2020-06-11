@@ -3,7 +3,7 @@
     <toggle-button
       slot="body"
       description="스피커 on/off"
-      :size="34"
+      size="2.429rem"
       :active="speaker"
       :activeSrc="require('assets/image/call/gnb_ic_volum_on.svg')"
       :inactiveSrc="require('assets/image/call/gnb_ic_volum_off.svg')"
@@ -32,7 +32,7 @@ export default {
       let speaker = !this.speaker
       this.callSpeaker(speaker)
 
-      // this.$call.speakerOnOff(speaker)
+      this.$call.speaker(speaker)
     },
   },
 

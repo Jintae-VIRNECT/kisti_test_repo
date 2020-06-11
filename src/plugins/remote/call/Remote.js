@@ -10,7 +10,8 @@ const _ = {
   publisher: null,
   subscribers: [],
   resolution: null,
-  join: async (roomInfo, account, users) => {
+  join: async (roomInfo, account, role) => {
+    Store.commit('clear')
     try {
       const params = {
         sessionId: roomInfo.sessionId,
@@ -26,7 +27,7 @@ const _ = {
       addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: account.uuid,
-        serverData: users,
+        roleType: role,
       }
 
       const iceServer = [
@@ -52,15 +53,20 @@ const _ = {
         audioSource: undefined, // The source of audio. If undefined default microphone
         videoSource: undefined, //screen ? 'screen' : undefined, // The source of video. If undefined default webcam
         publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+        publishVideo: role !== 'LEADER', // Whether you want to start publishing with your video enabled or not
         resolution: '1280x720', // The resolution of your video
         frameRate: 30, // The frame rate of your video
         insertMode: 'PREPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       })
-      _.publisher.on('streamCreated', event => {
+      _.publisher.on('streamCreated', () => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
         _.mic(Store.getters['mic'])
+      })
+      _.publisher.on('streamPropertyChanged', event => {
+        console.log(event)
+        // Store.commit('addStream', getUserObject(_.publisher.stream))
+        // _.mic(Store.getters['mic'])
       })
 
       _.session.publish(_.publisher)
@@ -72,7 +78,7 @@ const _ = {
   },
   leave: () => {
     try {
-      Store.commit('clearStreams')
+      Store.commit('clear')
       _.session.disconnect()
       _.session = null
       _.publisher = null
@@ -101,6 +107,16 @@ const _ = {
       type: 'signal:resolution',
     })
   },
+  sendMessage: (type, params) => {
+    const account = Store.getters['account']
+    params['from'] = account.uuid
+    params['to'] = []
+    _.session.signal({
+      type: `signal:${type}`,
+      to: _.session.connection,
+      data: JSON.stringify(params),
+    })
+  },
   pointing: message => {
     console.log('send pointing: ', JSON.stringify(message))
     _.session.signal({
@@ -126,16 +142,35 @@ const _ = {
   mic: active => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
+    _.session.signal({
+      data: active ? 'true' : 'false',
+      to: _.session.connection,
+      type: 'signal:mic',
+    })
   },
-  mute: (id, statue) => {
+  speaker: active => {
+    for (let subscriber of _.subscribers) {
+      subscriber.subscribeToAudio(active)
+    }
+    _.session.signal({
+      data: active ? 'true' : 'false',
+      to: _.session.connection,
+      type: 'signal:audio',
+    })
+  },
+  mute: (connectionId, mute) => {
     let idx = _.subscribers.findIndex(
-      subscriber => subscriber.id.indexOf(id) > -1,
+      subscriber => subscriber.stream.connection.connectionId === connectionId,
     )
     if (idx < 0) {
       console.log('can not find user')
       return
     }
-    _.subscribers[idx].subscribeToAudio(statue)
+    _.subscribers[idx].subscribeToAudio(!mute)
+    Store.commit('propertyChanged', {
+      connectionId: connectionId,
+      mute: mute,
+    })
   },
   disconnect: connectionId => {
     let idx = _.subscribers.findIndex(

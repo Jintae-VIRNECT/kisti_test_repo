@@ -13,6 +13,7 @@ import DrawingWatch from './DrawingWatch'
 import DrawingObject from './DrawingObject'
 import DrawingHistory from './DrawingHistory'
 import DrawingStack from './DrawingStack'
+import DrawingHandler from './DrawingHandler'
 import DrawingListener from './DrawingListener'
 
 import MixinToast from 'mixins/toast'
@@ -21,7 +22,7 @@ import { hexToRGBA } from 'utils/color'
 export default {
   name: 'DrawingCanvas',
   props: {
-    fileReader: FileReader,
+    file: Object,
     videoWidth: Number,
     videoHeight: Number,
     videoVPad: {
@@ -36,23 +37,30 @@ export default {
     DrawingObject,
     DrawingHistory,
     DrawingStack,
+    DrawingHandler,
     DrawingListener,
   ],
   data() {
     return {
       mode: 'document',
+      fileReader: null,
       isInit: false,
       canvas: null,
       cursor: null,
       drawingMode: 'line', // ('line' / 'text' / false)
       editingMode: false, // check text in editing (true / false)
       undoList: [],
+      receiveUndoList: {},
       redoList: [],
+      receiveRedoList: {},
       history: [],
     }
   },
   computed: {
     ...mapGetters(['tools']),
+    uuid() {
+      return this.account.uuid
+    },
   },
   methods: {
     /**
@@ -60,6 +68,7 @@ export default {
      * @param {String} mode :: 변경 모드  // ('line' / 'text' / false)
      */
     changeMode(mode) {
+      console.log(mode)
       this.drawingMode = mode
     },
 
@@ -94,11 +103,6 @@ export default {
           resolve(canvas)
         })
       })
-
-      // //배경을 드로잉 객체로 등록하는 방식.
-      // fabric.Image.fromURL(bgImage, function(img){
-      //     canvas.add(img);
-      // },{ crossOrigin: 'Anonymous' })
     },
 
     /**
@@ -108,11 +112,11 @@ export default {
     createCursor(canvas) {
       if (canvas) {
         // Set custom cursor
-        canvas.freeDrawingBrush.width = this.tools.lineSize
-        canvas.freeDrawingBrush.color = this.tools.drawingColor
+        canvas.freeDrawingBrush.width = this.tools.lineWidth
+        canvas.freeDrawingBrush.color = this.tools.color
         canvas.freeDrawingBrush.color = hexToRGBA(
-          this.tools.drawingColor,
-          this.tools.drawingOpacity,
+          this.tools.color,
+          this.tools.opacity,
         )
 
         // 커서 캔버스 생성.
@@ -126,7 +130,7 @@ export default {
           top: 0,
           left: 0,
           radius: canvas.freeDrawingBrush.width / 2,
-          fill: this.tools.drawingColor,
+          fill: this.tools.color,
           borderColor: '#000000',
           originX: 'center',
           originY: 'center',
@@ -142,6 +146,7 @@ export default {
      */
     initCanvas() {
       this.isInit = false
+      console.log(this.canvas)
       if (this.canvas === null) {
         const canvas = new fabric.Canvas('drawingCanvas', {
           backgroundColor: '#000000',
@@ -166,13 +171,15 @@ export default {
       bgImage.onload = () => {
         const fabricImage = new fabric.Image(bgImage)
         this.setBG(fabricImage).then(canvas => {
+          console.log(canvas)
+          console.log(canvas.getWidth(), canvas.getHeight())
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
 
-          this.addHistory(bgImage)
+          // this.addHistory(bgImage)
 
           // 히스토리 초기화
-          this.stackClear()
+          // this.stackClear()
 
           this.isInit = true
         })
@@ -180,9 +187,10 @@ export default {
       bgImage.onerror = error => {
         console.log(error)
       }
-      this.resizing(this.fileReader.result).then(result => {
-        bgImage.src = result
-      })
+      bgImage.src = this.file.img
+      // this.resizing(this.file.img).then(result => {
+      //   bgImage.src = result
+      // })
 
       return this.canvas
     },
@@ -195,14 +203,15 @@ export default {
     _sendAction(type, object, custom) {
       const aId = this.undoList.length
       const state = {
-        color: this.tools.drawingColor,
-        opacity: this.tools.drawingOpacity,
-        width: this.tools.lineSize,
-        size: this.tools.textSize,
+        color: this.tools.color,
+        opacity: this.tools.opacity,
+        width: this.tools.lineWidth,
+        size: this.tools.fontSize,
         scale: 1 / this.canvas.backgroundImage.scaleX,
       }
+      console.log(state)
       const param = getSignalParams(type, aId, object, state)
-      param.imgId = this.shareDocSelect.id
+      param.imgId = this.file.uId
 
       if (object) {
         param.oId = object.id
@@ -212,8 +221,8 @@ export default {
         state.vpad = this.videoVPad
       }
 
-      if (this.$remoteSDK) {
-        this.$remoteSDK.message(type, { ...param, ...custom })
+      if (this.$call.session) {
+        this.$call.sendMessage(type, { ...param, ...custom })
       }
 
       // tId 업데이트
@@ -225,6 +234,13 @@ export default {
         object.tId = aId
       }
     },
+  },
+  created() {
+    if (this.file && this.file.id) {
+      setTimeout(() => {
+        this.initCanvas()
+      }, 500)
+    }
   },
 }
 </script>

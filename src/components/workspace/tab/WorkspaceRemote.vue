@@ -32,6 +32,7 @@ import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
+import { EXPERT_LEADER, EXPERT } from 'utils/role'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin],
@@ -72,10 +73,15 @@ export default {
         })
 
         this.setRoomInfo(roomInfo)
+        let role = ''
+        if (roomInfo.leaderId === this.account.uuid) {
+          role = EXPERT_LEADER
+        } else {
+          role = EXPERT
+        }
 
-        const joinRtn = await this.$call.join(room, this.account, '')
+        const joinRtn = await this.$call.join(room, this.account, role)
         if (joinRtn) {
-          console.log('>>>join room 성공')
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })

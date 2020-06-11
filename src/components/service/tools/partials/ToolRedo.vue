@@ -1,8 +1,9 @@
 <template>
   <tool-button
     text="재실행"
+    :active="status"
     :src="require('assets/image/ic-tool-redo.svg')"
-    @action="clickHandler"
+    @click.stop="clickHandler"
   ></tool-button>
 </template>
 
@@ -14,13 +15,19 @@ export default {
   mixins: [toolMixin],
   data() {
     return {
-      mode: '',
       status: false,
     }
   },
   watch: {},
   methods: {
-    clickHandler() {},
+    clickHandler() {
+      this.status = true
+      // this.$eventBus.$emit(`control:${this.mode}:undo`)
+      this.$eventBus.$emit(`control:document:redo`)
+      setTimeout(() => {
+        this.status = false
+      }, 100)
+    },
   },
 
   /* Lifecycles */

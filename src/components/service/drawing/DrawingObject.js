@@ -19,13 +19,13 @@ export default {
     addTextObject(left, top) {
       const object = new fabric.IText('', {
         left: left,
-        // top: top - (this.tools.textSize / 2),
+        // top: top - (this.tools.fontSize / 2),
         top: top,
-        fill: this.tools.drawingColor,
+        fill: this.tools.color,
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.tools.textSize,
+        fontSize: this.tools.fontSize,
         lineHeight: this.lineHeight,
         hasControls: false,
       })
@@ -42,22 +42,22 @@ export default {
         } else {
           if (object.initialized) {
             this._sendAction('updateText', object)
-            this.stackAdd('text', [object.id])
+            this.stackAdd('text', object.id)
           } else {
             this._sendAction('drawText', object)
-            this.stackAdd('add', [object.id])
+            this.stackAdd('add', object.id)
           }
           object.initialized = true
         }
 
-        setTimeout(_ => {
+        setTimeout(() => {
           this.editingMode = false
         }, 100)
       })
-      object.on('changed', (event, b) => {
-        // 실시간 텍스트 변경 시
-        // this._sendAction('updateText', object);
-      })
+      // object.on('changed', (event, b) => {
+      //   // 실시간 텍스트 변경 시
+      //   // this._sendAction('updateText', object);
+      // })
     },
 
     /**
@@ -83,8 +83,8 @@ export default {
       this.canvas.renderAll()
       this.stackAdd('remove', [...ids])
 
-      if (this.$remoteSDK) {
-        this.$remoteSDK.message('clear', {
+      if (this.$call) {
+        this.$call.sendMessage('clear', {
           aId: this.undoList.length,
           oId: target.id,
           tId: target.tId,
@@ -105,15 +105,17 @@ export default {
 
       if (ids.length > 0) {
         this.canvas.getObjects().forEach(object => {
-          object.canvas.remove(object)
+          if (!('owner' in object)) {
+            object.canvas.remove(object)
+          }
           // object.visible = false;
         })
         this.canvas.renderAll()
         // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
         this.stackClear() // 전체 삭제
 
-        if (this.$remoteSDK) {
-          this.$remoteSDK.message('clearAll', { imgId: this.shareDocSelect.id })
+        if (this.$call) {
+          this.$call.sendMessage('clearAll', { imgId: this.file.id })
         }
       }
     },

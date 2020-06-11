@@ -9,7 +9,6 @@ import { merge } from 'lodash'
 import Axios from 'axios'
 import Cookies from 'js-cookie'
 import urls from '@/server/urls'
-import { tokenRenewal } from 'utils/auth'
 
 const TOKEN = Cookies.get('accessToken')
 const axios = Axios.create({
@@ -18,7 +17,9 @@ const axios = Axios.create({
   headers: {
     'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${TOKEN}`,
+    common: {
+      Authorization: `Bearer ${TOKEN}`,
+    },
   },
   // baseURL: urls.api[process.env.TARGET_ENV],
   baseURL: 'https://192.168.6.4:4443',
@@ -197,7 +198,6 @@ const errorHandler = function(err) {
       // case 8005:
       case 8003:
         // 토근만료, 갱신
-        tokenRenewal()
         break
       // case 'Network Error':
       //   sessionStorage.clear()
@@ -210,6 +210,11 @@ const errorHandler = function(err) {
     // window.sessionStorage.clear()
     // window.location.href = "/"
   }
+}
+
+export const setAuthorization = accessToken => {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+  console.log(axios.defaults.headers)
 }
 
 export default sender

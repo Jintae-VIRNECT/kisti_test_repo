@@ -32,10 +32,10 @@ export default {
             })
         })
 
-      if (this.$remoteSDK) {
+      if (this.$call.session) {
         const img = new Image()
         img.onload = event => {
-          this.$remoteSDK.message('showImage', {
+          this.$call.sendMessage('showImage', {
             imgId,
             ext,
             fileName: this.fileReader.fileName,
@@ -55,14 +55,12 @@ export default {
       const json = this.canvas.toJSON()
       const thumbnail = this.canvas.lowerCanvasEl.toDataURL()
       // const thumbnail = this.resizeCanvas(this.canvas.lowerCanvasEl);
-      const hist = this.shareDocList
 
-      if (
-        hist.length < 0 ||
-        JSON.stringify(hist[hist.length - 1].json) !== JSON.stringify(json)
-      ) {
-        this.$store.dispatch('updateShareDoc', { thumbnail, json })
-      }
+      this.$store.dispatch('updateHistory', {
+        id: this.file.id,
+        img: thumbnail,
+        json: json,
+      })
     },
 
     /**
@@ -70,38 +68,6 @@ export default {
      */
     clearHistory() {
       // clear history
-    },
-    resizing(imageUrl) {
-      return new Promise((resolve, reject) => {
-        const image = new Image()
-        image.onload = event => {
-          const canvas = document.createElement('canvas')
-          const max_size = 4096
-          // 최대 기준을 1280으로 잡음.
-          let width = image.width
-          let height = image.height
-
-          if (width > height) {
-            // 가로가 길 경우
-            if (width > max_size) {
-              height *= max_size / width
-              width = max_size
-            }
-          } else {
-            // 세로가 길 경우
-            if (height > max_size) {
-              width *= max_size / height
-              height = max_size
-            }
-          }
-          canvas.width = width
-          canvas.height = height
-          canvas.getContext('2d').drawImage(image, 0, 0, width, height)
-          const dataUrl = canvas.toDataURL('image/jpeg')
-          resolve(dataUrl)
-        }
-        image.src = imageUrl
-      })
     },
     resizeCanvas(canvas) {
       let width = canvas.width

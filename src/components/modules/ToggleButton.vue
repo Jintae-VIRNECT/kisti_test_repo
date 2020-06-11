@@ -4,8 +4,8 @@
     :class="[{ active: !active }, customClass]"
     :style="{
       background: 'url(' + src + ') center no-repeat',
-      width: size + 'px',
-      height: size + 'px',
+      width: size,
+      height: size,
     }"
     @click="$emit('action', $event)"
   >
@@ -40,7 +40,7 @@ export default {
       default: true,
     },
     size: {
-      type: Number,
+      type: [Number, String],
       default: 12,
     },
   },

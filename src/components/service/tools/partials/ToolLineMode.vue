@@ -3,7 +3,7 @@
     text="그리기 모드"
     :active="action === 'line'"
     :src="require('assets/image/ic-tool-draw.svg')"
-    @action="clickHandler"
+    @click.stop="clickHandler"
   ></tool-button>
 </template>
 
@@ -40,11 +40,13 @@ export default {
 
       this.status = !this.status
       this.$eventBus.$emit(
-        `control:${this.callViewMode}:mode`,
+        `control:document:mode`,
         this.status ? 'line' : false,
       )
       if (!!this.status === true) {
         this.setAction('line')
+      } else {
+        this.setAction('')
       }
     },
     changeStatus(mode) {

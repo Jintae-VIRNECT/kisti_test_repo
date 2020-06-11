@@ -21,7 +21,7 @@
     padding-right: 25px;
     color: #dcdcdc;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143rem;
     background: transparent;
     &::after {
       position: absolute;
@@ -108,7 +108,7 @@
   right: 0;
   display: flex;
   height: 100%;
-  padding: 11px 17px;
+  padding: 0.786rem 1.214rem;
   > .tooltip,
   > .popover--wrapper {
     margin-left: 8px;

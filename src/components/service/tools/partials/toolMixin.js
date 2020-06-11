@@ -9,7 +9,11 @@ export default {
     ToolButton,
     ToolPicker,
   },
-  filters: {},
+  data() {
+    return {
+      mode: 'document',
+    }
+  },
   computed: {
     ...mapGetters(['action', 'tools']),
   },

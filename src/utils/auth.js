@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
 import jwtDecode from 'jwt-decode'
+import { setAuthorization } from 'api/gateway/gateway'
 
 /**
  * 상태
@@ -31,9 +32,7 @@ function setTokensToCookies(response) {
   Cookies.set('refreshToken', response.refreshToken)
   accessToken = response.accessToken
   refreshToken = response.refreshToken
-  api.defaults.headers.common = {
-    Authorization: `Bearer ${accessToken}`,
-  }
+  setAuthorization(accessToken)
 }
 
 const tokenInterval = async () => {

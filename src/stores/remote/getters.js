@@ -8,8 +8,8 @@ export default {
     return {
       color: state.oncall.drawColor,
       opacity: state.oncall.drawOpacity,
-      width: state.oncall.lineWidth,
-      size: state.oncall.fontSize,
+      lineWidth: state.oncall.lineWidth,
+      fontSize: state.oncall.fontSize,
     }
   },
   action: state => state.oncall.action,
@@ -28,6 +28,7 @@ export default {
   historyList: state => state.files.historyList,
   fileList: state => state.files.fileList,
   pdfPages: state => state.files.pdfPages,
+  shareFile: state => state.files.shareFile,
 
   // setting
   micDevice: state => state.settings.micDevice,

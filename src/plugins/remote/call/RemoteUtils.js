@@ -10,6 +10,20 @@ export const addSessionEventListener = session => {
     })
     addSubscriber(subscriber)
   })
+  session.on('streamPropertyChanged', event => {
+    if (event.changedProperty === 'audioActive') {
+      // audio 조절
+      Store.commit('propertyChanged', {
+        connectionId: event.stream.connection.connectionId,
+        audio: event.newValue,
+      })
+    } else if (event.changedProperty === 'videoActive') {
+      Store.commit('propertyChanged', {
+        connectionId: event.stream.connection.connectionId,
+        video: event.newValue,
+      })
+    }
+  })
 
   session.on('streamDestroyed', event => {
     console.log('[session] stream destroyed')
@@ -20,6 +34,10 @@ export const addSessionEventListener = session => {
 
   session.on('signal:audio', event => {
     console.log(event)
+    Store.commit('propertyChanged', {
+      connectionId: event.from.connectionId,
+      speaker: event.data === 'true' ? true : false,
+    })
   })
 
   session.on('signal:video', event => {
@@ -61,15 +79,23 @@ export const addSessionEventListener = session => {
 }
 
 export const getUserObject = stream => {
+  console.log(stream)
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
 
-  let uuid = JSON.parse(connection.data.split('%/%')[0]).clientData
+  const metaData = JSON.parse(connection.data.split('%/%')[0])
+
+  let uuid = metaData.clientData
+  let role = metaData.roleType
 
   const participant = participants.find(user => {
     return user.uuid === uuid
   })
+  if (participant === undefined) {
+    console.error('참여자 정보를 찾을 수 없습니다.')
+    return
+  }
 
   streamObj = {
     id: uuid,
@@ -80,10 +106,14 @@ export const getUserObject = stream => {
     path: participant.path,
     audio: stream.audioActive,
     video: stream.videoActive,
+    speaker: true,
+    mute: false,
     status: 'good',
+    role: role,
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true
+    Store.commit('myRole', role)
   }
 
   return streamObj

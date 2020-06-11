@@ -18,7 +18,6 @@ export const hexToAHEX = function hexToAHEX(hex, alpha) {
 }
 
 export const ahexToHEX = function ahexToHEX(ahex) {
-  console.log(ahex)
   return ahex.substr(0, 1) + ahex.substr(3)
 }
 
@@ -29,14 +28,11 @@ export const hexToHEXA = function hexToHEXA(hex, alpha) {
   return '#' + hex.slice(1, 7) + a.toString(16)
 }
 
-export const RGBToHex = function RGBToHex(rgb) {
-  rgb = rgb.match(
-    /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i,
-  )
-  return rgb && rgb.length === 4
-    ? '#' +
-        ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-        ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-        ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2)
-    : ''
+export const ahexToRGBA = function ahexToRGBA(ahex) {
+  var r = parseInt(ahex.slice(3, 5), 16),
+    g = parseInt(ahex.slice(5, 7), 16),
+    b = parseInt(ahex.slice(7, 9), 16),
+    a = parseInt(ahex.slice(1, 3), 16) / 255
+
+  return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')'
 }

@@ -3,7 +3,7 @@
     <div class="drawing-body">
       <drawing-tools></drawing-tools>
       <menus></menus>
-      <drawing-canvas></drawing-canvas>
+      <drawing></drawing>
     </div>
   </main>
 </template>
@@ -11,14 +11,14 @@
 <script>
 import DrawingTools from './tools/DrawingTools'
 import Menus from './tools/Menus'
-import DrawingCanvas from './drawing/DrawingCanvas'
+import Drawing from './drawing/Drawing'
 
 export default {
   name: 'ServiceDrawing',
   components: {
     DrawingTools,
     Menus,
-    DrawingCanvas,
+    Drawing,
   },
   data() {
     return {}
