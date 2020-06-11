@@ -2,6 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
+import { WORKER } from 'utils/role'
 
 let OV
 
@@ -12,6 +13,7 @@ const _ = {
   resolution: null,
   join: async (roomInfo, account, role) => {
     Store.commit('clear')
+    Store.commit('myRole', role)
     try {
       const params = {
         sessionId: roomInfo.sessionId,
@@ -30,7 +32,7 @@ const _ = {
         roleType: role,
       }
 
-      const iceServer = [
+      const iceServers = [
         {
           url: 'turn:turn.virnectremote.com:3478?transport=udp',
           username: 'virnect',
@@ -46,18 +48,18 @@ const _ = {
       await _.session.connect(
         rtnValue.token,
         JSON.stringify(metaData),
-        iceServer,
+        iceServers,
       )
 
       _.publisher = OV.initPublisher('', {
-        audioSource: undefined, // The source of audio. If undefined default microphone
-        videoSource: undefined, //screen ? 'screen' : undefined, // The source of video. If undefined default webcam
-        publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-        publishVideo: role !== 'LEADER', // Whether you want to start publishing with your video enabled or not
-        resolution: '1280x720', // The resolution of your video
-        frameRate: 30, // The frame rate of your video
-        insertMode: 'PREPEND', // How the video is inserted in the target element 'video-container'
-        mirror: false, // Whether to mirror your local video or not
+        audioSource: undefined, // TODO: setting value
+        videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
+        publishAudio: true,
+        publishVideo: role === WORKER,
+        resolution: '1280x720', // TODO: setting value
+        frameRate: 30,
+        insertMode: 'PREPEND',
+        mirror: false,
       })
       _.publisher.on('streamCreated', () => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
