@@ -541,7 +541,10 @@ public class ContentService {
 
         if (search != null) {
             // 1. 사용자 식별번호 조회
-            ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
+            ApiResponse<UserInfoListResponse> userInfoListResult = getUserInfo(search, workspaceUUID);
+
+//            ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
+
             UserInfoListResponse userInfoList = userInfoListResult.getData();
             log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", userInfoList);
 
@@ -570,13 +573,13 @@ public class ContentService {
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
-                contentInfoResponse.setUploaderName(userInfoMap.get(content.getUserUUID()).getName());
+                contentInfoResponse.setUploaderName(userInfoMap.get(content.getUserUUID()).getNickname());    // name -> nickname으로 변경
                 contentInfoResponse.setUploaderUUID(userInfoMap.get(content.getUserUUID()).getUuid());
                 contentInfoResponse.setUploaderProfile(userInfoMap.get(content.getUserUUID()).getProfile());
             } else {
                 ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
                 contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
-                contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+                contentInfoResponse.setUploaderName(userInfoResponse.getData().getNickname());    // name -> nickname으로 변경
                 contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
             }
 
@@ -638,7 +641,7 @@ public class ContentService {
 
             ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
             contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
-            contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+            contentInfoResponse.setUploaderName(userInfoResponse.getData().getNickname());    // name -> nickname으로 변경
             contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
 
             return WorkspaceSceneGroupInfoResponse.builder()
@@ -748,7 +751,7 @@ public class ContentService {
                 .sceneGroupTotal(content.getSceneGroupList().size())
                 .contentSize(content.getSize())
                 .uploaderUUID(userInfoResponse.getData().getUuid())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
@@ -873,7 +876,7 @@ public class ContentService {
                 .sceneGroupTotal(content.getSceneGroupList().size())
                 .contentSize(content.getSize())
                 .uploaderUUID(content.getUserUUID())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
@@ -909,7 +912,7 @@ public class ContentService {
                 .sceneGroupTotal(returnContent.getSceneGroupList().size())
                 .contentSize(returnContent.getSize())
                 .uploaderUUID(returnContent.getUserUUID())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(returnContent.getPath())
                 .converted(returnContent.getConverted())
@@ -926,6 +929,19 @@ public class ContentService {
         if (!isWorkspaceMember) {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
+    }
+
+    private ApiResponse<UserInfoListResponse> getUserInfo(String search, String workspaceId) {
+        ApiResponse<MemberListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
+        List<String> userUUIDs = new ArrayList<>();
+
+        for (MemberInfoDTO dto : userList.getData().getMemberInfoList()) {
+            userUUIDs.add(dto.getUuid());
+        }
+
+        ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(search, userUUIDs);
+
+        return userInfoListResult;
     }
 
     public ApiResponse<List<ContentCountResponse>> countMyContents(String workspaceUUID, List<String> userUUIDList) {

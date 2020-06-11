@@ -43,7 +43,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         // apply search keyword
         if (search != null) {
-            query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUIDList)));
+            query = query.where( qContent.name.contains(search)
+                                 .or(qContent.userUUID.in(userUUIDList))
+                                 .or(qContent.userUUID.eq(search)));
         }
 
         if (userUUID != null) {
