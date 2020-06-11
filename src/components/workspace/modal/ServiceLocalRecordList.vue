@@ -225,10 +225,6 @@ export default {
   font-size: 14px;
   letter-spacing: 0.9px;
 }
-
-.record-list__table {
-}
-
 .table__header {
   display: flex;
   justify-content: space-between;
