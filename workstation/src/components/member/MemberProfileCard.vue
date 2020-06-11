@@ -44,7 +44,7 @@
         </router-link>
         <router-link :to="`/tasks/results/papers?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-report.svg" />
-          <span>{{ $t('members.card.report') }}</span>
+          <span>{{ $t('members.card.paper') }}</span>
         </router-link>
       </dd>
     </dl>

@@ -31,6 +31,7 @@
           class="virnect-workstation-form"
           :model="mainForm"
           :rules="rules"
+          :show-message="false"
         >
           <el-form-item
             class="horizon"
@@ -91,6 +92,7 @@
               class="virnect-workstation-form"
               :model="form"
               :rules="rules"
+              :show-message="false"
             >
               <dl>
                 <dt>{{ $tc('task.manage.subTaskName', index + 1) }}</dt>

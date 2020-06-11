@@ -73,7 +73,7 @@
                     :to="`/tasks/results/papers?search=${scope.row.workerUUID}`"
                   >
                     <img src="~assets/images/icon/ic-report.svg" />
-                    <span>{{ $t('members.card.report') }}</span>
+                    <span>{{ $t('members.card.paper') }}</span>
                   </router-link>
                 </div>
               </template>
