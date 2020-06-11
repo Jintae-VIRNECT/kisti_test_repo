@@ -120,7 +120,7 @@ export default {
           })
 
           zip.generateAsync({ type: 'blob' }).then(function(content) {
-            FileSaver.saveAs(content, 'compressed.zip')
+            FileSaver.saveAs(content, 'recorded.zip')
           })
         }
       }
@@ -143,6 +143,7 @@ export default {
       IDBHelper.deleteMediaChunk(uuids)
     },
     refreshSelectedArray(selectedArray) {
+      console.log('너 업데이트 되는거임?', selectedArray)
       this.selectedArray = selectedArray
     },
 
@@ -175,6 +176,7 @@ export default {
         }
         if (seconds === 0) {
           seconds = ''
+          sText = ''
         }
         return hours + hText + minutes + mText + seconds + sText
       }
@@ -199,12 +201,13 @@ export default {
   updated() {},
   mounted() {
     console.log('mounted')
+    this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   async created() {
     await IDBHelper.initIDB()
-    this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   beforeDestroy() {
+    console.log('service local record beforeDestroy')
     this.$eventBus.$off('table:selectedarray')
   },
 }
@@ -214,6 +217,7 @@ export default {
 .record-list {
   width: 100%;
   height: 100%;
+  padding: 8px 22px 22px 22px;
 }
 
 .record-list__paragraph {
@@ -223,17 +227,29 @@ export default {
 .paragraph--text {
   color: #b7b7b7;
   font-size: 14px;
-  letter-spacing: 0.9px;
 }
 .table__header {
   display: flex;
   justify-content: space-between;
-  margin: 0px 0px 17px 0px;
+  margin: 0px 0px 14px 0px;
 }
 
 .table__title {
   color: #dedede;
   font-weight: normal;
   font-size: 18px;
+}
+
+.table__tools {
+  > button.icon-button {
+    opacity: 0.6;
+
+    &:hover {
+      opacity: 1;
+    }
+    &:active {
+      opacity: 0.8;
+    }
+  }
 }
 </style>
