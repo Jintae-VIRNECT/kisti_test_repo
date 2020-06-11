@@ -47,6 +47,9 @@
           <div class="main-video__empty-inner" v-else>
             <img src="~assets/image/img_novideo.svg" />
             <p>출력 할 영상이 없습니다.</p>
+            <p class="inner-discription">
+              접속중인 작업자가 없습니다.
+            </p>
           </div>
         </div>
       </template>
