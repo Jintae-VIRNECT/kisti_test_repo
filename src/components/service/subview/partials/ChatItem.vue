@@ -12,12 +12,14 @@
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
-        <div v-if="chat.file && chat.file.length > 0" class="file">
-          <div class="file__wrapper">
-            <div class="file__icon" :class="getClass"></div>
-            <div class="file__name">{{ chat.file[0].filename }}</div>
+        <div v-if="chat.file && chat.file.length > 0" class="chat-item__file">
+          <div class="chat-item__file--wrapper">
+            <div class="chat-item__file--icon" :class="getClass"></div>
+            <div class="chat-item__file--name">
+              {{ chat.file[0].filename }}
+            </div>
           </div>
-          <p class="file__size">{{ chat.file[0].filesize }}</p>
+          <p class="chat-item__file--size">{{ chat.file[0].filesize }}</p>
         </div>
         <p
           v-if="chat.text !== undefined"
@@ -25,8 +27,11 @@
           :class="getClass"
           v-html="chat.text"
         ></p>
-        <button v-if="chat.file && chat.file.length > 0" class="file__button">
-          <span class="button__text">다운로드</span>
+        <button
+          v-if="chat.file && chat.file.length > 0"
+          class="chat-item__file--button"
+        >
+          <span class="button-text">다운로드</span>
         </button>
       </div>
       <span v-if="!hideTime" class="time">{{
@@ -122,11 +127,11 @@ export default {
         mp3: this.extension === 'mp3',
         jpg: this.extension === 'jpg',
         video: this.extension === 'video',
-        alarm: this.type === 'system' && this.chat.name === 'alarm',
-        people: this.type === 'system' && this.chat.name === 'people',
-        cancel: this.type === 'system' && this.chat.name === 'cancel',
-        ar: this.type === 'system' && this.chat.name === 'ar',
-        board: this.type === 'system' && this.chat.name === 'board',
+        alarm: this.type === 'system' && this.chat.subType === 'alarm',
+        people: this.type === 'system' && this.chat.subType === 'people',
+        cancel: this.type === 'system' && this.chat.subType === 'cancel',
+        ar: this.type === 'system' && this.chat.subType === 'ar',
+        board: this.type === 'system' && this.chat.subType === 'board',
       }
     },
   },

@@ -444,6 +444,54 @@
         </div>
       </div>
     </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">setting modal</h2>
+      <div class="action-box">
+        <div class="component">
+          <button @click="toggleModal" style="color: #fff;">
+            모달 테스트
+          </button>
+
+          <service-local-record-setting
+            :visible.sync="customModal.visible"
+          ></service-local-record-setting>
+        </div>
+      </div>
+    </section>
+    <section class="test-section select" style="background-color: #1e1e20;">
+      <h2 class="subtitle">개발 완 Checkbox</h2>
+      <div class="action-box">
+        <div class="component">
+          <r-check
+            :text="'저는 시작부터 체크가 되어있어요'"
+            :value="'으억'"
+            :defaultVal="true"
+            @toggle="updateCheckBox"
+          ></r-check>
+          <r-check
+            :text="'난 체크 안되어있지. 날 true로 만들면 value가 emit된답니다.'"
+            :value="'크어어억'"
+            @toggle="updateCheckBox"
+          ></r-check>
+          <r-check
+            :text="'눌러보세요!'"
+            :value="'으아아악'"
+            @toggle="updateCheckBox"
+          ></r-check>
+        </div>
+        <!-- <div class="props">
+          <div class="props-option">
+            <p class="props-title">value</p>
+            <input
+              class="props-options"
+              type="text"
+              disabled
+              v-model="checked"
+            />
+          </div>
+        </div> -->
+      </div>
+    </section>
   </div>
 </template>
 <script>
@@ -467,6 +515,8 @@ import Modal from 'Modal'
 import ToggleButton from 'ToggleButton'
 import Search from 'components/workspace/modules/Search'
 import IconButton from 'components/workspace/modules/IconButton'
+import ServiceLocalRecordSetting from 'components/workspace/modal/ServiceLocalRecordSetting'
+import RCheck from 'RemoteCheckBox'
 export default {
   components: {
     CreateRoom,
@@ -489,6 +539,8 @@ export default {
     ToggleButton,
     Search,
     IconButton,
+    ServiceLocalRecordSetting,
+    RCheck,
   },
   data() {
     return {
@@ -500,6 +552,9 @@ export default {
         value2: '',
       },
       modalOption: {
+        visible: false,
+      },
+      customModal: {
         visible: false,
       },
       radioOption: {
@@ -619,6 +674,7 @@ export default {
       modal: {
         visible: false,
       },
+      checked: false,
     }
   },
   methods: {
@@ -628,6 +684,12 @@ export default {
     },
     selectOptionValue(option) {
       this.selectOptions.selection = option[this.selectOptions.text]
+    },
+    toggleModal() {
+      this.customModal.visible = !this.customModal.visible
+    },
+    updateCheckBox(value) {
+      console.log(value)
     },
   },
 }

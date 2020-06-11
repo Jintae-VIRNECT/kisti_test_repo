@@ -83,7 +83,7 @@ export default {
 
   /** workspace-settings **/
   /**
-   *
+   * set mic device
    * @param {*} param0
    * @param {String} payload deviceId
    */
@@ -93,7 +93,7 @@ export default {
   },
 
   /**
-   *
+   * set speaker device
    * @param {*} param0
    * @param {String} payload deviceId
    */
@@ -103,7 +103,7 @@ export default {
   },
 
   /**
-   *
+   * set local recording length
    * @param {*} param0
    * @param {Number} payload record length
    */
@@ -113,7 +113,7 @@ export default {
   },
 
   /**
-   *
+   * set record resolution
    * @param {*} param0
    * @param {String} payload record resolution
    */
@@ -123,13 +123,61 @@ export default {
   },
 
   /**
-   *
+   * set language
    * @param {*} param0
    * @param {*} payload language
    */
   setLanguage({ commit }, payload) {
     localStorage.setItem('language', payload)
     commit(types.SETTINGS.SET_LANGUAGE, payload)
+  },
+
+  /**
+   * set local record interval
+   * @param {*} param0
+   * @param {*} payload local record interval
+   */
+  setLocalRecordInterval({ commit }, payload) {
+    localStorage.setItem('recordingInterval', payload)
+    commit(types.SETTINGS.SET_LOCAL_RECORD_INTERVAL, payload)
+  },
+
+  /**
+   * set allow pointing
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setAllowPointing({ commit }, payload) {
+    localStorage.setItem('allowPointing', payload)
+    commit(types.SETTINGS.SET_ALLOW_POINTING, payload)
+  },
+
+  /**
+   * set allow local recording
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setAllowLocalRecording({ commit }, payload) {
+    localStorage.setItem('allowLocalRecording', payload)
+    commit(types.SETTINGS.SET_ALLOW_LOCAL_RECORDING, payload)
+  },
+
+  /**
+   * set screen stream for local recording
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setScreenStream({ commit }, payload) {
+    commit(types.SETTINGS.SET_SCREEN_STREAM, payload)
+  },
+
+  /**
+   * set local record target
+   * @param {*} param0
+   * @param {*} payload
+   */
+  setLocalRecordTarget({ commit }, payload) {
+    commit(types.SETTINGS.SET_LOCAL_RECORD_TARGET, payload)
   },
 
   /**
