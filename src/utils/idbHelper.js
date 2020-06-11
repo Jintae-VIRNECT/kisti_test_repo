@@ -1,16 +1,24 @@
 import Dexie from 'dexie'
 
-const db = new Dexie('RemoteMediaChunk')
+/**
+ * @author ykmo-VIRNECT
+ */
+
+let db = null
 const logPrefix = 'IDB :: '
+const USAGE_LIMIT_PERSENTAGE = 80
 
 async function initIDB() {
   //define db structure
+
+  db = new Dexie('RemoteMediaChunk')
 
   console.log(logPrefix + 'init idb')
   db.version(1).stores({
     RemoteMediaChunk:
       '++id, groupId, uuid, fileName, playTime, fileSize,  blob, accountName',
   })
+  // await db.open()
 }
 
 async function addMediaChunk(
@@ -60,6 +68,35 @@ async function deleteMediaChunk(uuids) {
     .delete()
 }
 
+async function deleteGroupMediaChunk(groupId) {
+  await db.RemoteMediaChunk.where('groupId')
+    .equals(groupId)
+    .delete()
+}
+
+async function checkEstimatedQuota() {
+  if (navigator.storage && navigator.storage.estimate) {
+    const estimation = await navigator.storage.estimate()
+
+    const quotaUsagePersentage = (
+      (estimation.usage / estimation.quota) *
+      100
+    ).toFixed(2)
+
+    console.log(`Quota: ${estimation.quota}`)
+    console.log(`Usage: ${estimation.usage}`)
+    console.log(quotaUsagePersentage)
+
+    if (quotaUsagePersentage < USAGE_LIMIT_PERSENTAGE) {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    console.error('StorageManager not found')
+  }
+}
+
 const IDBHelper = {
   initIDB: initIDB,
   addMediaChunk: addMediaChunk,
@@ -67,6 +104,8 @@ const IDBHelper = {
   getMediaChunkArrays: getMediaChunkArrays,
   deleteMediaChunk: deleteMediaChunk,
   getAllDataArray: getAllDataArray,
+  checkEstimatedQuota: checkEstimatedQuota,
+  deleteGroupMediaChunk: deleteGroupMediaChunk,
 }
 
 export default IDBHelper
