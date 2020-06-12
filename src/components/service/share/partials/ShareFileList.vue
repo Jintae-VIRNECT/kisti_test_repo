@@ -1,5 +1,5 @@
 <template>
-  <div class="share-body">
+  <div class="share-body__file">
     <vue2-scrollbar>
       <ol class="upload-list">
         <li>

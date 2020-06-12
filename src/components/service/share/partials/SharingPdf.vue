@@ -127,7 +127,7 @@ export default {
       })
       canvas.width = viewport.width
       canvas.height = viewport.height
-      renderTask.promise.then(() => {
+      await renderTask.promise.then(() => {
         canvas.toBlob(
           blobData => {
             blobData.name = fileReader.pageNumber
@@ -144,6 +144,11 @@ export default {
       })
     },
     pdfPageView() {
+      if (
+        this.docPages.length === 0 ||
+        this.docPages.length !== this.totalPages
+      )
+        return
       this.$emit('pdfView', this.fileInfo.id)
     },
   },
