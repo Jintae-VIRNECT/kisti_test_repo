@@ -8,98 +8,83 @@
       <p v-html="$t('home.visual.desc')" />
     </div>
     <el-divider />
-    <el-tabs>
-      <!-- make -->
-      <el-tab-pane :label="$t('home.make')">
-        <el-card>
-          <h6 v-html="$t('home.pc')" />
-          <h5 v-html="$t('home.windowsInstall')" />
-          <img src="~assets/images/img-make-pc.svg" />
+    <el-tabs v-model="activeTab">
+      <el-tab-pane
+        v-for="(product, name) in products"
+        :label="$t(`home.${name}`)"
+        :name="name"
+        :key="name"
+      >
+        <el-card v-for="app in product" :key="app.id">
+          <h6 v-html="app.os" />
+          <h5 v-html="app.device" />
+          <img :src="app.imageUrl" />
           <span class="release">
-            {{ `${$t('home.release')}: ${make.release}` }}
+            {{ $t('home.release') }}: {{ app.releaseTime | dateFormat }}
           </span>
-          <span class="version">{{ make.version }}</span>
-          <el-button type="primary" @click="download(make.downloadUrl)">
+          <span class="version">{{ app.version }}</span>
+          <el-button type="primary" @click="download(app.appUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <!-- <el-button type="text" @click="link(make.guideUrl)">
+          <el-button
+            type="text"
+            @click="download(app.guideUrl)"
+            :disabled="!app.guideUrl"
+          >
             {{ $t('home.guideDownload') }}
-          </el-button> -->
+          </el-button>
         </el-card>
       </el-tab-pane>
-      <!-- view -->
-      <el-tab-pane :label="$t('home.view')">
-        <el-card>
-          <h6 v-html="$t('home.realwear')" />
-          <h5 v-html="$t('home.hmt-1')" />
-          <img src="~assets/images/img-view-realwear.png" />
-          <span class="release">
-            {{ `${$t('home.release')}: ${viewHmt1.release}` }}
-          </span>
-          <span class="version">{{ viewHmt1.version }}</span>
-          <el-button type="primary" @click="download(viewHmt1.downloadUrl)">
-            {{ $t('home.installFileDownload') }}
-          </el-button>
-          <!-- <el-button type="text" @click="link(viewHmt1.guideUrl)">
-            {{ $t('home.guideDownload') }}
-          </el-button> -->
-        </el-card>
-        <el-card>
-          <h6 v-html="$t('home.googlePlay')" />
-          <h5 v-html="$t('home.mobile')" />
-          <img src="~assets/images/img-view-google-play.png" />
-          <span class="release">
-            {{ `${$t('home.release')}: ${viewApp.release}` }}
-          </span>
-          <span class="version">{{ viewApp.version }}</span>
-          <el-button type="primary" @click="link(viewApp.downloadUrl)" disabled>
-            {{ $t('home.downloadLink') }}
-          </el-button>
-          <!-- <el-button type="text" @click="link(viewApp.guideUrl)">
-            {{ $t('home.guideDownload') }}
-          </el-button> -->
-        </el-card>
-      </el-tab-pane>
-      <!-- remote -->
-      <el-tab-pane :label="$t('home.remote')" disabled> </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
-const downloadApi = `${urls.api[process.env.TARGET_ENV]}/download/app`
+import fileDownload from 'js-file-download'
+import { filters } from '@/plugins/dayjs'
 
 export default {
   data() {
     return {
-      make: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        downloadUrl: `${downloadApi}/8`,
-        guideUrl: '',
-      },
-      viewHmt1: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        downloadUrl: `${downloadApi}/1`,
-        guideUrl: '',
-      },
-      viewApp: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        downloadUrl: '',
-        guideUrl: '',
+      activeTab: null,
+      products: {
+        remote: [],
+        make: [],
+        view: [],
       },
     }
   },
+  watch: {
+    async activeTab(tab) {
+      if (this.products[tab].length) return false
+
+      const data = await this.$api('APP_LIST', {
+        route: { productName: tab },
+      })
+      this.products[tab] = data.appInfoList
+    },
+  },
+  filters,
   methods: {
-    download(url) {
+    async download(url) {
       window.open(url)
+      // const data = await this.$api('DOWNLOAD', {
+      //   headers: { 'Content-Type': 'application/octet-stream' },
+      //   route: { id },
+      // })
+      // fileDownload(data)
     },
     link(url) {
       window.open(url)
     },
+  },
+  mounted() {
+    this.activeTab =
+      {
+        '/remote': 'remote',
+        '/make': 'make',
+        '/view': 'view',
+      }[this.$route.path] || 'remote'
   },
 }
 </script>
@@ -164,12 +149,13 @@ export default {
   }
 
   .el-tabs__content {
+    min-height: 530px;
     margin: 120px auto 160px;
   }
   .el-tabs__content .el-card {
     display: inline-block;
     width: 372px;
-    margin: 0 18px;
+    margin: 0 18px 32px;
     box-shadow: none;
   }
   .el-card .el-card__body {

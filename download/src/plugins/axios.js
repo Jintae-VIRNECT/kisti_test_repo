@@ -6,7 +6,7 @@ export default function({ app, $axios }, inject) {
   // Create a custom axios instance
   const axios = $axios.create({
     baseURL: app.$env.API_GATEWAY_URL,
-    timeout: app.$env.API_TIMEOUT,
+    // timeout: app.$env.API_TIMEOUT,
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
@@ -45,7 +45,7 @@ export default function({ app, $axios }, inject) {
     // default header
     const accessToken = process.client
       ? Cookies.get('accessToken')
-      : headers && headers.cookie.match('accessToken=(.*?);')[1]
+      : headers && headers.cookie.match(/accessToken=(.*?)(?![^;])/)[1]
     if (accessToken) {
       axios.defaults.headers.common = {
         Authorization: `Bearer ${accessToken}`,

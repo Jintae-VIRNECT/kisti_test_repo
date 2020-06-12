@@ -15,8 +15,10 @@
     "@nuxtjs/style-resources": "^1.0.0",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
+    "dayjs": "^1.8.28",
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
+    "js-file-download": "^0.4.12",
     "nuxt": "^2.0.0",
     "nuxt-env": "^0.1.0",
     "nuxt-i18n": "^6.6.1"
