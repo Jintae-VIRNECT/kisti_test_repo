@@ -199,13 +199,11 @@ export default {
       //   })
     },
     stop(showMsg) {
-      this.isRecording = false
-
       if (this.recorder) {
         this.recorder.stop()
         this.recorder.clearRecordedData()
 
-        if (showMsg) {
+        if (showMsg && this.isRecording) {
           this.toastDefault(
             '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
           )
@@ -213,7 +211,7 @@ export default {
       }
 
       console.log('localrecord stopped')
-
+      this.isRecording = false
       // this.$openvidu
       //   .stop()
       //   .then(() => {
@@ -225,12 +223,13 @@ export default {
     },
 
     /**
-     * record에 필요한 스트림을 가지고 온다.
+     * get streams
      */
     getStreams() {
       const streamArray = []
       const participantsAudioStream = []
 
+      //get participants audio stream
       this.participants.forEach(participant => {
         if (participant.stream) {
           let audioStream = new MediaStream()
