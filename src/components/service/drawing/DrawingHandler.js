@@ -1,5 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
-import { EVENT } from 'utils/drawing.config'
+import { EVENT } from 'configs/drawing.config'
 
 export default {
   data() {

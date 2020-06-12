@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { EVENT } from 'utils/drawing.config'
+import { EVENT } from 'configs/drawing.config'
 export default {
   data() {
     return {

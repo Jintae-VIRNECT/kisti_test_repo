@@ -69,7 +69,7 @@ import { createRoom, getRoomInfo } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
-import { ROLE } from 'plugins/remote/call/remote.config'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ModalCreateRoomInfo',

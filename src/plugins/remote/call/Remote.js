@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE } from 'plugins/remote/call/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 
 let OV
 
@@ -13,7 +13,9 @@ const _ = {
   resolution: null,
   join: async (roomInfo, account, role) => {
     Store.commit('clear')
-    Store.commit('myRole', role)
+    Store.dispatch('updateAccount', {
+      roleType: role,
+    })
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
     if (['test25@test.com', 'test26@test.com'].includes(account.email)) {

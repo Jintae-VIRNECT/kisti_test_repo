@@ -1,6 +1,5 @@
 const getDefaultState = () => {
   return {
-    roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
     mainView: {
       // nickname: nickname,
       // userName: name
@@ -17,7 +16,7 @@ const getDefaultState = () => {
       // video: stream.videoActive,
       // status: 'good',
       // resolution: { width, height }
-      // role: 'LEADER' / 'EXPERT'
+      // roleType: 'LEADER' / 'EXPERT'
     ],
     chatList: [
       // {
@@ -155,9 +154,6 @@ const mutations = {
     }
     Object.assign(state.resolutions[idx], payload)
   },
-  myRole(state, payload) {
-    state.roleType = payload
-  },
 
   // chat
   addChat(state, payload) {
@@ -180,7 +176,6 @@ const mutations = {
 }
 
 const getters = {
-  myRole: state => state.roleType,
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,

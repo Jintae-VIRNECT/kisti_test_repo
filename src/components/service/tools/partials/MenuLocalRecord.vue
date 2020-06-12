@@ -19,6 +19,7 @@ import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 import IDBHelper from 'utils/idbHelper'
 
 import { mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 import uuid from 'uuid'
 export default {
   name: 'LocalRecordMenu',
@@ -58,7 +59,7 @@ export default {
     participants: {
       handler(participants) {
         const checkWorker = participant => {
-          return participant.role === 'WORKER'
+          return participant.roleType === ROLE.WORKER
         }
         this.workerJoined = participants.some(checkWorker)
       },

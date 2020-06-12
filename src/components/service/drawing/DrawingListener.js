@@ -1,8 +1,8 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
-import { SIGNAL } from 'plugins/remote/call/remote.config'
-import { EVENT } from 'utils/drawing.config'
+import { SIGNAL } from 'configs/remote.config'
+import { EVENT } from 'configs/drawing.config'
 
 export default {
   data() {

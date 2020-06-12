@@ -27,6 +27,7 @@ const config = mode => {
         '@': join(__dirname, '../'),
         apps: join(__dirname, '../src/apps'),
         assets: join(__dirname, '../src/assets'),
+        configs: join(__dirname, '../src/configs'),
         components: join(__dirname, '../src/components'),
         routers: join(__dirname, '../src/routers'),
         languages: join(__dirname, '../src/languages'),

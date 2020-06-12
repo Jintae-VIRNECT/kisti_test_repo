@@ -1,14 +1,9 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
-import { ROLE } from 'plugins/remote/call/remote.config'
 
 export default {
   data() {
-    return {
-      EXPERT_LEADER: ROLE.EXPERT_LEADER,
-      EXPERT: ROLE.EXPERT,
-      WORKER: ROLE.WORKER,
-    }
+    return {}
   },
   filters: {
     timeFilter(time) {

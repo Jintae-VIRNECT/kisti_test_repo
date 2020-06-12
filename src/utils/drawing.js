@@ -1,5 +1,5 @@
 import { hexToAHEX } from './color'
-import { EVENT } from './drawing.config'
+import { EVENT } from 'configs/drawing.config'
 // tId: targetId
 // oId: objectId
 // aId: undolist 아이디

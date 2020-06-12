@@ -5,7 +5,9 @@
       <sub-view></sub-view>
 
       <transition name="share" mode="out-in">
-        <share v-if="view === 'drawing'"></share>
+        <share
+          v-if="account.roleType === EXPERT_LEADER && view === 'drawing'"
+        ></share>
       </transition>
 
       <transition name="main" mode="out-in">
@@ -25,6 +27,7 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
+import { ROLE } from 'configs/remote.config'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -39,7 +42,9 @@ export default {
     Share: () => import('./share/Share'),
   },
   data() {
-    return {}
+    return {
+      EXPERT_LEADER: ROLE.EXPERT_LEADER,
+    }
   },
   computed: {
     ...mapGetters(['view']),
