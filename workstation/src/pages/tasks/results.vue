@@ -11,12 +11,7 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ myResult }}
-          </el-button>
+          <searchbar-mine ref="mine" :mineLabel="myResult" />
           <span v-if="activeTab === 'task'">
             {{ $t('searchbar.filter.title') }}:
           </span>
@@ -103,7 +98,9 @@ export default {
   },
   methods: {
     changedSearchParams() {
-      this.searchSubTasks()
+      if (this.activeTab === 'task') this.searchSubTasks()
+      else if (this.activeTab === 'issue') this.searchIssues()
+      else if (this.activeTab === 'paper') this.searchPapers()
     },
     async searchSubTasks() {
       const { list, total } = await resultService.searchCurrentSubTasks(

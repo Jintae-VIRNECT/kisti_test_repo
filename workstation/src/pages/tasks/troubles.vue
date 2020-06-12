@@ -14,12 +14,7 @@
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('troubles.list.myTm') }}
-          </el-button>
+          <searchbar-mine ref="mine" :mineLabel="$t('troubles.list.myTm')" />
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="troubleSearch" />

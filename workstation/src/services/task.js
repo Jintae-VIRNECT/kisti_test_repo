@@ -47,6 +47,7 @@ export default {
     const data = await api('TASK_LIST', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'updatedDate,desc',
         ...params,
@@ -139,6 +140,7 @@ export default {
       route: { taskId },
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        userUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'priority,asc',
         ...params,
@@ -182,6 +184,7 @@ export default {
     const data = await api('STEPS_LIST', {
       route: { subTaskId },
       params: {
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'priority,asc',
         ...params,

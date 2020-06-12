@@ -13,12 +13,10 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
-          </el-button>
+          <searchbar-mine
+            ref="mine"
+            :mineLabel="$t('contents.allContents.myContents')"
+          />
           <el-button @click="remove" type="text" :disabled="!canRemove">
             <img src="~assets/images/icon/ic-delete.svg" />
             <span>{{ $t('contents.allContents.delete') }}</span>
@@ -141,14 +139,6 @@ export default {
     },
     rowClick(row) {
       this.$router.push(`/contents/${row.contentUUID}`)
-    },
-    showAll() {
-      this.searchParams.mine = false
-      this.emitChangedSearchParams()
-    },
-    showMine() {
-      this.searchParams.mine = true
-      this.emitChangedSearchParams()
     },
     selectionChanged(selection) {
       this.canRemove = selection.length ? true : false

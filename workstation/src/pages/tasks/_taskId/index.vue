@@ -55,12 +55,10 @@
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('task.detail.mySubTasks') }}
-          </el-button>
+          <searchbar-mine
+            ref="mine"
+            :mineLabel="$t('task.detail.mySubTasks')"
+          />
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"

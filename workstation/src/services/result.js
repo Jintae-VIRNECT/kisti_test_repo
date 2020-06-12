@@ -8,6 +8,9 @@ import Trouble from '@/models/result/Trouble'
 function activeWorkspaceGetter() {
   return store.getters['workspace/activeWorkspace']
 }
+function myProfileGetter() {
+  return store.getters['auth/myProfile']
+}
 
 export default {
   /**
@@ -21,6 +24,7 @@ export default {
     const data = await api('SUB_TASK_ALL', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'reportedDate,desc',
         ...params,
@@ -42,6 +46,7 @@ export default {
     const data = await api('ISSUES_ALL', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'updatedDate,desc',
         ...params,
@@ -63,6 +68,7 @@ export default {
     const data = await api('PAPERS_ALL', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'updatedDate,desc',
         ...params,
@@ -84,6 +90,7 @@ export default {
     const data = await api('TROUBLES_LIST', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
+        myUUID: params.mine ? myProfileGetter().uuid : null,
         size: 10,
         sort: 'updatedDate,desc',
         ...params,

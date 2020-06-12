@@ -12,10 +12,10 @@
       </div>
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
-        <el-col class="left"> </el-col>
+        <!-- <el-col class="left"> </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="activetySearch" />
-        </el-col>
+        </el-col> -->
       </el-row>
 
       <el-row>
