@@ -109,6 +109,7 @@ export default {
         this.$notify.success({
           message: this.$t('profile.marketInfoReceive.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedMarketInfoReceive', this.form.marketInfoReceive)
       } catch (e) {
@@ -116,6 +117,7 @@ export default {
         this.$notify.error({
           message: this.$t('profile.marketInfoReceive.message.fail'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

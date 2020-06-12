@@ -77,6 +77,7 @@ export default {
         this.$notify.success({
           message: this.$t('profile.contactChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedContact', form.mobile)
       } catch (e) {
@@ -84,6 +85,7 @@ export default {
         this.$notify.error({
           message: this.$t('profile.contactChangeModal.message.fail'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

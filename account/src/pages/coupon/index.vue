@@ -144,6 +144,7 @@ export default {
         this.$notify.success({
           message: this.$t('coupon.message.registerSuccess'),
           position: 'bottom-left',
+          duration: 2000,
         })
       } catch (e) {
         console.error(e)
@@ -156,6 +157,7 @@ export default {
         this.$notify.error({
           message: messages[code] || this.$t('coupon.message.registerFail'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },
@@ -181,6 +183,7 @@ export default {
         this.$notify.success({
           message: this.$t('coupon.message.useSuccess'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.getCoupons()
       } catch (e) {
@@ -188,6 +191,7 @@ export default {
         this.$notify.error({
           message: e,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

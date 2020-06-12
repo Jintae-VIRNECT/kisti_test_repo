@@ -67,11 +67,13 @@ export default {
         this.$notify.error({
           message: this.$t('coupon.message.useAlready'),
           position: 'bottom-left',
+          duration: 2000,
         })
       } else if (row.status === 'EXPIRED') {
         this.$notify.error({
           message: this.$t('coupon.message.useExpired'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

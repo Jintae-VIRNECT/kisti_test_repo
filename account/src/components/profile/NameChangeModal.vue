@@ -62,6 +62,7 @@ export default {
         this.$notify.success({
           message: this.$t('profile.nameChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedName', this.form)
       } catch (e) {
@@ -69,6 +70,7 @@ export default {
         this.$notify.error({
           message: this.$t('profile.nameChangeModal.message.fail'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

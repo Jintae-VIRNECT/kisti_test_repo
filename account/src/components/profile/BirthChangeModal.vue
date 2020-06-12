@@ -99,6 +99,7 @@ export default {
         this.$notify.success({
           message: this.$t('profile.birthChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedBirth', birth)
       } catch (e) {
@@ -106,6 +107,7 @@ export default {
         this.$notify.error({
           message: this.$t('profile.birthChangeModal.message.fail'),
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

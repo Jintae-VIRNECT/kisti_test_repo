@@ -1,6 +1,6 @@
 {
   "desc": "회원님이 마스터인 워크스페이스에서 구매한 플랜 및 서비스를 관리합니다  ",
-  "countsUnit": "번",
+  "countsUnit": "회",
   "hoursUnit": "시간",
   "info": {
     "title": "구매 정보",
