@@ -2117,7 +2117,7 @@ public class TaskService {
             userUUIDs.add(dto.getUuid());
         }
 
-        ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoAll(search, userUUIDs);
+        ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(search, userUUIDs);
 
         List<UserInfoResponse> userInfoResponses = new ArrayList<>();
 

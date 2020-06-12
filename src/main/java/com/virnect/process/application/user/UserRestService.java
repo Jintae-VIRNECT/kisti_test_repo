@@ -29,5 +29,5 @@ public interface UserRestService {
     ApiResponse<UserInfoListResponse> getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
 
     @GetMapping("/users/list")
-    ApiResponse<UserInfoListResponse> getUserInfoAll(@RequestParam(name = "search", required = false) String search, @RequestBody List<String> workspaceUserIdList);
+    ApiResponse<UserInfoListResponse> getUserInfoSearchNickName(@RequestParam(name = "search", required = false) String search, @RequestBody List<String> workspaceUserIdList);
 }
