@@ -40,6 +40,8 @@ export default {
 
       //for file chunk group id
       groupId: null,
+
+      workerJoined: false,
     }
   },
   computed: {
@@ -55,17 +57,21 @@ export default {
   watch: {
     participants: {
       handler(participants) {
+        const checkWorker = participant => {
+          return participant.role === 'WORKER'
+        }
+        this.workerJoined = participants.some(checkWorker)
+      },
+      deep: true,
+    },
+    workerJoined: {
+      handler(now, before) {
         //if worker out -> then stop local recording
-        const checkWorker = participants.some(participant => {
-          participant.role === 'WORKER'
-        })
-
-        if (!checkWorker) {
+        if (now === false && before === true) {
           const showMsg = true
           this.stop(showMsg)
         }
       },
-      deep: true,
     },
   },
   methods: {
