@@ -2,7 +2,7 @@
 RELEASE
 
 New Features
-- 없음
+- 다운로드 센터 api 접근 허용
 
 Bug Fixes
 - 없음
