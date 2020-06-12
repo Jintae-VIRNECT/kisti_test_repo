@@ -32,7 +32,7 @@ import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
-import { EXPERT_LEADER, EXPERT } from 'utils/role'
+import { ROLE } from 'plugins/remote/call/remote.config'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin],
@@ -75,9 +75,9 @@ export default {
         this.setRoomInfo(roomInfo)
         let role = ''
         if (roomInfo.leaderId === this.account.uuid) {
-          role = EXPERT_LEADER
+          role = ROLE.EXPERT_LEADER
         } else {
-          role = EXPERT
+          role = ROLE.EXPERT
         }
 
         const joinRtn = await this.$call.join(room, this.account, role)

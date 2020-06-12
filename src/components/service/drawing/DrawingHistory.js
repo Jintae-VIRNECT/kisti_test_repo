@@ -35,7 +35,7 @@ export default {
       if (this.$call.session) {
         const img = new Image()
         img.onload = event => {
-          this.$call.sendMessage('showImage', {
+          this.$call.drawing('showImage', {
             imgId,
             ext,
             fileName: this.fileReader.fileName,

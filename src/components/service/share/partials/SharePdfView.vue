@@ -1,14 +1,18 @@
 <template>
-  <div class="share-body pdf">
+  <div class="share-body__file pdf">
     <button class="share-body__backbutton" @click="back">
-      <p>{{ `설계 도면.pdf` }}</p>
+      <tooltip :content="file.name" placement="bottom-start" width="auto">
+        <p class="share-body__backbutton-text" slot="body">
+          {{ file.name }}
+        </p>
+      </tooltip>
     </button>
     <vue2-scrollbar>
       <ol class="upload-list inner">
         <sharing-image
-          v-for="(file, idx) of sharingList"
+          v-for="(sharing, idx) of sharingList"
           :key="'sharing' + idx"
-          :fileInfo="file"
+          :fileInfo="sharing"
         ></sharing-image>
       </ol>
     </vue2-scrollbar>
@@ -16,17 +20,21 @@
 </template>
 
 <script>
+import Tooltip from 'Tooltip'
 import SharingImage from './SharingImage'
 import { mapGetters } from 'vuex'
 export default {
   name: 'SharePdfView',
   components: {
+    Tooltip,
     SharingImage,
   },
   props: {
-    id: {
-      type: Number,
-      default: 0,
+    file: {
+      type: Object,
+      default: () => {
+        return {}
+      },
     },
   },
   data() {
@@ -35,17 +43,11 @@ export default {
   computed: {
     ...mapGetters(['pdfPages']),
     sharingList() {
-      if (this.id === 0) {
+      if (this.file === null) {
         return []
       } else {
-        return this.pdfPages[this.id]
+        return this.pdfPages[this.file.id]
       }
-    },
-  },
-  watch: {
-    id(val) {
-      console.log(val)
-      console.log(this.pdfPages)
     },
   },
   methods: {

@@ -84,7 +84,7 @@ export default {
       this.stackAdd('remove', [...ids])
 
       if (this.$call) {
-        this.$call.sendMessage('clear', {
+        this.$call.drawing('clear', {
           aId: this.undoList.length,
           oId: target.id,
           tId: target.tId,
@@ -115,7 +115,7 @@ export default {
         this.stackClear() // 전체 삭제
 
         if (this.$call) {
-          this.$call.sendMessage('clearAll', { imgId: this.file.id })
+          this.$call.drawing('clearAll', { imgId: this.file.id })
         }
       }
     },

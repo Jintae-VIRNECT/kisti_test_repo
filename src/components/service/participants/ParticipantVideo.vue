@@ -42,7 +42,7 @@
           }}</span>
         </div>
       </div>
-      <div class="participant-video__device">
+      <div class="participant-video__device" v-if="!isMe">
         <img
           :src="
             participant.audio

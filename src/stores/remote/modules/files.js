@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import {
   SHOW_IMAGE,
   ADD_HISTORY,
@@ -52,7 +53,7 @@ const mutations = {
   },
   [ADD_PDF_PAGE](state, page) {
     if (!(page.id in state.pdfPages)) {
-      state.pdfPages[page.id] = []
+      Vue.set(state.pdfPages, page.id, [])
     }
     state.pdfPages[page.id].push(page)
   },

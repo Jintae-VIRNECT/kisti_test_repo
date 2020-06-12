@@ -15,7 +15,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['action', 'tools']),
+    ...mapGetters(['view', 'action', 'tools']),
   },
   methods: {
     ...mapActions(['setAction', 'setTool']),

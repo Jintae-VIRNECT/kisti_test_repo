@@ -20,13 +20,26 @@
         </button>
       </li>
     </ul>
-    <file-list v-show="list === 'file'" @pdfView="changePdfView"></file-list>
-    <history-list v-show="list === 'history'"></history-list>
-    <pdf-view
-      v-show="list === 'pdfview'"
-      :id="fileId"
-      @back="changeTab('file')"
-    ></pdf-view>
+    <transition name="share-list__left">
+      <div class="share-body" v-show="list === 'file'">
+        <transition name="share-list__left">
+          <file-list
+            v-show="!file || !file.id"
+            @pdfView="changePdfView"
+          ></file-list>
+        </transition>
+        <transition name="share-list__right">
+          <pdf-view
+            v-show="file && file.id"
+            :file="file"
+            @back="changeTab('file', 'empty')"
+          ></pdf-view>
+        </transition>
+      </div>
+    </transition>
+    <transition name="share-list__right">
+      <history-list v-show="list === 'history'"></history-list>
+    </transition>
   </div>
 </template>
 
@@ -45,11 +58,22 @@ export default {
   data() {
     return {
       list: 'file',
-      fileId: 0,
+      file: {},
     }
   },
   computed: {
     ...mapGetters(['shareFile']),
+    show() {
+      if (this.list === 'file') {
+        if (!this.file || !this.file.id) {
+          return 'file'
+        } else {
+          return 'pdf'
+        }
+      } else {
+        return 'history'
+      }
+    },
   },
   watch: {
     shareFile: {
@@ -62,13 +86,15 @@ export default {
     },
   },
   methods: {
-    changePdfView(id) {
-      this.changeTab('pdfview', id)
+    changePdfView(fileInfo) {
+      this.file = fileInfo
     },
-    changeTab(val, id) {
-      if (!id) id = 0
-      this.fileId = id
+    changeTab(val, fileInfo) {
+      if (fileInfo === 'empty') {
+        this.file = {}
+      }
       this.list = val
+      this.$eventBus.$emit('scroll:reset')
     },
   },
 
@@ -76,3 +102,35 @@ export default {
   mounted() {},
 }
 </script>
+<style>
+.share-list__left-enter-active,
+.share-list__left-leave-active,
+.share-list__right-enter-active,
+.share-list__right-leave-active {
+  transition: left ease 0.4s;
+}
+.share-list__left-enter {
+  left: -100%;
+}
+.share-list__left-enter-to {
+  left: 0;
+}
+.share-list__left-leave {
+  left: 0;
+}
+.share-list__left-leave-to {
+  left: -100%;
+}
+.share-list__right-enter {
+  left: 100%;
+}
+.share-list__right-enter-to {
+  left: 0;
+}
+.share-list__right-leave {
+  left: 0;
+}
+.share-list__right-leave-to {
+  left: 100%;
+}
+</style>

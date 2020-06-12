@@ -2,7 +2,12 @@
   <div class="tooltip" @mouseenter="enter" @mouseleave="leave">
     <slot name="body"></slot>
     <transition name="fade-in-linear">
-      <div class="tooltiptext" :class="placement + ' ' + effect" v-show="show">
+      <div
+        class="tooltiptext"
+        :class="placement + ' ' + effect"
+        v-show="show"
+        :style="`width: ${width}`"
+      >
         {{ content }}
         <div class="arrow" style="display: none;"></div>
       </div>
@@ -22,6 +27,10 @@ export default {
     content: {
       type: String,
       require: true,
+    },
+    width: {
+      type: String,
+      default: 'max-content',
     },
     // tooltipClass: {
     //     type: String,

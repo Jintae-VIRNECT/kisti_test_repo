@@ -1,15 +1,17 @@
 <template>
   <div class="share-body">
-    <vue2-scrollbar>
-      <ol class="upload-list">
-        <history-image
-          v-for="img of historyList"
-          :key="img.id"
-          :imgInfo="img"
-        ></history-image>
-      </ol>
-    </vue2-scrollbar>
-    <button class="share-save btn small"><span>저장하기</span></button>
+    <div class="share-body__history">
+      <vue2-scrollbar>
+        <ol class="upload-list">
+          <history-image
+            v-for="img of historyList"
+            :key="img.id"
+            :imgInfo="img"
+          ></history-image>
+        </ol>
+      </vue2-scrollbar>
+      <button class="share-save btn small"><span>저장하기</span></button>
+    </div>
   </div>
 </template>
 
