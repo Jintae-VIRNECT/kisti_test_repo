@@ -143,6 +143,12 @@ public class ContentService {
 
             // 타겟 저장 후 타겟데이터 반환
             String targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+            // 추후 반영 예정
+//            if (isExistTargetData(uploadRequest.getTargetData())){
+//                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+//            } else {
+//                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+//            }
 
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
@@ -206,6 +212,17 @@ public class ContentService {
         return targetData;
     }
 
+    private Boolean isExistTargetData(String targetData) {
+       Boolean flag = false;
+
+       int targetCnt = this.targetRepository.countByData(targetData);
+
+       if (targetCnt > 0) {
+           flag = true;
+       }
+       return flag;
+    }
+
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
         String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
 
@@ -237,8 +254,14 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
-        // 타겟 저장 후 타겟데이터 반환
         String targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+
+        // 이미 있는 타겟 데이터인지 체크 - 추후 반영 예정
+//        if (isExistTargetData(targetRequest.getTargetData())) {
+//            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+//        } else {
+//            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+//        }
 
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
@@ -479,9 +502,11 @@ public class ContentService {
             }
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
+
             if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
             // 파일을 실제 삭제하지 않을 경우. 복구 프로세스가 필요할 수도 있어 일부 구현해 놓음.
@@ -944,6 +969,18 @@ public class ContentService {
         return userInfoListResult;
     }
 
+    public ApiResponse<Boolean> checkTargetData(String targetData) {
+        Boolean isExist = false;
+
+        int cntTargetData = this.targetRepository.countByData(targetData);
+
+        if (cntTargetData > 0) {
+            isExist = true;
+        }
+
+        return new ApiResponse<>(isExist);
+    }
+
     public ApiResponse<List<ContentCountResponse>> countMyContents(String workspaceUUID, List<String> userUUIDList) {
 
         List<Tuple> tupleList = this.contentRepository.countByUsers(workspaceUUID, userUUIDList);
@@ -960,7 +997,6 @@ public class ContentService {
         }).collect(Collectors.toList());
 
         return new ApiResponse<>(countList);
-
     }
 
     // property 정보 -> metadata로 변환

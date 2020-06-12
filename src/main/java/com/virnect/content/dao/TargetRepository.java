@@ -20,4 +20,6 @@ public interface TargetRepository extends JpaRepository<Target, Long> {
     Optional<Target> findByContentId(Long contentId);
 
     void deleteByContentId(Long contentId);
+
+    int countByData(String targetData);
 }
