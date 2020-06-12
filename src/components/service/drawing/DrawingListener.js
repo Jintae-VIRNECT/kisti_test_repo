@@ -1,6 +1,7 @@
 import { fabric } from 'plugins/remote/fabric.custom'
-import { ahexToRGBA, hexToRGBA } from 'utils/color'
+import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
+import { SIGNAL } from 'plugins/remote/call/remote.config'
 
 export default {
   data() {
@@ -10,64 +11,76 @@ export default {
     }
   },
   methods: {
-    lineStartListener(receive) {
+    drawingListener(receive) {
       this.receivePath = []
       const data = JSON.parse(receive.data)
       if (data.from === this.account.uuid) return
-      // 드로잉
-      let params = {
-        posX: data.posX,
-        posY: data.posY,
-        scale: 1 / this.canvas.backgroundImage.scaleX,
-      }
-      this.receivePath.push(getReceiveParams('lineStart', params))
-    },
-    lineMoveListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-      let params = {
-        posX: data.posX,
-        posY: data.posY,
-        scale: 1 / this.canvas.backgroundImage.scaleX,
-      }
-      this.receivePath.push(getReceiveParams('lineMove', params))
-    },
-    lineEndListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-      let params = {
-        posX: data.posX,
-        posY: data.posY,
-        scale: 1 / this.canvas.backgroundImage.scaleX,
-      }
-      const width = parseInt(data.width) / params.scale
-      this.receivePath.push(getReceiveParams('lineEnd', params))
-      const pos = calcPosition(this.receivePath, width)
-      const path = new fabric.Path(this.receivePath, {
-        left: pos.left,
-        top: pos.top,
-        fill: null,
-        stroke: ahexToRGBA(data.color), //data.color,
-        strokeWidth: width,
-        strokeMiterLimit: width,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-        owner: data.from,
-        hasControls: false,
-        selectable: false,
-        hoverCursor: 'default',
-      })
-      // path.set()
-      this.canvas.add(path)
-      this.canvas.renderAll()
-      this.$nextTick(() => {
-        this.receivePath = []
-      })
-    },
-    drawMoveListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
 
+      switch (data.type) {
+        case 'lineStart':
+        case 'lineMove':
+        case 'lineEnd':
+          this.drawingLine(data)
+          break
+        case 'drawMove':
+          this.drawingMove(data)
+          break
+        case 'drawText':
+          this.drawingText(data)
+          break
+        case 'updateText':
+          this.updateText(data)
+          break
+        case 'undo':
+          this.receiveStackUndo(data)
+          break
+        case 'redo':
+          this.receiveStackRedo(data)
+          break
+        case 'clearAll':
+          this.clearAll(data)
+          break
+      }
+    },
+    drawingLine(data) {
+      let params = {
+        posX: data.posX,
+        posY: data.posY,
+        scale: 1 / this.canvas.backgroundImage.scaleX,
+      }
+
+      if (data.type === 'lineStart') {
+        this.receivePath = []
+      }
+
+      this.receivePath.push(getReceiveParams(data.type, params))
+
+      if (data.type === 'lineEnd') {
+        const width = parseInt(data.width) / params.scale
+        const pos = calcPosition(this.receivePath, width)
+        const path = new fabric.Path(this.receivePath, {
+          left: pos.left,
+          top: pos.top,
+          fill: null,
+          stroke: ahexToRGBA(data.color), //data.color,
+          strokeWidth: width,
+          strokeMiterLimit: width,
+          strokeLineCap: 'round',
+          strokeLineJoin: 'round',
+          owner: data.from,
+          hasControls: false,
+          selectable: false,
+          hoverCursor: 'default',
+        })
+        // path.set()
+        this.canvas.add(path)
+        this.canvas.renderAll()
+        this.$nextTick(() => {
+          this.receivePath = []
+        })
+      }
+    },
+    drawingMove(data) {
       const object = this.canvas.getObjects().find(_ => _.id === data.oId)
 
       let params = {
@@ -80,10 +93,7 @@ export default {
       object.set(params)
       this.canvas.renderAll()
     },
-    drawTextListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-
+    drawingText(data) {
       const params = getReceiveParams('drawText', {
         ...data,
         scale: 1 / this.canvas.backgroundImage.scaleX,
@@ -105,32 +115,14 @@ export default {
       this.canvas.add(object)
       this.canvas.renderAll()
     },
-    updateTextListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-
+    updateText(data) {
       const object = this.canvas.getObjects().find(_ => _.id === data.oId)
       object.set({
         text: data.text,
       })
       this.canvas.renderAll()
     },
-    undoListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-
-      this.receiveStackUndo(data.from)
-    },
-    redoListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-
-      this.receiveStackRedo(data.from)
-    },
-    clearAllListener(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
-
+    clearAll(data) {
       this.canvas.getObjects().forEach(object => {
         if (object.owner === data.from) {
           object.canvas.remove(object)
@@ -145,18 +137,7 @@ export default {
   /* Lifecycles */
   created() {
     if (this.$call) {
-      this.$call.addListener('signal:lineStart', this.lineStartListener)
-      this.$call.addListener('signal:lineMove', this.lineMoveListener)
-      this.$call.addListener('signal:lineEnd', this.lineEndListener)
-
-      this.$call.addListener('signal:drawText', this.drawTextListener)
-      this.$call.addListener('signal:updateText', this.updateTextListener)
-
-      this.$call.addListener('signal:undo', this.undoListener)
-      this.$call.addListener('signal:redo', this.redoListener)
-      this.$call.addListener('signal:drawMove', this.drawMoveListener)
-      this.$call.addListener('signal:clearAll', this.clearAllListener)
-      // this.$call.addListener('signal:clear')
+      this.$call.addListener(SIGNAL.DRAWING, this.drawingListener)
     }
   },
   beforeDestroy() {},

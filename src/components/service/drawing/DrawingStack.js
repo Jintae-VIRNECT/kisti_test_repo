@@ -102,7 +102,8 @@ export default {
 
       return this.undoList.length
     },
-    receiveStackUndo(owner) {
+    receiveStackUndo(data) {
+      const owner = data.from
       if (
         !(owner in this.receiveUndoList) ||
         this.receiveUndoList[owner].length === 0
@@ -148,7 +149,8 @@ export default {
 
       return this.redoList.length
     },
-    receiveStackRedo(owner) {
+    receiveStackRedo(data) {
+      const owner = data.from
       if (
         !(owner in this.receiveRedoList) ||
         this.receiveRedoList[owner].length === 0

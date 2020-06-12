@@ -1,5 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
+import { SIGNAL } from './remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -32,7 +33,7 @@ export const addSessionEventListener = session => {
     removeSubscriber(event.stream.streamId)
   })
 
-  session.on('signal:audio', event => {
+  session.on(SIGNAL.SPEAKER, event => {
     console.log(event)
     Store.commit('propertyChanged', {
       connectionId: event.from.connectionId,
@@ -40,18 +41,18 @@ export const addSessionEventListener = session => {
     })
   })
 
-  session.on('signal:video', event => {
+  session.on(SIGNAL.CAMERA, event => {
     console.log(event)
   })
 
-  session.on('signal:resolution', event => {
+  session.on(SIGNAL.RESOLUTION, event => {
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
     })
   })
 
-  session.on('signal:chat', event => {
+  session.on(SIGNAL.CHAT, event => {
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(

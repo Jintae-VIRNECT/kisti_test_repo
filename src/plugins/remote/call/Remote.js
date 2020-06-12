@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { WORKER } from 'utils/role'
+import { SIGNAL, ROLE } from 'plugins/remote/call/remote.config'
 
 let OV
 
@@ -55,7 +55,7 @@ const _ = {
         audioSource: undefined, // TODO: setting value
         videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
-        publishVideo: role === WORKER,
+        publishVideo: role === ROLE.WORKER,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
@@ -93,7 +93,7 @@ const _ = {
     _.session.signal({
       data: text.trim(),
       to: _.session.connection,
-      type: 'signal:chat',
+      type: SIGNAL.CHAT,
     })
   },
   sendResolution: resolution => {
@@ -106,25 +106,25 @@ const _ = {
     _.session.signal({
       data: JSON.stringify(resolution),
       to: _.session.connection,
-      type: 'signal:resolution',
+      type: SIGNAL.RESOLUTION,
     })
   },
-  sendMessage: (type, params) => {
+  drawing: (type, params) => {
     const account = Store.getters['account']
+    params.type = type
     params['from'] = account.uuid
     params['to'] = []
     _.session.signal({
-      type: `signal:${type}`,
+      type: SIGNAL.DRAWING,
       to: _.session.connection,
       data: JSON.stringify(params),
     })
   },
   pointing: message => {
-    console.log('send pointing: ', JSON.stringify(message))
     _.session.signal({
       data: JSON.stringify(message),
       to: _.session.connection,
-      type: 'signal:pointing',
+      type: SIGNAL.POINTING,
     })
   },
   getDevices: () => {},
@@ -144,20 +144,26 @@ const _ = {
   mic: active => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
+    const params = {
+      isOn: active,
+    }
     _.session.signal({
-      data: active ? 'true' : 'false',
+      data: JSON.stringify(params),
       to: _.session.connection,
-      type: 'signal:mic',
+      type: SIGNAL.MIC,
     })
   },
   speaker: active => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
     }
+    const params = {
+      isOn: active,
+    }
     _.session.signal({
-      data: active ? 'true' : 'false',
+      data: JSON.stringify(params),
       to: _.session.connection,
-      type: 'signal:audio',
+      type: SIGNAL.SPEAKER,
     })
   },
   mute: (connectionId, mute) => {

@@ -15,6 +15,7 @@ import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX, ahexToHEX } from 'utils/color'
+import { SIGNAL } from 'plugins/remote/call/remote.config'
 
 function hexToLottie(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16) / 255,
@@ -141,7 +142,7 @@ export default {
 
   /* Lifecycling */
   created() {
-    this.$call.addListener('signal:pointing', this.receivePointing)
+    this.$call.addListener(SIGNAL.POINTING, this.receivePointing)
   },
   mounted() {
     this.lottieOption.animationData.layers.forEach(layer => {
@@ -153,7 +154,7 @@ export default {
     })
   },
   beforeDestroy() {
-    this.$call.removeListener('signal:pointing', this.receivePointing)
+    this.$call.removeListener(SIGNAL.POINTING, this.receivePointing)
   },
 }
 </script>
