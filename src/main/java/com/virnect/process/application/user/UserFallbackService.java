@@ -20,7 +20,7 @@ public class UserFallbackService implements UserRestService {
     }
 
     @Override
-    public ApiResponse<UserInfoListResponse> getUserInfoAll(String search, List<String> workspaceUserIdList) {
+    public ApiResponse<UserInfoListResponse> getUserInfoSearchNickName(String search, List<String> workspaceUserIdList) {
         return null;
     }
 }
