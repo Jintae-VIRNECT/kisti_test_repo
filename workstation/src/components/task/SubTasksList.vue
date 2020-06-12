@@ -21,7 +21,7 @@
         prop="subTaskName"
         :sortable="sortable"
       />
-      <column-count
+      <column-done
         :label="$t('task.detail.subTaskColumn.endedSteps')"
         :tooltip="$t('task.detail.subTaskColumn.endedStepsTooltip')"
         prop="doneCount"

@@ -26,8 +26,19 @@
           <dt>{{ $t('task.manage.taskName') }}</dt>
           <dd>{{ contentName }}</dd>
         </dl>
-        <el-form class="virnect-workstation-form">
-          <el-form-item class="horizon" :label="$t('task.manage.taskSchedule')">
+        <el-form
+          ref="mainForm"
+          class="virnect-workstation-form"
+          :model="mainForm"
+          :rules="rules"
+          :show-message="false"
+        >
+          <el-form-item
+            class="horizon"
+            :label="$t('task.manage.taskSchedule')"
+            prop="schedule"
+            required
+          >
             <el-date-picker
               v-model="mainForm.schedule"
               type="datetimerange"
@@ -76,7 +87,13 @@
             :name="form.id"
             :key="form.id"
           >
-            <el-form class="virnect-workstation-form">
+            <el-form
+              ref="subForm"
+              class="virnect-workstation-form"
+              :model="form"
+              :rules="rules"
+              :show-message="false"
+            >
               <dl>
                 <dt>{{ $tc('task.manage.subTaskName', index + 1) }}</dt>
                 <dd>{{ form.name }}</dd>
@@ -84,6 +101,8 @@
               <el-form-item
                 class="horizon"
                 :label="$tc('task.manage.subTaskSchedule', index + 1)"
+                prop="schedule"
+                required
               >
                 <el-date-picker
                   v-model="form.schedule"
@@ -97,6 +116,8 @@
               <el-form-item
                 class="horizon"
                 :label="$tc('task.manage.subTaskWorker', index + 1)"
+                prop="worker"
+                required
               >
                 <el-select
                   v-model="form.worker"
@@ -140,10 +161,10 @@ export default {
     taskId: Number,
     type: String,
     contentInfo: Object,
-    properties: Array,
   },
   data() {
     return {
+      contentUUID: null,
       contentName: '',
       mainForm: {
         schedule: [],
@@ -155,6 +176,10 @@ export default {
       workerList: [],
       searchLoading: false,
       taskInfo: null,
+      rules: {
+        schedule: [{ required: true, trigger: 'change' }],
+        worker: [{ required: true, trigger: 'change' }],
+      },
     }
   },
   // 모달 타입별 분기
@@ -197,30 +222,19 @@ export default {
   },
   watch: {
     'mainForm.schedule'(date) {
-      this.subForm.map(form => (form.schedule = date))
+      this.subForm.forEach(form => {
+        if (!form.schedule.length) form.schedule = date
+      })
     },
     'mainForm.worker'(worker) {
-      if (worker !== this.$t('task.manage.subTaskWorkerSelected')) {
-        this.subForm.map(form => (form.worker = worker))
+      if (worker && worker !== this.$t('task.manage.subTaskWorkerSelected')) {
+        this.subForm.forEach(form => (form.worker = worker))
       }
     },
     subForm: {
       deep: true,
       handler(forms) {
         forms.forEach(form => {
-          // 공정 일정 자동 조정
-          if (this.mainForm.schedule[0] > form.schedule[0]) {
-            this.mainForm.schedule = [
-              form.schedule[0],
-              this.mainForm.schedule[1],
-            ]
-          }
-          if (this.mainForm.schedule[1] < form.schedule[1]) {
-            this.mainForm.schedule = [
-              this.mainForm.schedule[0],
-              form.schedule[1],
-            ]
-          }
           // 하위 작업 담당자가 모두 같은 사람이 아닐 경우
           if (form.worker !== this.mainForm.worker) {
             this.mainForm.worker = this.$t('task.manage.subTaskWorkerSelected')
@@ -233,10 +247,16 @@ export default {
     async opened() {
       // 신규
       if (this.type === 'new') {
+        if (this.contentUUID === this.contentInfo.contentUUID) return false
+        else this.contentUUID = this.contentInfo.contentUUID
+        const sceneGroups = await contentService.getContentSceneGroups(
+          this.contentInfo.contentUUID,
+        )
         this.contentName = this.contentInfo.contentName
-        this.subForm = this.properties[0].children.map(sceneGroup => ({
+        this.subForm = sceneGroups.map(sceneGroup => ({
           id: sceneGroup.id,
-          name: sceneGroup.label,
+          name: sceneGroup.name,
+          priority: sceneGroup.priority,
           schedule: [],
           worker: '',
         }))
@@ -260,6 +280,7 @@ export default {
         this.subForm = subTasks.list.map(subTask => ({
           id: subTask.subTaskId,
           name: subTask.subTaskName,
+          priority: subTask.priority,
           schedule: [
             dayjs.utc(subTask.startDate).local(),
             dayjs.utc(subTask.endDate).local(),
@@ -280,9 +301,24 @@ export default {
       // 공통
       this.activeSubForms = this.subForm.map(form => form.id)
       this.workerList = await workspaceService.allMembers()
+      this.$refs.mainForm.clearValidate()
+      this.$refs.subForm.forEach(form => form.clearValidate())
+    },
+    async validate() {
+      try {
+        await Promise.all([
+          this.$refs.mainForm.validate(),
+          ...this.$refs.subForm.map(form => form.validate()),
+        ])
+        return true
+      } catch (e) {
+        return false
+      }
     },
     // 신규
-    newNext() {
+    async newNext() {
+      if (!(await this.validate())) return false
+
       const form = new RegisterNewTask({
         workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
         content: this.contentInfo,
@@ -292,7 +328,9 @@ export default {
       this.$emit('next', form)
     },
     // 추가 생성
-    addNext() {
+    async addNext() {
+      if (!(await this.validate())) return false
+
       const form = new DuplicateTask({
         workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
         originTask: this.taskInfo,
@@ -302,6 +340,8 @@ export default {
       this.$emit('next', form)
     },
     async update() {
+      if (!(await this.validate())) return false
+
       const form = new EditTaskFrom({
         task: { id: this.taskId, ...this.mainForm },
         subTasks: this.subForm,
@@ -315,7 +355,7 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.manage.message.taskUpdateFail'),
+          message: this.$t('task.manage.message.taskUpdateFail') + `\n(${e})`,
           showClose: true,
         })
       }

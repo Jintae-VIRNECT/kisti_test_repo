@@ -29,14 +29,20 @@
       </el-col>
       <!-- 하위 작업 -->
       <el-col :span="24">
-        <el-form class="virnect-workstation-form">
+        <el-form
+          ref="form"
+          class="virnect-workstation-form"
+          :model="form"
+          :rules="rules"
+          :show-message="false"
+        >
           <h4>{{ $t('task.detail.dropdown.subTaskEdit') }}</h4>
           <el-divider />
           <dl>
             <dt>{{ $tc('task.manage.subTaskName', subTaskInfo.priority) }}</dt>
             <dd>{{ subTaskInfo.subTaskName }}</dd>
           </dl>
-          <el-form-item class="horizon">
+          <el-form-item class="horizon" prop="schedule" required>
             <template slot="label">
               {{ $tc('task.manage.subTaskSchedule', subTaskInfo.priority) }}
               <el-tooltip
@@ -58,6 +64,8 @@
           <el-form-item
             class="horizon"
             :label="$tc('task.manage.subTaskWorker', subTaskInfo.priority)"
+            prop="worker"
+            required
           >
             <el-select
               v-model="form.worker"
@@ -105,6 +113,10 @@ export default {
         schedule: [],
         worker: null,
       },
+      rules: {
+        schedule: [{ required: true, trigger: 'change' }],
+        worker: [{ required: true, trigger: 'change' }],
+      },
       workerList: [],
       searchLoading: false,
     }
@@ -126,7 +138,17 @@ export default {
       this.form.worker = this.subTaskInfo.workerUUID
       this.workerList = await workspaceService.allMembers()
     },
+    async validate() {
+      try {
+        await this.$refs.form.validate()
+        return true
+      } catch (e) {
+        return false
+      }
+    },
     async submit() {
+      if (!(await this.validate())) return false
+
       const form = {
         subTaskId: this.subTaskInfo.subTaskId,
         startDate: dayjs.utc(this.form.schedule[0]),
@@ -142,7 +164,8 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.manage.message.subTaskUpdateFail'),
+          message:
+            this.$t('task.manage.message.subTaskUpdateFail') + `\n(${e})`,
           showClose: true,
         })
       }

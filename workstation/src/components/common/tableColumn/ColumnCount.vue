@@ -1,30 +1,30 @@
 <template>
-  <el-table-column :label="label" :width="width">
-    <template slot="header" v-if="tooltip">
-      <span>{{ label }}</span>
-      <el-tooltip :content="tooltip" placement="right">
-        <img src="~assets/images/icon/ic-error.svg" />
-      </el-tooltip>
-    </template>
+  <el-table-column
+    :prop="prop"
+    :label="label"
+    :width="width"
+    :align="align"
+    :sortable="sortable"
+  >
     <template slot-scope="scope">
       <div class="column-count">
-        <div>
-          <span>{{ scope.row[prop] }}</span>
-          <span v-if="maxProp">/{{ scope.row[maxProp] }}</span>
-        </div>
+        <span>{{ toNumbersString(scope.row[prop]) }}</span>
       </div>
     </template>
   </el-table-column>
 </template>
 
 <script>
+import filters from '@/mixins/filters'
+
 export default {
+  mixins: [filters],
   props: {
-    label: String,
     prop: String,
-    maxProp: String,
+    label: String,
     width: Number,
-    tooltip: String,
+    align: String,
+    sortable: [Boolean, String],
   },
 }
 </script>

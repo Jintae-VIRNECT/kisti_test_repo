@@ -11,12 +11,7 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ myResult }}
-          </el-button>
+          <searchbar-mine ref="mine" :mineLabel="myResult" />
           <span v-if="activeTab === 'task'">
             {{ $t('searchbar.filter.title') }}:
           </span>
@@ -102,8 +97,10 @@ export default {
     },
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchSubTasks(searchParams)
+    changedSearchParams() {
+      if (this.activeTab === 'task') this.searchSubTasks()
+      else if (this.activeTab === 'issue') this.searchIssues()
+      else if (this.activeTab === 'paper') this.searchPapers()
     },
     async searchSubTasks() {
       const { list, total } = await resultService.searchCurrentSubTasks(
@@ -130,6 +127,9 @@ export default {
     showMine() {},
   },
   beforeMount() {
+    this.resultsSearch = this.$route.query.search
+    this.searchParams.search = this.$route.query.search
+
     const tab = this.$route.path.match(/[a-z]*?$/)[0]
     if (tab === 'results') this.activeTab = 'task'
     else if (tab === 'issues') this.activeTab = 'issue'

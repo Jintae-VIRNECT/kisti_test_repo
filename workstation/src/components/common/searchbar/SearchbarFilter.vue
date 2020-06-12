@@ -61,8 +61,8 @@ export default {
   }
   .selected {
     .el-input__inner {
-      background: #455163;
-      border-color: #455163;
+      background: $color-selected;
+      border-color: $color-selected;
     }
     .el-tag {
       padding-right: 4px;

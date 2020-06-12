@@ -4,6 +4,7 @@ import { store } from '@/plugins/context'
 // model
 import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
+import MemberActivity from '@/models/workspace/MemberActivity'
 
 function activeWorkspaceGetter() {
   return store.getters['workspace/activeWorkspace']
@@ -30,7 +31,7 @@ export default {
   },
   /**
    * 신규 참여 멤버
-   * @param {function} searchParams
+   * @param {object} searchParams
    */
   async getNewMembers() {
     const data = await api('WORKSPACE_NEW_MEMBERS', {
@@ -42,7 +43,7 @@ export default {
   },
   /**
    * 멤버 리스트 검색
-   * @param {function} searchParams
+   * @param {object} searchParams
    */
   async searchMembers(searchParams = {}) {
     const { memberInfoList, pageMeta } = await api('MEMBER_LIST', {
@@ -178,5 +179,18 @@ export default {
         userInfoList,
       },
     })
+  },
+  /**
+   * 멤버 활동 조회
+   * @param {object} searchParams
+   */
+  async searchMembersActivity(searchParams) {
+    const data = await api('MEMBERS_ACTIVITY', {
+      route: {
+        workspaceUUID: activeWorkspaceGetter().uuid,
+      },
+      params: searchParams,
+    })
+    return data.map(activity => new MemberActivity(activity))
   },
 }

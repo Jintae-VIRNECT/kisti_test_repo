@@ -27,10 +27,12 @@
       <dd>
         <span>{{ taskInfo.targets[0].type }}</span>
         <img
+          v-if="taskInfo.targets[0].imgPath"
           src="~assets/images/icon/ic-print.svg"
           @click="print(taskInfo.targets[0].imgPath)"
         />
         <img
+          v-if="taskInfo.targets[0].imgPath"
           src="~assets/images/icon/ic-file-download.svg"
           @click="download(taskInfo.targets[0].imgPath)"
         />
@@ -69,7 +71,7 @@ export default {
       const popup = window.open('', '_blank')
       popup.document.write(`<img src="${url}" />`)
       popup.document.close()
-      popup.print()
+      setTimeout(() => popup.print(), 1)
     },
   },
 }

@@ -2,6 +2,7 @@ import SearchbarFilter from '@/components/common/searchbar/SearchbarFilter'
 import SearchbarSort from '@/components/common/searchbar/SearchbarSort'
 import SearchbarKeyword from '@/components/common/searchbar/SearchbarKeyword'
 import SearchbarPage from '@/components/common/searchbar/SearchbarPage'
+import SearchbarMine from '@/components/common/searchbar/SearchbarMine'
 
 /**
  *
@@ -12,6 +13,7 @@ export default {
     SearchbarSort,
     SearchbarKeyword,
     SearchbarPage,
+    SearchbarMine,
   },
   data() {
     return {
@@ -40,12 +42,12 @@ export default {
     },
   },
   mounted() {
-    const { filter, sort, keyword, page, table } = this.$refs
+    const { filter, sort, keyword, page, table, mine } = this.$refs
 
     if (keyword) keyword.$on('change', this.emitChangedSearchParams)
     if (sort) sort.$on('change', this.emitChangedSearchParams)
     if (page) page.$on('change', this.emitChangedSearchParams)
-    if (filter)
+    if (filter) {
       filter.$on('change', () => {
         const last = filter.myValue[filter.myValue.length - 1]
         if (last === 'ALL' || !filter.myValue.length) {
@@ -55,7 +57,8 @@ export default {
         }
         this.emitChangedSearchParams()
       })
-    if (table)
+    }
+    if (table) {
       table.$on('sort-change', ({ prop, order }) => {
         if (!order) this.emitChangedSearchParams()
         else {
@@ -63,5 +66,13 @@ export default {
           this.emitChangedSearchParams({ sort })
         }
       })
+    }
+    if (mine) {
+      mine.$on('change', label => {
+        if (label === this.$t('common.all')) this.searchParams.mine = false
+        else this.searchParams.mine = true
+        this.emitChangedSearchParams()
+      })
+    }
   },
 }

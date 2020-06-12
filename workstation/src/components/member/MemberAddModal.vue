@@ -15,6 +15,7 @@
         </el-tooltip>
       </p>
       <el-form
+        ref="form"
         v-for="(form, index) in userInfoList"
         :key="index"
         class="virnect-workstation-form"
@@ -132,11 +133,19 @@ export default {
   methods: {
     opened() {
       this.userInfoList = [new InviteMember()]
+      this.$refs.form.forEach(form => form.resetFields())
     },
     addMember() {
       this.userInfoList.push(new InviteMember())
     },
     async submit() {
+      // 유효성 검사
+      try {
+        await Promise.all(this.$refs.form.map(form => form.validate()))
+      } catch (e) {
+        return false
+      }
+      // api 요청
       try {
         await workspaceService.inviteMembers(this.userInfoList)
         this.$message.success({
@@ -147,7 +156,7 @@ export default {
         this.showMe = false
       } catch (e) {
         this.$message.error({
-          message: this.$t('members.add.message.inviteFail'),
+          message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
           showClose: true,
         })
       }

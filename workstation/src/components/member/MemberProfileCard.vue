@@ -15,36 +15,36 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${data.profile})`"
+            :style="`background-image: url(${myInfo.profile})`"
           />
         </div>
         <div class="column-role">
-          <el-tag :class="data.role">{{ data.role }}</el-tag>
+          <el-tag :class="myInfo.role">{{ myInfo.role }}</el-tag>
         </div>
-        <span class="name">{{ data.nickname }}</span>
-        <span class="email">{{ data.email }}</span>
+        <span class="name">{{ myInfo.nickname }}</span>
+        <span class="email">{{ myInfo.email }}</span>
       </dd>
       <el-divider />
       <dt>{{ $t('members.card.usingPlans') }}</dt>
       <dd class="plans">
-        <div class="plan" v-for="plan in data.licenseProducts" :key="plan">
+        <div class="plan" v-for="plan in myInfo.licenseProducts" :key="plan">
           <img :src="plans[plan].logo" />
           <span>{{ plans[plan].label }}</span>
         </div>
       </dd>
       <dt>{{ $t('members.card.links') }}</dt>
       <dd class="column-links">
-        <router-link to="/contents">
+        <router-link :to="`/contents?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-contents.svg" />
           <span>{{ $t('members.card.contents') }}</span>
         </router-link>
-        <router-link to="/tasks">
+        <router-link :to="`/tasks?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-work.svg" />
           <span>{{ $t('members.card.work') }}</span>
         </router-link>
-        <router-link to="/tasks/results">
+        <router-link :to="`/tasks/results/papers?search=${myInfo.uuid}`">
           <img src="~assets/images/icon/ic-report.svg" />
-          <span>{{ $t('members.card.report') }}</span>
+          <span>{{ $t('members.card.paper') }}</span>
         </router-link>
       </dd>
     </dl>
@@ -88,6 +88,11 @@ export default {
       }, {}),
     }
   },
+  watch: {
+    data(val) {
+      this.myInfo = val
+    },
+  },
   computed: {
     ...mapGetters({
       activeWorkspace: 'workspace/activeWorkspace',
@@ -102,6 +107,11 @@ export default {
     },
     updated(form) {
       this.myInfo.role = form.role
+      this.myInfo.licenseProducts = [
+        form.licenseRemote && plans.remote.value,
+        form.licenseMake && plans.make.value,
+        form.licenseView && plans.view.value,
+      ].filter(_ => _)
       this.showMemberSettingModal = false
     },
     kicked() {
@@ -145,12 +155,17 @@ export default {
     float: right;
     width: 70px;
     height: 70px;
+    margin-left: 10px;
   }
   .name {
     display: block;
     margin: 24px 0 4px;
+    overflow: hidden;
     font-size: 20px;
     line-height: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
   }
   .email {
     display: block;

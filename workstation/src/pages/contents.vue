@@ -13,12 +13,10 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
-          </el-button>
+          <searchbar-mine
+            ref="mine"
+            :mineLabel="$t('contents.allContents.myContents')"
+          />
           <el-button @click="remove" type="text" :disabled="!canRemove">
             <img src="~assets/images/icon/ic-delete.svg" />
             <span>{{ $t('contents.allContents.delete') }}</span>
@@ -108,37 +106,39 @@ import {
 
 export default {
   mixins: [searchMixin, columnsMixin],
+  async asyncData({ query }) {
+    const contentsSearch = query.search || ''
+    const { list, total } = await contentService.searchContents({
+      search: contentsSearch,
+    })
+    return {
+      contentsList: list,
+      contentsTotal: total,
+      contentsSearch,
+    }
+  },
   data() {
     return {
       loading: false,
-      contentsList: [],
-      contentsTotal: 0,
       contentsFilter,
       contentsSort,
-      contentsSearch: '',
       contentsPage: 1,
       canRemove: false,
     }
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchContents(searchParams)
+    changedSearchParams() {
+      this.searchContents()
     },
-    async searchContents(params) {
-      const { list, total } = await contentService.searchContents(params)
+    async searchContents() {
+      const { list, total } = await contentService.searchContents(
+        this.searchParams,
+      )
       this.contentsList = list
       this.contentsTotal = total
     },
     rowClick(row) {
       this.$router.push(`/contents/${row.contentUUID}`)
-    },
-    showAll() {
-      this.searchParams.mine = false
-      this.emitChangedSearchParams()
-    },
-    showMine() {
-      this.searchParams.mine = true
-      this.emitChangedSearchParams()
     },
     selectionChanged(selection) {
       this.canRemove = selection.length ? true : false
@@ -164,17 +164,14 @@ export default {
         this.emitChangedSearchParams()
       } catch (e) {
         this.$message.error({
-          message: this.$t('contents.info.message.deleteFail'),
+          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
           showClose: true,
         })
       }
     },
   },
   beforeMount() {
-    this.searchContents()
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchContents(this.searchParams),
-    )
+    workspaceService.watchActiveWorkspace(this, this.searchContents)
   },
 }
 </script>

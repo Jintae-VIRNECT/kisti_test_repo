@@ -16,7 +16,7 @@
         prop="name"
         :sortable="sortable"
       />
-      <column-count
+      <column-done
         :label="$t('task.list.column.endedSubTasks')"
         :tooltip="$t('task.list.column.endedSubTasksTooltip')"
         prop="doneCount"
@@ -95,6 +95,7 @@
     <set-task-manage
       :type="taskManageModalType"
       :taskId="activeTask.id"
+      :contentInfo="{ contentUUID: activeTask.contentUUID }"
       :visible.sync="showSetTaskManageModal"
       @updated="updated"
       @next="taskManageEnded"
@@ -203,7 +204,7 @@ export default {
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.list.message.closeFail'),
+          message: this.$t('task.list.message.closeFail') + `\n(${e})`,
           showClose: true,
         })
       }
@@ -231,7 +232,7 @@ export default {
         this.$emit('deleted')
       } catch (e) {
         this.$message.error({
-          message: this.$t('task.list.message.deleteFail'),
+          message: this.$t('task.list.message.deleteFail') + `\n(${e})`,
           showClose: true,
         })
       }

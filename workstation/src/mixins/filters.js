@@ -16,5 +16,11 @@ export default {
       if (bool > 0) return true
       else return bool && bool.toLowerCase() !== 'no'
     },
+    toNumbersString(numbers) {
+      return (
+        numbers &&
+        `${numbers.toLocaleString()} ${this.$t('common.numbersUnit')}`
+      )
+    },
   },
 }

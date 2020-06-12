@@ -91,7 +91,7 @@
       </el-form>
     </div>
     <div slot="footer">
-      <el-button @click="$emit('kick')">
+      <el-button v-show="canKick" @click="$emit('kick')">
         {{ $t('members.setting.kick') }}
       </el-button>
       <el-button type="primary" @click="submit">
@@ -118,7 +118,7 @@ export default {
     return {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
-      form: new EditMember(this.data),
+      form: {},
     }
   },
   computed: {
@@ -130,8 +130,18 @@ export default {
         this.form.role !== 'MASTER' && this.activeWorkspace.role === 'MASTER'
       )
     },
+    canKick() {
+      return (
+        this.data.role !== 'MASTER' &&
+        this.activeWorkspace.role !== 'MEMBER' &&
+        this.activeWorkspace.role !== this.data.role
+      )
+    },
   },
   methods: {
+    opened() {
+      this.form = new EditMember(this.data)
+    },
     async submit() {
       try {
         await workspaceService.updateMembersRole(this.form)
@@ -142,7 +152,7 @@ export default {
         this.$emit('updated', this.form)
       } catch (e) {
         this.$message.error({
-          message: this.$t('members.setting.message.updateFail'),
+          message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
           showClose: true,
         })
       }

@@ -40,7 +40,7 @@ export default {
         this.$emit('kicked')
       } catch (e) {
         this.$message.error({
-          message: this.$t('members.kick.message.kickFail'),
+          message: this.$t('members.kick.message.kickFail') + `\n(${e})`,
           showClose: true,
         })
       }

@@ -6,6 +6,7 @@
     <div class="the-sidebar__collapse__body">
       <div v-for="(group, role) in workspaces" :key="role">
         <span>{{ $t(`menu.collapse.workspace.${role}`) }}</span>
+        <span v-if="!workspaces[role].length">-</span>
         <button
           v-for="workspace in workspaces[role]"
           :class="isActive(workspace.uuid) ? 'selected' : ''"

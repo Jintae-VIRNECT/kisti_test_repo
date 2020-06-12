@@ -79,6 +79,9 @@
 .el-card--table .el-card__body {
   padding: 0;
 
+  .el-table__body-wrapper {
+    min-height: 640px;
+  }
   .el-table .el-table__row {
     height: 64px;
   }
@@ -174,6 +177,9 @@
       font-size: 12.6px;
       line-height: 48px;
     }
+  }
+  .el-card__body .el-table__body-wrapper {
+    min-height: auto;
   }
   .el-table th.is-leaf {
     padding-bottom: 0;

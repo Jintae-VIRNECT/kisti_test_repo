@@ -31,12 +31,7 @@
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('task.list.myTasks') }}
-          </el-button>
+          <searchbar-mine ref="mine" :mineLabel="$t('task.list.myTasks')" />
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"
@@ -93,7 +88,12 @@
           <task-daily-graph v-else />
         </el-card>
       </el-row>
-      <searchbar-page ref="page" :value.sync="taskPage" :total="taskTotal" />
+      <searchbar-page
+        v-if="!isGraph"
+        ref="page"
+        :value.sync="taskPage"
+        :total="taskTotal"
+      />
     </div>
   </div>
 </template>
@@ -119,15 +119,17 @@ export default {
     TaskDailyGraph,
     TasksList,
   },
-  async asyncData() {
+  async asyncData({ query }) {
+    const taskSearch = query.search || ''
     const promise = {
-      tasks: taskService.searchTasks(),
+      tasks: taskService.searchTasks({ search: taskSearch }),
       stat: taskService.getTaskStatistics(),
     }
     return {
       taskList: (await promise.tasks).list,
       taskTotal: (await promise.tasks).total,
       taskStatistics: await promise.stat,
+      taskSearch,
     }
   },
   data() {
@@ -136,7 +138,6 @@ export default {
       activeTab: 'allTasks',
       taskConditions,
       taskFilter: { ...taskFilter },
-      taskSearch: '',
       taskPage: 1,
       taskTotal: 0,
       loading: false,
@@ -166,8 +167,6 @@ export default {
     filterChanged(filter) {
       if (!filter.length) this.activeTab = 'allTasks'
     },
-    showAll() {},
-    showMine() {},
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, async () => {
