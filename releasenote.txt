@@ -1,10 +1,11 @@
+
 RELEASE
 
 New Features
 - 없음
 
 Bug Fixes
-- 워크스페이스 초대 url 확인 정규 표현식 수정
+- 없음
 
 Limitation
 - 없음
