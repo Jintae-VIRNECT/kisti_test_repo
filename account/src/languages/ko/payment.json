@@ -44,7 +44,7 @@
     "title": "결제 이력 정보",
     "info": "결제 정보",
     "paymentNo": "구매 번호",
-    "creditCardStatement": "신용카드 전표",
+    "creditCardSlip": "신용카드 전표",
     "detail": "결제 상세 정보",
     "priceWithVat": "가격 (VAT 포함)",
     "productPrice": "상품 금액",
@@ -52,5 +52,26 @@
     "discount": "할인 금액",
     "period": "이용 기간",
     "totalPayment": "총 결제 금액"
+  },
+  "creditCardSlip": {
+    "title": "신용카드 매출 전표",
+    "paymentInfo": "결제 정보",
+    "cardType": "카드종류",
+    "cardNo": "카드번호",
+    "tradeType": "거래종류",
+    "tradeDate": "거래일시",
+    "instalmentMonth": "할부개월",
+    "approvalNo": "승인번호",
+    "buyInfo": "구매 정보",
+    "buyNo": "구매 번호",
+    "buyUser": "구매자명",
+    "tax": "과세금액",
+    "taxFree": "비과세금액",
+    "surtax": "부가세",
+    "sellerInfo": "판매자 정보",
+    "sellerCompanyName": "판매자 상호",
+    "sellerCompanyNo": "판매자 사업자등록번호",
+    "sellerAddress": "판매자 주소",
+    "caution": "신용카드 매출 전표는 부가가치세법 제 32조의 2 제 3항에 의하여 발행되었으며, 동법 시행령 제 57조 제 2항에 의하여  세금 계산서를 교부하지 않습니다. 카드사 측 정책 상, BC/국민카드 결저 건의 경우 가상 카드번호로 보여질 수 있습니다. 실 카드 번호의 내역이 필요하시다면 해당 카드사로 문의하시기 바랍니다."
   }
 }

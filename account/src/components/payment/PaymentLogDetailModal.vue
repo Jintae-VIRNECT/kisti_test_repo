@@ -1,14 +1,27 @@
 <template>
   <el-dialog
     class="payment-log-detail-modal"
-    :title="$t('payment.logDetail.title')"
     :visible.sync="visible"
     width="905px"
+    top="10vh"
     :before-close="handleClose"
   >
+    <template slot="title">
+      <div class="el-dialog__title" v-if="!showCardSlip">
+        <span>{{ $t('payment.creditCardSlip.title') }}</span>
+      </div>
+      <div class="el-dialog__title" v-else>
+        <img
+          @click="showCardSlip = false"
+          src="~assets/images/icon/ic-arrow-back.svg"
+        />
+        <span v-if="!showCardSlip">{{ $t('payment.logDetail.title') }}</span>
+        <span v-else>{{ $t('payment.creditCardSlip.title') }}</span>
+      </div>
+    </template>
     <el-row>
       <!-- 결제 정보 -->
-      <el-col :span="8">
+      <el-col :span="8" v-if="!showCardSlip">
         <h6>{{ $t('payment.logDetail.info') }}</h6>
         <dl class="horizon">
           <dt>{{ $t('payment.log.column.paidDate') }}</dt>
@@ -24,8 +37,57 @@
           <dd>{{ paymentLogDetail.no }}</dd>
         </dl>
         <el-divider />
-        <el-button type="simple" class="wide">
-          {{ $t('payment.logDetail.creditCardStatement') }}
+        <el-button type="simple" class="wide" @click="showCardSlip = true">
+          {{ $t('payment.logDetail.creditCardSlip') }}
+        </el-button>
+      </el-col>
+      <!-- 카드 전표 -->
+      <el-col class="card-slip" :span="8" v-if="showCardSlip">
+        <h6>{{ $t('payment.creditCardSlip.paymentInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.cardType') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.cardNo') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.tradeType') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.tradeDate') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.instalmentMonth') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.approvalNo') }}</dt>
+          <dd>-</dd>
+        </dl>
+        <el-divider />
+        <h6>{{ $t('payment.creditCardSlip.buyInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.buyNo') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.buyUser') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.tax') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.taxFree') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.surtax') }}</dt>
+          <dd>-</dd>
+        </dl>
+        <el-divider />
+        <h6>{{ $t('payment.creditCardSlip.sellerInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.sellerCompanyName') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.sellerCompanyNo') }}</dt>
+          <dd>-</dd>
+          <dt>{{ $t('payment.creditCardSlip.sellerAddress') }}</dt>
+          <dd>-</dd>
+        </dl>
+        <el-divider />
+        <el-button type="simple">
+          {{ $t('common.download') }}
+        </el-button>
+        <el-button type="simple">
+          {{ $t('common.print') }}
         </el-button>
       </el-col>
       <!-- 결제 상세 정보 -->
@@ -76,6 +138,9 @@
             <span>{{ this.$t('payment.monetaryUnit') }}</span>
           </dd>
         </dl>
+        <p v-if="showCardSlip">
+          {{ this.$t('payment.creditCardSlip.caution') }}
+        </p>
       </el-col>
     </el-row>
   </el-dialog>
@@ -92,7 +157,13 @@ export default {
   data() {
     return {
       paymentLogDetail: {},
+      showCardSlip: false,
     }
+  },
+  methods: {
+    opened() {
+      this.showCardSlip = false
+    },
   },
   async beforeMount() {
     this.paymentLogDetail = await paymentService.getPaymentLogDetail()
@@ -102,6 +173,16 @@ export default {
 
 <style lang="scss">
 #__nuxt .payment-log-detail-modal {
+  .el-dialog__title {
+    & > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    & > img {
+      margin-right: 12px;
+      cursor: pointer;
+    }
+  }
   h6 {
     margin-bottom: 14px;
     color: $font-color-content;
@@ -139,6 +220,13 @@ export default {
         font-size: 20px;
       }
     }
+    p {
+      margin-top: 20px;
+      color: $font-color-desc;
+      font-size: 10px;
+      line-height: 1.6;
+      word-break: normal;
+    }
   }
   .el-dialog .el-table {
     margin: 5px 0 20px;
@@ -153,6 +241,20 @@ export default {
     }
     td {
       padding: 0;
+    }
+  }
+  // 카드 전표
+  .card-slip {
+    dl.horizon dd {
+      margin-bottom: 12px;
+    }
+    .el-button {
+      width: calc(50% - 4px);
+      height: 36px;
+      margin: 0 0 4px 0;
+      &:last-child {
+        float: right;
+      }
     }
   }
 }
