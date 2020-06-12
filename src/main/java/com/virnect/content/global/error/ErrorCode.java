@@ -32,6 +32,9 @@ public enum ErrorCode {
     ERR_CONTENT_UPLOAD_LICENSE(4018, "Content upload fail. Because provided capacity exceeded."),
     ERR_CONTENT_DOWNLOAD_LICENSE(4019, "Content Download fail. Because the number of offers exceeded."),
 
+    // 타겟 관련
+    ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),
+
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
 

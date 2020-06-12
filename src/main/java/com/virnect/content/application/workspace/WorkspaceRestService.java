@@ -1,9 +1,11 @@
 package com.virnect.content.application.workspace;
 
+import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoListResponse;
 import com.virnect.content.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -24,4 +26,7 @@ public interface WorkspaceRestService {
      */
     @GetMapping("/workspaces")
     ApiResponse<WorkspaceInfoListResponse> getMyWorkspaceInfoList(@RequestParam("userId") String userId);
+
+    @GetMapping("/workspaces/{workspaceId}/members/simple")
+    ApiResponse<MemberListResponse> getSimpleWorkspaceUserList(@PathVariable("workspaceId") String workspaceId);
 }

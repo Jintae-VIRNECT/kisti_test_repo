@@ -1,5 +1,6 @@
 package com.virnect.content.api;
 
+import com.querydsl.core.Tuple;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.*;
@@ -22,6 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: PF-ContentManagement
@@ -44,7 +46,7 @@ public class ContentController {
             @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(콘텐츠 이름:name / 타겟유형:type(확인필요) / 콘텐츠 등록일:createdDate / 공유상태:shared)", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
     })
@@ -80,6 +82,23 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, null, pageable.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스테이션 기준 사용자별 업로드한 컨텐츠 수 ", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "")
+    })
+    @GetMapping("/countContents")
+    public ResponseEntity<ApiResponse<List<ContentCountResponse>>> countContents(
+            @RequestParam(value = "workspaceUUID") String workspaceUUID
+            , @RequestParam(value = "userUUIDList") List<String> userUUIDList){
+        if (userUUIDList.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<List<ContentCountResponse>> responseMessage = this.contentService.countMyContents(workspaceUUID, userUUIDList);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -401,5 +420,18 @@ public class ContentController {
     ) {
         ApiResponse<MetadataInfoResponse> response = this.contentService.propertyToMetadata(contentUUID);
         return ResponseEntity.ok(response);
+    }
+
+    @ApiOperation(value = "타겟 데이터 존재 유무", notes = "타겟 데이터의 존재 유무 확인 (true : 존재함, false : 존재하지 않음)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "path", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
+    })
+    @GetMapping("/target/{targetData}/isExist")
+    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@PathVariable("targetData") String targetData) {
+        if (targetData.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
+        return ResponseEntity.ok(responseMessage);
     }
 }

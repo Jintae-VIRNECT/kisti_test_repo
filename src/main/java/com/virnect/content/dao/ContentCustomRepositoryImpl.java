@@ -3,17 +3,21 @@ package com.virnect.content.dao;
 import com.querydsl.core.QueryFactory;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.QTuple;
 import com.querydsl.jpa.JPQLQuery;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
 import com.virnect.content.domain.QTarget;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.response.ContentCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +43,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         // apply search keyword
         if (search != null) {
-            query = query.where(qContent.name.contains(search).or(qContent.userUUID.in(userUUIDList)));
+            query = query.where( qContent.name.contains(search)
+                                 .or(qContent.userUUID.in(userUUIDList))
+                                 .or(qContent.userUUID.eq(search)));
         }
 
         if (userUUID != null) {
@@ -115,5 +121,22 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
                 .fetchOne();
 
         return sumDownload;
+    }
+
+    @Override
+    public List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList) {
+        QContent qContent = QContent.content;
+
+        List<Map<String, Object>> mapList = new ArrayList<>();
+
+        List<Tuple> tupleList =  from(qContent)
+                .select( qContent.userUUID.as("userUUID")
+                       , qContent.id.count().as("contentCount"))
+                .where(qContent.workspaceUUID.eq(workspaceUUID))
+                .where(qContent.userUUID.in(userUUIDList))
+                .groupBy(qContent.userUUID)
+                .fetch();
+
+        return tupleList;
     }
 }

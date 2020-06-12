@@ -3,6 +3,7 @@ package com.virnect.content.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
+import com.querydsl.core.Tuple;
 import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
@@ -142,6 +143,12 @@ public class ContentService {
 
             // 타겟 저장 후 타겟데이터 반환
             String targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+            // 추후 반영 예정
+//            if (isExistTargetData(uploadRequest.getTargetData())){
+//                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+//            } else {
+//                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+//            }
 
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
@@ -205,6 +212,17 @@ public class ContentService {
         return targetData;
     }
 
+    private Boolean isExistTargetData(String targetData) {
+       Boolean flag = false;
+
+       int targetCnt = this.targetRepository.countByData(targetData);
+
+       if (targetCnt > 0) {
+           flag = true;
+       }
+       return flag;
+    }
+
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
         String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
 
@@ -236,8 +254,14 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
-        // 타겟 저장 후 타겟데이터 반환
         String targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+
+        // 이미 있는 타겟 데이터인지 체크 - 추후 반영 예정
+//        if (isExistTargetData(targetRequest.getTargetData())) {
+//            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+//        } else {
+//            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+//        }
 
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
@@ -305,7 +329,11 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
-        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
+        // 2020/06/08 공유 상태 조건은 제거 (공유 상태 제한을 건 이유 :
+        // [오전 10:23] 김수환
+        // 네 ~ 승호님이 말씀하신 상태는 SMIC 사업때 작업 관리 중인 상태에서 콘텐츠 업데이트 시 문제 발생하여 막아두자고 해서 임의로 막아둔 것
+        // 이여서 승호님 말씀대로 변경하는 것이 제품 적용에 맞는 방향입니다 (smile))
+        if (targetContent.getConverted() != YesOrNo.NO  || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
@@ -474,6 +502,7 @@ public class ContentService {
             }
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
+
             if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
@@ -537,7 +566,10 @@ public class ContentService {
 
         if (search != null) {
             // 1. 사용자 식별번호 조회
-            ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
+            ApiResponse<UserInfoListResponse> userInfoListResult = getUserInfo(search, workspaceUUID);
+
+//            ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
+
             UserInfoListResponse userInfoList = userInfoListResult.getData();
             log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", userInfoList);
 
@@ -562,17 +594,17 @@ public class ContentService {
                     .contentSize(content.getSize())
                     .path(content.getPath())
                     .converted(content.getConverted())
-                    .createdDate(content.getUpdatedDate())
+                    .createdDate(content.getCreatedDate())
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
-                contentInfoResponse.setUploaderName(userInfoMap.get(content.getUserUUID()).getName());
+                contentInfoResponse.setUploaderName(userInfoMap.get(content.getUserUUID()).getNickname());    // name -> nickname으로 변경
                 contentInfoResponse.setUploaderUUID(userInfoMap.get(content.getUserUUID()).getUuid());
                 contentInfoResponse.setUploaderProfile(userInfoMap.get(content.getUserUUID()).getProfile());
             } else {
                 ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
                 contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
-                contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+                contentInfoResponse.setUploaderName(userInfoResponse.getData().getNickname());    // name -> nickname으로 변경
                 contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
             }
 
@@ -634,7 +666,7 @@ public class ContentService {
 
             ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
             contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
-            contentInfoResponse.setUploaderName(userInfoResponse.getData().getName());
+            contentInfoResponse.setUploaderName(userInfoResponse.getData().getNickname());    // name -> nickname으로 변경
             contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
 
             return WorkspaceSceneGroupInfoResponse.builder()
@@ -744,12 +776,12 @@ public class ContentService {
                 .sceneGroupTotal(content.getSceneGroupList().size())
                 .contentSize(content.getSize())
                 .uploaderUUID(userInfoResponse.getData().getUuid())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
                 .targets(targetResponseList)
-                .createdDate(content.getUpdatedDate())
+                .createdDate(content.getCreatedDate())
                 .build();
         return new ApiResponse<>(contentInfoResponse);
     }
@@ -869,11 +901,11 @@ public class ContentService {
                 .sceneGroupTotal(content.getSceneGroupList().size())
                 .contentSize(content.getSize())
                 .uploaderUUID(content.getUserUUID())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(content.getPath())
                 .converted(content.getConverted())
-                .createdDate(content.getUpdatedDate())
+                .createdDate(content.getCreatedDate())
                 .propertiesMetadata(content.getProperties())
                 .build());
     }
@@ -905,11 +937,11 @@ public class ContentService {
                 .sceneGroupTotal(returnContent.getSceneGroupList().size())
                 .contentSize(returnContent.getSize())
                 .uploaderUUID(returnContent.getUserUUID())
-                .uploaderName(userInfoResponse.getData().getName())
+                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
                 .uploaderProfile(userInfoResponse.getData().getProfile())
                 .path(returnContent.getPath())
                 .converted(returnContent.getConverted())
-                .createdDate(returnContent.getUpdatedDate())
+                .createdDate(returnContent.getCreatedDate())
                 .propertiesMetadata(returnContent.getProperties())
                 .build());
     }
@@ -922,6 +954,49 @@ public class ContentService {
         if (!isWorkspaceMember) {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
+    }
+
+    private ApiResponse<UserInfoListResponse> getUserInfo(String search, String workspaceId) {
+        ApiResponse<MemberListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
+        List<String> userUUIDs = new ArrayList<>();
+
+        for (MemberInfoDTO dto : userList.getData().getMemberInfoList()) {
+            userUUIDs.add(dto.getUuid());
+        }
+
+        ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(search, userUUIDs);
+
+        return userInfoListResult;
+    }
+
+    public ApiResponse<Boolean> checkTargetData(String targetData) {
+        Boolean isExist = false;
+
+        int cntTargetData = this.targetRepository.countByData(targetData);
+
+        if (cntTargetData > 0) {
+            isExist = true;
+        }
+
+        return new ApiResponse<>(isExist);
+    }
+
+    public ApiResponse<List<ContentCountResponse>> countMyContents(String workspaceUUID, List<String> userUUIDList) {
+
+        List<Tuple> tupleList = this.contentRepository.countByUsers(workspaceUUID, userUUIDList);
+
+        log.debug(">>>>> : {}", tupleList);
+
+        List<ContentCountResponse> countList  = tupleList.stream().map(tuple -> {
+            ContentCountResponse response = new ContentCountResponse();
+
+            response.setUserUUID(tuple.get(0, String.class));
+            response.setCountContents(tuple.get(1, Long.class));
+
+            return response;
+        }).collect(Collectors.toList());
+
+        return new ApiResponse<>(countList);
     }
 
     // property 정보 -> metadata로 변환

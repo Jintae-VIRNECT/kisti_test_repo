@@ -25,6 +25,8 @@ public class UserInfoResponse {
     private String email;
     @ApiModelProperty(value = "사용자 이름", position = 2, example = "VIRNECT Master")
     private String name;
+    @ApiModelProperty(value = "사용자 닉네임", position = 3, example = "지렁이")
+    private String nickname;
     @ApiModelProperty(value = "사용자 소개", position = 3, example = "VIRNECT 워크스페이스 유저")
     private String description;
     @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 4, example = "VIRNECT 워크스페이스 유저")
