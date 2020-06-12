@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<TheHeader :showSection="showSection">
-			<template slot="subTitle">QR 로그인 센터</template>
+			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
 			<router-view :myInfo="myInfo" />
@@ -34,14 +34,16 @@ export default {
 	async mounted() {
 		try {
 			await Auth.init()
-			if (Auth.myInfo) {
+			if (Auth.isLogin) {
 				this.myInfo = Auth.myInfo
 				this.showSection.login = false
+				this.showSection.link = true
 				this.showSection.profile = true
 			} else throw 'error'
 		} catch (e) {
 			this.showSection.login = true
 			this.showSection.profile = false
+			this.showSection.link = false
 		}
 	},
 }

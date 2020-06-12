@@ -2,10 +2,10 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
-				<h2>로그인</h2>
-				<p class="input-title">이메일</p>
+				<h2>{{ $t('login.title') }}</h2>
+				<p class="input-title">{{ $t('login.email') }}</p>
 				<el-input
-					placeholder="이메일을 입력해 주세요"
+					:placeholder="$t('login.emailPlaceholder')"
 					v-model="login.email"
 					name="email"
 					:class="{ 'input-danger': message }"
@@ -14,9 +14,9 @@
 				>
 				</el-input>
 
-				<p class="input-title">비밀번호</p>
+				<p class="input-title">{{ $t('login.password') }}</p>
 				<el-input
-					placeholder="비밀번호를 입력해 주세요"
+					:placeholder="$t('login.passwordPlaceholder')"
 					v-model="login.password"
 					show-password
 					name="password"
@@ -31,12 +31,12 @@
 					<el-checkbox
 						v-model="login.rememberMe"
 						@change="emailRemember(login.email, login.rememberMe)"
-						>이메일 저장</el-checkbox
+						>{{ $t('login.remember') }}</el-checkbox
 					>
 					<el-checkbox
 						@change="autoLogin(login.autoLogin)"
 						v-model="login.autoLogin"
-						>자동 로그인</el-checkbox
+						>{{ $t('login.autoLogin') }}</el-checkbox
 					>
 				</div>
 
@@ -45,21 +45,21 @@
 					type="info"
 					@click="handleLogin"
 					:disabled="loading || login.email == '' || login.password == ''"
-					>로그인</el-button
+					>{{ $t('login.title') }}</el-button
 				>
 				<div class="find-wrap">
 					<router-link
 						:to="{ name: 'findTab', params: { findCategory: 'email' } }"
-						>이메일 찾기</router-link
+						>{{ $t('login.findAccount') }}</router-link
 					>
 					<router-link
 						:to="{
 							name: 'findTab',
 							params: { findCategory: 'reset_password' },
 						}"
-						>비밀번호 재설정</router-link
+						>{{ $t('login.resetPassword') }}</router-link
 					>
-					<router-link to="/terms">회원가입</router-link>
+					<router-link to="/terms">{{ $t('login.signUp') }}</router-link>
 				</div>
 			</el-col>
 		</el-row>
@@ -71,6 +71,7 @@
 import Cookies from 'js-cookie'
 import Login from 'model/login'
 import AuthService from 'service/auth-service'
+import mixin from 'mixins/mixin'
 
 import footerSection from '../common/Footer'
 import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
@@ -78,6 +79,7 @@ import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
 	name: 'login',
+	mixins: [mixin],
 	components: {
 		footerSection,
 	},
@@ -172,14 +174,21 @@ export default {
 					}
 					// location.href = urls.workstation[process.env.TARGET_ENV]
 				} catch (e) {
-					// console.log(e)d
 					if (e.code === 2000) {
 						this.alertWindow(
-							'계정 정보 입력 오류',
-							'등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.',
-							'확인',
+							this.$t('login.accountError.title'),
+							this.$t('login.accountError.contents'),
+							this.$t('login.accountError.btn'),
 						)
+						this.loading = false
 						this.message = e.message
+					} else {
+						this.alertMessage(
+							this.$t('login.networkError.title'),
+							this.$t('login.networkError.contents'),
+							'error',
+						)
+						this.loading = false
 					}
 				}
 			}

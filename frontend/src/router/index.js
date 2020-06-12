@@ -5,8 +5,8 @@ Vue.use(Router)
 
 import HomeRouter from './partials/home'
 import QRRouter from './partials/qr'
-import PageNotFound from 'WC-Modules/vue/components/errors/404'
-import InternetNotFound from 'WC-Modules/vue/components/errors/504'
+import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
+import InternetNotFound from 'WC-Modules/vue/components/errors/NetworkError'
 
 export default new Router({
 	name: 'router',

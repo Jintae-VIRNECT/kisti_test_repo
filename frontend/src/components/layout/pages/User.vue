@@ -246,8 +246,8 @@ export default {
 				} else throw registerData
 			} catch (error) {
 				this.alertMessage(
-					'기타 오류',
-					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+					'기타 오류', // 기타 오류
+					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`, // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 					'error',
 				)
 			}
@@ -329,9 +329,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				if (files.length > 0) {
 					if (
-						['image/gif', 'image/jpeg', 'image/jpg', 'image/png'].indexOf(
-							files[0].type,
-						) < 0
+						['image/jpeg', 'image/jpg', 'image/png'].indexOf(files[0].type) < 0
 					) {
 						reject('This image is unavailable.')
 						return
@@ -368,8 +366,8 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					'닉네임 설정 오류',
-					`닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.`,
+					'닉네임 설정 오류', // 닉네임 설정 오류
+					`닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.`, // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
 					'error',
 				)
 			}
