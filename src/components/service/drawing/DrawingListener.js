@@ -2,6 +2,7 @@ import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
 import { SIGNAL } from 'plugins/remote/call/remote.config'
+import { EVENT } from 'utils/drawing.config'
 
 export default {
   data() {
@@ -12,29 +13,28 @@ export default {
   },
   methods: {
     drawingListener(receive) {
-      this.receivePath = []
       const data = JSON.parse(receive.data)
       if (data.from === this.account.uuid) return
 
       switch (data.type) {
-        case 'drawLineDown':
-        case 'drawLineMove':
-        case 'drawLineUp':
+        case EVENT.LINE_DOWN:
+        case EVENT.LINE_MOVE:
+        case EVENT.LINE_UP:
           this.drawingLine(data)
           break
-        case 'drawText':
+        case EVENT.TEXT_ADD:
           this.drawingText(data)
           break
-        case 'updateText':
+        case EVENT.TEXT_UPDATE:
           this.updateText(data)
           break
-        case 'drawUndo':
+        case EVENT.UNDO:
           this.receiveStackUndo(data)
           break
-        case 'drawRedo':
+        case EVENT.REDO:
           this.receiveStackRedo(data)
           break
-        case 'drawClearAll':
+        case EVENT.CLEAR_ALL:
           this.clearAll(data)
           break
       }
@@ -46,13 +46,13 @@ export default {
         scale: 1 / this.canvas.backgroundImage.scaleX,
       }
 
-      if (data.type === 'lineStart') {
+      if (data.type === EVENT.LINE_DOWN) {
         this.receivePath = []
       }
 
       this.receivePath.push(getReceiveParams(data.type, params))
 
-      if (data.type === 'lineEnd') {
+      if (data.type === EVENT.LINE_UP) {
         const width = parseInt(data.width) / params.scale
         const pos = calcPosition(this.receivePath, width)
         const path = new fabric.Path(this.receivePath, {
@@ -77,21 +77,8 @@ export default {
         })
       }
     },
-    drawingMove(data) {
-      const object = this.canvas.getObjects().find(_ => _.id === data.oId)
-
-      let params = {
-        posX: data.posX,
-        posY: data.posY,
-        scale: 1 / this.canvas.backgroundImage.scaleX,
-      }
-
-      params = getReceiveParams('drawMove', params)
-      object.set(params)
-      this.canvas.renderAll()
-    },
     drawingText(data) {
-      const params = getReceiveParams('drawText', {
+      const params = getReceiveParams(EVENT.TEXT_ADD, {
         ...data,
         scale: 1 / this.canvas.backgroundImage.scaleX,
       })

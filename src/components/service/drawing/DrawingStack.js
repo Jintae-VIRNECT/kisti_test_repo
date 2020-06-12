@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { EVENT } from 'utils/drawing.config'
 /**
  * undoList
  * {
@@ -36,7 +37,7 @@ export default {
             if (_.text.trim() === '') {
               _.canvas.remove(_)
             } else {
-              this._sendAction('updateText', _)
+              this._sendAction(EVENT.TEXT_UPDATE, _)
               this.stackAdd('text', [_.id])
             }
 
@@ -98,7 +99,7 @@ export default {
       this.redoList.unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
-      this._sendAction('undo')
+      this._sendAction(EVENT.UNDO)
 
       return this.undoList.length
     },
@@ -145,7 +146,7 @@ export default {
       this.undoList.push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
-      this._sendAction('redo')
+      this._sendAction(EVENT.REDO)
 
       return this.redoList.length
     },
@@ -169,7 +170,6 @@ export default {
       this.receiveUndoList[owner].push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
-      this._sendAction('redo')
 
       return this.receiveRedoList[owner].length
     },

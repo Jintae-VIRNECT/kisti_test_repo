@@ -1,4 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
+import { EVENT } from 'utils/drawing.config'
 
 export default {
   data() {
@@ -115,15 +116,15 @@ export default {
           )
         }
       })
-      canvas.on('object:moved', event => {
-        console.log('[Fabric] Object moved')
-        const object = event.target
-        console.log(object)
+      // canvas.on('object:moved', event => {
+      //   console.log('[Fabric] Object moved')
+      //   const object = event.target
+      //   console.log(object)
 
-        // this.$remoteSDK.message('drawMove', getParam('move', object));
-        this._sendAction('drawMove', object)
-        this.stackAdd('move', object.id)
-      })
+      //   // this.$remoteSDK.message('drawMove', getParam('move', object));
+      //   this._sendAction('drawMove', object)
+      //   this.stackAdd('move', object.id)
+      // })
       /* Object - scale */
       //   canvas.on('object:scaling', event => {
       //     // console.log('[Fabric] Object scaling');
@@ -174,7 +175,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction('lineStart', object)
+          this._sendAction(EVENT.LINE_DOWN, object)
         }
       })
 
@@ -201,7 +202,7 @@ export default {
               left: mouse.x,
               top: mouse.y,
             }
-            this._sendAction('lineMove', object)
+            this._sendAction(EVENT.LINE_MOVE, object)
           }
 
           if (cursor) {
@@ -232,7 +233,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction('lineEnd', object)
+          this._sendAction(EVENT.LINE_UP, object)
         }
 
         // 텍스트 삽입
