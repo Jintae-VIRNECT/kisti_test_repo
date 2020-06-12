@@ -143,7 +143,6 @@ export default {
       IDBHelper.deleteMediaChunk(uuids)
     },
     refreshSelectedArray(selectedArray) {
-      console.log('너 업데이트 되는거임?', selectedArray)
       this.selectedArray = selectedArray
     },
 
