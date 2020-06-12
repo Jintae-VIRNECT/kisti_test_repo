@@ -29,6 +29,7 @@
         <div
           v-for="(data, index) in renderArray"
           class="table__row"
+          :class="{ active: selectedArray[index] }"
           :key="index"
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
@@ -184,11 +185,11 @@ export default {
   justify-content: center;
   height: 56px;
   border-top: solid;
-  border-top-color: rgb(49, 49, 53);
+  border-top-color: #313135;
   border-top-width: 1px;
 }
 .table__column--toggle {
-  margin: 19px 19px 19px 22px;
+  margin: 22px 19px 19px 22px;
 }
 .table__column--cell {
   flex-basis: 0;
@@ -196,9 +197,12 @@ export default {
   flex-shrink: 1;
   color: #a7a7a7;
   font-size: 15px;
-  font-family: NotoSansCJKkr-Regular;
-  letter-spacing: 0.96px;
   text-align: center;
+}
+
+.table__column--cell:nth-child(2) {
+  flex-grow: 2;
+  text-align: left;
 }
 
 .table__body {
@@ -212,7 +216,20 @@ export default {
   height: 62px;
   margin: 0px 0px 8px 0px;
   background: #29292c;
+
+  &.active {
+    background: #313135;
+  }
+  &:hover {
+    background: #313135;
+  }
 }
+
+.table__row .table__cell:nth-child(2) {
+  flex-grow: 2;
+  text-align: left;
+}
+
 .table__cell {
   flex-basis: 0;
   flex-grow: 1;
@@ -220,13 +237,12 @@ export default {
   overflow: hidden;
   color: #d3d3d3;
   font-size: 15px;
-  letter-spacing: 0.96px;
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
 }
 .table__cell--toggle {
-  margin: 19px 19px 19px 22px;
+  margin: 23px 19px 19px 22px;
 }
 
 .table__body--empty {

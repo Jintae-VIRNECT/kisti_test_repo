@@ -13,18 +13,16 @@
 // @TODO:detach related record logics - ykmo
 
 import toolMixin from './toolMixin'
+import toastMixin from 'mixins/toast'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 
 import IDBHelper from 'utils/idbHelper'
-
-//나중에 다운로드 할때 가져다 써야함
-//import RecordRTC from 'recordrtc'
 
 import { mapGetters } from 'vuex'
 import uuid from 'uuid'
 export default {
   name: 'LocalRecordMenu',
-  mixins: [toolMixin],
+  mixins: [toolMixin, toastMixin],
   data() {
     return {
       isRecording: false,
@@ -42,6 +40,8 @@ export default {
 
       //for file chunk group id
       groupId: null,
+
+      workerJoined: false,
     }
   },
   computed: {
@@ -54,46 +54,81 @@ export default {
       'recordResolution',
     ]),
   },
-  watch: {},
+  watch: {
+    participants: {
+      handler(participants) {
+        const checkWorker = participant => {
+          return participant.role === 'WORKER'
+        }
+        this.workerJoined = participants.some(checkWorker)
+      },
+      deep: true,
+    },
+    workerJoined: {
+      handler(now, before) {
+        //if worker out -> then stop local recording
+        if (now === false && before === true) {
+          const showMsg = true
+          this.stop(showMsg)
+        }
+      },
+    },
+  },
   methods: {
     initRecorder() {},
 
-    recording() {
+    async recording() {
       console.log('recording!!!')
+
       console.log('this.participants ::', this.participants)
       console.log('this.mainView ::', this.mainView)
 
       // this.active = 'recording'
       if (!this.isRecording) {
-        this.record()
+        if (!(await IDBHelper.checkEstimatedQuota())) {
+          console.log('LocalRecording :: quota over!!! cancel recording!!!')
+          this.showNoQuota()
+          return
+        } else {
+          this.record()
+        }
       } else {
-        this.stop()
+        const showMsg = true
+        this.stop(showMsg)
       }
     },
     record() {
-      // this.begin = performance.now()
-      this.groupId = uuid()
-      this.fileCount = 0
       this.isRecording = true
 
+      //for group id
+      this.groupId = uuid()
+
+      //reset fileCount
+      this.fileCount = 0
+
       const recordStream = this.getStreams()
+      if (recordStream.length <= 0) {
+        this.isRecording = false
+        return
+      }
 
       const option = {
         video: this.getWH(this.recordResolution),
       }
 
       this.recorder = new MSR.MultiStreamRecorder(recordStream, option)
+      this.recorder.mimeType = this.mimeType
 
       // don't provide bit rate option yet
       // this.recorder.videoBitsPerSecond = this.bitrate
 
-      this.recorder.mimeType = this.mimeType
-
-      //db 인서트
       let today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
 
-      this.recorder.ondataavailable = blob => {
-        //RecordRTC.invokeSaveAsDialog(blob, 'test.mp4')
+      this.recorder.ondataavailable = async blob => {
+        if (this.fileCount >= 60) {
+          console.log('max recording time over')
+          this.stop()
+        }
 
         //create private uuid for media chunk
         let privateId = uuid()
@@ -118,16 +153,23 @@ export default {
           nickname = this.account.nickname
         }
 
-        //insert IDB
-        IDBHelper.addMediaChunk(
-          this.groupId,
-          privateId,
-          this.fileName,
-          playTime,
-          blob.size,
-          blob,
-          nickname,
-        )
+        if (!(await IDBHelper.checkEstimatedQuota())) {
+          this.recorder.stop()
+          this.recorder.clearRecordedData()
+          await IDBHelper.deleteGroupMediaChunk(this.groupId)
+          this.showNoQuota()
+        } else {
+          //insert IDB
+          IDBHelper.addMediaChunk(
+            this.groupId,
+            privateId,
+            this.fileName,
+            playTime,
+            blob.size,
+            blob,
+            nickname,
+          )
+        }
 
         this.fileCount++
       }
@@ -137,8 +179,12 @@ export default {
       }
 
       this.recorder.onstop = stopCallback
-      this.recorder.start(Number.parseInt(10 * 1000, 10))
-      //this.recorder.start(Number.parseInt(this.localRecordInterval * 1000, 10))
+      this.recorder.start(Number.parseInt(this.localRecordInterval * 1000, 10))
+
+      this.toastDefault(
+        '로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.',
+      )
+
       this.timeMark = performance.now()
 
       console.log('record started')
@@ -152,12 +198,21 @@ export default {
       //     console.log(err)
       //   })
     },
-    stop() {
+    stop(showMsg) {
       this.isRecording = false
-      this.recorder.stop()
-      this.recorder.clearRecordedData()
 
-      // this.end = performance.now()
+      if (this.recorder) {
+        this.recorder.stop()
+        this.recorder.clearRecordedData()
+
+        if (showMsg) {
+          this.toastDefault(
+            '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
+          )
+        }
+      }
+
+      console.log('localrecord stopped')
 
       // this.$openvidu
       //   .stop()
@@ -190,25 +245,24 @@ export default {
         streamArray.push(...participantsAudioStream)
       }
 
-      if (this.localRecordTarget === 'recordScreen') {
-        if (this.screenStream) {
-          streamArray.push(this.screenStream)
-        } else {
-          //스크린 영상 녹화하려는데 screenStream이 없다? 그럼 녹화 안해!
-          //이에 대한 예외 처리 해야겠군
-        }
-      } else {
-        if (this.mainView.stream) {
-          //비디오 트랙이 없을수가 있지. 음음 이것도 처리해줘야할것같아
-          // const mainViewVideoTrack = this.mainView.stream.getVideoTracks()[0]
-          // let mainViewVideoStream = new MediaStream()
-          // mainViewVideoStream.addTrack(mainViewVideoTrack)
-          // streamArray.push(mainViewVideoStream)
-
-          streamArray.push(this.mainView.stream)
-        } else {
-          console.log('mainView is not vaild!!')
-        }
+      switch (this.localRecordTarget) {
+        case 'recordWorker':
+          if (this.mainView.stream) {
+            streamArray.push(this.mainView.stream)
+          } else {
+            console.error('mainView is not vaild!!')
+          }
+          break
+        case 'recordScreen':
+          if (this.screenStream) {
+            streamArray.push(this.screenStream)
+          } else {
+            console.error('screenStream is not vaild!!')
+          }
+          break
+        default:
+          console.log('local record :: unknown target')
+          break
       }
 
       if (streamArray.length === 0) {
@@ -262,9 +316,16 @@ export default {
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
+  beforeDestroy() {
+    console.log('beforeDestroy')
+    this.stop()
+  },
+  showNoQuota() {
+    this.toastDefault(
+      'PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​',
+    )
+  },
   async mounted() {
-    console.log(this.account)
     await IDBHelper.initIDB()
   },
 }

@@ -24,5 +24,16 @@ export default {
         },
       })
     },
+    toastDefault(message, options) {
+      this.$toasted.clear()
+      this.$toasted.show(message, {
+        position: 'top-center',
+        type: 'info',
+        duration: 2000,
+        action: null,
+        containerClass: 'toast-default',
+        ...options,
+      })
+    },
   },
 }
