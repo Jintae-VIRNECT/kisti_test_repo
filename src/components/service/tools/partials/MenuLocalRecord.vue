@@ -52,7 +52,22 @@ export default {
       'recordResolution',
     ]),
   },
-  watch: {},
+  watch: {
+    participants: {
+      handler(participants) {
+        //if worker out -> then stop local recording
+        const checkWorker = participants.some(participant => {
+          participant.role === 'WORKER'
+        })
+
+        if (!checkWorker) {
+          const showMsg = true
+          this.stop(showMsg)
+        }
+      },
+      deep: true,
+    },
+  },
   methods: {
     initRecorder() {},
 
@@ -66,15 +81,14 @@ export default {
       if (!this.isRecording) {
         if (!(await IDBHelper.checkEstimatedQuota())) {
           console.log('LocalRecording :: quota over!!! cancel recording!!!')
-          this.toastDefault(
-            'PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​',
-          )
+          this.showNoQuota()
           return
         } else {
           this.record()
         }
       } else {
-        this.stop()
+        const showMsg = true
+        this.stop(showMsg)
       }
     },
     record() {
@@ -137,6 +151,7 @@ export default {
           this.recorder.stop()
           this.recorder.clearRecordedData()
           await IDBHelper.deleteGroupMediaChunk(this.groupId)
+          this.showNoQuota()
         } else {
           //insert IDB
           IDBHelper.addMediaChunk(
@@ -177,14 +192,19 @@ export default {
       //     console.log(err)
       //   })
     },
-    stop() {
+    stop(showMsg) {
       this.isRecording = false
-      this.recorder.stop()
-      this.recorder.clearRecordedData()
 
-      this.toastDefault(
-        '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
-      )
+      if (this.recorder) {
+        this.recorder.stop()
+        this.recorder.clearRecordedData()
+
+        if (showMsg) {
+          this.toastDefault(
+            '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
+          )
+        }
+      }
 
       console.log('localrecord stopped')
 
@@ -290,7 +310,15 @@ export default {
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
+  beforeDestroy() {
+    console.log('beforeDestroy')
+    this.stop()
+  },
+  showNoQuota() {
+    this.toastDefault(
+      'PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​',
+    )
+  },
   async mounted() {
     await IDBHelper.initIDB()
   },
