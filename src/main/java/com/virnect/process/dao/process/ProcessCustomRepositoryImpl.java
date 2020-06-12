@@ -29,7 +29,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Process> getProcessPageSearchUser(String workspaceUUID, String title, List<String> userUUIDList, Pageable pageable){
+    public Page<Process> getProcessPageSearchUser(String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable){
         log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
 
         QProcess qProcess = QProcess.process;
@@ -47,14 +47,13 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
             query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
         }
 
-        // 검색시 사용자 명은 잠시 보류
-//        if (userUUIDList != null && userUUIDList.size() > 0)
-//        {
-//            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
-//        }
+        if (!userUUIDList.isEmpty()) {
+            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+        }
 
-        if (title != null){
-            query = query.where(qProcess.name.contains(title));
+        if (Objects.nonNull(search)){
+            // or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
+            query = query.where(qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search)));
         }
 
         log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
@@ -109,7 +108,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Process> getMyWork(String title, String workerUUID, Pageable pageable) {
+    public Page<Process> getMyTask(String myUUID, String workspaceUUID, String title, Pageable pageable) {
         QProcess qProcess = QProcess.process;
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QTarget qTarget = QTarget.target;
@@ -118,11 +117,11 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
         query.join(qProcess.subProcessList, qSubProcess);
         query.join(qProcess.targetList, qTarget);
 
-        query.where(qSubProcess.workerUUID.eq(workerUUID));
+        query.where(qSubProcess.workerUUID.eq(myUUID));
 
         // 검색어가 들어왔을 경우
         if (Objects.nonNull(title)) {
-            query.where(qProcess.name.contains("title"));
+            query.where(qProcess.name.contains(title));
         }
 
         query.groupBy(qProcess.id);

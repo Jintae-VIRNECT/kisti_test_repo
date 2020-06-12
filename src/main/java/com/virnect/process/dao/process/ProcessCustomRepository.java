@@ -24,7 +24,7 @@ public interface ProcessCustomRepository {
      * @param pageable
      * @return
      */
-    Page<Process> getProcessPageSearchUser(String workspaceUUID, String title, List<String> userUUIDList, Pageable pageable);
+    Page<Process> getProcessPageSearchUser(String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable);
 
     /**
      * 특정 작업의 Issue 카운트
@@ -41,5 +41,5 @@ public interface ProcessCustomRepository {
      */
     Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 
-    Page<Process> getMyWork(String title, String workerUUID, Pageable pageable);
+    Page<Process> getMyTask(String myUUID, String workspaceUUID, String title, Pageable pageable);
 }

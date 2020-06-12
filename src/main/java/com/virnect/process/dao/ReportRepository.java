@@ -17,13 +17,13 @@ import java.util.Optional;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public interface ReportRepository extends JpaRepository<Report, Long> {
+public interface ReportRepository extends JpaRepository<Report, Long>, ReportCustomRepository {
 
     //    @Query(value = "select * from report where report_id = :reportId", nativeQuery = true)
-    @Query(value = "select R from Report R where R.id = :reportId")
-    Optional<Report> getReport(Long reportId);
+//    @Query(value = "select R from Report R where R.id = :reportId")
+//    Optional<Report> getReport(Long reportId);
 
-//    Optional<Report> findById(Long reportId);
+    Optional<Report> findById(Long reportId);
 
     @Query(value = "select hour, count(1) as reportCount from (" +
             "select(" +
