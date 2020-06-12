@@ -149,6 +149,7 @@ export default {
   }
 
   .el-tabs__content {
+    min-height: 530px;
     margin: 120px auto 160px;
   }
   .el-tabs__content .el-card {
