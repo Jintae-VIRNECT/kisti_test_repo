@@ -9,7 +9,7 @@
 				>
 				<!-- <router-link to="/register">도움말</router-link> -->
 			</div>
-			<p>Copyright© <strong>VIRNECT INC.</strong> All Rights Reserved.</p>
+			<p><strong>©VIRNECT CO.</strong>, LTD. All rights reserved.</p>
 		</el-col>
 	</el-row>
 </template>

@@ -1,13 +1,5 @@
 {
   "terms": {
-    "page": {
-      "title": "약관 동의",
-      "pageInfo": "VIRNECT 이용약관에 동의하시면 가입이 진행됩니다.",
-      "entire": "전체 약관 동의",
-      "termsContents": "[서비스 이용약관 동의 내용]",
-      "privacyPolicyContents": "[개인정보처리방침 동의 내용]",
-      "marketingReceive": "[이벤트 마케팅 수신 동의 내용(선택)]"
-    },
     "h2": "서비스 이용약관",
     "lists": [
       {

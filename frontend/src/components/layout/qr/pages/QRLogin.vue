@@ -2,7 +2,7 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle">
 			<el-col>
-				<h2>QR 로그인 센터</h2>
+				<h2>QR 로그인</h2>
 				<p>
 					QR 로그인 센터에서 발급한 로그인용 QR을 <br />인식하여 로그인합니다.
 				</p>
