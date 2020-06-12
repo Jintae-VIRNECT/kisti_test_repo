@@ -12,7 +12,7 @@ import {
 import { reset } from 'utils/callOptions'
 
 const state = {
-  view: 'stream', // stream, sharing, ar
+  view: 'stream', // stream, drawing, ar
   drawColor: reset.color,
   drawOpacity: reset.opacity,
   lineWidth: reset.width,

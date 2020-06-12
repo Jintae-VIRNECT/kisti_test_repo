@@ -26,6 +26,7 @@
         </tool-picker>
 
         <tool-picker
+          v-if="view === 'drawing'"
           type="range"
           :title="$t('service.controller_opacity_label')"
           :step="20"

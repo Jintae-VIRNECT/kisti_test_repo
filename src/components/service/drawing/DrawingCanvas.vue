@@ -222,7 +222,7 @@ export default {
       }
 
       if (this.$call.session) {
-        this.$call.sendMessage(type, { ...param, ...custom })
+        this.$call.drawing(type, { ...param, ...custom })
       }
 
       // tId 업데이트
