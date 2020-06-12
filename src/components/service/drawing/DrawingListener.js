@@ -17,13 +17,10 @@ export default {
       if (data.from === this.account.uuid) return
 
       switch (data.type) {
-        case 'lineStart':
-        case 'lineMove':
-        case 'lineEnd':
+        case 'drawLineDown':
+        case 'drawLineMove':
+        case 'drawLineUp':
           this.drawingLine(data)
-          break
-        case 'drawMove':
-          this.drawingMove(data)
           break
         case 'drawText':
           this.drawingText(data)
@@ -31,13 +28,13 @@ export default {
         case 'updateText':
           this.updateText(data)
           break
-        case 'undo':
+        case 'drawUndo':
           this.receiveStackUndo(data)
           break
-        case 'redo':
+        case 'drawRedo':
           this.receiveStackRedo(data)
           break
-        case 'clearAll':
+        case 'drawClearAll':
           this.clearAll(data)
           break
       }

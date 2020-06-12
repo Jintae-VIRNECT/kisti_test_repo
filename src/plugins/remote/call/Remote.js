@@ -14,6 +14,11 @@ const _ = {
   join: async (roomInfo, account, role) => {
     Store.commit('clear')
     Store.commit('myRole', role)
+    // TODO: 영상 출력 허용 테스트 계정 이메일
+    let allowUser = false
+    if (['test25@test.com', 'test26@test.com'].includes(account.email)) {
+      allowUser = true
+    }
     try {
       const params = {
         sessionId: roomInfo.sessionId,
@@ -55,7 +60,7 @@ const _ = {
         audioSource: undefined, // TODO: setting value
         videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
-        publishVideo: role === ROLE.WORKER,
+        publishVideo: role === ROLE.WORKER || allowUser,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
