@@ -134,8 +134,7 @@ spring:
               - "https://stgconsole.virnect.com"
               - "https://stgaccount.virnect.com"
               - "https://stgadmin.virnect.com"
-              - "https://stgadmin.virnect.com"
-              - "https://stgconsole.virnect.com"
+              - "https://stgdownload.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
