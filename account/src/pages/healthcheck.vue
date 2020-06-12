@@ -1,9 +1,11 @@
 <template>
   <div>
-    subscribe
+    200
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  layout: 'empty',
+}
 </script>

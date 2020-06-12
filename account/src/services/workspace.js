@@ -1,4 +1,4 @@
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 import Workspace from '@/models/workspace/Workspace'
 import profileServices from '@/services/profile'
 

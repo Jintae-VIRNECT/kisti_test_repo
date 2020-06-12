@@ -9,12 +9,15 @@
     <template slot-scope="scope">
       <div class="column-date">
         <span v-if="!scope.row[prop]">-</span>
-        <span v-if="scope.row[prop]">
-          {{ scope.row[prop] | localDateFormat }}
+        <span
+          v-if="scope.row[prop]"
+          :style="type === 'time-narrow' ? { display: 'block' } : null"
+        >
+          {{ format(scope.row[prop]) }}
         </span>
-        <span v-if="scope.row[prop2]">~</span>
+        <span v-if="scope.row[prop2]">-</span>
         <span v-if="scope.row[prop2]">
-          {{ scope.row[prop2] | localDateFormat }}
+          {{ format(scope.row[prop2]) }}
         </span>
       </div>
     </template>
@@ -27,12 +30,20 @@ import { filters } from '@/plugins/dayjs'
 export default {
   props: {
     label: String,
+    type: String,
     prop: String,
     prop2: String,
     width: Number,
     align: String,
     sortable: [Boolean, String],
   },
-  filters: { ...filters },
+  methods: {
+    format(date) {
+      if (!this.type) return filters.localDateFormat(date)
+      if (this.type === 'date') return filters.localDateFormat(date)
+      if (this.type === 'time') return filters.localTimeFormat(date)
+      if (this.type === 'time-narrow') return filters.localTimeFormat(date)
+    },
+  },
 }
 </script>

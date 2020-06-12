@@ -59,17 +59,6 @@
               {{ $t('profile.info.nicknameChange') }}
             </el-button>
           </div>
-          <div class="profile__info">
-            <h4>{{ $t('profile.additional.birth') }}</h4>
-            <div class="content">
-              <span class="value">
-                {{ myBirth }}
-              </span>
-            </div>
-            <el-button type="text" @click="visible.birthChangeModal = true">
-              {{ $t('profile.additional.birthChange') }}
-            </el-button>
-          </div>
         </div>
       </el-card>
       <!-- 계정 정보 -->
@@ -104,6 +93,43 @@
             <el-button type="text" @click="visible.passwordChangeModal = true">
               {{ $t('profile.account.passwordChange') }}
             </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <div class="content">
+              <span class="value">
+                {{ myBirth }}
+              </span>
+            </div>
+            <el-button type="text" @click="visible.birthChangeModal = true">
+              {{ $t('profile.additional.birthChange') }}
+            </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.account.marketing') }}</h4>
+            <div class="content">
+              <span>
+                {{
+                  me.marketInfoReceive == 'ACCEPT'
+                    ? $t('profile.account.marketingAgree')
+                    : $t('profile.account.marketingDisagree')
+                }}
+              </span>
+            </div>
+            <el-button
+              type="text"
+              @click="visible.MarketInfoReceiveModal = true"
+            >
+              {{ $t('profile.account.marketingChange') }}
+            </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.account.secession') }}</h4>
+            <div class="content">
+              <el-button type="info" @click="visible.SecessionModal = true">
+                {{ $t('profile.account.secession') }}
+              </el-button>
+            </div>
           </div>
         </div>
       </el-card>
@@ -186,6 +212,16 @@
       :visible.sync="visible.recoveryEmailChangeModal"
       @changedRecoveryEmail="changedRecoveryEmail"
     />
+    <market-info-receive-modal
+      :me="me"
+      :visible.sync="visible.MarketInfoReceiveModal"
+      @changedMarketInfoReceive="changedMarketInfoReceive"
+    />
+    <secession-modal
+      :me="me"
+      :visible.sync="visible.SecessionModal"
+      @changedMarketInfoReceive="changedMarketInfoReceive"
+    />
   </div>
 </template>
 
@@ -200,6 +236,8 @@ import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
 import BirthChangeModal from '@/components/profile/BirthChangeModal'
 import ContactChangeModal from '@/components/profile/ContactChangeModal'
 import RecoveryEmailChangeModal from '@/components/profile/RecoveryEmailChangeModal'
+import MarketInfoReceiveModal from '@/components/profile/MarketInfoReceiveModal'
+import SecessionModal from '@/components/profile/SecessionModal'
 
 export default {
   middleware: ['default', 'profile'],
@@ -211,6 +249,8 @@ export default {
     BirthChangeModal,
     ContactChangeModal,
     RecoveryEmailChangeModal,
+    MarketInfoReceiveModal,
+    SecessionModal,
   },
   filters: {
     ...filters,
@@ -226,6 +266,8 @@ export default {
         birthChangeModal: false,
         contactChangeModal: false,
         recoveryEmailChangeModal: false,
+        MarketInfoReceiveModal: false,
+        SecessionModal: false,
       },
     }
   },
@@ -267,6 +309,11 @@ export default {
     changedRecoveryEmail(email) {
       this.me.recoveryEmail = email
       this.visible.recoveryEmailChangeModal = false
+    },
+    changedMarketInfoReceive(marketInfoReceive) {
+      console.log(marketInfoReceive)
+      this.me.marketInfoReceive = marketInfoReceive
+      this.visible.MarketInfoReceiveModal = false
     },
   },
   beforeCreate() {
@@ -362,7 +409,7 @@ export default {
       font-size: 12.6px;
     }
   }
-  .el-button {
+  .el-button--text {
     margin-top: 0;
     color: $color-link;
   }

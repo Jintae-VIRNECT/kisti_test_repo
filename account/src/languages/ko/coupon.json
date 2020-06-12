@@ -27,9 +27,9 @@
     "status": "사용 상태"
   },
   "status": {
-    "UNUSE": "사용 대기",
-    "USE": "사용 완료",
-    "EXPIRED": "만료"
+    "unuse": "사용 대기",
+    "use": "사용 완료",
+    "expired": "만료"
   },
   "message": {
     "registerFail": "쿠폰 등록에 실패하였습니다. 잠시 후 다시 이용해 주세요.",

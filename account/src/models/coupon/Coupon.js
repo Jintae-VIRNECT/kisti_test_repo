@@ -12,3 +12,9 @@ export default class Coupon extends Model {
     this.status = json.status
   }
 }
+
+export const status = [
+  { value: 'USE', label: 'coupon.status.use' },
+  { value: 'UNUSE', label: 'coupon.status.unuse' },
+  { value: 'EXPIRED', label: 'coupon.status.expired' },
+]

@@ -1,6 +1,11 @@
 <template>
   <div class="coupon-list">
-    <el-table :data="coupons" @row-click="select" @sort-change="sort">
+    <el-table
+      class="clickable"
+      :data="coupons"
+      @row-click="select"
+      @sort-change="sort"
+    >
       <column-default
         :label="$t('coupon.column.couponName')"
         prop="name"
@@ -28,7 +33,7 @@
       <column-status
         :label="$t('coupon.column.status')"
         prop="status"
-        statusList="coupon.status"
+        :statusList="couponStatus"
         :width="120"
         sortable="custom"
       />
@@ -41,18 +46,18 @@
 </template>
 
 <script>
-import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
-import ColumnDate from '@/components/common/tableColumn/ColumnDate'
-import ColumnStatus from '@/components/common/tableColumn/ColumnStatus'
+import columnMixin from '@/mixins/columns'
+import { status as couponStatus } from '@/models/coupon/Coupon'
 
 export default {
-  components: {
-    ColumnDefault,
-    ColumnDate,
-    ColumnStatus,
-  },
+  mixins: [columnMixin],
   props: {
     coupons: Array,
+  },
+  data() {
+    return {
+      couponStatus,
+    }
   },
   methods: {
     async select(row) {
@@ -78,7 +83,7 @@ export default {
 </script>
 
 <style lang="scss">
-.coupon-list {
+#__nuxt .coupon-list {
   .el-table {
     &__body-wrapper {
       height: 640px;

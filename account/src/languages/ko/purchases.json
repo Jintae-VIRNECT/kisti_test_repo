@@ -1,0 +1,60 @@
+{
+  "desc": "회원님이 마스터인 워크스페이스에서 구매한 플랜 및 서비스를 관리합니다  ",
+  "countsUnit": "번",
+  "hoursUnit": "시간",
+  "info": {
+    "title": "구매 정보",
+    "productPurchasesInfo": "제품 이용권 구매 정보",
+    "proudctPlan": "제품 플랜",
+    "arStorageCapacity": "AR 스토리지 용량",
+    "arContentsViewCount": "온라인 AR 콘텐츠 조회 수",
+    "callTime": "통화 시간",
+    "extendPurchasesInfo": "추가 서비스 이용권 구매 정보",
+    "nextPaymentDate": "다음 결제일",
+    "way": "결제 수단",
+    "changePlans": "플랜 및 서비스 이용권 변경"
+  },
+  "planMembersInfo": {
+    "title": "워크스페이스 플랜 사용자 정보",
+    "column": {
+      "name": "플랜 이름",
+      "user": "사용자"
+    }
+  },
+  "used": "사용됨",
+  "remainOfMax": "{max} {unit} 중 {remain} {unit} 사용 가능",
+  "change": "변경",
+  "arStorage": {
+    "used": "AR 스토리지 사용량",
+    "usedDesc": "실제 잔여 용량과 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+    "capacity": "AR 스토리지 용량",
+    "capacityDesc": "용량 초과 시 업로드가 불가하며, 잔여 AR 스토리지 용량은 이월 합산되지 않습니다.",
+    "max": "전체 스토리지 용량",
+    "maxShort": "전체 스토리지 용량",
+    "default": "기본 제공 용량",
+    "extend": "추가 구매 용량",
+    "unit": "GB"
+  },
+  "arContent": {
+    "used": "AR 콘텐츠 조회 수 사용량",
+    "usedDesc": "실제 잔여 조회 수와 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+    "capacity": "AR 콘텐츠 조회 수",
+    "capacityDesc": "조회 수 소진 시 AR 콘텐츠 조회가 불가하며, 잔여 조회 수는 이월 합산되지 않습니다.",
+    "max": "전체 온라인 AR 콘텐츠 조회 수",
+    "maxShort": "전체 조회 수",
+    "default": "기본 제공 조회 수",
+    "extend": "추가 구매 조회 수",
+    "unit": "회"
+  },
+  "call": {
+    "used": "통화 시간 사용량",
+    "usedDesc": "실제 잔여 통화 시간과 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+    "capacity": "통화 시간",
+    "capacityDesc": "통화 시간 소진 시 VIRNECT Remote 서비스 이용이 불가하며, 잔여 통화 시간은 이월 합산되지 않습니다. ",
+    "max": "전체 통화 시간",
+    "maxShort": "전체 통화 시간",
+    "default": "기본 제공 통화 시간",
+    "extend": "추가 통화 시간",
+    "unit": "시간"
+  }
+}

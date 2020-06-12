@@ -12,9 +12,20 @@
 }
 
 .column-plan {
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & > img {
+    box-sizing: border-box;
+    margin-top: 1px;
+    margin-right: 4px;
+    border: solid 1px #dde1ea;
+    border-radius: 100px;
+  }
   & > .el-tag {
     height: auto;
-    margin: 0 6px;
+    margin: 1px 6px 0;
     padding: 4px 6px;
     font-size: 11px;
     line-height: 11px;
@@ -47,5 +58,19 @@
   }
   .MEMBER {
     background: #7ac1fc;
+  }
+}
+
+.column-status {
+  & > span {
+    display: inline-block;
+    box-sizing: border-box;
+    min-width: 74px;
+    margin: -10px 0;
+    padding: 4px 10px;
+    font-size: 12.6px;
+    text-align: center;
+    border: solid 1px;
+    border-radius: 100px;
   }
 }

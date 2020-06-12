@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import PageNotFound from 'WC-Modules/vue/components/errors/404'
-import ConnectionError from 'WC-Modules/vue/components/errors/504'
+import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
+import ConnectionError from 'WC-Modules/vue/components/errors/NetworkError'
 
 export default {
   layout: 'noSidebar',

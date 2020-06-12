@@ -15,13 +15,20 @@
   }
 }
 .el-button--info {
-  font-weight: 300;
+  // font-weight: 300;
   background: $color-info;
   &:hover {
     background: $color-info-hover;
   }
   &:active {
     background: $color-info-active;
+  }
+}
+.profile__info {
+  .el-button--info {
+    // font-weight: 300;
+    color: #0b1f48;
+    background: #f0f3f8;
   }
 }
 .el-button--primary {

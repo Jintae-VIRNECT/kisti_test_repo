@@ -1,5 +1,5 @@
 import Profile from '@/models/profile/Profile'
-import api from '@/api/gateway'
+import { api } from '@/plugins/axios'
 
 function getMyProfile() {
   return process.client && { ...$nuxt.$store.getters['auth/myProfile'] }
