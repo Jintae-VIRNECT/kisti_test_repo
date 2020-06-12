@@ -175,3 +175,11 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#contents {
+  .el-radio-group {
+    margin-right: 6px;
+  }
+}
+</style>

@@ -14,7 +14,7 @@
     "title": "워크스페이스 프로필 설정",
     "createdDate": "워크스페이스 생성일",
     "name": "워크스페이스 이름",
-    "namePlaceholder": "{nickname}의 Worksapce",
+    "namePlaceholder": "{nickname}의 Workspace",
     "nameComment": "워크스페이스 이름은 30자 이내로 입력해 주세요.",
     "desc": "워크스페이스 설명",
     "descPlaceholder": "워크스페이스 설명을 입력해 주세요",

@@ -106,12 +106,14 @@ export default {
    * @param {Array} contentUUIDs
    */
   async deleteContent(contentUUIDs) {
-    return await api('CONTENT_DELETE', {
+    const data = await api('CONTENT_DELETE', {
       params: {
         contentUUIDs,
         workerUUID: myProfileGetter().uuid,
       },
     })
+    const err = data.deleteResponseList.find(res => !res.result)
+    if (err) throw err.msg
   },
   /**
    * 컨텐츠 상태 변경
