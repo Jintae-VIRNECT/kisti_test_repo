@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 /**
@@ -24,18 +26,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("local")
 @AutoConfigureMockMvc
 public class DownloadServiceTest {
-/*    @Autowired
-    private MockMvc mockMvc;
-    @Mock
-    private AppRepository appRepository;
-
     @Test
-    void uploadFile() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.exe",
-                "multipart/form-data", "영원한 삶..".getBytes());
-        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/download/upload").file(file))
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful());
-    }*/
+    void createAppUUID() {
+        String[] tokens = UUID.randomUUID().toString().split("-");
+        System.out.println(tokens[1] + "-" +tokens[4]);
+
+        String[] tokens2 = UUID.randomUUID().toString().split("-");
+        System.out.println(tokens2[1] + "-" +tokens2[4]);
+
+        String[] tokens3 = UUID.randomUUID().toString().split("-");
+        System.out.println(tokens3[1] + "-" +tokens3[4]);
+
+    }
 
 }

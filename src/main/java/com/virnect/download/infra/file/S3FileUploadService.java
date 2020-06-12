@@ -3,12 +3,14 @@ package com.virnect.download.infra.file;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,14 +28,12 @@ import java.util.UUID;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"staging", "production"})
 @Slf4j
 @Service
-public class S3FileUploadService implements FileUploadService {
+public class S3FileUploadService {
 
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
-
 
     @Value("${file.allow-extension}")
     private String allowExtension;
@@ -41,13 +41,15 @@ public class S3FileUploadService implements FileUploadService {
     @Value("${file.url}")
     private String fileUrl;
 
+    @Value("${file.upload-path}")
+    private String fileUploadPath;
+
     private AmazonS3 amazonS3Client;
 
     public S3FileUploadService(AmazonS3 amazonS3) {
         this.amazonS3Client = amazonS3;
     }
 
-    @Override
     public String upload(MultipartFile multipartFile) throws IOException {
         if (!allowExtension.contains(FilenameUtils.getExtension(multipartFile.getOriginalFilename()).toLowerCase())) {
             throw new DownloadException(ErrorCode.ERR_NOT_SUPPORTED_FILE);
@@ -70,6 +72,7 @@ public class S3FileUploadService implements FileUploadService {
     private String putS3(File uploadFile, String fileName) {
         try {
             amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.BucketOwnerRead));
+
         } catch (Exception e) {
             removeNewFile(uploadFile);
             throw new DownloadException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -87,7 +90,6 @@ public class S3FileUploadService implements FileUploadService {
         }
     }
 
-    @Override
     public void delete(String fileName) {
 
         String endPoint = bucketName;
@@ -96,7 +98,6 @@ public class S3FileUploadService implements FileUploadService {
 
     }
 
-    @Override
     public String getFileExtension(String originFileName) {
         int lastIndexOf = originFileName.lastIndexOf(".");
         if (lastIndexOf == -1) {
@@ -106,7 +107,6 @@ public class S3FileUploadService implements FileUploadService {
         return extension;
     }
 
-    @Override
     public boolean isAllowFileExtension(String fileExtension) {
         return false;
     }
@@ -123,8 +123,13 @@ public class S3FileUploadService implements FileUploadService {
         return Optional.empty();
     }
 
-    @Override
     public boolean doesFileExist(String fileName) {
         return amazonS3Client.doesObjectExist(bucketName, fileName);
+    }
+
+    public byte[] fileDownload(String fileName) throws IOException {
+        S3Object object = amazonS3Client.getObject(bucketName, fileUploadPath + fileName);
+        S3ObjectInputStream inputStream = object.getObjectContent();
+        return IOUtils.toByteArray(inputStream, object.getObjectMetadata().getContentLength());
     }
 }

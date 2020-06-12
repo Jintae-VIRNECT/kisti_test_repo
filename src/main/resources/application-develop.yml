@@ -7,7 +7,7 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -15,8 +15,8 @@ spring:
         format_sql: true
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 logging:
   level:
     com.virnect.download.application.*: DEBUG
@@ -27,9 +27,9 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
+  upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
-  allow-extension: "exe,apk"
+  allow-extension: "exe,apk,zip"
 
 ## Eureka Server Configuration
 eureka:

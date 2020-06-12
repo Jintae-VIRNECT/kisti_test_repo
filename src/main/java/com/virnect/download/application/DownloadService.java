@@ -8,22 +8,22 @@ import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.FileUploadService;
+import com.virnect.download.infra.file.S3FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DownloadService {
-    private final FileUploadService fileUploadService;
+    private final S3FileUploadService fileUploadService;
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
@@ -43,43 +43,48 @@ public class DownloadService {
         return null;
     }
 
-    public ResponseEntity<byte[]> downloadApp(String id) {
-        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+    public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
+        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
         this.appRepository.save(app);
-        return this.downloadFile(app.getAppUrl());
-    }
 
-    public ResponseEntity<byte[]> downloadGuide(String id) {
-        App app = this.appRepository.findById(Long.parseLong(id)).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+        if (app.getDevice().getType().equals("Google Play")) {
+            //링크 리턴
+            URI redirectUri = new URI(app.getAppUrl());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(redirectUri);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+        } else {
+            String fileName = FilenameUtils.getName(app.getAppUrl());
 
-        app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
-        this.appRepository.save(app);
-
-        return this.downloadFile(app.getGuideUrl());
-    }
-
-    public ResponseEntity<byte[]> downloadFile(String fileUrl) {
-        HttpHeaders headers = new HttpHeaders();
-        byte[] media;
-        try {
-            URL url = new URL(fileUrl);
-            InputStream inputStream = url.openStream();
-            media = IOUtils.toByteArray(inputStream);
-
-            String fileName = FilenameUtils.getName(fileUrl);
-
+            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
                     new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
 
-        } catch (IOException e) {
-            throw new DownloadException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(this.fileUploadService.fileDownload(fileName));
         }
+    }
+
+    public ResponseEntity<byte[]> downloadGuide(String uuid) throws IOException {
+        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+
+        app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
+        this.appRepository.save(app);
+
+        String fileName = FilenameUtils.getName(app.getGuideUrl());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attatchment; filename=\"" +
+                new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(media);
+                .body(this.fileUploadService.fileDownload(fileName));
     }
 
     public ApiResponse<AppInfoListResponse> getAppList(String productName) {
@@ -94,6 +99,8 @@ public class DownloadService {
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
             appInfo.setOs(appList.get(0).getOs().getName());
             appInfo.setVersion("v." + appList.get(0).getVersion());
+
+            appInfo.setImageUrl(appList.get(0).getImage());
             appInfoList.add(appInfo);
         });
 
