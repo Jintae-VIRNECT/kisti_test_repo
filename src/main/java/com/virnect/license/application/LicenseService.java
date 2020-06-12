@@ -447,7 +447,7 @@ public class LicenseService {
             this.licenseRepository.save(updatedLicense);
 
             MyLicenseInfoResponse myLicenseInfoResponse = this.modelMapper.map(updatedLicense, MyLicenseInfoResponse.class);
-            myLicenseInfoResponse.setLicenseType(updatedLicense.getLicenseProduct().getLicenseType().getName());
+            //myLicenseInfoResponse.setLicenseType(updatedLicense.getLicenseProduct().getLicenseType().getName());
             return new ApiResponse<>(myLicenseInfoResponse);
         } else {
             oldLicense.setUserId(null);
