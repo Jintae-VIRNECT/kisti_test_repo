@@ -379,7 +379,7 @@ public class ContentService {
 
         // 7-1. 컨텐츠 씬그룹 수정
         targetContent.getSceneGroupList().clear();
-        addSceneGroupToContent(targetContent, updateRequest.getMetadata());
+        addSceneGroupToContent(targetContent, metadata);
 
         String targetData = updateRequest.getTargetData();
 
