@@ -218,7 +218,7 @@ export default {
 
     selectParticipantRecTarget(recordTarget) {
       console.log(recordTarget)
-      //참여자의 스트림은 ㄴparticipants에서 가지고 오면 됨.
+
       switch (recordTarget) {
         case 'recordWorker':
           //set worker stream(main view + participants)

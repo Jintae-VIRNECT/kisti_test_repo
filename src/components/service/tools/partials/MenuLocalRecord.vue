@@ -42,6 +42,8 @@ export default {
       groupId: null,
 
       workerJoined: false,
+
+      today: null,
     }
   },
   computed: {
@@ -76,7 +78,6 @@ export default {
   },
   methods: {
     ...mapActions(['setScreenStream']),
-    initRecorder() {},
 
     async recording() {
       console.log('recording!!!')
@@ -86,10 +87,10 @@ export default {
 
       // this.active = 'recording'
       if (!this.isRecording) {
-        if (!(await IDBHelper.checkEstimatedQuota())) {
+        if (!(await IDBHelper.checkQuota())) {
           console.log('LocalRecording :: quota over!!! cancel recording!!!')
           this.showNoQuota()
-          return
+          return false
         } else {
           this.record()
         }
@@ -101,86 +102,12 @@ export default {
     async record() {
       this.isRecording = true
 
-      //for group id
-      this.groupId = uuid()
-
-      //reset fileCount
-      this.fileCount = 0
-
-      const recordStream = await this.getStreams()
-      if (recordStream.length <= 0) {
-        this.isRecording = false
-        return
+      if (!(await this.initRecorder())) {
+        return false
       }
 
-      const option = {
-        video: this.getWH(this.recordResolution),
-      }
-
-      this.recorder = new MSR.MultiStreamRecorder(recordStream, option)
-      this.recorder.mimeType = this.mimeType
-
-      // don't provide bit rate option yet
-      // this.recorder.videoBitsPerSecond = this.bitrate
-
-      let today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
-
-      this.recorder.ondataavailable = async blob => {
-        if (this.fileCount >= 60) {
-          console.log('max recording time over')
-          this.stop()
-        }
-
-        //create private uuid for media chunk
-        let privateId = uuid()
-
-        //make file name
-        let fileNumber = this.getFileNumberString(this.fileCount)
-        this.fileName = today + '_' + fileNumber + '.mp4'
-
-        console.log(this.fileName)
-        console.log(blob)
-
-        //get media chunk play time
-        let currentTime = performance.now()
-        let playTime = (currentTime - this.timeMark) / 1000
-        this.timeMark = currentTime
-
-        console.log(playTime)
-
-        //get nickname
-        let nickname = 'unknown'
-        if (this.account && this.account.nickname) {
-          nickname = this.account.nickname
-        }
-
-        if (!(await IDBHelper.checkEstimatedQuota())) {
-          this.recorder.stop()
-          this.recorder.clearRecordedData()
-          await IDBHelper.deleteGroupMediaChunk(this.groupId)
-          this.showNoQuota()
-        } else {
-          //insert IDB
-          IDBHelper.addMediaChunk(
-            this.groupId,
-            privateId,
-            this.fileName,
-            playTime,
-            blob.size,
-            blob,
-            nickname,
-          )
-        }
-
-        this.fileCount++
-      }
-
-      const stopCallback = () => {
-        console.log('stopCallback called')
-      }
-
-      this.recorder.onstop = stopCallback
-      this.recorder.start(Number.parseInt(this.localRecordInterval * 1000, 10))
+      let timeSlice = Number.parseInt(this.localRecordInterval * 1000, 10)
+      this.recorder.start(timeSlice)
 
       this.toastDefault(
         '로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.',
@@ -223,6 +150,39 @@ export default {
       //   })
     },
 
+    async initRecorder() {
+      //for group id
+      this.groupId = uuid()
+
+      //for file name
+      this.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
+
+      //reset fileCount
+      this.fileCount = 0
+
+      const recordStream = await this.getStreams()
+
+      if (recordStream.length <= 0) {
+        this.isRecording = false
+        return false
+      }
+
+      const option = {
+        video: this.getWH(this.recordResolution),
+      }
+
+      this.recorder = new MSR.MultiStreamRecorder(recordStream, option)
+      this.recorder.mimeType = this.mimeType
+      // don't provide bit rate option yet
+      // this.recorder.videoBitsPerSecond = this.bitrate
+      this.recorder.ondataavailable = this.getOndataavailable()
+      this.recorder.onstop = () => {
+        console.log('stopCallback called')
+      }
+
+      return true
+    },
+
     /**
      * get streams
      */
@@ -233,11 +193,15 @@ export default {
       //get participants audio stream
       this.participants.forEach(participant => {
         if (participant.stream) {
-          let audioStream = new MediaStream()
-          let audioTrack = participant.stream.getAudioTracks()[0]
+          let audioTracks = participant.stream.getAudioTracks()
 
-          audioStream.addTrack(audioTrack)
-          participantsAudioStream.push(audioStream)
+          if (audioTracks && audioTracks.length > 0) {
+            let audioStream = new MediaStream()
+            let audioTrack = participant.stream.getAudioTracks()[0]
+
+            audioStream.addTrack(audioTrack)
+            participantsAudioStream.push(audioStream)
+          }
         }
       })
 
@@ -273,6 +237,15 @@ export default {
 
       return streamArray
     },
+
+    async setScreenCapture() {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: this.getWH(this.recordResolution),
+      })
+      this.setScreenStream(displayStream)
+    },
+
     getWH(resolution) {
       //default
       const video = {
@@ -316,18 +289,63 @@ export default {
       return count
     },
 
-    async setScreenCapture() {
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
-        audio: true,
-        video: this.getWH(this.recordResolution),
-      })
-      this.setScreenStream(displayStream)
+    getOndataavailable() {
+      const ondataavailable = async blob => {
+        if (this.fileCount >= 60) {
+          console.log('max recording time over')
+          this.stop()
+        }
+
+        //create private uuid for media chunk
+        let privateId = uuid()
+
+        //make file name
+        let fileNumber = this.getFileNumberString(this.fileCount)
+        this.fileName = this.today + '_' + fileNumber + '.mp4'
+
+        console.log(this.fileName)
+        console.log(blob)
+
+        //get media chunk play time
+        let currentTime = performance.now()
+        let playTime = (currentTime - this.timeMark) / 1000
+        this.timeMark = currentTime
+
+        console.log(playTime)
+
+        //get nickname
+        let nickname = 'unknown'
+        if (this.account && this.account.nickname) {
+          nickname = this.account.nickname
+        }
+
+        if (!(await IDBHelper.checkQuota())) {
+          this.recorder.stop()
+          this.recorder.clearRecordedData()
+          await IDBHelper.deleteGroupMediaChunk(this.groupId)
+          this.showNoQuota()
+        } else {
+          //insert IDB
+          IDBHelper.addMediaChunk(
+            this.groupId,
+            privateId,
+            this.fileName,
+            playTime,
+            blob.size,
+            blob,
+            nickname,
+          )
+        }
+
+        this.fileCount++
+      }
+
+      return ondataavailable
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
-    console.log('beforeDestroy')
     this.stop()
   },
   showNoQuota() {
