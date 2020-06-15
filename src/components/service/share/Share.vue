@@ -16,7 +16,7 @@
           :class="{ active: list === 'history' }"
           @click="changeTab('history')"
         >
-          히스토리
+          공유목록
         </button>
       </li>
     </ul>
