@@ -3,6 +3,7 @@ package com.virnect.content.dao;
 import com.virnect.content.domain.Target;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,8 @@ public interface TargetRepository extends JpaRepository<Target, Long> {
     Optional<Target> findById(Long id);
 
     Optional<Target> findByContentId(Long contentId);
+
+    List<Target> findAllByContentId(Long contentId);
 
     void deleteByContentId(Long contentId);
 

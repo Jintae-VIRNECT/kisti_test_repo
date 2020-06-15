@@ -591,11 +591,24 @@ public class ContentService {
             log.info("[{}]", userInfoList);
         }
 
-
         // 2. 콘텐츠 조회
         Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
+
+            List<Target> targetList = this.targetRepository.findAllByContentId(content.getId());
+
+            List<ContentTargetResponse> targets = targetList.stream().map(target -> {
+                        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                                .id(target.getId())
+                                .data(target.getData())
+                                .type(target.getType())
+                                .imgPath(target.getImgPath())
+                                .build();
+
+                        return contentTargetResponse;
+            }).collect(Collectors.toList());
+
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                     .workspaceUUID(content.getWorkspaceUUID())
                     .contentUUID(content.getUuid())
@@ -606,6 +619,7 @@ public class ContentService {
                     .path(content.getPath())
                     .converted(content.getConverted())
                     .createdDate(content.getCreatedDate())
+                    .targets(targets)
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
