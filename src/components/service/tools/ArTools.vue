@@ -1,15 +1,17 @@
 <template>
   <div class="ar-tools tools">
     <ar-pointing></ar-pointing>
-    <ar-capture></ar-capture>
+    <template v-if="isLeader">
+      <ar-capture></ar-capture>
+      <div class="division"></div>
+      <line-mode :disabled="!canDrawing"></line-mode>
+      <line-width :disabled="!canDrawing"></line-width>
+    </template>
+    <color :disabled="!(canDrawing || canPointing)"></color>
     <div class="division"></div>
-    <line-mode></line-mode>
-    <line-width></line-width>
-    <color></color>
-    <div class="division"></div>
-    <undo></undo>
-    <redo></redo>
-    <clear></clear>
+    <undo :disabled="!(canDrawing || canPointing)"></undo>
+    <redo :disabled="!(canDrawing || canPointing)"></redo>
+    <clear :disabled="!(canDrawing || canPointing)"></clear>
   </div>
 </template>
 
@@ -24,6 +26,9 @@ import {
   Redo,
   Clear,
 } from './partials'
+import { mapGetters } from 'vuex'
+import { ACTION } from 'configs/view.config'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ArTools',
@@ -41,9 +46,36 @@ export default {
     return {
       active: 'pointing',
       isRecording: false,
+      EXPERT_LEADER: ROLE.EXPERT_LEADER,
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['viewAction']),
+    isLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
+    canDrawing() {
+      if (
+        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.viewAction === ACTION.AR_DRAWING
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
+    canPointing() {
+      if (this.viewAction === ACTION.AR_POINTING) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
   watch: {},
   methods: {},
 

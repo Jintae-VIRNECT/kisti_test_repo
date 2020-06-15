@@ -36,6 +36,11 @@ import { ROLE } from 'configs/remote.config'
 import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.dispatch('callReset')
+    })
+  },
   components: {
     HeaderSection,
     SubView,

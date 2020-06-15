@@ -42,12 +42,11 @@ export default {
   ],
   data() {
     return {
-      mode: 'document',
       fileReader: null,
       isInit: false,
       canvas: null,
       cursor: null,
-      drawingMode: 'line', // ('line' / 'text' / false)
+      // viewAction: 'line', // ('line' / 'text' / false)
       editingMode: false, // check text in editing (true / false)
       undoList: [],
       receiveUndoList: {},
@@ -57,7 +56,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools']),
+    ...mapGetters(['tools', 'view', 'viewAction']),
     uuid() {
       return this.account.uuid
     },
@@ -67,10 +66,10 @@ export default {
      * 모드 변경 메소드
      * @param {String} mode :: 변경 모드  // ('line' / 'text' / false)
      */
-    changeMode(mode) {
-      console.log(mode)
-      this.drawingMode = mode
-    },
+    // changeMode(mode) {
+    //   console.log(mode)
+    //   this.viewAction = mode
+    // },
 
     /* initialize */
     /**
@@ -150,7 +149,7 @@ export default {
       if (this.canvas === null) {
         const canvas = new fabric.Canvas('drawingCanvas', {
           backgroundColor: '#000000',
-          isDrawingMode: !!this.drawingMode,
+          isDrawingMode: !!this.viewAction,
           freeDrawingCursor: 'default',
         })
         // canvas.setWidth(this.videoWidth);

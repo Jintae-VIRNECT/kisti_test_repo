@@ -1,12 +1,14 @@
 @charset "utf-8";
 
 @import "common";
+@import "transition";
 @import "./plugin/material-icons";
 
 @import "./service/service-layout";
 @import "./service/service-subview";
 @import "./service/service-chat";
 @import "./service/service-stream";
+@import "./service/service-ar";
 @import "./service/service-participants";
 @import "./service/service-tools";
 

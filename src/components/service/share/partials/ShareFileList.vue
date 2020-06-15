@@ -3,7 +3,7 @@
     <vue2-scrollbar>
       <ol class="upload-list">
         <li>
-          <button class="upload-list__button" @click="addFileClick">
+          <button class="upload-list__button" @click="addFileClick()">
             파일추가
           </button>
           <input
@@ -59,8 +59,12 @@ export default {
     pdfView(file) {
       this.$emit('pdfView', { id: file.id, name: file.filedata.name })
     },
-    addFileClick() {
-      this.$refs['uploadFile'].click()
+    addFileClick(file) {
+      if (file) {
+        this.loadFile(file)
+      } else {
+        this.$refs['uploadFile'].click()
+      }
     },
     fileChangeHandler(event) {
       const file = event.target.files[0]

@@ -7,6 +7,7 @@ import { SIGNAL, ROLE } from 'configs/remote.config'
 let OV
 
 const _ = {
+  account: null,
   session: null,
   publisher: null,
   subscribers: [],
@@ -16,9 +17,14 @@ const _ = {
     Store.dispatch('updateAccount', {
       roleType: role,
     })
+    _.account = account
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
-    if (['test25@test.com', 'test26@test.com'].includes(account.email)) {
+    if (
+      ['test6@test.com', 'test25@test.com', 'test26@test.com'].includes(
+        account.email,
+      )
+    ) {
       allowUser = true
     }
     try {
@@ -117,9 +123,8 @@ const _ = {
     })
   },
   drawing: (type, params) => {
-    const account = Store.getters['account']
     params.type = type
-    params['from'] = account.uuid
+    params['from'] = _.account.uuid
     params['to'] = []
     _.session.signal({
       type: SIGNAL.DRAWING,
@@ -132,6 +137,23 @@ const _ = {
       data: JSON.stringify(message),
       to: _.session.connection,
       type: SIGNAL.POINTING,
+    })
+  },
+  arPointing: message => {
+    _.session.signal({
+      data: JSON.stringify(message),
+      to: _.session.connection,
+      type: SIGNAL.AR_POINTING,
+    })
+  },
+  arDrawing: (type, params = {}) => {
+    params.type = type
+    params['from'] = _.account.uuid
+    params['to'] = []
+    _.session.signal({
+      type: SIGNAL.AR_DRAWING,
+      to: _.session.connection,
+      data: JSON.stringify(params),
     })
   },
   getDevices: () => {},
@@ -197,9 +219,6 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
-  record: () => {},
-  stop: () => {},
-  active: () => {},
   /**
    * append message channel listener
    * @param {Function} customFunc

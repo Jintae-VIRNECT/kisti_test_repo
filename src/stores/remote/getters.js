@@ -12,7 +12,7 @@ export default {
       fontSize: state.oncall.fontSize,
     }
   },
-  action: state => state.oncall.action,
+  viewAction: state => state.oncall.action,
   stream: state => state.oncall.stream,
   mic: state => state.oncall.mic,
   speaker: state => state.oncall.speaker,

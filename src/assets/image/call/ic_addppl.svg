@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>1046781B-703F-45E4-827A-A456895B127E@3.00x</title>
+    <defs>
+        <filter x="-9.1%" y="-14.5%" width="118.1%" height="129.0%" filterUnits="objectBoundingBox" id="filter-1">
+            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feMorphology radius="1" operator="erode" in="SourceAlpha" result="shadowInner"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowInner" result="shadowInner"></feOffset>
+            <feComposite in="shadowOffsetOuter1" in2="shadowInner" operator="out" result="shadowOffsetOuter1"></feComposite>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.07 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0130_접속-화면-_AR-공유_요청-메시지(리더)" transform="translate(-1047.000000, -936.000000)" fill-rule="nonzero">
+            <g id="frame_list" transform="translate(415.000000, 915.000000)">
+                <g id="btn_invit_ppl" filter="url(#filter-1)" transform="translate(570.000000, 0.000000)">
+                    <g id="smvideo_addppl" transform="translate(62.000000, 21.000000)">
+                        <rect id="smvideo_ic_addppl" opacity="0.11761" x="0" y="0" width="36" height="36" rx="2.52631579"></rect>
+                        <path d="M21.6842105,18.1052632 C24.4757895,18.1052632 26.7368421,15.8442105 26.7368421,13.0526316 C26.7368421,10.2610526 24.4757895,8 21.6842105,8 C18.8926316,8 16.6315789,10.2610526 16.6315789,13.0526316 C16.6315789,15.8442105 18.8926316,18.1052632 21.6842105,18.1052632 Z M10.3157895,15.5789474 L10.3157895,11.7894737 L7.78947368,11.7894737 L7.78947368,15.5789474 L4,15.5789474 L4,18.1052632 L7.78947368,18.1052632 L7.78947368,21.8947368 L10.3157895,21.8947368 L10.3157895,18.1052632 L14.1052632,18.1052632 L14.1052632,15.5789474 L10.3157895,15.5789474 Z M21.6842105,20.6315789 C18.3115789,20.6315789 11.5789474,22.3242105 11.5789474,25.6842105 L11.5789474,28.2105263 L31.7894737,28.2105263 L31.7894737,25.6842105 C31.7894737,22.3242105 25.0568421,20.6315789 21.6842105,20.6315789 Z" id="Shape" fill="#FFFFFF"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

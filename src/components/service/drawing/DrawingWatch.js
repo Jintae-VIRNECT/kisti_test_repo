@@ -22,16 +22,16 @@ export default {
           this.canvas.defaultCursor = 'default'
           this.canvas.renderAll()
         } else {
-          this.canvas.isDrawingMode = this.drawingMode === 'line'
+          this.canvas.isDrawingMode = this.viewAction === 'line'
           this.canvas.freeDrawingCursor =
-            this.drawingMode === 'text' ? 'text' : 'default'
+            this.viewAction === 'text' ? 'text' : 'default'
           this.canvas.defaultCursor =
-            this.drawingMode === 'text' ? 'text' : 'default'
+            this.viewAction === 'text' ? 'text' : 'default'
           this.canvas.renderAll()
         }
       }
     },
-    drawingMode(value) {
+    viewAction(value) {
       if (this.canvas) {
         this.canvas.isDrawingMode = value === 'line'
         this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
@@ -39,7 +39,7 @@ export default {
         let cursor
         if (value === 'text') {
           cursor = 'text'
-        } else if (this.drawingMode === 'zoom') {
+        } else if (this.viewAction === 'zoom') {
           cursor = 'zoom-out'
         }
         this.canvas.defaultCursor = cursor

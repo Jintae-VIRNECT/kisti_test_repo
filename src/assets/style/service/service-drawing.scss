@@ -33,6 +33,7 @@
 .drawing-box__empty-inner {
   margin: auto;
   text-align: center;
+  user-select: none;
   > p {
     color: #fff;
     font-weight: 500;

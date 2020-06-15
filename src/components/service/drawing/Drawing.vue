@@ -1,5 +1,11 @@
 <template>
-  <div class="drawing-box">
+  <div
+    class="drawing-box"
+    @dragenter.stop.prevent="dragenterHandler"
+    @dragleave.stop.prevent="dragleaveHandler"
+    @dragover.stop.prevent="dragoverHandler"
+    @drop.prevent="dropHandler"
+  >
     <drawing-canvas
       v-if="shareFile && shareFile.id"
       :file="shareFile"
@@ -60,6 +66,19 @@ export default {
   methods: {
     addFile() {
       this.$eventBus.$emit('addFile')
+    },
+    dragenterHandler(event) {
+      // console.log(event)
+    },
+    dragleaveHandler(event) {
+      // console.log(event)
+    },
+    dragoverHandler(event) {
+      // console.log(event)
+    },
+    dropHandler(event) {
+      const file = event.dataTransfer.files[0]
+      this.$eventBus.$emit('addFile', file)
     },
   },
 

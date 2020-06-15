@@ -1,0 +1,119 @@
+.ar-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  height: 100%;
+  margin: auto;
+}
+
+.ar-view {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 80px);
+}
+
+.ar-video {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.ar-video__box {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}
+
+.ar-video__stream {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ar-video__select {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(#014fe5, 0.3);
+  border: solid 2px #1967ff;
+  &::before {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 28px;
+    height: 28px;
+    border-top: solid 2px #1967ff;
+    border-left: solid 2px #1967ff;
+    content: "";
+  }
+  &::after {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 28px;
+    height: 28px;
+    border-top: solid 2px #1967ff;
+    border-right: solid 2px #1967ff;
+    content: "";
+  }
+  &:hover {
+    > .ar-video__select-inner p {
+      text-shadow: 4px 4px 4px rgba(#000, 0.59);
+    }
+  }
+}
+.ar-video__select-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  &::before {
+    position: absolute;
+    bottom: -4px;
+    left: -4px;
+    width: 28px;
+    height: 28px;
+    border-bottom: solid 2px #1967ff;
+    border-left: solid 2px #1967ff;
+    content: "";
+  }
+  &::after {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 28px;
+    height: 28px;
+    border-right: solid 2px #1967ff;
+    border-bottom: solid 2px #1967ff;
+    content: "";
+  }
+}
+.ar-video__select-inner {
+  margin: auto;
+  text-align: center;
+  > p {
+    color: #fff;
+    font-weight: 500;
+    font-size: 24px;
+    text-shadow: 1px 2px 4px rgba(#000, 0.59);
+    transition: all 0.3s;
+    &.description {
+      margin-top: 6px;
+      font-size: 13px;
+    }
+  }
+}
+
+.ar-pointing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
