@@ -30,7 +30,7 @@
   width: calc(100% - #{$subview_width});
   height: calc(100% - #{$videolist_height});
   color: $color_text_main;
-  &.drawing {
+  &.shareview {
     width: calc(100% - #{$subview_width + $share_width});
     margin-left: $share_width;
   }

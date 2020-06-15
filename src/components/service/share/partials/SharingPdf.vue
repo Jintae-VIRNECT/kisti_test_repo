@@ -5,7 +5,9 @@
     </button>
 
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove">파일 삭제</button>
+    <button class="sharing-image__remove" @click.native="deleteImage">
+      파일 삭제
+    </button>
     <div
       class="sharing-image__loading"
       v-if="docPages.length === 0 || docPages.length !== totalPages"
@@ -150,6 +152,21 @@ export default {
       )
         return
       this.$emit('pdfView', this.fileInfo.id)
+    },
+    deleteImage() {
+      this.confirmCancel(
+        '정말로 삭제하시겠습니까?',
+        {
+          text: '확인',
+          action: this.remove,
+        },
+        {
+          text: '취소',
+        },
+      )
+    },
+    remove() {
+      this.removeFile(this.fileInfo.id)
     },
   },
 

@@ -107,6 +107,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.$eventBus.$on('addFile', this.addFileClick)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('addFile', this.addFileClick)
+  },
 }
 </script>

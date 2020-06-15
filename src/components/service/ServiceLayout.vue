@@ -16,7 +16,11 @@
         <ar-view v-if="view === 'ar'"></ar-view>
       </transition>
 
-      <user-list :class="{ draw: view === 'drawing' }"></user-list>
+      <user-list
+        :class="{
+          shareview: account.roleType === EXPERT_LEADER && view === 'drawing',
+        }"
+      ></user-list>
 
       <!-- <component :is="viewComponent"></component> -->
     </div>

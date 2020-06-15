@@ -27,8 +27,6 @@ export default {
       )
       if (!!this.status === true) {
         this.setAction('text')
-      } else {
-        this.setAction('')
       }
     },
     changeStatus(mode) {

@@ -45,8 +45,6 @@ export default {
       )
       if (!!this.status === true) {
         this.setAction('line')
-      } else {
-        this.setAction('')
       }
     },
     changeStatus(mode) {
