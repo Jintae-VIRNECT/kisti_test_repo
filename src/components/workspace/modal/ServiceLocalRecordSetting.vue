@@ -225,7 +225,7 @@ export default {
         case 'recordScreen':
           //set screen stream for local record
           this.setLocalRecordTarget(recordTarget)
-          this.setScreenCapture()
+          //this.setScreenCapture()
           break
         default:
           console.log('unknown value')

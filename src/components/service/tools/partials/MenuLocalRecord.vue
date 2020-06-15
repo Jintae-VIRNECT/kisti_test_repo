@@ -18,7 +18,7 @@ import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 
 import IDBHelper from 'utils/idbHelper'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import uuid from 'uuid'
 export default {
   name: 'LocalRecordMenu',
@@ -75,6 +75,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setScreenStream']),
     initRecorder() {},
 
     async recording() {
@@ -97,7 +98,7 @@ export default {
         this.stop(showMsg)
       }
     },
-    record() {
+    async record() {
       this.isRecording = true
 
       //for group id
@@ -106,7 +107,7 @@ export default {
       //reset fileCount
       this.fileCount = 0
 
-      const recordStream = this.getStreams()
+      const recordStream = await this.getStreams()
       if (recordStream.length <= 0) {
         this.isRecording = false
         return
@@ -225,7 +226,7 @@ export default {
     /**
      * get streams
      */
-    getStreams() {
+    async getStreams() {
       const streamArray = []
       const participantsAudioStream = []
 
@@ -253,6 +254,8 @@ export default {
           }
           break
         case 'recordScreen':
+          await this.setScreenCapture()
+
           if (this.screenStream) {
             streamArray.push(this.screenStream)
           } else {
@@ -311,6 +314,14 @@ export default {
         count = number.toString(10)
       }
       return count
+    },
+
+    async setScreenCapture() {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: this.getWH(this.recordResolution),
+      })
+      this.setScreenStream(displayStream)
     },
   },
 
