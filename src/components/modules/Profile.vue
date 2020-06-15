@@ -1,12 +1,9 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <div
-        class="profile--image"
-        :class="{ group: group, image: image && image.length > 0 }"
-      >
+      <div class="profile--image" :class="{ group: group, image: useImage }">
         <img
-          v-if="image && image.length > 0"
+          v-if="useImage"
           :src="image"
           :alt="mainText"
           @error="onImageError"
@@ -65,6 +62,15 @@ export default {
     group: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    useImage() {
+      if (this.image && this.image.length > 0 && this.image !== 'default') {
+        return this.image
+      } else {
+        return false
+      }
     },
   },
 }

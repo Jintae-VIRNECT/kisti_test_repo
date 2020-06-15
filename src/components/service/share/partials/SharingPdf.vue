@@ -5,7 +5,7 @@
     </button>
 
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove" @click.native="deleteImage">
+    <button class="sharing-image__remove" @click.stop="deleteImage">
       파일 삭제
     </button>
     <div

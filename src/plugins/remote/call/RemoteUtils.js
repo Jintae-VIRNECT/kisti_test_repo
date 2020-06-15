@@ -111,6 +111,7 @@ export const getUserObject = stream => {
     mute: false,
     status: 'good',
     roleType: roleType,
+    permission: false,
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

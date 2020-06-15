@@ -146,6 +146,15 @@ const _ = {
       type: SIGNAL.AR_POINTING,
     })
   },
+  permission: (params = {}) => {
+    params['from'] = _.account.uuid
+    console.log(params)
+    _.session.signal({
+      type: SIGNAL.CAPTURE_PERMISSION,
+      to: _.session.connection,
+      data: JSON.stringify(params),
+    })
+  },
   arDrawing: (type, params = {}) => {
     params.type = type
     params['from'] = _.account.uuid
@@ -156,7 +165,6 @@ const _ = {
       data: JSON.stringify(params),
     })
   },
-  getDevices: () => {},
   getState: () => {
     if (_.publisher) {
       return {
