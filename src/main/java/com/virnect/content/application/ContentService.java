@@ -367,12 +367,16 @@ public class ContentService {
         // 6. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
+        log.debug(">>>>>>>>>>>>>>>>>> updateProperties {}", updateRequest.getProperties());
+
         // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
         JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), updateRequest.getProperties());
 
         String metadata = metaObject.toString();
 
         targetContent.setMetadata(metadata);
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>> metadata : {}", metadata);
 
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
@@ -387,7 +391,14 @@ public class ContentService {
         Target target = this.targetRepository.findByContentId(targetContent.getId())
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
-        String originTargetData = target.getData();
+
+        String originTargetData = null;
+        // 기존 타겟 데이터가 없을 경우
+        if (Objects.isNull(target.getData())) {
+            throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
+        } else {
+            originTargetData = target.getData();
+        }
 
         // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
         if (!originTargetData.equals(targetData)) {
