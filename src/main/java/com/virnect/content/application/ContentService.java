@@ -368,7 +368,7 @@ public class ContentService {
         targetContent.setName(updateRequest.getName());
 
         // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
-        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getProperties());
+        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), updateRequest.getProperties());
 
         String metadata = metaObject.toString();
 
