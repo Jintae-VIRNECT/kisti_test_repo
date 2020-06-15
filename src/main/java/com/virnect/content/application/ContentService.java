@@ -593,17 +593,13 @@ public class ContentService {
         Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
-
-            List<Target> targetList = this.targetRepository.findAllByContentId(content.getId());
-
-            List<ContentTargetResponse> targets = targetList.stream().map(target -> {
+            List<ContentTargetResponse> targets = content.getTargetList().stream().map(target -> {
                         ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
                                 .id(target.getId())
                                 .data(target.getData())
                                 .type(target.getType())
                                 .imgPath(target.getImgPath())
                                 .build();
-
                         return contentTargetResponse;
             }).collect(Collectors.toList());
 
