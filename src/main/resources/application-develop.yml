@@ -160,7 +160,7 @@ spring:
                 postLogger: true
 
         - id: link-server
-          uri: lb:http://linke-server
+          uri: lb:http://link-server
           predicates:
             - Path=/link/**
           filters:
