@@ -91,7 +91,7 @@ public class TaskController {
     }
 
     /**
-     * Metadata API Remark
+     * Metadata API Part
      */
 
     /**
@@ -158,7 +158,7 @@ public class TaskController {
     }
 
     /**
-     *  ISSUES API Remark
+     *  ISSUES API Part
      */
 
     /**
@@ -295,7 +295,7 @@ public class TaskController {
     }
 
     /**
-     * PAPERS API Remark
+     * PAPERS API Part
      */
 
     /**
@@ -353,7 +353,7 @@ public class TaskController {
     }
 
     /**
-     * Statics API Remark
+     * Statics API Part
      */
 
     /**
@@ -434,7 +434,7 @@ public class TaskController {
     }
 
     /**
-     * Process API Remark
+     * Process API Part
      */
 
     /**
@@ -596,7 +596,7 @@ public class TaskController {
     }
 
     /**
-     * SubTask API Remark
+     * SubTask API Part
      */
 
     /**
@@ -770,7 +770,7 @@ public class TaskController {
     }
 
     /**
-     * Step API Remark
+     * Step API Part
      */
 
     /**

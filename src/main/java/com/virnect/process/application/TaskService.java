@@ -1392,6 +1392,7 @@ public class TaskService {
             List<ProcessTargetResponse> targetList = process.getTargetList().stream().map(target -> {
                 ProcessTargetResponse targetResponse = ProcessTargetResponse.builder()
                         .id(target.getId())
+                        .type(target.getType())
                         .data(target.getData())
                         .imgPath(target.getImgPath())
                         .build();
@@ -1456,6 +1457,7 @@ public class TaskService {
                     .id(target.getId())
                     .type(target.getType())
                     .data(target.getData())
+                    .imgPath(target.getImgPath())
                     .build();
         }).collect(Collectors.toList());
 
