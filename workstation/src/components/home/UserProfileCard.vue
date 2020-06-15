@@ -1,7 +1,9 @@
 <template>
   <el-card class="user-profile-card">
     <div slot="header">
-      <h3>{{ $t('home.profile.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.profile.title') }}</span>
+      </h3>
       <a :href="profileUpdatePage" target="_blank">
         {{ $t('home.profile.link') }}
       </a>

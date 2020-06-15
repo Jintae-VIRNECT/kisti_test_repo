@@ -1,13 +1,15 @@
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+
 export const install = [
   {
     label: 'VIRNECT Make 설치',
-    path: '',
-    image: '',
+    path: `${urls.download[process.env.TARGET_ENV]}/make`,
+    image: require('assets/images/logo/logo-make.svg'),
   },
   {
     label: 'VIRNECT View 설치',
-    path: '',
-    image: '',
+    path: `${urls.download[process.env.TARGET_ENV]}/view`,
+    image: require('assets/images/logo/logo-view.svg'),
   },
 ]
 

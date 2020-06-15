@@ -30,7 +30,11 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>
+              <span>{{
+                $t('contents.allContents.workspaceContentsList')
+              }}</span>
+            </h3>
           </div>
           <el-table
             class="clickable"

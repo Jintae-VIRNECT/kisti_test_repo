@@ -58,7 +58,7 @@ export default {
       this.$emit('sort-change', params)
     },
     rowClick(row) {
-      this.$router.push(`/tasks/${row.taskId}`)
+      this.$router.push(`/tasks/${row.taskId}/${row.subTaskId}`)
     },
   },
 }

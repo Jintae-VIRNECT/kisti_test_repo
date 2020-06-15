@@ -1,7 +1,9 @@
 <template>
   <el-card class="current-contents-list el-card--table">
     <div slot="header">
-      <h3>{{ $t('home.contentsList.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.contentsList.title') }}</span>
+      </h3>
     </div>
     <el-tabs v-model="activeTab">
       <el-tab-pane
