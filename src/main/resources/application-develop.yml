@@ -159,6 +159,18 @@ spring:
                 preLogger: true
                 postLogger: true
 
+        - id: link-server
+          uri: lb:http://linke-server
+          predicates:
+            - Path=/link/**
+          filters:
+            - StripPrefix=1
+            - RewritePath=/link/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                messagePrefix: "LINK_SERVER"
+                preLogger: true
+                postLogger: true
       globalcors:
         corsConfigurations:
           '[/**]':
