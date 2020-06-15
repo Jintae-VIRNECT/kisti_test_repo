@@ -57,17 +57,17 @@
             </el-select>
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
-          <dd v-for="target in content.targets" :key="target.id">
-            <span>{{ target.type }}</span>
+          <dd v-if="content.target">
+            <span>{{ content.target.type }}</span>
             <img
-              v-if="target.imgPath"
+              v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
-              @click="print(target.imgPath)"
+              @click="print(content.target.imgPath)"
             />
             <img
-              v-if="target.imgPath"
+              v-if="content.target.imgPath"
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(target.imgPath)"
+              @click="download(content.target.imgPath)"
             />
           </dd>
         </dl>

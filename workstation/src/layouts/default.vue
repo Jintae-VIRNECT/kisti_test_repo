@@ -71,8 +71,9 @@ export default {
   left: $the-sidebar-width !important;
   width: calc(100% - #{$the-sidebar-width}) !important;
 }
-.sub-title {
+#__nuxt .sub-title {
   font-size: 14px;
+  line-height: 32px;
   .el-divider {
     height: 24px;
     margin-right: 16px;
@@ -86,6 +87,7 @@ export default {
   }
   span {
     display: inline-block;
+    margin-bottom: 2px;
     vertical-align: middle;
   }
 }

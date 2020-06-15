@@ -22,6 +22,8 @@ export default class Content extends Model {
     this.path = json.path
     this.converted = json.converted
     this.targets = json.targets
+    this.target = json.targets && json.targets[0]
+    this.targetType = json.targets && json.targets[0].type
     this.createdDate = json.createdDate
   }
 }

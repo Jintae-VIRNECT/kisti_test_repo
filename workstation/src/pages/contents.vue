@@ -57,7 +57,7 @@
             />
             <column-default
               :label="$t('contents.allContents.column.targetType')"
-              prop="targets"
+              prop="targetType"
               sortable="custom"
               :width="120"
             />
