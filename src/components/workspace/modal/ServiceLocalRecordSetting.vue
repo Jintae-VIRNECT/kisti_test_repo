@@ -100,10 +100,13 @@ import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 
+import toastMixin from 'mixins/toast'
+
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'ServiceLocalRecordSetting',
+  mixins: [toastMixin],
   components: {
     Modal,
     RSelect,
@@ -125,6 +128,8 @@ export default {
       localRecordingTime: '',
       localRecordingResolution: '',
       joinerPointingApprove: false,
+
+      toastFlag: false,
 
       localRecTimeOpt: [
         {
@@ -221,14 +226,15 @@ export default {
 
           //don't need screen stream when record worker.
           this.setScreenStream(null)
+          this.showToast()
           break
         case 'recordScreen':
           //set screen stream for local record
           this.setLocalRecordTarget(recordTarget)
-          //this.setScreenCapture()
+          this.showToast()
           break
         default:
-          console.log('unknown value')
+          console.log('unknown recordTarget ::', recordTarget)
           break
       }
     },
@@ -248,15 +254,19 @@ export default {
 
     setRecLength(newRecLength) {
       this.setLocalRecordLength(newRecLength.value)
+      this.showToast()
     },
     setRecInterval(newInterval) {
       this.setLocalRecordInterval(newInterval.value)
+      this.showToast()
     },
     setMic(newMic) {
       this.setMicDevice(newMic.deviceId)
+      this.showToast()
     },
     setSpeaker(newSpeaker) {
       this.setSpeakerDevice(newSpeaker.deviceId)
+      this.showToast()
     },
 
     setRecResolution(newResolution) {
@@ -265,6 +275,7 @@ export default {
       } else {
         this.setRecordResolution(newResolution)
       }
+      this.showToast()
     },
 
     beforeClose() {
@@ -277,6 +288,7 @@ export default {
       } else {
         this.setAllowPointing(false)
       }
+      this.showToast()
     },
 
     toggleLocalRecording(value) {
@@ -285,6 +297,7 @@ export default {
       } else {
         this.setAllowLocalRecording(false)
       }
+      this.showToast()
     },
 
     displayTooltip() {
@@ -329,17 +342,13 @@ export default {
       if (allowLocalRecording) {
         this.setAllowLocalRecording(allowLocalRecording)
       }
-    },
 
-    async setScreenCapture() {
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
-        audio: true,
-        video: {
-          width: this.width,
-          height: this.height,
-        },
-      })
-      this.setScreenStream(displayStream)
+      this.toastFlag = true
+    },
+    showToast() {
+      if (this.toastFlag) {
+        this.toastNotify('변경사항을 저장했습니다.')
+      }
     },
   },
 
