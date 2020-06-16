@@ -108,6 +108,7 @@ import workspaceService from '@/services/workspace'
 import { mapGetters } from 'vuex'
 import EditMember from '@/models/workspace/EditMember'
 import plans from '@/models/workspace/plans'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
   mixins: [modalMixin],
@@ -151,10 +152,19 @@ export default {
         })
         this.$emit('updated', this.form)
       } catch (e) {
-        this.$message.error({
-          message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
-          showClose: true,
-        })
+        if (/^Error: 2000/.test(e)) {
+          this.$confirm(this.$t('members.add.message.noHavePlans'), {
+            confirmButtonText: this.$t('common.paymentCenter'),
+            customClass: 'no-title',
+          }).then(() => {
+            window.open(`${urls.pay[process.env.TARGET_ENV]}`)
+          })
+        } else {
+          this.$message.error({
+            message: this.$t('members.add.message.updateFail') + `\n(${e})`,
+            showClose: true,
+          })
+        }
       }
     },
   },
