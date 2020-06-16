@@ -87,6 +87,10 @@
           {{ $t('task.list.dropdown.taskDelete') }}
         </el-dropdown-item>
       </column-dropdown>
+      <template slot="empty">
+        <img src="~assets/images/empty/img-work-empty.jpg" />
+        <p>{{ $t('task.list.empty') }}</p>
+      </template>
     </el-table>
     <task-target-info
       :task="activeTask"

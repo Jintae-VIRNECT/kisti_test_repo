@@ -1,5 +1,5 @@
 <template>
-  <div id="members-log">
+  <div id="members-activity">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -118,3 +118,11 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#__nuxt #members-activity {
+  .column-links {
+    overflow: visible;
+  }
+}
+</style>

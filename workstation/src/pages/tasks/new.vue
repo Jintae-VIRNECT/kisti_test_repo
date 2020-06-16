@@ -14,12 +14,10 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
-          </el-button>
+          <searchbar-mine
+            ref="mine"
+            :mineLabel="$t('contents.allContents.myContents')"
+          />
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
@@ -168,14 +166,6 @@ export default {
     rowClick(row) {
       this.selectedContentId = row.contentUUID
       this.showNewTaskInfo = true
-    },
-    showAll() {
-      this.searchParams.mine = false
-      this.emitChangedSearchParams()
-    },
-    showMine() {
-      this.searchParams.mine = true
-      this.emitChangedSearchParams()
     },
     // 생성
     taskInfoEnded(contentInfo) {

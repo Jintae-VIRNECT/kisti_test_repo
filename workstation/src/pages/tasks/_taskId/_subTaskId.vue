@@ -51,10 +51,6 @@
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <searchbar-mine
-            ref="mine"
-            :mineLabel="$t('task.subTaskDetail.mySteps')"
-          />
           <span>{{ $t('searchbar.filter.title') }}:</span>
           <searchbar-filter
             ref="filter"
@@ -172,6 +168,10 @@
                 </el-button>
               </template>
             </el-table-column>
+            <template slot="empty">
+              <img src="~assets/images/empty/img-work-empty.jpg" />
+              <p>{{ $t('task.subTaskDetail.empty') }}</p>
+            </template>
           </el-table>
         </el-card>
       </el-row>

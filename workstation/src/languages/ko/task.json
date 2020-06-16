@@ -14,6 +14,7 @@
     "dailyRateGraphDesc": "일자별 작업 진행률을 안내합니다. 일자별 작업 진행률은 시작된 작업의 각 작업 일간 진행률 평균 정보를 제공합니다.",
     "rate": "진행률",
     "close": "종료",
+    "empty": "등록된 작업이 없습니다",
     "dashboard": {
       "title": "실시간 작업 진행 상태",
       "titleDesc": "접속하신 시간 기준의 작업 진행 상태 정보를 제공합니다.",
@@ -68,6 +69,7 @@
     "mySubTasks": "내 하위 작업",
     "subTasksProgressGraph": "하위 작업 진행률 그래프",
     "subTasksProgressGraphDesc": "하위 작업 진행률은 하위 작업 내 전체 단계 진행률을 계산하여 제공합니다.",
+    "empty": "등록된 하위 작업이 없습니다",
     "subTaskColumn": {
       "no": "순번",
       "id": "하위 작업 ID",
@@ -99,9 +101,9 @@
     "startedSteps": "시작된 단계",
     "endSteps": "마감된 단계",
     "stepsCount": "등록된 단계 수",
-    "mySteps": "내 단계",
     "stepsProgressGraph": "단계 진행률 그래프",
     "stepsProgressGraphDesc": "단계 진행률은 단계 내 전체 행동 진행률을 계산하여 제공합니다.",
+    "empty": "등록된 단계가 없습니다",
     "stepsColumn": {
       "no": "순번",
       "id": "단계 ID",

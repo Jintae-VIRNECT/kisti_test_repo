@@ -100,8 +100,8 @@
         :width="90"
       />
       <template slot="empty">
-        <img src="~assets/images/empty/img-content-empty.jpg" />
-        <p>{{ $t('home.contentsList.empty') }}</p>
+        <img src="~assets/images/empty/img-work-empty.jpg" />
+        <p>{{ $t('home.contentsList.taskEmpty') }}</p>
       </template>
     </el-table>
   </el-card>

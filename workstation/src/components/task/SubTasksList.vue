@@ -72,6 +72,10 @@
           {{ $t('task.detail.dropdown.subTaskEdit') }}
         </el-dropdown-item>
       </column-dropdown>
+      <template slot="empty">
+        <img src="~assets/images/empty/img-work-empty.jpg" />
+        <p>{{ $t('task.detail.empty') }}</p>
+      </template>
     </el-table>
     <set-sub-task-manage
       :taskInfo="taskInfo"

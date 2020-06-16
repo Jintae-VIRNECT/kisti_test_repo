@@ -36,6 +36,10 @@
       prop="reportedDate"
       :width="150"
     />
+    <template slot="empty">
+      <img src="~assets/images/empty/img-common-empty.jpg" />
+      <p>{{ $t('home.reportList.empty') }}</p>
+    </template>
   </el-table>
 </template>
 

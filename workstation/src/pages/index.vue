@@ -110,7 +110,8 @@ export default {
       opacity: 0.9;
     }
   }
-  .el-card--table .el-table__body-wrapper {
+  .el-card--table .el-table__body-wrapper,
+  .el-card--table .el-table__empty-block {
     min-height: 256px;
   }
   .install-list .el-card__body {
