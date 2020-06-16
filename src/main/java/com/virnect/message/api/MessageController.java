@@ -1,21 +1,25 @@
 package com.virnect.message.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
+import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.MailSendRequest;
+import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.exception.MessageException;
-import com.virnect.message.global.common.ApiResponse;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.function.Supplier;
 
 /**
  * Project: base
@@ -33,7 +37,37 @@ import javax.validation.Valid;
 public class MessageController {
 
     private final MessageService messageService;
+    private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
+    @ApiOperation(
+            value = "메일 메세지 발행"
+    )
+    @PostMapping("/email")
+    public void sendMail(@RequestBody @Valid MailSendRequest mailSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+        if (bindingResult.hasErrors()) {
+            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        String exchange = MessageType.EMAIL.getValue();
+        String routingKey = exchange + "." + mailSendRequest.getService();
+
+        rabbitTemplate.convertAndSend(exchange, routingKey, mailSendRequest);
+    }
+
+    @ApiOperation(
+            value = "푸시 메세지 발행"
+    )
+    @PostMapping("/push")
+    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+        if (bindingResult.hasErrors()) {
+            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        String exchange = MessageType.PUSH.getValue();
+        String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId() + "." + pushSendRequest.getUserId();
+        rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
+    }
+
+/*
     @ApiOperation(
             value = "메일 전송"
     )
@@ -45,4 +79,6 @@ public class MessageController {
         ApiResponse apiResponse = messageService.sendMail(mailSendRequest);
         return ResponseEntity.ok(apiResponse);
     }
+*/
+
 }
