@@ -193,11 +193,11 @@ export default {
       //get participants audio stream
       this.participants.forEach(participant => {
         if (participant.stream) {
-          let audioTracks = participant.stream.getAudioTracks()
+          const audioTracks = participant.stream.getAudioTracks()
 
           if (audioTracks && audioTracks.length > 0) {
-            let audioStream = new MediaStream()
-            let audioTrack = participant.stream.getAudioTracks()[0]
+            const audioStream = new MediaStream()
+            const audioTrack = participant.stream.getAudioTracks()[0]
 
             audioStream.addTrack(audioTrack)
             participantsAudioStream.push(audioStream)
@@ -297,18 +297,18 @@ export default {
         }
 
         //create private uuid for media chunk
-        let privateId = uuid()
+        const privateId = uuid()
 
         //make file name
-        let fileNumber = this.getFileNumberString(this.fileCount)
+        const fileNumber = this.getFileNumberString(this.fileCount)
         this.fileName = this.today + '_' + fileNumber + '.mp4'
 
         console.log(this.fileName)
         console.log(blob)
 
         //get media chunk play time
-        let currentTime = performance.now()
-        let playTime = (currentTime - this.timeMark) / 1000
+        const currentTime = performance.now()
+        const playTime = (currentTime - this.timeMark) / 1000
         this.timeMark = currentTime
 
         console.log(playTime)
