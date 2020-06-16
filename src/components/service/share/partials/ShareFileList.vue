@@ -1,9 +1,9 @@
 <template>
-  <div class="share-body">
+  <div class="share-body__file">
     <vue2-scrollbar>
       <ol class="upload-list">
         <li>
-          <button class="upload-list__button" @click="addFileClick">
+          <button class="upload-list__button" @click="addFileClick()">
             파일추가
           </button>
           <input
@@ -19,7 +19,7 @@
             v-if="file.pdf"
             :key="'sharing' + idx"
             :fileInfo="file"
-            @pdfView="id => $emit('pdfView', id)"
+            @pdfView="pdfView(file)"
           ></sharing-pdf>
           <sharing-image
             v-else
@@ -56,8 +56,15 @@ export default {
   watch: {},
   methods: {
     ...mapActions(['addFile']),
-    addFileClick() {
-      this.$refs['uploadFile'].click()
+    pdfView(file) {
+      this.$emit('pdfView', { id: file.id, name: file.filedata.name })
+    },
+    addFileClick(file) {
+      if (file) {
+        this.loadFile(file)
+      } else {
+        this.$refs['uploadFile'].click()
+      }
     },
     fileChangeHandler(event) {
       const file = event.target.files[0]
@@ -104,6 +111,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.$eventBus.$on('addFile', this.addFileClick)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('addFile', this.addFileClick)
+  },
 }
 </script>

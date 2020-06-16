@@ -1,14 +1,9 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
-import { EXPERT_LEADER, EXPERT, WORKER } from 'utils/role'
 
 export default {
   data() {
-    return {
-      EXPERT_LEADER: EXPERT_LEADER,
-      EXPERT: EXPERT,
-      WORKER: WORKER,
-    }
+    return {}
   },
   filters: {
     timeFilter(time) {

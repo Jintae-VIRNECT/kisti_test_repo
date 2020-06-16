@@ -1,6 +1,11 @@
 <template>
   <div>
-    <tool-button text="색상 선택" :active="status" @click.stop="clickHandler">
+    <tool-button
+      text="색상 선택"
+      :active="status"
+      @click.stop="clickHandler"
+      :disabled="disabled"
+    >
       <span class="line-color" :style="{ backgroundColor: pick }">{{
         pick
       }}</span>
@@ -26,6 +31,7 @@
         </tool-picker>
 
         <tool-picker
+          v-if="useOpacity"
           type="range"
           :title="$t('service.controller_opacity_label')"
           :step="20"
@@ -41,6 +47,7 @@
 <script>
 import toolMixin from './toolMixin'
 import { color } from 'utils/callOptions'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   name: 'ToolLineColor',
@@ -53,6 +60,13 @@ export default {
     }
   },
   computed: {
+    useOpacity() {
+      if (this.view === VIEW.DRAWING || this.viewAction === ACTION.AR_DRAWING) {
+        return true
+      } else {
+        return false
+      }
+    },
     pick() {
       return this.tools.color
     },

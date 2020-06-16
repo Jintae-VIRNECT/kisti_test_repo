@@ -10,12 +10,10 @@
 </template>
 
 <script>
-import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
-import { hexToAHEX, ahexToHEX } from 'utils/color'
-import { SIGNAL } from 'configs/remote.config'
+import { hexToAHEX } from 'utils/color'
 import { ACTION } from 'configs/view.config'
 
 function hexToLottie(hex, alpha) {
@@ -35,11 +33,7 @@ function hexToLottie(hex, alpha) {
 }
 
 export default {
-  name: 'Pointing',
-  props: {
-    scale: Number,
-    videoSize: Object,
-  },
+  name: 'ARPointing',
   data() {
     return {
       radius: '60',
@@ -92,8 +86,8 @@ export default {
       }, 1050)
     },
     doPointing(event) {
-      if (this.viewAction !== ACTION.STREAM_POINTING) return
-      this.$call.pointing({
+      if (this.viewAction !== ACTION.AR_POINTING) return
+      this.$call.arPointing({
         to: this.mainView.id,
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
@@ -103,53 +97,14 @@ export default {
         posY: (event.offsetY / this.heightScale).toFixed(2),
       })
     },
-    receivePointing(receive) {
-      const data = JSON.parse(receive.data)
-      if (data.to !== this.mainView.id) return
-      let color = ahexToHEX(data.color)
-      this.pointList.push({
-        coords: [data.posX * this.widthScale, data.posY * this.heightScale],
-        color: color,
-        opacity: data.opacity,
-        label: 'opponent',
-      })
-      this.stateControl()
-
-      this.lottieOption.animationData.layers.forEach(layer => {
-        layer.shapes[0].it[1].c.k = hexToLottie(color, data.opacity)
-        layer.shapes[0].it[1].o.k = data.opacity * 100
-      })
-
-      this.$nextTick(() => {
-        const container = this.$el.lastChild
-        const lottie = Lottie.loadAnimation({
-          ...this.lottieOption,
-          container,
-        })
-
-        lottie.addEventListener('complete', () => {
-          lottie.destroy()
-          if (this.idle === true) {
-            this.pointList.shift()
-          }
-        })
-      })
-      return
-    },
   },
 
   /* Lifecycling */
-  created() {
-    this.$call.addListener(SIGNAL.POINTING, this.receivePointing)
-  },
   mounted() {
     this.lottieOption.animationData.layers.forEach(layer => {
       layer.shapes[0].it[1].c.k = hexToLottie(this.pointingColor, 1)
       layer.shapes[0].it[1].o.k = 100
     })
-  },
-  beforeDestroy() {
-    this.$call.removeListener(SIGNAL.POINTING, this.receivePointing)
   },
 }
 </script>

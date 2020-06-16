@@ -2,7 +2,7 @@
   <div>
     <menu-button
       text="로컬 녹화 설정"
-      :active="action === 'setting'"
+      :active="status"
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
@@ -19,7 +19,10 @@ export default {
   name: 'SettingMenu',
   mixins: [toolMixin],
   data() {
-    return { showSetting: false }
+    return {
+      showSetting: false,
+      status: false,
+    }
   },
   components: {
     ServiceLocalRecordSetting,
@@ -28,7 +31,7 @@ export default {
   watch: {},
   methods: {
     setting() {
-      this.setAction('setting')
+      this.status = !this.status
       this.showSetting = true
     },
   },

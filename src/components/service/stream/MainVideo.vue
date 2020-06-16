@@ -22,7 +22,7 @@
         </div>
 
         <pointing :scale="1" class="main-video__pointing"></pointing>
-        <template v-if="action !== 'pointing'">
+        <template v-if="viewAction !== STREAM_POINTING">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>
@@ -47,6 +47,9 @@
           <div class="main-video__empty-inner" v-else>
             <img src="~assets/image/img_novideo.svg" />
             <p>출력 할 영상이 없습니다.</p>
+            <p class="inner-discription">
+              접속중인 작업자가 없습니다.
+            </p>
           </div>
         </div>
       </template>
@@ -56,6 +59,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { ACTION } from 'configs/view.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
@@ -70,13 +74,14 @@ export default {
       status: 'good', // good, normal, bad
       showTools: false,
       loaded: false,
+      STREAM_POINTING: ACTION.STREAM_POINTING,
     }
   },
   computed: {
     ...mapGetters({
       mainView: 'mainView',
       speaker: 'speaker',
-      action: 'action',
+      viewAction: 'viewAction',
       resolutions: 'resolutions',
     }),
     resolution() {
@@ -138,7 +143,7 @@ export default {
       console.log(maxWidth)
       let scale = this.resolution.width / this.resolution.height
       if (
-        this.resolution.width / this.resolution.height >
+        this.resolution.width / this.resolution.height <
         maxWidth / maxHeight
       ) {
         // height에 맞춤

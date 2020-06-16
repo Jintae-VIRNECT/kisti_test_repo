@@ -122,43 +122,40 @@ export default {
       this.selectedArray.splice(index, 1, toggleData)
     },
     toggleAll() {
-      const tArray = []
-
+      this.selectedArray = []
       this.toggleAllFlag = !this.toggleAllFlag
 
       this.datas.forEach(() => {
-        tArray.push(this.toggleAllFlag)
+        this.selectedArray.push(this.toggleAllFlag)
       })
-
-      this.selectedArray = tArray
     },
-    //for display only columns
+
+    /**
+     * copy datas with specific columns and execute render func
+     */
     setRenderArray() {
       this.renderArray = []
 
-      this.datas.forEach(obj => {
-        const newObj = {}
+      this.renderArray = this.datas.map(data => {
+        const newData = {}
 
-        if (obj !== null) {
-          this.columns.forEach(key => {
-            newObj[key] = obj[key]
-          })
+        //copy data with specific columns
+        this.columns.forEach(key => {
+          newData[key] = data[key]
+        })
 
-          //adjust render function
-          this.renderOpts.forEach(renderObj => {
-            if (newObj.hasOwnProperty(renderObj.column)) {
-              newObj[renderObj.column] = renderObj.render(
-                newObj[renderObj.column],
-              )
-            }
-          })
-
-          this.renderArray.push(newObj)
-        }
+        //execute render function
+        this.renderOpts.forEach(render => {
+          if (newData.hasOwnProperty(render.column)) {
+            newData[render.column] = render.render(newData[render.column])
+          }
+        })
+        return newData
       })
     },
     setSelectedArray() {
       this.selectedArray = []
+
       if (this.showToggleHeader) {
         this.datas.forEach(() => {
           this.selectedArray.push(false)
@@ -166,16 +163,11 @@ export default {
       }
     },
   },
-
-  created() {
-    this.setSelectedArray()
-    this.setRenderArray()
-  },
-  mounted() {},
 }
 </script>
 
 <style lang="scss">
+@import '~assets/style/mixin';
 .table {
   height: 100%;
 }
@@ -185,7 +177,7 @@ export default {
   justify-content: center;
   height: 56px;
   border-top: solid;
-  border-top-color: #313135;
+  border-top-color: $color_darkgray_500;
   border-top-width: 1px;
 }
 .table__column--toggle {
@@ -215,13 +207,13 @@ export default {
   width: 100%;
   height: 62px;
   margin: 0px 0px 8px 0px;
-  background: #29292c;
+  background: $color_darkgray_600;
 
   &.active {
-    background: #313135;
+    background: $color_darkgray_500;
   }
   &:hover {
-    background: #313135;
+    background: $color_darkgray_500;
   }
 }
 
@@ -250,7 +242,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 342px;
-  background-color: #29292c;
+  background-color: $color_darkgray_600;
 }
 
 .table__body--empty-text {

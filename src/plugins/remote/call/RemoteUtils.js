@@ -1,5 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
+import { SIGNAL } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -32,7 +33,7 @@ export const addSessionEventListener = session => {
     removeSubscriber(event.stream.streamId)
   })
 
-  session.on('signal:audio', event => {
+  session.on(SIGNAL.SPEAKER, event => {
     console.log(event)
     Store.commit('propertyChanged', {
       connectionId: event.from.connectionId,
@@ -40,18 +41,18 @@ export const addSessionEventListener = session => {
     })
   })
 
-  session.on('signal:video', event => {
+  session.on(SIGNAL.CAMERA, event => {
     console.log(event)
   })
 
-  session.on('signal:resolution', event => {
+  session.on(SIGNAL.RESOLUTION, event => {
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
     })
   })
 
-  session.on('signal:chat', event => {
+  session.on(SIGNAL.CHAT, event => {
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -87,7 +88,7 @@ export const getUserObject = stream => {
   const metaData = JSON.parse(connection.data.split('%/%')[0])
 
   let uuid = metaData.clientData
-  let role = metaData.roleType
+  let roleType = metaData.roleType
 
   const participant = participants.find(user => {
     return user.uuid === uuid
@@ -109,7 +110,8 @@ export const getUserObject = stream => {
     speaker: true,
     mute: false,
     status: 'good',
-    role: role,
+    roleType: roleType,
+    permission: false,
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

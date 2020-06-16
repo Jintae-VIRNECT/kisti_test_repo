@@ -1,70 +1,30 @@
 <template>
   <tool-button
     text="AR 캡쳐"
-    :active="action === 'capture'"
+    :disabled="disabled"
+    :active="viewAction === AR_AREA"
     :src="require('assets/image/ic_ar_capture.svg')"
-    @action="clickHandler"
+    @click.native="clickHandler"
   ></tool-button>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   name: 'ToolLineMode',
   mixins: [toolMixin],
   data() {
     return {
-      mode: '',
-      status: false,
+      AR_AREA: ACTION.AR_AREA,
     }
-  },
-  watch: {
-    callViewMode(viewMode) {
-      this.$eventBus.$off(`control:${this.mode}:mode`, this.changeStatus)
-      this.$eventBus.$on(`control:${viewMode}:mode`, this.changeStatus)
-
-      this.mode = viewMode
-      if (viewMode === 'ar') {
-        this.status = true
-        this.$eventBus.$emit(`control:${this.callViewMode}:mode`, 'line')
-      } else {
-        this.status = false
-        this.clickHandler()
-      }
-    },
   },
   methods: {
     clickHandler() {
-      if (this.callViewMode === 'ar') return
-
-      this.status = !this.status
-      this.$eventBus.$emit(
-        `control:${this.callViewMode}:mode`,
-        this.status ? 'line' : false,
-      )
-      if (!!this.status === true) {
-        this.setAction('line')
-      }
+      if (this.callViewMode === VIEW.AR) return
+      this.setAction(this.AR_AREA)
     },
-    changeStatus(mode) {
-      this.status = mode === 'line'
-    },
-  },
-
-  /* Lifecycles */
-  created() {
-    this.mode = this.callViewMode
-    this.$eventBus.$on(`control:${this.mode}:mode`, this.changeStatus)
-    if (this.callViewMode === 'ar') {
-      this.status = true
-      this.$eventBus.$emit(`control:${this.callViewMode}:mode`, 'line')
-    } else {
-      this.clickHandler()
-    }
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`control:${this.mode}:mode`, this.changeStatus)
   },
 }
 </script>

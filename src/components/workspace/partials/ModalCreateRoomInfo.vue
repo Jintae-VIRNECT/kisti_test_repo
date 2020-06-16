@@ -69,7 +69,7 @@ import { createRoom, getRoomInfo } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
-import { EXPERT_LEADER } from 'utils/role'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ModalCreateRoomInfo',
@@ -171,7 +171,7 @@ export default {
         const joinRtn = await this.$call.join(
           createdRoom,
           this.account,
-          EXPERT_LEADER,
+          ROLE.EXPERT_LEADER,
         )
         if (joinRtn) {
           this.$eventBus.$emit('popover:close')

@@ -3,7 +3,7 @@
     <button
       class="header-lnb__button"
       :class="{ active: view === keyvalue }"
-      @click="setView(keyvalue)"
+      @click="$listeners['click']"
     >
       <img class="header-lnb__image" :src="image" />
       <span class="header-lnb__text">{{ text }}</span>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   name: 'LnbButton',
   props: {
@@ -28,9 +28,7 @@ export default {
     ...mapGetters(['view']),
   },
   watch: {},
-  methods: {
-    ...mapActions(['setView']),
-  },
+  methods: {},
 
   /* Lifecycles */
   mounted() {},

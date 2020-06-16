@@ -9,13 +9,19 @@ export default {
     ToolButton,
     ToolPicker,
   },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       mode: 'document',
     }
   },
   computed: {
-    ...mapGetters(['action', 'tools']),
+    ...mapGetters(['view', 'viewAction', 'tools']),
   },
   methods: {
     ...mapActions(['setAction', 'setTool']),

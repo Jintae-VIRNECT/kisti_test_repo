@@ -3,6 +3,7 @@
     <tool-button
       text="선 두께"
       :active="status"
+      :disabled="disabled"
       :src="require('assets/image/ic-tool-line-weight.svg')"
       @click.stop="clickHandler()"
     >
@@ -56,7 +57,6 @@ export default {
         target: 'lineWidth',
         value,
       }
-      console.log(params)
       this.setTool(params)
     },
     clickHandler() {

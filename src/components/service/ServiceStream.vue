@@ -1,5 +1,5 @@
 <template>
-  <main class="main-wrapper stream">
+  <main class="main-wrapper">
     <div class="stream-body">
       <stream-tools></stream-tools>
       <menus></menus>

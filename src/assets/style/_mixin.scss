@@ -83,7 +83,11 @@
   -ms-user-select: none;
   user-select: none;
 }
-
+@mixin ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 @mixin image {
   position: relative;
   overflow: hidden;
@@ -157,6 +161,9 @@
 /* Motion */
 .shake {
   animation: shake 0.6s linear alternate;
+}
+.rotate360 {
+  animation: rotate360 0.4s linear alternate;
 }
 @keyframes shake {
   0%,

@@ -5,7 +5,9 @@
       <sub-view></sub-view>
 
       <transition name="share" mode="out-in">
-        <share v-if="view === 'drawing'"></share>
+        <share
+          v-if="account.roleType === EXPERT_LEADER && view === 'drawing'"
+        ></share>
       </transition>
 
       <transition name="main" mode="out-in">
@@ -14,7 +16,11 @@
         <ar-view v-if="view === 'ar'"></ar-view>
       </transition>
 
-      <user-list :class="{ draw: view === 'drawing' }"></user-list>
+      <user-list
+        :class="{
+          shareview: account.roleType === EXPERT_LEADER && view === 'drawing',
+        }"
+      ></user-list>
 
       <!-- <component :is="viewComponent"></component> -->
     </div>
@@ -25,10 +31,16 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
+import { ROLE } from 'configs/remote.config'
 
 import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.dispatch('callReset')
+    })
+  },
   components: {
     HeaderSection,
     SubView,
@@ -39,7 +51,9 @@ export default {
     Share: () => import('./share/Share'),
   },
   data() {
-    return {}
+    return {
+      EXPERT_LEADER: ROLE.EXPERT_LEADER,
+    }
   },
   computed: {
     ...mapGetters(['view']),

@@ -163,9 +163,9 @@ export default {
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
 
-        if (this.drawingMode === 'text') {
+        if (this.viewAction === 'text') {
           canvas.defaultCursor = 'text'
-        } else if (this.drawingMode === 'zoom') {
+        } else if (this.viewAction === 'zoom') {
           // if (event.e.shiftKey) {
           //   canvas.defaultCursor = 'zoom-out'
           // } else {
@@ -210,7 +210,7 @@ export default {
           return false
         }
         // console.log(canvas.onDrag)
-        // console.log(this.drawingMode)
+        // console.log(this.viewAction)
 
         if (canvas.onDrag === true) {
           canvas.onDrag = false
@@ -225,7 +225,7 @@ export default {
 
         // 텍스트 삽입
         if (
-          this.drawingMode === 'text' &&
+          this.viewAction === 'text' &&
           this.editingMode === false &&
           !(canvas.getActiveObject() instanceof fabric.IText)
         ) {
@@ -279,7 +279,7 @@ export default {
         const keycode = parseInt(event.keyCode)
         const deleteCode = [8, 46]
 
-        if (this.drawingMode === 'zoom') {
+        if (this.viewAction === 'zoom') {
           // Shift Key
           if (keycode === 16) {
             this.canvas.defaultCursor = 'zoom-out'
@@ -321,7 +321,7 @@ export default {
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
 
-        if (this.drawingMode === 'zoom') {
+        if (this.viewAction === 'zoom') {
           // Shift Key
           if (keycode === 16) {
             this.canvas.defaultCursor = 'zoom-in'

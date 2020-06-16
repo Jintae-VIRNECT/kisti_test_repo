@@ -9,6 +9,7 @@ function getDefaultState() {
     nickname: null,
     serviceInfo: null,
     userType: null,
+    roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
   }
 }
 const state = getDefaultState()

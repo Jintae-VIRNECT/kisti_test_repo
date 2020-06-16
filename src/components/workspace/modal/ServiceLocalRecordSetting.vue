@@ -100,10 +100,13 @@ import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 
+import toastMixin from 'mixins/toast'
+
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'ServiceLocalRecordSetting',
+  mixins: [toastMixin],
   components: {
     Modal,
     RSelect,
@@ -125,6 +128,8 @@ export default {
       localRecordingTime: '',
       localRecordingResolution: '',
       joinerPointingApprove: false,
+
+      toastFlag: false,
 
       localRecTimeOpt: [
         {
@@ -213,7 +218,7 @@ export default {
 
     selectParticipantRecTarget(recordTarget) {
       console.log(recordTarget)
-      //참여자의 스트림은 ㄴparticipants에서 가지고 오면 됨.
+
       switch (recordTarget) {
         case 'recordWorker':
           //set worker stream(main view + participants)
@@ -221,14 +226,15 @@ export default {
 
           //don't need screen stream when record worker.
           this.setScreenStream(null)
+          this.showToast()
           break
         case 'recordScreen':
           //set screen stream for local record
           this.setLocalRecordTarget(recordTarget)
-          this.setScreenCapture()
+          this.showToast()
           break
         default:
-          console.log('unknown value')
+          console.log('unknown recordTarget ::', recordTarget)
           break
       }
     },
@@ -248,15 +254,19 @@ export default {
 
     setRecLength(newRecLength) {
       this.setLocalRecordLength(newRecLength.value)
+      this.showToast()
     },
     setRecInterval(newInterval) {
       this.setLocalRecordInterval(newInterval.value)
+      this.showToast()
     },
     setMic(newMic) {
       this.setMicDevice(newMic.deviceId)
+      this.showToast()
     },
     setSpeaker(newSpeaker) {
       this.setSpeakerDevice(newSpeaker.deviceId)
+      this.showToast()
     },
 
     setRecResolution(newResolution) {
@@ -265,6 +275,7 @@ export default {
       } else {
         this.setRecordResolution(newResolution)
       }
+      this.showToast()
     },
 
     beforeClose() {
@@ -277,6 +288,7 @@ export default {
       } else {
         this.setAllowPointing(false)
       }
+      this.showToast()
     },
 
     toggleLocalRecording(value) {
@@ -285,6 +297,7 @@ export default {
       } else {
         this.setAllowLocalRecording(false)
       }
+      this.showToast()
     },
 
     displayTooltip() {
@@ -329,17 +342,13 @@ export default {
       if (allowLocalRecording) {
         this.setAllowLocalRecording(allowLocalRecording)
       }
-    },
 
-    async setScreenCapture() {
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
-        audio: true,
-        video: {
-          width: this.width,
-          height: this.height,
-        },
-      })
-      this.setScreenStream(displayStream)
+      this.toastFlag = true
+    },
+    showToast() {
+      if (this.toastFlag) {
+        this.toastNotify('변경사항을 저장했습니다.')
+      }
     },
   },
 
@@ -348,102 +357,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-@import '~assets/style/vars';
-/** custom mdoal */
-.modal.local-recsetting-modal .modal--inner {
-  background-color: $color_darkgray_500;
-  // box-shadow: 0 0 0.714em 0 rgba(255, 255, 255, 0.07),
-  //   0 0.857em 0.857em 0 rgba(255, 255, 255, 0.3);
-  box-shadow: none;
-}
-.modal.local-recsetting-modal .modal--header {
-  height: 2.813rem;
-  padding: 0.75rem 0.688rem 0 0;
-  background-color: $color_darkgray_500;
-  border-bottom: none;
-}
-
-.rec-setting {
-  padding: 0;
-}
-
-.rec-setting__header {
-  margin-bottom: 1.625rem;
-  color: $color_white;
-  font-size: 1.125rem;
-}
-
-.rec-setting__row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 0.875rem;
-}
-
-.rec-setting__text {
-  width: 12.875rem;
-  color: $color_text_main;
-  font-size: 0.875rem;
-
-  &.custom {
-    display: flex;
-  }
-
-  > p {
-    margin: 0px 4px 0px 0px;
-    color: $color_text_main;
-    font-size: 0.875rem;
-  }
-}
-
-.rec-setting__selector {
-  align-items: flex-start;
-  width: 21rem;
-}
-
-.rec-setting__underbar {
-  margin-top: 2.313rem;
-  margin-bottom: 2.375rem;
-  border-bottom-color: #454548;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-}
-.rec-setting--tooltip-icon {
-  width: 18px;
-  height: 18px;
-  background: url('~assets/image/ic_tool_tip.svg') center no-repeat;
-}
-.rec-setting__tooltip--body {
-  position: absolute;
-  left: 110px;
-  z-index: 9999;
-  width: 342px;
-  height: 68px;
-  padding: 16px 24px 16px 28px;
-  background: url('~assets/image/img_tooltip_big.svg') center no-repeat;
-}
-
-.rec-setting__tooltip--text {
-  color: #ffffff;
-  font-size: 12px;
-}
-
-/*custom remote radio */
-.rec-setting {
-  .radio-group {
-    flex-direction: row;
-    padding: 0;
-
-    .radio-option:not(:first-of-type) {
-      padding-left: 26px;
-    }
-  }
-}
-.modal.local-recsetting-modal {
-  .modal--body {
-    padding: 0 18px 0 30px;
-  }
-}
-</style>

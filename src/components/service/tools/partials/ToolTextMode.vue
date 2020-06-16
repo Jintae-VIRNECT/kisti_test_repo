@@ -1,7 +1,8 @@
 <template>
   <tool-button
     text="텍스트 모드"
-    :active="action === 'text'"
+    :disabled="disabled"
+    :active="viewAction === DRAWING_TEXT"
     :src="require('assets/image/ic-tool-txt.svg')"
     @click.stop="clickHandler"
   ></tool-button>
@@ -9,40 +10,20 @@
 
 <script>
 import toolMixin from './toolMixin'
+import { ACTION } from 'configs/view.config'
 
 export default {
   name: 'ToolTextMode',
   mixins: [toolMixin],
   data() {
     return {
-      status: false,
+      DRAWING_TEXT: ACTION.DRAWING_TEXT,
     }
   },
   methods: {
     clickHandler() {
-      this.status = !this.status
-      this.$eventBus.$emit(
-        `control:document:mode`,
-        this.status ? 'text' : false,
-      )
-      if (!!this.status === true) {
-        this.setAction('text')
-      } else {
-        this.setAction('')
-      }
+      this.setAction(this.DRAWING_TEXT)
     },
-    changeStatus(mode) {
-      this.status = mode === 'text'
-    },
-  },
-
-  /* Lifecycles */
-  created() {
-    this.mode = this.callViewMode
-    this.$eventBus.$on(`control:${this.mode}:mode`, this.changeStatus)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`control:${this.mode}:mode`, this.changeStatus)
   },
 }
 </script>

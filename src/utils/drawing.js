@@ -1,4 +1,5 @@
 import { hexToAHEX } from './color'
+import { EVENT } from 'configs/drawing.config'
 // tId: targetId
 // oId: objectId
 // aId: undolist 아이디
@@ -101,8 +102,10 @@ export const getSignalParams = function getSignalParams(
 
   // if(object) tId = object.id;
   if (object) tId = object.tId
+  console.log(EVENT)
 
   switch (type) {
+    /* 
     case 'drawMove':
       params = {
         aId,
@@ -133,8 +136,8 @@ export const getSignalParams = function getSignalParams(
         aId,
         tId,
       }
-      break
-    case 'lineStart':
+      break */
+    case EVENT.LINE_DOWN:
     case 'arLineStart':
       params = {
         aId,
@@ -144,7 +147,7 @@ export const getSignalParams = function getSignalParams(
         posY: object.top,
       }
       break
-    case 'lineMove':
+    case EVENT.LINE_MOVE:
     case 'arLineMove':
       params = {
         aId,
@@ -154,7 +157,7 @@ export const getSignalParams = function getSignalParams(
         posY: object.top,
       }
       break
-    case 'lineEnd':
+    case EVENT.LINE_UP:
     case 'arLineEnd':
       params = {
         aId: aId - 1,
@@ -164,7 +167,7 @@ export const getSignalParams = function getSignalParams(
         posY: object.top,
       }
       break
-    case 'drawText':
+    case EVENT.TEXT_ADD:
       params = {
         aId,
         text: object.text,
@@ -178,7 +181,7 @@ export const getSignalParams = function getSignalParams(
         height: object.height,
       }
       break
-    case 'updateText':
+    case EVENT.TEXT_UPDATE:
       params = {
         aId,
         tId,
@@ -226,21 +229,21 @@ export const getReceiveParams = function getReceiveParams(type, params) {
     }
   }
   switch (type) {
-    case 'lineStart':
+    case EVENT.LINE_DOWN:
       console.log(['M', params.posX, params.posY])
       return ['M', params.posX, params.posY]
-    case 'lineMove':
+    case EVENT.LINE_MOVE:
       console.log(['Q', params.posX, params.posY, params.posX, params.posY])
       return ['Q', params.posX, params.posY, params.posX, params.posY]
-    case 'lineEnd':
+    case EVENT.LINE_UP:
       console.log(['L', params.posX, params.posY])
       return ['L', params.posX, params.posY]
-    case 'drawMove':
-      return {
-        top: params.posY,
-        left: params.posX,
-      }
-    case 'drawText':
+    // case 'drawMove':
+    //   return {
+    //     top: params.posY,
+    //     left: params.posX,
+    //   }
+    case EVENT.TEXT_ADD:
       return params
     default:
       return []

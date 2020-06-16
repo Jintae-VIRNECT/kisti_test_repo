@@ -1,4 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
+import { EVENT } from 'configs/drawing.config'
 
 export default {
   data() {
@@ -115,15 +116,15 @@ export default {
           )
         }
       })
-      canvas.on('object:moved', event => {
-        console.log('[Fabric] Object moved')
-        const object = event.target
-        console.log(object)
+      // canvas.on('object:moved', event => {
+      //   console.log('[Fabric] Object moved')
+      //   const object = event.target
+      //   console.log(object)
 
-        // this.$remoteSDK.message('drawMove', getParam('move', object));
-        this._sendAction('drawMove', object)
-        this.stackAdd('move', object.id)
-      })
+      //   // this.$remoteSDK.message('drawMove', getParam('move', object));
+      //   this._sendAction('drawMove', object)
+      //   this.stackAdd('move', object.id)
+      // })
       /* Object - scale */
       //   canvas.on('object:scaling', event => {
       //     // console.log('[Fabric] Object scaling');
@@ -174,14 +175,14 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction('lineStart', object)
+          this._sendAction(EVENT.LINE_DOWN, object)
         }
       })
 
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
 
-        if (this.drawingMode === 'text') {
+        if (this.viewAction === 'text') {
           canvas.defaultCursor = 'text'
         }
 
@@ -201,7 +202,7 @@ export default {
               left: mouse.x,
               top: mouse.y,
             }
-            this._sendAction('lineMove', object)
+            this._sendAction(EVENT.LINE_MOVE, object)
           }
 
           if (cursor) {
@@ -222,7 +223,7 @@ export default {
           return false
         }
         // console.log(canvas.onDrag)
-        // console.log(this.drawingMode)
+        // console.log(this.viewAction)
 
         if (canvas.onDrag === true) {
           canvas.onDrag = false
@@ -232,12 +233,12 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction('lineEnd', object)
+          this._sendAction(EVENT.LINE_UP, object)
         }
 
         // 텍스트 삽입
         if (
-          this.drawingMode === 'text' &&
+          this.viewAction === 'text' &&
           this.editingMode === false &&
           !(canvas.getActiveObject() instanceof fabric.IText)
         ) {
@@ -277,7 +278,7 @@ export default {
     //     const keycode = parseInt(event.keyCode)
     //     const deleteCode = [8, 46]
 
-    //     if (this.drawingMode === 'zoom') {
+    //     if (this.viewAction === 'zoom') {
     //       // Shift Key
     //       if (keycode === 16) {
     //         this.canvas.defaultCursor = 'zoom-out'
@@ -319,7 +320,7 @@ export default {
     //   if (this.canvas) {
     //     const keycode = parseInt(event.keyCode)
 
-    //     if (this.drawingMode === 'zoom') {
+    //     if (this.viewAction === 'zoom') {
     //       // Shift Key
     //       if (keycode === 16) {
     //         this.canvas.defaultCursor = 'zoom-in'
@@ -337,10 +338,10 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on(`control:${this.mode}:mode`, this.changeMode)
-    this.$eventBus.$on(`control:${this.mode}:undo`, this.stackUndo)
-    this.$eventBus.$on(`control:${this.mode}:redo`, this.stackRedo)
-    this.$eventBus.$on(`control:${this.mode}:clear`, this.drawingClear)
+    // this.$eventBus.$on(`control:${this.view}:mode`, this.changeMode)
+    this.$eventBus.$on(`control:${this.view}:undo`, this.stackUndo)
+    this.$eventBus.$on(`control:${this.view}:redo`, this.stackRedo)
+    this.$eventBus.$on(`control:${this.view}:clear`, this.drawingClear)
     // this.$eventBus.$on(`control:${this.mode}:focus`, this.focusCanvas)
   },
   mounted() {
@@ -349,10 +350,10 @@ export default {
     // window.addEventListener('resize', this.resizeEventHandler)
   },
   beforeDestroy() {
-    this.$eventBus.$off(`control:${this.mode}:mode`, this.changeMode)
-    this.$eventBus.$off(`control:${this.mode}:undo`, this.stackUndo)
-    this.$eventBus.$off(`control:${this.mode}:redo`, this.stackRedo)
-    this.$eventBus.$off(`control:${this.mode}:clear`, this.drawingClear)
+    // this.$eventBus.$off(`control:${this.view}:mode`, this.changeMode)
+    this.$eventBus.$off(`control:${this.view}:undo`, this.stackUndo)
+    this.$eventBus.$off(`control:${this.view}:redo`, this.stackRedo)
+    this.$eventBus.$off(`control:${this.view}:clear`, this.drawingClear)
     // this.$eventBus.$off(`control:${this.mode}:focus`, this.focusCanvas)
     // window.removeEventListener('keydown', this.keyEventHandler)
     // window.removeEventListener('keyup', this.keyUpEventHandler)

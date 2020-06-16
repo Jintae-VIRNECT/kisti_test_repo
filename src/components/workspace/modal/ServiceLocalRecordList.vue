@@ -108,27 +108,31 @@ export default {
         }
       })
 
-      let chunks = await IDBHelper.getMediaChunkArrays(uuids)
+      const chunks = await IDBHelper.getMediaChunkArrays(uuids)
       if (chunks && chunks.length > 0) {
         if (chunks.length === 1) {
           RecordRTC.invokeSaveAsDialog(chunks[0].blob, chunks[0].fileName)
         } else {
-          let zip = new JSZip()
-
-          chunks.forEach(chunk => {
-            zip.file(chunk.fileName, chunk.blob)
-          })
-
-          zip.generateAsync({ type: 'blob' }).then(function(content) {
-            FileSaver.saveAs(content, 'recorded.zip')
-          })
+          this.downloadZip(chunks)
         }
       }
+    },
+    downloadZip(chunks) {
+      const zip = new JSZip()
+
+      chunks.forEach(chunk => {
+        zip.file(chunk.fileName, chunk.blob)
+      })
+
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        FileSaver.saveAs(content, 'recorded.zip')
+      })
     },
     deleteItems() {
       console.log('deleteItems :: called')
 
       const uuids = []
+
       this.selectedArray.forEach((selected, index) => {
         if (selected) {
           uuids.push(this.datas[index].uuid)
@@ -197,16 +201,13 @@ export default {
       return renderOpts
     },
   },
-  updated() {},
   mounted() {
-    console.log('mounted')
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   async created() {
     await IDBHelper.initIDB()
   },
   beforeDestroy() {
-    console.log('service local record beforeDestroy')
     this.$eventBus.$off('table:selectedarray')
   },
 }
