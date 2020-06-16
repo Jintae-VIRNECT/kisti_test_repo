@@ -1,5 +1,10 @@
 <template>
-  <div class="tooltip" @mouseenter="enter" @mouseleave="leave">
+  <div
+    class="tooltip"
+    @mouseenter="enter"
+    @mouseleave="leave"
+    :class="customClass"
+  >
     <slot name="body"></slot>
     <transition name="fade-in-linear">
       <div
@@ -32,10 +37,10 @@ export default {
       type: String,
       default: 'max-content',
     },
-    // tooltipClass: {
-    //     type: String,
-    //     default: 'item'
-    // },
+    customClass: {
+      type: String,
+      default: '',
+    },
     effect: {
       type: String,
       default: 'black',

@@ -54,6 +54,12 @@
         </div>
       </template>
     </div>
+    <capture-modal
+      v-if="imgBlob"
+      :imgUrl="imgBlob"
+      @close="imgBlob = ''"
+      @recapture="doCapture"
+    ></capture-modal>
   </div>
 </template>
 
@@ -63,11 +69,13 @@ import { ACTION } from 'configs/view.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
+import CaptureModal from '../modal/CaptureModal'
 export default {
   name: 'MainVideo',
   components: {
     Pointing,
     VideoTools,
+    CaptureModal,
   },
   data() {
     return {
@@ -75,6 +83,7 @@ export default {
       showTools: false,
       loaded: false,
       STREAM_POINTING: ACTION.STREAM_POINTING,
+      imgBlob: '',
     }
   },
   computed: {
@@ -140,7 +149,6 @@ export default {
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
-      console.log(maxWidth)
       let scale = this.resolution.width / this.resolution.height
       if (
         this.resolution.width / this.resolution.height <
@@ -155,7 +163,7 @@ export default {
         videoBox.style.width = maxWidth + 'px'
       }
     },
-    capture() {
+    doCapture() {
       const videoEl = this.$el.querySelector('#main-video')
 
       const width = videoEl.offsetWidth
@@ -166,19 +174,11 @@ export default {
       tmpCanvas.height = height
 
       const tmpCtx = tmpCanvas.getContext('2d')
-      tmpCtx.drawImage(videoEl, 0, 0, width, height)
+
+      tmpCtx.drawImage(this.$refs['mainVideo'], 0, 0, width, height)
+
       tmpCanvas.toBlob(blob => {
-        const a = document.createElement('a')
-        document.body.appendChild(a)
-        const url = window.URL.createObjectURL(blob)
-        a.href = url
-        a.download = '캡쳐.png'
-        a.click()
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url)
-          document.body.removeChild(a)
-        }, 0)
-        // this.imgBlob = blob
+        this.imgBlob = URL.createObjectURL(blob)
       }, 'image/png')
     },
   },
@@ -186,11 +186,11 @@ export default {
   /* Lifecycles */
   beforeDestroy() {
     // this.$call.leave()
-    this.$eventBus.$off('capture', this.capture)
+    this.$eventBus.$off('capture', this.doCapture)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
   created() {
-    this.$eventBus.$on('capture', this.capture)
+    this.$eventBus.$on('capture', this.doCapture)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
 }
