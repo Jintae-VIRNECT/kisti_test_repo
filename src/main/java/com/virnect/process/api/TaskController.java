@@ -494,13 +494,12 @@ public class TaskController {
     @PutMapping("{taskId}/closed")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(
             @PathVariable(value="taskId") Long taskId,
-            @RequestBody String actorUUID) {
-//            @RequestParam(value = "taskId") Long taskId
-//            , @RequestParam(value = "actorUUID") String actorUUID) {
-//        if (result.hasErrors()) {
-//            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-//        }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(taskId, actorUUID);
+            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(taskId, checkProcessOwnerRequest);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 

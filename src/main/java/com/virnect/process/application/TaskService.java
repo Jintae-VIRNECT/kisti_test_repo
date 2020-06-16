@@ -465,8 +465,6 @@ public class TaskService {
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(duplicateRequest.getContentUUID());
 
-        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
-
         // 1-1. 에러가 난 경우
         if (contentApiResponse.getCode() != 200) {
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
@@ -521,6 +519,24 @@ public class TaskService {
 
             // 타겟
             addTargetToProcess(newProcess, duplicateRequest.getTargetType());
+
+            // addSubProcessOnProcess에 들어갈 객체
+            ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
+
+            registerNewProcess.setSubTaskList(duplicateRequest.getSubTaskList());
+
+            ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(contentDuplicate.getData().getContentUUID());
+
+            // 5. 복제된 컨텐츠로 세부 공정 정보 리스트 생성
+            log.info("{}", duplicatedContent.getData().getContents().toString());
+            ContentRestDto.Content duplicatedMetadata = duplicatedContent.getData().getContents();
+            Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
+
+            log.debug("Duplicated ConetntMetadata {}", duplicatedMetadata);
+
+            duplicatedMetadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
+
+            addSubProcessOnProcess(registerNewProcess, sceneGroupMap, newProcess);
         }
         // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
         else {
@@ -540,8 +556,12 @@ public class TaskService {
             // 새로운 작업 저장
             this.processRepository.save(newProcess);
 
+            CheckProcessOwnerRequest checkProcessOwnerRequest = new CheckProcessOwnerRequest();
+
+            checkProcessOwnerRequest.setActorUUID(targetProcess.getContentManagerUUID());
+
             // 기존의 작업은 CLOSED
-            this.setClosedProcess(targetProcess.getId(), targetProcess.getContentManagerUUID());
+            this.setClosedProcess(targetProcess.getId(), checkProcessOwnerRequest);
 
             Target target = null;
 
@@ -551,22 +571,22 @@ public class TaskService {
 
             // 기존 작업의 타겟 정보를 가져옴
             getTargetFromTask(newProcess, target);
+
+            // 5. 세부 공정 정보 리스트 생성
+            log.info("{}", contentApiResponse.getData().getContents().toString());
+            ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
+            Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
+
+            log.debug("ConetntMetadata {}", metadata);
+
+            metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
+
+            ProcessRegisterRequest processRegisterRequest = new ProcessRegisterRequest();
+
+            processRegisterRequest.setSubTaskList(duplicateRequest.getSubTaskList());
+
+            addSubProcessOnProcess(processRegisterRequest, sceneGroupMap, newProcess);
         }
-
-        // 5. 세부 공정 정보 리스트 생성
-        log.info("{}", contentApiResponse.getData().getContents().toString());
-        ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
-        Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
-
-        log.debug("ConetntMetadata {}", metadata);
-
-        metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
-
-        ProcessRegisterRequest processRegisterRequest = new ProcessRegisterRequest();
-
-        processRegisterRequest.setSubTaskList(duplicateRequest.getSubTaskList());
-
-        addSubProcessOnProcess(processRegisterRequest, sceneGroupMap, newProcess);
 
         List<ProcessTargetResponse> targetResponseList = new ArrayList<>();
         newProcess.getTargetList().forEach(target -> {
@@ -1423,12 +1443,14 @@ public class TaskService {
      * @Description 작업 수행 중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
      */
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, String actorUUID) {
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, CheckProcessOwnerRequest request) {
         // 공정조회
         Process process = this.processRepository.findById(taskId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        
-        if (!actorUUID.equals(process.getContentManagerUUID())) {
+
+        log.info("actorUUID : {}, contentManagerUUID : {}", request.getActorUUID(), process.getContentManagerUUID());
+
+        if (!request.getActorUUID().equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
         }
 
