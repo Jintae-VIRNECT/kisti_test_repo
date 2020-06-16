@@ -1,6 +1,9 @@
 <template>
   <div class="chat">
     <div class="chat-header">
+      <div v-show="showSubVideo" class="chat-hedaer__sub-vide">
+        <sub-video></sub-video>
+      </div>
       <div class="chat-header__title">
         <div class="chat-header__title--text ">
           {{ roomTitle + ' 원격협업' }}
@@ -74,12 +77,14 @@ import ChatInput from './partials/ChatInput'
 // import Tooltip from 'Tooltip'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
+import SubVideo from './SubVideo'
 
 export default {
   name: 'Chat',
   components: {
     ChatItem,
     ChatInput,
+    SubVideo,
     // Popover,
     // Tooltip,
   },
@@ -87,9 +92,10 @@ export default {
     return {
       showChat: true,
       showFile: false,
-
       roomTitle: '',
       participantsCount: 1,
+
+      showSubVideo: false,
     }
   },
   computed: {
@@ -111,20 +117,15 @@ export default {
       deep: true,
     },
     viewMode: {
-      handler(newVal) {
-        switch (newVal) {
+      handler(mode) {
+        switch (mode) {
           case 'stream':
             console.log('실시간 공유')
+            this.showSubVideo = false
             break
           case 'drawing':
             console.log('협업 보드')
-            // this.chatList.push({
-            //   text: '협업 보드를 사용합니다.',
-            //   name: 'board',
-            //   date: new Date(),
-            //   uuid: null,
-            //   type: 'system',
-            // })
+            this.showSubVideo = true
 
             this.chatList.push(
               new ChatMsgBuilder()
@@ -135,6 +136,7 @@ export default {
             )
             break
           case 'ar':
+            this.showSubVideo = true
             this.chatList.push(
               new ChatMsgBuilder()
                 .setType('system')
@@ -142,6 +144,9 @@ export default {
                 .setText('AR 기능을 사용합니다.')
                 .build(),
             )
+            break
+          default:
+            console.log('unknown viewMode :: ', mode)
             break
         }
       },
