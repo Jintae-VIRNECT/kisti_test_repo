@@ -277,7 +277,7 @@ export default {
       else return require('assets/images/icon/ic-user-profile.png')
     },
     myBirth() {
-      if (this.me.birth) return filters.dateFormat(this.me.birth)
+      if (this.me.birth) return filters.fullYearDateFormat(this.me.birth)
       else return this.$t('profile.additional.birthEmpty')
     },
   },

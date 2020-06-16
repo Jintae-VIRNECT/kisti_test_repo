@@ -164,6 +164,15 @@ export default {
     opened() {
       this.showCardSlip = false
     },
+    download(url) {
+      window.open(url)
+    },
+    print(url) {
+      const popup = window.open('', '_blank')
+      popup.document.write(`<img src="${url}" />`)
+      popup.document.close()
+      setTimeout(() => popup.print(), 1)
+    },
   },
   async beforeMount() {
     this.paymentLogDetail = await paymentService.getPaymentLogDetail()

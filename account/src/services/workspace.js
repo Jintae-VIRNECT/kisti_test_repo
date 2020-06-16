@@ -1,9 +1,10 @@
 import { api } from '@/plugins/axios'
+import { store } from '@/plugins/context'
 import Workspace from '@/models/workspace/Workspace'
 import profileServices from '@/services/profile'
 
 function getMyWorkspaces() {
-  return process.client && [...$nuxt.$store.getters['auth/myWorkspaces']]
+  return store.getters['auth/myWorkspaces']
 }
 
 export default {
