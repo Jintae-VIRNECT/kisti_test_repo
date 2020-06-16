@@ -4,6 +4,7 @@
       slot="body"
       class="tool"
       :class="{ active: active }"
+      :disabled="disabled"
       v-on="$listeners"
     >
       <img v-if="onActive" :src="activeSrc" />
@@ -37,6 +38,10 @@ export default {
     activeSrc: {
       type: String,
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   watch: {},
@@ -78,6 +83,14 @@ export default {
       border-radius: 2px;
       transform: translate(-50%, -50%);
       content: '';
+    }
+  }
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+    > img {
+      cursor: default;
+      opacity: 0.5;
     }
   }
 

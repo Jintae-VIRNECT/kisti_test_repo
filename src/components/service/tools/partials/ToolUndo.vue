@@ -1,6 +1,7 @@
 <template>
   <tool-button
     text="되돌리기"
+    :disabled="disabled"
     :active="status"
     :src="require('assets/image/ic-tool-undo.svg')"
     @click.stop="clickHandler"
@@ -18,20 +19,14 @@ export default {
       status: false,
     }
   },
-  watch: {},
   methods: {
     clickHandler() {
       this.status = true
-      // this.$eventBus.$emit(`control:${this.mode}:undo`)
-      this.$eventBus.$emit(`control:document:undo`)
+      this.$eventBus.$emit(`control:${this.view}:undo`)
       setTimeout(() => {
         this.status = false
       }, 100)
     },
   },
-
-  /* Lifecycles */
-  created() {},
-  beforeDestroy() {},
 }
 </script>

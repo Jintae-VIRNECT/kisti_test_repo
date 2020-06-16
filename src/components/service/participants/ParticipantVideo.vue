@@ -84,7 +84,7 @@
                 음소거
               </button>
             </li>
-            <li v-if="myRole === EXPERT_LEADER">
+            <li v-if="account.roleType === EXPERT_LEADER">
               <button class="video-pop__button" @click="disconnectUser">
                 내보내기
               </button>
@@ -98,6 +98,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 import Profile from 'Profile'
 import Popover from 'Popover'
 
@@ -109,6 +110,7 @@ export default {
   },
   data() {
     return {
+      EXPERT_LEADER: ROLE.EXPERT_LEADER,
       hover: false,
       btnActive: false,
     }
@@ -117,7 +119,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['myRole', 'mainView', 'speaker']),
+    ...mapGetters(['mainView', 'speaker']),
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -161,8 +163,6 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    console.log(this.myRole)
-  },
+  mounted() {},
 }
 </script>

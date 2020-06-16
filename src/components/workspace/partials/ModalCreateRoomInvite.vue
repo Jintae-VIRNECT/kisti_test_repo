@@ -8,6 +8,7 @@
       <icon-button
         text="새로고침"
         :imgSrc="require('assets/image/ic_renew.svg')"
+        animation="rotate360"
         @click="refresh"
       ></icon-button>
     </div>

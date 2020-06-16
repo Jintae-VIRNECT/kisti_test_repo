@@ -1,4 +1,5 @@
 import * as types from './mutation-types'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   // account
@@ -16,11 +17,21 @@ export default {
     commit(types.CHANGE_WORKSPACE, id)
   },
 
+  callReset({ commit }) {
+    commit(types.CALL_RESET)
+  },
   /**
    * Change Call Mode
    * @param {String} state : stream, sharing, ar
    */
   setView({ commit }, state) {
+    if (state === VIEW.STREAM) {
+      commit(types.CALL_ACTION_SET, ACTION.STREAM_DEFAULT)
+    } else if (state === VIEW.DRAWING) {
+      commit(types.CALL_ACTION_SET, ACTION.DRAWING_LINE)
+    } else if (state === VIEW.AR) {
+      commit(types.CALL_ACTION_SET, ACTION.AR_POINTING)
+    }
     commit(types.CALL_MODE_SET, state)
   },
   /**

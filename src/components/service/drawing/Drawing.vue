@@ -1,10 +1,16 @@
 <template>
-  <div class="drawing-box">
+  <div
+    class="drawing-box"
+    @dragenter.stop.prevent="dragenterHandler"
+    @dragleave.stop.prevent="dragleaveHandler"
+    @dragover.stop.prevent="dragoverHandler"
+    @drop.prevent="dropHandler"
+  >
     <drawing-canvas
       v-if="shareFile && shareFile.id"
       :file="shareFile"
     ></drawing-canvas>
-    <div class="drawing-box__empty" v-else>
+    <div class="drawing-box__empty" v-else-if="fileList && fileList.length > 0">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_fileshare.svg" />
         <p>
@@ -13,12 +19,26 @@
         </p>
       </div>
     </div>
+    <div class="drawing-box__empty" v-else>
+      <div class="drawing-box__empty-inner">
+        <img src="~assets/image/call/img_file.svg" />
+        <p>
+          이미지 또는 PDF 파일을 여기 끌어다 놓거나 <br />
+          '불러오기'버튼을 사용하세요.
+        </p>
+        <p class="description">
+          20MB이하의 파일을 공유할 수 있습니다.
+        </p>
+        <button class="btn" @click="addFile">불러오기</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'Drawing',
@@ -29,9 +49,38 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['shareFile']),
+    ...mapGetters(['fileList', 'shareFile']),
+    view() {
+      if (this.shareFile && this.shareFile.id) {
+        return 'file'
+      } else if (
+        (this.fileList && this.fileList.length > 0) ||
+        this.account.roleType === ROLE.EXPERT
+      ) {
+        return 'upload'
+      } else {
+        return 'default'
+      }
+    },
   },
-  methods: {},
+  methods: {
+    addFile() {
+      this.$eventBus.$emit('addFile')
+    },
+    dragenterHandler(event) {
+      // console.log(event)
+    },
+    dragleaveHandler(event) {
+      // console.log(event)
+    },
+    dragoverHandler(event) {
+      // console.log(event)
+    },
+    dropHandler(event) {
+      const file = event.dataTransfer.files[0]
+      this.$eventBus.$emit('addFile', file)
+    },
+  },
 
   /* Lifecycles */
   mounted() {},

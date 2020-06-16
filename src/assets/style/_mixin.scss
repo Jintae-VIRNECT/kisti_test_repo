@@ -162,6 +162,9 @@
 .shake {
   animation: shake 0.6s linear alternate;
 }
+.rotate360 {
+  animation: rotate360 0.4s linear alternate;
+}
 @keyframes shake {
   0%,
   100% {

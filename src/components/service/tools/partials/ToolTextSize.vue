@@ -2,6 +2,7 @@
   <div>
     <tool-button
       text="텍스트 크기 선택"
+      :disabled="disabled"
       :src="require('assets/image/ic-tool-txt-size.svg')"
       :active="status"
       @click.stop="clickHandler"
@@ -64,10 +65,7 @@ export default {
         target: 'textSize',
         value,
       }
-      console.log(params)
       this.setTool(params)
-
-      this.$eventBus.$emit(`control:${this.callViewMode}:mode`, 'text')
     },
   },
 

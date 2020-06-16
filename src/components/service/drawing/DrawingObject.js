@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { EVENT } from 'configs/drawing.config'
 export default {
   data() {
     return {
@@ -41,10 +42,10 @@ export default {
           object.canvas.remove(object)
         } else {
           if (object.initialized) {
-            this._sendAction('updateText', object)
+            this._sendAction(EVENT.TEXT_UPDATE, object)
             this.stackAdd('text', object.id)
           } else {
-            this._sendAction('drawText', object)
+            this._sendAction(EVENT.TEXT_ADD, object)
             this.stackAdd('add', object.id)
           }
           object.initialized = true
@@ -64,33 +65,33 @@ export default {
      * 드로잉 객체 삭제 메소드
      * @param {Object} target ::삭제 대상 드로잉 객체
      */
-    removeObject(target) {
-      const ids = []
+    // removeObject(target) {
+    //   const ids = []
 
-      this.canvas.discardActiveObject()
+    //   this.canvas.discardActiveObject()
 
-      if (target._objects) {
-        target._objects.forEach(function(object) {
-          ids.push(object.id)
-          target._objects.forEach(obj => {
-            obj.visible = false
-          })
-        })
-      } else {
-        ids.push(target.id)
-        target.visible = false
-      }
-      this.canvas.renderAll()
-      this.stackAdd('remove', [...ids])
+    //   if (target._objects) {
+    //     target._objects.forEach(function(object) {
+    //       ids.push(object.id)
+    //       target._objects.forEach(obj => {
+    //         obj.visible = false
+    //       })
+    //     })
+    //   } else {
+    //     ids.push(target.id)
+    //     target.visible = false
+    //   }
+    //   this.canvas.renderAll()
+    //   this.stackAdd('remove', [...ids])
 
-      if (this.$call) {
-        this.$call.drawing('clear', {
-          aId: this.undoList.length,
-          oId: target.id,
-          tId: target.tId,
-        })
-      }
-    },
+    //   if (this.$call) {
+    //     this.$call.drawing('clear', {
+    //       aId: this.undoList.length,
+    //       oId: target.id,
+    //       tId: target.tId,
+    //     })
+    //   }
+    // },
 
     /**
      * 드로잉 초기화 객체 메소드
@@ -115,7 +116,7 @@ export default {
         this.stackClear() // 전체 삭제
 
         if (this.$call) {
-          this.$call.drawing('clearAll', { imgId: this.file.id })
+          this.$call.drawing(EVENT.CLEAR_ALL, { imgId: this.file.id })
         }
       }
     },

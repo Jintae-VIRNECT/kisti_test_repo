@@ -5,7 +5,7 @@
   height: $video_height;
   padding: 0 8%;
   transition: all 0.3s;
-  &.draw {
+  &.shareview {
     width: calc(100% - #{$subview_width + $share_width});
     margin-left: $share_width;
   }
@@ -40,7 +40,7 @@
   }
 
   &.more {
-    background: url(~assets/image/call/smvideo_ic_addppl@2x.png) center 1.5rem/2.571rem
+    background: url(~assets/image/call/ic_addppl.svg) center 1.5rem/2.571rem
       no-repeat $color_darkgray_500;
     cursor: pointer;
     > p {

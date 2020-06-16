@@ -8,9 +8,9 @@
     >
       <tooltip
         :content="
-          user.nickname && user.nickname.length === 0
+          user.nickName && user.nickName.length === 0
             ? user.name
-            : user.nickname
+            : user.nickName
         "
       >
         <div class="profilelist-user__image" slot="body">
@@ -26,9 +26,9 @@
           slot="body"
         /> -->
         <span>{{
-          user.nickname && user.nickname.length === 0
+          user.nickName && user.nickName.length === 0
             ? user.name
-            : user.nickname
+            : user.nickName
         }}</span>
       </tooltip>
     </figure>
@@ -57,7 +57,7 @@
             @error="onImageError"
           /> -->
           <span class="profilelist-user__name ">{{
-            user.nickname.length === 0 ? user.name : user.nickname
+            user.nickName.length === 0 ? user.name : user.nickName
           }}</span>
         </figure>
       </div>

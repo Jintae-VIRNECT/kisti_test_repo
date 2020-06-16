@@ -2,21 +2,29 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE } from 'plugins/remote/call/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 
 let OV
 
 const _ = {
+  account: null,
   session: null,
   publisher: null,
   subscribers: [],
   resolution: null,
   join: async (roomInfo, account, role) => {
     Store.commit('clear')
-    Store.commit('myRole', role)
+    Store.dispatch('updateAccount', {
+      roleType: role,
+    })
+    _.account = account
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
-    if (['test25@test.com', 'test26@test.com'].includes(account.email)) {
+    if (
+      ['test6@test.com', 'test25@test.com', 'test26@test.com'].includes(
+        account.email,
+      )
+    ) {
       allowUser = true
     }
     try {
@@ -115,9 +123,8 @@ const _ = {
     })
   },
   drawing: (type, params) => {
-    const account = Store.getters['account']
     params.type = type
-    params['from'] = account.uuid
+    params['from'] = _.account.uuid
     params['to'] = []
     _.session.signal({
       type: SIGNAL.DRAWING,
@@ -132,7 +139,32 @@ const _ = {
       type: SIGNAL.POINTING,
     })
   },
-  getDevices: () => {},
+  arPointing: message => {
+    _.session.signal({
+      data: JSON.stringify(message),
+      to: _.session.connection,
+      type: SIGNAL.AR_POINTING,
+    })
+  },
+  permission: (params = {}) => {
+    params['from'] = _.account.uuid
+    console.log(params)
+    _.session.signal({
+      type: SIGNAL.CAPTURE_PERMISSION,
+      to: _.session.connection,
+      data: JSON.stringify(params),
+    })
+  },
+  arDrawing: (type, params = {}) => {
+    params.type = type
+    params['from'] = _.account.uuid
+    params['to'] = []
+    _.session.signal({
+      type: SIGNAL.AR_DRAWING,
+      to: _.session.connection,
+      data: JSON.stringify(params),
+    })
+  },
   getState: () => {
     if (_.publisher) {
       return {
@@ -195,9 +227,6 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
-  record: () => {},
-  stop: () => {},
-  active: () => {},
   /**
    * append message channel listener
    * @param {Function} customFunc

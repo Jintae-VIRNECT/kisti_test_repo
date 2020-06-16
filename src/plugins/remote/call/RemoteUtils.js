@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL } from './remote.config'
+import { SIGNAL } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -88,7 +88,7 @@ export const getUserObject = stream => {
   const metaData = JSON.parse(connection.data.split('%/%')[0])
 
   let uuid = metaData.clientData
-  let role = metaData.roleType
+  let roleType = metaData.roleType
 
   const participant = participants.find(user => {
     return user.uuid === uuid
@@ -110,7 +110,8 @@ export const getUserObject = stream => {
     speaker: true,
     mute: false,
     status: 'good',
-    role: role,
+    roleType: roleType,
+    permission: false,
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

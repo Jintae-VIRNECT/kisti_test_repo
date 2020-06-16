@@ -32,7 +32,7 @@ import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
-import { ROLE } from 'plugins/remote/call/remote.config'
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin],

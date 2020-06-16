@@ -1,7 +1,8 @@
 <template>
   <tool-button
     text="포인팅"
-    :active="isPointing"
+    :active="viewAction === STREAM_POINTING"
+    :disabled="disabled"
     :src="require('assets/image/ic_pointing.svg')"
     @click="pointing"
   ></tool-button>
@@ -9,27 +10,23 @@
 
 <script>
 import toolMixin from './toolMixin'
+import { ACTION } from 'configs/view.config'
 export default {
   name: 'PointingTool',
   mixins: [toolMixin],
   data() {
-    return { isPointing: false }
+    return {
+      STREAM_POINTING: ACTION.STREAM_POINTING,
+    }
   },
-  computed: {},
-  watch: {},
   methods: {
     pointing() {
-      this.isPointing = !this.isPointing
-      if (this.isPointing) {
+      if (this.viewAction !== ACTION.STREAM_POINTING) {
         this.setAction('pointing')
       } else {
         this.setAction('default')
       }
     },
   },
-
-  /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
 }
 </script>

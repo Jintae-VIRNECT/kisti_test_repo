@@ -1,6 +1,5 @@
 const getDefaultState = () => {
   return {
-    roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
     mainView: {
       // nickname: nickname,
       // userName: name
@@ -17,7 +16,8 @@ const getDefaultState = () => {
       // video: stream.videoActive,
       // status: 'good',
       // resolution: { width, height }
-      // role: 'LEADER' / 'EXPERT'
+      // roleType: 'LEADER' / 'EXPERT'
+      // permission: false
     ],
     chatList: [
       // {
@@ -140,10 +140,19 @@ const mutations = {
     state.resolutions.splice(rIdx, 1)
     console.log(state.resolutions)
   },
+
+  // device control
   deviceUpdate(state, object) {
     for (let key in object) {
       state[key] = object[key]
     }
+  },
+  agreePermission(state, id) {
+    const idx = state.participants.findIndex(user => user.id === id)
+    if (idx < 0) {
+      return
+    }
+    state.participants[idx].permission = true
   },
   updateResolution(state, payload) {
     const idx = state.resolutions.findIndex(
@@ -154,9 +163,6 @@ const mutations = {
       return
     }
     Object.assign(state.resolutions[idx], payload)
-  },
-  myRole(state, payload) {
-    state.roleType = payload
   },
 
   // chat
@@ -180,7 +186,6 @@ const mutations = {
 }
 
 const getters = {
-  myRole: state => state.roleType,
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,

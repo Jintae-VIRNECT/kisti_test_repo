@@ -2,7 +2,7 @@
   <div>
     <menu-button
       text="로컬 녹화 목록"
-      :active="action === 'localRecordList'"
+      :active="showList"
       :src="require('assets/image/ic_local_record_list.svg')"
       @click="list"
     ></menu-button>
@@ -19,7 +19,9 @@ export default {
   name: 'LocalRecordListMenu',
   mixins: [toolMixin],
   data() {
-    return { showList: false }
+    return {
+      showList: false,
+    }
   },
   components: {
     ServiceLocalRecordList,

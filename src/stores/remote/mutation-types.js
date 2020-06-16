@@ -6,6 +6,7 @@ export const INIT_WORKSPACE = 'INIT_WORKSPACE'
 export const CHANGE_WORKSPACE = 'CHANGE_WORKSPACE'
 
 // oncall
+export const CALL_RESET = 'CALL_RESET'
 export const CALL_MODE_SET = 'CALL_MODE_SET'
 export const CALL_ACTION_SET = 'CALL_ACTION_SET'
 export const CALL_STREAM = 'CALL_STREAM'

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import ParticipantVideo from './ParticipantVideo'
 import { maxParticipants } from 'utils/callOptions'
 export default {
@@ -29,46 +29,6 @@ export default {
   data() {
     return {
       max: maxParticipants,
-      // participants: [
-      //   {
-      //     uuid: 'main',
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'default',
-      //     status: 'good',
-      //     mic: true,
-      //     audio: true,
-      //   },
-      //   {
-      //     uuid: 2,
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'default',
-      //     status: 'normal',
-      //     mic: true,
-      //     audio: true,
-      //     mute: true,
-      //   },
-      //   {
-      //     uuid: 3,
-      //     email: 'wooka@virnect.com',
-      //     name: 'wooka',
-      //     nickname: 'wuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwu',
-      //     device: 'web',
-      //     role: 'MASTER',
-      //     path: 'https://virnect.com/favicon.ico',
-      //     status: 'bad',
-      //     mic: false,
-      //     audio: false,
-      //     mute: true,
-      //   },
-      // ],
     }
   },
   computed: {
@@ -101,7 +61,6 @@ export default {
     },
   },
   methods: {
-    // ...mapActions(['setMainSession']),
     more() {
       console.log('추가 초대하기')
     },
