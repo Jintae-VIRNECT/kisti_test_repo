@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.dao.MailHistoryRepository;
 import com.virnect.message.domain.MailHistory;
 import com.virnect.message.domain.MailSender;
+import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.global.common.ApiResponse;
@@ -60,10 +61,23 @@ public class MessageService {
             exchange = @Exchange(value = "email", type = ExchangeTypes.TOPIC),
             key = "email.*"
     ))
-    public void sendEmailMessage(MailSendRequest mailSendRequest) throws IOException {
-        this.sendMail(mailSendRequest);
-    }
+    public void sendEmailMessage(EmailSendRequest emailSendRequest) throws IOException {
+        for (String receiver : emailSendRequest.getReceivers()) {
+            MailHistory mailHistory = MailHistory.builder()
+                    .receiver(receiver)
+                    .sender(MailSender.MASTER.getSender())
+                    .contents(emailSendRequest.getHtml())
+                    .subject(emailSendRequest.getSubject())
+                    .resultCode(HttpStatus.OK.value())
+                    .build();
+            mailService.sendMail(receiver, MailSender.MASTER.getSender(), emailSendRequest.getSubject(), emailSendRequest.getHtml());
 
+            log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
+
+            this.mailHistoryRepository.save(mailHistory);
+        }
+
+    }
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,

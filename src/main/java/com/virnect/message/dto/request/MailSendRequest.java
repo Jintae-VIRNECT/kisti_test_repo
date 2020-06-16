@@ -18,23 +18,19 @@ import java.util.List;
 @Getter
 @Setter
 public class MailSendRequest {
-    @ApiModelProperty(value = "메일 발송 서비스 명", example = "pf-workspace", required = true, position = 0)
-    @NotBlank
-    private String service;
-
-    @ApiModelProperty(value = "받는 사람 이메일 주소", example = "[\"ljk@virnect.com\"]", required = true, position = 1)
+    @ApiModelProperty(value = "받는 사람 이메일 주소", example = "[\"ljk@virnect.com\"]", required = true, position = 0)
     @NotNull
     private List<String> receivers;
 
-    @ApiModelProperty(value = "보내는 사람 사람 이메일 주소", example = "no-reply@virnect.com", required = true, position = 2)
+    @ApiModelProperty(value = "보내는 사람 사람 이메일 주소", example = "no-reply@virnect.com", required = true, position = 1)
     @NotBlank
     private String sender;
 
-    @ApiModelProperty(value = "메일 제목", example = "제목", required = true, position = 3)
+    @ApiModelProperty(value = "메일 제목", example = "제목", required = true, position = 2)
     @NotBlank
     private String subject;
 
-    @ApiModelProperty(value = "메일 html", example = "", required = true, position = 4)
+    @ApiModelProperty(value = "메일 html", example = "", required = true, position = 3)
     @NotBlank
     private String html;
 }

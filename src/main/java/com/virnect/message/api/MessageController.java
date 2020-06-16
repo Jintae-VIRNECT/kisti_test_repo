@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
+import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.exception.MessageException;
+import com.virnect.message.global.common.ApiResponse;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,14 +47,14 @@ public class MessageController {
             value = "메일 메세지 발행"
     )
     @PostMapping("/email")
-    public void sendMail(@RequestBody @Valid MailSendRequest mailSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws JsonProcessingException {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         String exchange = MessageType.EMAIL.getValue();
-        String routingKey = exchange + "." + mailSendRequest.getService();
+        String routingKey = exchange + "." + emailSendRequest.getService();
 
-        rabbitTemplate.convertAndSend(exchange, routingKey, mailSendRequest);
+        rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
     }
 
     @ApiOperation(
@@ -67,18 +70,18 @@ public class MessageController {
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
     }
 
-/*
     @ApiOperation(
-            value = "메일 전송"
+            value = "메일 전송",
+            notes = "메일 전송에 사용하던 api",
+            tags = "old message-controller"
     )
     @PostMapping("/mail")
-    public ResponseEntity<ApiResponse> sendMail(@RequestBody @Valid MailSendRequest mailSendRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<Boolean>> sendMail(@RequestBody @Valid MailSendRequest mailSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse apiResponse = messageService.sendMail(mailSendRequest);
+        ApiResponse<Boolean> apiResponse = messageService.sendMail(mailSendRequest);
         return ResponseEntity.ok(apiResponse);
     }
-*/
 
 }
