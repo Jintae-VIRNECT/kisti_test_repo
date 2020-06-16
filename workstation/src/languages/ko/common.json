@@ -8,5 +8,6 @@
   "delete": "삭제",
   "graph": "그래프",
   "list": "리스트",
-  "numbersUnit": "개"
+  "numbersUnit": "개",
+  "paymentCenter": "결제센터"
 }

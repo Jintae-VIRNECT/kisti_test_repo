@@ -1,5 +1,5 @@
 <template>
-  <div id="contents">
+  <div id="tasks-new">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -29,7 +29,14 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>
+              <router-link to="/tasks">
+                <img src="~assets/images/icon/ic-arrow-back.svg" />
+              </router-link>
+              <span>{{
+                $t('contents.allContents.workspaceContentsList')
+              }}</span>
+            </h3>
           </div>
           <el-table
             class="clickable"
@@ -50,7 +57,7 @@
             />
             <column-default
               :label="$t('contents.allContents.column.targetType')"
-              prop="targets"
+              prop="targetType"
               sortable="custom"
               :width="120"
             />
@@ -194,3 +201,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#__nuxt #tasks-new {
+  .el-card__header > div > h3 > span {
+    margin-left: 10px;
+    line-height: 21px;
+  }
+}
+</style>

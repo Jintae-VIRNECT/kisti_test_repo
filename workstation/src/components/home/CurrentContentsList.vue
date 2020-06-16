@@ -27,7 +27,7 @@
       />
       <column-default
         :label="$t('contents.allContents.column.targetType')"
-        prop="targets"
+        prop="targetType"
         :width="90"
       />
       <column-user
