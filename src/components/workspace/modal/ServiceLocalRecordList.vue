@@ -241,6 +241,8 @@ export default {
 }
 
 .table__tools {
+  display: flex;
+
   > button.icon-button {
     opacity: 0.6;
 
