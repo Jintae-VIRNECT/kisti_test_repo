@@ -25,3 +25,5 @@ export const reset = {
   width: width[0],
   size: size[0],
 }
+
+export const arCount = 30

@@ -122,6 +122,34 @@ const _ = {
       type: SIGNAL.RESOLUTION,
     })
   },
+  shareImage: imgInfo => {
+    const params = {
+      imgId: imgInfo.id,
+      from: _.account.uuid,
+    }
+    const chunkSize = 1024 * 10
+
+    const chunk = []
+    const base64 = imgInfo.img.replace(/data:image\/.+;base64,/, '')
+    const chunkLength = parseInt(base64.length / chunkSize)
+    let start = 0
+    for (let i = 0; i < chunkLength; i++) {
+      chunk.push(base64.substr(start, chunkSize))
+      start += chunkSize
+    }
+    for (let i = 0; i < chunk.length; i++) {
+      if (i === 0) params.status = 'firstFrame'
+      else if (i === chunk.length - 1) params.status = 'lastFrame'
+      else params.status = 'frame'
+      params.chunk = chunk[i]
+      console.log(params)
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: _.session.connection,
+        type: SIGNAL.SHOW_IMAGE,
+      })
+    }
+  },
   drawing: (type, params) => {
     params.type = type
     params['from'] = _.account.uuid
@@ -158,7 +186,6 @@ const _ = {
   arDrawing: (type, params = {}) => {
     params.type = type
     params['from'] = _.account.uuid
-    params['to'] = []
     _.session.signal({
       type: SIGNAL.AR_DRAWING,
       to: _.session.connection,

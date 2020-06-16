@@ -3,6 +3,7 @@
     <div class="ar-video__box">
       <video
         class="ar-video__stream"
+        ref="arVideo"
         :srcObject.prop="mainView.stream"
         @play="optimizeVideoSize"
         :muted="!speaker"
@@ -14,7 +15,7 @@
         <button
           class="ar-video__select"
           @click="setArArea"
-          v-if="viewAction === AR_AREA"
+          v-if="view === 'area'"
         >
           <div class="ar-video__select-back"></div>
           <div class="ar-video__select-inner">
@@ -27,19 +28,16 @@
           </div>
         </button>
       </transition>
-      <ar-pointing
-        class="ar-pointing"
-        v-if="viewAction === AR_POINTING"
-      ></ar-pointing>
+      <ar-pointing class="ar-pointing" v-if="view === 'pointing'"></ar-pointing>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 import ArPointing from './ArPointing'
-import { EVENT } from 'configs/drawing.config'
+import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
 export default {
   name: 'ARVideo',
   components: {
@@ -47,12 +45,20 @@ export default {
   },
   data() {
     return {
-      AR_AREA: ACTION.AR_AREA,
-      AR_POINTING: ACTION.AR_POINTING,
+      chunk: [],
     }
   },
   computed: {
     ...mapGetters(['mainView', 'speaker', 'viewAction', 'resolutions']),
+    view() {
+      if (this.viewAction === ACTION.AR_AREA) {
+        return 'area'
+      } else if (this.viewAction === ACTION.AR_POINTING) {
+        return 'pointing'
+      } else {
+        return ''
+      }
+    },
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
@@ -75,8 +81,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['showArImage', 'setAction']),
     setArArea() {
-      this.$call.arDrawing(EVENT.REQUEST_FRAME)
+      this.$call.arDrawing(AR_DRAWING.REQUEST_FRAME)
     },
     optimizeVideoSize() {
       const mainWrapper = this.$el
@@ -99,9 +106,93 @@ export default {
         videoBox.style.width = maxWidth + 'px'
       }
     },
+    receiveCapture(receive) {
+      const data = JSON.parse(receive.data)
+
+      // 웹-웹 테스트용
+      // if (data.type === AR_DRAWING.REQUEST_FRAME) {
+      //   console.log('웹-웹 테스트용')
+      //   this.doArCapture()
+      //   return
+      // }
+      if (data.from === this.account.uuid) return
+
+      // frameResponse 수신
+      if (data.type !== AR_DRAWING.FRAME_RESPONSE) return
+
+      if (data.status === 'firstFrame') {
+        this.chunk = []
+      }
+      this.chunk.push(data.chunk)
+
+      if (data.status === 'lastFrame') {
+        this.encodeImage(data.imgId)
+      }
+    },
+    encodeImage(imgId) {
+      let imgUrl = ''
+      for (let part of this.chunk) {
+        imgUrl += part
+      }
+      this.chunk = []
+      imgUrl = 'data:image/png;base64,' + imgUrl
+      const imageInfo = {
+        id: imgId,
+        img: imgUrl,
+      }
+
+      this.showArImage(imageInfo)
+      this.$call.arDrawing(AR_DRAWING.RECEIVE_FRAME)
+    },
+    /**
+     * 웹-웹 테스트용!
+     */
+    doArCapture() {
+      const videoEl = this.$el.querySelector('.ar-video__stream')
+
+      const width = videoEl.offsetWidth
+      const height = videoEl.offsetHeight
+
+      const tmpCanvas = document.createElement('canvas')
+      tmpCanvas.width = width
+      tmpCanvas.height = height
+
+      const tmpCtx = tmpCanvas.getContext('2d')
+
+      tmpCtx.drawImage(this.$refs['arVideo'], 0, 0, width, height)
+
+      const imgUrl = tmpCanvas.toDataURL('image/png')
+
+      this.sendFrame(imgUrl, Date.now())
+    },
+    sendFrame(imgUrl, id) {
+      const params = {
+        imgId: id,
+      }
+      const chunkSize = 1024 * 10
+
+      const chunk = []
+      const base64 = imgUrl.replace(/data:image\/.+;base64,/, '')
+      const chunkLength = parseInt(base64.length / chunkSize)
+      let start = 0
+      for (let i = 0; i < chunkLength; i++) {
+        chunk.push(base64.substr(start, chunkSize))
+        start += chunkSize
+      }
+      for (let i = 0; i < chunk.length; i++) {
+        if (i === 0) params.status = 'firstFrame'
+        else if (i === chunk.length - 1) params.status = 'lastFrame'
+        else params.status = 'frame'
+        params.chunk = chunk[i]
+        this.$call.arDrawing(AR_DRAWING.FRAME_RESPONSE, params)
+      }
+    },
   },
 
   /* Lifecycles */
+  created() {
+    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveCapture)
+  },
   mounted() {
     if (this.resolution && this.resolution.width > 0) {
       this.optimizeVideoSize()
