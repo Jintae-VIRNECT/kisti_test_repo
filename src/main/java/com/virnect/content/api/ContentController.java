@@ -69,14 +69,14 @@ public class ContentController {
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "")
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "")
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
-            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            @PathVariable(value = "userUUID") String userUUID
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
-            , @RequestParam(value = "userUUID") String userUUID
+            , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
             , @ApiIgnore PageRequest pageable) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -236,7 +236,7 @@ public class ContentController {
             @ApiImplicitParam(name = "content", value = "수정할 컨텐츠 ares 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "name", value = "수정할 컨텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "update"),
             @ApiImplicitParam(name = "metadata", value = "수정할 컨텐츠 메타데이터", dataType = "string", paramType = "form", defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"name\":\"SampleContent\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"5f43e519-0f18-46c1-947e-198f801bf3cc\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"TOGGLE\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"INPUT_FIELD\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"REPORT\",\"title\":\"항목3\"}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]}]}]}}"),
-            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
+            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"TargetID\":\"c1772a71-dd71-4c2e-b313-fa029fa2e89e\",\"PropertyInfo\":{\"54d3ea12-062e-4a2c-9922-eb1f4440ffa3\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"54d3ea12-062e-4a2c-9922-eb1f4440ffa3\"},\"Child\":{\"167afc43-4426-400f-8333-2890d78b1282\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"167afc43-4426-400f-8333-2890d78b1282\"}}}}}}"),
             @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
     })
     @PutMapping("/{contentUUID}")
