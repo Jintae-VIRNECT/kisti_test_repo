@@ -3,8 +3,8 @@
     :visible.sync="visibleFlag"
     :title="'로컬 녹화 파일'"
     :showClose="true"
-    :width="940"
-    :height="708"
+    :width="'67.1429rem'"
+    :height="'50.5714rem'"
     :beforeClose="beforeClose"
   >
     <div class="record-list">
@@ -217,27 +217,27 @@ export default {
 .record-list {
   width: 100%;
   height: 100%;
-  padding: 8px 22px 22px 22px;
+  padding: 0.5714rem 1.5714rem 1.5714rem 1.5714rem;
 }
 
 .record-list__paragraph {
-  margin: 0px 0px 44px 0px;
+  margin: 0px 0px 3.1429rem 0px;
 }
 
 .paragraph--text {
   color: #b7b7b7;
-  font-size: 14px;
+  font-size: 1rem;
 }
 .table__header {
   display: flex;
   justify-content: space-between;
-  margin: 0px 0px 14px 0px;
+  margin: 0px 0px 1rem 0px;
 }
 
 .table__title {
   color: #dedede;
   font-weight: normal;
-  font-size: 18px;
+  font-size: 1.2857rem;
 }
 
 .table__tools {
