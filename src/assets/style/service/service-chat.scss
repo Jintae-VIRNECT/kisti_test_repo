@@ -24,10 +24,10 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 0.714rem 22px 16px;
+  padding: 0.7857rem 1.5714rem 1.1429rem;
   color: rgba($color_text, 0.87);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 1.1429rem;
 
   // .show-list {
   //   margin-left: 0.357rem;
@@ -48,9 +48,9 @@
   height: 100%;
 
   .selector__icon--chat {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.375rem;
+    width: 1.4286rem;
+    height: 1.4286rem;
+    margin-right: 0.4286rem;
     background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
 
     &.chat__active {
@@ -59,9 +59,9 @@
   }
 
   .selector__icon--file {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.375rem;
+    width: 1.4286rem;
+    height: 1.4286rem;
+    margin-right: 0.4286rem;
     background: url(~assets/image/call/chat_ic_folder_b.svg) center no-repeat;
 
     &.file__active {
@@ -75,10 +75,17 @@
   flex-grow: 0.5;
   align-items: center;
   justify-content: center;
-  height: 2.8rem;
+  height: 3.2143rem;
 
   &.active {
     background: rgba(169, 169, 169, 0.2);
+  }
+  &.active:hover {
+    cursor: default;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 }
 
@@ -91,9 +98,9 @@
 }
 
 .selector__icon--chat {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.375rem;
+  width: 1.4286rem;
+  height: 1.4286rem;
+  margin-right: 0.4286rem;
   background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
 
   &.active {
@@ -102,9 +109,9 @@
 }
 
 .selector__icon--file {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.375rem;
+  width: 1.4286rem;
+  height: 1.4286rem;
+  margin-right: 0.4286rem;
   background: url(~assets/image/call/chat_ic_folder_b.svg) center no-repeat;
 
   &.active {
@@ -372,13 +379,13 @@
 
 .chat-item__file--wrapper {
   display: flex;
-  margin-top: 0.6875rem;
+  margin-top: 0.7857rem;
 }
 
 .chat-item__file--icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-right: 0.375rem;
+  width: 1.7143rem;
+  height: 1.7143rem;
+  margin-right: 0.4286rem;
   &.pdf {
     background: url(~assets/image/call/chat_ic_pdf_b.svg) center no-repeat;
   }
@@ -400,25 +407,25 @@
 }
 
 .chat-item__file--name {
-  width: 8.5rem;
+  width: 9.7143rem;
   overflow: hidden;
   color: rgba($color_darkgray_1000, 0.78);
   font-weight: 500;
-  font-size: 1.071rem;
+  font-size: 1.2143rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   background: url() no-repeat;
 }
 
 .chat-item__file--size {
-  margin: 0.3125rem 0;
+  margin: 0.3571rem 0;
   color: rgb(122, 122, 122);
-  font-size: 0.75rem;
+  font-size: 0.8571rem;
 }
 
 .chat-item__file--button {
   width: 100%;
-  height: 2.125rem;
+  height: 2.4286rem;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
   &:hover {
@@ -432,7 +439,7 @@
   .button-text {
     color: rgba(0, 0, 0, 0.78);
     font-weight: 500;
-    font-size: 0.875rem;
+    font-size: 1rem;
     text-align: center;
   }
 }
@@ -521,6 +528,168 @@
 }
 
 .chat-input__form-button {
+  position: absolute;
+  right: 1.286rem;
+  padding: 0.357rem 0.857rem;
+  color: $color_text_sub;
+  font-size: 1.071rem;
+  background-color: $color_primary;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color_primary_700;
+  }
+  &:active {
+    background-color: $color_primary_dark;
+  }
+  &:focus {
+    background-color: $color_primary_dark;
+  }
+}
+
+/*for chat files */
+.chat-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 5.5714rem;
+  padding: 1.1429rem 1.4286rem 1.1429rem 1.7857rem;
+
+  &:hover {
+    background: #3d3d41;
+  }
+  &.active {
+    background: #3d3d41;
+  }
+  &.invalid {
+    pointer-events: none;
+    // &:hover {
+    //   background-color: unset;
+    // }
+  }
+}
+.chat-file-item--wrapper {
+  display: flex;
+}
+
+.chat-file-item--icon {
+  width: 1.7143rem;
+  height: 1.7143rem;
+  margin-right: 0.8571rem;
+  &.pdf {
+    background: url(~assets/image/call/chat/ic_chat_pdf_w.svg) center no-repeat;
+  }
+  &.txt {
+    background: url(~assets/image/call/chat/ic_chat_file_w.svg) center no-repeat;
+  }
+  &.jpg {
+    background: url(~assets/image/call/chat/ic_chat_jpgpng_w.svg) center
+      no-repeat;
+  }
+  &.png {
+    background: url(~assets/image/call/chat/ic_chat_jpgpng_w.svg) center
+      no-repeat;
+  }
+  &.mp3 {
+    background: url(~assets/image/call/chat/ic_chat_mp3_w.svg) center no-repeat;
+  }
+  &.video {
+    background: url(~assets/image/call/chat/ic_chat_video_w.svg) center
+      no-repeat;
+  }
+}
+
+.chat-file-item__center--file-name {
+  width: 16.4286rem;
+  height: 1.5rem;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  font-size: 1.1429rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  &.invalid {
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.chat-file-item__sub--valid-text {
+  margin: 0px 0.2857rem 0px 0px;
+  color: #6bb4f9;
+  font-size: 0.9286rem;
+
+  &.invalid {
+    color: #e34850;
+  }
+}
+
+.chat-file-item__sub--file-size {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9286rem;
+  opacity: 0.6;
+}
+
+.chat-file-item--check-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4286rem;
+  height: 1.4286rem;
+  border: 1px solid #979797;
+  border-radius: 50%;
+  &.active {
+    background-color: #0f75f5;
+    border: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.chat-file-item--check-inner {
+  &.active {
+    width: 0.9286rem;
+    height: 0.9286rem;
+    background: url(~assets/image/call/chat/ic_chat_check.svg) center no-repeat;
+  }
+}
+
+/*for chat files */
+.chat-down {
+  bottom: 0;
+  flex-shrink: 0;
+  width: 100%;
+  background-color: rgba($color_bg_item, 0.3);
+}
+
+.chat-down__bar {
+  display: flex;
+  height: 4.286rem;
+  padding: 1.071rem 1.286rem 1.071rem 0.857rem;
+  border-top: solid 1px #26262a;
+}
+
+.chat-down__bar--cancel {
+  width: 2.2857rem;
+  height: 100%;
+  margin: 0px 0.5714rem 0px 0px;
+  background: url(~assets/image/call/chat/ic_chat_cancel_select.svg) center
+    no-repeat;
+
+  @include ir();
+}
+
+.chat-down__bar--count {
+  margin: 0.2143rem 0px 0px 0px;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.chat-down__bar--button {
   position: absolute;
   right: 1.286rem;
   padding: 0.357rem 0.857rem;

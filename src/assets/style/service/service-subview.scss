@@ -10,6 +10,25 @@
   @include background-border(left);
 }
 
-.subvideo {
-  height: 200px;
+.sub-video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 360px;
+  // height: 200px;
+  height: 252px;
+  background: #111012;
+}
+
+.sub-video--screen {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sub-video--no-stream {
+  width: 54px;
+  height: 54px;
+  background: url(~assets/image/call/chat_img_no_video_stream.svg) center
+    no-repeat;
 }
