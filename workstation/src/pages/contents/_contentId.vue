@@ -14,7 +14,7 @@
         <el-divider />
         <dl>
           <dt>{{ $t('contents.info.id') }}</dt>
-          <dd>{{ content.contentUUID }}</dd>
+          <dd class="content-uuid">{{ content.contentUUID }}</dd>
           <dt>{{ $t('contents.info.name') }}</dt>
           <dd>{{ content.contentName }}</dd>
           <dt>{{ $t('contents.info.uploader') }}</dt>

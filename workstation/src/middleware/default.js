@@ -43,8 +43,8 @@ export default async function({ req, store, redirect, error }) {
         return redirect('/start')
       }
     } catch (e) {
-      // 토큰 만료됨
-      if (/^Error: 8005/.test(e)) {
+      // 비정상 토큰
+      if (/^Error: (8003|8005)/.test(e)) {
         return redirect(
           `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
             req.headers.referer || req.headers.host,

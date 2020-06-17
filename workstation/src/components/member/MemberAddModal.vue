@@ -21,6 +21,7 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        :show-message="false"
       >
         <el-divider />
         <h6>

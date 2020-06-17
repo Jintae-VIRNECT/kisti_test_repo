@@ -54,8 +54,13 @@
   }
   dd {
     margin-bottom: 20px;
+    overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
 
+    &.content-uuid {
+      overflow: visible;
+    }
     & > img {
       float: right;
       margin-left: 12px;
