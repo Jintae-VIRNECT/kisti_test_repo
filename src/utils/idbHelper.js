@@ -73,7 +73,7 @@ async function deleteGroupMediaChunk(groupId) {
     .delete()
 }
 
-async function checkEstimatedQuota() {
+async function checkQuota() {
   if (navigator.storage && navigator.storage.estimate) {
     const estimation = await navigator.storage.estimate()
 
@@ -103,7 +103,7 @@ const IDBHelper = {
   getMediaChunkArrays: getMediaChunkArrays,
   deleteMediaChunk: deleteMediaChunk,
   getAllDataArray: getAllDataArray,
-  checkEstimatedQuota: checkEstimatedQuota,
+  checkQuota: checkQuota,
   deleteGroupMediaChunk: deleteGroupMediaChunk,
 }
 
