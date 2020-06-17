@@ -28,8 +28,11 @@
 import { mapGetters, mapActions } from 'vuex'
 import { SIGNAL } from 'configs/remote.config'
 import LnbButton from '../tools/LnbButton'
+import toastMixin from 'mixins/toast'
+import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
+  mixins: [toastMixin],
   components: {
     LnbButton,
   },
@@ -39,9 +42,33 @@ export default {
   computed: {
     ...mapGetters(['mainView', 'participants']),
   },
+  watch: {
+    'mainView.permission': permission => {
+      console.log('get permission value: ', permission)
+      if (permission === true) {
+        this.setView('ar')
+      } else if (permission === false) {
+        this.toastDefault(
+          '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
+        )
+      }
+    },
+  },
   methods: {
     ...mapActions(['setView']),
     permissionCheck() {
+      // 웹-웹 테스트용
+      if (web_test) {
+        this.setView('ar')
+        return
+      }
+      if (!this.mainView || !this.mainView.stream) {
+        // TODO: MESSAGE
+        this.toastDefault(
+          '작업자가 존재하지 않습니다.?? 이 경우 메시지 정의 필요',
+        )
+        return
+      }
       if (this.mainView.id === this.account.uuid) {
         console.error('본인 영상입니다.')
         return
@@ -50,39 +77,45 @@ export default {
         this.setView('ar')
         return
       }
+      if (this.mainView.permission === false) {
+        this.toastDefault(
+          '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
+        )
+        return
+      }
+      if (this.mainView.permission === 'noAR') {
+        this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
+        return
+      }
+      this.toastDefault(
+        '상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.',
+      )
 
       this.$call.permission({
         to: this.mainView.id,
       })
     },
+    // 웹-웹 테스트용!!!
     getPermissionCheck(receive) {
       const data = JSON.parse(receive.data)
 
-      // 내가 요청한 허용인지 체크
       if (data.to !== this.account.uuid) return
 
-      // 웹-웹 테스트용!!!
       if (!('value' in data)) {
         this.$call.permission({
           to: data.from,
           value: true,
         })
       }
-
-      // 허용값 체크
-      if (!data.value) return
-
-      const idx = this.participants.findIndex(user => user.id === data.from)
-      if (idx < 0) return
-
-      this.$store.commit('agreePermission', data.from)
-      this.setView('ar')
     },
   },
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    if (web_test) {
+      // 웹-웹 테스트용!!!
+      this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    }
   },
 }
 </script>

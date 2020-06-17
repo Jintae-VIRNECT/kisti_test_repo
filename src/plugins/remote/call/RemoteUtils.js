@@ -33,25 +33,32 @@ export const addSessionEventListener = session => {
     removeSubscriber(event.stream.streamId)
   })
 
+  // 디바이스 정보
   session.on(SIGNAL.SPEAKER, event => {
-    console.log(event)
+    const data = JSON.parse(event.data)
     Store.commit('propertyChanged', {
       connectionId: event.from.connectionId,
-      speaker: event.data === 'true' ? true : false,
+      speaker: data.isOn,
     })
   })
-
   session.on(SIGNAL.CAMERA, event => {
     console.log(event)
   })
-
   session.on(SIGNAL.RESOLUTION, event => {
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
     })
   })
+  session.on(SIGNAL.CAPTURE_PERMISSION, event => {
+    const data = JSON.parse(event.data)
+    Store.commit('agreePermission', {
+      id: data.from,
+      value: data.value,
+    })
+  })
 
+  // 채팅
   session.on(SIGNAL.CHAT, event => {
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
@@ -111,7 +118,14 @@ export const getUserObject = stream => {
     mute: false,
     status: 'good',
     roleType: roleType,
-    permission: false,
+    permission: 'default',
+  }
+  if (stream.videoActive) {
+    Store.commit('updateResolution', {
+      connectionId: stream.connection.connectionId,
+      width: 0,
+      height: 0,
+    })
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

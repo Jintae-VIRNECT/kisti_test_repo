@@ -1,5 +1,6 @@
 import { hexToAHEX } from './color'
-import { EVENT } from 'configs/drawing.config'
+import { DRAWING, AR_DRAWING } from 'configs/remote.config'
+import { normalizedPos, originalPos } from './normalize'
 // tId: targetId
 // oId: objectId
 // aId: undolist 아이디
@@ -102,7 +103,6 @@ export const getSignalParams = function getSignalParams(
 
   // if(object) tId = object.id;
   if (object) tId = object.tId
-  console.log(EVENT)
 
   switch (type) {
     /* 
@@ -137,37 +137,37 @@ export const getSignalParams = function getSignalParams(
         tId,
       }
       break */
-    case EVENT.LINE_DOWN:
-    case 'arLineStart':
+    case DRAWING.LINE_DOWN:
+    case AR_DRAWING.LINE_DOWN:
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: object.left,
-        posY: object.top,
+        posX: normalizedPos(object.left, status.imgWidth),
+        posY: normalizedPos(object.top, status.imgHeight),
       }
       break
-    case EVENT.LINE_MOVE:
-    case 'arLineMove':
+    case DRAWING.LINE_MOVE:
+    case AR_DRAWING.LINE_MOVE:
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: object.left,
-        posY: object.top,
+        posX: normalizedPos(object.left, status.imgWidth),
+        posY: normalizedPos(object.top, status.imgHeight),
       }
       break
-    case EVENT.LINE_UP:
-    case 'arLineEnd':
+    case DRAWING.LINE_UP:
+    case AR_DRAWING.LINE_UP:
       params = {
         aId: aId - 1,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: object.left,
-        posY: object.top,
+        posX: normalizedPos(object.left, status.imgWidth),
+        posY: normalizedPos(object.top, status.imgHeight),
       }
       break
-    case EVENT.TEXT_ADD:
+    case DRAWING.TEXT_ADD:
       params = {
         aId,
         text: object.text,
@@ -175,13 +175,13 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: object.left,
-        posY: object.top,
+        posX: normalizedPos(object.left, status.imgWidth),
+        posY: normalizedPos(object.top, status.imgHeight),
         width: object.width,
         height: object.height,
       }
       break
-    case EVENT.TEXT_UPDATE:
+    case DRAWING.TEXT_UPDATE:
       params = {
         aId,
         tId,
@@ -190,8 +190,8 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: object.left,
-        posY: object.top,
+        posX: normalizedPos(object.left, status.imgWidth),
+        posY: normalizedPos(object.top, status.imgHeight),
         width: object.width,
         height: object.height,
       }
@@ -203,16 +203,15 @@ export const getSignalParams = function getSignalParams(
   }
 
   //calculate scale
-  for (let key in params) {
-    if (['posX', 'posY', 'width', 'height', 'size'].indexOf(key) >= 0) {
-      // console.log(status.scale)
-      params[key] = (params[key] * status.scale).toFixed(2)
-    }
-    if (key === 'size') {
-      params[key] = params[key] * 1.25
-    }
-  }
-  console.log(params)
+  // for (let key in params) {
+  //   if (['width', 'height', 'size'].indexOf(key) >= 0) {
+  //     // console.log(status.scale)
+  //     params[key] = (params[key] * status.scale).toFixed(2)
+  //   }
+  //   if (key === 'size') {
+  //     params[key] = params[key] * 1.25
+  //   }
+  // }
 
   return params
 }
@@ -221,29 +220,35 @@ export const getReceiveParams = function getReceiveParams(type, params) {
   //calculate scale
   if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
   for (let key in params) {
-    if (['posX', 'posY', 'width', 'height', 'size'].indexOf(key) >= 0) {
-      params[key] = parseFloat(params[key]) / params.scale
+    if ('posX' === key) {
+      params['posX'] = originalPos(parseFloat(params['posX']), params.imgWidth)
     }
+    if ('posY' === key) {
+      params['posY'] = originalPos(parseFloat(params['posY']), params.imgHeight)
+    }
+    // if (['width', 'height', 'size'].indexOf(key) >= 0) {
+    //   params[key] = parseFloat(params[key]) / params.scale
+    // }
     if (key === 'size') {
       params[key] = params[key] / 1.25
     }
   }
   switch (type) {
-    case EVENT.LINE_DOWN:
-      console.log(['M', params.posX, params.posY])
+    case DRAWING.LINE_DOWN:
+      // console.log(['M', params.posX, params.posY])
       return ['M', params.posX, params.posY]
-    case EVENT.LINE_MOVE:
-      console.log(['Q', params.posX, params.posY, params.posX, params.posY])
+    case DRAWING.LINE_MOVE:
+      // console.log(['Q', params.posX, params.posY, params.posX, params.posY])
       return ['Q', params.posX, params.posY, params.posX, params.posY]
-    case EVENT.LINE_UP:
-      console.log(['L', params.posX, params.posY])
+    case DRAWING.LINE_UP:
+      // console.log(['L', params.posX, params.posY])
       return ['L', params.posX, params.posY]
     // case 'drawMove':
     //   return {
     //     top: params.posY,
     //     left: params.posX,
     //   }
-    case EVENT.TEXT_ADD:
+    case DRAWING.TEXT_ADD:
       return params
     default:
       return []

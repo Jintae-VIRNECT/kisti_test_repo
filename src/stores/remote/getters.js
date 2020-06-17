@@ -29,6 +29,7 @@ export default {
   fileList: state => state.files.fileList,
   pdfPages: state => state.files.pdfPages,
   shareFile: state => state.files.shareFile,
+  shareArImage: state => state.files.shareArImage,
 
   // setting
   micDevice: state => state.settings.micDevice,
