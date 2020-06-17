@@ -14,6 +14,7 @@ export default {
     const { workspaceList, pageMeta } = await api('GET_WORKSPACES', {
       params: {
         userId: profileServices.getMyProfile().uuid,
+        size: 6,
         ...searchParams,
       },
     })

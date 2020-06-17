@@ -111,9 +111,9 @@ export default {
         })
         this.$emit('changedBirth', birth)
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: this.$t('profile.birthChangeModal.message.fail'),
+          message:
+            this.$t('profile.birthChangeModal.message.fail') + `\n(${e})`,
           position: 'bottom-left',
           duration: 2000,
         })

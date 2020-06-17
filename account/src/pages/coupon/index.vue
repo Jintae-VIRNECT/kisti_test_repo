@@ -136,14 +136,13 @@ export default {
      */
     async addCouponCode() {
       try {
-        await couponService.addCouponCode(this.form.newCouponCode)
+        await couponService.addCouponCode(this.addCouponForm.newCouponCode)
         this.$notify.success({
           message: this.$t('coupon.message.registerSuccess'),
           position: 'bottom-left',
           duration: 2000,
         })
       } catch (e) {
-        console.error(e)
         const code = e.toString().match(/Error: ([0-9]*)/)[1]
         const messages = {
           '2000': this.$t('coupon.message.registerNotExist'),
@@ -151,7 +150,9 @@ export default {
           '2002': this.$t('coupon.message.registerExpired'),
         }
         this.$notify.error({
-          message: messages[code] || this.$t('coupon.message.registerFail'),
+          message:
+            messages[code] ||
+            this.$t('coupon.message.registerFail') + `\n(${e})`,
           position: 'bottom-left',
           duration: 2000,
         })
@@ -183,9 +184,8 @@ export default {
         })
         this.getCoupons()
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: e,
+          message: this.$t('coupon.message.useFail') + `\n(${e})`,
           position: 'bottom-left',
           duration: 2000,
         })

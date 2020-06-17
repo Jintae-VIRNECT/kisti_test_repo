@@ -60,9 +60,9 @@ export default {
         })
         this.$emit('changedNickname', this.form.nickname)
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: this.$t('profile.nicknameChangeModal.message.fail'),
+          message:
+            this.$t('profile.nicknameChangeModal.message.fail') + `\n(${e})`,
           position: 'bottom-left',
           duration: 2000,
         })

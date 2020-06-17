@@ -108,9 +108,9 @@ export default {
           })
           this.$emit('changedPassword')
         } catch (e) {
-          console.error(e)
           this.$notify.error({
-            message: e,
+            message:
+              this.$t('profile.passwordChangeModal.message.fail') + `\n(${e})`,
             position: 'bottom-left',
             duration: 2000,
           })

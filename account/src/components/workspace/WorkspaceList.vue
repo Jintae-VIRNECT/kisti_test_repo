@@ -3,7 +3,7 @@
     <div slot="header">
       <h3>{{ $t('workspace.list.title') }}</h3>
     </div>
-    <el-table :data="workspaces">
+    <el-table ref="table" :data="workspaces">
       <column-default
         :label="$t('workspace.list.column.name')"
         prop="name"
@@ -29,12 +29,12 @@
         :width="150"
         sortable
       />
-      <searchbar-page
-        ref="page"
-        :value.sync="workspacesPage"
-        :total="workspacesTotal"
-      />
     </el-table>
+    <searchbar-page
+      ref="page"
+      :value.sync="workspacesPage"
+      :total="workspacesTotal"
+    />
   </el-card>
 </template>
 
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     changedSearchParams(searchParams) {
-      this.searchUsingPlans(searchParams)
+      this.searchWorkspaces(searchParams)
     },
     async searchWorkspaces(searchParams) {
       const { list, total } = await workspaceService.searchWorkspaces(
