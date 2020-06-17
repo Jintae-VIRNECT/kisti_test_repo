@@ -43,8 +43,11 @@ export default {
     ...mapGetters(['mainView', 'participants']),
   },
   watch: {
-    'mainView.permission': permission => {
-      console.log('get permission value: ', permission)
+    'mainView.permission': 'permissionSetting',
+  },
+  methods: {
+    ...mapActions(['setView']),
+    permissionSetting(permission) {
       if (permission === true) {
         this.setView('ar')
       } else if (permission === false) {
@@ -53,15 +56,12 @@ export default {
         )
       }
     },
-  },
-  methods: {
-    ...mapActions(['setView']),
     permissionCheck() {
       // 웹-웹 테스트용
-      if (web_test) {
-        this.setView('ar')
-        return
-      }
+      // if (web_test) {
+      //   this.setView('ar')
+      //   return
+      // }
       if (!this.mainView || !this.mainView.stream) {
         // TODO: MESSAGE
         this.toastDefault(
