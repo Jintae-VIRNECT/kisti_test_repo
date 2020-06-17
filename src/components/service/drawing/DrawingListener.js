@@ -1,8 +1,7 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
-import { SIGNAL } from 'configs/remote.config'
-import { EVENT } from 'configs/drawing.config'
+import { SIGNAL, DRAWING } from 'configs/remote.config'
 
 export default {
   data() {
@@ -17,24 +16,24 @@ export default {
       if (data.from === this.account.uuid) return
 
       switch (data.type) {
-        case EVENT.LINE_DOWN:
-        case EVENT.LINE_MOVE:
-        case EVENT.LINE_UP:
+        case DRAWING.LINE_DOWN:
+        case DRAWING.LINE_MOVE:
+        case DRAWING.LINE_UP:
           this.drawingLine(data)
           break
-        case EVENT.TEXT_ADD:
+        case DRAWING.TEXT_ADD:
           this.drawingText(data)
           break
-        case EVENT.TEXT_UPDATE:
+        case DRAWING.TEXT_UPDATE:
           this.updateText(data)
           break
-        case EVENT.UNDO:
+        case DRAWING.UNDO:
           this.receiveStackUndo(data)
           break
-        case EVENT.REDO:
+        case DRAWING.REDO:
           this.receiveStackRedo(data)
           break
-        case EVENT.CLEAR_ALL:
+        case DRAWING.CLEAR_ALL:
           this.clearAll(data)
           break
       }
@@ -44,15 +43,19 @@ export default {
         posX: data.posX,
         posY: data.posY,
         scale: 1 / this.canvas.backgroundImage.scaleX,
+        imgWidth: this.canvas.getWidth(),
+        imgHeight: this.canvas.getHeight(),
       }
 
-      if (data.type === EVENT.LINE_DOWN) {
+      if (data.type === DRAWING.LINE_DOWN) {
         this.receivePath = []
       }
+      let receiveParams = getReceiveParams(data.type, params)
 
-      this.receivePath.push(getReceiveParams(data.type, params))
+      this.receivePath.push(receiveParams)
 
-      if (data.type === EVENT.LINE_UP) {
+      if (data.type === DRAWING.LINE_UP) {
+        console.log(params.scale)
         const width = parseInt(data.width) / params.scale
         const pos = calcPosition(this.receivePath, width)
         const path = new fabric.Path(this.receivePath, {
@@ -78,9 +81,11 @@ export default {
       }
     },
     drawingText(data) {
-      const params = getReceiveParams(EVENT.TEXT_ADD, {
+      const params = getReceiveParams(DRAWING.TEXT_ADD, {
         ...data,
         scale: 1 / this.canvas.backgroundImage.scaleX,
+        imgWidth: this.canvas.getWidth(),
+        imgHeight: this.canvas.getHeight(),
       })
       const object = new fabric.IText(data.text, {
         left: params.posX,

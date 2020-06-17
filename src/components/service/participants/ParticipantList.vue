@@ -1,18 +1,18 @@
 <template>
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
-      <div class="participants__view">
+      <transition-group name="list" tag="div" class="participants__view">
         <participant-video
           v-for="participant of participants"
           :key="participant.id"
           :participant="participant"
         ></participant-video>
-        <article v-if="participants.length < max">
+        <article v-if="participants.length < max" key="append">
           <div class="participant-video more" @click="more">
             <p>추가 초대하기</p>
           </div>
         </article>
-      </div>
+      </transition-group>
     </vue2-scrollbar>
   </div>
 </template>
@@ -70,3 +70,14 @@ export default {
   mounted() {},
 }
 </script>
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s;
+}
+.list-enter,
+.list-leave-to {
+  transform: translateX(11.428rem);
+  opacity: 0;
+}
+</style>

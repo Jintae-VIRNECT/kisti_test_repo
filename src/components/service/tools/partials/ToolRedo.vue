@@ -22,7 +22,7 @@ export default {
   methods: {
     clickHandler() {
       this.status = true
-      this.$eventBus.$emit(`control:${this.view}:undo`)
+      this.$eventBus.$emit(`control:${this.view}:redo`)
       setTimeout(() => {
         this.status = false
       }, 100)

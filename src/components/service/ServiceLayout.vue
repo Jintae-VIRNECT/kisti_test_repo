@@ -41,6 +41,11 @@ export default {
       vm.$store.dispatch('callReset')
     })
   },
+  beforeRouteLeave(to, from, next) {
+    next(vm => {
+      vm.$store.commit('clear')
+    })
+  },
   components: {
     HeaderSection,
     SubView,
@@ -62,6 +67,14 @@ export default {
   methods: {},
 
   /* Lifecycles */
+  created() {
+    window.onbeforeunload = () => {
+      return true
+    }
+  },
+  beforeDestroy() {
+    window.onbeforeunload = () => {}
+  },
   mounted() {
     // this.$call.getDevices().then(res => {
     //   console.log(res)

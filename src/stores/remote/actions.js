@@ -19,6 +19,7 @@ export default {
 
   callReset({ commit }) {
     commit(types.CALL_RESET)
+    commit(types.FILE_RESET)
   },
   /**
    * Change Call Mode
@@ -213,6 +214,16 @@ export default {
    */
   showImage({ commit }, fileInfo) {
     commit(types.SHOW_IMAGE, fileInfo)
+  },
+  /**
+   * show image
+   * @param {Object} fileInfo
+   */
+  showArImage({ commit }, fileInfo) {
+    commit(types.SHOW_AR_IMAGE, fileInfo)
+    if (fileInfo && fileInfo.id) {
+      commit(types.CALL_ACTION_SET, ACTION.AR_DRAWING)
+    }
   },
   /**
    * add file history

@@ -1,6 +1,6 @@
 <template>
   <div class="ar-view">
-    <ar-drawing v-if="viewAction === AR_DRAWING"></ar-drawing>
+    <ar-drawing v-if="isDrawing"></ar-drawing>
     <ar-video v-else></ar-video>
   </div>
 </template>
@@ -16,18 +16,15 @@ export default {
     ArVideo,
     ArDrawing,
   },
-  data() {
-    return {
-      AR_DRAWING: ACTION.AR_DRAWING,
-    }
-  },
   computed: {
     ...mapGetters(['viewAction']),
+    isDrawing() {
+      if (this.viewAction === ACTION.AR_DRAWING) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
-  watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

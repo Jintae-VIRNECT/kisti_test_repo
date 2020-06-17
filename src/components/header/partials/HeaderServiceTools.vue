@@ -54,7 +54,6 @@ export default {
     leave() {
       try {
         this.$call.leave()
-
         this.$router.push({ name: 'workspace' })
       } catch (err) {
         this.$router.push({ name: 'workspace' })
