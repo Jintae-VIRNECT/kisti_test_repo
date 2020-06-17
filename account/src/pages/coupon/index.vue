@@ -70,18 +70,15 @@
               </el-tooltip>
             </div>
             <coupon-list
+              ref="table"
               :coupons="coupons"
               @select="couponSelect"
-              @sort="sortCoupons"
             />
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="couponsTotal"
-                @current-change="getCoupons"
-              >
-              </el-pagination>
-            </el-row>
+            <searchbar-page
+              ref="page"
+              :value.sync="coponsPage"
+              :total="couponsTotal"
+            />
           </el-card>
         </el-col>
       </el-row>
@@ -92,37 +89,36 @@
 <script>
 import couponService from '@/services/coupon'
 import CouponList from '@/components/coupon/CouponList'
+import searchMixin from '@/mixins/search'
 
 export default {
+  mixins: [searchMixin],
   components: {
     CouponList,
   },
   data() {
     return {
       coupons: [],
+      coponsPage: 1,
       couponsTotal: 0,
-      searchParams: {
-        page: 1,
-        size: 10,
-        sort: null,
-      },
       addCouponForm: {
         newCouponCode: '',
       },
     }
   },
   methods: {
+    changedSearchParams(searchParams) {
+      console.log(searchParams)
+      this.searchCoupons(searchParams)
+    },
     goGetCouponPage() {
       window.open(`${process.env.PROMOTION_SITE_URL}/coupon`)
     },
     /**
      * 쿠폰 리스트
      */
-    async getCoupons(page) {
-      this.searchParams.page = page || 1
-      const { list, total } = await couponService.getCouponList(
-        this.searchParams,
-      )
+    async searchCoupons(searchParams) {
+      const { list, total } = await couponService.searchCoupons(searchParams)
       this.coupons = list
       this.couponsTotal = total
     },
@@ -197,7 +193,7 @@ export default {
     },
   },
   created() {
-    this.getCoupons()
+    this.searchCoupons()
   },
 }
 </script>
