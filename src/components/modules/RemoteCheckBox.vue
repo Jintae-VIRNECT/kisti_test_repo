@@ -69,9 +69,9 @@ export default {
 }
 
 .checkbox__box {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.688rem;
+  width: 1.4286rem;
+  height: 1.4286rem;
+  margin-right: 0.7857rem;
   border: 1px solid $color_sub_border;
   border-radius: 2px;
   &.active {
@@ -83,6 +83,6 @@ export default {
 
 .checkbox__label {
   color: $color_white;
-  font-size: 0.813rem;
+  font-size: 0.9286rem;
 }
 </style>
