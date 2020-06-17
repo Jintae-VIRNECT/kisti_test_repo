@@ -2,53 +2,6 @@
 export default {
   methods: {
     /**
-     * 이미지 목록 추가 메소드
-     */
-    addHistory(image) {
-      // 모바일 수신부 타입: Int32
-      const imgId = Date.now()
-        .toString()
-        .substr(-9) // getID('history');
-      const ext = 'png'
-      // const imgData = this.fileReader.result //this.canvas.lowerCanvasEl.toDataURL('image/png')
-      const imgData = image.src // this.canvas.lowerCanvasEl.toDataURL('image/png')
-      // const smallImgData = this.resizing(image)
-      const fileName = this.fileReader.fileName
-
-      this.$store
-        .dispatch('addShareDoc', {
-          id: imgId,
-          json: this.canvas.toJSON(),
-          origin: imgData,
-          thumbnail: imgData,
-          fileName: fileName,
-          // scale: this.imageScaled
-        })
-        .then(() => {
-          this.$store
-            .dispatch('selectShareDoc', this.shareDocListLen - 1)
-            .then(() => {
-              this.isInit = true
-            })
-        })
-
-      if (this.$call.session) {
-        const img = new Image()
-        img.onload = event => {
-          this.$call.drawing('showImage', {
-            imgId,
-            ext,
-            fileName: this.fileReader.fileName,
-            width: event.target.width,
-            height: event.target.height,
-            imgData: imgData.replace(/data:image\/.+;base64,/, ''),
-          })
-        }
-        img.src = imgData
-      }
-    },
-
-    /**
      * 이미지 목록 수정 메소드
      */
     updateHistory() {

@@ -37,8 +37,8 @@
 
 <script>
 import DrawingCanvas from './DrawingCanvas'
-import { mapGetters } from 'vuex'
-import { ROLE } from 'configs/remote.config'
+import { mapGetters, mapActions } from 'vuex'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 
 export default {
   name: 'Drawing',
@@ -46,7 +46,9 @@ export default {
     DrawingCanvas,
   },
   data() {
-    return {}
+    return {
+      chunk: [],
+    }
   },
   computed: {
     ...mapGetters(['fileList', 'shareFile']),
@@ -64,6 +66,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['showImage']),
     addFile() {
       this.$eventBus.$emit('addFile')
     },
@@ -80,9 +83,38 @@ export default {
       const file = event.dataTransfer.files[0]
       this.$eventBus.$emit('addFile', file)
     },
+    getImage(receive) {
+      const data = JSON.parse(receive.data)
+      if (data.from === this.account.uuid) return
+
+      if (data.status === 'firstFrame') {
+        this.chunk = []
+      }
+      this.chunk.push(data.chunk)
+
+      if (data.status === 'lastFrame') {
+        this.encodeImage(data.imgId)
+      }
+    },
+    encodeImage(imgId) {
+      let imgUrl = ''
+      for (let part of this.chunk) {
+        imgUrl += part
+      }
+      this.chunk = []
+      imgUrl = 'data:image/png;base64,' + imgUrl
+      const imageInfo = {
+        id: imgId,
+        img: imgUrl,
+      }
+
+      this.showImage(imageInfo)
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.$call.addListener(SIGNAL.SHOW_IMAGE, this.getImage)
+  },
 }
 </script>

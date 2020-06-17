@@ -131,7 +131,7 @@ const _ = {
 
     const chunk = []
     const base64 = imgInfo.img.replace(/data:image\/.+;base64,/, '')
-    const chunkLength = parseInt(base64.length / chunkSize)
+    const chunkLength = Math.ceil(base64.length / chunkSize)
     let start = 0
     for (let i = 0; i < chunkLength; i++) {
       chunk.push(base64.substr(start, chunkSize))

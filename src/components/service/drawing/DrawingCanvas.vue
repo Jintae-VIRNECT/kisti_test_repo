@@ -23,13 +23,10 @@ export default {
   name: 'DrawingCanvas',
   props: {
     file: Object,
-    videoWidth: Number,
-    videoHeight: Number,
     videoVPad: {
       type: Number,
       default: 0,
     },
-    scale: Number,
   },
   mixins: [
     MixinToast,
@@ -62,15 +59,6 @@ export default {
     },
   },
   methods: {
-    /**
-     * 모드 변경 메소드
-     * @param {String} mode :: 변경 모드  // ('line' / 'text' / false)
-     */
-    // changeMode(mode) {
-    //   console.log(mode)
-    //   this.viewAction = mode
-    // },
-
     /* initialize */
     /**
      * 배경이미지 생성 메소드
@@ -98,6 +86,7 @@ export default {
             scaleY: canvasSize.scale,
           })
           canvas.renderAll.bind(canvas)()
+          canvas.renderAll()
 
           resolve(canvas)
         })
@@ -145,15 +134,12 @@ export default {
      */
     initCanvas() {
       this.isInit = false
-      console.log(this.canvas)
       if (this.canvas === null) {
         const canvas = new fabric.Canvas('drawingCanvas', {
           backgroundColor: '#000000',
           isDrawingMode: !!this.viewAction,
           freeDrawingCursor: 'default',
         })
-        // canvas.setWidth(this.videoWidth);
-        // canvas.setHeight(this.videoHeight);
 
         this.canvas = canvas
 
@@ -170,26 +156,19 @@ export default {
       bgImage.onload = () => {
         const fabricImage = new fabric.Image(bgImage)
         this.setBG(fabricImage).then(canvas => {
-          console.log(canvas)
-          console.log(canvas.getWidth(), canvas.getHeight())
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
 
-          // this.addHistory(bgImage)
-
           // 히스토리 초기화
-          // this.stackClear()
+          this.stackClear()
 
           this.isInit = true
         })
       }
       bgImage.onerror = error => {
-        console.log(error)
+        console.error(error)
       }
       bgImage.src = this.file.img
-      // this.resizing(this.file.img).then(result => {
-      //   bgImage.src = result
-      // })
 
       return this.canvas
     },
@@ -207,8 +186,9 @@ export default {
         width: this.tools.lineWidth,
         size: this.tools.fontSize,
         scale: 1 / this.canvas.backgroundImage.scaleX,
+        imgWidth: this.canvas.getWidth(),
+        imgHeight: this.canvas.getHeight(),
       }
-      console.log(state)
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.uId
 
@@ -233,8 +213,32 @@ export default {
         object.tId = aId
       }
     },
+    optimizeCanvasSize() {
+      const canvas = this.canvas
+      const image = canvas.backgroundImage
+      const parent = this.$el.parentNode
+
+      const canvasSize = getCanvasSize(
+        parent.offsetWidth,
+        parent.offsetHeight,
+        image.width,
+        image.height,
+      )
+
+      canvas.setWidth(canvasSize.width)
+      canvas.setHeight(canvasSize.height)
+      canvas.backgroundImage.set({
+        scaleX: canvasSize.scale,
+        scaleY: canvasSize.scale,
+      })
+    },
+  },
+  /* Lifecycles */
+  beforeDestroy() {
+    window.removeEventListener('resize', this.optimizeCanvasSize)
   },
   created() {
+    window.addEventListener('resize', this.optimizeCanvasSize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
