@@ -31,6 +31,10 @@ export default {
       this.$set(this, 'redoList', [])
       this.undoList.push(stack)
       if (this.undoList.length > arCount) {
+        // TODO: MESSAGE
+        this.toastDefault(
+          '최대 30개의 객체를 생성할 수 있습니다. << 문구정의필요',
+        )
         this.undoList.splice(0, 1)
         this.canvas.remove(this.canvas.getObjects()[0])
       }
@@ -78,8 +82,6 @@ export default {
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
       this._sendAction(AR_DRAWING.REDO)
-      console.log('>>undo: ', this.undoList.length)
-      console.log('>>redo: ', this.redoList.length)
 
       return this.redoList.length
     },

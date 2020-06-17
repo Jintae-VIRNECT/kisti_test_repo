@@ -35,7 +35,6 @@ export default {
       isInit: false,
       canvas: null,
       cursor: null,
-      editingMode: false, // check text in editing (true / false)
       receiveUndoList: {},
       receiveRedoList: {},
       undoList: [],
@@ -177,8 +176,9 @@ export default {
         width: this.tools.lineWidth,
         size: this.tools.fontSize,
         scale: 1 / this.canvas.backgroundImage.scaleX,
+        imgWidth: this.canvas.getWidth(),
+        imgHeight: this.canvas.getHeight(),
       }
-      console.log(state)
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.uId
 
@@ -203,13 +203,37 @@ export default {
         object.tId = aId
       }
     },
+    optimizeCanvasSize() {
+      const canvas = this.canvas
+      const image = canvas.backgroundImage
+      const parent = this.$el.parentNode
+
+      const canvasSize = getCanvasSize(
+        parent.offsetWidth,
+        parent.offsetHeight,
+        image.width,
+        image.height,
+      )
+
+      canvas.setWidth(canvasSize.width)
+      canvas.setHeight(canvasSize.height)
+      canvas.backgroundImage.set({
+        scaleX: canvasSize.scale,
+        scaleY: canvasSize.scale,
+      })
+    },
   },
+  /* Lifecycles */
   created() {
+    window.addEventListener('resize', this.optimizeCanvasSize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
       }, 500)
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.optimizeCanvasSize)
   },
 }
 </script>

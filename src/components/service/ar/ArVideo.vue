@@ -38,8 +38,11 @@ import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 import ArPointing from './ArPointing'
 import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
+import toastMixin from 'mixins/toast'
+import web_test from 'utils/testing'
 export default {
   name: 'ARVideo',
+  mixins: [toastMixin],
   components: {
     ArPointing,
   },
@@ -55,6 +58,8 @@ export default {
         return 'area'
       } else if (this.viewAction === ACTION.AR_POINTING) {
         return 'pointing'
+      } else if (this.viewAction === ACTION.AR_DRAWING) {
+        return 'drawing'
       } else {
         return ''
       }
@@ -78,6 +83,19 @@ export default {
       handler() {
         this.optimizeVideoSize()
       },
+    },
+    view(val) {
+      if (val === 'pointing') {
+        this.toastDefault(
+          'AR 3D 화살표를 원하는 위치에 클릭하세요. 최대 30개의 화살표를 생성할 수 있습니다.',
+        )
+      } else if (val === 'area') {
+        this.toastDefault(
+          'AR 영역을 설정합니다. 설정된 영역에서 AR 기능을 실행합니다.',
+        )
+      } else if (val === 'drawing') {
+        this.toastDefault('AR 영역이 설정되었습니다. AR 드로잉을 시작하세요.')
+      }
     },
   },
   methods: {
@@ -110,11 +128,12 @@ export default {
       const data = JSON.parse(receive.data)
 
       // 웹-웹 테스트용
-      // if (data.type === AR_DRAWING.REQUEST_FRAME) {
-      //   console.log('웹-웹 테스트용')
-      //   this.doArCapture()
-      //   return
-      // }
+      if (web_test) {
+        if (data.type === AR_DRAWING.REQUEST_FRAME) {
+          this.doArCapture()
+          return
+        }
+      }
       if (data.from === this.account.uuid) return
 
       // frameResponse 수신
@@ -192,11 +211,15 @@ export default {
   /* Lifecycles */
   created() {
     this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveCapture)
+    window.addEventListener('resize', this.optimizeVideoSize)
   },
   mounted() {
     if (this.resolution && this.resolution.width > 0) {
       this.optimizeVideoSize()
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.optimizeVideoSize)
   },
 }
 </script>
