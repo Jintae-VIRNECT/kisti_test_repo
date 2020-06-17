@@ -36,7 +36,7 @@
         accept="image/jpeg,image/png"
         @change="fileUpload($event)"
       />
-      <input
+      <textarea
         class="chat-input__form-write"
         v-model="inputText"
         placeholder="메시지를 입력하세요."
@@ -124,11 +124,6 @@ export default {
       this.$call.sendChat(this.inputText)
 
       this.inputText = ''
-    },
-    newLine() {
-      console.log('newline')
-      console.log(this.inputText)
-      this.inputText = this.inputText + '\n'
     },
     clickUpload() {
       this.$refs['inputFile'].click()
