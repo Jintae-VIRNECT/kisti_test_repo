@@ -100,14 +100,15 @@ export default {
 			isLogin: null,
 			message: '',
 			token: Cookies.get('accessToken'),
-			rememberEmail: localStorage.getItem('email'),
-			rememberLogin: localStorage.getItem('auto'),
+			rememberEmail: Cookies.get('email'),
+			rememberLogin: Cookies.get('auto'),
 		}
 	},
 	beforeMount() {
 		this.checkToken()
 	},
 	mounted() {
+		console.log(this.rememberEmail)
 		if (this.rememberLogin === 'true') {
 			this.login.autoLogin = true
 		}
@@ -135,17 +136,17 @@ export default {
 		emailRemember(email, check) {
 			if (check == true) {
 				this.rememberEmail = true
-				localStorage.setItem('email', email)
+				Cookies.set('email', email)
 			} else {
-				localStorage.removeItem('email')
+				Cookies.remove('email')
 			}
 		},
 		autoLogin(check) {
 			if (check == true) {
 				this.rememberLogin = true
-				localStorage.setItem('auto', check)
+				Cookies.set('auto', check)
 			} else {
-				localStorage.removeItem('auto')
+				Cookies.remove('auto')
 			}
 		},
 		alertWindow(title, msg, btn) {

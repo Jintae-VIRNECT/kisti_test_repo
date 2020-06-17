@@ -2,21 +2,20 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
-				<h2>회원가입 완료</h2>
-				<p>VIRNECT 회원이 되신 것을 환영합니다.</p>
+				<h2>{{ $t('complete.title') }}</h2>
+				<p>{{ $t('complete.welcome') }}</p>
 
 				<el-button
 					class="next-btn block-btn"
 					@click="trialCoupon"
 					type="primary"
-					>2주 무료 사용</el-button
+					>{{ $t('complete.trial') }}</el-button
 				>
-				<el-button class="next-btn block-btn" type="info">플랜 구매</el-button>
+				<el-button class="next-btn block-btn" type="info">{{
+					$t('complete.payment')
+				}}</el-button>
 
-				<p class="divide">
-					VIRNECT 제품, 서비스는 <br />
-					VIRNECT Workstation에서 시작할 수 있습니다.
-				</p>
+				<p class="divide" v-html="$t('complete.info')"></p>
 				<el-button class="next-btn block-btn" type="info" @click="goWorkstation"
 					>VIRNECT Workstation
 				</el-button>

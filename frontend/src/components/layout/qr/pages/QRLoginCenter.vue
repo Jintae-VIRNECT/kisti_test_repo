@@ -2,13 +2,15 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle">
 			<el-col>
-				<h2>QR 로그인 센터</h2>
-				<p>
-					QR 로그인 센터에서 발급한 로그인용 QR을 <br />인식하여 로그인합니다.
-				</p>
+				<h2>{{ $t('qrLoginCenter.title') }}</h2>
+				<p v-html="$t('qrLoginCenter.pageInfo')"></p>
 
 				<div class="qr-login-body">
-					<p>[로그인용 QR코드<i v-if="isExpire"> 만료</i>]</p>
+					<p>
+						[{{ $t('qrLoginCenter.loginRole')
+						}}<i v-if="isExpire"> {{ $t('qrLoginCenter.expire') }}</i
+						>]
+					</p>
 					<div class="qr-image-box" :class="{ 'code-expire': isExpire }">
 						<img
 							v-if="qrImage"
@@ -16,16 +18,19 @@
 							alt="qrcode image"
 							class="qrcode--image__inner"
 						/>
-						<p v-if="isExpire">QR코드를 갱신해 주세요.</p>
+						<p v-if="isExpire">{{ $t('qrLoginCenter.renewalCode') }}</p>
 					</div>
-					<p>유효시간</p>
+					<p>{{ $t('qrLoginCenter.effectiveTime') }}</p>
 					<p class="qr-expire-count">{{ showTime }}</p>
-					<el-button class="next-btn block-btn" @click="reset()" type="primary"
-						>QR 코드 갱신</el-button
+					<el-button
+						class="next-btn block-btn"
+						@click="reset()"
+						type="primary"
+						>{{ $t('qrLoginCenter.resendCode') }}</el-button
 					>
 				</div>
 				<div class="howto-qr-login">
-					<p class="title">QR 로그인 방법</p>
+					<p class="title">{{ $t('qrLoginCenter.howToLogin') }}</p>
 					<div>
 						<ol>
 							<li v-for="(list, idx) of $t('qrLogin.centerHowTo')" :key="idx">
@@ -34,7 +39,7 @@
 								</p>
 							</li>
 						</ol>
-						<p>* QR 로그인 기능은 지원 가능 기기에서만 제공됩니다.</p>
+						<p>{{ $t('qrLoginCenter.LoginInfo') }}</p>
 					</div>
 				</div>
 			</el-col>

@@ -1,11 +1,13 @@
 RELEASE
 
 New Features
-푸터내용 업데이트
-헤더 업데이트
-languages.json 파일 생성
+healthcheck 추가
+서비스 이용 약관 업데이트
 
 Bug Fixes
-SW1904SV-906: gif 배열에서 제거
+/find/email
+/find/reset_password
+/healthcheck
+라우터맵핑 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
