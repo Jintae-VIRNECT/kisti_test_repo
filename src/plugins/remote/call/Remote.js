@@ -3,6 +3,7 @@ import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE } from 'configs/remote.config'
+import { allowCamera } from 'utils/testing'
 
 let OV
 
@@ -20,11 +21,7 @@ const _ = {
     _.account = account
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
-    if (
-      ['test6@test.com', 'test25@test.com', 'test26@test.com'].includes(
-        account.email,
-      )
-    ) {
+    if (allowCamera.includes(account.email)) {
       allowUser = true
     }
     try {
@@ -63,12 +60,13 @@ const _ = {
         JSON.stringify(metaData),
         iceServers,
       )
+      const publishVideo = role === ROLE.WORKER || allowUser
 
       _.publisher = OV.initPublisher('', {
         audioSource: undefined, // TODO: setting value
         videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
-        publishVideo: role === ROLE.WORKER || allowUser,
+        publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
@@ -77,11 +75,13 @@ const _ = {
       _.publisher.on('streamCreated', () => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
         _.mic(Store.getters['mic'])
-      })
-      _.publisher.on('streamPropertyChanged', event => {
-        console.log(event)
-        // Store.commit('addStream', getUserObject(_.publisher.stream))
-        // _.mic(Store.getters['mic'])
+        if (publishVideo) {
+          Store.commit('updateResolution', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            width: 0,
+            height: 0,
+          })
+        }
       })
 
       _.session.publish(_.publisher)
@@ -93,7 +93,6 @@ const _ = {
   },
   leave: () => {
     try {
-      Store.commit('clear')
       _.session.disconnect()
       _.session = null
       _.publisher = null
@@ -142,7 +141,6 @@ const _ = {
       else if (i === chunk.length - 1) params.status = 'lastFrame'
       else params.status = 'frame'
       params.chunk = chunk[i]
-      console.log(params)
       _.session.signal({
         data: JSON.stringify(params),
         to: _.session.connection,

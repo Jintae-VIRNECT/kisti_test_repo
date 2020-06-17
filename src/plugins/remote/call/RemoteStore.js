@@ -1,11 +1,7 @@
 const getDefaultState = () => {
   return {
-    mainView: {
-      // nickname: nickname,
-      // userName: name
-      // stream: '',
-      // uuid: ''
-    },
+    initing: true,
+    mainView: {},
     participants: [
       // id: uuid,
       // stream: MediaStream,
@@ -17,7 +13,7 @@ const getDefaultState = () => {
       // status: 'good',
       // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
-      // permission: false
+      // permission: 'default' / 'noAR' / false / true
     ],
     chatList: [
       // {
@@ -55,11 +51,11 @@ const mutations = {
   },
   addStream(state, payload) {
     if (payload.me) {
-      console.log(state.mainView, payload)
       state.participants.splice(0, 0, payload)
       if (payload.video) {
         state.mainView = payload
       }
+      state.initing = false
       return
     }
     state.participants.push(payload)
@@ -131,14 +127,12 @@ const mutations = {
         console.log(state.mainView)
       }
     }
-    console.log(state.resolutions)
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(
       obj => obj.connectionId === connectionId,
     )
     if (rIdx < 0) return
     state.resolutions.splice(rIdx, 1)
-    console.log(state.resolutions)
   },
 
   // device control
@@ -147,12 +141,15 @@ const mutations = {
       state[key] = object[key]
     }
   },
-  agreePermission(state, id) {
-    const idx = state.participants.findIndex(user => user.id === id)
+  agreePermission(state, param) {
+    const idx = state.participants.findIndex(user => user.id === param.id)
     if (idx < 0) {
       return
     }
-    state.participants[idx].permission = true
+    state.participants[idx].permission = param.value
+    if (state.participants[idx].id === state.mainView.id) {
+      state.mainView.permission = param.value
+    }
   },
   updateResolution(state, payload) {
     const idx = state.resolutions.findIndex(
@@ -190,6 +187,7 @@ const getters = {
   participants: state => state.participants,
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
+  initing: state => state.initing,
 }
 
 export default {

@@ -7,6 +7,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
+import { ROLE } from 'configs/remote.config'
 
 import { getCanvasSize, getSignalParams } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
@@ -137,7 +138,8 @@ export default {
       if (this.canvas === null) {
         const canvas = new fabric.Canvas('drawingCanvas', {
           backgroundColor: '#000000',
-          isDrawingMode: !!this.viewAction,
+          isDrawingMode:
+            !!this.viewAction && this.account.roleType === ROLE.EXPERT_LEADER,
           freeDrawingCursor: 'default',
         })
 
