@@ -80,6 +80,13 @@
   &.active {
     background: rgba(169, 169, 169, 0.2);
   }
+  &.active:hover {
+    cursor: default;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .chat-header__selector--text {
