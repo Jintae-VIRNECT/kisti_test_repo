@@ -114,7 +114,7 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.SHOW_IMAGE, this.getImage)
+    this.$call.addListener(SIGNAL.DRAWING, this.getImage)
   },
 }
 </script>

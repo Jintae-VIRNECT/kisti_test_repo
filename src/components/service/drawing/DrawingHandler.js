@@ -1,5 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
-import { EVENT } from 'configs/drawing.config'
+import { DRAWING } from 'configs/remote.config'
 
 export default {
   data() {
@@ -174,7 +174,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(EVENT.LINE_DOWN, object)
+          this._sendAction(DRAWING.LINE_DOWN, object)
         }
       })
 
@@ -201,7 +201,7 @@ export default {
               left: mouse.x,
               top: mouse.y,
             }
-            this._sendAction(EVENT.LINE_MOVE, object)
+            this._sendAction(DRAWING.LINE_MOVE, object)
           }
 
           if (cursor) {
@@ -230,7 +230,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(EVENT.LINE_UP, object)
+          this._sendAction(DRAWING.LINE_UP, object)
         }
 
         // 텍스트 삽입

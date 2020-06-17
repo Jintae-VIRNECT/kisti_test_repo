@@ -144,7 +144,7 @@ const _ = {
       _.session.signal({
         data: JSON.stringify(params),
         to: _.session.connection,
-        type: SIGNAL.SHOW_IMAGE,
+        type: SIGNAL.DRAWING,
       })
     }
   },

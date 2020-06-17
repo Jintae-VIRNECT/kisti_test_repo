@@ -2,7 +2,6 @@ export const SIGNAL = {
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
   POINTING: 'signal:pointing',
-  SHOW_IMAGE: 'signal:showImage',
   DRAWING: 'signal:drawing',
   APP: 'signal:app',
   CAMERA: 'signal:camera',
