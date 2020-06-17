@@ -9,48 +9,32 @@
         <h2>{{ $t('menu.workspace') }}</h2>
         <p>{{ $t('workspace.desc') }}</p>
       </div>
+      <!-- 워크스페이스 리스트 -->
       <el-card class="el-card--table">
         <div slot="header">
-          <h3>전체 워크스페이스 정보</h3>
+          <h3>{{ $t('workspace.list.title') }}</h3>
         </div>
-        <el-table :data="workspaces">
-          <column-default
-            :label="$t('workspace.column.name')"
-            prop="name"
-            sortable
-          />
-          <column-user
-            :label="$t('workspace.column.master')"
-            prop="masterNickName"
-            nameProp="masterNickName"
-            imageProp="masterProfile"
-            :width="120"
-            sortable
-          />
-          <column-date
-            :label="$t('workspace.column.joinDate')"
-            prop="joinDate"
-            :width="100"
-            sortable
-          />
-          <column-role
-            :label="$t('workspace.column.role')"
-            prop="role"
-            :width="150"
-            sortable
-          />
-          <!-- <column-plan
-            :label="$t('workspace.column.plan')"
-            nameProp="planName"
-            gradeProp="planGrade"
-            :width="170"
-          /> -->
-        </el-table>
+        <workspace-list :workspaces="workspaces" />
         <el-row type="flex" justify="center">
           <el-pagination
             layout="prev, pager, next"
             :total="workspacesTotal"
-            @current-change="getWorkspaces"
+            @current-change="searchWorkspaces"
+          >
+          </el-pagination>
+        </el-row>
+      </el-card>
+      <!-- 플랜 리스트 -->
+      <el-card class="el-card--table">
+        <div slot="header">
+          <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
+        </div>
+        <using-plan-list :plans="plans" />
+        <el-row type="flex" justify="center">
+          <el-pagination
+            layout="prev, pager, next"
+            :total="plansTotal"
+            @current-change="searchUsingPlans"
           >
           </el-pagination>
         </el-row>
@@ -61,10 +45,14 @@
 
 <script>
 import workspaceService from '@/services/workspace'
-import columnMixin from '@/mixins/columns'
+import WorkspaceList from '@/components/workspace/WorkspaceList'
+import UsingPlanList from '@/components/workspace/UsingPlanList'
 
 export default {
-  mixins: [columnMixin],
+  components: {
+    WorkspaceList,
+    UsingPlanList,
+  },
   data() {
     return {
       searchParams: {
@@ -74,27 +62,37 @@ export default {
       },
       workspaces: [],
       workspacesTotal: 0,
+      plans: [],
+      plansTotal: 0,
     }
   },
   methods: {
-    async getWorkspaces() {
-      const { list, total } = await workspaceService.getWorkspaceList(
+    async searchWorkspaces() {
+      const { list, total } = await workspaceService.searchWorkspaces(
         this.searchParams,
       )
       this.workspaces = list
-      // this.workspacesTotal = total
+      this.workspacesTotal = total
+    },
+    async searchUsingPlans() {
+      const { list, total } = await workspaceService.searchUsingPlans(
+        this.searchParams,
+      )
+      this.plans = list
+      this.plansTotal = total
     },
   },
   beforeMount() {
-    this.getWorkspaces()
+    this.searchWorkspaces()
+    this.searchUsingPlans()
   },
 }
 </script>
 
 <style lang="scss">
-#workspace {
-  .el-table {
-    min-height: 450px;
+#__nuxt #workspace {
+  .el-table__body-wrapper {
+    min-height: 384px;
   }
 }
 </style>

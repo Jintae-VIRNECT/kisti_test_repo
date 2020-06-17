@@ -51,10 +51,18 @@
         <el-progress
           :percentage="capacityUsed.default"
           type="circle"
+          :show-text="false"
           :stroke-width="12"
           stroke-linecap="butt"
           :width="192"
         />
+        <div class="progress-text">
+          <span>{{ $t(`${usedI18n}.maxShort`) }}</span>
+          <span>
+            {{ capacityUsed.max }}
+            {{ $t(`${usedI18n}.unit`) }}
+          </span>
+        </div>
         <dl>
           <dt>{{ $t(`${usedI18n}.max`) }}</dt>
           <dd>
@@ -155,7 +163,8 @@ export default {
   // 용량
   .el-row:nth-child(2) {
     padding-top: 38px;
-    .el-progress-circle {
+    .el-progress-circle,
+    .progress-text {
       margin-top: 20px;
       margin-left: -6px;
     }
@@ -164,6 +173,24 @@ export default {
     }
     .el-progress-circle path:last-child {
       stroke: #007cfe;
+    }
+    .el-col {
+      position: relative;
+    }
+    .progress-text {
+      position: absolute;
+      top: 33%;
+      width: 192px;
+      height: 192px;
+      text-align: center;
+      & > span {
+        display: block;
+        font-size: 12px;
+      }
+      & > span:last-child {
+        font-size: 24px;
+        line-height: 30px;
+      }
     }
     dl {
       float: right;

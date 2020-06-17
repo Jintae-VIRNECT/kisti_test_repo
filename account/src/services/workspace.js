@@ -1,6 +1,7 @@
 import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 import Workspace from '@/models/workspace/Workspace'
+import Plan from '@/models/workspace/Plan'
 import profileServices from '@/services/profile'
 
 function getMyWorkspaces() {
@@ -9,7 +10,7 @@ function getMyWorkspaces() {
 
 export default {
   getMyWorkspaces,
-  async getWorkspaceList(searchParams) {
+  async searchWorkspaces(searchParams) {
     const { workspaceList, pageMeta } = await api('GET_WORKSPACES', {
       params: {
         userId: profileServices.getMyProfile().uuid,
@@ -18,7 +19,14 @@ export default {
     })
     return {
       list: workspaceList.map(workspace => new Workspace(workspace)),
-      // total: pageMeta.totalElements,
+      total: pageMeta.totalElements,
+    }
+  },
+  async searchUsingPlans(searchParams) {
+    const data = [0, 1, 2, 3, 4]
+    return {
+      list: data.map(plan => new Plan(plan)),
+      total: data.length,
     }
   },
 }
