@@ -7,15 +7,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
-import { ROLE } from 'configs/remote.config'
 
 import { getCanvasSize, getSignalParams } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
 import DrawingObject from './DrawingObject'
-import DrawingHistory from './DrawingHistory'
 import DrawingStack from './DrawingStack'
 import DrawingHandler from './DrawingHandler'
-import DrawingListener from './DrawingListener'
 
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
@@ -24,19 +21,13 @@ export default {
   name: 'DrawingCanvas',
   props: {
     file: Object,
-    videoVPad: {
-      type: Number,
-      default: 0,
-    },
   },
   mixins: [
     MixinToast,
     DrawingWatch,
     DrawingObject,
-    DrawingHistory,
     DrawingStack,
     DrawingHandler,
-    DrawingListener,
   ],
   data() {
     return {
@@ -44,17 +35,14 @@ export default {
       isInit: false,
       canvas: null,
       cursor: null,
-      // viewAction: 'line', // ('line' / 'text' / false)
-      editingMode: false, // check text in editing (true / false)
-      undoList: [],
       receiveUndoList: {},
-      redoList: [],
       receiveRedoList: {},
-      history: [],
+      undoList: [],
+      redoList: [],
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view']),
     uuid() {
       return this.account.uuid
     },
@@ -87,7 +75,6 @@ export default {
             scaleY: canvasSize.scale,
           })
           canvas.renderAll.bind(canvas)()
-          canvas.renderAll()
 
           resolve(canvas)
         })
@@ -138,10 +125,11 @@ export default {
       if (this.canvas === null) {
         const canvas = new fabric.Canvas('drawingCanvas', {
           backgroundColor: '#000000',
-          isDrawingMode:
-            !!this.viewAction && this.account.roleType === ROLE.EXPERT_LEADER,
+          isDrawingMode: true,
           freeDrawingCursor: 'default',
         })
+        // canvas.setWidth(this.videoWidth);
+        // canvas.setHeight(this.videoHeight);
 
         this.canvas = canvas
 
@@ -168,7 +156,7 @@ export default {
         })
       }
       bgImage.onerror = error => {
-        console.error(error)
+        console.log(error)
       }
       bgImage.src = this.file.img
 
@@ -203,7 +191,7 @@ export default {
       }
 
       if (this.$call.session) {
-        this.$call.drawing(type, { ...param, ...custom })
+        this.$call.arDrawing(type, { ...param, ...custom })
       }
 
       // tId 업데이트
@@ -236,9 +224,6 @@ export default {
     },
   },
   /* Lifecycles */
-  beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeCanvasSize)
-  },
   created() {
     window.addEventListener('resize', this.optimizeCanvasSize)
     if (this.file && this.file.id) {
@@ -246,6 +231,9 @@ export default {
         this.initCanvas()
       }, 500)
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.optimizeCanvasSize)
   },
 }
 </script>

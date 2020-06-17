@@ -1,5 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
-import { EVENT } from 'configs/drawing.config'
+import { DRAWING } from 'configs/remote.config'
 
 export default {
   data() {
@@ -29,7 +29,6 @@ export default {
       canvas.on('object:added', event => {
         console.log('[Fabric] Object added')
         const object = event.target
-        console.log(object)
 
         const objID = canvas.getObjects().length - 1
 
@@ -175,7 +174,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(EVENT.LINE_DOWN, object)
+          this._sendAction(DRAWING.LINE_DOWN, object)
         }
       })
 
@@ -202,7 +201,7 @@ export default {
               left: mouse.x,
               top: mouse.y,
             }
-            this._sendAction(EVENT.LINE_MOVE, object)
+            this._sendAction(DRAWING.LINE_MOVE, object)
           }
 
           if (cursor) {
@@ -222,8 +221,6 @@ export default {
           this.removeObject(event.target)
           return false
         }
-        // console.log(canvas.onDrag)
-        // console.log(this.viewAction)
 
         if (canvas.onDrag === true) {
           canvas.onDrag = false
@@ -233,7 +230,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(EVENT.LINE_UP, object)
+          this._sendAction(DRAWING.LINE_UP, object)
         }
 
         // 텍스트 삽입
@@ -338,7 +335,6 @@ export default {
 
   /* Lifecycles */
   created() {
-    // this.$eventBus.$on(`control:${this.view}:mode`, this.changeMode)
     this.$eventBus.$on(`control:${this.view}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${this.view}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${this.view}:clear`, this.drawingClear)
@@ -350,7 +346,6 @@ export default {
     // window.addEventListener('resize', this.resizeEventHandler)
   },
   beforeDestroy() {
-    // this.$eventBus.$off(`control:${this.view}:mode`, this.changeMode)
     this.$eventBus.$off(`control:${this.view}:undo`, this.stackUndo)
     this.$eventBus.$off(`control:${this.view}:redo`, this.stackRedo)
     this.$eventBus.$off(`control:${this.view}:clear`, this.drawingClear)

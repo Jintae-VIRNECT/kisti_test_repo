@@ -4,8 +4,8 @@
   box-shadow: none;
 }
 .modal.local-recsetting-modal .modal--header {
-  height: 2.813rem;
-  padding: 0.75rem 0.688rem 0 0;
+  height: 3.2143rem;
+  padding: 0.8571rem 0.7857rem 0 0;
   background-color: $color_darkgray_500;
   border-bottom: none;
 }
@@ -15,63 +15,67 @@
 }
 
 .rec-setting__header {
-  margin-bottom: 1.625rem;
+  margin-bottom: 1.4286rem;
   color: $color_white;
-  font-size: 1.125rem;
+  font-size: 1.2857rem;
 }
 
 .rec-setting__row {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 .rec-setting__text {
-  width: 12.875rem;
+  width: 12.8571rem;
   color: $color_text_main;
-  font-size: 0.875rem;
+  font-size: 1rem;
 
   &.custom {
     display: flex;
+    align-items: center;
   }
 
   > p {
-    margin: 0px 4px 0px 0px;
+    margin: 0px 0.2857rem 0px 0px;
     color: $color_text_main;
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 }
 
 .rec-setting__selector {
   align-items: flex-start;
-  width: 21rem;
+  width: 24rem;
+  .radio-group {
+    height: 2.4286rem;
+  }
 }
 
 .rec-setting__underbar {
-  margin: 2.313rem 0rem 2.375rem 0px;
+  margin: 2.6429rem 0rem 2.7143rem 0px;
   border-bottom-color: #454548;
   border-bottom-width: 1px;
   border-bottom-style: solid;
 }
 .rec-setting--tooltip-icon {
-  width: 18px;
-  height: 18px;
+  width: 1.2857rem;
+  height: 1.3214rem;
   background: url("~assets/image/ic_tool_tip.svg") center no-repeat;
 }
 .rec-setting__tooltip--body {
   position: absolute;
-  left: 110px;
+  left: 7.8571rem;
   z-index: 9999;
-  width: 342px;
-  height: 68px;
-  padding: 16px 24px 16px 28px;
+  width: 24.4286rem;
+  height: 4.8571rem;
+  padding: 1.1429rem 1.7143rem 1.1429rem 2rem;
   background: url("~assets/image/img_tooltip_big.svg") center no-repeat;
 }
 
 .rec-setting__tooltip--text {
   color: #ffffff;
-  font-size: 12px;
+  font-size: 0.8571rem;
 }
 
 /*custom remote radio */
@@ -81,12 +85,12 @@
     padding: 0;
 
     .radio-option:not(:first-of-type) {
-      padding-left: 26px;
+      padding-left: 1.8571rem;
     }
   }
 }
 .modal.local-recsetting-modal {
   .modal--body {
-    padding: 0 18px 0 30px;
+    padding: 0 1.2857rem 0 2.1429rem;
   }
 }

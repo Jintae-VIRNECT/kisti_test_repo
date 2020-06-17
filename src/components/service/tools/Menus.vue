@@ -1,8 +1,8 @@
 <template>
   <div class="stream-menu menus">
-    <capture></capture>
-    <record></record>
-    <local-record></local-record>
+    <capture :disabled="!isMainView"></capture>
+    <record :disabled="!isMainView"></record>
+    <local-record :disabled="!isMainView"></local-record>
     <local-record-list></local-record-list>
     <setting></setting>
   </div>
@@ -16,6 +16,7 @@ import {
   Setting,
   LocalRecordList,
 } from './partials'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Menus',
@@ -32,7 +33,16 @@ export default {
       isRecording: false,
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['mainView']),
+    isMainView() {
+      if (!(this.mainView && this.mainView.id)) {
+        return false
+      } else {
+        return true
+      }
+    },
+  },
   watch: {},
   methods: {},
 

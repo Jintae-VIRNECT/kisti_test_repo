@@ -15,6 +15,8 @@ import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX } from 'utils/color'
 import { ACTION } from 'configs/view.config'
+import { normalizedPos } from 'utils/normalize'
+import toastMixin from 'mixins/toast'
 
 function hexToLottie(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16) / 255,
@@ -34,6 +36,7 @@ function hexToLottie(hex, alpha) {
 
 export default {
   name: 'ARPointing',
+  mixins: [toastMixin],
   data() {
     return {
       radius: '60',
@@ -64,18 +67,6 @@ export default {
       }
       return this.resolutions[idx]
     },
-    widthScale() {
-      if (this.resolution && this.resolution.width > 0) {
-        return this.$el.offsetWidth / this.resolution.width
-      }
-      return 1
-    },
-    heightScale() {
-      if (this.resolution && this.resolution.height > 0) {
-        return this.$el.offsetHeight / this.resolution.height
-      }
-      return 1
-    },
   },
   methods: {
     stateControl() {
@@ -93,8 +84,8 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: (event.offsetX / this.widthScale).toFixed(2),
-        posY: (event.offsetY / this.heightScale).toFixed(2),
+        posX: normalizedPos(event.offsetX, this.resolution.width),
+        posY: normalizedPos(event.offsetY, this.resolution.height),
       })
     },
   },

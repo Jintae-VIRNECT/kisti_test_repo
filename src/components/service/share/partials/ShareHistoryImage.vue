@@ -39,6 +39,7 @@ export default {
     ...mapActions(['showImage', 'removeHistory']),
     show() {
       this.showImage(this.imgInfo)
+      this.$call.shareImage(this.imgInfo)
     },
     deleteImage() {
       if (this.shareFile.id === this.imgInfo.id) return

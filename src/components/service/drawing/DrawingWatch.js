@@ -76,48 +76,5 @@ export default {
         this.cursor.setRadius(size / 2)
       }
     },
-    // shareDocSelect: {
-    //   handler(select, oldSelect) {
-    //     if (select && oldSelect && select.id !== oldSelect.id) {
-    //       if (this.canvas) {
-    //         this.canvas.discardActiveObject()
-    //       }
-    //     }
-
-    //     if (select) {
-    //       const canvas = this.canvas
-    //       const json = select.json
-
-    //       if (
-    //         oldSelect === null ||
-    //         JSON.stringify(canvas.toJSON()) !== JSON.stringify(json)
-    //       ) {
-    //         canvas.loadFromJSON(json, () => {
-    //           const parent = this.$el.parentNode
-    //           const canvasSize = getCanvasSize(
-    //             parent.offsetWidth,
-    //             parent.offsetHeight,
-    //             json.backgroundImage.width,
-    //             json.backgroundImage.height,
-    //           )
-    //           canvas.setWidth(canvasSize.width)
-    //           canvas.setHeight(canvasSize.height)
-    //           canvas.backgroundImage.set({
-    //             scaleX: canvasSize.scale,
-    //             scaleY: canvasSize.scale,
-    //           })
-    //           canvas.renderAll.bind(canvas)()
-
-    //           this.stackClear()
-
-    //           if (this.canvas.getObjects().length > 0) {
-    //             this.stackAddFirst()
-    //           }
-    //         })
-    //       }
-    //     }
-    //   },
-    //   deep: true,
-    // },
   },
 }

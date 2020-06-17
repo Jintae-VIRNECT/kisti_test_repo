@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import {
+  FILE_RESET,
   SHOW_IMAGE,
+  SHOW_AR_IMAGE,
   ADD_HISTORY,
   UPDATE_HISTORY,
   REMOVE_HISTORY,
@@ -16,11 +18,23 @@ const state = {
   pdfPages: {},
   selected: null,
   shareFile: {},
+  shareArImage: {},
 }
 
 const mutations = {
+  [FILE_RESET](state) {
+    state.historyList = []
+    state.fileList = []
+    state.pdfPages = {}
+    state.selected = null
+    state.shareFile = {}
+    state.shareArImage = {}
+  },
   [SHOW_IMAGE](state, imgInfo) {
     state.shareFile = Object.assign({}, imgInfo)
+  },
+  [SHOW_AR_IMAGE](state, imgInfo) {
+    state.shareArImage = Object.assign({}, imgInfo)
   },
   [ADD_HISTORY](state, imgInfo) {
     // const idx = state.historyList.findIndex(history => history.id === file.id)

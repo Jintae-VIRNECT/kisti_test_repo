@@ -18,3 +18,30 @@ export const ROLE = {
   EXPERT: 'EXPERT',
   WORKER: 'WORKER',
 }
+
+export const DRAWING = {
+  LINE_DOWN: 'drawLineDown',
+  LINE_MOVE: 'drawLineMove',
+  LINE_UP: 'drawLineUp',
+  TEXT_ADD: 'drawText',
+  TEXT_UPDATE: 'updateText',
+  UNDO: 'drawUndo',
+  REDO: 'drawRedo',
+  CLEAR_ALL: 'drawClearAll',
+}
+
+export const AR_DRAWING = {
+  REQUEST_FRAME: 'requestFrame',
+  FRAME_RESPONSE: 'frameResponse',
+  RECEIVE_FRAME: 'receivedFrame',
+
+  START_DRAWING: 'startArDrawing',
+  END_DRAWING: 'endArDrawing',
+
+  LINE_DOWN: 'arDrawLineDown',
+  LINE_MOVE: 'arDrawLineMove',
+  LINE_UP: 'arDrawLineUp',
+  UNDO: 'arDrawRedo',
+  REDO: 'arDrawUndo',
+  CLEAR_ALL: 'arDrawClearAll',
+}

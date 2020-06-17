@@ -47,7 +47,9 @@ export const SEARCH_SORT = 'SEARCH_SORT'
 export const SEARCH_FILTER = 'SEARCH_FILTER'
 
 // file sharing
+export const FILE_RESET = 'FILE_RESET'
 export const SHOW_IMAGE = 'SHOW_IMAGE'
+export const SHOW_AR_IMAGE = 'SHOW_AR_IMAGE'
 export const ADD_HISTORY = 'ADD_HISTORY'
 export const UPDATE_HISTORY = 'UPDATE_HISTORY'
 export const REMOVE_HISTORY = 'REMOVE_HISTORY'

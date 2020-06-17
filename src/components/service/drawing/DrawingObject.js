@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { EVENT } from 'configs/drawing.config'
+import { DRAWING } from 'configs/remote.config'
 export default {
   data() {
     return {
@@ -42,10 +42,10 @@ export default {
           object.canvas.remove(object)
         } else {
           if (object.initialized) {
-            this._sendAction(EVENT.TEXT_UPDATE, object)
+            this._sendAction(DRAWING.TEXT_UPDATE, object)
             this.stackAdd('text', object.id)
           } else {
-            this._sendAction(EVENT.TEXT_ADD, object)
+            this._sendAction(DRAWING.TEXT_ADD, object)
             this.stackAdd('add', object.id)
           }
           object.initialized = true
@@ -116,7 +116,7 @@ export default {
         this.stackClear() // 전체 삭제
 
         if (this.$call) {
-          this.$call.drawing(EVENT.CLEAR_ALL, { imgId: this.file.id })
+          this.$call.drawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
         }
       }
     },

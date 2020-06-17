@@ -28,32 +28,43 @@
           </transition>
         </template>
       </template>
-      <template v-else>
-        <div class="main-video__empty">
-          <div class="main-video__empty-inner" v-if="resolutions.length > 0">
-            <img src="~assets/image/img_video_connecting.svg" />
-            <p>영상 연결 중…</p>
-          </div>
-          <div class="main-video__empty-inner" v-else-if="false">
-            <img src="~assets/image/img_video_stop.svg" />
-            <p>영상을 정지하였습니다.</p>
-            <p class="inner-discription" v-if="true">
-              작업자의 Remote App이<br />백그라운드 상태입니다.
-            </p>
-            <p class="inner-discription" v-else>
-              작업자의 영상이 일시정지 상태입니다.
-            </p>
-          </div>
-          <div class="main-video__empty-inner" v-else>
-            <img src="~assets/image/img_novideo.svg" />
-            <p>출력 할 영상이 없습니다.</p>
-            <p class="inner-discription">
-              접속중인 작업자가 없습니다.
-            </p>
-          </div>
-        </div>
-      </template>
     </div>
+    <div class="main-video__empty" v-if="!loaded">
+      <transition name="opacity">
+        <div class="main-video__empty-inner" v-if="resolutions.length > 0">
+          <img src="~assets/image/img_video_connecting.svg" />
+          <p>영상 연결 중…</p>
+        </div>
+        <div class="main-video__empty-inner" v-else-if="false">
+          <img src="~assets/image/img_video_stop.svg" />
+          <p>영상을 정지하였습니다.</p>
+          <p class="inner-discription" v-if="true">
+            작업자의 Remote App이<br />백그라운드 상태입니다.
+          </p>
+          <p class="inner-discription" v-else>
+            작업자의 영상이 일시정지 상태입니다.
+          </p>
+        </div>
+        <div class="main-video__empty-inner" v-else>
+          <img src="~assets/image/img_novideo.svg" />
+          <p>출력 할 영상이 없습니다.</p>
+          <p class="inner-discription">
+            접속중인 작업자가 없습니다.
+          </p>
+        </div>
+      </transition>
+      <transition name="opacity">
+        <div class="main-video__empty-inner loading" v-if="initing">
+          <img src="~assets/image/gif_loading.svg" />
+        </div>
+      </transition>
+    </div>
+    <capture-modal
+      v-if="imgBlob"
+      :imgUrl="imgBlob"
+      @close="imgBlob = ''"
+      @recapture="doCapture"
+    ></capture-modal>
   </div>
 </template>
 
@@ -63,11 +74,13 @@ import { ACTION } from 'configs/view.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
+import CaptureModal from '../modal/CaptureModal'
 export default {
   name: 'MainVideo',
   components: {
     Pointing,
     VideoTools,
+    CaptureModal,
   },
   data() {
     return {
@@ -75,6 +88,7 @@ export default {
       showTools: false,
       loaded: false,
       STREAM_POINTING: ACTION.STREAM_POINTING,
+      imgBlob: '',
     }
   },
   computed: {
@@ -83,12 +97,13 @@ export default {
       speaker: 'speaker',
       viewAction: 'viewAction',
       resolutions: 'resolutions',
+      initing: 'initing',
     }),
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
       )
-      if (idx < 0) {
+      if (idx < 0 || this.resolutions.width * this.resolutions.height === 0) {
         return {
           width: 0,
           height: 0,
@@ -140,7 +155,6 @@ export default {
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
-      console.log(maxWidth)
       let scale = this.resolution.width / this.resolution.height
       if (
         this.resolution.width / this.resolution.height <
@@ -155,7 +169,7 @@ export default {
         videoBox.style.width = maxWidth + 'px'
       }
     },
-    capture() {
+    doCapture() {
       const videoEl = this.$el.querySelector('#main-video')
 
       const width = videoEl.offsetWidth
@@ -166,31 +180,22 @@ export default {
       tmpCanvas.height = height
 
       const tmpCtx = tmpCanvas.getContext('2d')
-      tmpCtx.drawImage(videoEl, 0, 0, width, height)
+
+      tmpCtx.drawImage(this.$refs['mainVideo'], 0, 0, width, height)
+
       tmpCanvas.toBlob(blob => {
-        const a = document.createElement('a')
-        document.body.appendChild(a)
-        const url = window.URL.createObjectURL(blob)
-        a.href = url
-        a.download = '캡쳐.png'
-        a.click()
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url)
-          document.body.removeChild(a)
-        }, 0)
-        // this.imgBlob = blob
+        this.imgBlob = URL.createObjectURL(blob)
       }, 'image/png')
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
-    // this.$call.leave()
-    this.$eventBus.$off('capture', this.capture)
+    this.$eventBus.$off('capture', this.doCapture)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
   created() {
-    this.$eventBus.$on('capture', this.capture)
+    this.$eventBus.$on('capture', this.doCapture)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
 }

@@ -2,8 +2,9 @@
   <menu-button
     text="캡쳐 후 공유"
     :active="status"
+    :disabled="disabled"
     :src="require('assets/image/ic_capture.svg')"
-    @click="capture"
+    @click.native="capture"
   ></menu-button>
 </template>
 
@@ -17,11 +18,15 @@ export default {
       status: false,
     }
   },
-  computed: {},
   watch: {},
   methods: {
     capture() {
-      this.status = !this.status
+      if (this.disabled) return
+      this.status = true
+      this.$eventBus.$emit('capture')
+      setTimeout(() => {
+        this.status = false
+      }, 100)
     },
   },
 
