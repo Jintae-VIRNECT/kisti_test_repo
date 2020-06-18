@@ -42,7 +42,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view']),
+    ...mapGetters(['tools', 'view', 'viewAction']),
     uuid() {
       return this.account.uuid
     },

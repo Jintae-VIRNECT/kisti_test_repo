@@ -167,9 +167,10 @@ const _ = {
       type: SIGNAL.POINTING,
     })
   },
-  arPointing: message => {
+  arPointing: (type, params = {}) => {
+    params.type = type
     _.session.signal({
-      data: JSON.stringify(message),
+      data: JSON.stringify(params),
       to: _.session.connection,
       type: SIGNAL.AR_POINTING,
     })

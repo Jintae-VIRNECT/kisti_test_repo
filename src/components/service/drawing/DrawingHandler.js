@@ -1,5 +1,6 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { DRAWING } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 
 export default {
   data() {
@@ -335,9 +336,9 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on(`control:${this.view}:undo`, this.stackUndo)
-    this.$eventBus.$on(`control:${this.view}:redo`, this.stackRedo)
-    this.$eventBus.$on(`control:${this.view}:clear`, this.drawingClear)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
     // this.$eventBus.$on(`control:${this.mode}:focus`, this.focusCanvas)
   },
   mounted() {
@@ -346,9 +347,9 @@ export default {
     // window.addEventListener('resize', this.resizeEventHandler)
   },
   beforeDestroy() {
-    this.$eventBus.$off(`control:${this.view}:undo`, this.stackUndo)
-    this.$eventBus.$off(`control:${this.view}:redo`, this.stackRedo)
-    this.$eventBus.$off(`control:${this.view}:clear`, this.drawingClear)
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
     // this.$eventBus.$off(`control:${this.mode}:focus`, this.focusCanvas)
     // window.removeEventListener('keydown', this.keyEventHandler)
     // window.removeEventListener('keyup', this.keyUpEventHandler)

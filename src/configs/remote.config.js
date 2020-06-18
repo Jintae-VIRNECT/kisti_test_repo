@@ -34,6 +34,16 @@ export const DRAWING = {
   LAST_FRAME: 'lastFrame',
 }
 
+export const AR_POINTING = {
+  AR_POINTING: 'arPointing',
+  UNDO: 'undo',
+  REDO: 'redo',
+  CLEAR: 'clear',
+  UNDO_ABLE: 'undoAble',
+  REDO_ABLE: 'redoAble',
+  CLEAR_ABLE: 'clearAble',
+}
+
 export const AR_DRAWING = {
   REQUEST_FRAME: 'requestFrame',
   RECEIVE_FRAME: 'receivedFrame',
