@@ -44,7 +44,12 @@ public class JwtAuthenticate implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String requestUriPath = exchange.getRequest().getURI().getPath();
-        if (requestUriPath.startsWith("/auth") || requestUriPath.startsWith("/admin")) {
+        boolean isAuthenticateSkipUrl = requestUriPath.startsWith("/auth") ||
+                requestUriPath.startsWith("/admin") ||
+                requestUriPath.startsWith("/users/find") ||
+                requestUriPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
+
+        if (isAuthenticateSkipUrl) {
             return chain.filter(exchange);
         }
         String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))

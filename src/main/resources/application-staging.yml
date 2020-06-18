@@ -15,6 +15,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "AUTH_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
@@ -27,6 +28,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "USER_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
@@ -39,6 +41,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "WORKSPACE_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
@@ -51,6 +54,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "ADMIN_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
@@ -64,6 +68,7 @@ spring:
             - RemoveRequestHeader=Expect
             - name: Logging
               args:
+                messagePrefix: "CONTENT_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
@@ -71,11 +76,12 @@ spring:
         - id: process-server
           uri: lb://process-server
           predicates:
-            - Path=/processes/**
+            - Path=/tasks/**
           filters:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "TASKS_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
@@ -88,6 +94,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "LICENSE_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
@@ -100,6 +107,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "MESSAGE_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
@@ -112,6 +120,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "DOWNLOAD_SERVER"
                 preLogger: true
                 postLogger: true
 #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
@@ -125,6 +134,7 @@ spring:
               - "https://stgconsole.virnect.com"
               - "https://stgaccount.virnect.com"
               - "https://stgadmin.virnect.com"
+              - "https://stgdownload.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true

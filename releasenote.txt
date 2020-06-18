@@ -1,0 +1,13 @@
+
+RELEASE
+
+New Features
+- 다운로드 센터 api 접근 허용
+
+Bug Fixes
+- 없음
+
+Limitation
+- 없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

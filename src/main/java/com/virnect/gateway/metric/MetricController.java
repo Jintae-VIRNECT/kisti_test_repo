@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Gateway
@@ -18,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class MetricController {
 
-    @GetMapping
+    @GetMapping("/healthcheck")
     public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("HELLO VIRNECT PLATFORM API GATEWAY");
+        return ResponseEntity.ok("HELLO VIRNECT PLATFORM API GATEWAY - " + LocalDateTime.now());
     }
 }

@@ -25,6 +25,8 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<LoggingGatewayFilterFactory.Config> {
+    private static String MESSAGE_DIVIDE_LINE = "-----------------------------------------------------------------------------------------------------------------------------------------";
+
     public LoggingGatewayFilterFactory() {
         super(Config.class);
     }
@@ -40,30 +42,36 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
             if (config.isPreLogger()) {
                 stopWatch.start();
                 String uri = request.getURI().toString();
-                String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
-                log.info("[REQUEST] [{}] [{}] [{}] {}", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
+                String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
+                log.info(MESSAGE_DIVIDE_LINE);
+                log.info("[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
                 request.getHeaders().entrySet().forEach((entry -> log.info("[HEADER] [{}] => {} ", entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
-                log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                log.info(MESSAGE_DIVIDE_LINE);
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 stopWatch.stop();
                 if (config.isPostLogger()) {
                     String uri = request.getURI().toString();
                     String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
-                    log.info("[RESPONSE] [{}] [{}] [{}] [{}] {} [{} ms]", LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, String.format("%d %s", response.getRawStatusCode(), HttpStatus.valueOf(response.getRawStatusCode()).name()), response.getHeaders().get("Content-Type"), stopWatch.getTotalTimeMillis());
-                    log.info("-----------------------------------------------------------------------------------------------------------------------------------------");
+                    log.info(MESSAGE_DIVIDE_LINE);
+                    log.info("[{}] [RESPONSE] [{}] [{}] [{}] [{}] {} [{} ms]", config.messagePrefix, LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, String.format("%d %s", response.getRawStatusCode(), HttpStatus.valueOf(response.getRawStatusCode()).name()), response.getHeaders().get("Content-Type"), stopWatch.getTotalTimeMillis());
+                    log.info(MESSAGE_DIVIDE_LINE);
                 }
             }));
         };
     }
 
     public static class Config {
+        private String messagePrefix;
         private boolean preLogger;
         private boolean postLogger;
 
-        public Config(boolean preLogger, boolean postLogger) {
+        public Config(String messagePrefix, boolean preLogger, boolean postLogger) {
+            if (messagePrefix == null) {
+                this.messagePrefix = "LOGGING_FILTER";
+            } else {
+                this.messagePrefix = messagePrefix;
+            }
             this.preLogger = preLogger;
             this.postLogger = postLogger;
         }
@@ -82,6 +90,14 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
 
         public void setPostLogger(boolean postLogger) {
             this.postLogger = postLogger;
+        }
+
+        public String getMessagePrefix() {
+            return messagePrefix;
+        }
+
+        public void setMessagePrefix(String messagePrefix) {
+            this.messagePrefix = messagePrefix;
         }
     }
 }
