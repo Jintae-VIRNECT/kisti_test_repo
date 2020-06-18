@@ -125,11 +125,11 @@ export const getUserObject = stream => {
     zoom: 0,
   }
   if (stream.videoActive) {
-    Store.commit('updateResolution', {
-      connectionId: stream.connection.connectionId,
-      width: 0,
-      height: 0,
-    })
+    // Store.commit('updateResolution', {
+    //   connectionId: stream.connection.connectionId,
+    //   width: 0,
+    //   height: 0,
+    // })
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

@@ -5,27 +5,27 @@
       <sub-view></sub-view>
 
       <transition name="share">
-        <share v-if="isExpert && view === 'drawing'"></share>
+        <share v-if="isExpert && currentView === 'drawing'"></share>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: isExpert && view === 'drawing' }"
+        :class="{ shareview: isExpert && currentView === 'drawing' }"
       >
         <transition name="main">
-          <stream-view v-show="view === 'stream'"></stream-view>
+          <stream-view v-show="currentView === 'stream'"></stream-view>
         </transition>
         <transition name="main">
-          <drawing-view v-show="view === 'drawing'"></drawing-view>
+          <drawing-view v-show="currentView === 'drawing'"></drawing-view>
         </transition>
         <transition name="main">
-          <ar-view v-show="view === 'ar'"></ar-view>
+          <ar-view v-show="currentView === 'ar'"></ar-view>
         </transition>
       </main>
 
       <user-list
         :class="{
-          shareview: isExpert && view === 'drawing',
+          shareview: isExpert && currentView === 'drawing',
         }"
       ></user-list>
 
@@ -39,6 +39,7 @@ import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -74,8 +75,27 @@ export default {
         return false
       }
     },
+    currentView() {
+      if (this.view === VIEW.STREAM) {
+        return 'stream'
+      } else if (this.view === VIEW.DRAWING) {
+        return 'drawing'
+      } else if (this.view === VIEW.AR) {
+        return 'ar'
+      }
+      return ''
+    },
   },
-  watch: {},
+  watch: {
+    view(val, beforeVal) {
+      if (val === VIEW.AR) {
+        // start ar
+      }
+      if (beforeVal === VIEW.AR) {
+        // stop ar
+      }
+    },
+  },
   methods: {},
 
   /* Lifecycles */

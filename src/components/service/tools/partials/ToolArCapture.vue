@@ -26,8 +26,8 @@ export default {
     },
   },
   watch: {
-    viewAction(val) {
-      if (ACTION.AR_AREA !== val) {
+    viewAction(val, beforeVal) {
+      if ([ACTION.AR_AREA, ACTION.AR_DRAWING].includes(beforeVal)) {
         this.$call.arDrawing(AR_DRAWING.END_DRAWING)
       }
     },
