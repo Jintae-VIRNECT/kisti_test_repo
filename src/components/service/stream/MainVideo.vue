@@ -21,7 +21,10 @@
           <p class="local">{{ 0 | timeFilter }}</p>
         </div>
 
-        <pointing :scale="1" class="main-video__pointing"></pointing>
+        <pointing
+          :videoSize="videoSize"
+          class="main-video__pointing"
+        ></pointing>
         <template v-if="viewAction !== STREAM_POINTING">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
@@ -89,6 +92,10 @@ export default {
       loaded: false,
       STREAM_POINTING: ACTION.STREAM_POINTING,
       imgBlob: '',
+      videoSize: {
+        width: 0,
+        height: 0,
+      },
     }
   },
   computed: {
@@ -173,6 +180,8 @@ export default {
         video.style.height = maxWidth / scale + 'px'
         video.style.width = maxWidth + 'px'
       }
+      this.videoSize.width = video.offsetWidth
+      this.videoSize.height = video.offsetHeight
     },
     doCapture() {
       const videoEl = this.$el.querySelector('#main-video')

@@ -1,16 +1,8 @@
 <template>
-  <div @click="doPointing($event)">
-    <div
-      v-for="(point, index) in pointList"
-      :key="index"
-      class="pointing--item"
-      :style="{ left: point.coords[0] + 'px', top: point.coords[1] + 'px' }"
-    />
-  </div>
+  <div @click="doPointing($event)"></div>
 </template>
 
 <script>
-import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX } from 'utils/color'
@@ -18,64 +10,24 @@ import { ACTION } from 'configs/view.config'
 import { normalizedPosX, normalizedPosY } from 'utils/normalize'
 import toastMixin from 'mixins/toast'
 
-function hexToLottie(hex, alpha) {
-  var r = parseInt(hex.slice(1, 3), 16) / 255,
-    g = parseInt(hex.slice(3, 5), 16) / 255,
-    b = parseInt(hex.slice(5, 7), 16) / 255
-
-  if (alpha) {
-    if (alpha > 1) {
-      alpha /= 100
-    }
-
-    return [r, g, b, alpha]
-  } else {
-    return [r, g, b]
-  }
-}
-
 export default {
   name: 'ARPointing',
   mixins: [toastMixin],
+  props: {
+    videoSize: Object,
+  },
   data() {
     return {
       radius: '60',
-      lottieOption: {
-        animationData,
-        loop: false,
-      },
-      pointList: [],
-      idle: true,
-      idleID: 0,
-      fullMessage: '',
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction', 'resolutions']),
+    ...mapGetters(['tools', 'mainView', 'viewAction']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
-    resolution() {
-      const idx = this.resolutions.findIndex(
-        data => data.connectionId === this.mainView.connectionId,
-      )
-      if (idx < 0) {
-        return {
-          width: 0,
-          height: 0,
-        }
-      }
-      return this.resolutions[idx]
-    },
   },
   methods: {
-    stateControl() {
-      this.idle = false
-      clearTimeout(this.idleID)
-      this.idleID = setTimeout(() => {
-        this.idle = true
-      }, 1050)
-    },
     doPointing(event) {
       if (this.viewAction !== ACTION.AR_POINTING) return
       this.$call.arPointing({
@@ -84,19 +36,14 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPosX(event.offsetX, this.resolution.width),
-        posY: normalizedPosY(event.offsetY, this.resolution.height),
+        posX: normalizedPosX(event.offsetX, this.videoSize.width),
+        posY: normalizedPosY(event.offsetY, this.videoSize.height),
       })
     },
   },
 
   /* Lifecycling */
-  mounted() {
-    this.lottieOption.animationData.layers.forEach(layer => {
-      layer.shapes[0].it[1].c.k = hexToLottie(this.pointingColor, 1)
-      layer.shapes[0].it[1].o.k = 100
-    })
-  },
+  mounted() {},
 }
 </script>
 <style lang="scss">

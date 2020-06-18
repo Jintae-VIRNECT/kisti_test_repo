@@ -29,6 +29,7 @@
       </transition>
       <ar-pointing
         class="ar-pointing"
+        :videoSize="videoSize"
         v-if="currentAction === 'pointing'"
       ></ar-pointing>
     </div>
@@ -51,6 +52,10 @@ export default {
   data() {
     return {
       chunk: [],
+      videoSize: {
+        width: 0,
+        height: 0,
+      },
     }
   },
   computed: {
@@ -140,6 +145,8 @@ export default {
         video.style.height = maxWidth / scale + 'px'
         video.style.width = maxWidth + 'px'
       }
+      this.videoSize.width = video.offsetWidth
+      this.videoSize.height = video.offsetHeight
     },
   },
 
