@@ -1,7 +1,8 @@
 pipeline {
   agent any
   environment {
-    GIT_TAG = sh(returnStdout: true, script: "git describe --tags --abbrev=0").trim()
+    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+    REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
   }
   stages {
     stage('Pre-Build') {
@@ -49,7 +50,6 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'git checkout $GIT_TAG'
             sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
         }
@@ -175,6 +175,14 @@ pipeline {
                   ]
                 )
               }
+              script {
+                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                 def payload = """
+                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                """
+
+                sh "curl  -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+               }
             }
           }
         }
@@ -189,3 +197,4 @@ pipeline {
     }
   }
 }
+
