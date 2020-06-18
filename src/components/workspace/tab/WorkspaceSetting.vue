@@ -32,7 +32,10 @@
         <div class="setting-view__header">{{ headerText }}</div>
 
         <div class="setting-view__body">
-          <device-denied :visible.sync="showDenied"></device-denied>
+          <device-denied
+            :visible.sync="showDenied"
+            :modalLess="true"
+          ></device-denied>
 
           <template v-if="tabview === 'audio-video'">
             <set-audio
@@ -68,7 +71,7 @@ import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
 //import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-
+import { getPermission } from 'utils/deviceCheck'
 export default {
   name: 'WorkspaceSetting',
   components: {
@@ -102,30 +105,6 @@ export default {
         this.headerText = headerText
       })
     },
-    async getPermission() {
-      try {
-        const result = await Promise.all([
-          navigator.permissions.query({ name: 'camera' }),
-          navigator.permissions.query({ name: 'microphone' }),
-        ])
-
-        const [cameraState, micState] = result
-
-        if (cameraState.state === 'denied' || micState.state === 'denied') {
-          throw 'device access deined'
-        }
-
-        if (cameraState.state === 'prompt' || micState.state === 'prompt') {
-          await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true,
-          })
-        }
-        return true
-      } catch (err) {
-        console.error(err)
-      }
-    },
     async getMediaDevice() {
       try {
         if (
@@ -154,7 +133,7 @@ export default {
   /* Lifecycles */
   async created() {
     try {
-      const permission = await this.getPermission()
+      const permission = await getPermission()
 
       if (permission) {
         await this.getMediaDevice()

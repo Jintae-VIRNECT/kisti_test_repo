@@ -66,6 +66,7 @@
       :visible.sync="showRestart"
       :roomId="roomId"
     ></create-room-modal>
+    <device-denied :visible.sync="showDenied"></device-denied>
   </div>
 </template>
 
@@ -77,6 +78,9 @@ import sort from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
+import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
+import { getPermission } from 'utils/deviceCheck'
+
 import { deleteHistorySingleItem } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
 import dayjs from 'dayjs'
@@ -90,12 +94,14 @@ export default {
     CreateRoomModal,
     Popover,
     RoominfoModal,
+    DeviceDenied,
   },
   data() {
     return {
       showRestart: false,
       showRoomInfo: false,
       roomId: 0,
+      showDenied: false,
     }
   },
   computed: {
@@ -158,9 +164,14 @@ export default {
     },
 
     //재시작
-    createRoom(roomId) {
+    async createRoom(roomId) {
       this.roomId = roomId
       this.showRestart = !this.showRestart
+
+      const permission = await getPermission()
+      if (!permission && this.showRestart === true) {
+        this.showDenied = true
+      }
     },
     convertDate(date) {
       if (date !== null && date !== '') {

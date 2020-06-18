@@ -25,7 +25,7 @@
           v-if="chat.text !== undefined"
           class="text"
           :class="getClass"
-          v-html="chat.text"
+          v-html="chatText"
         ></p>
         <button
           v-if="chat.file && chat.file.length > 0"
@@ -133,6 +133,9 @@ export default {
         ar: this.type === 'system' && this.chat.subType === 'ar',
         board: this.type === 'system' && this.chat.subType === 'board',
       }
+    },
+    chatText() {
+      return this.chat.text.replace(/\n/gi, '<br>')
     },
   },
   watch: {},

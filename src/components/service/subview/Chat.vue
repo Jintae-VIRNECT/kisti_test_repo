@@ -1,14 +1,13 @@
 <template>
   <div class="chat">
     <div class="chat-header">
+      <div v-show="showSubVideo" class="chat-hedaer__sub-vide">
+        <sub-video></sub-video>
+      </div>
       <div class="chat-header__title">
         <div class="chat-header__title--text ">
           {{ roomTitle + ' 원격협업' }}
         </div>
-        <!-- <popover trigger="hover" placement="bottom">
-          <button slot="reference" class="show-list">목록보기</button>
-          <div>사용자 목록</div>
-        </popover> -->
       </div>
 
       <div class="chat-header__menu">
@@ -37,49 +36,36 @@
           >
         </div>
       </div>
-      <!-- <p class="chat-header__description">6명의 작업자</p> -->
-      <!-- <tooltip
-      class="chat-header__fold"
-      content="펼치기">
-    </tooltip> -->
-      <!-- <button slot="body" class="chat-header__fold">펼치기</button> -->
     </div>
 
-    <vue2-scrollbar ref="chatListScrollbar">
-      <ol class="chat-list">
-        <li class="chat-item date">
-          <p>{{ $dayjs().format('LL') }}</p>
-        </li>
-        <chat-item
-          v-for="(chat, idx) of chatList"
-          :key="idx"
-          :beforeChat="idx === 0 ? null : chatList[idx - 1]"
-          :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
-          :chat="chat"
-        ></chat-item>
-      </ol>
-    </vue2-scrollbar>
+    <chat-msg-list v-if="showChat"></chat-msg-list>
+    <chat-input v-if="showChat"></chat-input>
 
-    <chat-input></chat-input>
+    <chat-file-list v-if="showFile"></chat-file-list>
+    <chat-file-down v-if="showFile"></chat-file-down>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
-import ChatItem from './partials/ChatItem'
 import ChatInput from './partials/ChatInput'
-// import Popover from 'Popover'
-// import Tooltip from 'Tooltip'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
+import SubVideo from './SubVideo'
+
+import ChatMsgList from './partials/ChatMsgList'
+import ChatFileList from './partials/ChatFileList'
+import ChatFileDown from './partials/ChatFileDownload'
 
 export default {
   name: 'Chat',
   components: {
-    ChatItem,
     ChatInput,
+    SubVideo,
+    ChatMsgList,
+    ChatFileList,
+    ChatFileDown,
     // Popover,
     // Tooltip,
   },
@@ -87,9 +73,10 @@ export default {
     return {
       showChat: true,
       showFile: false,
-
       roomTitle: '',
       participantsCount: 1,
+
+      showSubVideo: false,
     }
   },
   computed: {
@@ -111,20 +98,15 @@ export default {
       deep: true,
     },
     viewMode: {
-      handler(newVal) {
-        switch (newVal) {
+      handler(mode) {
+        switch (mode) {
           case 'stream':
             console.log('실시간 공유')
+            this.showSubVideo = false
             break
           case 'drawing':
             console.log('협업 보드')
-            // this.chatList.push({
-            //   text: '협업 보드를 사용합니다.',
-            //   name: 'board',
-            //   date: new Date(),
-            //   uuid: null,
-            //   type: 'system',
-            // })
+            this.showSubVideo = true
 
             this.chatList.push(
               new ChatMsgBuilder()
@@ -135,6 +117,7 @@ export default {
             )
             break
           case 'ar':
+            this.showSubVideo = true
             this.chatList.push(
               new ChatMsgBuilder()
                 .setType('system')
@@ -142,6 +125,9 @@ export default {
                 .setText('AR 기능을 사용합니다.')
                 .build(),
             )
+            break
+          default:
+            console.log('unknown viewMode :: ', mode)
             break
         }
       },
