@@ -57,13 +57,16 @@ export default {
         this.$notify.success({
           message: this.$t('profile.recoveryEmailChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedRecoveryEmail', this.form.recoveryEmail)
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: this.$t('profile.recoveryEmailChangeModal.message.fail'),
+          message:
+            this.$t('profile.recoveryEmailChangeModal.message.fail') +
+            `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

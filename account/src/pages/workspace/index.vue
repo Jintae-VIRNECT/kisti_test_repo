@@ -9,92 +9,30 @@
         <h2>{{ $t('menu.workspace') }}</h2>
         <p>{{ $t('workspace.desc') }}</p>
       </div>
-      <el-card class="el-card--table">
-        <div slot="header">
-          <h3>전체 워크스페이스 정보</h3>
-        </div>
-        <el-table :data="workspaces">
-          <column-default
-            :label="$t('workspace.column.name')"
-            prop="name"
-            sortable
-          />
-          <column-user
-            :label="$t('workspace.column.master')"
-            prop="masterNickName"
-            nameProp="masterNickName"
-            imageProp="masterProfile"
-            :width="120"
-            sortable
-          />
-          <column-date
-            :label="$t('workspace.column.joinDate')"
-            prop="joinDate"
-            :width="100"
-            sortable
-          />
-          <column-role
-            :label="$t('workspace.column.role')"
-            prop="role"
-            :width="150"
-            sortable
-          />
-          <!-- <column-plan
-            :label="$t('workspace.column.plan')"
-            nameProp="planName"
-            gradeProp="planGrade"
-            :width="170"
-          /> -->
-        </el-table>
-        <el-row type="flex" justify="center">
-          <el-pagination
-            layout="prev, pager, next"
-            :total="workspacesTotal"
-            @current-change="getWorkspaces"
-          >
-          </el-pagination>
-        </el-row>
-      </el-card>
+      <!-- 워크스페이스 리스트 -->
+      <workspace-list />
+      <!-- 플랜 리스트 -->
+      <using-plan-list />
     </div>
   </div>
 </template>
 
 <script>
-import workspaceService from '@/services/workspace'
-import columnMixin from '@/mixins/columns'
+import WorkspaceList from '@/components/workspace/WorkspaceList'
+import UsingPlanList from '@/components/workspace/UsingPlanList'
 
 export default {
-  mixins: [columnMixin],
-  data() {
-    return {
-      searchParams: {
-        page: 1,
-        size: 10,
-        sort: null,
-      },
-      workspaces: [],
-      workspacesTotal: 0,
-    }
-  },
-  methods: {
-    async getWorkspaces() {
-      const { list, total } = await workspaceService.getWorkspaceList(
-        this.searchParams,
-      )
-      this.workspaces = list
-      // this.workspacesTotal = total
-    },
-  },
-  beforeMount() {
-    this.getWorkspaces()
+  components: {
+    WorkspaceList,
+    UsingPlanList,
   },
 }
 </script>
 
 <style lang="scss">
-#workspace {
-  .el-table {
-    min-height: 450px;
+#__nuxt #workspace {
+  .el-table__body-wrapper {
+    min-height: 384px;
   }
 }
 </style>

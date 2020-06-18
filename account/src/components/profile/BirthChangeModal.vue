@@ -22,6 +22,7 @@
             type="year"
             format="yyyy"
             v-model="year"
+            :picker-options="pickerOptions"
           />
           <el-date-picker
             class="month"
@@ -29,6 +30,7 @@
             type="month"
             format="MM"
             v-model="month"
+            :picker-options="pickerOptions"
           />
           <el-date-picker
             class="day"
@@ -36,6 +38,7 @@
             type="date"
             format="dd"
             v-model="day"
+            :picker-options="pickerOptions"
           />
         </el-form-item>
       </el-form>
@@ -64,6 +67,11 @@ export default {
       year: '',
       month: '',
       day: '',
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now()
+        },
+      },
     }
   },
   watch: {
@@ -92,20 +100,22 @@ export default {
         .month(dayjs(this.month).month())
         .date(dayjs(this.day).date())
       const form = {
-        birth: filters.dateFormat(birth).replace(/\./g, '-'),
+        birth: filters.fullYearDateFormat(birth).replace(/\./g, '-'),
       }
       try {
         await profileService.updateMyProfile(form)
         this.$notify.success({
           message: this.$t('profile.birthChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedBirth', birth)
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: this.$t('profile.birthChangeModal.message.fail'),
+          message:
+            this.$t('profile.birthChangeModal.message.fail') + `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

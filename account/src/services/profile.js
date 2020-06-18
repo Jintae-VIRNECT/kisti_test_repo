@@ -1,8 +1,9 @@
 import Profile from '@/models/profile/Profile'
 import { api } from '@/plugins/axios'
+import { store } from '@/plugins/context'
 
 function getMyProfile() {
-  return process.client && { ...$nuxt.$store.getters['auth/myProfile'] }
+  return { ...store.getters['auth/myProfile'] }
 }
 
 export default {
@@ -10,14 +11,14 @@ export default {
   async auth() {
     if (Object.keys(getMyProfile()).length) return false
     const data = await api('GET_AUTH_INFO')
-    $nuxt.$store.commit('auth/SET_MY_PROFILE', new Profile(data.userInfo))
+    store.commit('auth/SET_MY_PROFILE', new Profile(data.userInfo))
   },
   async certification(form) {
     await api('ACCESS_AUTH', {
       route: { userId: form.uuid },
       params: form,
     })
-    $nuxt.$store.commit('auth/SET_AUTH', true)
+    store.commit('auth/SET_AUTH', true)
   },
   async updateMyProfile(form) {
     await api('UPDATE_USER_INFO', {

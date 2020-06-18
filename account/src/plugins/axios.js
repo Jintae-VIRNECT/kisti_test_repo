@@ -1,6 +1,7 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 let axios = null
 /**
@@ -50,6 +51,9 @@ export async function api(name, option = {}) {
 
     if (code === 200) {
       return data
+    } else if (code === 8003 || code === 8005) {
+      if (process.client) location.href = urls.console[process.env.TARGET_ENV]
+      throw new Error(`${code}: ${message}`)
     } else {
       const error = new Error(`${code}: ${message}`)
       console.error(error)

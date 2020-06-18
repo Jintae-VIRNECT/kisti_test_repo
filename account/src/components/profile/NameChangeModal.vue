@@ -62,13 +62,14 @@ export default {
         this.$notify.success({
           message: this.$t('profile.nameChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.$emit('changedName', this.form)
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: this.$t('profile.nameChangeModal.message.fail'),
+          message: this.$t('profile.nameChangeModal.message.fail') + `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },

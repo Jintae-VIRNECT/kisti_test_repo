@@ -87,11 +87,13 @@ export default {
         this.$notify.error({
           message: this.$t('profile.passwordChangeModal.message.wrong'),
           position: 'bottom-left',
+          duration: 2000,
         })
       } else if (!this.validate(this.form.password1)) {
         this.$notify.error({
           message: this.$t('profile.passwordChangeModal.message.invalid'),
           position: 'bottom-left',
+          duration: 2000,
         })
       } else {
         try {
@@ -102,13 +104,15 @@ export default {
           this.$notify.success({
             message: this.$t('profile.passwordChangeModal.message.success'),
             position: 'bottom-left',
+            duration: 2000,
           })
           this.$emit('changedPassword')
         } catch (e) {
-          console.error(e)
           this.$notify.error({
-            message: e,
+            message:
+              this.$t('profile.passwordChangeModal.message.fail') + `\n(${e})`,
             position: 'bottom-left',
+            duration: 2000,
           })
         }
       }

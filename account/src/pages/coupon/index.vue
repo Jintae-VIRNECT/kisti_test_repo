@@ -52,7 +52,16 @@
               <div class="caution">
                 <h5>{{ $t('coupon.addCouponCode.cautionTitle') }}</h5>
                 <el-divider />
-                <p v-html="$t('coupon.addCouponCode.cautionContent')" />
+                <ol>
+                  <li
+                    v-for="(content, index) in $t(
+                      'coupon.addCouponCode.cautionContent',
+                    )"
+                    :key="index"
+                  >
+                    {{ content }}
+                  </li>
+                </ol>
               </div>
             </div>
           </el-card>
@@ -70,18 +79,15 @@
               </el-tooltip>
             </div>
             <coupon-list
+              ref="table"
               :coupons="coupons"
               @select="couponSelect"
-              @sort="sortCoupons"
             />
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="couponsTotal"
-                @current-change="getCoupons"
-              >
-              </el-pagination>
-            </el-row>
+            <searchbar-page
+              ref="page"
+              :value.sync="coponsPage"
+              :total="couponsTotal"
+            />
           </el-card>
         </el-col>
       </el-row>
@@ -92,37 +98,36 @@
 <script>
 import couponService from '@/services/coupon'
 import CouponList from '@/components/coupon/CouponList'
+import searchMixin from '@/mixins/search'
 
 export default {
+  mixins: [searchMixin],
   components: {
     CouponList,
   },
   data() {
     return {
       coupons: [],
+      coponsPage: 1,
       couponsTotal: 0,
-      searchParams: {
-        page: 1,
-        size: 10,
-        sort: null,
-      },
       addCouponForm: {
         newCouponCode: '',
       },
     }
   },
   methods: {
+    changedSearchParams(searchParams) {
+      console.log(searchParams)
+      this.searchCoupons(searchParams)
+    },
     goGetCouponPage() {
       window.open(`${process.env.PROMOTION_SITE_URL}/coupon`)
     },
     /**
      * 쿠폰 리스트
      */
-    async getCoupons(page) {
-      this.searchParams.page = page || 1
-      const { list, total } = await couponService.getCouponList(
-        this.searchParams,
-      )
+    async searchCoupons(searchParams) {
+      const { list, total } = await couponService.searchCoupons(searchParams)
       this.coupons = list
       this.couponsTotal = total
     },
@@ -140,13 +145,13 @@ export default {
      */
     async addCouponCode() {
       try {
-        await couponService.addCouponCode(this.form.newCouponCode)
+        await couponService.addCouponCode(this.addCouponForm.newCouponCode)
         this.$notify.success({
           message: this.$t('coupon.message.registerSuccess'),
           position: 'bottom-left',
+          duration: 2000,
         })
       } catch (e) {
-        console.error(e)
         const code = e.toString().match(/Error: ([0-9]*)/)[1]
         const messages = {
           '2000': this.$t('coupon.message.registerNotExist'),
@@ -154,8 +159,11 @@ export default {
           '2002': this.$t('coupon.message.registerExpired'),
         }
         this.$notify.error({
-          message: messages[code] || this.$t('coupon.message.registerFail'),
+          message:
+            messages[code] ||
+            this.$t('coupon.message.registerFail') + `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },
@@ -181,19 +189,20 @@ export default {
         this.$notify.success({
           message: this.$t('coupon.message.useSuccess'),
           position: 'bottom-left',
+          duration: 2000,
         })
         this.getCoupons()
       } catch (e) {
-        console.error(e)
         this.$notify.error({
-          message: e,
+          message: this.$t('coupon.message.useFail') + `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },
   },
   created() {
-    this.getCoupons()
+    this.searchCoupons()
   },
 }
 </script>
@@ -271,11 +280,13 @@ export default {
       & > h5 {
         color: $font-color-content;
       }
-      & > p {
+      & > ol {
+        padding-left: 1.1em;
         color: $font-color-desc;
         font-size: 11.8px;
         line-height: 2;
         word-break: break-all;
+        list-style: decimal;
       }
     }
   }

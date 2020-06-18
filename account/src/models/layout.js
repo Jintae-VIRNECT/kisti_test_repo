@@ -19,21 +19,16 @@ export const sideMenus = [
   //   image: require('@/assets/images/icon/ic-security.svg'),
   //   label: 'menu.security',
   // },
-  // {
-  //   path: '/plan',
-  //   image: require('@/assets/images/icon/ic-plan.svg'),
-  //   label: 'menu.usedPlan',
-  // },
-  // {
-  //   path: '/subscribe',
-  //   image: require('@/assets/images/icon/ic-plan-management.svg'),
-  //   label: 'menu.plan',
-  // },
-  // {
-  //   path: '/payment',
-  //   image: require('@/assets/images/icon/ic-payment.svg'),
-  //   label: 'menu.payment',
-  // },
+  {
+    path: '/purchases',
+    image: require('@/assets/images/icon/ic-plan-management.svg'),
+    label: 'menu.purchases',
+  },
+  {
+    path: '/payment',
+    image: require('@/assets/images/icon/ic-payment.svg'),
+    label: 'menu.payment',
+  },
   {
     path: '/coupon',
     image: require('@/assets/images/icon/ic-coupon.svg'),

@@ -1,14 +1,27 @@
 <template>
   <el-dialog
     class="payment-log-detail-modal"
-    :title="$t('payment.logDetail.title')"
     :visible.sync="visible"
     width="905px"
+    top="10vh"
     :before-close="handleClose"
   >
+    <template slot="title">
+      <div class="el-dialog__title" v-if="!showCardSlip">
+        <span>{{ $t('payment.creditCardSlip.title') }}</span>
+      </div>
+      <div class="el-dialog__title" v-else>
+        <img
+          @click="showCardSlip = false"
+          src="~assets/images/icon/ic-arrow-back.svg"
+        />
+        <span v-if="!showCardSlip">{{ $t('payment.logDetail.title') }}</span>
+        <span v-else>{{ $t('payment.creditCardSlip.title') }}</span>
+      </div>
+    </template>
     <el-row>
       <!-- 결제 정보 -->
-      <el-col :span="8">
+      <el-col :span="8" v-if="!showCardSlip">
         <h6>{{ $t('payment.logDetail.info') }}</h6>
         <dl class="horizon">
           <dt>{{ $t('payment.log.column.paidDate') }}</dt>
@@ -24,8 +37,57 @@
           <dd>{{ paymentLogDetail.no }}</dd>
         </dl>
         <el-divider />
-        <el-button type="simple" class="wide">
-          {{ $t('payment.logDetail.creditCardStatement') }}
+        <el-button type="simple" class="wide" @click="showCardSlip = true">
+          {{ $t('payment.logDetail.creditCardSlip') }}
+        </el-button>
+      </el-col>
+      <!-- 카드 전표 -->
+      <el-col class="card-slip" :span="8" v-if="showCardSlip">
+        <h6>{{ $t('payment.creditCardSlip.paymentInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.cardType') }}</dt>
+          <dd>{{ '00카드' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.cardNo') }}</dt>
+          <dd>{{ '1234-56**-****-1234' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.tradeType') }}</dt>
+          <dd>{{ '신용 거래' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.tradeDate') }}</dt>
+          <dd>{{ 'YYYY/MM/DD HH:MM:SS' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.instalmentMonth') }}</dt>
+          <dd>{{ '일시불' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.approvalNo') }}</dt>
+          <dd>{{ '12345678900' }}</dd>
+        </dl>
+        <el-divider />
+        <h6>{{ $t('payment.creditCardSlip.buyInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.buyNo') }}</dt>
+          <dd>{{ '109876543210000' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.buyUser') }}</dt>
+          <dd>{{ 'Users name' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.tax') }}</dt>
+          <dd>{{ '0원' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.taxFree') }}</dt>
+          <dd>{{ '0원' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.surtax') }}</dt>
+          <dd>{{ '10,000원' }}</dd>
+        </dl>
+        <el-divider />
+        <h6>{{ $t('payment.creditCardSlip.sellerInfo') }}</h6>
+        <dl class="horizon">
+          <dt>{{ $t('payment.creditCardSlip.sellerCompanyName') }}</dt>
+          <dd>{{ '버넥트(주)' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.sellerCompanyNo') }}</dt>
+          <dd>{{ '123-45-678910' }}</dd>
+          <dt>{{ $t('payment.creditCardSlip.sellerAddress') }}</dt>
+          <dd>{{ '서울시 용산구 한강대로 7길 10-15' }}</dd>
+        </dl>
+        <el-divider />
+        <el-button type="simple">
+          {{ $t('common.download') }}
+        </el-button>
+        <el-button type="simple">
+          {{ $t('common.print') }}
         </el-button>
       </el-col>
       <!-- 결제 상세 정보 -->
@@ -66,6 +128,7 @@
             {{ paymentLogDetail.startDate | fullYearDateFormat }}
             -
             {{ paymentLogDetail.endDate | fullYearDateFormat }}
+            {{ '(1개월)' }}
           </dd>
           <el-divider />
           <dt>{{ $t('payment.logDetail.totalPayment') }}</dt>
@@ -76,6 +139,9 @@
             <span>{{ this.$t('payment.monetaryUnit') }}</span>
           </dd>
         </dl>
+        <p v-if="showCardSlip">
+          {{ this.$t('payment.creditCardSlip.caution') }}
+        </p>
       </el-col>
     </el-row>
   </el-dialog>
@@ -92,7 +158,22 @@ export default {
   data() {
     return {
       paymentLogDetail: {},
+      showCardSlip: false,
     }
+  },
+  methods: {
+    opened() {
+      this.showCardSlip = false
+    },
+    download(url) {
+      window.open(url)
+    },
+    print(url) {
+      const popup = window.open('', '_blank')
+      popup.document.write(`<img src="${url}" />`)
+      popup.document.close()
+      setTimeout(() => popup.print(), 1)
+    },
   },
   async beforeMount() {
     this.paymentLogDetail = await paymentService.getPaymentLogDetail()
@@ -102,6 +183,16 @@ export default {
 
 <style lang="scss">
 #__nuxt .payment-log-detail-modal {
+  .el-dialog__title {
+    & > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    & > img {
+      margin-right: 12px;
+      cursor: pointer;
+    }
+  }
   h6 {
     margin-bottom: 14px;
     color: $font-color-content;
@@ -139,6 +230,13 @@ export default {
         font-size: 20px;
       }
     }
+    p {
+      margin-top: 20px;
+      color: $font-color-desc;
+      font-size: 10px;
+      line-height: 1.6;
+      word-break: normal;
+    }
   }
   .el-dialog .el-table {
     margin: 5px 0 20px;
@@ -153,6 +251,20 @@ export default {
     }
     td {
       padding: 0;
+    }
+  }
+  // 카드 전표
+  .card-slip {
+    dl.horizon dd {
+      margin-bottom: 12px;
+    }
+    .el-button {
+      width: calc(50% - 4px);
+      height: 36px;
+      margin: 0 0 4px 0;
+      &:last-child {
+        float: right;
+      }
     }
   }
 }
