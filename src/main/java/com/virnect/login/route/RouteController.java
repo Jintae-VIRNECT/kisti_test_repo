@@ -27,12 +27,12 @@ public class RouteController {
 
     @GetMapping("/find/email")
     public String userFindEmailRedirect() {
-        return "/find/email";
+        return "index";
     }
 
     @GetMapping("/find/reset_password")
     public String userFindPasswordRedirect() {
-        return "/find/reset_password";
+        return "index";
     }
 
     @RequestMapping(value = "{_:^(?!api).*$}")
