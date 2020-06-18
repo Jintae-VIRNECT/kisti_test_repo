@@ -1,6 +1,9 @@
+node_modules
+yarn-error.log
+releasenote.txt
+
 HELP.md
 .gradle
-build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -30,3 +33,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### build bundle ##
+src/main/resources/static/**/*
+src/main/resources/templates/index.html
+build

@@ -1,0 +1,205 @@
+@charset "utf-8";
+@import "./mixin.scss";
+@import "./reset.scss";
+
+.resend-btn {
+    width: 100%;
+    margin-top: 12px;
+    color: $baseColor;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: right;
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+.restriction-text {
+    margin-top: 8px;
+    color: #566173;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
+}
+
+.profile-image {
+    @include clearfix();
+}
+
+.camera-ico {
+    position: absolute;
+    right: -12px;
+    bottom: -12px;
+    width: 32px;
+    height: 32px;
+    padding-top: 9px;
+    background-color: #fff;
+    border-radius: 50%;
+
+    img {
+        width: 18px;
+    }
+}
+
+.text-wrap {
+    float: left;
+    width: 260px;
+    padding-top: 32px;
+    padding-left: 8px;
+    color: #566173;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
+
+    p {
+        position: relative;
+        padding-left: 8px;
+
+        &:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: "-";
+        }
+    }
+}
+
+.container {
+    padding-top: 144px;
+    padding-bottom: 240px;
+    @media (max-width: $mobile) {
+        padding-top: 120px;
+        padding-bottom: 80px;
+    }
+}
+
+.row-bg {
+    height: 100%;
+    text-align: center;
+
+    > div {
+        // width: 380px;
+        @include area-flex(380px);
+    }
+}
+
+.find-wrap {
+    margin-top: 20px;
+
+    a {
+        position: relative;
+        display: inline-block;
+        padding: 0 13px 0 11px;
+        font-weight: 500;
+
+        &:after {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 1px;
+            height: 12px;
+            margin-top: -5px;
+            background: $baseColor;
+            content: "";
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+    }
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 28px;
+    font-family: $noto;
+
+    + p {
+        margin-top: 8px;
+        font-weight: 500;
+        font-size: 15px;
+    }
+}
+
+.danger-color {
+    color: $danger;
+}
+
+.warning-msg {
+    margin-top: 8px;
+    font-size: 14px;
+    text-align: left;
+}
+
+// messageBox.scss
+@import "modules/messageBox.scss";
+
+// input.scss
+@import "modules/input.scss";
+
+.el-button {
+    height: 50px;
+    margin-top: 20px;
+    border: 0;
+
+    &.block-btn {
+        display: block;
+        width: 100%;
+        max-width: 380px;
+        margin: 16px auto 0;
+
+        & + .el-button {
+            margin-top: 0;
+            // margin-left: 0;
+        }
+    }
+
+    &.next-btn {
+        margin-top: 30px;
+    }
+}
+
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:active,
+.el-button--info.is-disabled,
+.el-button--info.is-disabled:hover,
+.el-button--info.is-disabled:focus,
+.el-button--info.is-disabled:active {
+    color: #8d939c;
+    background-color: #e2e6eb;
+    border-color: #e2e6eb;
+}
+
+.recover-info {
+    margin-top: 60px;
+    font-weight: 500;
+    text-align: left;
+
+    dt {
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    dd {
+        font-size: 13px;
+    }
+}
+
+.app-fade-enter-active,
+.app-fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.app-fade-enter,
+.app-fade-leave-to {
+    opacity: 0;
+}
+
+.app-fade-leave,
+.app-fade-enter-to {
+    opacity: 1;
+}

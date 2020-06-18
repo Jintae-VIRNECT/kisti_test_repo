@@ -1,0 +1,125 @@
+@charset "utf-8";
+@import "./mixin.scss";
+
+.el-message-box {
+    margin-top: 36px;
+    padding-bottom: 0;
+    vertical-align: top;
+}
+
+.el-message-box__title {
+    font-weight: 500;
+}
+.el-message-box__header {
+    padding-bottom: 6px;
+    &btn {
+        display: none;
+    }
+}
+.el-message-box__content {
+    padding-top: 6px;
+    font-weight: 500;
+}
+
+.el-message-box__btns {
+    padding: 20px 24px 24px;
+    .el-button--small {
+        height: 36px;
+        margin-top: 0;
+        font-size: 14px;
+        background-color: $point;
+        border-color: $point;
+        border-radius: 3px;
+    }
+}
+
+.el-message {
+    align-items: normal;
+    width: 540px;
+    padding: 14px 17px 18px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px -2px rgba(9, 30, 66, 0.25),
+        0 0 1px 0 rgba(9, 30, 66, 0.31);
+
+    &--success {
+        color: #fff;
+        background-color: #1655bf;
+        border-color: #1655bf;
+    }
+
+    &--error {
+        color: #fff;
+        background-color: #b92500;
+        border-color: #b92500;
+    }
+
+    h3 {
+        margin-bottom: 4px;
+        font-weight: bold;
+    }
+
+    .el-message__closeBtn {
+        top: 24px;
+        right: 14px;
+        font-size: 18px;
+    }
+
+    .el-message__icon {
+        display: inline-block;
+        width: 16px;
+        min-width: 16px;
+        height: 16px;
+        margin-top: 4px;
+        overflow: hidden;
+        border-radius: 8px;
+
+        &:before {
+            display: inline-block;
+            margin-top: -4px;
+            margin-left: -4px;
+            font-size: 25px;
+        }
+    }
+
+    .el-icon- {
+        &success {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        &error {
+            color: #fff;
+            font-size: 18px;
+        }
+    }
+
+    // .el-message__icon {
+    //   display: none;
+    // }
+    .el-icon-close:before {
+        color: #fff;
+    }
+}
+.el-dialog {
+    max-width: 420px;
+    &__header {
+        padding: 20px 30px;
+        border-bottom: 1px solid #eaedf3;
+    }
+    &__body {
+        padding: 20px 30px;
+        font-weight: 500;
+    }
+    &__title {
+        color: $baseColor;
+        font-weight: bold;
+    }
+}
+.el-dialog__headerbtn {
+    right: 24px;
+}
+.el-icon-close:before {
+    color: #0b1f48;
+    font-weight: bold;
+    font-size: 18px;
+}

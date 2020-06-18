@@ -23,31 +23,35 @@ ext {
     set('springCloudVersion', "Hoxton.SR1")
 }
 
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'develop' : profile
 
-node{
+
+node {
     version = '12.13.1'
     npmVersion = '6.12.1'
-    workDir = file("./frontend")
-    nodeModulesDir = file("./frontend")
 }
 
-task setUp(type: NpmTask){
+task setUp(type: YarnTask) {
     description = "Install NodeJS Packages"
     args = ['install']
-    inputs.files file('package.json')
-    outputs.files file('node_modules')
+    inputs.files file('./package.json')
 }
 
-task buildFrontend(type: NpmTask, dependsOn: setUp){
+task buildFrontend(type: YarnTask, dependsOn: setUp) {
+    println("Front Project Build Env : ${profile}")
     description = "Build Vue JS"
-    args = ['run', 'build']
+    if (project.hasProperty('profile')) {
+        args = ['workspace', 'frontend', "build:${profile}"]
+    } else {
+        args = ['workspace', 'frontend', "build"]
+    }
 }
 
 processResources.dependsOn 'buildFrontend'
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     compileOnly 'org.projectlombok:lombok'
@@ -56,7 +60,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 dependencyManagement {
