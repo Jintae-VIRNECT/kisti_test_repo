@@ -173,7 +173,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=master' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
