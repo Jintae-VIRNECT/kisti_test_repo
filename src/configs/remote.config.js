@@ -8,6 +8,7 @@ export const SIGNAL = {
   FLASH: 'signal:flash',
   MIC: 'signal:mic',
   SPEAKER: 'signal:speaker',
+  AR_FEATURE: 'signal:arFeature',
   AR_DRAWING: 'signal:arDrawing',
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
