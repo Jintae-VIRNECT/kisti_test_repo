@@ -7,6 +7,7 @@ import HomeRouter from './partials/home'
 import QRRouter from './partials/qr'
 import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 import InternetNotFound from 'WC-Modules/vue/components/errors/NetworkError'
+import HealthCheck from 'components/layout/common/HealthCheck'
 
 export default new Router({
 	name: 'router',
@@ -29,6 +30,11 @@ export default new Router({
 			path: '/504',
 			name: 'InternetNotFound',
 			component: InternetNotFound,
+		},
+		{
+			path: '/healthcheck',
+			name: 'healthcheck',
+			component: HealthCheck,
 		},
 	],
 })

@@ -2,19 +2,17 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle">
 			<el-col>
-				<h2>QR 로그인</h2>
-				<p>
-					QR 로그인 센터에서 발급한 로그인용 QR을 <br />인식하여 로그인합니다.
-				</p>
+				<h2>{{ $t('qrLogin.title') }}</h2>
+				<p v-html="$t('qrLogin.pageInfo')"></p>
 
 				<div class="qr-login-body">
-					<p>[사각형 안에 로그인용 QR을 카메라로 비춰주세요]</p>
+					<p>{{ $t('qrLogin.manual') }}</p>
 					<div class="qr-image-box">
 						<qrcode-stream @decode="onDecode" @init="onInit" />
 					</div>
 				</div>
 				<div class="howto-qr-login">
-					<p class="title">QR 로그인 방법</p>
+					<p class="title">{{ $t('qrLoginCenter.howToLogin') }}</p>
 					<div>
 						<ol>
 							<li v-for="(list, idx) of $t('qrLogin.loginHowTo')" :key="idx">
@@ -23,7 +21,7 @@
 								</p>
 							</li>
 						</ol>
-						<p>* QR 로그인 기능은 지원 가능 기기에서만 제공됩니다.</p>
+						<p>{{ $t('qrLoginCenter.LoginInfo') }}</p>
 					</div>
 				</div>
 			</el-col>

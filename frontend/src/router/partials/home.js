@@ -40,7 +40,7 @@ export default {
 			props: true,
 		},
 		{
-			path: '/find/:findCategory',
+			path: '/find/:findCategory?',
 			name: 'findTab',
 			component: Find,
 			props: true,
