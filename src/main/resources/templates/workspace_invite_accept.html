@@ -155,9 +155,9 @@
 												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
 											>
                                                 <img th:if="${role}=='MANAGER'"
-                                                     th:src="'http://image.virnect.com/images/mailling_service/manager.png'"/>
+                                                     th:src="'http://image.virnect.com/images/mailling_service/label_manager.png'"/>
                                                 <img th:if="${role}=='MEMBER'"
-                                                     th:src="'http://image.virnect.com/images/mailling_service/member.png'"/>
+                                                     th:src="'http://image.virnect.com/images/mailling_service/labe_member.png'"/>
 											</td>
 										</tr>
 										<tr style="margin:0;padding:0;">
@@ -171,7 +171,12 @@
 											<td
 												style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
 											>
-												<img src="http://image.virnect.com/images/mailling_service/remote_logo.png">
+                                                <img th:if="${#strings.contains(plan,'REMOTE')}"
+                                                     th:src="'http://image.virnect.com/images/mailling_service/plan_remote.png'"/>
+                                                <img th:if="${#strings.contains(plan,'MAKE')}"
+                                                     th:src="'http://image.virnect.com/images/mailling_service/plan_make.png'"/>
+                                                <img th:if="${#strings.contains(plan,'VIEW')}"
+                                                     th:src="'http://image.virnect.com/images/mailling_service/plan_view.png'"/>
 											</td>
 										</tr>
 										<tr style="margin:0;padding:0;">

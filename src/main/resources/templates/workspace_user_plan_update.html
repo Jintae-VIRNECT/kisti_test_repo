@@ -11,6 +11,7 @@
             text-decoration:none !important;
         }
     </style>
+
     <div align="center">
         <table
                 width="680"
@@ -40,10 +41,7 @@
                     <p
                             style="margin:0;padding:0;color:#333;font-size:15px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;line-height:1.6"
                     >
-                        [[${workspaceMasterNickName}]] 님이 <br/>
-                        <b>[[${workspaceName}]]</b>에 <b>[[${responseUserName}]]</b>의 참여를 요청했습니다. <br/>
-                        메일 수신일로부터 7일 이내에 참여 요청을 수락하면 [[${workspaceMasterNickName}]]님의 <br/>
-                        워크스페이스에서 할당된 플랜과 권한을 통해 버넥트 제품 이용 및 서비스 이용이 가능합니다.
+                        워크스페이스에서 할당된 플랜 정보가 변경되었습니다.
                     </p>
 
                     <table
@@ -71,12 +69,17 @@
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
-                                    colspan="2"
+                                    colspan="1"
                                     rowspan="1"
-                                    style="width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
+                                    style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                참여 요청 발신자
+                                워크스페이스 이름:
                             </th>
+                            <td
+                                    style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+                            >
+                                <p>[[${workspaceName}]]</p>
+                            </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
@@ -107,13 +110,10 @@
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
-                            <th
-                                    colspan="2"
-                                    rowspan="1"
-                                    style="padding-top: 16px;width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
-                            >
-                                참여 요청 수신자
-                            </th>
+                            <td colspan="2" style="margin:0;padding:8px 0;"></td>
+                        </tr>
+                        <tr style="margin:0;padding:0;">
+                            <td colspan="2" style="margin:0;padding:8px 0;border-top: 1px solid #e2e7ed;"></td>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
@@ -121,7 +121,7 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 닉네임:
+                                사용자 닉네임:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
@@ -135,7 +135,7 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 계정:
+                                사용자 계정:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
@@ -149,24 +149,7 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                워크스페이스 권한:
-                            </th>
-                            <td
-                                    style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
-                            >
-                                <img th:if="${role}=='MANAGER'"
-                                     th:src="'http://image.virnect.com/images/mailling_service/label_manager.png'"/>
-                                <img th:if="${role}=='MEMBER'"
-                                     th:src="'http://image.virnect.com/images/mailling_service/labe_member.png'"/>
-                            </td>
-                        </tr>
-                        <tr style="margin:0;padding:0;">
-                            <th
-                                    colspan="1"
-                                    rowspan="1"
-                                    style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
-                            >
-                                멤버 계정:
+                                할당된 플랜:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
@@ -197,17 +180,10 @@
                         </tbody>
                     </table>
 
-                    <p style="text-align: center;">
-                        <a th:href="@{${rejectUrl}}" style="margin: 0 4px;"><img
-                                src="http://image.virnect.com/images/mailling_service/invite_reject_btn.png"></a>
-                        <a th:href="@{${acceptUrl}}" style="margin: 0 4px;"><img
-                                src="http://image.virnect.com/images/mailling_service/invite_accept_btn.png"></a>
-                    </p>
-
                 </td>
             </tr>
             <tr style="margin:0;padding:0;">
-                <td height="100" style="height:36px;margin:0;padding:0;">&nbsp;
+                <td height="100" style="height:20px;margin:0;padding:0;">&nbsp;
 
                 </td>
             </tr>

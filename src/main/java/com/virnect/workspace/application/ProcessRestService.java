@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @FeignClient(name = "process-server", fallbackFactory = ProcessRestFallbackFactory.class)
 public interface ProcessRestService {
+    /**
+     * smic 때 사용했던 api
+     * @param workerUUID
+     * @return
+     */
     @GetMapping("/processes/subProcesses/count/onWorker/{workerUUID}")
     ApiResponse<SubProcessCountResponse> getSubProcessCount(@PathVariable("workerUUID") String workerUUID);
 

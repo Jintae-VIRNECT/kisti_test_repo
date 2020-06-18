@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Project: PF-Workspace
@@ -23,6 +24,7 @@ import java.io.Serializable;
 @ToString
 public class UserInvite implements Serializable {
     @Id
+    private String inviteId;//userId + workspaceId
     private String responseUserId;
     private String responseUserEmail;
     private String responseUserName;
@@ -33,17 +35,23 @@ public class UserInvite implements Serializable {
     private String requestUserNickName;
     private String workspaceId;
     private String workspaceName;
-    private String code;
     private String role;
-    private String makeType;
-    private String viewType;
+    private Boolean planRemote;
+    private Boolean planMake;
+    private Boolean planView;
+    private String planRemoteType;
+    private String planMakeType;
+    private String planViewType;
+    private LocalDateTime invitedDate;
+    private LocalDateTime updatedDate;
 
     @TimeToLive
     private Long expireTime;
 
     @Builder
-    public UserInvite(String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
-                      String workspaceId, String workspaceName, String code, String role, String makeType, String viewType, Long expireTime) {
+    public UserInvite(String inviteId, String responseUserId, String responseUserEmail, String responseUserName, String responseUserNickName, String requestUserId, String requestUserEmail, String requestUserName, String requestUserNickName,
+                      String workspaceId, String workspaceName, String role, Boolean planRemote, Boolean planMake, Boolean planView, String planRemoteType, String planMakeType, String planViewType, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
+        this.inviteId = inviteId;
         this.responseUserId = responseUserId;
         this.responseUserEmail = responseUserEmail;
         this.responseUserName = responseUserName;
@@ -54,10 +62,15 @@ public class UserInvite implements Serializable {
         this.requestUserNickName = requestUserNickName;
         this.workspaceId = workspaceId;
         this.workspaceName = workspaceName;
-        this.code = code;
         this.role = role;
-        this.makeType = makeType;
-        this.viewType = viewType;
+        this.planRemote = planRemote;
+        this.planMake = planMake;
+        this.planView = planView;
+        this.planRemoteType = planRemoteType;
+        this.planMakeType = planMakeType;
+        this.planViewType = planViewType;
+        this.invitedDate = invitedDate;
+        this.updatedDate = updatedDate;
         this.expireTime = expireTime;
     }
 }

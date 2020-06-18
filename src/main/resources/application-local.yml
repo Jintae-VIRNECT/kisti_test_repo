@@ -29,6 +29,10 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  messages:
+    encoding: UTF-8
+    basename: classpath:/messages
+
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -53,15 +57,35 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 
-## server url (use send workspace invite mail)
+## Mail send rediect Url
 serverUrl: "http://localhost:8082"
-
-## client url (use send workspace invite mail)
-redirectUrl: "https://localhost:8878"
+redirectUrl: "http://192.168.6.3:8878"
+contactUrl: "http://192.168.6.3:3000/contact/inquiry"
 
 ## Feign
 feign:
   hystrix:
     enabled: true
-
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 1000
+hystrix:
+  command:
+    "LicenseRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "UserRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "MessageRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
 

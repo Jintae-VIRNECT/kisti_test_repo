@@ -15,13 +15,16 @@ import java.util.List;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser,Long>, WorkspaceUserRepositoryCustom{
+public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser, Long>, WorkspaceUserRepositoryCustom {
     List<WorkspaceUser> findByWorkspace_Uuid(String workspaceId);
+
     Page<WorkspaceUser> findByUserId(String userId, Pageable pageable);
+
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
+
     List<WorkspaceUser> findTop4ByWorkspace_UuidOrderByCreatedDateDesc(String workspaceId);
-    Page<WorkspaceUser> findByWorkspace_UuidAndUserIdIn(String workspaceId, List<String> userIdList,Pageable pageable);
 
+    Page<WorkspaceUser> findByWorkspace_UuidAndUserIdIn(String workspaceId, List<String> userIdList, Pageable pageable);
 
-
+    long countWorkspaceUsersByUserId(String userId);
 }

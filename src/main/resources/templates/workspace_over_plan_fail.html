@@ -3,6 +3,10 @@
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap"
     />
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:500&display=swap"
+    />
     <style>
         .info-table a:link, span.MsoHyperlink {
             mso-style-priority:100 !important;
@@ -11,6 +15,7 @@
             text-decoration:none !important;
         }
     </style>
+
     <div align="center">
         <table
                 width="680"
@@ -18,7 +23,6 @@
                 cellspacing="0"
                 background="#fff"
                 style="font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;background:#fff;border:1px solid #e8edf1;"
-                class="info-table"
         >
             <tbody>
             <tr style="margin:0;padding:0;">
@@ -40,10 +44,8 @@
                     <p
                             style="margin:0;padding:0;color:#333;font-size:15px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;line-height:1.6"
                     >
-                        [[${workspaceMasterNickName}]] 님이 <br/>
-                        <b>[[${workspaceName}]]</b>에 <b>[[${responseUserName}]]</b>의 참여를 요청했습니다. <br/>
-                        메일 수신일로부터 7일 이내에 참여 요청을 수락하면 [[${workspaceMasterNickName}]]님의 <br/>
-                        워크스페이스에서 할당된 플랜과 권한을 통해 버넥트 제품 이용 및 서비스 이용이 가능합니다.
+                        워크스페이스 멤버에게 할당할 플랜이 없습니다.<br>
+                        플랜을 추가 구매하여 워크스페이스 멤버를 다시 초대해 주세요.
                     </p>
 
                     <table
@@ -51,7 +53,6 @@
                             cellpadding="0"
                             cellspacing="0"
                             style="margin:0 0 8px;padding:0;"
-                            class="info-table"
                     >
                         <tr>
                             <td style="padding-top: 44px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;font-weight:bold;text-align:left;">워크스페이스 정보</td>
@@ -71,12 +72,17 @@
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
-                                    colspan="2"
+                                    colspan="1"
                                     rowspan="1"
-                                    style="width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
+                                    style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                참여 요청 발신자
+                                워크스페이스 이름:
                             </th>
+                            <td
+                                    style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+                            >
+                                <p>[[${workspaceName}]]</p>
+                            </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
@@ -107,13 +113,16 @@
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
-                            <th
+                            <td colspan="2" style="margin:0;padding:8px 0;"></td>
+                        </tr>
+                        <tr style="margin:0;padding:0;">
+                            <td
                                     colspan="2"
-                                    rowspan="1"
-                                    style="padding-top: 16px;width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
-                            >
-                                참여 요청 수신자
-                            </th>
+                                    style="margin:0;padding:0;border-bottom:1px solid #e2e7ed"
+                            ></td>
+                        </tr>
+                        <tr style="margin:0;padding:0;">
+                            <td colspan="2" style="margin:0;padding:8px 0;"></td>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
@@ -121,12 +130,12 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 닉네임:
+                                사용자 닉네임:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <p>[[${responseUserNickName}]]</p>
+                                <p>[[${userNickName}]]</p>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
@@ -135,12 +144,12 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 계정:
+                                사용자 계정:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <p>[[${responseUserEmail}]]</p>
+                                <p>[[${userEmail}]]</p>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
@@ -149,15 +158,36 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                워크스페이스 권한:
+                                할당 성공 플랜:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <img th:if="${role}=='MANAGER'"
-                                     th:src="'http://image.virnect.com/images/mailling_service/label_manager.png'"/>
-                                <img th:if="${role}=='MEMBER'"
-                                     th:src="'http://image.virnect.com/images/mailling_service/labe_member.png'"/>
+                                <img th:if="${#strings.contains(successPlan,'REMOTE')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_remote.png'">
+                                <span th:if="${#strings.contains(successPlan,'REMOTE')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planRemoteType}]]
+                                </span>
+                                <span th:if="${#strings.contains(successPlan,'REMOTE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
+
+                                <img th:if="${#strings.contains(successPlan,'MAKE')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_make.png'">
+                                <span th:if="${#strings.contains(successPlan,'MAKE')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planMakeType}]]
+                                </span>
+                                <span th:if="${#strings.contains(successPlan,'MAKE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
+
+                                <img th:if="${#strings.contains(successPlan,'VIEW')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_view.png'">
+                                <span th:if="${#strings.contains(successPlan,'VIEW')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planViewType}]]
+                                </span>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
@@ -166,17 +196,36 @@
                                     rowspan="1"
                                     style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 계정:
+                                할당 실패 플랜:
                             </th>
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <img th:if="${#strings.contains(plan,'REMOTE')}"
-                                     th:src="'http://image.virnect.com/images/mailling_service/plan_remote.png'"/>
-                                <img th:if="${#strings.contains(plan,'MAKE')}"
-                                     th:src="'http://image.virnect.com/images/mailling_service/plan_make.png'"/>
-                                <img th:if="${#strings.contains(plan,'VIEW')}"
-                                     th:src="'http://image.virnect.com/images/mailling_service/plan_view.png'"/>
+                                <img th:if="${#strings.contains(failPlan,'REMOTE')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_remote.png'">
+                                <span th:if="${#strings.contains(failPlan,'REMOTE')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planRemoteType}]]
+                                </span>
+                                <span th:if="${#strings.contains(failPlan,'REMOTE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
+
+                                <img th:if="${#strings.contains(failPlan,'MAKE')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_make.png'">
+                                <span th:if="${#strings.contains(failPlan,'MAKE')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planMakeType}]]
+                                </span>
+                                <span th:if="${#strings.contains(failPlan,'MAKE')}">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
+
+                                <img th:if="${#strings.contains(failPlan,'VIEW')}"
+                                     th:style="'vertical-align:middle;'"
+                                     th:src="'http://image.virnect.com/images/mailling_service/plan_view.png'">
+                                <span th:if="${#strings.contains(failPlan,'VIEW')}"
+                                      th:style="'border: 1px solid #959ba5;color: #959ba5;font-size: 11px; font-weight: 500;font-family: Roboto, Dotum, serif;vertical-align: middle;display: inline-block; padding: 2px 6px; border-radius: 3px;margin-top:2px;'">
+                                    [[${planViewType}]]
+                                </span>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
@@ -197,11 +246,8 @@
                         </tbody>
                     </table>
 
-                    <p style="text-align: center;">
-                        <a th:href="@{${rejectUrl}}" style="margin: 0 4px;"><img
-                                src="http://image.virnect.com/images/mailling_service/invite_reject_btn.png"></a>
-                        <a th:href="@{${acceptUrl}}" style="margin: 0 4px;"><img
-                                src="http://image.virnect.com/images/mailling_service/invite_accept_btn.png"></a>
+                    <p>
+                        <a th:href="@{${workstationMembersUrl}}" th:style="'margin: 0 4px;'"><img src="http://image.virnect.com/images/mailling_service/workspace_member_list.png"></a>
                     </p>
 
                 </td>

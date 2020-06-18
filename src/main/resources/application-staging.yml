@@ -18,8 +18,6 @@ spring:
           envers:
             audit_table_suffix: _history
   redis:
-    port: 6379
-    database: 0
     host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
   cloud:
     loadbalancer:
@@ -66,13 +64,39 @@ cloud:
         name: "virnect-platform-qa"
         resource: "workspace/profile"
 
-## server url (use send workspace invite mail)
+## Mail send rediect Url
 serverUrl: "https://stgapi.virnect.com"
-
-## client url (use send workspace invite mail)
 redirectUrl: "https://stgworkstation.virnect.com"
+contactUrl: "https://stgwww.virnect.com/contact/inquiry"
 
 ## Feign
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 1000
+hystrix:
+  command:
+    "UserRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "ProcessRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "LicenseRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "MessageRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50

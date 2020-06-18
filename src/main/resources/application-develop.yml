@@ -7,7 +7,7 @@ spring:
     password: virnect1234!
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -27,6 +27,9 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  messages:
+    encoding: UTF-8
+    basename: classpath:/messages
 
 logging:
   level:
@@ -52,13 +55,39 @@ eureka:
     service-url:
       defaultZone: http://192.168.6.3:8761/eureka
 
-## server url (use send workspace invite mail)
+## Mail send rediect Url
 serverUrl: "http://192.168.6.3:8082"
-
-## rediect url (use send workspace invite mail)
 redirectUrl: "https://192.168.6.3:8878"
+contactUrl: "http://192.168.6.3:3000/contact/inquiry"
 
 ## Feign
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 1000
+hystrix:
+  command:
+    "UserRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "ProcessRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "LicenseRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
+    "MessageRestService":
+      execution.isolation.thread.timeoutInMilliseconds: 1000
+      metrics.rollingStats.timeInMilliseconds: 60000
+      circuitBreaker.requestVolumeThreshold: 5
+      circuitBreaker.errorThresholdPercentage: 50
