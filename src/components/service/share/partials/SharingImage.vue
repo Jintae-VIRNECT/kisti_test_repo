@@ -51,9 +51,11 @@ export default {
     },
     getHistoryObject() {
       // 모바일 수신부 타입: Int32
-      const imgId = Date.now()
-        .toString()
-        .substr(-9)
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
+      )
       return {
         id: imgId,
         fileName: this.fileData.name,
@@ -65,7 +67,7 @@ export default {
         const history = this.getHistoryObject()
 
         this.addHistory(history)
-        this.$call.shareImage(history)
+        // this.$call.shareImage(history)
       } else {
         alert('이미지가 로드중')
       }

@@ -135,16 +135,24 @@ export default {
         }
       }
       if (data.from === this.account.uuid) return
+      if (data.to !== this.account.uuid) return
 
       // frameResponse 수신
-      if (data.type !== AR_DRAWING.FRAME_RESPONSE) return
+      if (
+        ![
+          AR_DRAWING.FIRST_FRAME,
+          AR_DRAWING.FRAME,
+          AR_DRAWING.LAST_FRAME,
+        ].includes(data.type)
+      )
+        return
 
-      if (data.status === 'firstFrame') {
+      if (data.status === AR_DRAWING.FIRST_FRAME) {
         this.chunk = []
       }
       this.chunk.push(data.chunk)
 
-      if (data.status === 'lastFrame') {
+      if (data.status === AR_DRAWING.LAST_FRAME) {
         this.encodeImage(data.imgId)
       }
     },
@@ -199,11 +207,14 @@ export default {
         start += chunkSize
       }
       for (let i = 0; i < chunk.length; i++) {
-        if (i === 0) params.status = 'firstFrame'
-        else if (i === chunk.length - 1) params.status = 'lastFrame'
-        else params.status = 'frame'
         params.chunk = chunk[i]
-        this.$call.arDrawing(AR_DRAWING.FRAME_RESPONSE, params)
+        if (i === 0) {
+          this.$call.arDrawing(AR_DRAWING.FIRST_FRAME, params)
+        } else if (i === chunk.length - 1) {
+          this.$call.arDrawing(AR_DRAWING.FRAME, params)
+        } else {
+          this.$call.arDrawing(AR_DRAWING.LAST_FRAME, params)
+        }
       }
     },
   },
