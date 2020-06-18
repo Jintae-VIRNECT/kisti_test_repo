@@ -40,7 +40,6 @@
         class="chat-input__form-write"
         v-model="inputText"
         placeholder="메시지를 입력하세요."
-        @keydown.shift.enter.exact="newLine()"
         @keydown.enter.exact="doSend($event)"
       />
 
