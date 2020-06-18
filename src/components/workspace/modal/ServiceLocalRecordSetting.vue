@@ -50,17 +50,20 @@
           <p>
             녹화간격
           </p>
-          <div
-            class="rec-setting--tooltip-icon"
-            @mouseover="displayTooltip"
-            @mouseleave="hideTooltip"
-          ></div>
-        </div>
-        <div class="rec-setting__tooltip--body" v-show="showTooltip">
-          <p class="rec-setting__tooltip--text">
-            장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에 녹화
-            파일을 시간 간격으로 나눠서 생성합니다.
-          </p>
+          <popover
+            placement="right"
+            trigger="hover"
+            popperClass="custom-popover"
+            width="25.4286rem"
+          >
+            <div slot="reference" class="rec-setting--tooltip-icon"></div>
+            <div class="rec-setting__tooltip--body">
+              <p class="rec-setting__tooltip--text">
+                장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에
+                녹화 파일을 시간 간격으로 나눠서 생성합니다.
+              </p>
+            </div>
+          </popover>
         </div>
         <r-select
           class="rec-setting__selector"
@@ -71,11 +74,31 @@
         >
         </r-select>
       </div>
+
       <div class="rec-setting__row">
-        <p class="rec-setting__text">녹화 영상 해상도</p>
+        <div class="rec-setting__text custom">
+          <p>
+            녹화 영상 해상도
+          </p>
+          <popover
+            placement="right"
+            trigger="hover"
+            popperClass="custom-popover"
+            width="25.4286rem"
+          >
+            <div slot="reference" class="rec-setting--tooltip-icon"></div>
+            <div class="rec-setting__tooltip--body">
+              <p class="rec-setting__tooltip--text">
+                720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가
+                원활하지 않을 수 있습니다.
+              </p>
+            </div>
+          </popover>
+        </div>
+
         <r-select
           class="rec-setting__selector"
-          v-on:changeValue="setRecResolution"
+          v-on:changeValue="setRecInterval"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
@@ -99,6 +122,7 @@ import Modal from 'Modal'
 import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
+import Popover from 'Popover'
 
 import toastMixin from 'mixins/toast'
 
@@ -112,11 +136,10 @@ export default {
     RSelect,
     RCheck,
     RRadio,
+    Popover,
   },
   data() {
     return {
-      showTooltip: false,
-
       selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
@@ -298,13 +321,6 @@ export default {
         this.setAllowLocalRecording(false)
       }
       this.showToast()
-    },
-
-    displayTooltip() {
-      this.showTooltip = true
-    },
-    hideTooltip() {
-      this.showTooltip = false
     },
 
     init() {

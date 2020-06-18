@@ -6,6 +6,7 @@
     :width="'67.1429rem'"
     :height="'50.5714rem'"
     :beforeClose="beforeClose"
+    :class="'record-list-modal'"
   >
     <div class="record-list">
       <div class="record-list__paragraph">
@@ -13,11 +14,12 @@
           ᛫ 완료된 로컬 녹화 파일은 사용하시는 PC의 시스템에 귀속되어 있습니다.
         </p>
         <p class="paragraph--text">
-          ᛫ 공용 PC의 경우, 다른 계정에 의해서 녹화된 파일도 보일 수 있습니다.
+          ᛫ <strong>[다운로드]</strong> 시, 다운로드 경로는 브라우저의 설정을
+          따릅니다.
         </p>
         <p class="paragraph--text">
-          ᛫ 중요한 녹화 파일의 경우, [다운로드]를 하신 후 파일 리스트를 삭제하여
-          주시기 바랍니다.
+          ᛫ 브라우저의 Private 모드로 로컬 녹화를 진행할 경우, 브라우저를 닫으면
+          녹화 파일은 자동 삭제됩니다.
         </p>
       </div>
 
@@ -67,11 +69,12 @@ export default {
   data() {
     return {
       visibleFlag: false,
-      headers: ['파일명', '녹화된 시간', '파일 용량', '녹화 계정'],
-      columns: ['fileName', 'playTime', 'fileSize', 'accountName'],
+      headers: ['파일명', '녹화된 시간', '파일 용량', '협업 이름'],
+      columns: ['fileName', 'playTime', 'fileSize', 'roomName'],
       datas: [],
       tableTitle: '로컬 녹화 파일 리스트',
       selectedArray: [],
+      zipName: 'vremote_rec.zip',
     }
   },
   components: {
@@ -99,8 +102,6 @@ export default {
     },
 
     async download() {
-      console.log('download :: called')
-
       const uuids = []
       this.selectedArray.forEach((selected, index) => {
         if (selected) {
@@ -125,7 +126,7 @@ export default {
       })
 
       zip.generateAsync({ type: 'blob' }).then(content => {
-        FileSaver.saveAs(content, 'recorded.zip')
+        FileSaver.saveAs(content, this.zipName)
       })
     },
     deleteItems() {
@@ -151,7 +152,18 @@ export default {
     },
 
     async getList() {
-      return await IDBHelper.getAllDataArray()
+      const dataHandler = record => {
+        if (record.playTime <= 1) {
+          record.playTime = 0
+          record.fileSize = 0
+          record.disable = true
+        } else {
+          record.disable = false
+        }
+        return record
+      }
+
+      return await IDBHelper.getDataWithUserId(this.account.uuid, dataHandler)
     },
 
     //for record render
@@ -169,18 +181,29 @@ export default {
         let mText = '분'
         let sText = '초'
 
-        if (hours === 0) {
+        if (hours === 0 && minutes === 0 && seconds <= 1) {
           hours = ''
           hText = ''
-        }
-        if (minutes === 0) {
+
           minutes = ''
           mText = ''
+
+          seconds = '0'
+        } else {
+          if (hours === 0) {
+            hours = ''
+            hText = ''
+          }
+          if (minutes === 0) {
+            minutes = ''
+            mText = ''
+          }
+          if (seconds === 0) {
+            seconds = ''
+            sText = ''
+          }
         }
-        if (seconds === 0) {
-          seconds = ''
-          sText = ''
-        }
+
         return hours + hText + minutes + mText + seconds + sText
       }
 
@@ -214,6 +237,15 @@ export default {
 </script>
 
 <style lang="scss">
+.modal.record-list-modal .modal--inner {
+  border: none;
+  border-radius: 0.4286rem;
+}
+.modal.record-list-modal .modal--header {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.27);
+  border-radius: 0.4286rem 0.4286rem 0px 0px;
+}
+
 .record-list {
   width: 100%;
   height: 100%;
@@ -227,6 +259,10 @@ export default {
 .paragraph--text {
   color: #b7b7b7;
   font-size: 1rem;
+  & > strong {
+    color: #b7b7b7;
+    font-weight: 500;
+  }
 }
 .table__header {
   display: flex;

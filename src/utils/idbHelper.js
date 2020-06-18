@@ -14,12 +14,29 @@ async function initIDB() {
   db = new Dexie('RemoteMediaChunk')
 
   console.log(logPrefix + 'init idb')
-  db.version(1).stores({
+
+  /**
+   * Warning!! if you change column then
+   * increase version number
+   */
+  db.version(2).stores({
     RemoteMediaChunk:
-      '++id, groupId, uuid, fileName, playTime, fileSize,  blob, accountName',
+      '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
   })
 }
 
+/**
+ * Add Record to Idb
+ * @param {*} groupId media chunk group id
+ * @param {*} uuid media chunk private id
+ * @param {*} fileName media chunk file name
+ * @param {*} playTime media chunk play time(s)
+ * @param {*} fileSize media chunk size (byte)
+ * @param {*} blob media chunk blob
+ * @param {*} userId account id
+ * @param {*} accountName account nickname
+ * @param {*} roomName room name
+ */
 async function addMediaChunk(
   groupId,
   uuid,
@@ -27,10 +44,10 @@ async function addMediaChunk(
   playTime,
   fileSize,
   blob,
+  userId,
   accountName,
+  roomName,
 ) {
-  console.log(logPrefix + 'addMediaChunk')
-
   await db.RemoteMediaChunk.add({
     groupId: groupId,
     uuid: uuid,
@@ -38,17 +55,37 @@ async function addMediaChunk(
     playTime: playTime,
     fileSize: fileSize,
     blob: blob,
+    userId: userId,
     accountName: accountName,
+    roomName: roomName,
   })
 }
 
+/**
+ * Get All Data from Idb
+ */
 async function getAllDataArray() {
   return await db.RemoteMediaChunk.toArray()
 }
 
-async function getMediaChunkArray(fileName) {
-  console.log(fileName)
+/**
+ * Get data from idb with user id and excute dataHandler if exist
+ * @param {String} userId account id
+ * @param {Function} dataHandler data process function
+ */
+async function getDataWithUserId(userId, dataHandler) {
+  let result = await db.RemoteMediaChunk.where('userId')
+    .equals(userId)
+    .toArray()
 
+  if (dataHandler && typeof dataHandler === Function) {
+    result = result.map(dataHandler)
+  }
+
+  return result
+}
+
+async function getMediaChunkArray(fileName) {
   return await db.RemoteMediaChunk.where('fileName')
     .equals(fileName)
     .toArray()
@@ -61,7 +98,6 @@ async function getMediaChunkArrays(uuids) {
 }
 
 async function deleteMediaChunk(uuids) {
-  console.log('deleteMediaChunk :: ', uuids)
   await db.RemoteMediaChunk.where('uuid')
     .anyOf(uuids)
     .delete()
@@ -103,6 +139,7 @@ const IDBHelper = {
   getMediaChunkArrays: getMediaChunkArrays,
   deleteMediaChunk: deleteMediaChunk,
   getAllDataArray: getAllDataArray,
+  getDataWithUserId: getDataWithUserId,
   checkQuota: checkQuota,
   deleteGroupMediaChunk: deleteGroupMediaChunk,
 }
