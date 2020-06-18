@@ -159,6 +159,7 @@ export default {
         await taskService.updateSubTask(form.subTaskId, form)
         this.$message.success({
           message: this.$t('task.manage.message.subTaskUpdateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
@@ -166,6 +167,7 @@ export default {
         this.$message.error({
           message:
             this.$t('task.manage.message.subTaskUpdateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

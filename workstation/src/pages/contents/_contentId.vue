@@ -161,6 +161,7 @@ export default {
         await contentService.deleteContent([this.content.contentUUID])
         this.$message.success({
           message: this.$t('contents.info.message.deleteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
@@ -168,6 +169,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -177,6 +179,7 @@ export default {
         await contentService.updateContent(this.content.contentUUID, this.form)
         this.$message.success({
           message: this.$t('contents.info.message.updateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.content.shared = this.form.shared
@@ -184,6 +187,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.updateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

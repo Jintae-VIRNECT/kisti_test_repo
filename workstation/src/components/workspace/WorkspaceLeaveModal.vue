@@ -67,12 +67,14 @@ export default {
         await workspaceService.workspaceLeave(this.myProfile.uuid)
         this.$message.success({
           message: this.$t('workspace.setting.leaveInfo.success'),
+          duration: 2000,
           showClose: true,
         })
         this.$router.push('/')
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.leaveInfo.fail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

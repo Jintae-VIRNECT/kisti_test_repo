@@ -41,6 +41,7 @@ export default {
       data = await api('CONTENTS_LIST_MINE', {
         route: { userUUID },
         params: {
+          converteds: 'NO',
           workspaceUUID,
           userUUID,
           size: 10,
@@ -53,6 +54,7 @@ export default {
       data = await api('CONTENTS_LIST', {
         params: {
           workspaceUUID: activeWorkspaceGetter().uuid,
+          converteds: 'NO',
           size: 10,
           ...params,
         },
@@ -109,11 +111,11 @@ export default {
     const data = await api('CONTENT_DELETE', {
       params: {
         contentUUIDs,
-        workerUUID: myProfileGetter().uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
       },
     })
-    const err = data.deleteResponseList.find(res => !res.result)
-    if (err) throw err.msg
+    const errors = data.deleteResponseList.filter(res => !res.result)
+    if (errors.length) throw errors
   },
   /**
    * 컨텐츠 상태 변경

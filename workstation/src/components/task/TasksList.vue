@@ -203,12 +203,14 @@ export default {
         await await taskService.closeTask(taskId)
         this.$message.success({
           message: this.$t('task.list.message.closeSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
           message: this.$t('task.list.message.closeFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -231,12 +233,14 @@ export default {
         await await taskService.deleteTask(taskId)
         this.$message.success({
           message: this.$t('task.list.message.deleteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('deleted')
       } catch (e) {
         this.$message.error({
           message: this.$t('task.list.message.deleteFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

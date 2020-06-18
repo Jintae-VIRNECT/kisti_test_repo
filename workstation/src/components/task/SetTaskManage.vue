@@ -355,12 +355,14 @@ export default {
         await taskService.updateTask(this.taskId, form)
         this.$message.success({
           message: this.$t('task.manage.message.taskUpdateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
           message: this.$t('task.manage.message.taskUpdateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

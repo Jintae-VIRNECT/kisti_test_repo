@@ -164,13 +164,21 @@ export default {
         await contentService.deleteContent(selectedContents)
         this.$message.success({
           message: this.$t('contents.info.message.deleteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.emitChangedSearchParams()
-      } catch (e) {
-        this.$message.error({
-          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
-          showClose: true,
+      } catch (errors) {
+        errors.forEach((e, index) => {
+          setTimeout(() => {
+            this.$message.error({
+              message:
+                this.$t('contents.info.message.deleteFail') +
+                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
+              duration: 2000,
+              showClose: true,
+            })
+          }, index * 100)
         })
       }
     },
@@ -185,6 +193,10 @@ export default {
 #contents {
   .el-radio-group {
     margin-right: 6px;
+  }
+  .searchbar .el-button {
+    height: 34px;
+    padding: 7px 10px;
   }
 }
 </style>

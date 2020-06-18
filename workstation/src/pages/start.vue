@@ -100,6 +100,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.message.updateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

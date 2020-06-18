@@ -148,6 +148,7 @@ export default {
         await workspaceService.updateMembersRole(this.form)
         this.$message.success({
           message: this.$t('members.setting.message.updateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated', this.form)
@@ -162,6 +163,7 @@ export default {
         } else {
           this.$message.error({
             message: this.$t('members.add.message.updateFail') + `\n(${e})`,
+            duration: 2000,
             showClose: true,
           })
         }

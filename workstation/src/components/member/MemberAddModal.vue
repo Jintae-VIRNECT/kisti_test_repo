@@ -152,6 +152,7 @@ export default {
         await workspaceService.inviteMembers(this.userInfoList)
         this.$message.success({
           message: this.$t('members.add.message.inviteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated', this.form)
@@ -167,11 +168,13 @@ export default {
         } else if (/^Error: 1002/.test(e)) {
           this.$message.error({
             message: this.$t('members.add.message.memberAlready'),
+            duration: 2000,
             showClose: true,
           })
         } else {
           this.$message.error({
             message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
+            duration: 2000,
             showClose: true,
           })
         }

@@ -35,12 +35,14 @@ export default {
         await workspaceService.kickMember(this.data.uuid)
         this.$message.success({
           message: this.$t('members.kick.message.kickSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('kicked')
       } catch (e) {
         this.$message.error({
           message: this.$t('members.kick.message.kickFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
