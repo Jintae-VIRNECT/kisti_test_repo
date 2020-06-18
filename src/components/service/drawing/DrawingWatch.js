@@ -1,5 +1,7 @@
 // import { getCanvasSize } from 'utils/drawing'
 import { hexToRGBA } from 'utils/color'
+import { VIEW } from 'configs/view.config'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   watch: {
@@ -14,33 +16,36 @@ export default {
         }
       },
     },
-    canUseChannel(value) {
-      if (this.canvas) {
-        if (!value) {
-          this.canvas.isDrawingMode = false
-          this.canvas.freeDrawingCursor = 'default'
-          this.canvas.defaultCursor = 'default'
-          this.canvas.renderAll()
-        } else {
-          this.canvas.isDrawingMode = this.viewAction === 'line'
-          this.canvas.freeDrawingCursor =
-            this.viewAction === 'text' ? 'text' : 'default'
-          this.canvas.defaultCursor =
-            this.viewAction === 'text' ? 'text' : 'default'
-          this.canvas.renderAll()
-        }
+    // canUseChannel(value) {
+    //   if (this.canvas) {
+    //     if (!value) {
+    //       this.canvas.isDrawingMode = false
+    //       this.canvas.freeDrawingCursor = 'default'
+    //       this.canvas.defaultCursor = 'default'
+    //       this.canvas.renderAll()
+    //     } else {
+    //       this.canvas.isDrawingMode = this.viewAction === 'line'
+    //       this.canvas.freeDrawingCursor =
+    //         this.viewAction === 'text' ? 'text' : 'default'
+    //       this.canvas.defaultCursor =
+    //         this.viewAction === 'text' ? 'text' : 'default'
+    //       this.canvas.renderAll()
+    //     }
+    //   }
+    // },
+    view(val, oldVal) {
+      if (val !== oldVal && val === VIEW.DRAWING) {
+        this.optimizeCanvasSize()
       }
     },
     viewAction(value) {
-      if (this.canvas) {
+      if (this.canvas && this.account.roleType === ROLE.EXPERT_LEADER) {
         this.canvas.isDrawingMode = value === 'line'
         this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
         // this.canvas.defaultCursor = (value === 'text') ? 'text' : 'default'
         let cursor
         if (value === 'text') {
           cursor = 'text'
-        } else if (this.viewAction === 'zoom') {
-          cursor = 'zoom-out'
         }
         this.canvas.defaultCursor = cursor
         this.canvas.renderAll()

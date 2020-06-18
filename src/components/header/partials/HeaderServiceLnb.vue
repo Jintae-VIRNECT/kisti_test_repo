@@ -3,20 +3,22 @@
     <ul class="flex">
       <lnb-button
         text="실시간 공유"
-        keyvalue="stream"
+        :active="currentView === 'stream'"
         :image="require('assets/image/call/gnb_ic_shareframe.svg')"
         @click="setView('stream')"
       ></lnb-button>
       <lnb-button
         text="협업 보드"
+        :active="currentView === 'drawing'"
         keyvalue="drawing"
+        :notice="drawingNotice"
         :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
-        @click="setView('drawing')"
+        @click="goDrawing"
       ></lnb-button>
       <lnb-button
         text="AR 기능"
-        keyvalue="ar"
-        :notice="true"
+        :active="currentView === 'ar'"
+        :notice="arNotice"
         :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
         @click="permissionCheck"
       ></lnb-button>
@@ -26,7 +28,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL } from 'configs/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
 import web_test from 'utils/testing'
@@ -37,16 +40,53 @@ export default {
     LnbButton,
   },
   data() {
-    return {}
+    return {
+      drawingNotice: false,
+      arNotice: false,
+    }
   },
   computed: {
-    ...mapGetters(['mainView', 'participants']),
+    ...mapGetters(['mainView', 'participants', 'view', 'shareFile']),
+    currentView() {
+      if (this.view === VIEW.STREAM) {
+        return 'stream'
+      } else if (this.view === VIEW.DRAWING) {
+        return 'drawing'
+      } else if (this.view === VIEW.AR) {
+        return 'ar'
+      }
+      return ''
+    },
   },
   watch: {
     'mainView.permission': 'permissionSetting',
+    shareFile(file, oldFile) {
+      if (
+        file &&
+        file.id &&
+        file.id !== oldFile.id &&
+        this.currentView !== 'drawing'
+      ) {
+        this.drawingNotice = true
+      }
+    },
   },
   methods: {
     ...mapActions(['setView']),
+    goDrawing() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        this.setView(VIEW.DRAWING)
+        return
+      }
+      if (this.drawingNotice) {
+        this.drawingNotice = false
+      }
+      if (this.shareFile && this.shareFile.id) {
+        this.setView(VIEW.DRAWING)
+      } else {
+        this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
+      }
+    },
     permissionSetting(permission) {
       if (permission === true) {
         this.setView('ar')

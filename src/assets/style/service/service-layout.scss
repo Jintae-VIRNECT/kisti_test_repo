@@ -30,17 +30,27 @@
   width: calc(100% - #{$subview_width});
   height: calc(100% - #{$videolist_height});
   color: $color_text_main;
+  transition: all 0.3s;
   &.shareview {
     width: calc(100% - #{$subview_width + $share_width});
     margin-left: $share_width;
   }
 }
 
-.drawing-wrapper {
-  position: relative;
+.main-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: flex;
-  width: calc(100% - #{$subview_width + $share_width});
+  flex-direction: column;
+  width: 80%;
   height: 100%;
-  margin-left: $share_width;
-  color: $color_text_main;
+  transform: translate(-50%, -50%);
+  &.stream {
+  }
+  &.drawing {
+  }
+
+  &.ar {
+  }
 }

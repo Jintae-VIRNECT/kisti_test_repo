@@ -142,6 +142,7 @@ export default {
         this.$call.sendResolution({
           width: videoEl.offsetWidth,
           height: videoEl.offsetHeight,
+          orientation: '',
         })
       }
       this.loaded = true

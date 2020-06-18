@@ -164,7 +164,16 @@ export default {
           // 히스토리 초기화
           this.stackClear()
 
+          if (this.account.roleType === ROLE.EXPERT_LEADER) {
+            this.$call.shareImage({
+              ...this.file,
+              width: canvas.getWidth(),
+              height: canvas.getHeight(),
+            })
+          }
+
           this.isInit = true
+          this.$emit('initCanvas')
         })
       }
       bgImage.onerror = error => {
@@ -192,7 +201,7 @@ export default {
         imgHeight: this.canvas.getHeight(),
       }
       const param = getSignalParams(type, aId, object, state)
-      param.imgId = this.file.uId
+      param.imgId = this.file.id
 
       if (object) {
         param.oId = object.id

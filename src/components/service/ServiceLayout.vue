@@ -4,21 +4,28 @@
     <div class="remote-wrapper service-wrapper">
       <sub-view></sub-view>
 
-      <transition name="share" mode="out-in">
-        <share
-          v-if="account.roleType === EXPERT_LEADER && view === 'drawing'"
-        ></share>
+      <transition name="share">
+        <share v-if="isExpert && view === 'drawing'"></share>
       </transition>
 
-      <transition name="main" mode="out-in">
-        <stream-view v-if="view === 'stream'"></stream-view>
-        <drawing-view v-if="view === 'drawing'"></drawing-view>
-        <ar-view v-if="view === 'ar'"></ar-view>
-      </transition>
+      <main
+        class="main-wrapper"
+        :class="{ shareview: isExpert && view === 'drawing' }"
+      >
+        <transition name="main">
+          <stream-view v-show="view === 'stream'"></stream-view>
+        </transition>
+        <transition name="main">
+          <drawing-view v-show="view === 'drawing'"></drawing-view>
+        </transition>
+        <transition name="main">
+          <ar-view v-show="view === 'ar'"></ar-view>
+        </transition>
+      </main>
 
       <user-list
         :class="{
-          shareview: account.roleType === EXPERT_LEADER && view === 'drawing',
+          shareview: isExpert && view === 'drawing',
         }"
       ></user-list>
 
@@ -56,12 +63,17 @@ export default {
     Share: () => import('./share/Share'),
   },
   data() {
-    return {
-      EXPERT_LEADER: ROLE.EXPERT_LEADER,
-    }
+    return {}
   },
   computed: {
     ...mapGetters(['view']),
+    isExpert() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {},
   methods: {},
@@ -104,7 +116,9 @@ export default {
   transform: translateX(-#{$share_width});
 }
 
-.main-enter-active,
+.main-enter-active {
+  transition: opacity ease 0.2s 0.2s;
+}
 .main-leave-active {
   transition: opacity ease 0.2s;
 }
