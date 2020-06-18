@@ -175,7 +175,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 56px;
+  height: 4rem;
   border-top: solid;
   border-top-color: $color_darkgray_500;
   border-top-width: 1px;
@@ -188,7 +188,7 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   color: #a7a7a7;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
 }
 
@@ -205,8 +205,8 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 62px;
-  margin: 0px 0px 8px 0px;
+  height: 4.4286rem;
+  margin: 0px 0px 0.5714rem 0px;
   background: $color_darkgray_600;
 
   &.active {
@@ -228,25 +228,25 @@ export default {
   flex-shrink: 1;
   overflow: hidden;
   color: #d3d3d3;
-  font-size: 15px;
+  font-size: 1.0714rem;
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
 }
 .table__cell--toggle {
-  margin: 23px 19px 19px 22px;
+  margin: 1.6429rem 1.3571rem 1.3571rem 1.5714rem;
 }
 
 .table__body--empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 342px;
+  height: 24.4286rem;
   background-color: $color_darkgray_600;
 }
 
 .table__body--empty-text {
   color: #a7a7a7;
-  font-size: 16px;
+  font-size: 1.1429rem;
 }
 </style>

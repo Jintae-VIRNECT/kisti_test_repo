@@ -120,10 +120,10 @@ export default {
       selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
-      modalWidth: 568,
-      modalHeight: 510,
+      modalWidth: '40.5714rem',
+      modalHeight: '36.4286rem',
 
-      modalSmallHeight: 376,
+      modalSmallHeight: '26.8571rem',
 
       localRecordingTime: '',
       localRecordingResolution: '',
