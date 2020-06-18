@@ -17,7 +17,12 @@ import { reset } from 'utils/callOptions'
 import { hexToAHEX, ahexToHEX } from 'utils/color'
 import { SIGNAL } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { normalizedPos, originalPos } from 'utils/normalize'
+import {
+  normalizedPosX,
+  normalizedPosY,
+  originalPosX,
+  originalPosY,
+} from 'utils/normalize'
 
 function hexToLottie(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16) / 255,
@@ -100,8 +105,8 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPos(event.offsetX, this.resolution.width),
-        posY: normalizedPos(event.offsetY, this.resolution.height),
+        posX: normalizedPosX(event.offsetX, this.resolution.width),
+        posY: normalizedPosY(event.offsetY, this.resolution.height),
       })
     },
     receivePointing(receive) {
@@ -110,8 +115,8 @@ export default {
       let color = ahexToHEX(data.color)
       this.pointList.push({
         coords: [
-          originalPos(data.posX, this.resolution.width),
-          originalPos(data.posY, this.resolution.height),
+          originalPosX(data.posX, this.resolution.width),
+          originalPosY(data.posY, this.resolution.height),
         ],
         color: color,
         opacity: data.opacity,

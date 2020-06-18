@@ -1,6 +1,11 @@
 import { hexToAHEX } from './color'
 import { DRAWING, AR_DRAWING } from 'configs/remote.config'
-import { normalizedPos, originalPos } from './normalize'
+import {
+  normalizedPosX,
+  normalizedPosY,
+  originalPosX,
+  originalPosY,
+} from './normalize'
 // tId: targetId
 // oId: objectId
 // aId: undolist 아이디
@@ -143,8 +148,8 @@ export const getSignalParams = function getSignalParams(
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPos(object.left, status.imgWidth),
-        posY: normalizedPos(object.top, status.imgHeight),
+        posX: normalizedPosX(object.left, status.imgWidth),
+        posY: normalizedPosY(object.top, status.imgHeight),
       }
       break
     case DRAWING.LINE_MOVE:
@@ -153,8 +158,8 @@ export const getSignalParams = function getSignalParams(
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPos(object.left, status.imgWidth),
-        posY: normalizedPos(object.top, status.imgHeight),
+        posX: normalizedPosX(object.left, status.imgWidth),
+        posY: normalizedPosY(object.top, status.imgHeight),
       }
       break
     case DRAWING.LINE_UP:
@@ -163,8 +168,8 @@ export const getSignalParams = function getSignalParams(
         aId: aId - 1,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPos(object.left, status.imgWidth),
-        posY: normalizedPos(object.top, status.imgHeight),
+        posX: normalizedPosX(object.left, status.imgWidth),
+        posY: normalizedPosY(object.top, status.imgHeight),
       }
       break
     case DRAWING.TEXT_ADD:
@@ -175,8 +180,8 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: normalizedPos(object.left, status.imgWidth),
-        posY: normalizedPos(object.top, status.imgHeight),
+        posX: normalizedPosX(object.left, status.imgWidth),
+        posY: normalizedPosY(object.top, status.imgHeight),
         width: object.width,
         height: object.height,
       }
@@ -190,8 +195,8 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: normalizedPos(object.left, status.imgWidth),
-        posY: normalizedPos(object.top, status.imgHeight),
+        posX: normalizedPosX(object.left, status.imgWidth),
+        posY: normalizedPosY(object.top, status.imgHeight),
         width: object.width,
         height: object.height,
       }
@@ -221,10 +226,13 @@ export const getReceiveParams = function getReceiveParams(type, params) {
   if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
   for (let key in params) {
     if ('posX' === key) {
-      params['posX'] = originalPos(parseFloat(params['posX']), params.imgWidth)
+      params['posX'] = originalPosX(parseFloat(params['posX']), params.imgWidth)
     }
     if ('posY' === key) {
-      params['posY'] = originalPos(parseFloat(params['posY']), params.imgHeight)
+      params['posY'] = originalPosY(
+        parseFloat(params['posY']),
+        params.imgHeight,
+      )
     }
     // if (['width', 'height', 'size'].indexOf(key) >= 0) {
     //   params[key] = parseFloat(params[key]) / params.scale
