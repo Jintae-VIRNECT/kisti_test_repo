@@ -69,19 +69,21 @@ public class ContentController {
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "")
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
+            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
             @PathVariable(value = "userUUID") String userUUID
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
+            , @RequestParam(value = "converteds", defaultValue = "ALL") String converteds
             , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
             , @ApiIgnore PageRequest pageable) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, null, pageable.of());
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -437,5 +439,13 @@ public class ContentController {
         }
         ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
         return ResponseEntity.ok(responseMessage);
+    }
+
+    @GetMapping("/temp/{targetData}")
+    public ResponseEntity<ApiResponse<String>> temp(@PathVariable("targetData") String targetData) {
+
+        ApiResponse<String> res = this.contentService.checkParameterEncoded(targetData);
+
+        return ResponseEntity.ok(res);
     }
 }
