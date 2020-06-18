@@ -192,7 +192,7 @@ export default {
         imgHeight: this.canvas.getHeight(),
       }
       const param = getSignalParams(type, aId, object, state)
-      param.imgId = this.file.uId
+      param.imgId = this.file.id
 
       if (object) {
         param.oId = object.id
