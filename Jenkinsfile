@@ -1,11 +1,9 @@
 pipeline {
   agent any
-  
   environment {
     GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
     REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
   }
-
   stages {
     stage('Pre-Build') {
       steps {
@@ -52,6 +50,7 @@ pipeline {
             branch 'master'
           }
           steps {
+            sh 'git checkout $GIT_TAG'
             sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
         }
@@ -89,7 +88,7 @@ pipeline {
           steps {
             sh 'count=`docker ps -a | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8082:8082 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-workspace pf-workspace'
-            sh 'docker image prune -f'
+            sh 'docker image prune -a -f'
           }
         }
 
@@ -101,7 +100,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-workspace").push("${GIT_TAG}")
+                  docker.image("pf-workspace:${GIT_TAG}").push("${GIT_TAG}")
                 }
               }
 
@@ -126,7 +125,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune -f'
+                          execCommand: 'docker image prune -a -f'
                         )
                       ]
                     )
@@ -145,7 +144,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-workspace").push("${GIT_TAG}")
+                  docker.image("pf-workspace:${GIT_TAG}").push("${GIT_TAG}")
                 }
               }
 
@@ -170,7 +169,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune -f'
+                          execCommand: 'docker image prune -a -f'
                         )
                       ]
                     )
@@ -181,9 +180,8 @@ pipeline {
                  def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                  def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """  
-                
-                sh "curl  -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                """                             
+                sh "curl -H 'Content-Type: application/json' -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
             }
           }
@@ -191,6 +189,7 @@ pipeline {
       }
     }
   }
+
   post {
     always {
       emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
