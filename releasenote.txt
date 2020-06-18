@@ -1,15 +1,11 @@
+
 RELEASE
+- 없음
 
 New Features
-healthcheck 추가
-서비스 이용 약관 업데이트
+- 없음
 
 Bug Fixes
-/find/email
-/find/reset_password
-/healthcheck
-라우터맵핑 추가
-언어변경 ui 감추기
-자바 라우터 맵핑 변경
+- 운영 환경 빌드 명령어 수정
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
