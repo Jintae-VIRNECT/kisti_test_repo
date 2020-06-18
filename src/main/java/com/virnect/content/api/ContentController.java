@@ -255,7 +255,11 @@ public class ContentController {
     @ApiOperation(value = "컨텐츠 삭제 요청")
     @DeleteMapping
     public ResponseEntity<ApiResponse<ContentDeleteListResponse>> contentDeleteRequestHandler(
-            @RequestBody @Valid ContentDeleteRequest contentDeleteRequest) {
+            @RequestBody @Valid ContentDeleteRequest contentDeleteRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            log.error("REQUEST BINDING contentDeleteRequest: {}", contentDeleteRequest.toString());
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(contentDeleteRequest);
         return ResponseEntity.ok(responseMessage);
     }

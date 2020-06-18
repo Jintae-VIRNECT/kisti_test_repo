@@ -521,7 +521,7 @@ public class ContentService {
     @Transactional
     public ApiResponse<ContentDeleteListResponse> contentDelete(ContentDeleteRequest contentDeleteRequest)  {
         final String[] contentUUIDs = contentDeleteRequest.getContentUUIDs();
-        final String workerUUID     = contentDeleteRequest.getWorkerUUID();
+        final String workspaceUUID  = contentDeleteRequest.getWorkspaceUUID();
 
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
@@ -539,19 +539,31 @@ public class ContentService {
                     .updatedDate(content.getUpdatedDate())
                     .build();
 
-            // 1-1 권한확인 - 권한이 맞지 않다면 continue.
+            // 1-1 권한확인 - 권한이 맞지 않다면 continue. -> 기존에는 컨텐츠 관리자의 정보를 확인하여 삭제. 혹시 몰라 주석처리.
             // TODO : 관리자 관련 처리 되어있지 않음
-            log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
-            if (!content.getUserUUID().equals(workerUUID)) {
-                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getCode());
-                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
+//            log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
+//            if (!content.getUserUUID().equals(workerUUID)) {
+//                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getCode());
+//                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
+//                contentDeleteResponse.setResult(false);
+//                deleteResponseList.add(contentDeleteResponse);
+//                continue;
+//            }
+
+            // 1-1 권한확인 - 권한이 맞지 않다면 continue. -> 컨텐츠를 삭제하려는 워크스페이스UUID를 받아서 처리.
+            log.info("Content Delete : contentWorkspace -> {}, requestWorkspace -> {}", content.getWorkspaceUUID(), workspaceUUID);
+            if (!content.getWorkspaceUUID().equals(workspaceUUID)) {
+                contentDeleteResponse.setCode(ErrorCode.ERROR_WORKSPACE.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERROR_WORKSPACE.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
+
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
 
+            // 삭제 시 각각의 케이스를 나눔. (웹 쪽 다국어와 관련하여 errorcode 추가)
             // 작업 전환 여부
             if (YesOrNo.YES.equals(content.getConverted())) {
                 contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_MANAGED.getCode());
