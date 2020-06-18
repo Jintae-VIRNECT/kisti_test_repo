@@ -1,7 +1,7 @@
 <template>
-  <div class="drawing-canvas">
-    <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
-    <canvas id="cursorCanvas"></canvas>
+  <div class="ardrawing-canvas">
+    <canvas id="arDrawingCanvas" ref="arDrawingCanvas"></canvas>
+    <canvas id="arCursorCanvas"></canvas>
   </div>
 </template>
 <script>
@@ -18,7 +18,7 @@ import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
 
 export default {
-  name: 'DrawingCanvas',
+  name: 'ARDrawingCanvas',
   props: {
     file: Object,
   },
@@ -96,7 +96,7 @@ export default {
         )
 
         // 커서 캔버스 생성.
-        const cursor = new fabric.StaticCanvas('cursorCanvas')
+        const cursor = new fabric.StaticCanvas('arCursorCanvas')
         cursor.setWidth(canvas.getWidth())
         cursor.setHeight(canvas.getHeight())
 
@@ -123,7 +123,7 @@ export default {
     initCanvas() {
       this.isInit = false
       if (this.canvas === null) {
-        const canvas = new fabric.Canvas('drawingCanvas', {
+        const canvas = new fabric.Canvas('arDrawingCanvas', {
           backgroundColor: '#000000',
           isDrawingMode: true,
           freeDrawingCursor: 'default',
@@ -153,6 +153,7 @@ export default {
           this.stackClear()
 
           this.isInit = true
+          this.$emit('loading')
         })
       }
       bgImage.onerror = error => {
@@ -180,7 +181,7 @@ export default {
         imgHeight: this.canvas.getHeight(),
       }
       const param = getSignalParams(type, aId, object, state)
-      param.imgId = this.file.uId
+      param.imgId = this.file.id
 
       if (object) {
         param.oId = object.id
@@ -238,7 +239,18 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.ardrawing-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: fit-content;
+  max-width: 100%;
+  height: fit-content;
+  max-height: 100%;
+  margin: auto;
+  transform: translate(-50%, -50%);
+}
 .drawing-toolbox {
   position: fixed;
   top: 74px;
@@ -246,7 +258,7 @@ export default {
   z-index: 1;
   border-radius: 6px;
 }
-#cursorCanvas {
+#arCursorCanvas {
   position: absolute;
   top: 0;
   left: 0;

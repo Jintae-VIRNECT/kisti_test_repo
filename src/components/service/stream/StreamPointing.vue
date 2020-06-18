@@ -43,7 +43,6 @@ function hexToLottie(hex, alpha) {
 export default {
   name: 'Pointing',
   props: {
-    scale: Number,
     videoSize: Object,
   },
   data() {
@@ -60,33 +59,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction', 'resolutions']),
+    ...mapGetters(['tools', 'mainView', 'viewAction']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
-    },
-    resolution() {
-      const idx = this.resolutions.findIndex(
-        data => data.connectionId === this.mainView.connectionId,
-      )
-      if (idx < 0) {
-        return {
-          width: 0,
-          height: 0,
-        }
-      }
-      return this.resolutions[idx]
-    },
-    widthScale() {
-      if (this.resolution && this.resolution.width > 0) {
-        return this.$el.offsetWidth / this.resolution.width
-      }
-      return 1
-    },
-    heightScale() {
-      if (this.resolution && this.resolution.height > 0) {
-        return this.$el.offsetHeight / this.resolution.height
-      }
-      return 1
     },
   },
   methods: {
@@ -105,8 +80,8 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPosX(event.offsetX, this.resolution.width),
-        posY: normalizedPosY(event.offsetY, this.resolution.height),
+        posX: normalizedPosX(event.offsetX, this.videoSize.width),
+        posY: normalizedPosY(event.offsetY, this.videoSize.height),
       })
     },
     receivePointing(receive) {
@@ -115,8 +90,8 @@ export default {
       let color = ahexToHEX(data.color)
       this.pointList.push({
         coords: [
-          originalPosX(data.posX, this.resolution.width),
-          originalPosY(data.posY, this.resolution.height),
+          originalPosX(data.posX, this.videoSize.width),
+          originalPosY(data.posY, this.videoSize.height),
         ],
         color: color,
         opacity: data.opacity,

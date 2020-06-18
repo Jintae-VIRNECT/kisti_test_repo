@@ -7,9 +7,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
-import { ROLE } from 'configs/remote.config'
+import { ROLE, DRAWING } from 'configs/remote.config'
 
-import { getCanvasSize, getSignalParams } from 'utils/drawing'
+import { getCanvasSize, getSignalParams, getChunk } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
 import DrawingObject from './DrawingObject'
 import DrawingHistory from './DrawingHistory'
@@ -165,11 +165,31 @@ export default {
           this.stackClear()
 
           if (this.account.roleType === ROLE.EXPERT_LEADER) {
-            this.$call.shareImage({
-              ...this.file,
+            const params = {
+              imgId: this.file.id,
               width: canvas.getWidth(),
               height: canvas.getHeight(),
-            })
+            }
+
+            const chunk = getChunk(this.file.img)
+
+            let type
+
+            for (let i = 0; i < chunk.length; i++) {
+              if (i === 0) {
+                type = DRAWING.FIRST_FRAME
+                if (chunk.length === 1) {
+                  type = DRAWING.LAST_FRAME
+                }
+              } else if (i === chunk.length - 1) {
+                type = DRAWING.LAST_FRAME
+              } else {
+                type = DRAWING.FRAME
+              }
+              params.chunk = chunk[i]
+
+              this.$call.drawing(type, params)
+            }
           }
 
           this.isInit = true

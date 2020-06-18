@@ -28,3 +28,10 @@ export default {
   mounted() {},
 }
 </script>
+<style>
+.ar-drawing {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>
