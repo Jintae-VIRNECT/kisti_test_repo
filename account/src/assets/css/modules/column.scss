@@ -1,7 +1,31 @@
+.column-user {
+  .avatar {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+  }
+  & > span {
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+}
+
 .column-plan {
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & > img {
+    box-sizing: border-box;
+    margin-top: 1px;
+    margin-right: 4px;
+    border: solid 1px #dde1ea;
+    border-radius: 100px;
+  }
   & > .el-tag {
     height: auto;
-    margin: 0 6px;
+    margin: 1px 6px 0;
     padding: 4px 6px;
     font-size: 11px;
     line-height: 11px;
@@ -14,5 +38,39 @@
       color: #828a97;
       border-color: #828a97;
     }
+  }
+}
+
+.column-role {
+  & > .el-tag {
+    height: 24px;
+    padding: 0 12px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.9;
+    border: none;
+  }
+  .MASTER {
+    background: #365595;
+  }
+  .MANAGER {
+    background: #1f87e6;
+  }
+  .MEMBER {
+    background: #7ac1fc;
+  }
+}
+
+.column-status {
+  & > span {
+    display: inline-block;
+    box-sizing: border-box;
+    min-width: 74px;
+    margin: -10px 0;
+    padding: 4px 10px;
+    font-size: 12.6px;
+    text-align: center;
+    border: solid 1px;
+    border-radius: 100px;
   }
 }

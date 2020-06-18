@@ -19,7 +19,12 @@
     "emailDesc": "가입 시 등록한 이메일 주소는 변경할 수 없습니다.",
     "password": "비밀번호",
     "passwordDesc": "주기적인 비밀번호 변경은 보안 강화에 도움이 됩니다.",
-    "passwordChange": "비밀번호 변경"
+    "passwordChange": "비밀번호 변경",
+    "marketing": "이벤트 마케팅 수신",
+    "marketingAgree": "동의",
+    "marketingDisagree": "거부",
+    "marketingChange": "마케팅 수신 동의 변경",
+    "secession": "회원 탈퇴"
   },
   "additional": {
     "title": "사용자 추가 정보",
@@ -29,7 +34,10 @@
     "birthChange": "생년월일 변경",
     "contact": "연락처",
     "contactEmpty": "등록된 연락처가 없습니다.",
-    "contactChange": "연락처 변경"
+    "contactChange": "연락처 변경",
+    "recoveryEmail": "복구 이메일",
+    "recoveryEmailEmpty": "복구 이메일이 없습니다.",
+    "recoveryEmailChange": "복구 이메일 변경"
   },
   "imageChangeModal": {
     "title": "프로필 이미지 설정",
@@ -93,13 +101,57 @@
       "fail": "생년월일 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
     }
   },
+  "marketInfoReceive": {
+    "title": "이벤트 마케팅 수신 동의",
+    "contents": "VIRNECT의 제품 및 서비스 신규 소식, 프로모션 이벤트 소식을 이메일로 수신합니다.",
+    "message": {
+      "success": "이벤트 마케팅 수신 동의 정보 변경에 성공했습니다.",
+      "fail": "변경에 실패했습니다. 잠시 후 다시 이용해 주세요."
+    }
+  },
+  "secession": {
+    "title": "회원 탈퇴",
+    "password": "비밀번호",
+    "passwordDesk": "비밀번호 입력",
+    "secessionReason": "탈퇴 사유",
+    "secessionReasonDesk": "탈퇴 사유 선택",
+    "secessionSelect": [
+      "개인정보 유출 우려",
+      "제품 및 서비스 오류로 인한 불만족",
+      "제품 이용 가격에 대한 부담",
+      "서비스 사용 빈도가 낮음"
+      
+    ],
+    "secessionReasonEtc": "탈퇴 사유를 입력해 주세요.",
+    "notice": "탈퇴 주의 사항",
+    "noticeLists": [
+      "플랜 및 라이선스 관련 내용은 약관 내용을 따릅니다.",
+      "탈퇴 후 회원 정보 및 서비스 이용 기록, 제품 및 서비스 관련 데이터는 모두 삭제되며, 삭제된 데이터는 복구되지 않습니다.",
+      "단, 관련 법령에 따라 버넥트의 개인정보처리정책에 명시되어 있는 보관 의무를 가지고 있는 정보는 관련 법령이 규정한 기간 동안 보존됩니다."
+    ],
+    "done": "회원 탈퇴 관련 내용에 모두 동의하고, 회원 탈퇴를 진행합니다.",
+    "message": {
+      "success": "탈퇴 처리되었습니다.",
+      "fail": "비밀번호가 일치하지 않습니다."
+    }
+  },
   "contactChangeModal": {
     "title": "연락처 변경",
+    "contact": "연락처",
     "contactPlaceholder": "전화번호를 입력해 주세요",
     "submit": "변경",
     "message": {
       "success": "연락처 변경에 성공하였습니다.",
       "fail": "연락처 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
+    }
+  },
+  "recoveryEmailChangeModal": {
+    "title": "복구 이메일 변경",
+    "recoveryEmail": "복구 이메일",
+    "submit": "변경",
+    "message": {
+      "success": "복구 이메일 변경에 성공하였습니다.",
+      "fail": "복구 이메일 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
     }
   }
 }

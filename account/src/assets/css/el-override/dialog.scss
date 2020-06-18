@@ -1,4 +1,6 @@
 .el-dialog {
+  border-radius: 4px;
+
   &__header {
     padding: 20px 30px;
     border-bottom: solid 1px #eaedf3;
@@ -16,9 +18,65 @@
   }
   &__body {
     padding: 24px 30px;
+    color: $font-color-content;
     p {
-      color: $font-color-content;
-      line-height: 24px;
+      line-height: 1.71;
+    }
+    .mail-box {
+      padding: 28px 0;
+      color: #333333;
+      text-align: center;
+      background-color: #f5f7fa;
+    }
+    .el-divider {
+      margin: 20px 0;
+      background: #eaedf3;
+    }
+  }
+  .el-form {
+    margin: 30px 0 54px;
+    &.secession-form {
+      margin: 28px 0 24px;
+    }
+  }
+  .secession-notice {
+    margin-bottom: 20px;
+    font-size: 12.6px;
+    dt {
+      margin-bottom: 6px;
+      color: #0b1f48;
+    }
+    li {
+      position: relative;
+      padding-left: 8px;
+      &:before {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        content: "-";
+      }
+      p {
+        color: #5e6b81;
+      }
+    }
+  }
+  .el-form-item {
+    margin-bottom: 30px;
+
+    &:not(.horizon) .el-input + .el-input {
+      margin-top: 10px;
+    }
+    &.horizon .el-form-item__content {
+      display: flex;
+      width: 100%;
+
+      .el-input,
+      .el-select {
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
     }
   }
   &__footer {

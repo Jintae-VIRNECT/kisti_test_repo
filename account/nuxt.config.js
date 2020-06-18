@@ -4,12 +4,16 @@ const dotenv = require('dotenv')
 const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
+const path = require('path')
 
 module.exports = {
   /*
    ** Headers of the page
    */
   head: {
+    htmlAttrs: {
+      lang: 'ko',
+    },
     title: 'account',
     meta: [
       { charset: 'utf-8' },
@@ -21,37 +25,43 @@ module.exports = {
   /**
    * Plugins
    */
-  plugins: ['@/plugins/element-ui'],
-  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources'],
+  modules: [
+    ['nuxt-i18n', lang],
+    '@nuxtjs/style-resources',
+    ['nuxt-env', { keys: [] }],
+    '@nuxtjs/axios',
+  ],
+  plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
   /*
    ** Customize style
    */
   styleResources: {
     scss: [
-      '../../WC-Modules/src/assets/css/mixin.scss',
+      resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
       '@/assets/css/_vars.scss',
     ],
   },
   css: [
-    '../../WC-Modules/src/assets/css/reset.scss',
+    resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
     '@/assets/css/global.scss',
   ],
-  loading: { color: '#1b293e' },
+  loading: { color: '#1468e2' },
   /**
    * dir
    */
-  srcDir: 'src/',
-  modulesDir: ['../../node_modules'],
+  srcDir: resolve(__dirname, 'src'),
+  modulesDir: [resolve(__dirname, '../WC-Modules/src')],
   /**
    * env
    */
   env: {
     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     SSL_ENV: JSON.stringify(process.env.SSL_ENV),
-    USER_API_URL: env.USER_API_URL,
-    WORKSPACE_API_URL: env.WORKSPACE_API_URL,
-    CONTENT_API_URL: env.CONTENT_API_URL,
-    PROCESS_API_URL: env.PROCESS_API_URL,
+    TARGET_ENV: env.TARGET_ENV,
+    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
+    PROMOTION_SITE_URL: env.PROMOTION_SITE_URL,
+    API_GATEWAY_URL: env.API_GATEWAY_URL,
+    API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
   /**
    * build
@@ -67,5 +77,9 @@ module.exports = {
   server: {
     port: env.NUXT_PORT, // default: 3000
     host: env.NUXT_HOST, // default: localhost
+    https: /(local|develop)/.test(env.TARGET_ENV) && {
+      key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
+    },
   },
 }

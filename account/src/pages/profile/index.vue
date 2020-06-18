@@ -26,9 +26,12 @@
               </span>
             </div>
             <div class="avatar" @click="visible.imageChangeModal = true">
-              <img :src="me.image" />
+              <div
+                class="image"
+                :style="`background-image: url('${profileImg}')`"
+              />
               <i>
-                <img src="~assets/images/ic-camera-alt.svg" />
+                <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
             </div>
           </div>
@@ -52,7 +55,7 @@
                 {{ $t('profile.info.nicknameDesc') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.nicknameChangeModal = true">
               {{ $t('profile.info.nicknameChange') }}
             </el-button>
           </div>
@@ -62,7 +65,12 @@
       <el-card>
         <div slot="header">
           <h3>{{ $t('profile.account.title') }}</h3>
-          <span>{{ $t('profile.account.desc') }}</span>
+          <el-tooltip
+            :content="$t('profile.account.desc')"
+            placement="bottom-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
         </div>
         <div>
           <div class="profile__info">
@@ -82,9 +90,46 @@
                 {{ $t('profile.account.passwordDesc') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.passwordChangeModal = true">
               {{ $t('profile.account.passwordChange') }}
             </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <div class="content">
+              <span class="value">
+                {{ myBirth }}
+              </span>
+            </div>
+            <el-button type="text" @click="visible.birthChangeModal = true">
+              {{ $t('profile.additional.birthChange') }}
+            </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.account.marketing') }}</h4>
+            <div class="content">
+              <span>
+                {{
+                  me.marketInfoReceive == 'ACCEPT'
+                    ? $t('profile.account.marketingAgree')
+                    : $t('profile.account.marketingDisagree')
+                }}
+              </span>
+            </div>
+            <el-button
+              type="text"
+              @click="visible.MarketInfoReceiveModal = true"
+            >
+              {{ $t('profile.account.marketingChange') }}
+            </el-button>
+          </div>
+          <div class="profile__info">
+            <h4>{{ $t('profile.account.secession') }}</h4>
+            <div class="content">
+              <el-button type="info" @click="visible.SecessionModal = true">
+                {{ $t('profile.account.secession') }}
+              </el-button>
+            </div>
           </div>
         </div>
       </el-card>
@@ -92,18 +137,29 @@
       <el-card>
         <div slot="header">
           <h3>{{ $t('profile.additional.title') }}</h3>
-          <span>{{ $t('profile.additional.desc') }}</span>
+          <el-tooltip
+            :content="$t('profile.additional.desc')"
+            placement="bottom-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
         </div>
         <div>
           <div class="profile__info">
-            <h4>{{ $t('profile.additional.birth') }}</h4>
+            <h4>{{ $t('profile.additional.recoveryEmail') }}</h4>
             <div class="content">
               <span class="value">
-                {{ me.birth || $t('profile.additional.birthEmpty') }}
+                {{
+                  me.recoveryEmail ||
+                    $t('profile.additional.recoveryEmailEmpty')
+                }}
               </span>
             </div>
-            <el-button type="text">
-              {{ $t('profile.additional.birthChange') }}
+            <el-button
+              type="text"
+              @click="visible.recoveryEmailChangeModal = true"
+            >
+              {{ $t('profile.additional.recoveryEmailChange') }}
             </el-button>
           </div>
           <div class="profile__info">
@@ -113,7 +169,7 @@
                 {{ me.contact || $t('profile.additional.contactEmpty') }}
               </span>
             </div>
-            <el-button type="text">
+            <el-button type="text" @click="visible.contactChangeModal = true">
               {{ $t('profile.additional.contactChange') }}
             </el-button>
           </div>
@@ -124,27 +180,80 @@
     <image-change-modal
       :me="me"
       :visible.sync="visible.imageChangeModal"
-      @changeImage="changeImage"
+      @changedImage="changedImage"
     />
     <name-change-modal
       :me="me"
       :visible.sync="visible.nameChangeModal"
-      @changeName="changeName"
+      @changedName="changedName"
+    />
+    <nickname-change-modal
+      :me="me"
+      :visible.sync="visible.nicknameChangeModal"
+      @changedNickname="changedNickname"
+    />
+    <password-change-modal
+      :me="me"
+      :visible.sync="visible.passwordChangeModal"
+      @changedPassword="changedPassword"
+    />
+    <birth-change-modal
+      :me="me"
+      :visible.sync="visible.birthChangeModal"
+      @changedBirth="changedBirth"
+    />
+    <contact-change-modal
+      :me="me"
+      :visible.sync="visible.contactChangeModal"
+      @changedContact="changedContact"
+    />
+    <recovery-email-change-modal
+      :me="me"
+      :visible.sync="visible.recoveryEmailChangeModal"
+      @changedRecoveryEmail="changedRecoveryEmail"
+    />
+    <market-info-receive-modal
+      :me="me"
+      :visible.sync="visible.MarketInfoReceiveModal"
+      @changedMarketInfoReceive="changedMarketInfoReceive"
+    />
+    <secession-modal
+      :me="me"
+      :visible.sync="visible.SecessionModal"
+      @changedMarketInfoReceive="changedMarketInfoReceive"
     />
   </div>
 </template>
 
 <script>
+import { filters } from '@/plugins/dayjs'
 import profileService from '@/services/profile'
 
 import ImageChangeModal from '@/components/profile/ImageChangeModal'
 import NameChangeModal from '@/components/profile/NameChangeModal'
+import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
+import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
+import BirthChangeModal from '@/components/profile/BirthChangeModal'
+import ContactChangeModal from '@/components/profile/ContactChangeModal'
+import RecoveryEmailChangeModal from '@/components/profile/RecoveryEmailChangeModal'
+import MarketInfoReceiveModal from '@/components/profile/MarketInfoReceiveModal'
+import SecessionModal from '@/components/profile/SecessionModal'
 
 export default {
-  middleware: 'auth',
+  middleware: ['default', 'profile'],
   components: {
     ImageChangeModal,
     NameChangeModal,
+    NicknameChangeModal,
+    PasswordChangeModal,
+    BirthChangeModal,
+    ContactChangeModal,
+    RecoveryEmailChangeModal,
+    MarketInfoReceiveModal,
+    SecessionModal,
+  },
+  filters: {
+    ...filters,
   },
   data() {
     return {
@@ -152,19 +261,63 @@ export default {
       visible: {
         imageChangeModal: false,
         nameChangeModal: false,
+        nicknameChangeModal: false,
+        passwordChangeModal: false,
+        birthChangeModal: false,
+        contactChangeModal: false,
+        recoveryEmailChangeModal: false,
+        MarketInfoReceiveModal: false,
+        SecessionModal: false,
       },
     }
   },
+  computed: {
+    profileImg() {
+      if (this.me.image) return this.me.image
+      else return require('assets/images/icon/ic-user-profile.png')
+    },
+    myBirth() {
+      if (this.me.birth) return filters.fullYearDateFormat(this.me.birth)
+      else return this.$t('profile.additional.birthEmpty')
+    },
+  },
   methods: {
-    changeImage(image) {
+    changedImage(image) {
       this.me.image = image
       this.visible.imageChangeModal = false
     },
-    changeName({ lastName, firstName }) {
+    changedName({ lastName, firstName }) {
       this.me.lastName = lastName
       this.me.firstName = firstName
       this.visible.nameChangeModal = false
     },
+    changedNickname(nickname) {
+      this.me.nickname = nickname
+      this.visible.nicknameChangeModal = false
+    },
+    changedPassword() {
+      this.visible.passwordChangeModal = false
+    },
+    changedBirth(birth) {
+      this.me.birth = birth
+      this.visible.birthChangeModal = false
+    },
+    changedContact(contact) {
+      this.me.contact = contact
+      this.visible.contactChangeModal = false
+    },
+    changedRecoveryEmail(email) {
+      this.me.recoveryEmail = email
+      this.visible.recoveryEmailChangeModal = false
+    },
+    changedMarketInfoReceive(marketInfoReceive) {
+      console.log(marketInfoReceive)
+      this.me.marketInfoReceive = marketInfoReceive
+      this.visible.MarketInfoReceiveModal = false
+    },
+  },
+  beforeCreate() {
+    this.$store.commit('auth/SET_AUTH', false)
   },
 }
 </script>
@@ -183,8 +336,8 @@ export default {
   .el-card__header {
     height: 240px;
     padding: 36px 40px;
-    background: url('~assets/images/bg@2x.jpg') center no-repeat;
-    background-size: 200%;
+    background: url('~assets/images/bg_profile.jpg') center no-repeat;
+    border: none;
 
     & > div > h3 {
       display: block;
@@ -253,10 +406,10 @@ export default {
     }
     .desc {
       color: $font-color-desc;
-      font-size: 12px;
+      font-size: 12.6px;
     }
   }
-  .el-button {
+  .el-button--text {
     margin-top: 0;
     color: $color-link;
   }

@@ -32,7 +32,7 @@
               <h3>{{ $t('home.payment.title') }}</h3>
               <router-link to="/payment">{{ $t('common.link') }}</router-link>
             </div>
-            <subscribe-payment-info />
+            <purchases-info />
           </el-card>
         </el-col>
         <el-col class="container__right">
@@ -42,7 +42,6 @@
               <span>{{ $t('home.usingPlan.desc') }}</span>
               <router-link to="/plan">{{ $t('common.link') }}</router-link>
             </div>
-            <using-plan-list />
           </el-card>
           <el-card class="el-card--table">
             <div slot="header">
@@ -50,7 +49,6 @@
               <span>{{ $t('home.workspacePlan.desc') }}</span>
               <router-link to="/plan">{{ $t('common.link') }}</router-link>
             </div>
-            <workspace-plan-list />
           </el-card>
         </el-col>
       </el-row>
@@ -69,17 +67,13 @@
 </template>
 
 <script>
-import SubscribePaymentInfo from '@/components/payment/SubscribePaymentInfo'
-import usingPlanList from '@/components/plan/usingPlanList'
-import WorkspacePlanList from '@/components/plan/WorkspacePlanList'
+import PurchasesInfo from '@/components/purchases/PurchasesInfo'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
-    usingPlanList,
-    WorkspacePlanList,
     LoggedInDeviceList,
-    SubscribePaymentInfo,
+    PurchasesInfo,
   },
   data() {
     return {
@@ -96,12 +90,18 @@ export default {
 </script>
 
 <style lang="scss">
+#home .container {
+  padding-top: 80px;
+  .el-table__empty-block {
+    min-height: 300px;
+  }
+}
 .home__bg {
   position: absolute;
   width: 100%;
   height: 420px;
-  background: url('~assets/images/bg@2x.jpg') center no-repeat;
-  background-size: 200%;
+  background: url('~assets/images/bg_profile.jpg') center no-repeat;
+  background-size: 100%;
 }
 .page-description {
   margin-bottom: 60px;

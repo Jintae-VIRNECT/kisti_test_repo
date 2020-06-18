@@ -2,33 +2,37 @@
   <div id="certification">
     <div class="container">
       <el-card class="virnect-login-form">
-        <div>
-          <p v-html="$t('certification.desc')"></p>
-          <div class="avatar"></div>
-          <span class="name">{{ me.lastName }} {{ me.firstName }}</span>
-          <span class="email">{{ me.email }}</span>
-          <el-form ref="form" :model="form" @submit.native.prevent="submit">
-            <el-form-item :label="$t('certification.password')">
-              <el-input
-                :placeholder="$t('certification.passwordPlaceholder')"
-                v-model="form.password"
-                show-password
-              ></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button
-                type="primary"
-                @click="submit"
-                :disabled="!form.password"
-              >
-                {{ $t('common.confirm') }}
-              </el-button>
-            </el-form-item>
-          </el-form>
+        <p v-html="$t('certification.desc')"></p>
+        <div class="avatar">
+          <div
+            class="image"
+            v-if="me.image"
+            :style="`background-image: url('${me.image}')`"
+          />
         </div>
+        <span class="name">{{ me.nickname }}</span>
+        <span class="email">{{ me.email }}</span>
+        <el-form ref="form" :model="form" @submit.native.prevent="submit">
+          <el-form-item :label="$t('certification.password')">
+            <el-input
+              :placeholder="$t('certification.passwordPlaceholder')"
+              v-model="form.password"
+              show-password
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="submit"
+              :disabled="!form.password"
+            >
+              {{ $t('common.confirm') }}
+            </el-button>
+          </el-form-item>
+        </el-form>
       </el-card>
       <div class="bottom">
-        <a href="http://console.virnect.com/password">
+        <a :href="findPasswordUrl" target="_blank">
           {{ $t('certification.forgetPassword') }}
         </a>
       </div>
@@ -46,9 +50,11 @@ export default {
     return {
       me: profile,
       form: {
-        id: profile.id,
-        password: null,
+        uuid: profile.uuid,
+        email: profile.email,
+        password: '',
       },
+      findPasswordUrl: `${process.env.LOGIN_SITE_URL}/find`,
     }
   },
   methods: {
@@ -57,8 +63,12 @@ export default {
         await profileService.certification(this.form)
         this.$router.push(`/profile`)
       } catch (e) {
+        console.error(e)
+        const message = /^Error: 4001/.test(e)
+          ? this.$t('certification.message.wrong')
+          : this.$t('certification.message.fail')
         this.$message.error({
-          message: e,
+          message,
           showClose: true,
         })
       }
@@ -77,10 +87,10 @@ export default {
   }
   .el-card__body {
     padding: 44px 40px 48px;
-    p {
+    & > p {
       font-size: 16px;
     }
-    span {
+    & > span {
       display: block;
     }
     .name {
@@ -96,6 +106,9 @@ export default {
   .el-form {
     margin-top: 40px;
     text-align: right;
+    .el-input__suffix {
+      margin-top: 2px;
+    }
   }
   .bottom {
     margin: 24px;

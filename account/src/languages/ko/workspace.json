@@ -1,0 +1,22 @@
+
+{
+  "desc": "회원님이 참여중인 전체 워크스페이스 목록입니다.",
+  "list": {
+    "title": "참여 중인 워크스페이스 정보",
+    "empty": "워크스페이스 정보가 없습니다",
+    "column": {
+      "name": "워크스페이스 이름",
+      "master": "마스터",
+      "joinDate": "참여일",
+      "role": "워크스페이스 권한"
+    }
+  },
+  "usingPlanList": {
+    "title": "사용 중인 플랜 정보",
+    "column": {
+      "name": "플랜 이름",
+      "workspaceName": "워크스페이스 이름",
+      "renewalDate": "다음 갱신일"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "desc": "회원님이 마스터인 워크스페이스 결제 예정 정보 및 결제 이력을 관리합니다",
+  "monetaryUnit": "원",
+  "will": {
+    "title": "결제 예정 정보",
+    "price": "결제 예정 총 금액",
+    "dueDate": "결제 예정일",
+    "way": "결제 수단",
+    "autoPaymentEveryMonth": "매월 자동 결제"
+  },
+  "way": {
+    "register": "결제 수단 등록",
+    "change": "결제 수단 변경",
+    "changeDesc": "플랜, 스토리지, 통화 구매 항목을 변경하고 싶으시다면 결제 센터를 이용해 주세요.",
+    "changeCaution": "결제 수단을 변경하시더라도 이용 중인 제품 플랜과 서비스를 그대로 이용하실 수 있습니다. 결제일이 변경되지 않으니 안심하고 변경하세요. 다음 결제일에는 변경하신 결제 수단으로 자동 결제 됩니다.",
+    "autoPayment": "자동 결제",
+    "autoPaymentNow": "자동 결제 이용중",
+    "autoPaymentCancel": "자동 결제 해지"
+  },
+  "log": {
+    "title": "결제 이력",
+    "column": {
+      "no": "구매 번호",
+      "way": "결제 수단",
+      "price": "결제 금액",
+      "paidDate": "결제일"
+    }
+  },
+  "autoPaymentCancelModal": {
+    "desc": "해지하실 제품 플랜 및 이용권을 다시 한 번 확인해 주세요.",
+    "column": {
+      "product": "제품 플랜 및 추가 서비스 이용권",
+      "count": "수량",
+      "numbersUnit": "개"
+    },
+    "caution": "* 지금 해지하시면 남은 기간까지만 제품 플랜 및 서비스 이용이 가능합니다. <br>* 만료일 7일 경과 후 제품 및 서비스 관련 데이터는 삭제되며 복구되지 않습니다.",
+    "submit": "해지하기",
+    "submitDone": "자동 결제 해지 완료",
+    "submitDoneDesc": "자동 결제가 해지되었습니다. 자동 결제를 다시 유지하고 싶으신 경우 익일부터 이용권 만료일 하루 전까지 [자동 결제 해지 취소]가 가능합니다.",
+    "cancelRequestCancel": "자동 결제 해지 신청 취소",
+    "cancelRequestCancelDesc": "자동 결제 해지 신청을 취소하실 경우 자동결제가 재개됩니다."
+  },
+  "logDetail": {
+    "title": "결제 이력 정보",
+    "info": "결제 정보",
+    "paymentNo": "구매 번호",
+    "creditCardSlip": "신용카드 전표",
+    "detail": "결제 상세 정보",
+    "priceWithVat": "가격 (VAT 포함)",
+    "productPrice": "상품 금액",
+    "vat": "부가세",
+    "discount": "할인 금액",
+    "period": "이용 기간",
+    "totalPayment": "총 결제 금액"
+  },
+  "creditCardSlip": {
+    "title": "신용카드 매출 전표",
+    "paymentInfo": "결제 정보",
+    "cardType": "카드종류",
+    "cardNo": "카드번호",
+    "tradeType": "거래종류",
+    "tradeDate": "거래일시",
+    "instalmentMonth": "할부개월",
+    "approvalNo": "승인번호",
+    "buyInfo": "구매 정보",
+    "buyNo": "구매 번호",
+    "buyUser": "구매자명",
+    "tax": "과세금액",
+    "taxFree": "비과세금액",
+    "surtax": "부가세",
+    "sellerInfo": "판매자 정보",
+    "sellerCompanyName": "판매자 상호",
+    "sellerCompanyNo": "판매자 사업자등록번호",
+    "sellerAddress": "판매자 주소",
+    "caution": "신용카드 매출 전표는 부가가치세법 제 32조의 2 제 3항에 의하여 발행되었으며, 동법 시행령 제 57조 제 2항에 의하여  세금 계산서를 교부하지 않습니다. 카드사 측 정책 상, BC/국민카드 결저 건의 경우 가상 카드번호로 보여질 수 있습니다. 실 카드 번호의 내역이 필요하시다면 해당 카드사로 문의하시기 바랍니다."
+  }
+}

@@ -12,7 +12,9 @@
 
 body {
   overflow-y: scroll;
-  word-break: break-all;
+  .v-modal {
+    background: #020a17;
+  }
 }
 
 #__nuxt {
@@ -22,6 +24,7 @@ body {
   @import "@/assets/css/modules/column.scss";
 
   @import "@/assets/css/el-override/button.scss";
+  @import "@/assets/css/el-override/checkbox.scss";
   @import "@/assets/css/el-override/card.scss";
   @import "@/assets/css/el-override/dialog.scss";
 
@@ -33,3 +36,7 @@ body {
 @import "@/assets/css/modules/common.scss";
 @import "@/assets/css/el-override/messagebox.scss";
 @import "@/assets/css/el-override/notify.scss";
+@import "@/assets/css/el-override/tooltip.scss";
+@import "@/assets/css/el-override/datepicker.scss";
+@import "@/assets/css/el-override/tabs.scss";
+@import "@/assets/css/el-override/selectBox.scss";

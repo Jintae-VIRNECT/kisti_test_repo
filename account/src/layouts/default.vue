@@ -1,7 +1,9 @@
 <template>
   <div>
     <header>
-      <the-header />
+      <the-header :showSection="showSection">
+        <template slot="subTitle">{{ $t('menu.account') }}</template>
+      </the-header>
     </header>
     <the-sidebar :menus="sideMenus" />
     <main>
@@ -16,6 +18,7 @@ import TheSidebar from '@/components/TheSidebar'
 import { sideMenus } from '@/models/layout'
 
 export default {
+  middleware: 'default',
   components: {
     TheHeader,
     TheSidebar,
@@ -23,7 +26,19 @@ export default {
   data() {
     return {
       sideMenus,
+      showSection: {
+        login: false,
+        lang: false,
+        link: true,
+        profile: true,
+      },
     }
   },
 }
 </script>
+
+<style lang="scss">
+#headerSection .sub-title {
+  font-size: 18px;
+}
+</style>

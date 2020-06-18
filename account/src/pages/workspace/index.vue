@@ -3,72 +3,36 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item>계정 관리</el-breadcrumb-item>
-          <el-breadcrumb-item>워크스페이스 정보</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('menu.account') }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('menu.workspace') }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <h2>워크스페이스 정보</h2>
-        <p>회원님이 참여중인 전체 워크스페이스 목록입니다.</p>
+        <h2>{{ $t('menu.workspace') }}</h2>
+        <p>{{ $t('workspace.desc') }}</p>
       </div>
-      <search-tab-nav placeholder="워크스페이스 이름 검색" />
-      <el-card class="el-card--table">
-        <div slot="header">
-          <h3>전체 워크스페이스 정보</h3>
-        </div>
-        <el-table :data="workspaces">
-          <column-default label="이름" prop="name" sortable />
-          <column-default label="마스터" prop="master" :width="120" sortable />
-          <column-default
-            label="참여일"
-            prop="joinDate"
-            :width="100"
-            sortable
-          />
-          <column-default
-            label="워크스페이스 등급"
-            prop="workspaceGrade"
-            :width="150"
-            sortable
-          />
-          <column-plan
-            label="나의 플랜"
-            nameProp="planName"
-            gradeProp="planGrade"
-            :width="170"
-          />
-        </el-table>
-      </el-card>
+      <!-- 워크스페이스 리스트 -->
+      <workspace-list />
+      <!-- 플랜 리스트 -->
+      <using-plan-list />
     </div>
   </div>
 </template>
 
 <script>
-import workspaceService from '@/services/workspace'
-
-import SearchTabNav from 'WC-Modules/vue/components/searchTabNav/SearchTabNav'
-import ColumnDefault from '@/components/common/tableColumn/ColumnDefault'
-import ColumnPlan from '@/components/common/tableColumn/ColumnPlan'
+import WorkspaceList from '@/components/workspace/WorkspaceList'
+import UsingPlanList from '@/components/workspace/UsingPlanList'
 
 export default {
   components: {
-    SearchTabNav,
-    ColumnDefault,
-    ColumnPlan,
-  },
-  data() {
-    return {
-      workspaces: workspaceService.getWorkspaceList(),
-    }
+    WorkspaceList,
+    UsingPlanList,
   },
 }
 </script>
 
 <style lang="scss">
-#workspace {
-  .search-tab-nav {
-    position: relative;
-    bottom: 52px;
-    height: 0;
-    text-align: right;
+#__nuxt #workspace {
+  .el-table__body-wrapper {
+    min-height: 384px;
   }
 }
 </style>

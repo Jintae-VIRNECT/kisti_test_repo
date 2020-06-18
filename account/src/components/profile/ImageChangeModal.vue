@@ -17,7 +17,11 @@
         drag
       >
         <div class="avatar">
-          <img v-if="file" :src="file" />
+          <div
+            class="image"
+            v-if="file"
+            :style="`background-image: url('${file}')`"
+          />
         </div>
         <div class="el-upload__tip" slot="tip">
           {{ $t('profile.imageChangeModal.caution') }}
@@ -26,13 +30,13 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="uploadImage">
+      <el-button type="info" @click="uploadImage">
         {{ $t('profile.imageChangeModal.upload') }}
       </el-button>
       <el-button type="text" @click="deleteImage" :disabled="!file">
         {{ $t('profile.imageChangeModal.delete') }}
       </el-button>
-      <el-button type="confirm" @click="submit" :disabled="!file">
+      <el-button type="primary" @click="submit" :disabled="disabled">
         {{ $t('profile.imageChangeModal.submit') }}
       </el-button>
     </div>
@@ -52,6 +56,11 @@ export default {
     return {
       file: null,
     }
+  },
+  computed: {
+    disabled() {
+      return this.file === this.$props.me.image
+    },
   },
   watch: {
     visible() {
@@ -76,20 +85,26 @@ export default {
       this.file = null
     },
     async submit() {
+      const { uploadFiles } = this.$refs.upload
+      const form = {
+        profile: uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null,
+      }
       try {
-        await profileService.changeMyImage({
-          me: this.me,
-          image: this.file,
-        })
+        await profileService.updateMyImage(form)
         this.$notify.success({
           message: this.$t('profile.imageChangeModal.message.success'),
           position: 'bottom-left',
+          duration: 2000,
         })
-        this.$emit('changeImage', this.file)
+        this.$emit('changedImage', this.file)
       } catch (e) {
         this.$notify.error({
-          message: this.$t('profile.imageChangeModal.message.fail'),
+          message:
+            this.$t('profile.imageChangeModal.message.fail') + `\n(${e})`,
           position: 'bottom-left',
+          duration: 2000,
         })
       }
     },
@@ -119,7 +134,7 @@ export default {
     font-size: 13px;
     text-align: center;
   }
-  .el-button--primary {
+  .el-button--info {
     float: left;
   }
   .el-button--text {
