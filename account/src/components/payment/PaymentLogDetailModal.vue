@@ -46,41 +46,41 @@
         <h6>{{ $t('payment.creditCardSlip.paymentInfo') }}</h6>
         <dl class="horizon">
           <dt>{{ $t('payment.creditCardSlip.cardType') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '00카드' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.cardNo') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '1234-56**-****-1234' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.tradeType') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '신용 거래' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.tradeDate') }}</dt>
-          <dd>-</dd>
+          <dd>{{ 'YYYY/MM/DD HH:MM:SS' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.instalmentMonth') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '일시불' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.approvalNo') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '12345678900' }}</dd>
         </dl>
         <el-divider />
         <h6>{{ $t('payment.creditCardSlip.buyInfo') }}</h6>
         <dl class="horizon">
           <dt>{{ $t('payment.creditCardSlip.buyNo') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '109876543210000' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.buyUser') }}</dt>
-          <dd>-</dd>
+          <dd>{{ 'Users name' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.tax') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '0원' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.taxFree') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '0원' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.surtax') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '10,000원' }}</dd>
         </dl>
         <el-divider />
         <h6>{{ $t('payment.creditCardSlip.sellerInfo') }}</h6>
         <dl class="horizon">
           <dt>{{ $t('payment.creditCardSlip.sellerCompanyName') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '버넥트(주)' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.sellerCompanyNo') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '123-45-678910' }}</dd>
           <dt>{{ $t('payment.creditCardSlip.sellerAddress') }}</dt>
-          <dd>-</dd>
+          <dd>{{ '서울시 용산구 한강대로 7길 10-15' }}</dd>
         </dl>
         <el-divider />
         <el-button type="simple">
@@ -128,6 +128,7 @@
             {{ paymentLogDetail.startDate | fullYearDateFormat }}
             -
             {{ paymentLogDetail.endDate | fullYearDateFormat }}
+            {{ '(1개월)' }}
           </dd>
           <el-divider />
           <dt>{{ $t('payment.logDetail.totalPayment') }}</dt>

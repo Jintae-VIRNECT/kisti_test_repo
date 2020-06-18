@@ -3,9 +3,16 @@
   font-weight: 500;
   font-size: 13.5px;
   line-height: 1em;
-  background: $color-button;
   border: none;
+}
+.el-button--simple {
+  padding: 8px 14px;
+  color: $font-color-content;
+  background: $color-button;
 
+  & > span {
+    font-size: 12.6px;
+  }
   &:hover,
   &:focus {
     color: inherit;
@@ -14,15 +21,6 @@
   &:active {
     color: $color-primary;
     background: $color-button-active;
-  }
-}
-.el-button--simple {
-  padding: 8px 14px;
-  color: $font-color-content;
-  background: rgba(237, 240, 244, 0.6);
-
-  & > span {
-    font-size: 12.6px;
   }
 }
 .el-button--info {

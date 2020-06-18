@@ -52,7 +52,16 @@
               <div class="caution">
                 <h5>{{ $t('coupon.addCouponCode.cautionTitle') }}</h5>
                 <el-divider />
-                <p v-html="$t('coupon.addCouponCode.cautionContent')" />
+                <ol>
+                  <li
+                    v-for="(content, index) in $t(
+                      'coupon.addCouponCode.cautionContent',
+                    )"
+                    :key="index"
+                  >
+                    {{ content }}
+                  </li>
+                </ol>
               </div>
             </div>
           </el-card>
@@ -271,11 +280,13 @@ export default {
       & > h5 {
         color: $font-color-content;
       }
-      & > p {
+      & > ol {
+        padding-left: 1.1em;
         color: $font-color-desc;
         font-size: 11.8px;
         line-height: 2;
         word-break: break-all;
+        list-style: decimal;
       }
     }
   }
