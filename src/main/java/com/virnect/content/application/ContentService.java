@@ -1392,6 +1392,13 @@ public class ContentService {
 
         log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
 
+
+        if (targetData.contains(" ")) {
+            targetData = targetData.replace(" ", "+");
+        }
+
+        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
         try {
             // 디코딩된 데이터가 인코딩 되어있을 경우
             if (targetData.contains("%")) {
