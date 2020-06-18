@@ -1382,7 +1382,7 @@ public class ContentService {
     }
 
     /**
-     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 한 번 더 인코딩이 되는 케이스를 체크.
+     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
      * @param targetData
      * @return
      */
@@ -1391,28 +1391,24 @@ public class ContentService {
         String originData  = null;
         String encodedData = null;
 
-        log.info(">>>>>>>>>>>>>>>>>>> {}", targetData);
+        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
 
         try {
-            decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
+            // 디코딩된 데이터가 인코딩 되어있을 경우
+            if (targetData.contains("%")) {
+                decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
 
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
-
-            if (decodedData.contains("%")) {
-                log.info(">>>>>>>>>>>>>>>>>>>>>>> if in");
-
-                originData = URLDecoder.decode(decodedData, StandardCharsets.UTF_8.name());
-
-                if (originData.equals(decodedData)) {
+                if (decodedData.contains("%")) {
                     log.info(">>>>>>>>>>>>>>>>>>>>>>> if if in");
                     encodedData = targetData;
                 }else {
                     log.info(">>>>>>>>>>>>>>>>>>>>>>> if else in");
                     encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
                 }
+            // 디코딩된 데이터가 원본일 경우
             } else {
-                log.info(">>>>>>>>>>>>>>>>>>>>>>> else in");
-                encodedData = targetData;
+                // 인코딩을 해줌.
+                encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
             }
 
             log.info(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
@@ -1423,6 +1419,6 @@ public class ContentService {
             e.printStackTrace();
         }
 
-        return targetData;
+        return encodedData;
     }
 }
