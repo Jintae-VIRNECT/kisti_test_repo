@@ -2,7 +2,8 @@
 RELEASE
 
 New Features
-- 다운로드 센터 api 접근 허용
+- 다운로드 센터 url 운영 환경 추가
+- 결제 센터 url 운영 환경 추가
 
 Bug Fixes
 - 없음
