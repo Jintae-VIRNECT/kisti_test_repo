@@ -80,6 +80,10 @@
     margin-right: 0;
   }
 }
+.setting__figure--wrapper {
+  display: flex;
+  align-items: center;
+}
 
 .setting__label {
   margin: 0.357rem 0.357rem 0.857rem 0px;
@@ -89,4 +93,30 @@
 
 .setting__r-selecter {
   width: 28.571rem;
+}
+
+.setting__tooltip--icon {
+  width: 1.2857rem;
+  height: 1.3214rem;
+  margin: 0px 0px 0.4286rem 0px;
+  background: url("~assets/image/ic_tool_tip.svg") center no-repeat;
+}
+
+.setting__tooltip--body {
+  width: 24.4286rem;
+  height: 4.8571rem;
+  padding: 1.1429rem 1.7143rem 1.1429rem 2rem;
+  background: url("~assets/image/img_tooltip_big.svg") center no-repeat;
+}
+
+.setting__tooltip--text {
+  color: #ffffff;
+  font-size: 0.8571rem;
+}
+
+.popover.setting__custom-popover {
+  box-shadow: none;
+  > .popover--body {
+    padding-left: 10px;
+  }
 }
