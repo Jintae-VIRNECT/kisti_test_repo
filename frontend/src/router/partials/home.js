@@ -40,10 +40,20 @@ export default {
 			props: true,
 		},
 		{
-			path: '/find/:findCategory?',
+			path: '/find/:findCategory',
 			name: 'findTab',
 			component: Find,
 			props: true,
+		},
+		{
+			path: '/find/email',
+			name: 'findEmail',
+			component: Find,
+		},
+		{
+			path: '/find/reset_password',
+			name: 'findPassword',
+			component: Find,
 		},
 		{
 			path: '/profile',
