@@ -443,43 +443,9 @@ public class ContentService {
 
 
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
-        String decodedData = null;
-        String originData  = null;
-        String encodedData = null;
+        String checkedData = checkParameterEncoded(targetData);
 
-        log.debug(">>>>>>>>>>>>>>>>>>> {}", targetData);
-
-        try {
-            decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
-
-            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
-
-            if (decodedData.contains("%")) {
-                log.debug(">>>>>>>>>>>>>>>>>>>>>>> if in");
-
-                originData = URLDecoder.decode(decodedData, StandardCharsets.UTF_8.name());
-
-                if (originData.equals(decodedData)) {
-                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if if in");
-                    encodedData = targetData;
-                }else {
-                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if else in");
-                    encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
-                }
-            } else {
-                log.debug(">>>>>>>>>>>>>>>>>>>>>>> else in");
-                encodedData = targetData;
-            }
-
-            log.debug(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
-            log.debug(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
-            log.debug(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        Content content = this.contentRepository.getContentOfTarget(encodedData);
+        Content content = this.contentRepository.getContentOfTarget(checkedData);
         // 컨텐츠 데이터 조회
 
         if (content == null)
@@ -1064,7 +1030,9 @@ public class ContentService {
     public ApiResponse<Boolean> checkTargetData(String targetData) {
         Boolean isExist = false;
 
-        int cntTargetData = this.targetRepository.countByData(targetData);
+        String checkedData = checkParameterEncoded(targetData);
+
+        int cntTargetData = this.targetRepository.countByData(checkedData);
 
         if (cntTargetData > 0) {
             isExist = true;
@@ -1372,6 +1340,7 @@ public class ContentService {
 
     public String decodeData(String encodeURL){
         String imgPath = "";
+
         try {
             String decoder = URLDecoder.decode(encodeURL, "UTF-8");
 
@@ -1410,5 +1379,50 @@ public class ContentService {
         String imgPath = this.fileUploadService.base64ImageUpload(qrString);
 
         return imgPath;
+    }
+
+    /**
+     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 한 번 더 인코딩이 되는 케이스를 체크.
+     * @param targetData
+     * @return
+     */
+    public String checkParameterEncoded(String targetData) {
+        String decodedData = null;
+        String originData  = null;
+        String encodedData = null;
+
+        log.debug(">>>>>>>>>>>>>>>>>>> {}", targetData);
+
+        try {
+            decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
+
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
+
+            if (decodedData.contains("%")) {
+                log.debug(">>>>>>>>>>>>>>>>>>>>>>> if in");
+
+                originData = URLDecoder.decode(decodedData, StandardCharsets.UTF_8.name());
+
+                if (originData.equals(decodedData)) {
+                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if if in");
+                    encodedData = targetData;
+                }else {
+                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if else in");
+                    encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
+                }
+            } else {
+                log.debug(">>>>>>>>>>>>>>>>>>>>>>> else in");
+                encodedData = targetData;
+            }
+
+            log.debug(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
+            log.debug(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
+            log.debug(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return targetData;
     }
 }

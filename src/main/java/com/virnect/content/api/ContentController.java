@@ -440,12 +440,4 @@ public class ContentController {
         ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
         return ResponseEntity.ok(responseMessage);
     }
-
-//    @GetMapping("/temp/{targetData}")
-//    public ResponseEntity<ApiResponse<String>> temp(@PathVariable("targetData") String targetData) {
-//
-//        ApiResponse<String> res = this.contentService.checkParameterEncoded(targetData);
-//
-//        return ResponseEntity.ok(res);
-//    }
 }
