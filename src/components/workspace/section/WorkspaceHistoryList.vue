@@ -83,7 +83,6 @@ import { getPermission } from 'utils/deviceCheck'
 
 import { deleteHistorySingleItem } from 'api/workspace/history'
 import confirmMixin from 'mixins/confirm'
-import dayjs from 'dayjs'
 
 export default {
   name: 'WorkspaceHistoryList',
@@ -177,8 +176,8 @@ export default {
       if (date !== null && date !== '') {
         const re = /T/gi
         let cvtDate = date.replace(re, ' ')
-        cvtDate = dayjs(cvtDate).format('YYYY.MM.DD')
-        const today = dayjs().format('YYYY.MM.DD')
+        cvtDate = this.$dayjs(cvtDate).format('YYYY.MM.DD')
+        const today = this.$dayjs().format('YYYY.MM.DD')
         if (cvtDate === today) {
           return 'Today'
         } else {
