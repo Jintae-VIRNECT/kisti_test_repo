@@ -1,11 +1,9 @@
 <template>
-  <main class="main-wrapper">
-    <div class="stream-body">
-      <stream-tools></stream-tools>
-      <menus></menus>
-      <main-video></main-video>
-    </div>
-  </main>
+  <div class="main-body stream">
+    <stream-tools></stream-tools>
+    <menus></menus>
+    <main-video></main-video>
+  </div>
 </template>
 
 <script>

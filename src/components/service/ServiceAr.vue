@@ -1,11 +1,9 @@
 <template>
-  <main class="main-wrapper">
-    <div class="ar-body">
-      <ar-tools></ar-tools>
-      <menus></menus>
-      <ar-view></ar-view>
-    </div>
-  </main>
+  <div class="main-body ar">
+    <ar-tools></ar-tools>
+    <menus></menus>
+    <ar-view></ar-view>
+  </div>
 </template>
 
 <script>

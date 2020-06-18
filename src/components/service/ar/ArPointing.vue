@@ -15,7 +15,7 @@ import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX } from 'utils/color'
 import { ACTION } from 'configs/view.config'
-import { normalizedPos } from 'utils/normalize'
+import { normalizedPosX, normalizedPosY } from 'utils/normalize'
 import toastMixin from 'mixins/toast'
 
 function hexToLottie(hex, alpha) {
@@ -84,8 +84,8 @@ export default {
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPos(event.offsetX, this.resolution.width),
-        posY: normalizedPos(event.offsetY, this.resolution.height),
+        posX: normalizedPosX(event.offsetX, this.resolution.width),
+        posY: normalizedPosY(event.offsetY, this.resolution.height),
       })
     },
   },

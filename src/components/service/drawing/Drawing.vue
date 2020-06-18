@@ -9,6 +9,7 @@
     <drawing-canvas
       v-if="shareFile && shareFile.id"
       :file="shareFile"
+      @initCanvas="loadingFrame = false"
     ></drawing-canvas>
     <div class="drawing-box__empty" v-else-if="fileList && fileList.length > 0">
       <div class="drawing-box__empty-inner">
@@ -32,13 +33,18 @@
         <button class="btn" @click="addFile">불러오기</button>
       </div>
     </div>
+    <div class="drawing-box__empty loading" v-if="loadingFrame">
+      <div class="drawing-box__empty-inner">
+        <img src="~assets/image/gif_loading.svg" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE } from 'configs/remote.config'
+import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 
 export default {
   name: 'Drawing',
@@ -48,6 +54,7 @@ export default {
   data() {
     return {
       chunk: [],
+      loadingFrame: false,
     }
   },
   computed: {
@@ -87,12 +94,21 @@ export default {
       const data = JSON.parse(receive.data)
       if (data.from === this.account.uuid) return
 
-      if (data.status === 'firstFrame') {
+      if (
+        ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
+          data.type,
+        )
+      )
+        return
+
+      if (data.type === DRAWING.FIRST_FRAME) {
+        this.loadingFrame = true
         this.chunk = []
       }
       this.chunk.push(data.chunk)
 
-      if (data.status === 'lastFrame') {
+      if (data.type === DRAWING.LAST_FRAME) {
+        // this.loadingFrame = false
         this.encodeImage(data.imgId)
       }
     },

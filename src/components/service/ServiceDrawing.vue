@@ -1,16 +1,9 @@
 <template>
-  <main
-    class="main-wrapper"
-    :class="{ shareview: account.roleType === EXPERT_LEADER }"
-  >
-    <div class="drawing-body">
-      <drawing-tools
-        v-show="account.roleType === EXPERT_LEADER"
-      ></drawing-tools>
-      <menus></menus>
-      <drawing></drawing>
-    </div>
-  </main>
+  <div class="main-body drawing">
+    <drawing-tools v-show="account.roleType === EXPERT_LEADER"></drawing-tools>
+    <menus></menus>
+    <drawing></drawing>
+  </div>
 </template>
 
 <script>

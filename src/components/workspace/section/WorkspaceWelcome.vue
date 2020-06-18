@@ -10,28 +10,38 @@
       <button class="btn" @click="createRoom">원격 협업 생성</button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
+    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
+import { getPermission } from 'utils/deviceCheck'
 export default {
   name: 'WorkspaceWelcome',
   components: {
     Role,
     CreateRoomModal,
+    DeviceDenied,
   },
   data() {
     return {
       visible: false,
+      showDenied: false,
     }
   },
   computed: {},
   watch: {},
   methods: {
-    createRoom() {
+    async createRoom() {
       this.visible = !this.visible
+
+      const permission = await getPermission()
+      if (!permission && this.visible === true) {
+        this.showDenied = true
+      }
     },
   },
 
