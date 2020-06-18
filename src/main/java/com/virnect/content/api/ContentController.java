@@ -17,13 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Project: PF-ContentManagement
@@ -430,13 +434,14 @@ public class ContentController {
 
     @ApiOperation(value = "타겟 데이터 존재 유무", notes = "타겟 데이터의 존재 유무 확인 (true : 존재함, false : 존재하지 않음)")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "path", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
+            @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "query", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
     })
-    @GetMapping("/target/{targetData}/isExist")
-    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@PathVariable("targetData") String targetData) {
+    @GetMapping("/target/isExist")
+    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam("targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+
         ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
         return ResponseEntity.ok(responseMessage);
     }
