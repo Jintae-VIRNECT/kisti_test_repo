@@ -58,7 +58,7 @@
 									<el-option
 										v-for="item in countryCodeLists"
 										:key="item.value"
-										:label="item.label"
+										:label="item.value"
 										:value="item.value"
 									>
 									</el-option>

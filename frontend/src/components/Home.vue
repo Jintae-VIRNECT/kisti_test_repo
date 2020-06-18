@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<TheHeader :showSection="showSection" />
+		<TheHeader :showSection="showSection" :logoUrl="logoUrl" />
 		<transition name="app-fade" mode="out-in">
 			<router-view />
 		</transition>
@@ -16,6 +16,7 @@ export default {
 				login: false,
 				language: false,
 			},
+			logoUrl: '/',
 		}
 	},
 	components: {
