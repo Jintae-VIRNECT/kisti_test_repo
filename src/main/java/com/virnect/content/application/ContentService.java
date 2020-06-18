@@ -1391,33 +1391,33 @@ public class ContentService {
         String originData  = null;
         String encodedData = null;
 
-        log.debug(">>>>>>>>>>>>>>>>>>> {}", targetData);
+        log.info(">>>>>>>>>>>>>>>>>>> {}", targetData);
 
         try {
             decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
 
-            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
 
             if (decodedData.contains("%")) {
-                log.debug(">>>>>>>>>>>>>>>>>>>>>>> if in");
+                log.info(">>>>>>>>>>>>>>>>>>>>>>> if in");
 
                 originData = URLDecoder.decode(decodedData, StandardCharsets.UTF_8.name());
 
                 if (originData.equals(decodedData)) {
-                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if if in");
+                    log.info(">>>>>>>>>>>>>>>>>>>>>>> if if in");
                     encodedData = targetData;
                 }else {
-                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if else in");
+                    log.info(">>>>>>>>>>>>>>>>>>>>>>> if else in");
                     encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
                 }
             } else {
-                log.debug(">>>>>>>>>>>>>>>>>>>>>>> else in");
+                log.info(">>>>>>>>>>>>>>>>>>>>>>> else in");
                 encodedData = targetData;
             }
 
-            log.debug(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
-            log.debug(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
-            log.debug(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
+            log.info(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
+            log.info(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
+            log.info(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
