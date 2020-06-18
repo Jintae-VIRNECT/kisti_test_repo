@@ -46,16 +46,6 @@ export default {
 			props: true,
 		},
 		{
-			path: '/find/email',
-			name: 'findEmail',
-			component: Find,
-		},
-		{
-			path: '/find/reset_password',
-			name: 'findPassword',
-			component: Find,
-		},
-		{
 			path: '/profile',
 			name: 'profile',
 			component: Profile,

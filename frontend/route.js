@@ -6,19 +6,8 @@ const path = require('path')
  * @description
  * Main app route
  */
-router.get('/*', function(req, res) {
-	res.sendFile(
-		path.join(__dirname, '../src/main/resources/templates/index.html'),
-	)
-})
 
-router.get('/find/email', (req, res) => {
-	res.sendFile(
-		path.join(__dirname, '../src/main/resources/templates/index.html'),
-	)
-})
-
-router.get('/find/reset_password', (req, res) => {
+router.get('/**', function(req, res) {
 	res.sendFile(
 		path.join(__dirname, '../src/main/resources/templates/index.html'),
 	)

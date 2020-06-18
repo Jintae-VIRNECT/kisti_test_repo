@@ -10,5 +10,6 @@ Bug Fixes
 /healthcheck
 라우터맵핑 추가
 언어변경 ui 감추기
+자바 라우터 맵핑 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
