@@ -39,8 +39,9 @@ task setUp(type: YarnTask) {
 
 task buildFrontend(type: YarnTask, dependsOn: setUp) {
     println("Front Project Build Env : ${profile}")
+    def env = "${profile}"
     description = "Build Vue JS"
-    if (project.hasProperty('profile') && profile != "productioin") {
+    if (project.hasProperty('profile') && env != "production") {
         args = ['workspace', 'frontend', "build:${profile}"]
     } else {
         args = ['workspace', 'frontend', "build"]
