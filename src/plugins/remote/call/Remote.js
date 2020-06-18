@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE } from 'configs/remote.config'
+import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
 
 let OV
@@ -137,9 +137,9 @@ const _ = {
       start += chunkSize
     }
     for (let i = 0; i < chunk.length; i++) {
-      if (i === 0) params.status = 'firstFrame'
-      else if (i === chunk.length - 1) params.status = 'lastFrame'
-      else params.status = 'frame'
+      if (i === 0) params.type = DRAWING.FIRST_FRAME
+      else if (i === chunk.length - 1) params.type = DRAWING.LAST_FRAME
+      else params.type = DRAWING.FRAME
       params.chunk = chunk[i]
       _.session.signal({
         data: JSON.stringify(params),

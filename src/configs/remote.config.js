@@ -28,12 +28,19 @@ export const DRAWING = {
   UNDO: 'drawUndo',
   REDO: 'drawRedo',
   CLEAR_ALL: 'drawClearAll',
+
+  FIRST_FRAME: 'firstFrame',
+  FRAME: 'frame',
+  LAST_FRAME: 'lastFrame',
 }
 
 export const AR_DRAWING = {
   REQUEST_FRAME: 'requestFrame',
-  FRAME_RESPONSE: 'frameResponse',
   RECEIVE_FRAME: 'receivedFrame',
+  FRAME_RESPONSE: 'frameResponse',
+  FIRST_FRAME: 'firstFrame',
+  FRAME: 'frame',
+  LAST_FRAME: 'lastFrame',
 
   START_DRAWING: 'startArDrawing',
   END_DRAWING: 'endArDrawing',
