@@ -24,6 +24,17 @@ public class RouteController {
     public String login() {
         return "index";
     }
+
+    @GetMapping("/find/email")
+    public String userFindEmailRedirect() {
+        return "index";
+    }
+
+    @GetMapping("/find/reset_password")
+    public String userFindPasswordRedirect() {
+        return "index";
+    }
+
     @RequestMapping(value = "{_:^(?!api).*$}")
     public String redirectApi(HttpServletRequest request) {
         log.info("URL entered directly into the Browser, so we need to redirect...");
