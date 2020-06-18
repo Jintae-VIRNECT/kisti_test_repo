@@ -1,5 +1,6 @@
 // import { getCanvasSize } from 'utils/drawing'
 import { hexToRGBA } from 'utils/color'
+import { VIEW } from 'configs/view.config'
 
 export default {
   watch: {
@@ -29,6 +30,11 @@ export default {
             this.viewAction === 'text' ? 'text' : 'default'
           this.canvas.renderAll()
         }
+      }
+    },
+    view(val, oldVal) {
+      if (val !== oldVal && val === VIEW.DRAWING) {
+        this.optimizeCanvasSize()
       }
     },
     viewAction(value) {

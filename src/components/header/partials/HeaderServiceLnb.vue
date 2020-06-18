@@ -80,6 +80,8 @@ export default {
       }
       if (this.drawingNotice) {
         this.drawingNotice = false
+      }
+      if (this.shareFile && this.shareFile.id) {
         this.setView(VIEW.DRAWING)
       } else {
         this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
