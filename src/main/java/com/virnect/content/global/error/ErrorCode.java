@@ -31,6 +31,7 @@ public enum ErrorCode {
     ERR_CONTENT_DOWNLOAD(4017,"Content Download fail."),
     ERR_CONTENT_UPLOAD_LICENSE(4018, "Content upload fail. Because provided capacity exceeded."),
     ERR_CONTENT_DOWNLOAD_LICENSE(4019, "Content Download fail. Because the number of offers exceeded."),
+    ERR_CONTENT_DELETE_SHARED(4020, "Content deletion failed. Because it is managed. Check this content is shared."),
 
     // 타겟 관련
     ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),

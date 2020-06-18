@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.hibernate.service.spi.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +53,8 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -440,8 +443,44 @@ public class ContentService {
 
 
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+        String decodedData = null;
+        String originData  = null;
+        String encodedData = null;
+
+        log.debug(">>>>>>>>>>>>>>>>>>> {}", targetData);
+
+        try {
+            decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
+
+            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> first decodedData : {}", decodedData);
+
+            if (decodedData.contains("%")) {
+                log.debug(">>>>>>>>>>>>>>>>>>>>>>> if in");
+
+                originData = URLDecoder.decode(decodedData, StandardCharsets.UTF_8.name());
+
+                if (originData.equals(decodedData)) {
+                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if if in");
+                    encodedData = targetData;
+                }else {
+                    log.debug(">>>>>>>>>>>>>>>>>>>>>>> if else in");
+                    encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
+                }
+            } else {
+                log.debug(">>>>>>>>>>>>>>>>>>>>>>> else in");
+                encodedData = targetData;
+            }
+
+            log.debug(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
+            log.debug(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
+            log.debug(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Content content = this.contentRepository.getContentOfTarget(encodedData);
         // 컨텐츠 데이터 조회
-        Content content = this.contentRepository.getContentOfTarget(targetData);
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
@@ -504,6 +543,7 @@ public class ContentService {
             // TODO : 관리자 관련 처리 되어있지 않음
             log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
             if (!content.getUserUUID().equals(workerUUID)) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getCode());
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
@@ -512,12 +552,33 @@ public class ContentService {
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
 
-            if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
+            // 작업 전환 여부
+            if (YesOrNo.YES.equals(content.getConverted())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_MANAGED.getCode());
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
+
+            // 컨텐츠 공유 여부
+            if (YesOrNo.YES.equals(content.getShared())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_SHARED.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SHARED.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
+
+            // 컨텐츠 논리 삭제 여부 (현재 해당 플래그는 사용하지 않음)
+            if (YesOrNo.YES.equals(content.getDeleted())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_MANAGED.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
+
             // 파일을 실제 삭제하지 않을 경우. 복구 프로세스가 필요할 수도 있어 일부 구현해 놓음.
             if (false) {
                 // 2 컨텐츠 삭제 - 삭제여부 YES로 변경, 목록조회시 deleted가 YES인 것은 조회하지 않음.

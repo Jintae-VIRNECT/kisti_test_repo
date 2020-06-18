@@ -32,7 +32,6 @@ public class ContentUpdateRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String metadata;
 
     @NotBlank
