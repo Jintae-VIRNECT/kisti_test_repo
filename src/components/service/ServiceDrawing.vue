@@ -1,5 +1,5 @@
 <template>
-  <div class="main-body drawing-body">
+  <div class="main-body drawing">
     <drawing-tools v-show="account.roleType === EXPERT_LEADER"></drawing-tools>
     <menus></menus>
     <drawing></drawing>

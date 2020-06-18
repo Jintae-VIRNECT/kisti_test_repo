@@ -9,6 +9,7 @@
     <drawing-canvas
       v-if="shareFile && shareFile.id"
       :file="shareFile"
+      @initCanvas="loadingFrame = false"
     ></drawing-canvas>
     <div class="drawing-box__empty" v-else-if="fileList && fileList.length > 0">
       <div class="drawing-box__empty-inner">
@@ -32,6 +33,11 @@
         <button class="btn" @click="addFile">불러오기</button>
       </div>
     </div>
+    <div class="drawing-box__empty loading" v-if="loadingFrame">
+      <div class="drawing-box__empty-inner">
+        <img src="~assets/image/gif_loading.svg" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,6 +54,7 @@ export default {
   data() {
     return {
       chunk: [],
+      loadingFrame: false,
     }
   },
   computed: {
@@ -95,11 +102,13 @@ export default {
         return
 
       if (data.type === DRAWING.FIRST_FRAME) {
+        this.loadingFrame = true
         this.chunk = []
       }
       this.chunk.push(data.chunk)
 
       if (data.type === DRAWING.LAST_FRAME) {
+        // this.loadingFrame = false
         this.encodeImage(data.imgId)
       }
     },

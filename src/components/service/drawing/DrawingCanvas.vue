@@ -164,7 +164,16 @@ export default {
           // 히스토리 초기화
           this.stackClear()
 
+          if (this.account.roleType === ROLE.EXPERT_LEADER) {
+            this.$call.shareImage({
+              ...this.file,
+              width: canvas.getWidth(),
+              height: canvas.getHeight(),
+            })
+          }
+
           this.isInit = true
+          this.$emit('initCanvas')
         })
       }
       bgImage.onerror = error => {

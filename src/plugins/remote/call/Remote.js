@@ -125,6 +125,8 @@ const _ = {
     const params = {
       imgId: imgInfo.id,
       from: _.account.uuid,
+      width: imgInfo.width,
+      height: imgInfo.height,
     }
     const chunkSize = 1024 * 10
 
