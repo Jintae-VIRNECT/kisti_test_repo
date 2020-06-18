@@ -2,7 +2,7 @@
   <tool-button
     text="재실행"
     :active="status"
-    :disabled="disabled"
+    :disabled="!isAvailable"
     :src="require('assets/image/ic-tool-redo.svg')"
     @click.stop="clickHandler"
   ></tool-button>
@@ -10,6 +10,7 @@
 
 <script>
 import toolMixin from './toolMixin'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'ToolRedo',
@@ -17,16 +18,48 @@ export default {
   data() {
     return {
       status: false,
+      available: false,
     }
+  },
+  computed: {
+    isAvailable() {
+      if (this.disabled) {
+        return false
+      } else {
+        return this.available
+      }
+    },
+  },
+  watch: {
+    view() {
+      this.available = false
+    },
   },
   methods: {
     clickHandler() {
       this.status = true
-      this.$eventBus.$emit(`control:${this.view}:redo`)
+      let listener
+      if (this.view === VIEW.DRAWING) {
+        listener = VIEW.DRAWING
+      } else {
+        listener = this.viewAction
+      }
+      this.$eventBus.$emit(`control:${listener}:redo`)
       setTimeout(() => {
         this.status = false
       }, 100)
     },
+    setAvailable(use) {
+      this.available = use
+    },
+  },
+
+  /* Lifecycling */
+  created() {
+    this.$eventBus.$on(`tool:redo`, this.setAvailable)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(`tool:redo`, this.setAvailable)
   },
 }
 </script>

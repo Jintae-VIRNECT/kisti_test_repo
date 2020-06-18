@@ -167,9 +167,10 @@ const _ = {
       type: SIGNAL.POINTING,
     })
   },
-  arPointing: message => {
+  arPointing: (type, params = {}) => {
+    params.type = type
     _.session.signal({
-      data: JSON.stringify(message),
+      data: JSON.stringify(params),
       to: _.session.connection,
       type: SIGNAL.AR_POINTING,
     })
@@ -202,6 +203,8 @@ const _ = {
       return {}
     }
   },
+
+  // device control
   streamOnOff: active => {
     _.publisher.publishVideo(active)
   },
@@ -230,6 +233,22 @@ const _ = {
       type: SIGNAL.SPEAKER,
     })
   },
+  flash: params => {
+    params['from'] = _.account.uuid
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.FLASH,
+    })
+  },
+  camera: params => {
+    params['from'] = _.account.uuid
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.CAMERA,
+    })
+  },
   mute: (connectionId, mute) => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.stream.connection.connectionId === connectionId,
@@ -239,7 +258,8 @@ const _ = {
       return
     }
     _.subscribers[idx].subscribeToAudio(!mute)
-    Store.commit('propertyChanged', {
+    // TODO: 이건머냐!!!!
+    Store.commit('updateParticipant', {
       connectionId: connectionId,
       mute: mute,
     })

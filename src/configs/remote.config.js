@@ -8,6 +8,7 @@ export const SIGNAL = {
   FLASH: 'signal:flash',
   MIC: 'signal:mic',
   SPEAKER: 'signal:speaker',
+  AR_FEATURE: 'signal:arFeature',
   AR_DRAWING: 'signal:arDrawing',
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
@@ -32,6 +33,16 @@ export const DRAWING = {
   FIRST_FRAME: 'firstFrame',
   FRAME: 'frame',
   LAST_FRAME: 'lastFrame',
+}
+
+export const AR_POINTING = {
+  AR_POINTING: 'arPointing',
+  UNDO: 'undo',
+  REDO: 'redo',
+  CLEAR: 'clear',
+  UNDO_ABLE: 'undoAble',
+  REDO_ABLE: 'redoAble',
+  CLEAR_ABLE: 'clearAble',
 }
 
 export const AR_DRAWING = {

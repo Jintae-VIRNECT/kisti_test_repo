@@ -14,7 +14,7 @@ import { mapGetters } from 'vuex'
 import toastMixin from 'mixins/toast'
 import ToolButton from 'ToolButton'
 
-import * as device from 'utils/deviceinfo'
+import { FLASH } from 'configs/device.config'
 
 export default {
   name: 'ToolFlash',
@@ -22,118 +22,86 @@ export default {
     ToolButton,
   },
   mixins: [toastMixin],
-  data() {
-    return {
-      flashStatus: 'default', // 'default': 초기값 / 0: 플래시 꺼짐 / 1: 플래시 켜짐 / 2: 플래시 없음 / 3: 권한없음
-      status: false,
-    }
-  },
   computed: {
-    ...mapGetters({
-      // flashStatus: 'flashStatus',
-    }),
-    // status() {
-    //   if (this.flashStatus === device.FLASH_ON) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // },
+    ...mapGetters(['mainView', 'deviceInfo']),
+    flashStatus() {
+      if (this.mainView && this.mainView.id) {
+        return this.deviceInfo.flash
+      }
+      return -1
+    },
+    status() {
+      if (this.flashStatus === FLASH.FLASH_ON) {
+        return true
+      } else {
+        return false
+      }
+    },
     disable() {
       const state = this.flashStatus
-      if (state === device.FLASH_NONE || state === device.NO_PERMISSION) {
+      if (state === FLASH.FLASH_NONE || state === FLASH.NO_PERMISSION) {
         return true
       } else {
         return false
       }
     },
   },
+  watch: {
+    flashStatus(status) {
+      this.flashListener(status)
+    },
+  },
   methods: {
     // ...mapMutations(['deviceUpdate']),
     clickHandler() {
-      this.status = !this.status
-      // this.$eventBus.$emit('control:record',this.status);
+      if (this.flashStatus === FLASH.FLASH_NONE) {
+        this.toastDefault('플래시가 없는 기기입니다.')
+        return
+      }
 
-      // if (this.flashStatus === device.FLASH_NONE) {
-      //   this.toastDefault(this.$t('service.call_device_control_no_flash'))
-      //   return
-      // }
-
-      // if (this.flashStatus === device.NO_PERMISSION) {
-      //   this.toastDefault(this.$t('service.call_device_control_flash_deny'))
-      //   return
-      // }
-
-      // this.$remoteSDK.message('flashControl', { enable: toStatus })
+      if (this.flashStatus === FLASH.NO_PERMISSION) {
+        this.toastDefault('상대방이 플래시 제어 허가 요청을 거절하였습니다.')
+        return
+      }
+      const toStatus = !this.status
+      this.$call.flash({ enable: toStatus })
     },
-    flashListener(message) {
-      if ('status' in message) {
-        // 응답
-        if (parseInt(message.status) === device.CAMERA_ZOOMING) {
-          this.toastNotice(this.$t('service.call_device_control_camera'))
-          return
-        }
-        if (parseInt(message.status) === device.NO_PERMISSION) {
-          this.toastDefault(this.$t('service.call_device_control_flash_deny'))
-        }
-        if (parseInt(message.status) === device.FLASH_NONE) {
-          this.toastDefault(this.$t('service.call_device_control_no_flash'))
-        }
-        if (parseInt(message.status) === device.FLASH_ON) {
-          this.toastDefault(this.$t('service.call_device_control_flash_on'))
-        }
-        if (parseInt(message.status) === device.FLASH_OFF) {
-          this.toastDefault(this.$t('service.call_device_control_flash_off'))
-        }
-        if (parseInt(message.status) === device.APP_IS_BACKGROUND) {
-          this.toastDefault(
-            this.$t('service.call_ar_background_inactive_device'),
-          )
-        }
-        // this.flashStatus = parseInt(message.status)
-        this.deviceUpdate({
-          flashStatus: parseInt(message.status),
-        })
-      } else {
-        // 웹-웹 테스트용
-        // this.flashStatus = message.enable ? device.FLASH_ON : device.FLASH_OFF
-        this.deviceUpdate({
-          flashStatus: message.enable ? device.FLASH_ON : device.FLASH_OFF,
-        })
-        this.$nextTick(() => {
-          // this.$remoteSDK.message('flashControl', { status: device.NO_PERMISSION })  // 승인 거절거절
-          this.$remoteSDK.message('flashControl', {
-            status: this.flashStatus ? device.FLASH_ON : device.FLASH_OFF,
-          })
-          // this.$remoteSDK.message('flashControl', { status: device.CAMERA_ZOOMING }) // 카메라 zooming
-        })
+    flashListener(status) {
+      // 응답
+      if (parseInt(status) === FLASH.CAMERA_ZOOMING) {
+        this.toastNotice('상대방이 영상을 확대/축소하고 있습니다.')
+        return
+      }
+      if (parseInt(status) === FLASH.NO_PERMISSION) {
+        this.toastDefault('상대방이 플래시 제어 허가 요청을 거절하였습니다.')
+      }
+      if (parseInt(status) === FLASH.FLASH_NONE) {
+        this.toastDefault('플래시가 없는 기기입니다.')
+      }
+      if (parseInt(status) === FLASH.FLASH_ON) {
+        this.toastDefault('상대방 디바이스의 플래시 기능이 켜졌습니다.')
+      }
+      if (parseInt(status) === FLASH.FLASH_OFF) {
+        this.toastDefault('상대방 디바이스의 플래시 기능이 꺼졌습니다.')
+      }
+      if (parseInt(status) === FLASH.APP_IS_BACKGROUND) {
+        this.toastDefault(
+          '상대방 앱이 비활성화 상태입니다. 해당 작업을 실행할 수 없습니다.',
+        )
       }
     },
     flashInfoListener(message) {
       if ('status' in message) {
         if (
-          message.status === device.FLASH_OFF ||
-          message.status === device.FLASH_ON ||
-          message.status === device.FLASH_NONE
+          message.status === FLASH.FLASH_OFF ||
+          message.status === FLASH.FLASH_ON ||
+          message.status === FLASH.FLASH_NONE
         ) {
           // this.flashStatus = parseInt(message.status)
           this.deviceUpdate({
             flashStatus: parseInt(message.status),
           })
         }
-      } else {
-        // 웹-웹 테스트용
-        // this.flashStatus = message.enable ? device.FLASH_ON : device.FLASH_OFF
-        this.deviceUpdate({
-          flashStatus: message.enable ? device.FLASH_ON : device.FLASH_OFF,
-        })
-        this.$nextTick(() => {
-          // this.$remoteSDK.message('flashControl', { status: device.NO_PERMISSION })  // 승인 거절거절
-          this.$remoteSDK.message('flashInfo', {
-            status: this.flashStatus ? device.FLASH_ON : device.FLASH_OFF,
-          })
-          // this.$remoteSDK.message('flashControl', { status: device.CAMERA_ZOOMING }) // 카메라 zooming
-        })
       }
     },
   },

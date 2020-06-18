@@ -23,7 +23,7 @@
             <span class="percent">{{ parseInt(zoomLevel * 100) + '%' }}</span>
             <button
               class="plus"
-              :class="{ disable: zoomLevel >= maxLevel }"
+              :class="{ disable: zoomLevel >= zoomMax }"
               @click="plus"
             >
               +
@@ -45,7 +45,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import toastMixin from 'mixins/toast'
 import ToolButton from 'ToolButton'
 
-import * as device from 'utils/deviceinfo'
+import { CAMERA } from 'configs/device.config'
 
 export default {
   name: 'ToolZoomLevel',
@@ -56,45 +56,64 @@ export default {
   data() {
     return {
       picker: false,
-      zoomLevel: 1,
-      maxLevel: 5,
-      zoomStatus: 'default', // 'default': 초기값 / -1: 초기값 세팅 준비 / 0: 카메라 꺼짐 / 1: 카메라 켜짐 / 2: 카메라 없음 / 3: 권한없음
+      // zoomLevel: 1,
+      // zoomMax: 5,
+      // cameraStatus: 'default', // 'default': 초기값 / -1: 초기값 세팅 준비 / 0: 카메라 꺼짐 / 1: 카메라 켜짐 / 2: 카메라 없음 / 3: 권한없음
       toastTime: null,
     }
   },
   computed: {
-    ...mapGetters({
-      // zoomLevel: 'zoomLevel',
-      // maxLevel: 'zoomMax',
-      // zoomStatus: 'zoomStatus',
-    }),
+    ...mapGetters(['deviceInfo', 'mainView']),
+    zoomLevel() {
+      if (this.mainView && this.mainView.id) {
+        return this.deviceInfo.zoomLevel
+      }
+      return 1
+    },
+    zoomMax() {
+      if (this.mainView && this.mainView.id) {
+        return this.deviceInfo.zoomMax
+      }
+      return 1
+    },
+    cameraStatus() {
+      if (this.mainView && this.mainView.id) {
+        return this.deviceInfo.camera
+      }
+      return -1
+    },
+  },
+  watch: {
+    cameraStatus(level) {
+      this.cameraListener(level)
+    },
   },
   methods: {
     ...mapMutations(['deviceUpdate']),
     clickHandler() {
       const toPicker = this.picker
 
-      // if (this.zoomStatus === device.CAMERA_NONE) {
-      //   this.toastDefault(this.$t('service.call_device_control_no_camera'))
-      //   return
-      // }
+      if (this.cameraStatus === CAMERA.CAMERA_NONE) {
+        this.toastDefault('카메라가 없는 기기입니다.')
+        return
+      }
 
-      // if (this.zoomStatus === device.NO_PERMISSION) {
-      //   this.toastDefault(this.$t('service.call_device_control_camera_deny'))
-      //   return
-      // }
-      // this.$eventBus.$emit('control:close')
+      if (this.cameraStatus === CAMERA.NO_PERMISSION) {
+        this.toastDefault('상대방이 카메라 제어 허가 요청을 거절하였습니다.')
+        return
+      }
+      this.$eventBus.$emit('control:close')
       this.picker = !toPicker
     },
     hidePicker() {
       this.picker = false
     },
     plus() {
-      if (this.zoomLevel >= this.maxLevel) return
+      if (this.zoomLevel >= this.zoomMax) return
 
       let value = this.zoomLevel + 1
-      if (value > this.maxLevel) {
-        value = this.maxLevel
+      if (value > this.zoomMax) {
+        value = this.zoomMax
       }
       this.changeZoomLevel(value)
     },
@@ -113,83 +132,26 @@ export default {
       this.changeZoomLevel(1)
     },
     changeZoomLevel(level) {
-      if (this.zoomStatus === 'default') {
-        this.deviceUpdate({
-          zoomStatus: -1,
-        })
-      } else if (this.zoomStatus === -1) {
-        this.toastDefault(this.$t('service.call_device_permission'))
+      if (this.cameraStatus === -1) {
+        this.toastDefault('상대방 기기 제어 권한을 요청 중입니다.')
         return
       }
-      // this.$remoteSDK.message('cameraControl', { level: level })
+      this.$call.camera({ level: level })
     },
-    zoomListener(message) {
-      if ('status' in message) {
-        // 응답
-        if (parseInt(message.status) === device.CAMERA_ZOOMING) {
-          this.toastNotice(this.$t('service.call_device_control_camera'))
-          return
-        }
-        if (parseInt(message.status) === device.APP_IS_BACKGROUND) {
-          this.toastDefault(this.$t('service.call_ar_background_zoom'))
-        }
-        // this.zoomLevel = parseFloat(message.level)
-        // this.zoomStatus = parseInt(message.status)
-        this.deviceUpdate({
-          zoomLevel: parseFloat(message.level),
-          zoomStatus: parseInt(message.status),
-        })
-        this.$nextTick(() => {
-          if (this.zoomStatus === device.NO_PERMISSION) {
-            this.toastNotice(this.$t('service.call_device_control_camera_deny'))
-            this.hidePicker()
-          }
-        })
-      } else {
-        // 웹-웹 테스트용
-        // this.$remoteSDK.message('cameraControl', {
-        //   level: message.level,
-        //   status: device.CAMERA_ON,
-        // })
-        // this.$remoteSDK.message('cameraControl', { level: this.zoomLevel, status: device.CAMERA_ZOOMING }) // zooming test
+    cameraListener(status) {
+      // 응답
+      if (parseInt(status) === CAMERA.CAMERA_ZOOMING) {
+        this.toastNotice('상대방이 영상을 확대/축소하고 있습니다.')
+        return
       }
-    },
-    cameraInfoListener(message) {
-      if ('currentZoomLevel' in message) {
-        const time = Date.now()
-        if (!this.toastTime) {
-          this.toastTime = time
-        } else if (time - this.toastTime > 5000) {
-          if (this.zoomLevel !== parseFloat(message.currentZoomLevel)) {
-            this.toastDefault(this.$t('service.call_device_control_camera'))
-          }
-        }
-        this.toastTime = time
-
-        // this.zoomLevel = parseFloat(message.currentZoomLevel)
-        // this.maxLevel = parseFloat(message.maxZoomLevel)
-        this.deviceUpdate({
-          zoomLevel: parseFloat(message.currentZoomLevel),
-          zoomMax: parseFloat(message.maxZoomLevel),
-        })
-        // 디바이스 세팅 권한이 거절이면 초기 한번의 권한요청이 필요함
-        if (
-          parseInt(message.status) === device.NO_PERMISSION &&
-          this.zoomStatus === 'default'
-        ) {
-          return
-        }
-        // 권한이 거절된 카메라는 상태를 바꿀 수 없음. zoom 레벨만 표출
-        // 카메라 제어중일 때는 상태를 바꾸지 않음. zoom 레벨만 표출
-        if (
-          this.zoomStatus !== device.NO_PERMISSION &&
-          parseInt(message.status) !== device.CAMERA_ZOOMING
-        ) {
-          // this.zoomStatus = parseInt(message.status)
-          this.deviceUpdate({
-            zoomStatus: parseInt(message.status),
-          })
-        }
+      if (parseInt(status) === CAMERA.APP_IS_BACKGROUND) {
+        this.toastDefault(
+          '상대방 앱이 비활성화 상태입니다. 확대/축소 기능을 사용할 수 없습니다.',
+        )
+      }
+      if (parseInt(status) === CAMERA.NO_PERMISSION) {
+        this.toastNotice('상대방이 카메라 제어 허가 요청을 거절하였습니다.')
+        this.hidePicker()
       }
     },
   },
