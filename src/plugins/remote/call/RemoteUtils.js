@@ -52,10 +52,12 @@ export const addSessionEventListener = session => {
   })
   session.on(SIGNAL.CAPTURE_PERMISSION, event => {
     const data = JSON.parse(event.data)
-    Store.commit('agreePermission', {
-      id: data.from,
-      value: data.value,
-    })
+    if (data.type === 'response') {
+      Store.commit('agreePermission', {
+        id: data.from,
+        isAllowed: data.isAllowed,
+      })
+    }
   })
 
   // 채팅
@@ -119,6 +121,8 @@ export const getUserObject = stream => {
     status: 'good',
     roleType: roleType,
     permission: 'default',
+    flash: 0,
+    zoom: 0,
   }
   if (stream.videoActive) {
     Store.commit('updateResolution', {

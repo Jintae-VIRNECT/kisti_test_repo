@@ -149,9 +149,9 @@ export default {
       this.optimizeVideoSize()
     },
     optimizeVideoSize() {
-      console.log('OPTIMIZE VIDEO!!!!')
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.main-video__box')
+      const video = this.$refs['mainVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
 
       let maxWidth = mainWrapper.offsetWidth
@@ -164,10 +164,14 @@ export default {
         // height에 맞춤
         videoBox.style.height = maxHeight + 'px'
         videoBox.style.width = maxHeight * scale + 'px'
+        video.style.height = maxHeight + 'px'
+        video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
         videoBox.style.height = maxWidth / scale + 'px'
         videoBox.style.width = maxWidth + 'px'
+        video.style.height = maxWidth / scale + 'px'
+        video.style.width = maxWidth + 'px'
       }
     },
     doCapture() {

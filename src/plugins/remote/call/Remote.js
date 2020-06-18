@@ -176,7 +176,7 @@ const _ = {
   },
   permission: (params = {}) => {
     params['from'] = _.account.uuid
-    console.log(params)
+    if (params.type !== 'response') params['type'] = 'request'
     _.session.signal({
       type: SIGNAL.CAPTURE_PERMISSION,
       to: _.session.connection,

@@ -141,10 +141,11 @@ export default {
 
       if (data.to !== this.account.uuid) return
 
-      if (!('value' in data)) {
+      if (data.type === 'request') {
         this.$call.permission({
           to: data.from,
-          value: true,
+          type: 'response',
+          isAllowed: true,
         })
       }
     },

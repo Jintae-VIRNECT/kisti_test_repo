@@ -110,3 +110,18 @@
   width: 100%;
   height: 100%;
 }
+
+.ar-video__loading {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  display: flex;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  background-color: #1e1e20;
+}
+.ar-video__loading-inner {
+  margin: auto;
+  text-align: center;
+  user-select: none;
+}

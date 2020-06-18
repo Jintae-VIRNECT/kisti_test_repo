@@ -7,7 +7,6 @@
         :srcObject.prop="mainView.stream"
         @play="optimizeVideoSize"
         :muted="!speaker"
-        autoplay
         playsinline
         loop
       ></video>
@@ -15,7 +14,7 @@
         <button
           class="ar-video__select"
           @click="setArArea"
-          v-if="view === 'area'"
+          v-if="currentAction === 'area'"
         >
           <div class="ar-video__select-back"></div>
           <div class="ar-video__select-inner">
@@ -28,18 +27,21 @@
           </div>
         </button>
       </transition>
-      <ar-pointing class="ar-pointing" v-if="view === 'pointing'"></ar-pointing>
+      <ar-pointing
+        class="ar-pointing"
+        v-if="currentAction === 'pointing'"
+      ></ar-pointing>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { ACTION } from 'configs/view.config'
-import ArPointing from './ArPointing'
-import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
+import { VIEW, ACTION } from 'configs/view.config'
+import { AR_DRAWING } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
-import web_test from 'utils/testing'
+
+import ArPointing from './ArPointing'
 export default {
   name: 'ARVideo',
   mixins: [toastMixin],
@@ -52,8 +54,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'viewAction', 'resolutions']),
-    view() {
+    ...mapGetters(['mainView', 'speaker', 'view', 'viewAction', 'resolutions']),
+    currentAction() {
+      if (this.view !== VIEW.AR) return ''
       if (this.viewAction === ACTION.AR_AREA) {
         return 'area'
       } else if (this.viewAction === ACTION.AR_POINTING) {
@@ -78,13 +81,21 @@ export default {
     },
   },
   watch: {
+    view(val) {
+      if (val === VIEW.AR) {
+        this.$refs['arVideo'].play()
+      } else {
+        this.$refs['arVideo'].pause()
+      }
+    },
     resolution: {
       deep: true,
       handler() {
         this.optimizeVideoSize()
       },
     },
-    view(val) {
+    currentAction(val) {
+      if (this.view !== VIEW.AR) return
       if (val === 'pointing') {
         this.toastDefault(
           'AR 3D 화살표를 원하는 위치에 클릭하세요. 최대 30개의 화살표를 생성할 수 있습니다.',
@@ -104,8 +115,10 @@ export default {
       this.$call.arDrawing(AR_DRAWING.REQUEST_FRAME)
     },
     optimizeVideoSize() {
+      if (this.view !== VIEW.AR) return
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.ar-video__box')
+      const video = this.$refs['arVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
 
       let maxWidth = mainWrapper.offsetWidth
@@ -118,110 +131,20 @@ export default {
         // height에 맞춤
         videoBox.style.height = maxHeight + 'px'
         videoBox.style.width = maxHeight * scale + 'px'
+        video.style.height = maxHeight + 'px'
+        video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
         videoBox.style.height = maxWidth / scale + 'px'
         videoBox.style.width = maxWidth + 'px'
-      }
-    },
-    receiveCapture(receive) {
-      const data = JSON.parse(receive.data)
-
-      // 웹-웹 테스트용
-      if (web_test) {
-        if (data.type === AR_DRAWING.REQUEST_FRAME) {
-          this.doArCapture()
-          return
-        }
-      }
-      if (data.from === this.account.uuid) return
-      if (data.to !== this.account.uuid) return
-
-      // frameResponse 수신
-      if (
-        ![
-          AR_DRAWING.FIRST_FRAME,
-          AR_DRAWING.FRAME,
-          AR_DRAWING.LAST_FRAME,
-        ].includes(data.type)
-      )
-        return
-
-      if (data.status === AR_DRAWING.FIRST_FRAME) {
-        this.chunk = []
-      }
-      this.chunk.push(data.chunk)
-
-      if (data.status === AR_DRAWING.LAST_FRAME) {
-        this.encodeImage(data.imgId)
-      }
-    },
-    encodeImage(imgId) {
-      let imgUrl = ''
-      for (let part of this.chunk) {
-        imgUrl += part
-      }
-      this.chunk = []
-      imgUrl = 'data:image/png;base64,' + imgUrl
-      const imageInfo = {
-        id: imgId,
-        img: imgUrl,
-      }
-
-      this.showArImage(imageInfo)
-      this.$call.arDrawing(AR_DRAWING.RECEIVE_FRAME)
-    },
-    /**
-     * 웹-웹 테스트용!
-     */
-    doArCapture() {
-      const videoEl = this.$el.querySelector('.ar-video__stream')
-
-      const width = videoEl.offsetWidth
-      const height = videoEl.offsetHeight
-
-      const tmpCanvas = document.createElement('canvas')
-      tmpCanvas.width = width
-      tmpCanvas.height = height
-
-      const tmpCtx = tmpCanvas.getContext('2d')
-
-      tmpCtx.drawImage(this.$refs['arVideo'], 0, 0, width, height)
-
-      const imgUrl = tmpCanvas.toDataURL('image/png')
-
-      this.sendFrame(imgUrl, Date.now())
-    },
-    sendFrame(imgUrl, id) {
-      const params = {
-        imgId: id,
-      }
-      const chunkSize = 1024 * 10
-
-      const chunk = []
-      const base64 = imgUrl.replace(/data:image\/.+;base64,/, '')
-      const chunkLength = parseInt(base64.length / chunkSize)
-      let start = 0
-      for (let i = 0; i < chunkLength; i++) {
-        chunk.push(base64.substr(start, chunkSize))
-        start += chunkSize
-      }
-      for (let i = 0; i < chunk.length; i++) {
-        params.chunk = chunk[i]
-        if (i === 0) {
-          this.$call.arDrawing(AR_DRAWING.FIRST_FRAME, params)
-        } else if (i === chunk.length - 1) {
-          this.$call.arDrawing(AR_DRAWING.FRAME, params)
-        } else {
-          this.$call.arDrawing(AR_DRAWING.LAST_FRAME, params)
-        }
+        video.style.height = maxWidth / scale + 'px'
+        video.style.width = maxWidth + 'px'
       }
     },
   },
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveCapture)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
   mounted() {

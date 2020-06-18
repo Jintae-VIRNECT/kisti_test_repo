@@ -14,6 +14,8 @@ const getDefaultState = () => {
       // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
       // permission: 'default' / 'noAR' / false / true
+      // flash
+      // zoom
     ],
     chatList: [
       // {
@@ -146,9 +148,9 @@ const mutations = {
     if (idx < 0) {
       return
     }
-    state.participants[idx].permission = param.value
+    state.participants[idx].permission = param.isAllowed
     if (state.participants[idx].id === state.mainView.id) {
-      state.mainView.permission = param.value
+      state.mainView.permission = param.isAllowed
     }
   },
   updateResolution(state, payload) {

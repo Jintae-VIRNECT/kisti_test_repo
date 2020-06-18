@@ -10,6 +10,8 @@ import {
 // oId: objectId
 // aId: undolist 아이디
 
+const chunkSize = 1024 * 10
+
 export const getCanvasSize = function getCanvasSize(
   containerWidth,
   containerHeight,
@@ -285,4 +287,16 @@ export const calcPosition = function calcPosition(paths, width) {
     top: top,
     left: left,
   }
+}
+
+export const getChunk = function getChunk(img) {
+  const chunk = []
+  const base64 = img.replace(/data:image\/.+;base64,/, '')
+  const chunkLength = Math.ceil(base64.length / chunkSize)
+  let start = 0
+  for (let i = 0; i < chunkLength; i++) {
+    chunk.push(base64.substr(start, chunkSize))
+    start += chunkSize
+  }
+  return chunk
 }
