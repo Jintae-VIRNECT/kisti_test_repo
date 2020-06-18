@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     isAvailable() {
-      if (this.disable) {
+      if (this.disabled) {
         return false
       } else {
         return this.available

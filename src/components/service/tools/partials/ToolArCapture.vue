@@ -2,7 +2,7 @@
   <tool-button
     text="AR 캡쳐"
     :disabled="disabled"
-    :active="viewAction === AR_AREA"
+    :active="active"
     :src="require('assets/image/ic_ar_capture.svg')"
     @click.native="clickHandler"
   ></tool-button>
@@ -11,19 +11,33 @@
 <script>
 import toolMixin from './toolMixin'
 import { VIEW, ACTION } from 'configs/view.config'
+import { AR_DRAWING } from 'configs/remote.config'
 
 export default {
   name: 'ToolLineMode',
   mixins: [toolMixin],
-  data() {
-    return {
-      AR_AREA: ACTION.AR_AREA,
-    }
+  computed: {
+    active() {
+      if (this.viewAction === ACTION.AR_AREA) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
+  watch: {
+    viewAction(val) {
+      if (ACTION.AR_AREA !== val) {
+        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
+      }
+    },
   },
   methods: {
     clickHandler() {
-      if (this.callViewMode === VIEW.AR) return
-      this.setAction(this.AR_AREA)
+      if (this.view !== VIEW.AR) return
+
+      this.$call.arDrawing(AR_DRAWING.START_DRAWING)
+      this.setAction(ACTION.AR_AREA)
     },
   },
 }
