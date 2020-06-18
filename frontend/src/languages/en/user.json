@@ -1,0 +1,45 @@
+{
+  "user": {
+    "title": "추가 정보 입력",
+    "pageInfo": "추가 정보를 입력하시면 VIRNECT 제품을 <br />더 유용하게 사용하실 수 있습니다.",
+    "profileImage": {
+      "title": "프로필 이미지",
+      "subTitle": "프로필 이미지를 등록해 주세요.",
+      "contents": "등록하신 프로필 이미지는 다른 사용자들에게 보여집니다.",
+      "imageSet": "프로필 이미지 설정",
+      "visible": "프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다.",
+      "limit": "최대 5Mb의 Jpg, Png 파일 업로드 가능",
+      "upload": "이미지 업로드",
+      "delete": "삭제",
+      "submit": "이미지 등록"
+    },
+    "nickName": {
+      "title": "닉네임",
+      "contents": "국문, 영문, 특수문자(&lt;),(&gt;) 제외, 띄어쓰기 포함 20자 이하로 입력해 주세요."
+    },
+    "recoveryInfo": {
+      "title": "계정 복구 정보 입력",
+      "placeHolder": "계정 분실 시 본인 확인을 위한 정보를 입력해 주세요."
+    },
+    "phoneNumber": {
+      "title": "연락처",
+      "contents": "전화번호를 입력해 주세요."
+    },
+    "recoveryEmail": {
+      "title": "복구 이메일 주소",
+      "placeHolder": "복구 이메일 주소를 입력해 주세요"
+    },
+    "confirm": "확인",
+    "later": "나중에 하기",
+    "error": {
+      "etc": {
+        "title": "기타 오류",
+        "message": "회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요."
+      },
+      "nickName": {
+        "title": "닉네임 설정 오류",
+        "message": "닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요."
+      }
+    }
+  }
+}
