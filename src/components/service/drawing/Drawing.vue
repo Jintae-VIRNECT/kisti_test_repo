@@ -38,7 +38,7 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE } from 'configs/remote.config'
+import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 
 export default {
   name: 'Drawing',
@@ -87,12 +87,19 @@ export default {
       const data = JSON.parse(receive.data)
       if (data.from === this.account.uuid) return
 
-      if (data.status === 'firstFrame') {
+      if (
+        ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
+          data.type,
+        )
+      )
+        return
+
+      if (data.type === DRAWING.FIRST_FRAME) {
         this.chunk = []
       }
       this.chunk.push(data.chunk)
 
-      if (data.status === 'lastFrame') {
+      if (data.type === DRAWING.LAST_FRAME) {
         this.encodeImage(data.imgId)
       }
     },

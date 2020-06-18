@@ -139,10 +139,11 @@ export default {
 
       // frameResponse 수신
       if (
-        !(
-          [AR_DRAWING.FIRST_FRAME, AR_DRAWING.FRAME, AR_DRAWING.LAST_FRAME] in
-          data.type
-        )
+        ![
+          AR_DRAWING.FIRST_FRAME,
+          AR_DRAWING.FRAME,
+          AR_DRAWING.LAST_FRAME,
+        ].includes(data.type)
       )
         return
 
