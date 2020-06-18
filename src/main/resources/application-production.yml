@@ -123,10 +123,12 @@ spring:
               - "https://workstation.virnect.com"
               - "https://virnect.com"
               - "https://www.virnect.com"
-              - "https://Platform-Prod-Home-1237392900.ap-northeast-2.elb.amazonaws.com"
               - "https://console.virnect.com"
               - "https://account.virnect.com"
               - "https://admin.virnect.com"
+              - "https://download.virnect.com"
+              - "https://pay.virnect.com"
+              - "https://Platform-Prod-Home-1237392900.ap-northeast-2.elb.amazonaws.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
