@@ -1388,7 +1388,6 @@ public class ContentService {
      */
     public String checkParameterEncoded(String targetData) {
         String decodedData = null;
-        String originData  = null;
         String encodedData = null;
 
         log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
@@ -1403,7 +1402,7 @@ public class ContentService {
                     encodedData = targetData;
                 }else {
                     log.info(">>>>>>>>>>>>>>>>>>>>>>> if else in");
-                    encodedData = URLEncoder.encode(originData, StandardCharsets.UTF_8.name());
+                    encodedData = URLEncoder.encode(decodedData, StandardCharsets.UTF_8.name());
                 }
             // 디코딩된 데이터가 원본일 경우
             } else {
@@ -1412,7 +1411,6 @@ public class ContentService {
             }
 
             log.info(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
-            log.info(">>>>>>>>>>>>>>>>>>>> originData  {}", originData );
             log.info(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
 
         } catch (UnsupportedEncodingException e) {
