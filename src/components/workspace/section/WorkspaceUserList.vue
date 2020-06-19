@@ -40,9 +40,7 @@ export default {
       const array = []
       for (const list of this.memberList) {
         if (
-          list.participantName
-            .toLowerCase()
-            .match(this.searchFilter.toLowerCase())
+          list.nickName.toLowerCase().match(this.searchFilter.toLowerCase())
         ) {
           array.push(list)
         }
