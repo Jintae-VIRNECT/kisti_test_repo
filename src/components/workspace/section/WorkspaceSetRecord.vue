@@ -70,6 +70,10 @@ export default {
           value: '30',
           text: '30분',
         },
+        {
+          value: '60',
+          text: '60분',
+        },
       ],
 
       localRecIntervalOpt: [
