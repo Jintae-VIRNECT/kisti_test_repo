@@ -42,13 +42,14 @@
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="localRecordLength"
         >
         </r-select>
       </div>
       <div class="rec-setting__row">
         <div class="rec-setting__text custom">
           <p>
-            녹화간격
+            녹화 간격
           </p>
           <popover
             placement="right"
@@ -71,6 +72,7 @@
           :options="localRecIntervalOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="localRecordInterval"
         >
         </r-select>
       </div>
@@ -98,10 +100,11 @@
 
         <r-select
           class="rec-setting__selector"
-          v-on:changeValue="setRecInterval"
+          v-on:changeValue="setRecResolution"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
+          :defaultValue="recordResolution"
         >
         </r-select>
       </div>
@@ -170,6 +173,10 @@ export default {
         {
           value: '30',
           text: '30분',
+        },
+        {
+          value: '60',
+          text: '60분',
         },
       ],
 
