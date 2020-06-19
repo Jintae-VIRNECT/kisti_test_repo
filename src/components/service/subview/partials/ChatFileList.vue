@@ -2,7 +2,7 @@
   <vue2-scrollbar ref="chatFileListScrollbar">
     <div>
       <chat-file-item
-        v-for="(fileItem, index) in ChatFileList"
+        v-for="(fileItem, index) in chatFileList"
         :key="index"
         :id="fileItem.id"
         :fileName="fileItem.fileName"
@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       //test datas
-      ChatFileList: [
+      chatFileList: [
         {
           id: 'dd',
           fileName: '20200311_설계도면.txt',
@@ -142,7 +142,7 @@ export default {
     // ...mapGetters(['chatList']),
   },
   watch: {
-    // ChatFileList: {
+    // chatFileList: {
     //   handler() {
     //     this.$nextTick(() => {
     //       if (this.$refs['chatFileListScrollbar']) {
@@ -159,7 +159,7 @@ export default {
   methods: {},
 
   mounted() {
-    this.ChatFileList.push({
+    this.chatFileList.push({
       id: 'cc',
       fileName: '1가나다라마바사아자차카타파하긴텍스트',
       ext: 'video',
@@ -168,7 +168,7 @@ export default {
       fileSize: '1MB',
       isValid: false,
     })
-    this.ChatFileList.push({
+    this.chatFileList.push({
       id: 'bb',
       fileName: '2가나다라마바사아자차카타파하긴텍스트',
       ext: 'video',
@@ -177,7 +177,7 @@ export default {
       fileSize: '1MB',
       isValid: false,
     })
-    this.ChatFileList.push({
+    this.chatFileList.push({
       id: 'aa',
       fileName: '3가나다라마바사아자차카타파하긴텍스트',
       ext: 'video',

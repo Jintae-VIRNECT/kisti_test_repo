@@ -31,6 +31,12 @@
 
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <service-local-record-setting
+      :visible.sync="settingFlag"
+    ></service-local-record-setting>
+    <service-local-record-list
+      :visible.sync="recListFlag"
+    ></service-local-record-list>
   </section>
 </template>
 
@@ -40,6 +46,9 @@ import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+
+import ServiceLocalRecordSetting from 'components/workspace/modal/ServiceLocalRecordSetting'
+import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecordList'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -58,13 +67,18 @@ export default {
     HeaderSection,
     SubView,
     UserList,
+    ServiceLocalRecordSetting,
+    ServiceLocalRecordList,
     StreamView: () => import('./ServiceStream'),
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
     Share: () => import('./share/Share'),
   },
   data() {
-    return {}
+    return {
+      settingFlag: false,
+      recListFlag: false,
+    }
   },
   computed: {
     ...mapGetters(['view']),
@@ -96,7 +110,15 @@ export default {
       }
     },
   },
-  methods: {},
+
+  methods: {
+    showSetting() {
+      this.settingFlag = true
+    },
+    showList() {
+      this.recListFlag = true
+    },
+  },
 
   /* Lifecycles */
   created() {
@@ -106,11 +128,15 @@ export default {
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
+    this.$eventBus.$off('lcRecSet:show')
+    this.$eventBus.$off('lcRecList:show')
   },
   mounted() {
     // this.$call.getDevices().then(res => {
     //   console.log(res)
     // })
+    this.$eventBus.$on('lcRecSet:show', this.showSetting)
+    this.$eventBus.$on('lcRecList:show', this.showList)
   },
 }
 </script>

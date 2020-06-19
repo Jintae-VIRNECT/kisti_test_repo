@@ -64,9 +64,6 @@
   background: url("~assets/image/ic_tool_tip.svg") center no-repeat;
 }
 .rec-setting__tooltip--body {
-  position: absolute;
-  left: 7.8571rem;
-  z-index: 9999;
   width: 24.4286rem;
   height: 4.8571rem;
   padding: 1.1429rem 1.7143rem 1.1429rem 2rem;
@@ -92,5 +89,12 @@
 .modal.local-recsetting-modal {
   .modal--body {
     padding: 0 1.2857rem 0 2.1429rem;
+  }
+}
+
+.popover.custom-popover {
+  box-shadow: none;
+  > .popover--body {
+    padding-left: 10px;
   }
 }

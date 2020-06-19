@@ -17,7 +17,7 @@ import toastMixin from 'mixins/toast'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 
 import IDBHelper from 'utils/idbHelper'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 
 import uuid from 'uuid'
@@ -45,6 +45,9 @@ export default {
       workerJoined: false,
 
       today: null,
+
+      userId: 'NONE',
+      nickName: 'NONE',
     }
   },
   computed: {
@@ -56,6 +59,9 @@ export default {
       'localRecordInterval',
       'recordResolution',
     ]),
+    ...mapState({
+      room: state => state.room,
+    }),
   },
   watch: {
     participants: {
@@ -250,8 +256,8 @@ export default {
     getWH(resolution) {
       //default
       const video = {
-        width: 1280,
-        height: 720,
+        width: 640,
+        height: 480,
       }
 
       switch (resolution) {
@@ -302,23 +308,13 @@ export default {
 
         //make file name
         const fileNumber = this.getFileNumberString(this.fileCount)
-        this.fileName = this.today + '_' + fileNumber + '.mp4'
-
-        console.log(this.fileName)
-        console.log(blob)
+        this.fileName =
+          this.today + '_' + fileNumber + '_' + this.nickname + '.mp4'
 
         //get media chunk play time
         const currentTime = performance.now()
         const playTime = (currentTime - this.timeMark) / 1000
         this.timeMark = currentTime
-
-        console.log(playTime)
-
-        //get nickname
-        let nickname = 'unknown'
-        if (this.account && this.account.nickname) {
-          nickname = this.account.nickname
-        }
 
         if (!(await IDBHelper.checkQuota())) {
           this.recorder.stop()
@@ -334,7 +330,9 @@ export default {
             playTime,
             blob.size,
             blob,
-            nickname,
+            this.userId,
+            this.nickname,
+            this.room.title,
           )
         }
 
@@ -356,6 +354,16 @@ export default {
   },
   async mounted() {
     await IDBHelper.initIDB()
+
+    //get nickname
+    if (this.account && this.account.nickname) {
+      this.nickname = this.account.nickname
+    }
+
+    //get user uuid
+    if (this.account && this.account.uuid) {
+      this.userId = this.account.uuid
+    }
   },
 }
 </script>

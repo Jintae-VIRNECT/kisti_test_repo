@@ -128,7 +128,7 @@ export default {
 .device-denieds__content--icon {
   width: 3.2857rem;
   height: 3.2857rem;
-  img {
+  & > img {
     width: 100%;
     height: 100%;
   }
