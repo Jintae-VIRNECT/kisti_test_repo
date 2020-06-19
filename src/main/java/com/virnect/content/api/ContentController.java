@@ -437,7 +437,7 @@ public class ContentController {
             @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "query", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
     })
     @GetMapping("/target/isExist")
-    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam("targetData") String targetData) {
+    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam(value="targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
