@@ -54,7 +54,7 @@
           <popover
             placement="right"
             trigger="hover"
-            popperClass="custom-popover"
+            popperClass="rec-setting__custom-popover"
             width="25.4286rem"
           >
             <div slot="reference" class="rec-setting--tooltip-icon"></div>
@@ -85,7 +85,7 @@
           <popover
             placement="right"
             trigger="hover"
-            popperClass="custom-popover"
+            popperClass="rec-setting__custom-popover"
             width="25.4286rem"
           >
             <div slot="reference" class="rec-setting--tooltip-icon"></div>
