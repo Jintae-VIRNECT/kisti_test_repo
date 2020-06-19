@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -334,9 +335,13 @@ public class LicenseService {
         LicensePlan licensePlanInfo = licensePlan.get();
         Set<LicenseProduct> licenseProductList = licensePlanInfo.getLicenseProductList();
         List<LicenseProductInfoResponse> licenseProductInfoResponses = new ArrayList<>();
+
+
         licenseProductList.forEach(licenseProduct -> {
             LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
             Product product = licenseProduct.getProduct();
+            AtomicInteger availableLicenseAmount = new AtomicInteger();
+            AtomicInteger unAvailableLicensesAmount = new AtomicInteger();
 
             // Product Info
             licenseProductInfo.setProductId(product.getId());
@@ -349,6 +354,11 @@ public class LicenseService {
                 LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
                 licenseInfoResponse.setLicenseKey(license.getSerialKey());
                 licenseInfoResponse.setStatus(license.getStatus());
+                if (license.getStatus().equals(LicenseStatus.USE)) {
+                    unAvailableLicensesAmount.getAndIncrement();
+                } else {
+                    availableLicenseAmount.getAndIncrement();
+                }
                 licenseInfoResponse.setUserId(license.getUserId() == null ? "" : license.getUserId());
                 licenseInfoResponse.setCreatedDate(license.getCreatedDate());
                 licenseInfoResponse.setUpdatedDate(license.getUpdatedDate());
@@ -357,6 +367,8 @@ public class LicenseService {
 
             licenseProductInfo.setLicenseInfoList(licenseInfoList);
             licenseProductInfo.setQuantity(licenseInfoList.size());
+            licenseProductInfo.setAvailableLicenseAmount(availableLicenseAmount.get());
+            licenseProductInfo.setUnAvailableLicenseAmount(unAvailableLicensesAmount.get());
 
             licenseProductInfoResponses.add(licenseProductInfo);
         });
@@ -461,7 +473,6 @@ public class LicenseService {
     @Transactional(readOnly = true)
     public ApiResponse<ProductInfoListResponse> getAllProductInfo() {
         List<Product> productList = productRepository.findAllByDisplayStatus(ProductDisplayStatus.DISPLAY);
-//        List<Product> productList = productRepository.findAll();
         List<ProductInfoResponse> productInfoList = new ArrayList<>();
         productList.forEach(product -> {
             ProductInfoResponse productInfo = modelMapper.map(product, ProductInfoResponse.class);
