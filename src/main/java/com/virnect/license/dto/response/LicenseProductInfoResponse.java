@@ -20,9 +20,9 @@ public class LicenseProductInfoResponse {
     @ApiModelProperty(value = "재품 라이선스 수량", position = 3, example = "4")
     private int quantity;
     @ApiModelProperty(value = "현재 할당 가능한 라이선스 수량", position = 4, example = "1")
-    private int availableLicenseAmount;
+    private int unUseLicenseAmount;
     @ApiModelProperty(value = "현재 할당 된 라이선스 수량", position = 5, example = "1")
-    private int unAvailableLicenseAmount;
+    private int useLicenseAmount;
     @ApiModelProperty(value = "라이선스 정보", position = 6)
     private List<LicenseInfoResponse> licenseInfoList;
 }

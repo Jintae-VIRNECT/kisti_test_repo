@@ -340,8 +340,8 @@ public class LicenseService {
         licenseProductList.forEach(licenseProduct -> {
             LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
             Product product = licenseProduct.getProduct();
-            AtomicInteger availableLicenseAmount = new AtomicInteger();
-            AtomicInteger unAvailableLicensesAmount = new AtomicInteger();
+            AtomicInteger unUsedLicenseAmount = new AtomicInteger();
+            AtomicInteger usedLicenseAmount = new AtomicInteger();
 
             // Product Info
             licenseProductInfo.setProductId(product.getId());
@@ -355,9 +355,9 @@ public class LicenseService {
                 licenseInfoResponse.setLicenseKey(license.getSerialKey());
                 licenseInfoResponse.setStatus(license.getStatus());
                 if (license.getStatus().equals(LicenseStatus.USE)) {
-                    unAvailableLicensesAmount.getAndIncrement();
+                    usedLicenseAmount.getAndIncrement();
                 } else {
-                    availableLicenseAmount.getAndIncrement();
+                    unUsedLicenseAmount.getAndIncrement();
                 }
                 licenseInfoResponse.setUserId(license.getUserId() == null ? "" : license.getUserId());
                 licenseInfoResponse.setCreatedDate(license.getCreatedDate());
@@ -367,8 +367,8 @@ public class LicenseService {
 
             licenseProductInfo.setLicenseInfoList(licenseInfoList);
             licenseProductInfo.setQuantity(licenseInfoList.size());
-            licenseProductInfo.setAvailableLicenseAmount(availableLicenseAmount.get());
-            licenseProductInfo.setUnAvailableLicenseAmount(unAvailableLicensesAmount.get());
+            licenseProductInfo.setUnUseLicenseAmount(unUsedLicenseAmount.get());
+            licenseProductInfo.setUseLicenseAmount(usedLicenseAmount.get());
 
             licenseProductInfoResponses.add(licenseProductInfo);
         });
