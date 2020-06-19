@@ -110,7 +110,10 @@ export default {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
       )
-      if (idx < 0 || this.resolutions.width * this.resolutions.height === 0) {
+      if (
+        idx < 0 ||
+        this.resolutions[idx].width * this.resolutions[idx].height === 0
+      ) {
         return {
           width: 0,
           height: 0,
@@ -161,6 +164,12 @@ export default {
       const video = this.$refs['mainVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
 
+      console.log(
+        'current resolution: ',
+        this.resolution.width,
+        this.resolution.height,
+      )
+
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
       let scale = this.resolution.width / this.resolution.height
@@ -182,6 +191,7 @@ export default {
       }
       this.videoSize.width = video.offsetWidth
       this.videoSize.height = video.offsetHeight
+      console.log('calc size: ', this.videoSize.width, this.videoSize.height)
     },
     doCapture() {
       const videoEl = this.$el.querySelector('#main-video')

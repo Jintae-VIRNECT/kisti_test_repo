@@ -14,8 +14,7 @@ const getDefaultState = () => {
       // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
       // permission: 'default' / 'noAR' / false / true
-      // flash
-      // zoom
+      // arFeature
     ],
     chatList: [
       // {
@@ -36,9 +35,9 @@ const getDefaultState = () => {
     isBackground: false,
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
-    zoomStatus: 'default', // 'default': 초기세팅, utils/deviceinfo.js
+    cameraStatus: 'default', // 'default': 초기세팅
     flash: false, // flash 제어
-    flashStatus: 'default', // 'default': 초기세팅, utils/deviceinfo.js
+    flashStatus: 'default', // 'default': 초기세팅
   }
 }
 
@@ -94,17 +93,6 @@ const mutations = {
     }
     state.participants.splice(idx, 1, updateSession)
   },
-  propertyChanged(state, payload) {
-    const idx = state.participants.findIndex(
-      obj => obj.connectionId === payload.connectionId,
-    )
-    if (idx < 0) return
-
-    for (let key in payload) {
-      if (key === 'connectionId') continue
-      state.participants[idx][key] = payload[key]
-    }
-  },
   removeStream(state, connectionId) {
     const idx = state.participants.findIndex(
       obj => obj.connectionId === connectionId,
@@ -126,7 +114,6 @@ const mutations = {
         } else {
           state.mainView = {}
         }
-        console.log(state.mainView)
       }
     }
     // resolution 데이터 제거
@@ -138,19 +125,28 @@ const mutations = {
   },
 
   // device control
-  deviceUpdate(state, object) {
-    for (let key in object) {
-      state[key] = object[key]
+  deviceControl(state, params) {
+    for (let key in params) {
+      if (key in state && params[key] !== null) {
+        state[key] = params[key]
+      }
     }
   },
-  agreePermission(state, param) {
-    const idx = state.participants.findIndex(user => user.id === param.id)
+  updateParticipant(state, param) {
+    const idx = state.participants.findIndex(
+      user => user.connectionId === param.connectionId,
+    )
     if (idx < 0) {
       return
     }
-    state.participants[idx].permission = param.isAllowed
-    if (state.participants[idx].id === state.mainView.id) {
-      state.mainView.permission = param.isAllowed
+    for (let key in param) {
+      if (key in state.participants[idx] && param[key] !== null) {
+        if (key === 'connectionId') continue
+        state.participants[idx][key] = param[key]
+        if (state.participants[idx].id === state.mainView.id) {
+          state.mainView[key] = param[key]
+        }
+      }
     }
   },
   updateResolution(state, payload) {
@@ -190,6 +186,15 @@ const getters = {
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
+  deviceInfo: state => {
+    return {
+      zoomLevel: state.zoomLevel,
+      zoomMax: state.zoomMax,
+      cameraStatus: state.cameraStatus,
+      flash: state.flash,
+      flashStatus: state.flashStatus,
+    }
+  },
 }
 
 export default {

@@ -1,4 +1,5 @@
 import { AR_DRAWING } from 'configs/remote.config'
+import { ACTION } from 'configs/view.config'
 
 export default {
   data() {
@@ -122,13 +123,13 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on(`control:${this.view}:undo`, this.stackUndo)
-    this.$eventBus.$on(`control:${this.view}:redo`, this.stackRedo)
-    this.$eventBus.$on(`control:${this.view}:clear`, this.drawingClear)
+    this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:clear`, this.drawingClear)
   },
   beforeDestroy() {
-    this.$eventBus.$off(`control:${this.view}:undo`, this.stackUndo)
-    this.$eventBus.$off(`control:${this.view}:redo`, this.stackRedo)
-    this.$eventBus.$off(`control:${this.view}:clear`, this.drawingClear)
+    this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:clear`, this.drawingClear)
   },
 }

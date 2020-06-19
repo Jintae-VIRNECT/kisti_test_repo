@@ -13,13 +13,13 @@ export const addSessionEventListener = session => {
   })
   session.on('streamPropertyChanged', event => {
     if (event.changedProperty === 'audioActive') {
-      // audio 조절
-      Store.commit('propertyChanged', {
-        connectionId: event.stream.connection.connectionId,
-        audio: event.newValue,
-      })
+      // audio 조절 :::: SIGNAL.MIC로 대체
+      // Store.commit('updateParticipant', {
+      //   connectionId: event.stream.connection.connectionId,
+      //   audio: event.newValue,
+      // })
     } else if (event.changedProperty === 'videoActive') {
-      Store.commit('propertyChanged', {
+      Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         video: event.newValue,
       })
@@ -34,15 +34,44 @@ export const addSessionEventListener = session => {
   })
 
   // 디바이스 정보
-  session.on(SIGNAL.SPEAKER, event => {
+  session.on(SIGNAL.MIC, event => {
     const data = JSON.parse(event.data)
-    Store.commit('propertyChanged', {
+    Store.commit('updateParticipant', {
+      connectionId: event.from.connectionId,
+      audio: data.isOn,
+    })
+  })
+  session.on(SIGNAL.SPEAKER, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    Store.commit('updateParticipant', {
       connectionId: event.from.connectionId,
       speaker: data.isOn,
     })
   })
+  session.on(SIGNAL.AR_FEATURE, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    Store.commit('updateParticipant', {
+      connectionId: event.from.connectionId,
+      arFeature: data.hasArFeature,
+    })
+  })
+  session.on(SIGNAL.FLASH, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    Store.commit('deviceControl', {
+      flash: data.status,
+    })
+  })
   session.on(SIGNAL.CAMERA, event => {
-    console.log(event)
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    Store.commit('deviceControl', {
+      zoom: data.currentZoomLevel,
+      zoomMax: data.maxZoomLevel,
+      camera: data.status,
+    })
   })
   session.on(SIGNAL.RESOLUTION, event => {
     Store.commit('updateResolution', {
@@ -53,9 +82,9 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAPTURE_PERMISSION, event => {
     const data = JSON.parse(event.data)
     if (data.type === 'response') {
-      Store.commit('agreePermission', {
-        id: data.from,
-        isAllowed: data.isAllowed,
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        permission: data.isAllowed,
       })
     }
   })
@@ -121,15 +150,14 @@ export const getUserObject = stream => {
     status: 'good',
     roleType: roleType,
     permission: 'default',
-    flash: 0,
-    zoom: 0,
+    hasArFeature: 'default',
   }
   if (stream.videoActive) {
-    Store.commit('updateResolution', {
-      connectionId: stream.connection.connectionId,
-      width: 0,
-      height: 0,
-    })
+    // Store.commit('updateResolution', {
+    //   connectionId: stream.connection.connectionId,
+    //   width: 0,
+    //   height: 0,
+    // })
   }
   if (Store.getters['account'].uuid === uuid) {
     streamObj.me = true

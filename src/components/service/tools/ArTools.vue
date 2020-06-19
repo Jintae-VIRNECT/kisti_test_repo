@@ -76,7 +76,6 @@ export default {
       }
     },
   },
-  watch: {},
   methods: {},
 
   /* Lifecycles */

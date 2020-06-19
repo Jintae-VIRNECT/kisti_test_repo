@@ -1,6 +1,6 @@
 // stream: default, pointing
 // drawing: line, text
-// ar: pointing, area, drawing
+// ar: arPointing, arArea, arDrawing
 
 export const VIEW = {
   STREAM: 'stream',
@@ -13,7 +13,7 @@ export const ACTION = {
   STREAM_POINTING: 'pointing',
   DRAWING_LINE: 'line',
   DRAWING_TEXT: 'text',
-  AR_POINTING: 'pointing',
-  AR_AREA: 'area',
-  AR_DRAWING: 'drawing',
+  AR_POINTING: 'arPointing',
+  AR_AREA: 'arArea',
+  AR_DRAWING: 'arDrawing',
 }

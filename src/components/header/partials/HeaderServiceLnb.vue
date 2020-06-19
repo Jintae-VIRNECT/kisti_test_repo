@@ -113,10 +113,10 @@ export default {
         console.error('본인 영상입니다.')
         return
       }
-      if (this.mainView.permission === true) {
-        this.setView('ar')
-        return
-      }
+      // if (this.mainView.permission === true) {
+      //   this.setView('ar')
+      //   return
+      // }
       if (this.mainView.permission === false) {
         this.toastDefault(
           '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
