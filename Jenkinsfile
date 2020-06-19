@@ -30,7 +30,7 @@ pipeline {
                 branch 'develop'
               }
               steps {
-                sh 'NODE_ENV=develop yarn workspace account build'
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount .'
               }
             }
@@ -41,7 +41,7 @@ pipeline {
               }
               steps {
                 sh 'git checkout ${GIT_TAG}'
-                sh 'NODE_ENV=staging yarn workspace account build'
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount:${GIT_TAG} .'
               }
             }
@@ -52,7 +52,7 @@ pipeline {
               }
               steps {
                 sh 'git checkout ${GIT_TAG}'
-                sh 'NODE_ENV=production yarn workspace account build'
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount:${GIT_TAG} .'
               }
             }
