@@ -40,7 +40,7 @@ pipeline {
                 branch 'staging'
               }
               steps {
-                sh 'git checkout ${GIT_TAG}'
+                
                 sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount:${GIT_TAG} .'
               }
