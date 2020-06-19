@@ -1387,38 +1387,24 @@ public class ContentService {
      * @return
      */
     public String checkParameterEncoded(String targetData) {
-        String decodedData = null;
         String encodedData = null;
+
+        // 컨텐츠의 타겟데이터는 이미 원본 값이 URLEncoding된 값인데,
+        // 실제 서버에서는 servlet container에서 decode하여 URLDecoding된 데이터가 들어오게 된다.
+        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+        // 이 와중에 query 파라미터로 받을 경우 '+'가 '공백'으로 리턴된다.
+        // PathVariable로 받지 않는 이유는 decoding된 값에 '/'가 들어가는 경우가 있기 때문.
+        if (targetData.contains(" ")) {
+            // 임시방편으로 공백은 '+'로 치환한다. 더 좋은 방법이 있다면 수정하면 좋을 듯.
+            targetData = targetData.replace(" ", "+");
+        }
 
         log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
 
-//        if (targetData.contains(" ")) {
-//            targetData = targetData.replace(" ", "+");
-//        }
-//
-//        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
-
         try {
-            // 디코딩된 데이터가 인코딩 되어있을 경우
-            if (targetData.contains("%")) {
-                decodedData = URLDecoder.decode(targetData, StandardCharsets.UTF_8.name());
-
-                if (decodedData.contains("%")) {
-                    log.info(">>>>>>>>>>>>>>>>>>>>>>> if if in");
-                    encodedData = targetData;
-                }else {
-                    log.info(">>>>>>>>>>>>>>>>>>>>>>> if else in");
-                    encodedData = URLEncoder.encode(decodedData, StandardCharsets.UTF_8.name());
-                }
-            // 디코딩된 데이터가 원본일 경우
-            } else {
-                // 인코딩을 해줌.
-                encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
-            }
-
-            log.info(">>>>>>>>>>>>>>>>>>>> decodedData {}", decodedData);
-            log.info(">>>>>>>>>>>>>>>>>>>> encodedData {}", encodedData);
-
+            // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
+            encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
