@@ -66,12 +66,17 @@ export default {
     ...mapActions(['setRecordResolution']),
 
     setRecResolution(newResolution) {
-      this.setRecordResolution(newResolution.value)
+      if (newResolution.value) {
+        this.setRecordResolution(newResolution.value)
+      } else {
+        this.setRecordResolution(newResolution)
+      }
     },
   },
   created() {
     const resolution = localStorage.getItem('recordingResolution')
     if (resolution) {
+      console.log('resolution :: ', resolution)
       this.setRecResolution(resolution)
     }
   },

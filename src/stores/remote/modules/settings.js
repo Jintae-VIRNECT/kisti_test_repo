@@ -7,7 +7,7 @@ const state = {
   videoDevice: null,
   language: null,
   localRecordLength: null,
-  recordResolution: '720p',
+  recordResolution: '480p',
   localRecordInterval: '60',
   allowPointing: false,
   allowLocalRecording: false,
