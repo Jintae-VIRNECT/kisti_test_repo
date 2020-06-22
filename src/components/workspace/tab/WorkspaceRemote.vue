@@ -80,7 +80,7 @@ export default {
           role = ROLE.EXPERT
         }
 
-        const joinRtn = await this.$call.join(room, this.account, role)
+        const joinRtn = await this.$call.join(room, role)
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })

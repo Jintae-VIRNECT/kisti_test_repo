@@ -16,29 +16,13 @@ export default {
         }
       },
     },
-    // canUseChannel(value) {
-    //   if (this.canvas) {
-    //     if (!value) {
-    //       this.canvas.isDrawingMode = false
-    //       this.canvas.freeDrawingCursor = 'default'
-    //       this.canvas.defaultCursor = 'default'
-    //       this.canvas.renderAll()
-    //     } else {
-    //       this.canvas.isDrawingMode = this.viewAction === 'line'
-    //       this.canvas.freeDrawingCursor =
-    //         this.viewAction === 'text' ? 'text' : 'default'
-    //       this.canvas.defaultCursor =
-    //         this.viewAction === 'text' ? 'text' : 'default'
-    //       this.canvas.renderAll()
-    //     }
-    //   }
-    // },
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
         this.optimizeCanvasSize()
       }
     },
     viewAction(value) {
+      if (this.view !== VIEW.DRAWING) return
       if (this.canvas && this.account.roleType === ROLE.EXPERT_LEADER) {
         this.canvas.isDrawingMode = value === 'line'
         this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
@@ -79,6 +63,33 @@ export default {
       }
       if (this.cursor) {
         this.cursor.setRadius(size / 2)
+      }
+    },
+    undoList() {
+      this.toolAble()
+    },
+    redoList() {
+      this.toolAble()
+    },
+  },
+  methods: {
+    toolAble() {
+      if (this.undoList.length > 0 || this.redoList.length > 0) {
+        this.$eventBus.$emit('tool:clear', true)
+        if (this.undoList.length === 0) {
+          this.$eventBus.$emit('tool:undo', false)
+          this.$eventBus.$emit('tool:redo', true)
+        } else if (this.redoList.length === 0) {
+          this.$eventBus.$emit('tool:undo', true)
+          this.$eventBus.$emit('tool:redo', false)
+        } else {
+          this.$eventBus.$emit('tool:undo', true)
+          this.$eventBus.$emit('tool:redo', true)
+        }
+      } else {
+        this.$eventBus.$emit('tool:undo', false)
+        this.$eventBus.$emit('tool:redo', false)
+        this.$eventBus.$emit('tool:clear', false)
       }
     },
   },

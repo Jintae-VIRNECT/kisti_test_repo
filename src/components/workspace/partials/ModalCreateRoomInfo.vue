@@ -168,11 +168,7 @@ export default {
           workspaceId: this.workspace.uuid,
         })
 
-        const joinRtn = await this.$call.join(
-          createdRoom,
-          this.account,
-          ROLE.EXPERT_LEADER,
-        )
+        const joinRtn = await this.$call.join(createdRoom, ROLE.EXPERT_LEADER)
         if (joinRtn) {
           this.$eventBus.$emit('popover:close')
 

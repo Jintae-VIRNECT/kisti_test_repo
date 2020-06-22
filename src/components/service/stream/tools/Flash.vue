@@ -64,7 +64,7 @@ export default {
         return
       }
       const toStatus = !this.status
-      this.$call.flash({ enable: toStatus })
+      this.$call.flash(toStatus)
     },
     flashListener(status) {
       // 응답

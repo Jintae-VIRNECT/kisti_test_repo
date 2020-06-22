@@ -33,7 +33,7 @@ export const addSessionEventListener = session => {
     removeSubscriber(event.stream.streamId)
   })
 
-  // 디바이스 정보
+  /** 상대방 마이크 활성 정보 수신 */
   session.on(SIGNAL.MIC, event => {
     const data = JSON.parse(event.data)
     Store.commit('updateParticipant', {
@@ -41,6 +41,7 @@ export const addSessionEventListener = session => {
       audio: data.isOn,
     })
   })
+  /** 상대방 스피커 활성 정보 수신 */
   session.on(SIGNAL.SPEAKER, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
@@ -49,6 +50,15 @@ export const addSessionEventListener = session => {
       speaker: data.isOn,
     })
   })
+  /**AR 사용 가능 여부 >> AR_FEATURE랑 합쳐져야함 */
+  // session.on(SIGNAL.HAS_AR_FEATURE, event => {
+  //   if (session.connection.connectionId === event.from.connectionId) return
+  //   const data = JSON.parse(event.data)
+  //   Store.commit('updateParticipant', {
+  //     connectionId: event.from.connectionId,
+  //     arFeature: data.hasArFeature,
+  //   })
+  // })
   session.on(SIGNAL.AR_FEATURE, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
@@ -57,6 +67,7 @@ export const addSessionEventListener = session => {
       arFeature: data.hasArFeature,
     })
   })
+  /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
@@ -64,6 +75,7 @@ export const addSessionEventListener = session => {
       flash: data.status,
     })
   })
+  /** 카메라 컨트롤(zoom) */
   session.on(SIGNAL.CAMERA, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
@@ -73,23 +85,24 @@ export const addSessionEventListener = session => {
       camera: data.status,
     })
   })
+  /** 화면 해상도 설정 */
   session.on(SIGNAL.RESOLUTION, event => {
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
     })
   })
-  session.on(SIGNAL.CAPTURE_PERMISSION, event => {
-    const data = JSON.parse(event.data)
-    if (data.type === 'response') {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        permission: data.isAllowed,
-      })
-    }
-  })
+  // session.on(SIGNAL.CAPTURE_PERMISSION, event => {
+  //   const data = JSON.parse(event.data)
+  //   if (data.type === 'response') {
+  //     Store.commit('updateParticipant', {
+  //       connectionId: event.from.connectionId,
+  //       permission: data.isAllowed,
+  //     })
+  //   }
+  // })
 
-  // 채팅
+  /** 채팅 수신 */
   session.on(SIGNAL.CHAT, event => {
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
@@ -111,7 +124,7 @@ export const addSessionEventListener = session => {
     }
     Store.commit('addChat', chat)
   })
-
+  /** 내보내기 */
   session.on('forceDisconnectByUser', event => {
     console.log(event)
   })
