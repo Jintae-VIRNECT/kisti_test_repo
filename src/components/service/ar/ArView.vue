@@ -40,6 +40,7 @@ export default {
       if (this.viewAction === ACTION.AR_DRAWING) {
         return true
       } else {
+        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
         return false
       }
     },
@@ -53,7 +54,7 @@ export default {
       if (data.from === this.account.uuid) return
       // if (data.to !== this.account.uuid) return
       if (web_test) {
-        if (data.type === AR_DRAWING.REQUEST_FRAME) {
+        if (data.type === AR_DRAWING.FRAME_REQUEST) {
           this.doArCapture()
           return
         }
@@ -77,7 +78,8 @@ export default {
       this.chunk.push(data.chunk)
 
       if (data.type === AR_DRAWING.LAST_FRAME) {
-        this.encodeImage(data.imgId)
+        this.encodeImage(Date.now())
+        this.loadingFrame = false
       }
     },
     encodeImage(imgId) {
@@ -93,7 +95,7 @@ export default {
       }
 
       this.showArImage(imageInfo)
-      this.$call.arDrawing(AR_DRAWING.RECEIVE_FRAME)
+      this.$call.arDrawing(AR_DRAWING.FRAME_RECEIVED)
     },
     /**
      * 웹-웹 테스트용!
@@ -109,7 +111,6 @@ export default {
       tmpCanvas.height = height
 
       const tmpCtx = tmpCanvas.getContext('2d')
-      console.log(this.$refs)
 
       tmpCtx.drawImage(
         document.querySelector('.ar-video__stream'),
