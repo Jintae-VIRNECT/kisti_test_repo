@@ -14,6 +14,7 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
+    <invite-modal :visible="invite"></invite-modal>
   </div>
 </template>
 
@@ -21,14 +22,17 @@
 import { mapGetters } from 'vuex'
 import ParticipantVideo from './ParticipantVideo'
 import { maxParticipants } from 'utils/callOptions'
+import InviteModal from '../modal/ServiceInviteModal'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
+    InviteModal,
   },
   data() {
     return {
       max: maxParticipants,
+      invite: false,
     }
   },
   computed: {
@@ -63,6 +67,7 @@ export default {
   methods: {
     more() {
       console.log('추가 초대하기')
+      this.invite = !this.invite
     },
   },
 

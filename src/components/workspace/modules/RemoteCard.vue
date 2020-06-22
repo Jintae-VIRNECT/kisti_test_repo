@@ -80,7 +80,7 @@
 <script>
 import Card from 'Card'
 import Profile from 'Profile'
-import ProfileList from './ProfileList'
+import ProfileList from 'ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
 export default {
