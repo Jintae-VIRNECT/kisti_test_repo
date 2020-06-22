@@ -4,9 +4,10 @@
 
 <script>
 import RemoteLayout from 'components/RemoteLayout'
-
+import langMixin from 'mixins/language'
 export default {
   name: 'container',
+  mixins: [langMixin],
   components: {
     RemoteLayout,
   },
@@ -23,6 +24,8 @@ export default {
       type = 'mobile'
     }
     html.setAttribute('data-screen', type)
+
+    this.initLang()
   },
 }
 </script>
