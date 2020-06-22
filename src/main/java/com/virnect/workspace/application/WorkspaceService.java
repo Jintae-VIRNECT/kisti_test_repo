@@ -10,10 +10,7 @@ import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.MemberListResponse;
-import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
+import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -41,6 +38,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,7 +58,6 @@ public class WorkspaceService {
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
-    private final GroupService groupService;
     private final MessageRestService messageRestService;
     private final ProcessRestService processRestService;
     private final FileUploadService fileUploadService;
@@ -376,27 +373,21 @@ public class WorkspaceService {
         long memberUserCount = this.workspaceUserPermissionRepository.countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MEMBER");
 
         //plan 정보 set
-        long remotePlanCount = 0L;
-        long makePlanCount = 0L;
-        long viewPlanCount = 0L;
+        int remotePlanCount = 0;
+        int makePlanCount = 0;
+        int viewPlanCount = 0;
 
-        //수정해야 됨.
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
         if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
             for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
-
                 if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.REMOTE.toString())) {
-                    remotePlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
+                    remotePlanCount = licenseProductInfoResponse.getUseLicenseAmount();
                 }
                 if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.MAKE.toString())) {
-
-                    makePlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
+                    makePlanCount = licenseProductInfoResponse.getUseLicenseAmount();
                 }
                 if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.VIEW.toString())) {
-                    viewPlanCount = licenseProductInfoResponse.getLicenseInfoList().stream()
-                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equalsIgnoreCase("USE")).collect(Collectors.toList()).size();
+                    viewPlanCount = licenseProductInfoResponse.getUseLicenseAmount();
                 }
             }
         }
@@ -1325,4 +1316,118 @@ public class WorkspaceService {
         return new ApiResponse<>(new MemberListResponse(memberInfoDTOList, null));
     }
 
+    /**
+     * 워크스페이스 소속 멤버 플랜 리스트 조회
+     *
+     * @param workspaceId - 조회 대상 워크스페이스 식별자
+     * @param pageable    -  페이징
+     * @return - 멤버 플랜 리스트
+     */
+    public ApiResponse<WorkspaceUserLicenseListResponse> getLicenseWorkspaceUserList(String workspaceId, Pageable pageable) {
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+        }
+
+        List<WorkspaceUserLicenseInfoResponse> workspaceUserLicenseInfoList = new ArrayList<>();
+
+        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
+            for (WorkspaceLicensePlanInfoResponse.LicenseInfoResponse licenseInfoResponse : licenseProductInfoResponse.getLicenseInfoList()) {
+                if (licenseInfoResponse.getStatus().equals("USE")) {
+                    UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(licenseInfoResponse.getUserId()).getData();
+                    WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = new WorkspaceUserLicenseInfoResponse();
+                    workspaceUserLicenseInfo.setUserId(userInfoRestResponse.getUuid());
+                    workspaceUserLicenseInfo.setProfile(userInfoRestResponse.getProfile());
+                    workspaceUserLicenseInfo.setName(userInfoRestResponse.getName());
+                    workspaceUserLicenseInfo.setNickName(userInfoRestResponse.getNickname());
+                    workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
+                    workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
+                    workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
+                }
+            }
+        }
+
+        List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList = new ArrayList<>();
+
+        //sort
+        String sortName = pageable.getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
+        String sortDirection = pageable.getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
+
+        if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("asc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
+        }
+        if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("desc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
+        }
+        if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("asc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
+        }
+        if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("desc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
+        }
+        return new ApiResponse<>(paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList));
+    }
+
+    public WorkspaceUserLicenseListResponse paging(int pageNum, int pageSize, List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList) {
+
+        int totalElements = beforeWorkspaceUserLicenseList.size();
+        int totalPage = totalElements / pageSize;
+        int resultPage = totalPage;
+        int lastElements = totalElements % pageSize;
+
+        if (lastElements > 0) {
+            totalPage = totalPage + 1;
+            resultPage = resultPage + 1;
+        }
+
+        List<List<WorkspaceUserLicenseInfoResponse>> result = new ArrayList<>();
+
+        int temp = 0;
+        while (totalPage > 0) {
+            List<WorkspaceUserLicenseInfoResponse> afterList = beforeWorkspaceUserLicenseList.stream()
+                    .skip(temp)
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+            result.add(afterList);
+            temp = temp + pageSize;
+            totalPage = totalPage - 1;
+        }
+
+        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
+        pageMetadataResponse.setTotalElements(totalElements);
+        pageMetadataResponse.setTotalPage(resultPage);
+        pageMetadataResponse.setCurrentPage(pageNum + 1);
+        pageMetadataResponse.setCurrentSize(pageSize);
+
+        return new WorkspaceUserLicenseListResponse(result.get(pageNum), pageMetadataResponse);
+    }
+
+    public ApiResponse<WorkspaceLicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+        }
+        WorkspaceLicenseInfoResponse workspaceLicenseInfoResponse = new WorkspaceLicenseInfoResponse();
+        List<WorkspaceLicenseInfoResponse.LicenseInfo> licenseInfoList = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().map(licenseProductInfoResponse -> {
+            WorkspaceLicenseInfoResponse.LicenseInfo licenseInfo = new WorkspaceLicenseInfoResponse.LicenseInfo();
+            licenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
+            licenseInfo.setProductName(licenseProductInfoResponse.getProductName());
+            licenseInfo.setUseLicenseAmount(licenseProductInfoResponse.getUseLicenseAmount());
+            licenseInfo.setLicenseAmount(licenseProductInfoResponse.getUnUseLicenseAmount() + licenseProductInfoResponse.getUseLicenseAmount());
+            return licenseInfo;
+        }).collect(Collectors.toList());
+
+
+        workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
+        DecimalFormat decimalFormat = new DecimalFormat();
+        Long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
+        int idx = (int) Math.floor(Math.log(size) / Math.log(1024));
+        double ret = ((size / Math.pow(1024, Math.floor(idx))));
+
+        workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(ret)));
+        workspaceLicenseInfoResponse.setMaxDownloadHit(workspaceLicensePlanInfoResponse.getMaxDownloadHit());
+        workspaceLicenseInfoResponse.setMaxCallTime(workspaceLicenseInfoResponse.getMaxCallTime());
+
+        return new ApiResponse<>(workspaceLicenseInfoResponse);
+    }
 }
