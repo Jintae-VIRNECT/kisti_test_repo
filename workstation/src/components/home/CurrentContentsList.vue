@@ -169,7 +169,7 @@ export default {
   }
   .el-tabs .el-tabs__item {
     height: 40px;
-    font-size: 12.6px;
+    font-size: 13px;
     line-height: 40px;
   }
   .el-table {

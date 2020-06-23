@@ -235,7 +235,7 @@ export default {
   dt {
     margin-bottom: 4px;
     color: #445168;
-    font-size: 12.6px;
+    font-size: 13px;
   }
   dd {
     margin-bottom: 24px;

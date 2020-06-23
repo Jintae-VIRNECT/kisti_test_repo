@@ -129,7 +129,7 @@ export default {
     color: #445168;
     &:last-child {
       margin-bottom: 48px;
-      font-size: 12.6px;
+      font-size: 13px;
     }
   }
   .box {

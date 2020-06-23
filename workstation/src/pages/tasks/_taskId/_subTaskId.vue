@@ -281,7 +281,7 @@ export default {
   .cell .el-button {
     padding: 8px 11px;
     color: #0d2a58;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>
