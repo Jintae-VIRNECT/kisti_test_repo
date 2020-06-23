@@ -82,7 +82,7 @@ export const addSessionEventListener = session => {
     Store.commit('deviceControl', {
       zoom: data.currentZoomLevel,
       zoomMax: data.maxZoomLevel,
-      camera: data.status,
+      cameraStatus: data.status,
     })
   })
   /** 화면 해상도 설정 */

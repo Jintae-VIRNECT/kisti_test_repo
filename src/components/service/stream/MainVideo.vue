@@ -39,16 +39,6 @@
           <img src="~assets/image/img_video_connecting.svg" />
           <p>영상 연결 중…</p>
         </div>
-        <div class="main-video__empty-inner" v-else-if="false">
-          <img src="~assets/image/img_video_stop.svg" />
-          <p>영상을 정지하였습니다.</p>
-          <p class="inner-discription" v-if="true">
-            작업자의 Remote App이<br />백그라운드 상태입니다.
-          </p>
-          <p class="inner-discription" v-else>
-            작업자의 영상이 일시정지 상태입니다.
-          </p>
-        </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
           <p>출력 할 영상이 없습니다.</p>
@@ -63,12 +53,29 @@
         </div>
       </transition>
     </div>
+    <transition name="opacity">
+      <div class="main-video__empty" v-if="loaded && cameraStatus !== -1">
+        <transition name="opacity">
+          <div class="main-video__empty-inner" v-if="cameraStatus === 'off'">
+            <img src="~assets/image/img_video_stop.svg" />
+            <p>영상을 정지하였습니다.</p>
+            <p class="inner-discription" v-if="cameraStatus === 'background'">
+              작업자의 Remote App이<br />백그라운드 상태입니다.
+            </p>
+            <p class="inner-discription" v-else>
+              작업자의 영상이 일시정지 상태입니다.
+            </p>
+          </div>
+        </transition>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ACTION } from 'configs/view.config'
+import { CAMERA } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
@@ -99,6 +106,7 @@ export default {
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
+      deviceInfo: 'deviceInfo',
     }),
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -115,8 +123,29 @@ export default {
       }
       return this.resolutions[idx]
     },
+    cameraStatus() {
+      if (this.mainView && this.mainView.id) {
+        if (this.deviceInfo.cameraStatus === CAMERA.CAMERA_OFF) {
+          return 'off'
+        } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+          return 'background'
+        }
+        return -1
+      } else {
+        return -1
+      }
+    },
   },
   watch: {
+    deviceInfo: {
+      deep: true,
+      handler(e) {
+        console.log(e)
+      },
+    },
+    cameraStatus(val) {
+      console.log('camera status change:', val)
+    },
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
     },
