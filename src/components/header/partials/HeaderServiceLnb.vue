@@ -1,5 +1,5 @@
 <template>
-  <nav class="header-lnb service">
+  <nav class="header-lnbs service">
     <ul class="flex">
       <lnb-button
         text="실시간 공유"
@@ -10,7 +10,6 @@
       <lnb-button
         text="협업 보드"
         :active="currentView === 'drawing'"
-        keyvalue="drawing"
         :notice="drawingNotice"
         :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
         @click="goTab('drawing')"
@@ -76,26 +75,47 @@ export default {
     ...mapMutations(['updateParticipant']),
     goTab(type) {
       if (type === this.currentView) return
-      if (this.currentView === 'ar') {
-        this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
-      }
-      if (type === 'drawing') {
-        this.goDrawing()
-      }
-      if (type === 'stream') {
-        this.setView('stream')
-      }
-      if (type === 'ar') {
-        this.permissionCheck()
+
+      // leader
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.currentView === 'ar') {
+          this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
+        }
+        if (type === 'stream') {
+          this.setView(VIEW.STREAM)
+        }
+        if (type === 'drawing') {
+          this.setView(VIEW.DRAWING)
+        }
+        if (type === 'ar') {
+          this.permissionCheck()
+        }
+      } // other user
+      else {
+        if (type === 'stream') {
+          this.setView(VIEW.STREAM)
+        }
+        if (type === 'drawing') {
+          if (this.shareFile && this.shareFile.id) {
+            this.drawingNotice = false
+            this.setView(VIEW.DRAWING)
+          } else {
+            this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
+          }
+          this.goDrawing()
+        }
+        if (type === 'ar') {
+          if (!this.arNotice) {
+            this.toastDefault('AR 공유가 활성화되어 있지 않습니다.')
+            return
+          }
+        }
       }
     },
     goDrawing() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         this.setView(VIEW.DRAWING)
         return
-      }
-      if (this.drawingNotice) {
-        this.drawingNotice = false
       }
       if (this.shareFile && this.shareFile.id) {
         this.setView(VIEW.DRAWING)
@@ -105,7 +125,7 @@ export default {
     },
     permissionSetting(permission) {
       if (permission === true) {
-        this.setView('ar')
+        this.setView(VIEW.AR)
         this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
       } else if (permission === false) {
         this.toastDefault(

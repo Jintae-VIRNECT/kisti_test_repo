@@ -3,21 +3,21 @@
   height: 100%;
 }
 
-.header-lnb {
+.header-lnbs {
   height: 100%;
-  > .flex li {
-    &.notice {
-      position: relative;
-      &::after {
-        position: absolute;
-        top: 1.143rem;
-        right: 0;
-        width: 0.429rem;
-        height: 0.429rem;
-        background-color: $color_red;
-        border-radius: 50%;
-        content: "";
-      }
+}
+.header-lnb {
+  &.notice {
+    position: relative;
+    &::after {
+      position: absolute;
+      top: 1.143rem;
+      right: 0;
+      width: 0.429rem;
+      height: 0.429rem;
+      background-color: $color_red;
+      border-radius: 50%;
+      content: "";
     }
   }
 }

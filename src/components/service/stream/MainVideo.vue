@@ -238,12 +238,19 @@ export default {
       tmpCtx.drawImage(videoEl, 0, 0, width, height)
 
       tmpCanvas.toBlob(blob => {
+        const imgId = parseInt(
+          Date.now()
+            .toString()
+            .substr(-9),
+        )
         this.setCapture({
-          id: Date.now(),
-          img: URL.createObjectURL(blob),
+          id: imgId,
+          fileData: blob,
           fileName: `Remote_Capture_${this.$dayjs().format(
             'YYMMDD_HHmmss',
           )}.png`,
+          width,
+          height,
         })
       }, 'image/png')
     },

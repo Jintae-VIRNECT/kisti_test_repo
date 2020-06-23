@@ -26,7 +26,7 @@
         <transition name="popover">
           <capture-modal
             v-if="captureFile.id"
-            :imgData="captureFile"
+            :file="captureFile"
           ></capture-modal>
         </transition>
       </main>

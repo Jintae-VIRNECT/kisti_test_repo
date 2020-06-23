@@ -7,7 +7,9 @@
       </button>
     </div>
     <div class="capture-body">
-      <img class="capture-image" :src="imgUrl" />
+      <div class="capture-image">
+        <img :src="imageData" />
+      </div>
       <div class="capture-tools">
         <button class="capture-tools_button" @click="recapture">
           <p>
@@ -27,77 +29,71 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'CaptureModal',
   data() {
     return {
       status: false,
+      imageData: '',
     }
   },
   props: {
-    imgData: {
+    file: {
       type: Object,
       default: () => {
         return {}
       },
     },
   },
-  computed: {
-    ...mapGetters(['mainView', 'resolutions']),
-    imgId() {
-      if (this.imgData && this.imgData.id > 0) {
-        return this.imgData.id
-      } else {
-        return 0
-      }
-    },
-    imgUrl() {
-      if (this.imgData && this.imgData.id > 0) {
-        return this.imgData.img
-      } else {
-        return ''
-      }
-    },
-    resolution() {
-      const idx = this.resolutions.findIndex(
-        data => data.connectionId === this.mainView.connectionId,
-      )
-      if (
-        idx < 0 ||
-        this.resolutions[idx].width * this.resolutions[idx].height === 0
-      ) {
-        return {
-          width: 0,
-          height: 0,
+  watch: {
+    file: {
+      deep: true,
+      handler(e) {
+        if (e && e.id) {
+          this.init()
         }
-      }
-      return this.resolutions[idx]
+      },
     },
   },
   methods: {
     ...mapActions(['addHistory', 'setView', 'clearCapture']),
+    init() {
+      const fileReader = new FileReader()
+      fileReader.onload = e => {
+        this.imageData = e.target.result
+      }
+      fileReader.readAsDataURL(this.file.fileData)
+    },
     recapture() {
       this.$eventBus.$emit('capture')
     },
     save() {},
     share() {
-      this.addHistory(this.imgData)
-      this.setView('drawing')
-      this.$nextTick(() => {
-        this.close()
-      })
+      if (this.imageData && this.imageData.length > 0) {
+        const history = this.getHistoryObject()
+
+        this.addHistory(history)
+        this.setView('drawing')
+        this.$nextTick(() => {
+          this.close()
+        })
+      }
     },
     close() {
       this.clearCapture()
     },
-    getPosition() {},
+    getHistoryObject() {
+      return {
+        id: this.file.id,
+        fileName: this.file.fileName,
+        img: this.imageData,
+      }
+    },
   },
 
-  /* Lifecycles */
-  beforeDestroy() {},
   mounted() {
-    console.log(this.imgData)
+    this.init()
   },
 }
 </script>
@@ -134,6 +130,15 @@ export default {
 .capture-image {
   width: 25.714rem; //360px;
   height: 14.429rem; // 202px;
+  background: #000;
+  > img {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
+  }
 }
 .capture-tools {
   display: flex;
