@@ -100,7 +100,7 @@ export default {
   }
   dt {
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
     line-height: 20px;
   }
   dd,

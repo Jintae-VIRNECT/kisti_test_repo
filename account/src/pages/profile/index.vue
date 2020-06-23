@@ -406,7 +406,7 @@ export default {
     }
     .desc {
       color: $font-color-desc;
-      font-size: 12.6px;
+      font-size: 13px;
     }
   }
   .el-button--text {

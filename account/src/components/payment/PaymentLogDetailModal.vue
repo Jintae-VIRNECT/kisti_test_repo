@@ -221,7 +221,7 @@ export default {
       margin-bottom: 0;
     }
     dl.horizon dt {
-      font-size: 12.6px;
+      font-size: 13px;
     }
     .price {
       margin: -5px 0 6px;

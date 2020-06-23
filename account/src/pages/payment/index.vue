@@ -168,7 +168,7 @@ export default {
     .sub {
       display: block;
       color: $font-color-desc;
-      font-size: 12.6px;
+      font-size: 13px;
     }
     & + .el-button {
       margin: 30px 0 10px;

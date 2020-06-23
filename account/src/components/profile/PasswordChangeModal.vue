@@ -126,7 +126,7 @@ export default {
   .caution {
     margin-top: 4px;
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>
