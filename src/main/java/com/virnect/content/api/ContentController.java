@@ -173,12 +173,12 @@ public class ContentController {
 
     @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "path", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
             @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
     })
-    @GetMapping("/download/targetData/{targetData}")
+    @GetMapping("/download")
     public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
-            @PathVariable("targetData") String targetData
+            @RequestParam(value = "targetData") String targetData
             , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
         log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
         if (targetData.isEmpty() || memberUUID.isEmpty()) {
