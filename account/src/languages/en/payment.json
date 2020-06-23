@@ -1,0 +1,77 @@
+{
+  "desc": "Manage the payment details and payment history of the workspace where you are given with master authority.",
+  "monetaryUnit": "Won",
+  "will": {
+    "title": "Upcoming payment detail",
+    "price": "Upcoming payment",
+    "dueDate": "Payment due date",
+    "way": "Payment method",
+    "autoPaymentEveryMonth": "Authomatic monthly payment"
+  },
+  "way": {
+    "register": "Update payment method",
+    "change": "Modify payment method",
+    "changeDesc": "If you want to change your plan",
+    "changeCaution": "Even if you change your payment method",
+    "autoPayment": "Automatic payment",
+    "autoPaymentNow": "Automaic payment method activated",
+    "autoPaymentCancel": "Deactivate automatic payment method"
+  },
+  "log": {
+    "title": "Payment history",
+    "column": {
+      "no": "Purchase numbers",
+      "way": "Payment method",
+      "price": "Payment amount",
+      "paidDate": "Date of Payment"
+    }
+  },
+  "autoPaymentCancelModal": {
+    "desc": "Please double-check the product plan and subscription you want to cancel.",
+    "column": {
+      "product": "Product plans and additional services",
+      "count": "Quantity",
+      "numbersUnit": "Item"
+    },
+    "caution": "* If you cancel now",
+    "submit": "Cancel",
+    "submitDone": "Cancelling automatic payment",
+    "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment",
+    "cancelRequestCancel": "Cancel automatic payment application",
+    "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application"
+  },
+  "logDetail": {
+    "title": "Payment history details",
+    "info": "Payment details",
+    "paymentNo": "Purchase numbers",
+    "creditCardSlip": "Credit card slip",
+    "detail": "Detailed purchasement details",
+    "priceWithVat": "Price (inc. VAT)",
+    "productPrice": "Product price",
+    "vat": "VAT",
+    "discount": "Discount amount",
+    "period": "Subscription Period",
+    "totalPayment": "Total amount"
+  },
+  "creditCardSlip": {
+    "title": "Credit card sales receipt",
+    "paymentInfo": "Purchase details",
+    "cardType": "Payment card type",
+    "cardNo": "Payment card number",
+    "tradeType": "Transaction type",
+    "tradeDate": "Time of transaction",
+    "instalmentMonth": "Instalment period",
+    "approvalNo": "Authorized number",
+    "buyInfo": "Purchase details",
+    "buyNo": "Purhcase number",
+    "buyUser": "Purchaser",
+    "tax": "Tax amount",
+    "taxFree": "Tax-free amount",
+    "surtax": "VAT",
+    "sellerInfo": "Seller details",
+    "sellerCompanyName": "Name of seller",
+    "sellerCompanyNo": "Seller's business registration number",
+    "sellerAddress": "Address of seller",
+    "caution": "Credit card sales slips were issued in accordance with Article 32-2"
+  }
+}

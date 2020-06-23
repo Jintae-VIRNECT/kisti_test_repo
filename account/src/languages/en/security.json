@@ -1,0 +1,7 @@
+{
+  "column": {
+    "deviceName": "Device name",
+    "loginLocation": "Last connection location",
+    "loginDate": "Last connect time"
+  }
+}

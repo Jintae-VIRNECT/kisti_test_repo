@@ -1,0 +1,60 @@
+{
+  "desc": "Manage plans and services purchased from the workspace where you are given with the master authority",
+  "countsUnit": "Count",
+  "hoursUnit": "Hour",
+  "info": {
+    "title": "Purchase detail",
+    "productPurchasesInfo": "Product plan purchasement detail",
+    "proudctPlan": "Product plan",
+    "arStorageCapacity": "AR storage capacity",
+    "arContentsViewCount": "View counts of online AR content",
+    "callTime": "Call duration",
+    "extendPurchasesInfo": "Purchase details of Additional Services",
+    "nextPaymentDate": "Next payment date",
+    "way": "Payment method",
+    "changePlans": "Change your plan and services"
+  },
+  "planMembersInfo": {
+    "title": "Workspace Plan user details",
+    "column": {
+      "name": "Plan type",
+      "user": "User"
+    }
+  },
+  "used": "Used",
+  "remainOfMax": "{max} {unit} can be used from {remain} {unit}",
+  "change": "Edit",
+  "arStorage": {
+    "used": "AR storage usage",
+    "usedDesc": "It may differ from the actual remaining capacity",
+    "capacity": "AR storage capacity",
+    "capacityDesc": "Uploading is not possible if the capacity is exceeded",
+    "max": "Overall storage capacity",
+    "maxShort": "Overall storage capacity",
+    "default": "Default storage allotment",
+    "extend": "Purchase additional storage",
+    "unit": "GB"
+  },
+  "arContent": {
+    "used": "View counts usage in AR contents",
+    "usedDesc": "It may differ from the actual number of remaining view counts",
+    "capacity": "AR content view counts",
+    "capacityDesc": "When the view counts are all used",
+    "max": "Overall online AR contetn view counts",
+    "maxShort": "Overall view counts",
+    "default": "Default view count allotment",
+    "extend": "Additional purchasement of view counts",
+    "unit": "Count"
+  },
+  "call": {
+    "used": "Talk minutes used",
+    "usedDesc": "It may differ from the actual number of remaining minutes",
+    "capacity": "Talk minutes",
+    "capacityDesc": "When the Talk minutes are all used",
+    "max": "Total amount of Talk minutes",
+    "maxShort": "Total amount of Talk minutes",
+    "default": "Default Talk minutes allotment",
+    "extend": "Add more Talk minutes",
+    "unit": "Time"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "desc": "This is the list of Workstation that you are participating in.",
+  "couponList": {
+    "title": "Overall Workstation details",
+    "empty": "There is no Workstation details"
+  },
+  "column": {
+    "name": "Name",
+    "master": "Master",
+    "joinDate": "Participation date",
+    "role": "Workstation authority level",
+    "plan": "My plans"
+  }
+}

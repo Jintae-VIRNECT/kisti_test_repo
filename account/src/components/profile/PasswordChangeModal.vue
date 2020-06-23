@@ -29,7 +29,10 @@
               $t('profile.passwordChangeModal.newPasswordRepeatPlaceholder')
             "
           />
-          <p class="caution">{{ $t('profile.passwordChangeModal.caution') }}</p>
+          <p
+            class="caution"
+            v-html="$t('profile.passwordChangeModal.caution')"
+          />
         </el-form-item>
       </el-form>
     </div>
