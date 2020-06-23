@@ -147,6 +147,11 @@ export default {
   &:first-child {
     margin-left: 0;
   }
+
+  > .tooltip {
+    width: 100%;
+    height: 100%;
+  }
 }
 .profilelist-user__image {
   width: 100%;

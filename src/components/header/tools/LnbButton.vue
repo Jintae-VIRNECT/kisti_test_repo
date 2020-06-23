@@ -1,5 +1,5 @@
 <template>
-  <li :class="{ notice: notice }">
+  <li class="header-lnb" :class="{ notice: notice }">
     <button
       class="header-lnb__button"
       :class="{ active: active }"

@@ -67,6 +67,7 @@ export default {
       })
     },
     async joinRoom(room) {
+      console.log('>>> JOIN ROOM')
       try {
         const roomInfo = await getRoomInfo({
           roomId: room.roomId,
