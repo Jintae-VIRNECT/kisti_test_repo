@@ -45,7 +45,7 @@ export default {
   },
   computed: {
     roomList() {
-      return this.getFilter(this.rooms, ['title', 'description'], 'room')
+      return this.getFilter(this.rooms, ['title', 'description'])
     },
   },
   watch: {},
