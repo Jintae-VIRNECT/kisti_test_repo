@@ -1,0 +1,12 @@
+{
+  "conditions": {
+    "wait": "Waiting",
+    "unprogressing": "Not in progress",
+    "progressing": "In progress",
+    "incompleted": "Inadequate",
+    "completed": "Completed",
+    "failed": "Not done",
+    "success": "Done",
+    "fault": "Fault"
+  }
+}

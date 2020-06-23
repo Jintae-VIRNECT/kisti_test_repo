@@ -1,0 +1,28 @@
+{
+  "title": "Task report management",
+  "task": "Task",
+  "paper": "Paper",
+  "issue": "Issue",
+  "myTask": "My tasks",
+  "myPaper": "My paper",
+  "myIssue": "My issues",
+  "column": {
+    "taskName": "Task name",
+    "subTaskName": "Subtask name",
+    "stepName": "Phase name",
+    "issueTitle": "Issue title",
+    "status": "Progress status",
+    "reporter": "Report made by",
+    "reportedDate": "Report date"
+  },
+  "issueDetail": {
+    "title": "Issue details",
+    "reporter": "Report made by",
+    "reportedDate": "Report time of issued task",
+    "content": "Details of issued task"
+  },
+  "paperDetail": {
+    "title": "Paper details",
+    "item": "Items"
+  }
+}

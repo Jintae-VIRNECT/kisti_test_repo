@@ -1,0 +1,27 @@
+{
+  "home": "Workstation Home",
+  "members": "Workspace user",
+  "contents": "Content management",
+  "tasks": "Manage Tasks",
+  "workspaceSetting": "Workspace settings",
+  "collapse": {
+    "workspace": {
+      "title": "Workspace list",
+      "master": "Workspace master",
+      "manager": "Workspace manager",
+      "member": "Workspace member"
+    },
+    "members": {
+      "list": "Workspace member overview",
+      "activity": "Workspace member activity"
+    },
+    "contents": {
+      "list": "List of overall contents"
+    },
+    "tasks": {
+      "list": "Task list",
+      "results": "Task report management",
+      "troubles": "Trouble memo (TM)"
+    }
+  }
+}

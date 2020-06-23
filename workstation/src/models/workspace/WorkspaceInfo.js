@@ -11,7 +11,7 @@ export default class WorkspaceInfo extends Model {
     super()
     const members = json.workspaceUserInfo.map(user => new Member(user))
     return {
-      info: new Workspace(json),
+      info: new Workspace(json.workspaceInfo),
       master: members.find(member => member.role === 'MASTER'),
       managers: members.filter(member => member.role === 'MANAGER'),
       members: members.filter(member => member.role === 'MEMBER'),

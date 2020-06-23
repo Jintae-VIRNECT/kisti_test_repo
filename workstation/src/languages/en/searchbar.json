@@ -1,0 +1,25 @@
+{
+  "all": "All",
+  "delete": "Delete",
+  "filter": {
+    "title": "Filter",
+    "all": "All",
+    "processPublished": "Add a process",
+    "processUnpublished": "Process not added",
+    "globalIssue": "Issues",
+    "workIssue": "Task issues"
+  },
+  "sort": {
+    "title": "Sort by",
+    "role": "By authority",
+    "alphabetAsc": "Ascending alphabetical order",
+    "alphabetDesc": "Descending alphabetical order",
+    "createdAsc": "Sort oldest to newest creation",
+    "createdDesc": "Sort newest to oldest creation",
+    "updatedAsc": "Sort oldest to newest reports",
+    "updatedDesc": "Sort newest to oldest reports"
+  },
+  "keyword": {
+    "title": "Search"
+  }
+}
