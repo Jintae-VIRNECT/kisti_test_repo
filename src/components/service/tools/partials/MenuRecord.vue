@@ -26,8 +26,10 @@ export default {
       // this.active = 'recording'
       if (!this.isRecording) {
         this.record()
+        this.$eventBus.$emit('serverRecord', true)
       } else {
         this.stop()
+        this.$eventBus.$emit('serverRecord', false)
       }
     },
     record() {

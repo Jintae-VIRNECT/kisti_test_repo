@@ -27,11 +27,11 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    this.callStartTime = this.currentTime = this.$dayjs().unix()
+    this.callStartTime = this.$dayjs().unix()
     this.timeRunner()
   },
   beforeDestroy() {
-    this.callStartTime = this.currentTime = null
+    this.callStartTime = null
     clearInterval(this.runnerID)
   },
 }

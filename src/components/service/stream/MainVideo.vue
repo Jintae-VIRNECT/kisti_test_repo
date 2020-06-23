@@ -17,9 +17,9 @@
         loop
       ></video>
       <template v-if="loaded">
-        <div class="main-video__recording" v-if="false">
-          <p class="server">{{ 0 | timeFilter }}</p>
-          <p class="local">{{ 0 | timeFilter }}</p>
+        <div class="main-video__recording">
+          <p class="server" v-if="serverTimer">{{ serverTime | timeFilter }}</p>
+          <p class="local" v-if="localTimer">{{ localTime | timeFilter }}</p>
         </div>
 
         <pointing
@@ -97,6 +97,13 @@ export default {
         width: 0,
         height: 0,
       },
+
+      localTimer: null,
+      localTime: 0,
+      localStart: 0,
+      serverTimer: null,
+      serverTime: 0,
+      serverStart: 0,
     }
   },
   computed: {
@@ -240,15 +247,49 @@ export default {
         })
       }, 'image/png')
     },
+    localRecord(isStart) {
+      if (isStart) {
+        this.localStart = this.$dayjs().unix()
+        this.localTimer = setInterval(() => {
+          const diff = this.$dayjs().unix() - this.localStart
+
+          this.localTime = this.$dayjs
+            .duration(diff, 'seconds')
+            .as('milliseconds')
+        }, 1000)
+      } else {
+        clearInterval(this.localTimer)
+        this.localTimer = null
+      }
+    },
+    serverRecord(isStart) {
+      if (isStart) {
+        this.serverStart = this.$dayjs().unix()
+        this.serverTimer = setInterval(() => {
+          const diff = this.$dayjs().unix() - this.serverStart
+
+          this.serverTime = this.$dayjs
+            .duration(diff, 'seconds')
+            .as('milliseconds')
+        }, 1000)
+      } else {
+        clearInterval(this.serverTimer)
+        this.serverTimer = null
+      }
+    },
   },
 
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
+    this.$eventBus.$off('localRecord', this.localRecord)
+    this.$eventBus.$off('serverRecord', this.serverRecord)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
+    this.$eventBus.$on('localRecord', this.localRecord)
+    this.$eventBus.$on('serverRecord', this.serverRecord)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
 }
