@@ -21,7 +21,7 @@ export default {
   mixins: [langMixin],
   props: {},
   data() {
-    const defaultLanguage = this.getLangCode()
+    const defaultLanguage = this.mx_getLangCode()
 
     return {
       selectLanguage: defaultLanguage,
@@ -50,13 +50,13 @@ export default {
   },
   watch: {
     selectLanguage(language) {
-      this.changeLang(language)
+      this.mx_changeLang(language)
     },
   },
   mounted() {
     const lang = localStorage.getItem('language')
     if (lang) {
-      this.changeLang(lang)
+      this.mx_changeLang(lang)
     }
   },
 }

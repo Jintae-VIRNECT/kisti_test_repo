@@ -22,13 +22,13 @@ export default {
     },
   },
   methods: {
-    initLang() {
-      const langCode = this.getLangCode()
+    mx_initLang() {
+      const langCode = this.mx_getLangCode()
       localStorage.setItem('language', langCode)
       document.documentElement.lang = langCode
     },
 
-    getLangCode() {
+    mx_getLangCode() {
       let langCode = localStorage.getItem('language')
 
       if (!langCode) {
@@ -42,16 +42,16 @@ export default {
       return shortLang.get(langCode.toLowerCase())
     },
 
-    changeLang(locale) {
+    mx_changeLang(locale) {
       if (this.isScreenApp) {
-        this.mobileChangeLang(locale)
+        this.mx_mobileChangeLang(locale)
         return
       }
 
       if (locale) {
         localStorage.setItem('language', locale)
       } else {
-        locale = this.getLangCode()
+        locale = this.mx_getLangCode()
         localStorage.setItem('language', locale)
       }
 
@@ -62,9 +62,9 @@ export default {
         return
       }
     },
-    mobileChangeLang(locale) {
+    mx_mobileChangeLang(locale) {
       if (!locale) {
-        locale = this.getLangCode()
+        locale = this.mx_getLangCode()
       }
       this.$i18n.locale = locale
       document.documentElement.lang = locale
