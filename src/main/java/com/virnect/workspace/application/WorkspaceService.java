@@ -1419,7 +1419,7 @@ public class WorkspaceService {
 
 
         workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
-        DecimalFormat decimalFormat = new DecimalFormat();
+        DecimalFormat decimalFormat = new DecimalFormat("0");
         Long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
         int idx = (int) Math.floor(Math.log(size) / Math.log(1024));
         double ret = ((size / Math.pow(1024, Math.floor(idx))));
