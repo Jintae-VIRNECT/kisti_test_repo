@@ -1,7 +1,9 @@
 <template>
   <div class="stream-menu menus">
-    <capture :disabled="!isMainView"></capture>
-    <record :disabled="!isMainView"></record>
+    <template v-if="isLeader">
+      <capture :disabled="!isMainView"></capture>
+      <record :disabled="!isMainView"></record>
+    </template>
     <local-record :disabled="!isMainView"></local-record>
     <local-record-list></local-record-list>
     <setting></setting>
@@ -17,6 +19,7 @@ import {
   LocalRecordList,
 } from './partials'
 import { mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'Menus',
@@ -40,6 +43,13 @@ export default {
         return false
       } else {
         return true
+      }
+    },
+    isLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
       }
     },
   },
