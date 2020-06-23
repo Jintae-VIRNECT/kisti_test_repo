@@ -25,7 +25,7 @@ export default {
     }
     html.setAttribute('data-screen', type)
 
-    this.initLang()
+    this.mx_initLang()
   },
 }
 </script>
