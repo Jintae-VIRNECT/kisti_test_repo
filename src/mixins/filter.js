@@ -1,4 +1,5 @@
 import { mapGetters } from 'vuex'
+import _ from 'lodash'
 const Hangul = require('hangul-js')
 
 export default {
@@ -11,38 +12,95 @@ export default {
     // }
   },
   methods: {
-    getFilter(list, [...params], depth = null) {
+    /**
+     *
+     * Returns the object at the specified path
+     *
+     * if error occur then return raw list
+     *
+     * @param {Array} list array of object
+     * @param {Array} param1 array of property path
+     *
+     * @example this.getFilter(this.historyList, [
+        'title',
+        'participants[].nickname',
+      ])
+     *
+     */
+    getFilter(list, [...params]) {
       if (this.searchFilter === '') {
         return list
       }
 
-      const filterList = []
-      // const filteringValue = this.searchFilter.toLowerCase()
-      const filteringSearcher = new Hangul.Searcher(
-        this.searchFilter.toLowerCase(),
-      )
-      for (const object of list) {
-        let addObject = null
-        for (const param of [...params]) {
-          if (depth !== null) {
-            // if (object[depth][param].toLowerCase().match(filteringValue)) {
-            if (filteringSearcher.search(object[depth][param].toLowerCase())) {
-              // filterList.push(object)
-              addObject = object
+      try {
+        const filterList = []
+
+        //target [["ㅎ", "ㅗ", "ㅇ"], ["ㄱ", "ㅣ", "ㄹ"], ["ㄷ", "ㅗ", "ㅇ"]]
+        //-> merge to 'ㅎㄱㄷ'
+        const mergeChos = (prev, chos) => {
+          chos = chos[0] ? chos[0] : chos
+          return prev + chos
+        }
+
+        const inputDis = Hangul.disassemble(
+          this.searchFilter.toLowerCase(),
+          true,
+        )
+        const inputChos = inputDis.reduce(mergeChos, '')
+
+        for (const record of list) {
+          let newRecord = null
+          for (const param of [...params]) {
+            let target = null
+            let spts = null
+
+            //find .(dot) and '[]' text
+            if (param.includes('.') && param.includes('[]')) {
+              spts = param.split('.')
+
+              //access array property
+              if (spts[0].includes('[]')) {
+                target = record[spts[0].replace('[]', '')]
+              }
+
+              //case of a.b.c.d...
+            } else if (param.includes('.')) {
+              target = _.get(record, param)
+            } else {
+              target = record[param].toLowerCase()
             }
-          } else {
-            // if (object[param].toLowerCase().match(filteringValue)) {
-            if (filteringSearcher(object[param].toLowerCase())) {
-              // filterList.push(object)
-              addObject = object
+
+            //if target is array
+            if (Array.isArray(target) && spts.length === 2) {
+              target.forEach(obj => {
+                if (obj.hasOwnProperty(spts[1])) {
+                  const targetDis = Hangul.disassemble(obj[spts[1]], true)
+                  const targetChos = targetDis.reduce(mergeChos, '')
+
+                  if (targetChos.includes(inputChos)) {
+                    newRecord = record
+                  }
+                }
+              })
+            } else {
+              const targetDis = Hangul.disassemble(target, true)
+              const targetChos = targetDis.reduce(mergeChos, '')
+
+              if (targetChos.includes(inputChos)) {
+                newRecord = record
+              }
             }
           }
+
+          if (newRecord !== null) {
+            filterList.push(newRecord)
+          }
         }
-        if (addObject !== null) {
-          filterList.push(addObject)
-        }
+        return filterList
+      } catch (e) {
+        console.error(e)
+        return list
       }
-      return filterList
     },
   },
   mounted() {

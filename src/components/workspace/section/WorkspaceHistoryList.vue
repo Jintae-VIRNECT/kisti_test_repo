@@ -74,7 +74,7 @@
 import Profile from 'Profile'
 import WideCardExtend from 'WideCardExtend'
 
-import sort from 'mixins/filter'
+import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
@@ -86,7 +86,7 @@ import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceHistoryList',
-  mixins: [sort, confirmMixin],
+  mixins: [searchMixin, confirmMixin],
   components: {
     Profile,
     WideCardExtend,
@@ -105,17 +105,10 @@ export default {
   },
   computed: {
     list() {
-      if (this.searchFilter === '') {
-        return this.historyList
-      }
-
-      const array = []
-      for (const list of this.historyList) {
-        if (list.title.toLowerCase().match(this.searchFilter.toLowerCase())) {
-          array.push(list)
-        }
-      }
-      return array
+      return this.getFilter(this.historyList, [
+        'title',
+        'participants[].nickname',
+      ])
     },
   },
   watch: {
