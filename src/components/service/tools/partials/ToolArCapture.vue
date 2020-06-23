@@ -25,13 +25,6 @@ export default {
       }
     },
   },
-  watch: {
-    viewAction(val, beforeVal) {
-      if ([ACTION.AR_AREA, ACTION.AR_DRAWING].includes(beforeVal)) {
-        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
-      }
-    },
-  },
   methods: {
     clickHandler() {
       if (this.view !== VIEW.AR) return

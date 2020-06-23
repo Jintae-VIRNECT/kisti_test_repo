@@ -1,4 +1,4 @@
-import { AR_DRAWING } from 'configs/remote.config'
+import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 
 export default {
@@ -119,10 +119,25 @@ export default {
         }
       })
     },
+    receiveDrawing(receive) {
+      const data = JSON.parse(receive.data)
+      if (data.from === this.account.uuid) return
+
+      if (data.type === AR_DRAWING.UNDO_ABLE) {
+        this.$eventBus.$emit(`tool:undo`, data.isAvailable)
+      }
+      if (data.type === AR_DRAWING.REDO_ABLE) {
+        this.$eventBus.$emit(`tool:redo`, data.isAvailable)
+      }
+      if (data.type === AR_DRAWING.CLEAR_ABLE) {
+        this.$eventBus.$emit(`tool:clear`, data.isAvailable)
+      }
+    },
   },
 
   /* Lifecycles */
   created() {
+    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveDrawing)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:clear`, this.drawingClear)

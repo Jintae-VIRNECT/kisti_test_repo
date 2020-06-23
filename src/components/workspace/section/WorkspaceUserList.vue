@@ -4,6 +4,7 @@
       v-for="userinfo in list"
       :key="userinfo.uuid"
       :name="userinfo.nickName"
+      :imageUrl="userinfo.profile"
       :email="userinfo.email"
       :role="userinfo.role"
       :license="userinfo.license"

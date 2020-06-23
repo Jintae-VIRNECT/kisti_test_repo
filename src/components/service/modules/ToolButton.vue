@@ -54,12 +54,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .tool {
   position: relative;
   display: flex;
-  width: 50px;
-  height: 50px;
-  font-size: 12px;
+  width: 3.571rem;
+  height: 3.571rem;
+  font-size: 0.857rem;
   background-color: transparent;
   border-left: solid 1px #d8d8d8;
   opacity: 0.6;
@@ -77,8 +78,8 @@ export default {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 38px;
-      height: 38px;
+      width: 2.714rem;
+      height: 2.714rem;
       background-color: #494a4e;
       border-radius: 2px;
       transform: translate(-50%, -50%);

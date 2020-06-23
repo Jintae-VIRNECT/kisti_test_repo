@@ -114,7 +114,9 @@ export default {
 .inputrow {
   position: relative;
   width: 100%;
-  margin-top: 2.143em;
+  & + & {
+    margin-top: 2.143em;
+  }
 }
 .inputrow-title {
   position: relative;

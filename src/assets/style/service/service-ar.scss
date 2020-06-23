@@ -2,7 +2,7 @@
   position: relative;
   flex: 1;
   width: 100%;
-  height: calc(100% - 80px);
+  height: calc(100% - #{$tool_height});
 }
 
 .ar-video {
@@ -32,31 +32,31 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  background-color: rgba(#014fe5, 0.3);
-  border: solid 2px #1967ff;
+  background-color: rgba($color_primary_700, 0.3);
+  border: solid 2px $color_primary;
   &::before {
     position: absolute;
-    top: -4px;
-    left: -4px;
-    width: 28px;
-    height: 28px;
-    border-top: solid 2px #1967ff;
-    border-left: solid 2px #1967ff;
+    top: -0.286rem;
+    left: -0.286rem;
+    width: 0.2rem;
+    height: 0.2rem;
+    border-top: solid 2px $color_primary;
+    border-left: solid 2px $color_primary;
     content: "";
   }
   &::after {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 28px;
-    height: 28px;
-    border-top: solid 2px #1967ff;
-    border-right: solid 2px #1967ff;
+    top: -0.286rem;
+    right: -0.286rem;
+    width: 0.2rem;
+    height: 0.2rem;
+    border-top: solid 2px $color_primary;
+    border-right: solid 2px $color_primary;
     content: "";
   }
   &:hover {
     > .ar-video__select-inner p {
-      text-shadow: 4px 4px 4px rgba(#000, 0.59);
+      text-shadow: 0.286rem 0.286rem 0.286rem rgba($color_darkgray_1000, 0.59);
     }
   }
 }
@@ -68,22 +68,22 @@
   height: 100%;
   &::before {
     position: absolute;
-    bottom: -4px;
-    left: -4px;
-    width: 28px;
-    height: 28px;
-    border-bottom: solid 2px #1967ff;
-    border-left: solid 2px #1967ff;
+    bottom: -0.286rem;
+    left: -0.286rem;
+    width: 0.2rem;
+    height: 0.2rem;
+    border-bottom: solid 2px $color_primary;
+    border-left: solid 2px $color_primary;
     content: "";
   }
   &::after {
     position: absolute;
-    right: -4px;
-    bottom: -4px;
-    width: 28px;
-    height: 28px;
-    border-right: solid 2px #1967ff;
-    border-bottom: solid 2px #1967ff;
+    right: -0.286rem;
+    bottom: -0.286rem;
+    width: 0.2rem;
+    height: 0.2rem;
+    border-right: solid 2px $color_primary;
+    border-bottom: solid 2px $color_primary;
     content: "";
   }
 }
@@ -91,14 +91,14 @@
   margin: auto;
   text-align: center;
   > p {
-    color: #fff;
+    color: $color_text;
     font-weight: 500;
-    font-size: 24px;
-    text-shadow: 1px 2px 4px rgba(#000, 0.59);
+    font-size: 1.714rem;
+    text-shadow: 1px 2px 0.286rem rgba($color_darkgray_1000, 0.59);
     transition: all 0.3s;
     &.description {
-      margin-top: 6px;
-      font-size: 13px;
+      margin-top: 0.429rem;
+      font-size: 0.929rem;
     }
   }
 }
@@ -113,11 +113,11 @@
 
 .ar-video__loading {
   position: absolute;
-  top: -2px;
-  left: -2px;
+  top: -0.143rem;
+  left: -0.143rem;
   display: flex;
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
+  width: calc(100% + 0.286rem);
+  height: calc(100% + 0.286rem);
   background-color: #1e1e20;
 }
 .ar-video__loading-inner {

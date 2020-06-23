@@ -129,8 +129,8 @@ export default {
   min-height: 2.714em;
 }
 .profilelist-user {
-  width: 2.714em;
-  height: 2.714em;
+  width: fit-content;
+  height: fit-content;
   margin-left: 0.429em;
   // border: solid 1px transparent;
   border-radius: 50%;
@@ -146,6 +146,11 @@ export default {
   }
   &:first-child {
     margin-left: 0;
+  }
+
+  > .tooltip {
+    width: 100%;
+    height: 100%;
   }
 }
 .profilelist-user__image {

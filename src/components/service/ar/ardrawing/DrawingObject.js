@@ -27,7 +27,7 @@ export default {
         this.stackClear() // 전체 삭제
 
         if (this.$call) {
-          this.$call.arDrawing(AR_DRAWING.CLEAR_ALL, { imgId: this.file.id })
+          this.$call.arDrawing(AR_DRAWING.CLEAR, { imgId: this.file.id })
         }
       }
     },

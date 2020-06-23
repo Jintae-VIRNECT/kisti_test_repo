@@ -1,0 +1,54 @@
+@import "~assets/style/vars";
+
+.invite-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 19.286em;
+  height: 100%;
+  max-height: 41.429em;
+  margin: 3.571em 4.286em 2.143em 4em;
+}
+
+.invite-modal__body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  > .createroom-user {
+    flex: 1;
+  }
+}
+.invite-modal__footer {
+  display: inline-block;
+  flex: 0;
+  margin-bottom: 1.071em;
+  text-align: center;
+  > .btn {
+    min-width: 33%;
+  }
+}
+
+.invite-modal_regist-image {
+  width: fit-content;
+  margin: 1.143em auto 2.857em;
+  font-size: 0.929em;
+  line-height: 1.571em;
+}
+.invite-modal__selected {
+  flex: 0;
+  margin: 0.714em;
+}
+.invite-modal__selected-title {
+  margin-bottom: 1.143rem;
+  color: #d2d2d2;
+}
+.invite-modal__selected-empty {
+  min-height: 3.714em;
+  font-size: 0.929em;
+  opacity: 0.7;
+}
+.invite-modal__button {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}

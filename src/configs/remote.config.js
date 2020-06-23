@@ -8,6 +8,7 @@ export const SIGNAL = {
   FLASH: 'signal:flash',
   MIC: 'signal:mic',
   SPEAKER: 'signal:speaker',
+  // HAS_AR_FEATURE: 'signal:hasArFeature',
   AR_FEATURE: 'signal:arFeature',
   AR_DRAWING: 'signal:arDrawing',
   AR_POINTING: 'signal:arPointing',
@@ -45,10 +46,16 @@ export const AR_POINTING = {
   CLEAR_ABLE: 'clearAble',
 }
 
+export const AR_FEATURE = {
+  HAS_AR_FEATURE: 'signal:hasArFeature',
+  START_AR_FEATURE: 'startArFeature',
+  STOP_AR_FEATURE: 'stopArFeature',
+}
+
 export const AR_DRAWING = {
-  REQUEST_FRAME: 'requestFrame',
-  RECEIVE_FRAME: 'receivedFrame',
+  FRAME_REQUEST: 'frameRequest',
   FRAME_RESPONSE: 'frameResponse',
+  FRAME_RECEIVED: 'frameReceived',
   FIRST_FRAME: 'firstFrame',
   FRAME: 'frame',
   LAST_FRAME: 'lastFrame',
@@ -59,7 +66,11 @@ export const AR_DRAWING = {
   LINE_DOWN: 'arDrawLineDown',
   LINE_MOVE: 'arDrawLineMove',
   LINE_UP: 'arDrawLineUp',
-  UNDO: 'arDrawRedo',
-  REDO: 'arDrawUndo',
-  CLEAR_ALL: 'arDrawClearAll',
+  UNDO: 'undo',
+  REDO: 'redo',
+  CLEAR: 'clear',
+
+  UNDO_ABLE: 'undoAble',
+  REDO_ABLE: 'redoAble',
+  CLEAR_ABLE: 'clearAble',
 }

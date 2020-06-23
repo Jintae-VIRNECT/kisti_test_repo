@@ -1,17 +1,21 @@
+$share_title: 2.714rem;
+$share_image_height: 110px;
+$share_savebtn_height: 2.929rem;
+
 .share {
   position: absolute;
   width: $share_width;
   height: 100%;
   overflow: hidden;
   background-color: $color_bg_sub;
-  border-right: solid 1px rgba(#fff, 0.09);
+  border-right: solid 1px rgba($color_text, 0.09);
 }
 
 .share-title {
   display: flex;
   flex-shrink: 0;
   width: 100%;
-  height: 38px;
+  height: $share_title;
   > li {
     flex: 1;
   }
@@ -19,27 +23,27 @@
 .share-title__button {
   width: 100%;
   margin: auto;
-  color: rgba(#fff, 0.5);
+  color: rgba($color_text, 0.5);
   font-size: 0.857rem;
-  line-height: 38px;
+  line-height: $share_title;
   text-align: center;
   background-color: #181818;
   &:hover,
   &:active {
-    color: #fff;
+    color: $color_text;
   }
   &.active {
-    color: #fff;
+    color: $color_text;
     background-color: transparent;
   }
 }
 
 .share-body {
   position: absolute;
-  top: 38px;
+  top: $share_title;
   flex-direction: column;
   width: 100%;
-  height: calc(100% - 38px);
+  height: calc(100% - #{$share_title});
   > .vue-scrollbar__wrapper {
     width: 100%;
     margin-bottom: 0;
@@ -60,7 +64,7 @@
     width: 100%;
     height: 100%;
     > .vue-scrollbar__wrapper {
-      min-height: calc(100% - 70px);
+      min-height: calc(100% - #{$share_title + $share_savebtn_height});
     }
   }
 }
@@ -71,8 +75,8 @@
   height: 100%;
   > .vue-scrollbar__wrapper {
     width: 100%;
-    height: calc(100% - 79px);
-    transform: translate(-10px, 10px);
+    height: calc(100% - #{$share_title + $share_savebtn_height});
+    transform: translate(-0.714rem, 0.714rem);
   }
 }
 
@@ -82,9 +86,9 @@
   left: 0;
   flex: 0;
   flex-shrink: 0;
-  width: calc(100% - 28px);
-  height: 41px;
-  margin: 14px;
+  width: calc(100% - 2rem);
+  height: $share_savebtn_height;
+  margin: 1rem;
   font-weight: normal;
   font-size: 0.857rem;
   background-color: #213d62;
@@ -93,12 +97,12 @@
     display: flex;
     width: fit-content;
     margin: auto;
-    line-height: 20px;
+    line-height: 1.429rem;
     &:before {
       display: inline-block;
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
+      width: 1.429rem;
+      height: 1.429rem;
+      margin-right: 0.429rem;
       background: url(~assets/image/ic_save_down.svg) no-repeat;
       content: "";
     }
@@ -106,8 +110,8 @@
 }
 
 .upload-list {
-  padding: 20px;
-  padding-left: 24px;
+  padding: 1.429rem;
+  padding-left: 1.714rem;
   &.inner {
     padding-top: 0;
   }
@@ -122,7 +126,7 @@
 
 .upload-list__button {
   width: 100%;
-  height: 110px;
+  height: $share_image_height;
   background: url(~assets/image/call/ic-add-circle-outline.svg) center/40px
     no-repeat #4c5259;
   opacity: 0.28;
@@ -147,15 +151,15 @@
 .sharing-image__item {
   position: relative;
   width: 100%;
-  height: 110px;
-  margin-bottom: 25px;
+  height: $share_image_height;
+  margin-bottom: 1.786rem;
   // overflow: hidden;
   &.pdf:after {
     position: absolute;
-    right: 6px;
-    bottom: 6px;
-    width: 24px;
-    height: 24px;
+    right: 0.429rem;
+    bottom: 0.429rem;
+    width: 1.714rem;
+    height: 1.714rem;
     background: url(~assets/image/img_pdf.png) center/100% no-repeat;
     content: "";
   }
@@ -167,11 +171,11 @@
     pointer-events: none;
     &:before {
       position: absolute;
-      top: -4px;
-      left: -4px;
-      width: calc(100% + 6px);
-      height: calc(100% + 6px);
-      border: solid 1px #0f75f5;
+      top: -0.286rem;
+      left: -0.286rem;
+      width: calc(100% + 0.429rem);
+      height: calc(100% + 0.429rem);
+      border: solid 1px $color_primary;
       content: "";
     }
     > .sharing-image__item-active {
@@ -188,22 +192,22 @@
   left: 0;
   display: none;
   width: 100%;
-  height: 30px;
-  color: #fff;
+  height: 2.143rem;
+  color: $color_text;
   font-weight: 500;
   font-size: 1.071rem;
-  background-color: rgba(#0f75f5, 0.8);
+  background-color: rgba($color_primary, 0.8);
 }
 .sharing-image__name {
   position: absolute;
-  top: 110px;
+  top: 7.857rem;
   z-index: 5;
   width: 100%;
-  margin-top: 5px;
+  margin-top: 0.357rem;
   font-size: 1.071rem;
-  line-height: 20px;
+  line-height: 1.429rem;
   text-align: center;
-  background: #242427;
+  background: $color_bg_sub;
   @include ellipsis();
   transition: all 3s;
   &:hover {
@@ -214,10 +218,10 @@
 
 .sharing-image__remove {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 22px;
-  height: 22px;
+  top: 0.214rem;
+  right: 0.214rem;
+  width: 1.571rem;
+  height: 1.571rem;
   background: url(~assets/image/ic-close-w.svg) center/1.071rem no-repeat
     rgba(#2a2a2a, 0.7);
   border-radius: 50%;
@@ -230,10 +234,11 @@
   left: 0;
   display: flex;
   width: 100%;
-  height: 110px;
+  height: $share_image_height;
   background: rgba(#000, 0.5);
 }
 .loading-box {
+  width: 60%;
   margin: auto;
 }
 .loading-box__title {
@@ -243,8 +248,9 @@
 }
 .loading-box__progress {
   position: relative;
-  width: 92px;
-  height: 4px;
+  width: 100%;
+  height: 0.286rem;
+  overflow: hidden;
   background: #f8f8f8;
   border-radius: 2px;
 }
@@ -253,8 +259,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: #0f75f5;
-  border-radius: 2px;
+  background: $color_primary;
 }
 .loading-box__dash {
   font-size: 0.857rem;
@@ -263,16 +268,16 @@
 
 .share-body__backbutton {
   flex: 0;
-  width: calc(100% - 40px);
-  margin: 20px;
+  width: calc(100% - 2.857rem);
+  margin: 1.429rem;
 }
 .share-body__backbutton-text {
-  height: 30px;
-  padding: 5px 0 5px 32px;
+  height: 2.143rem;
+  padding: 0.357rem 0 0.357rem 2.286rem;
   font-weight: 500;
   font-size: 0.929rem;
   text-align: left;
-  background: url(~assets/image/call/ic_back.svg) 6px center/20px no-repeat
-    #38383a;
+  background: url(~assets/image/call/ic_back.svg) 0.429rem center/1.429rem
+    no-repeat #38383a;
   @include ellipsis();
 }

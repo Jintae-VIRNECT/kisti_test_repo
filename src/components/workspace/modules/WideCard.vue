@@ -60,7 +60,7 @@ export default {
   position: relative;
   width: 100%;
   margin-bottom: 0.571em;
-  padding: 1.571em 2.143em;
+  padding: 1.357em 2.143em;
   background-color: $color_darkgray_500;
   // border: solid 1px #3e3e42;
   border-radius: 2px;
