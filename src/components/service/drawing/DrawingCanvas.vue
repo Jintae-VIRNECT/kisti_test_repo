@@ -51,6 +51,13 @@ export default {
       redoList: [],
       receiveRedoList: {},
       history: [],
+      receivedList: [
+        // {
+        //   id: 0,
+        //   data: {},
+        //   path: [] / {},
+        // }
+      ],
     }
   },
   computed: {
@@ -193,7 +200,7 @@ export default {
           }
 
           this.isInit = true
-          this.$emit('initCanvas')
+          this.$emit('loadingSuccess')
         })
       }
       bgImage.onerror = error => {
@@ -260,14 +267,25 @@ export default {
       canvas.setWidth(canvasSize.width)
       canvas.setHeight(canvasSize.height)
       canvas.backgroundImage.set({
-        scaleX: canvasSize.scale,
-        scaleY: canvasSize.scale,
+        scaleX: this.file.width / image.width,
+        scaleY: this.file.height / image.height,
       })
+    },
+    receiveRender() {
+      if (this.receivedList.length === 0) return
+
+      for (let received of this.receivedList) {
+        this.addReceiveObject(received)
+      }
+      this.receivedList = []
     },
   },
   /* Lifecycles */
   beforeDestroy() {
     window.removeEventListener('resize', this.optimizeCanvasSize)
+  },
+  beforeCreate() {
+    this.$emit('loadingStart')
   },
   created() {
     window.addEventListener('resize', this.optimizeCanvasSize)

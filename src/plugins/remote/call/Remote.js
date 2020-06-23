@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
 
 let OV
@@ -12,16 +12,24 @@ const _ = {
   session: null,
   publisher: null,
   subscribers: [],
+  // 필요여부 체크할 것
   resolution: null,
-  join: async (roomInfo, account, role) => {
+  /**
+   * join session
+   * @param {Object}
+   * @param {Object}
+   * @param {String}
+   */
+  join: async (roomInfo, role) => {
+    // role = ROLE.EXPERT
     Store.commit('clear')
     Store.dispatch('updateAccount', {
       roleType: role,
     })
-    _.account = account
+    _.account = Store.getters['account']
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
-    if (allowCamera.includes(account.email)) {
+    if (allowCamera.includes(_.account.email)) {
       allowUser = true
     }
     try {
@@ -38,7 +46,7 @@ const _ = {
 
       addSessionEventListener(_.session, Store)
       const metaData = {
-        clientData: account.uuid,
+        clientData: _.account.uuid,
         roleType: role,
       }
 
@@ -91,6 +99,9 @@ const _ = {
       return false
     }
   },
+  /**
+   * leave session
+   */
   leave: () => {
     try {
       _.session.disconnect()
@@ -100,7 +111,12 @@ const _ = {
       throw err
     }
   },
+  /**
+   * chatting
+   * @param {String} text
+   */
   sendChat: text => {
+    if (!_.session) return
     if (text.trim().length === 0) return
     _.session.signal({
       data: text.trim(),
@@ -108,7 +124,12 @@ const _ = {
       type: SIGNAL.CHAT,
     })
   },
+  /**
+   * resolution
+   * @param {Object} resolution = {width, height, orientation}
+   */
   sendResolution: resolution => {
+    if (!_.session) return
     if (resolution) {
       _.resolution = resolution
     } else {
@@ -121,36 +142,25 @@ const _ = {
       type: SIGNAL.RESOLUTION,
     })
   },
-  shareImage: imgInfo => {
-    const params = {
-      imgId: imgInfo.id,
-      from: _.account.uuid,
-      width: imgInfo.width,
-      height: imgInfo.height,
-    }
-    const chunkSize = 1024 * 10
-
-    const chunk = []
-    const base64 = imgInfo.img.replace(/data:image\/.+;base64,/, '')
-    const chunkLength = Math.ceil(base64.length / chunkSize)
-    let start = 0
-    for (let i = 0; i < chunkLength; i++) {
-      chunk.push(base64.substr(start, chunkSize))
-      start += chunkSize
-    }
-    for (let i = 0; i < chunk.length; i++) {
-      if (i === 0) params.type = DRAWING.FIRST_FRAME
-      else if (i === chunk.length - 1) params.type = DRAWING.LAST_FRAME
-      else params.type = DRAWING.FRAME
-      params.chunk = chunk[i]
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: _.session.connection,
-        type: SIGNAL.DRAWING,
-      })
-    }
+  /**
+   * pointing
+   * @param {Object} params
+   *  = {to, from, color, opacity, width, posX, posY}
+   */
+  pointing: params => {
+    if (!_.session) return
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.POINTING,
+    })
   },
-  drawing: (type, params) => {
+  /**
+   * sharing drawing
+   * @param {String} type = remote.config.DRAWING
+   * @param {Object} params
+   */
+  drawing: (type, params = {}) => {
     params.type = type
     params['from'] = _.account.uuid
     params['to'] = []
@@ -160,13 +170,25 @@ const _ = {
       data: JSON.stringify(params),
     })
   },
-  pointing: message => {
+  /**
+   * AR feature status
+   * @param {String} type = remote.config.AR_FEATURE
+   */
+  arFeature: type => {
+    const params = {
+      type: type,
+    }
     _.session.signal({
-      data: JSON.stringify(message),
+      data: JSON.stringify(params),
       to: _.session.connection,
-      type: SIGNAL.POINTING,
+      type: SIGNAL.AR_FEATURE,
     })
   },
+  /**
+   * AR pointing
+   * @param {String} type = remote.config.AR_POINTING
+   * @param {Object} params (문서참조)
+   */
   arPointing: (type, params = {}) => {
     params.type = type
     _.session.signal({
@@ -175,6 +197,10 @@ const _ = {
       type: SIGNAL.AR_POINTING,
     })
   },
+  /**
+   * request screen capture permission
+   * @param {Object} params
+   */
   permission: (params = {}) => {
     params['from'] = _.account.uuid
     if (params.type !== 'response') params['type'] = 'request'
@@ -184,6 +210,11 @@ const _ = {
       data: JSON.stringify(params),
     })
   },
+  /**
+   * AR drawing
+   * @param {String} type = remote.config.AR_DRAWING
+   * @param {Object} params (문서참조)
+   */
   arDrawing: (type, params = {}) => {
     params.type = type
     params['from'] = _.account.uuid
@@ -193,21 +224,17 @@ const _ = {
       data: JSON.stringify(params),
     })
   },
-  getState: () => {
-    if (_.publisher) {
-      return {
-        audio: _.publisher.stream.audioActive,
-        video: _.publisher.stream.videoActive,
-      }
-    } else {
-      return {}
-    }
-  },
-
-  // device control
+  /**
+   * @WORNNING no used
+   * my video stream control
+   */
   streamOnOff: active => {
     _.publisher.publishVideo(active)
   },
+  /**
+   * my mic control
+   * @param {Boolean} active
+   */
   mic: active => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
@@ -220,6 +247,10 @@ const _ = {
       type: SIGNAL.MIC,
     })
   },
+  /**
+   * my speaker control
+   * @param {Boolean} active
+   */
   speaker: active => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
@@ -233,14 +264,25 @@ const _ = {
       type: SIGNAL.SPEAKER,
     })
   },
-  flash: params => {
-    params['from'] = _.account.uuid
+  /**
+   * other user's flash control
+   * @param {Boolean} active
+   */
+  flash: active => {
+    const params = {
+      enable: active,
+      from: _.account.uuid,
+    }
     _.session.signal({
       data: JSON.stringify(params),
       to: _.session.connection,
       type: SIGNAL.FLASH,
     })
   },
+  /**
+   * other user's camera control
+   * @param {Boolean} active
+   */
   camera: params => {
     params['from'] = _.account.uuid
     _.session.signal({
@@ -249,6 +291,11 @@ const _ = {
       type: SIGNAL.CAMERA,
     })
   },
+  /**
+   * user's speaker mute
+   * @param {String} connectionId
+   * @param {Boolean} mute
+   */
   mute: (connectionId, mute) => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.stream.connection.connectionId === connectionId,
@@ -264,6 +311,10 @@ const _ = {
       mute: mute,
     })
   },
+  /**
+   * kickout user
+   * @param {String} connectionId
+   */
   disconnect: connectionId => {
     let idx = _.subscribers.findIndex(
       subscriber => subscriber.stream.connection.connectionId === connectionId,
@@ -274,8 +325,19 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
+  getState: () => {
+    if (_.publisher) {
+      return {
+        audio: _.publisher.stream.audioActive,
+        video: _.publisher.stream.videoActive,
+      }
+    } else {
+      return {}
+    }
+  },
   /**
-   * append message channel listener
+   * append session signal listener
+   * @param {String} type = remote.config.SIGNAL
    * @param {Function} customFunc
    */
   addListener: (type, func) => {

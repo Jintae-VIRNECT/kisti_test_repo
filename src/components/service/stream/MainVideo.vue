@@ -4,6 +4,7 @@
       class="main-video__box"
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
+      :class="{ shutter: false }"
     >
       <video
         ref="mainVideo"
@@ -16,9 +17,9 @@
         loop
       ></video>
       <template v-if="loaded">
-        <div class="main-video__recording" v-if="false">
-          <p class="server">{{ 0 | timeFilter }}</p>
-          <p class="local">{{ 0 | timeFilter }}</p>
+        <div class="main-video__recording">
+          <p class="server" v-if="serverTimer">{{ serverTime | timeFilter }}</p>
+          <p class="local" v-if="localTimer">{{ localTime | timeFilter }}</p>
         </div>
 
         <pointing
@@ -38,16 +39,6 @@
           <img src="~assets/image/img_video_connecting.svg" />
           <p>영상 연결 중…</p>
         </div>
-        <div class="main-video__empty-inner" v-else-if="false">
-          <img src="~assets/image/img_video_stop.svg" />
-          <p>영상을 정지하였습니다.</p>
-          <p class="inner-discription" v-if="true">
-            작업자의 Remote App이<br />백그라운드 상태입니다.
-          </p>
-          <p class="inner-discription" v-else>
-            작업자의 영상이 일시정지 상태입니다.
-          </p>
-        </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
           <p>출력 할 영상이 없습니다.</p>
@@ -62,28 +53,39 @@
         </div>
       </transition>
     </div>
-    <capture-modal
-      v-if="imgBlob"
-      :imgUrl="imgBlob"
-      @close="imgBlob = ''"
-      @recapture="doCapture"
-    ></capture-modal>
+    <transition name="opacity">
+      <div class="main-video__empty" v-if="loaded && cameraStatus !== -1">
+        <transition name="opacity">
+          <div class="main-video__empty-inner" v-if="cameraStatus === 'off'">
+            <img src="~assets/image/img_video_stop.svg" />
+            <p>영상을 정지하였습니다.</p>
+            <p class="inner-discription" v-if="cameraStatus === 'background'">
+              작업자의 Remote App이<br />백그라운드 상태입니다.
+            </p>
+            <p class="inner-discription" v-else>
+              작업자의 영상이 일시정지 상태입니다.
+            </p>
+          </div>
+        </transition>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ACTION } from 'configs/view.config'
+import { CAMERA } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
-import CaptureModal from '../modal/CaptureModal'
+import shutterMixin from 'mixins/shutter'
 export default {
   name: 'MainVideo',
+  mixins: [shutterMixin],
   components: {
     Pointing,
     VideoTools,
-    CaptureModal,
   },
   data() {
     return {
@@ -91,11 +93,17 @@ export default {
       showTools: false,
       loaded: false,
       STREAM_POINTING: ACTION.STREAM_POINTING,
-      imgBlob: '',
       videoSize: {
         width: 0,
         height: 0,
       },
+
+      localTimer: null,
+      localTime: 0,
+      localStart: 0,
+      serverTimer: null,
+      serverTime: 0,
+      serverStart: 0,
     }
   },
   computed: {
@@ -105,6 +113,7 @@ export default {
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
+      deviceInfo: 'deviceInfo',
     }),
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -121,8 +130,29 @@ export default {
       }
       return this.resolutions[idx]
     },
+    cameraStatus() {
+      if (this.mainView && this.mainView.id) {
+        if (this.deviceInfo.cameraStatus === CAMERA.CAMERA_OFF) {
+          return 'off'
+        } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+          return 'background'
+        }
+        return -1
+      } else {
+        return -1
+      }
+    },
   },
   watch: {
+    deviceInfo: {
+      deep: true,
+      handler(e) {
+        console.log(e)
+      },
+    },
+    cameraStatus(val) {
+      console.log('camera status change:', val)
+    },
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
     },
@@ -145,7 +175,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateAccount']),
+    ...mapActions(['updateAccount', 'setCapture']),
     mediaPlay() {
       if (this.mainView.me && this.mainView.stream) {
         const videoEl = this.$el.querySelector('#main-video')
@@ -194,7 +224,7 @@ export default {
       console.log('calc size: ', this.videoSize.width, this.videoSize.height)
     },
     doCapture() {
-      const videoEl = this.$el.querySelector('#main-video')
+      const videoEl = this.$refs['mainVideo']
 
       const width = videoEl.offsetWidth
       const height = videoEl.offsetHeight
@@ -205,21 +235,68 @@ export default {
 
       const tmpCtx = tmpCanvas.getContext('2d')
 
-      tmpCtx.drawImage(this.$refs['mainVideo'], 0, 0, width, height)
+      tmpCtx.drawImage(videoEl, 0, 0, width, height)
 
       tmpCanvas.toBlob(blob => {
-        this.imgBlob = URL.createObjectURL(blob)
+        const imgId = parseInt(
+          Date.now()
+            .toString()
+            .substr(-9),
+        )
+        this.setCapture({
+          id: imgId,
+          fileData: blob,
+          fileName: `Remote_Capture_${this.$dayjs().format(
+            'YYMMDD_HHmmss',
+          )}.png`,
+          width,
+          height,
+        })
       }, 'image/png')
+    },
+    localRecord(isStart) {
+      if (isStart) {
+        this.localStart = this.$dayjs().unix()
+        this.localTimer = setInterval(() => {
+          const diff = this.$dayjs().unix() - this.localStart
+
+          this.localTime = this.$dayjs
+            .duration(diff, 'seconds')
+            .as('milliseconds')
+        }, 1000)
+      } else {
+        clearInterval(this.localTimer)
+        this.localTimer = null
+      }
+    },
+    serverRecord(isStart) {
+      if (isStart) {
+        this.serverStart = this.$dayjs().unix()
+        this.serverTimer = setInterval(() => {
+          const diff = this.$dayjs().unix() - this.serverStart
+
+          this.serverTime = this.$dayjs
+            .duration(diff, 'seconds')
+            .as('milliseconds')
+        }, 1000)
+      } else {
+        clearInterval(this.serverTimer)
+        this.serverTimer = null
+      }
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
+    this.$eventBus.$off('localRecord', this.localRecord)
+    this.$eventBus.$off('serverRecord', this.serverRecord)
     window.removeEventListener('resize', this.optimizeVideoSize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
+    this.$eventBus.$on('localRecord', this.localRecord)
+    this.$eventBus.$on('serverRecord', this.serverRecord)
     window.addEventListener('resize', this.optimizeVideoSize)
   },
 }

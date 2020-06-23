@@ -5,7 +5,7 @@
       <sub-view></sub-view>
 
       <transition name="share">
-        <share v-if="isExpert && currentView === 'drawing'"></share>
+        <share v-show="isExpert && currentView === 'drawing'"></share>
       </transition>
 
       <main
@@ -13,13 +13,21 @@
         :class="{ shareview: isExpert && currentView === 'drawing' }"
       >
         <transition name="main">
-          <stream-view v-show="currentView === 'stream'"></stream-view>
+          <stream-view
+            :class="{ hide: currentView !== 'stream' }"
+          ></stream-view>
         </transition>
         <transition name="main">
           <drawing-view v-show="currentView === 'drawing'"></drawing-view>
         </transition>
         <transition name="main">
           <ar-view v-show="currentView === 'ar'"></ar-view>
+        </transition>
+        <transition name="popover">
+          <capture-modal
+            v-if="captureFile.id"
+            :file="captureFile"
+          ></capture-modal>
         </transition>
       </main>
 
@@ -44,6 +52,7 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
+import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 
@@ -73,6 +82,7 @@ export default {
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
     Share: () => import('./share/Share'),
+    CaptureModal,
   },
   data() {
     return {
@@ -81,7 +91,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view']),
+    ...mapGetters(['view', 'captureFile']),
     isExpert() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -98,16 +108,6 @@ export default {
         return 'ar'
       }
       return ''
-    },
-  },
-  watch: {
-    view(val, beforeVal) {
-      if (val === VIEW.AR) {
-        // start ar
-      }
-      if (beforeVal === VIEW.AR) {
-        // stop ar
-      }
     },
   },
 

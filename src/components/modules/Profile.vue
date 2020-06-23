@@ -85,11 +85,13 @@ export default {
   flex-direction: row;
   justify-content: left;
   width: fit-content;
+  width: 100%;
+  height: 100%;
 }
 .profile--thumb {
   position: relative;
-  width: 3em;
-  height: 3em;
+  width: 100%;
+  height: 100%;
 }
 
 .profile--image {

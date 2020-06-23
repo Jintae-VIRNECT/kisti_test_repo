@@ -117,7 +117,7 @@ export default {
   methods: {
     ...mapActions(['showArImage', 'setAction']),
     setArArea() {
-      this.$call.arDrawing(AR_DRAWING.REQUEST_FRAME)
+      this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST)
     },
     optimizeVideoSize() {
       if (this.view !== VIEW.AR) return

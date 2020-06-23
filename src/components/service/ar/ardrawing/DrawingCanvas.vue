@@ -16,6 +16,7 @@ import DrawingHandler from './DrawingHandler'
 
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
+import { AR_DRAWING } from 'configs/remote.config'
 
 export default {
   name: 'ARDrawingCanvas',
@@ -154,6 +155,7 @@ export default {
 
           this.isInit = true
           this.$emit('loading')
+          this.$call.arDrawing(AR_DRAWING.START_DRAWING)
         })
       }
       bgImage.onerror = error => {
@@ -182,6 +184,7 @@ export default {
       }
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.id
+      param.action = type
 
       if (object) {
         param.oId = object.id
@@ -192,7 +195,13 @@ export default {
       }
 
       if (this.$call.session) {
-        this.$call.arDrawing(type, { ...param, ...custom })
+        if (
+          [AR_DRAWING.UNDO, AR_DRAWING.REDO, AR_DRAWING.CLEAR].includes(type)
+        ) {
+          this.$call.arDrawing(type, { ...param, ...custom })
+        } else {
+          this.$call.arDrawing('arDrawing', { ...param, ...custom })
+        }
       }
 
       // tId 업데이트

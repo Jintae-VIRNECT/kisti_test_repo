@@ -7,32 +7,48 @@
           :key="participant.id"
           :participant="participant"
         ></participant-video>
-        <article v-if="participants.length < max" key="append">
+        <article v-if="showInvite" key="append">
           <div class="participant-video more" @click="more">
             <p>추가 초대하기</p>
           </div>
         </article>
       </transition-group>
     </vue2-scrollbar>
+    <invite-modal :visible="invite"></invite-modal>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ParticipantVideo from './ParticipantVideo'
 import { maxParticipants } from 'utils/callOptions'
+import { ROLE } from 'configs/remote.config'
+
+import ParticipantVideo from './ParticipantVideo'
+import InviteModal from '../modal/ServiceInviteModal'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
+    InviteModal,
   },
   data() {
     return {
       max: maxParticipants,
+      invite: false,
     }
   },
   computed: {
     ...mapGetters(['participants', 'mainView']),
+    showInvite() {
+      if (
+        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.participants.length < this.max
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {
     'participants.length': {
@@ -63,6 +79,7 @@ export default {
   methods: {
     more() {
       console.log('추가 초대하기')
+      this.invite = !this.invite
     },
   },
 

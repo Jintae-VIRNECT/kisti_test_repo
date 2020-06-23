@@ -14,7 +14,13 @@ export default {
     drawingListener(receive) {
       const data = JSON.parse(receive.data)
       if (data.from === this.account.uuid) return
-
+      if (this.drawingView) {
+        this.addReceiveObject(data)
+      } else {
+        this.receivedList.push(data)
+      }
+    },
+    addReceiveObject(data) {
       switch (data.type) {
         case DRAWING.LINE_DOWN:
         case DRAWING.LINE_MOVE:
@@ -55,8 +61,8 @@ export default {
       this.receivePath.push(receiveParams)
 
       if (data.type === DRAWING.LINE_UP) {
-        console.log(params.scale)
         const width = parseInt(data.width) / params.scale
+        // const width = parseInt(data.width)
         const pos = calcPosition(this.receivePath, width)
         const path = new fabric.Path(this.receivePath, {
           left: pos.left,
@@ -110,6 +116,7 @@ export default {
         text: data.text,
       })
       this.canvas.renderAll()
+      this.receiveStackAdd('text', object.id, object.owner)
     },
     clearAll(data) {
       this.canvas.getObjects().forEach(object => {

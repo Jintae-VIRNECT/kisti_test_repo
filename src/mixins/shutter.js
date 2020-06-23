@@ -18,9 +18,9 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on('recapture', this.shutterAction)
+    this.$eventBus.$on('capture', this.shutterAction)
   },
   beforeDestroy() {
-    this.$eventBus.$off('recapture', this.shutterAction)
+    this.$eventBus.$off('capture', this.shutterAction)
   },
 }

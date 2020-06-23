@@ -10,6 +10,8 @@ import {
   REMOVE_FILE,
   ADD_PDF_PAGE,
   REMOVE_PDF_PAGE,
+  SET_CAPTURE,
+  CLEAR_CAPTURE,
 } from '../mutation-types'
 
 const state = {
@@ -19,6 +21,7 @@ const state = {
   selected: null,
   shareFile: {},
   shareArImage: {},
+  captureFile: {},
 }
 
 const mutations = {
@@ -29,6 +32,7 @@ const mutations = {
     state.selected = null
     state.shareFile = {}
     state.shareArImage = {}
+    state.captureFile = {}
   },
   [SHOW_IMAGE](state, imgInfo) {
     state.shareFile = Object.assign({}, imgInfo)
@@ -42,7 +46,6 @@ const mutations = {
     // }
     state.historyList.push(imgInfo)
     state.shareFile = Object.assign({}, imgInfo)
-    console.log(imgInfo)
   },
   [UPDATE_HISTORY](state, info) {
     const idx = state.historyList.findIndex(history => history.id === info.id)
@@ -74,6 +77,12 @@ const mutations = {
   [REMOVE_PDF_PAGE](state, key) {
     if (!(key in state.pdfPages)) return
     delete state.pdfPages[key]
+  },
+  [SET_CAPTURE](state, imgInfo) {
+    state.captureFile = Object.assign({}, imgInfo)
+  },
+  [CLEAR_CAPTURE](state) {
+    state.captureFile = {}
   },
 }
 

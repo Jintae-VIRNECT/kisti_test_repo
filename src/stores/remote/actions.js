@@ -259,10 +259,23 @@ export default {
     commit(types.ADD_PDF_PAGE, pdfImageInfo)
   },
   /**
-   * add remove pdf pages
+   * remove pdf pages
    * @param {Object} pdfId
    */
   removePdfPage({ commit }, pdfId) {
     commit(types.REMOVE_PDF_PAGE, pdfId)
+  },
+  /**
+   * set capture image
+   * @param {Object} fileInfo
+   */
+  setCapture({ commit }, fileInfo) {
+    commit(types.SET_CAPTURE, fileInfo)
+  },
+  /**
+   * remove capture image
+   */
+  clearCapture({ commit }) {
+    commit(types.CLEAR_CAPTURE)
   },
 }

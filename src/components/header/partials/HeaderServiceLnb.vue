@@ -1,34 +1,33 @@
 <template>
-  <nav class="header-lnb service">
+  <nav class="header-lnbs service">
     <ul class="flex">
       <lnb-button
         text="실시간 공유"
         :active="currentView === 'stream'"
         :image="require('assets/image/call/gnb_ic_shareframe.svg')"
-        @click="setView('stream')"
+        @click="goTab('stream')"
       ></lnb-button>
       <lnb-button
         text="협업 보드"
         :active="currentView === 'drawing'"
-        keyvalue="drawing"
         :notice="drawingNotice"
         :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
-        @click="goDrawing"
+        @click="goTab('drawing')"
       ></lnb-button>
       <lnb-button
         text="AR 기능"
         :active="currentView === 'ar'"
         :notice="arNotice"
         :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
-        @click="permissionCheck"
+        @click="goTab('ar')"
       ></lnb-button>
     </ul>
   </nav>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE } from 'configs/remote.config'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { SIGNAL, AR_FEATURE, ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
@@ -73,13 +72,50 @@ export default {
   },
   methods: {
     ...mapActions(['setView']),
+    ...mapMutations(['updateParticipant']),
+    goTab(type) {
+      if (type === this.currentView) return
+
+      // leader
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.currentView === 'ar') {
+          this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
+        }
+        if (type === 'stream') {
+          this.setView(VIEW.STREAM)
+        }
+        if (type === 'drawing') {
+          this.setView(VIEW.DRAWING)
+        }
+        if (type === 'ar') {
+          this.permissionCheck()
+        }
+      } // other user
+      else {
+        if (type === 'stream') {
+          this.setView(VIEW.STREAM)
+        }
+        if (type === 'drawing') {
+          if (this.shareFile && this.shareFile.id) {
+            this.drawingNotice = false
+            this.setView(VIEW.DRAWING)
+          } else {
+            this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
+          }
+          this.goDrawing()
+        }
+        if (type === 'ar') {
+          if (!this.arNotice) {
+            this.toastDefault('AR 공유가 활성화되어 있지 않습니다.')
+            return
+          }
+        }
+      }
+    },
     goDrawing() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         this.setView(VIEW.DRAWING)
         return
-      }
-      if (this.drawingNotice) {
-        this.drawingNotice = false
       }
       if (this.shareFile && this.shareFile.id) {
         this.setView(VIEW.DRAWING)
@@ -89,7 +125,8 @@ export default {
     },
     permissionSetting(permission) {
       if (permission === true) {
-        this.setView('ar')
+        this.setView(VIEW.AR)
+        this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
       } else if (permission === false) {
         this.toastDefault(
           '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
@@ -135,28 +172,35 @@ export default {
         to: this.mainView.id,
       })
     },
-    // 웹-웹 테스트용!!!
+
     getPermissionCheck(receive) {
       const data = JSON.parse(receive.data)
 
-      if (data.to !== this.account.uuid) return
+      // if (data.to !== this.account.uuid) return
+      if (data.from === this.account.uuid) return
 
-      if (data.type === 'request') {
+      // 웹-웹 테스트용!!!
+      if (web_test && data.type === 'request') {
         this.$call.permission({
           to: data.from,
           type: 'response',
           isAllowed: true,
         })
+        return
+      }
+      if (data.type === 'response') {
+        this.updateParticipant({
+          connectionId: receive.from.connectionId,
+          permission: data.isAllowed,
+        })
+        this.permissionSetting(data.isAllowed)
       }
     },
   },
 
   /* Lifecycles */
   created() {
-    if (web_test) {
-      // 웹-웹 테스트용!!!
-      this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
-    }
+    this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
   },
 }
 </script>

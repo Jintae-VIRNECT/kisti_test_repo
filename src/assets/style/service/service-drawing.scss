@@ -1,7 +1,7 @@
 .drawing-box {
   flex: 1;
   width: 100%;
-  height: calc(100% - 80px);
+  height: calc(100% - #{$tool_height});
 }
 
 .drawing-canvas {
@@ -16,9 +16,13 @@
 }
 
 .drawing-box__empty {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   width: 100%;
   height: 100%;
+  background-color: $color_bg_display;
   // background: url(~assets/image/img_novideo.svg) 50% 120px no-repeat;
   &.loading {
     position: absolute;
@@ -26,7 +30,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #1e1e20;
+    background-color: $color_bg_display;
   }
 }
 .drawing-box__empty-inner {
@@ -34,14 +38,14 @@
   text-align: center;
   user-select: none;
   > p {
-    color: #fff;
+    color: $color_text;
     font-weight: 500;
-    font-size: 17px;
+    font-size: 1.214rem;
     &.description {
-      margin: 14px auto 26px;
-      color: rgba(#fff, 0.46);
+      margin: 1rem auto 1.857rem;
+      color: rgba($color_text, 0.46);
       font-weight: 300;
-      font-size: 16px;
+      font-size: 1.143rem;
     }
   }
 }

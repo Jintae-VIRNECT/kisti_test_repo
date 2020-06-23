@@ -3,7 +3,7 @@
     class="groupcard"
     :menu="true"
     width="100%"
-    height="35rem"
+    height="33rem"
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
@@ -28,8 +28,8 @@
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            <b>{{ `접속 멤버: ${room.participantsCount} / ` }}</b>
-            {{ room.participantsCount }}
+            <b>{{ `접속 멤버  ${room.participantsCount}` }}</b>
+            {{ `/ ${room.participantsCount}` }}
           </p>
         </div>
         <div class="info__section">
@@ -80,7 +80,7 @@
 <script>
 import Card from 'Card'
 import Profile from 'Profile'
-import ProfileList from './ProfileList'
+import ProfileList from 'ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 
 export default {
@@ -105,11 +105,8 @@ export default {
     },
   },
   computed: {
-    accountId() {
-      return this.account.userId
-    },
     leader() {
-      if (this.account.userId === this.room.leaderId) {
+      if (this.account.uuid === this.room.leaderId) {
         return true
       } else {
         return false
