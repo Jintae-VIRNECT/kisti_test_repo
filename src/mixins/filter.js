@@ -54,6 +54,7 @@ export default {
             let target = null
             let spts = null
 
+            //find .(dot) and '[]' text
             if (param.includes('.') && param.includes('[]')) {
               spts = param.split('.')
 
