@@ -67,7 +67,6 @@ export default {
         const history = this.getHistoryObject()
 
         this.addHistory(history)
-        // this.$call.shareImage(history)
       } else {
         alert('이미지가 로드중')
       }

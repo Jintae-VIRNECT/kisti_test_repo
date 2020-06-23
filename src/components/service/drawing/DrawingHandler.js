@@ -50,21 +50,14 @@ export default {
             id: objID,
             tId: this.undoList.length,
           })
+          if (object instanceof fabric.IText) {
+            // this.$remoteSDK.message('drawText', getParam('text', object));
+            // this._sendAction('drawText', object);
+            return
+          }
           this.stackAdd('add', object.id)
         }
-
-        if (object instanceof fabric.IText) {
-          // this.$remoteSDK.message('drawText', getParam('text', object));
-          // this._sendAction('drawText', object);
-          return
-        }
       })
-      /* object 제거 시 필요없어보임
-      canvas.on('object:removed', event => {
-        console.log('[Fabric] Object removed')
-        // const object = event.target
-      })
-      */
 
       /* Object - move */
       canvas.on('object:moving', event => {
@@ -143,14 +136,14 @@ export default {
       //   })
 
       //   /* TEXT */
-      //   canvas.on('text:editing:entered', () => {
-      //     this.editingMode = true
-      //   })
+      canvas.on('text:editing:entered', () => {
+        this.editingMode = true
+      })
 
-      //   /* CANVAS */
-      //   canvas.on('event:changed', () => {
-      //     // console.log(arguments);
-      //   })
+      /* CANVAS */
+      // canvas.on('event:changed', event => {
+      //   console.log(event)
+      // })
       canvas.on('after:render', () => {
         if (this.isInit === true) {
           this.updateHistory()

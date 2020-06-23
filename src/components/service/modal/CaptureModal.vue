@@ -2,27 +2,26 @@
   <div class="capture">
     <div class="capture-header">
       <p class="capture-header__title">영상이 캡쳐되었습니다.</p>
-      <button class="capture-header__close" @click="$emit('close')">
+      <button class="capture-header__close" @click="close">
         닫기
       </button>
     </div>
     <div class="capture-body">
-      <img class="capture-image" :src="imgUrl" />
+      <div class="capture-image">
+        <img :src="imageData" />
+      </div>
       <div class="capture-tools">
-        <button class="capture-tools_button">
+        <button class="capture-tools_button" @click="recapture">
           <p>
-            <img
-              src="~assets/image/call/ic_recapture.svg"
-              @click="$emit('recapture')"
-            />
+            <img src="~assets/image/call/ic_recapture.svg" />
             다시 찍기
           </p>
         </button>
-        <button class="capture-tools_button">
+        <button class="capture-tools_button" @click="save">
           <p><img src="~assets/image/call/ic_download.svg" /> 이미지 저장</p>
         </button>
       </div>
-      <button class="capture-share">
+      <button class="capture-share" @click="share">
         <p><img src="~assets/image/call/ic_share.svg" /> 캡쳐 이미지 공유</p>
       </button>
     </div>
@@ -30,71 +29,98 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'CaptureModal',
-  props: {
-    imgUrl: {
-      type: String,
-      default: '',
-    },
-  },
   data() {
     return {
       status: false,
+      imageData: '',
     }
   },
-  computed: {
-    ...mapGetters(['mainView']),
-    disabled() {
-      if (!(this.mainView && this.mainView.id)) {
-        return true
-      } else {
-        return false
+  props: {
+    file: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+  },
+  watch: {
+    file: {
+      deep: true,
+      handler(e) {
+        if (e && e.id) {
+          this.init()
+        }
+      },
+    },
+  },
+  methods: {
+    ...mapActions(['addHistory', 'setView', 'clearCapture']),
+    init() {
+      const fileReader = new FileReader()
+      fileReader.onload = e => {
+        this.imageData = e.target.result
+      }
+      fileReader.readAsDataURL(this.file.fileData)
+    },
+    recapture() {
+      this.$eventBus.$emit('capture')
+    },
+    save() {},
+    share() {
+      if (this.imageData && this.imageData.length > 0) {
+        const history = this.getHistoryObject()
+
+        this.addHistory(history)
+        this.setView('drawing')
+        this.$nextTick(() => {
+          this.close()
+        })
+      }
+    },
+    close() {
+      this.clearCapture()
+    },
+    getHistoryObject() {
+      return {
+        id: this.file.id,
+        fileName: this.file.fileName,
+        img: this.imageData,
       }
     },
   },
-  watch: {},
-  methods: {
-    capture() {
-      if (this.disabled) return
-      this.status = !this.status
-    },
-    close() {
-      this.status = false
-    },
-  },
 
-  /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  mounted() {
+    this.init()
+  },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~assets/style/mixin';
 .capture {
   position: absolute;
-  right: 30px;
-  bottom: 30px;
-  width: 362px;
-  background-color: #313135;
-  border: solid 1px #3e3e41;
+  right: 2.143rem;
+  bottom: 2.143rem;
+  background-color: $color_darkgray_500;
+  border: solid 1px $color_darkgray_400;
   border-radius: 2px;
 }
 .capture-header {
   position: relative;
 }
 .capture-header__title {
-  padding: 14px 16px;
+  padding: 1rem 1.143rem;
   font-weight: 500;
 }
 .capture-header__close {
   position: absolute;
   top: 50%;
-  right: 14px;
-  width: 20px;
-  height: 20px;
+  right: 1rem;
+  width: 1.429rem;
+  height: 1.429rem;
   background: url(~assets/image/call/ic-close-w.svg) center no-repeat;
   transform: translateY(-50%);
   @include ir();
@@ -102,19 +128,28 @@ export default {
 .capture-body {
 }
 .capture-image {
-  width: 360px;
-  height: 202px;
-  background-color: #c7deff;
+  width: 25.714rem; //360px;
+  height: 14.429rem; // 202px;
+  background: #000;
+  > img {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
+  }
 }
 .capture-tools {
   display: flex;
-  margin: 18px 14px;
+  margin: 1.286rem 1rem;
 }
 .capture-tools_button {
   position: relative;
   display: flex;
   flex: 1;
   background: transparent;
+  opacity: 0.8;
   & + & {
     &:before {
       position: absolute;
@@ -126,38 +161,51 @@ export default {
       content: '';
     }
   }
+  &:hover,
+  &:active {
+    opacity: 1;
+  }
 
   > p {
     display: flex;
     margin: auto;
     color: #fff;
-    font-size: 13px;
-    line-height: 28px;
+    font-size: 0.929rem;
+    line-height: 2rem;
     text-align: center;
     > img {
-      width: 28px;
-      height: 28px;
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.571rem;
+      transform: translateY(-1px);
     }
   }
 }
 .capture-share {
   display: flex;
-  width: calc(100% - 24px);
-  margin: 12px;
+  width: calc(100% - 1.714rem);
+  margin: 0.857rem;
   text-align: center;
-  background-color: #626268;
+  background-color: rgba(#626268, 0.4);
   border-radius: 2px;
 
   > p {
     display: flex;
-    margin: 6px auto;
-    color: #fff;
-    font-size: 13px;
-    line-height: 28px;
-    line-height: 28px;
+    margin: 0.429rem auto;
+    color: $color_text;
+    font-size: 0.929rem;
+    line-height: 2rem;
+    line-height: 2rem;
+    opacity: 0.8;
     > img {
-      width: 28px;
-      height: 28px;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+  &:hover,
+  &:active {
+    > p {
+      opacity: 1;
     }
   }
 }

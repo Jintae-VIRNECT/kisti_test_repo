@@ -16,38 +16,38 @@ export default {
      * @param {Number[,Array]} ::변화 대상 타겟 드로잉 객체ID (현재 다중처리 지원 X)
      * @param {Array} ::현 상태 드로잉 객체목록
      */
-    stackAddFirst() {
-      const objects = this.canvas.getObjects()
+    // stackAddFirst() {
+    //   const objects = this.canvas.getObjects()
 
-      this.$set(this, 'redoList', [])
-      objects.map(_ => {
-        const stack = {
-          type: 'first',
-          ids: [_.id],
-          objects: [],
-        }
+    //   this.$set(this, 'redoList', [])
+    //   objects.map(_ => {
+    //     const stack = {
+    //       type: 'first',
+    //       ids: [_.id],
+    //       objects: [],
+    //     }
 
-        stack.objects.push(fabric.util.object.clone(_, true))
-        this.undoList.push(stack)
+    //     stack.objects.push(fabric.util.object.clone(_, true))
+    //     this.undoList.push(stack)
 
-        if (_.text && _.text.length > 0) {
-          // _.initialized = false;
+    //     if (_.text && _.text.length > 0) {
+    //       // _.initialized = false;
 
-          _.on('editing:exited', () => {
-            if (_.text.trim() === '') {
-              _.canvas.remove(_)
-            } else {
-              this._sendAction(DRAWING.TEXT_UPDATE, _)
-              this.stackAdd('text', [_.id])
-            }
+    //       _.on('editing:exited', () => {
+    //         if (_.text.trim() === '') {
+    //           _.canvas.remove(_)
+    //         } else {
+    //           this._sendAction(DRAWING.TEXT_UPDATE, _)
+    //           this.stackAdd('text', [_.id])
+    //         }
 
-            setTimeout(() => {
-              this.editingMode = false
-            }, 100)
-          })
-        }
-      })
-    },
+    //         setTimeout(() => {
+    //           this.editingMode = false
+    //         }, 100)
+    //       })
+    //     }
+    //   })
+    // },
 
     stackAdd(type, id) {
       const stack = {
@@ -91,7 +91,6 @@ export default {
       const tempActiveObj = this.canvas.getActiveObject()
       this.canvas.discardActiveObject()
 
-      // const objTarget = this.canvas.getObjects()
       const objHist = this.undoList.pop()
 
       this.updateObjTarget('undo', objHist)
@@ -120,7 +119,7 @@ export default {
 
       const objHist = this.receiveUndoList[owner].pop()
 
-      this.updateObjTarget('undo', objHist)
+      this.updateObjTarget('undo', objHist, owner)
 
       this.receiveRedoList[owner].unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
@@ -165,7 +164,7 @@ export default {
       const tempActiveObj = this.canvas.getActiveObject()
       this.canvas.discardActiveObject()
 
-      this.updateObjTarget('redo', objHist)
+      this.updateObjTarget('redo', objHist, owner)
 
       this.receiveUndoList[owner].push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
@@ -182,7 +181,7 @@ export default {
       this.$set(this, 'redoList', [])
     },
 
-    updateObjTarget(_do, objHist) {
+    updateObjTarget(_do, objHist, owner) {
       const objTarget = this.canvas.getObjects()
       const id = objHist.id
       const obj = objTarget.find(_ => _.id === id)
@@ -194,31 +193,29 @@ export default {
             obj.visible = true
           }
         }
-      } else if (objHist.type === 'remove') {
-        if (obj) {
-          if (_do === 'undo') {
-            obj.visible = true
-          } else {
-            obj.visible = false
-          }
-        }
-      } else if (['scale', 'move'].indexOf(objHist.type) >= 0) {
-        const idx = objTarget.findIndex(target => target.id === id)
-        objTarget[idx].set({
-          top: obj.top,
-          left: obj.left,
-          width: obj.width,
-          height: obj.height,
-          scaleX: obj.scaleX || 1,
-          scaleY: obj.scaleY || 1,
-          aCoords: obj.aCoords,
-          oCoords: obj.oCoords,
-        })
       } else if (objHist.type === 'text') {
-        const idx = objTarget.findIndex(target => target.id === id)
-        objTarget[idx].set({
-          text: obj.text,
-        })
+        const idx = objTarget.findIndex(_ => _.id === id)
+        if (_do === 'undo') {
+          let beforeObj, list
+          if (owner) {
+            list = this.receiveUndoList[owner]
+          } else {
+            list = this.undoList
+          }
+          for (let i = list.length - 1; i >= 0; i--) {
+            if (list[i].id === id) {
+              beforeObj = list[i].object
+              break
+            }
+          }
+          objTarget[idx].set({
+            text: beforeObj.text,
+          })
+        } else {
+          objTarget[idx].set({
+            text: objHist.object.text,
+          })
+        }
       }
     },
   },

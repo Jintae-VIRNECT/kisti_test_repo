@@ -2,6 +2,7 @@
   <menu-button
     text="로컬 녹화"
     :active="isRecording"
+    :disabled="disabled"
     :src="require('assets/image/ic_local_record.svg')"
     :onActive="isRecording"
     :activeSrc="require('assets/image/ic_local_record_on.svg')"
@@ -78,7 +79,7 @@ export default {
         //if worker out -> then stop local recording
         if (now === false && before === true) {
           const showMsg = true
-          this.stop(showMsg)
+          this.stopRecord(showMsg)
         }
       },
     },
@@ -97,16 +98,19 @@ export default {
         if (!(await IDBHelper.checkQuota())) {
           console.log('LocalRecording :: quota over!!! cancel recording!!!')
           this.showNoQuota()
+          this.$eventBus.$emit('localRecord', false)
           return false
         } else {
-          this.record()
+          this.startRecord()
+          this.$eventBus.$emit('localRecord', true)
         }
       } else {
         const showMsg = true
-        this.stop(showMsg)
+        this.stopRecord(showMsg)
+        this.$eventBus.$emit('localRecord', false)
       }
     },
-    async record() {
+    async startRecord() {
       this.isRecording = true
 
       if (!(await this.initRecorder())) {
@@ -133,7 +137,7 @@ export default {
       //     console.log(err)
       //   })
     },
-    stop(showMsg) {
+    stopRecord(showMsg) {
       if (this.recorder) {
         this.recorder.stop()
         this.recorder.clearRecordedData()
@@ -300,7 +304,7 @@ export default {
       const ondataavailable = async blob => {
         if (this.fileCount >= 60) {
           console.log('max recording time over')
-          this.stop()
+          this.stopRecord()
         }
 
         //create private uuid for media chunk
@@ -345,7 +349,7 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    this.stop()
+    this.stopRecord()
   },
   showNoQuota() {
     this.toastDefault(

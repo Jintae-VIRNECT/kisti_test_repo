@@ -10,6 +10,7 @@
         :imageAlt="'profileImg'"
         :mainText="history.title"
         :subText="`참석자 ${history.participantsCount}명`"
+        :thumbStyle="{ width: '3em', height: '3em' }"
         :group="true"
       ></profile>
 

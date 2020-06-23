@@ -86,7 +86,7 @@ export default {
     },
     receivePointing(receive) {
       const data = JSON.parse(receive.data)
-      if (data.to !== this.mainView.id) return
+      // if (data.to !== this.mainView.id) return
       let color = ahexToHEX(data.color)
       this.pointList.push({
         coords: [

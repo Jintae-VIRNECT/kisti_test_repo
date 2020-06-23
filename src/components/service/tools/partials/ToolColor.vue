@@ -117,8 +117,8 @@ export default {
 .line-color {
   z-index: 1;
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  width: 1.286rem;
+  height: 1.286rem;
   margin: auto;
   overflow: hidden;
   text-indent: -99px;

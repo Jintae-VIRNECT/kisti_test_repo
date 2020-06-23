@@ -70,7 +70,7 @@
   color: $color_text_sub;
   &:before {
     position: absolute;
-    top: 0;
+    top: 2px;
     right: 105%;
     width: 1.429rem;
     height: 1.429rem;
@@ -86,20 +86,26 @@
   margin-bottom: 1.429rem;
 }
 .info__title {
-  margin-bottom: 0.357rem;
+  margin-bottom: 0.714rem;
   color: $color_text_main;
   font-weight: 500;
 }
 .info__description {
-  font-weight: 500;
+  // font-weight: 500;
+  color: $color_text_main;
+  > b {
+    color: $color_text;
+    font-weight: 500;
+  }
 }
-.groupcard-button {
+.btn.small.groupcard-button {
   bottom: 0;
   left: 0;
   flex: 0;
   width: 100%;
   // margin-top: 1.429rem;
   padding: 0.714rem 2.857rem;
+  font-weight: normal;
 }
 .groupcard.profilelist {
   > .profilelist-user {
