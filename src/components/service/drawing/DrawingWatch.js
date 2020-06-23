@@ -8,8 +8,8 @@ export default {
     file: {
       deep: true,
       handler(value) {
-        console.log(value)
         if (value && value.id) {
+          this.$emit('loadingStart')
           setTimeout(() => {
             this.initCanvas()
           }, 500)
@@ -19,6 +19,9 @@ export default {
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
         this.optimizeCanvasSize()
+        this.$nextTick(() => {
+          this.receiveRender()
+        })
       }
     },
     viewAction(value) {
@@ -26,12 +29,12 @@ export default {
       if (this.canvas && this.account.roleType === ROLE.EXPERT_LEADER) {
         this.canvas.isDrawingMode = value === 'line'
         this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
-        // this.canvas.defaultCursor = (value === 'text') ? 'text' : 'default'
-        let cursor
-        if (value === 'text') {
-          cursor = 'text'
-        }
-        this.canvas.defaultCursor = cursor
+        this.canvas.defaultCursor = value === 'text' ? 'text' : 'default'
+        // let cursor
+        // if (value === 'text') {
+        //   cursor = 'text'
+        // }
+        // this.canvas.defaultCursor = cursor
         this.canvas.renderAll()
       }
     },
@@ -70,6 +73,15 @@ export default {
     },
     redoList() {
       this.toolAble()
+    },
+  },
+  computed: {
+    drawingView() {
+      if (this.view === VIEW.DRAWING) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   methods: {

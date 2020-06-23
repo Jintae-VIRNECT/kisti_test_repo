@@ -225,7 +225,7 @@ export const getSignalParams = function getSignalParams(
 
 export const getReceiveParams = function getReceiveParams(type, params) {
   //calculate scale
-  if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
+  // if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
   for (let key in params) {
     if ('posX' === key) {
       params['posX'] = originalPosX(parseFloat(params['posX']), params.imgWidth)

@@ -185,4 +185,8 @@ Fabric.Image.prototype.lockScalingFlip = false
 Fabric.Image.prototype.lockRotation = false
 Fabric.Image.prototype.setControlVisible('mtr', true)
 
+Fabric.IText.prototype.hoverCursor = 'text'
+Fabric.IText.prototype.editable = true
+Fabric.IText.prototype.selectable = true
+
 export const fabric = Fabric

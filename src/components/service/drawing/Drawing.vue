@@ -7,11 +7,19 @@
     @drop.prevent="dropHandler"
   >
     <drawing-canvas
-      v-if="show === 'file'"
+      v-show="show === 'file'"
       :file="shareFile"
-      @initCanvas="loadingFrame = false"
+      @loadingSuccess="loadingFrame = false"
+      @loadingStart="loadingFrame = true"
     ></drawing-canvas>
-    <div class="drawing-box__empty" v-else-if="show === 'upload'">
+    <transition name="loading">
+      <div class="drawing-box__empty loading" v-if="loadingFrame">
+        <div class="drawing-box__empty-inner">
+          <img src="~assets/image/gif_loading.svg" />
+        </div>
+      </div>
+    </transition>
+    <div class="drawing-box__empty" v-if="show === 'upload'">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_fileshare.svg" />
         <p>
@@ -20,7 +28,7 @@
         </p>
       </div>
     </div>
-    <div class="drawing-box__empty" v-else>
+    <div class="drawing-box__empty" v-show="show === 'default'">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_file.svg" />
         <p>
@@ -33,18 +41,13 @@
         <button class="btn" @click="addFile">불러오기</button>
       </div>
     </div>
-    <div class="drawing-box__empty loading" v-if="loadingFrame">
-      <div class="drawing-box__empty-inner">
-        <img src="~assets/image/gif_loading.svg" />
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 
 export default {
@@ -74,7 +77,10 @@ export default {
     view(val) {
       if (val !== VIEW.DRAWING) {
         // clear image
-        this.showImage({})
+        // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
+        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+          this.showImage({})
+        }
       }
     },
   },
@@ -115,10 +121,10 @@ export default {
 
       if (data.type === DRAWING.LAST_FRAME) {
         // this.loadingFrame = false
-        this.encodeImage(data.imgId)
+        this.encodeImage(data)
       }
     },
-    encodeImage(imgId) {
+    encodeImage(data) {
       let imgUrl = ''
       for (let part of this.chunk) {
         imgUrl += part
@@ -126,8 +132,10 @@ export default {
       this.chunk = []
       imgUrl = 'data:image/png;base64,' + imgUrl
       const imageInfo = {
-        id: imgId,
+        id: data.imgId,
         img: imgUrl,
+        width: data.width,
+        height: data.height,
       }
 
       this.showImage(imageInfo)
@@ -140,3 +148,15 @@ export default {
   },
 }
 </script>
+
+<style>
+.loading-leave-active {
+  transition: opacity ease 0.4s;
+}
+.loading-leave {
+  opacity: 1;
+}
+.loading-leave-to {
+  opacity: 0;
+}
+</style>
