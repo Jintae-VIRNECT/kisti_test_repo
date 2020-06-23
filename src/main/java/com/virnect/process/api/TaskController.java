@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -850,6 +851,36 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(value = "워크스페이스 내 사용자 정보", tags = "next", notes = "정렬 아직 안됨")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+    })
+    @GetMapping("/download/contentUUID/{contentUUID}")
+    public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam("memberUUID") String memberUUID
+    ) throws IOException {
+        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
+
+        return this.taskService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(
+            @RequestParam("targetData") String targetData
+            , @RequestParam("memberUUID") String memberUUID
+    ) throws IOException {
+        if (targetData.isEmpty() || memberUUID.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
+
+        return this.taskService.contentDownloadForTargetHandler(targetData, memberUUID);
+    }
+
     @GetMapping("/temp")
     public ResponseEntity<String> temp(
             @RequestParam(value = "search", required = false) String search
@@ -858,4 +889,5 @@ public class TaskController {
         this.taskService.temp(search, workspaceUUID);
         return ResponseEntity.ok("200");
     }
+
 }

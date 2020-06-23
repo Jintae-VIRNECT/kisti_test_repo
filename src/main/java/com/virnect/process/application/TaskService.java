@@ -18,7 +18,6 @@ import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
-import com.virnect.process.global.common.PageRequest;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.global.util.QRcodeGenerator;
@@ -30,6 +29,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -2417,6 +2416,17 @@ public class TaskService {
         }
 
         return new ApiResponse<>(resultList);
+    }
+
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
+
+        return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID);
+    }
+
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+        Process process = this.processRepository.findByTargetDataAndState(targetData, State.CREATED);
+
+        return contentRestService.contentDownloadForUUIDRequestHandler(process.getContentUUID(), memberUUID);
     }
 
     public void temp(String search, String workspaceId) {
