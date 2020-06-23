@@ -2,11 +2,11 @@ import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
 
-export default function({ app, $axios }, inject) {
+export default function({ $axios, $config }, inject) {
   // Create a custom axios instance
   const axios = $axios.create({
-    baseURL: app.$env.API_GATEWAY_URL,
-    // timeout: app.$env.API_TIMEOUT,
+    baseURL: $config.API_GATEWAY_URL,
+    timeout: $config.API_TIMEOUT,
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,

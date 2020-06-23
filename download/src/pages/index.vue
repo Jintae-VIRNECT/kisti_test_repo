@@ -19,7 +19,7 @@
           <h5 v-html="app.device" />
           <img :src="app.imageUrl" />
           <span class="release">
-            {{ $t('home.release') }}: {{ app.releaseTime | dateFormat }}
+            Release: {{ app.releaseTime | dateFormat }}
           </span>
           <span class="version">{{ app.version }}</span>
           <el-button type="primary" @click="download(app.appUrl)">

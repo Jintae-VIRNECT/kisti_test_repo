@@ -24,17 +24,12 @@ module.exports = {
         content: 'Virnect Download Center',
       },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '~assets/favicon.ico' }],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
   /**
    * Plugins
    */
-  modules: [
-    ['nuxt-i18n', lang],
-    '@nuxtjs/style-resources',
-    ['nuxt-env', { keys: [] }],
-    '@nuxtjs/axios',
-  ],
+  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
   plugins: ['@/plugins/element-ui', '@/plugins/axios'],
   /*
    ** Customize style
@@ -61,8 +56,9 @@ module.exports = {
   env: {
     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     SSL_ENV: JSON.stringify(process.env.SSL_ENV),
+  },
+  publicRuntimeConfig: {
     TARGET_ENV: env.TARGET_ENV,
-    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
