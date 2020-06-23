@@ -2,6 +2,7 @@
   <menu-button
     text="로컬 녹화"
     :active="isRecording"
+    :disabled="disabled"
     :src="require('assets/image/ic_local_record.svg')"
     :onActive="isRecording"
     :activeSrc="require('assets/image/ic_local_record_on.svg')"

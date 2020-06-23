@@ -2,6 +2,7 @@
   <menu-button
     text="녹화"
     :active="isRecording"
+    :disabled="disabled"
     :src="require('assets/image/ic_record_off.svg')"
     :onActive="isRecording"
     :activeSrc="require('assets/image/ic_record_ing.svg')"
