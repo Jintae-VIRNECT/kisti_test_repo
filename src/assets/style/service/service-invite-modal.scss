@@ -21,7 +21,7 @@
 .invite-modal__footer {
   display: inline-block;
   flex: 0;
-  margin-bottom: 15px;
+  margin-bottom: 1.071em;
   text-align: center;
   > .btn {
     min-width: 33%;
@@ -39,11 +39,11 @@
   margin: 0.714em;
 }
 .invite-modal__selected-title {
-  margin-bottom: 16px;
+  margin-bottom: 1.143rem;
   color: #d2d2d2;
 }
 .invite-modal__selected-empty {
-  min-height: 52px;
+  min-height: 3.714em;
   font-size: 0.929em;
   opacity: 0.7;
 }
