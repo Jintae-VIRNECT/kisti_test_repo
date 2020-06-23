@@ -2,11 +2,15 @@
   <li class="sharing-image">
     <button
       class="sharing-image__item"
-      :class="{ active: shareFile.id === imgInfo.id }"
+      :class="{
+        active: shareFile.id === imgInfo.id,
+        selected: selected,
+      }"
       @dblclick="show"
+      @click="select"
     >
       <img :src="imgInfo.img" />
-      <div class="sharing-image__item-active">공유중</div>
+      <div class="sharing-image__item-active"><p>공유중</p></div>
     </button>
     <button class="sharing-image__remove" @click="deleteImage">
       이미지 삭제
@@ -25,6 +29,7 @@ export default {
   data() {
     return {
       imageData: '',
+      selected: false,
     }
   },
   props: {
@@ -44,7 +49,7 @@ export default {
     deleteImage() {
       if (this.shareFile.id === this.imgInfo.id) return
       this.confirmCancel(
-        '정말로 삭제하시겠습니까?',
+        '선택한 저작된 이미지를 삭제하시겠습니까?​',
         {
           text: '확인',
           action: this.remove,
@@ -56,6 +61,14 @@ export default {
     },
     remove() {
       this.removeHistory(this.imgInfo.id)
+    },
+    select() {
+      this.selected = !this.selected
+      if (this.selected) {
+        this.$eventBus.$emit('drawingImg::selected', this.imgInfo.id)
+      } else {
+        this.$eventBus.$emit('drawingImg::unSelected', this.imgInfo.id)
+      }
     },
   },
 
