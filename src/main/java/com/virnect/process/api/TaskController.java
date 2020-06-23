@@ -851,9 +851,10 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @ApiOperation(value = "워크스페이스 내 사용자 정보", tags = "next", notes = "정렬 아직 안됨")
+    @ApiOperation(value = "콘텐츠UUID로 다운로드", tags = "Download")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "e1bd3914-2b69-475f-9f9d-117477dfae05"),
+            @ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
     })
     @GetMapping("/download/contentUUID/{contentUUID}")
     public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
@@ -868,6 +869,11 @@ public class TaskController {
         return this.taskService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
     }
 
+    @ApiOperation(value = "타겟 데이터로 다운로드", tags = "Download")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = true, defaultValue = "a73cca48-dc17-4de8-a1aa-c19316cf773b"),
+            @ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
+    })
     @GetMapping("/download")
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(
             @RequestParam("targetData") String targetData
