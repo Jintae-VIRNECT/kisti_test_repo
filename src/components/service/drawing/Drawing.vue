@@ -7,11 +7,11 @@
     @drop.prevent="dropHandler"
   >
     <drawing-canvas
-      v-if="shareFile && shareFile.id"
+      v-if="show === 'file'"
       :file="shareFile"
       @initCanvas="loadingFrame = false"
     ></drawing-canvas>
-    <div class="drawing-box__empty" v-else-if="fileList && fileList.length > 0">
+    <div class="drawing-box__empty" v-else-if="show === 'upload'">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_fileshare.svg" />
         <p>
@@ -44,7 +44,8 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
+import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'Drawing',
@@ -58,17 +59,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile']),
-    view() {
+    ...mapGetters(['fileList', 'shareFile', 'view']),
+    show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
-      } else if (
-        (this.fileList && this.fileList.length > 0) ||
-        this.account.roleType === ROLE.EXPERT
-      ) {
+      } else if (this.fileList && this.fileList.length > 0) {
         return 'upload'
       } else {
         return 'default'
+      }
+    },
+  },
+  watch: {
+    view(val) {
+      if (val !== VIEW.DRAWING) {
+        // clear image
+        this.showImage({})
       }
     },
   },

@@ -4,6 +4,7 @@
       class="main-video__box"
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
+      :class="{ shutter: false }"
     >
       <video
         ref="mainVideo"
@@ -62,12 +63,6 @@
         </div>
       </transition>
     </div>
-    <capture-modal
-      v-if="imgBlob"
-      :imgUrl="imgBlob"
-      @close="imgBlob = ''"
-      @recapture="doCapture"
-    ></capture-modal>
   </div>
 </template>
 
@@ -77,13 +72,13 @@ import { ACTION } from 'configs/view.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
-import CaptureModal from '../modal/CaptureModal'
+import shutterMixin from 'mixins/shutter'
 export default {
   name: 'MainVideo',
+  mixins: [shutterMixin],
   components: {
     Pointing,
     VideoTools,
-    CaptureModal,
   },
   data() {
     return {
@@ -91,7 +86,6 @@ export default {
       showTools: false,
       loaded: false,
       STREAM_POINTING: ACTION.STREAM_POINTING,
-      imgBlob: '',
       videoSize: {
         width: 0,
         height: 0,
@@ -145,7 +139,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateAccount']),
+    ...mapActions(['updateAccount', 'setCapture']),
     mediaPlay() {
       if (this.mainView.me && this.mainView.stream) {
         const videoEl = this.$el.querySelector('#main-video')
@@ -194,7 +188,7 @@ export default {
       console.log('calc size: ', this.videoSize.width, this.videoSize.height)
     },
     doCapture() {
-      const videoEl = this.$el.querySelector('#main-video')
+      const videoEl = this.$refs['mainVideo']
 
       const width = videoEl.offsetWidth
       const height = videoEl.offsetHeight
@@ -205,10 +199,16 @@ export default {
 
       const tmpCtx = tmpCanvas.getContext('2d')
 
-      tmpCtx.drawImage(this.$refs['mainVideo'], 0, 0, width, height)
+      tmpCtx.drawImage(videoEl, 0, 0, width, height)
 
       tmpCanvas.toBlob(blob => {
-        this.imgBlob = URL.createObjectURL(blob)
+        this.setCapture({
+          id: Date.now(),
+          img: URL.createObjectURL(blob),
+          fileName: `Remote_Capture_${this.$dayjs().format(
+            'YYMMDD_HHmmss',
+          )}.png`,
+        })
       }, 'image/png')
     },
   },

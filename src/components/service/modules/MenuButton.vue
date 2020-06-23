@@ -54,17 +54,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .tooltip-menu {
-  margin-left: 10px;
+  margin-left: 0.714rem;
 }
 .menu {
   position: relative;
   display: flex;
-  width: 30px;
-  height: 30px;
-  font-size: 12px;
+  width: 2.143rem;
+  height: 2.143rem;
+  font-size: 0.857rem;
   background-color: transparent;
-  border-left: solid 1px #d8d8d8;
+  border-left: solid 1px $color_text_main;
   border-radius: 2px;
   opacity: 0.6;
 
@@ -76,7 +77,7 @@ export default {
     opacity: 1;
   }
   &.active {
-    background-color: rgba(#888888, 0.3);
+    background-color: rgba($color_sub_border, 0.3);
     opacity: 1;
   }
   &.disabled {
@@ -86,8 +87,8 @@ export default {
 
   > img {
     z-index: 1;
-    width: 20px;
-    height: 20px;
+    width: 1.429rem;
+    height: 1.429rem;
     margin: auto;
   }
 }
