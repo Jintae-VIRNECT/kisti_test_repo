@@ -39,6 +39,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -2424,9 +2427,49 @@ public class TaskService {
     }
 
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
-        Process process = this.processRepository.findByTargetDataAndState(targetData, State.CREATED);
+
+        Process process = Optional.ofNullable(this.processRepository.findByTargetDataAndState(checkParameterEncoded(targetData), State.CREATED))
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
         return contentRestService.contentDownloadForUUIDRequestHandler(process.getContentUUID(), memberUUID);
+    }
+
+    /**
+     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
+     * @param targetData
+     * @return
+     */
+    public String checkParameterEncoded(String targetData) {
+        String encodedData = null;
+
+        // 컨텐츠 -> 작업으로 복제하여 작업에서 생성된 타겟데이터
+        if (targetData.contains("-")) {
+            encodedData = targetData;
+        }
+        // 컨텐츠 -> 작업 전환시에는 타겟데이터가 인코딩 된 상태
+        else {
+            // 컨텐츠의 타겟데이터는 이미 원본 값이 URLEncoding된 값인데,
+            // 실제 서버에서는 servlet container에서 decode하여 URLDecoding된 데이터가 들어오게 된다.
+            log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+            // 이 와중에 query 파라미터로 받을 경우 '+'가 '공백'으로 리턴된다.
+            // PathVariable로 받지 않는 이유는 decoding된 값에 '/'가 들어가는 경우가 있기 때문.
+            if (targetData.contains(" ")) {
+                // 임시방편으로 공백은 '+'로 치환한다. 더 좋은 방법이 있다면 수정하면 좋을 듯.
+                targetData = targetData.replace(" ", "+");
+            }
+
+            log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+            try {
+                // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
+                encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return encodedData;
     }
 
     public void temp(String search, String workspaceId) {
