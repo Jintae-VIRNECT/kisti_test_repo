@@ -1,7 +1,7 @@
 <template>
   <div class="stream-tools tools">
     <pointing></pointing>
-    <color v-if="account.roleType === EXPERT_LEADER"></color>
+    <color v-if="isLeader"></color>
   </div>
 </template>
 
@@ -17,12 +17,19 @@ export default {
   },
   data() {
     return {
-      EXPERT_LEADER: ROLE.EXPERT_LEADER,
       active: 'pointing',
       isRecording: false,
     }
   },
-  computed: {},
+  computed: {
+    isLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
   watch: {},
   methods: {},
 

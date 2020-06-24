@@ -171,6 +171,21 @@ const _ = {
     })
   },
   /**
+   * other user's pointing, recording control
+   * @param {String} type = remote.config.CONTROL
+   */
+  control: (type, enable) => {
+    const params = {
+      type,
+      enable,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.CONTROL,
+    })
+  },
+  /**
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */

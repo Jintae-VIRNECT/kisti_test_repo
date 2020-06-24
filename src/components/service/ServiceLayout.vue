@@ -39,12 +39,6 @@
 
       <!-- <component :is="viewComponent"></component> -->
     </div>
-    <service-local-record-setting
-      :visible.sync="settingFlag"
-    ></service-local-record-setting>
-    <service-local-record-list
-      :visible.sync="recListFlag"
-    ></service-local-record-list>
   </section>
 </template>
 
@@ -56,13 +50,13 @@ import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 
-import ServiceLocalRecordSetting from 'components/workspace/modal/ServiceLocalRecordSetting'
-import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecordList'
-
 import { mapGetters } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
+    if (from.name !== 'workspace') {
+      next({ name: 'workspace' })
+    }
     next(vm => {
       vm.$store.dispatch('callReset')
     })
@@ -76,8 +70,6 @@ export default {
     HeaderSection,
     SubView,
     UserList,
-    ServiceLocalRecordSetting,
-    ServiceLocalRecordList,
     StreamView: () => import('./ServiceStream'),
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
@@ -85,10 +77,7 @@ export default {
     CaptureModal,
   },
   data() {
-    return {
-      settingFlag: false,
-      recListFlag: false,
-    }
+    return {}
   },
   computed: {
     ...mapGetters(['view', 'captureFile']),
@@ -111,14 +100,7 @@ export default {
     },
   },
 
-  methods: {
-    showSetting() {
-      this.settingFlag = true
-    },
-    showList() {
-      this.recListFlag = true
-    },
-  },
+  methods: {},
 
   /* Lifecycles */
   created() {
@@ -128,15 +110,11 @@ export default {
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
-    this.$eventBus.$off('lcRecSet:show')
-    this.$eventBus.$off('lcRecList:show')
   },
   mounted() {
     // this.$call.getDevices().then(res => {
     //   console.log(res)
     // })
-    this.$eventBus.$on('lcRecSet:show', this.showSetting)
-    this.$eventBus.$on('lcRecList:show', this.showList)
   },
 }
 </script>

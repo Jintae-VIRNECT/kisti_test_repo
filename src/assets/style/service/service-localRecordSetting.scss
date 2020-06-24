@@ -1,12 +1,12 @@
 /** custom mdoal */
 .modal.local-recsetting-modal .modal--inner {
   background-color: $color_darkgray_500;
+  border-radius: 4px;
   box-shadow: none;
 }
 .modal.local-recsetting-modal .modal--header {
-  height: 3.2143rem;
-  padding: 0.8571rem 0.7857rem 0 0;
-  background-color: $color_darkgray_500;
+  height: auto;
+  padding: 0;
   border-bottom: none;
 }
 
@@ -25,6 +25,24 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 1rem;
+  &.underbar {
+    position: relative;
+    margin-bottom: 30px;
+    padding-bottom: 36px;
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: #454548;
+      content: "";
+    }
+  }
+  &.checkbox {
+    display: inline-flex;
+    margin-top: 1rem;
+  }
 }
 
 .rec-setting__text {
@@ -39,29 +57,30 @@
 
   > p {
     margin: 0px 0.2857rem 0px 0px;
+    margin-right: 8px;
     color: $color_text_main;
     font-size: 1rem;
+  }
+  > .popover--wrapper {
+    display: flex;
   }
 }
 
 .rec-setting__selector {
+  flex: 1;
   align-items: flex-start;
-  width: 24rem;
   .radio-group {
     height: 2.4286rem;
   }
 }
-
-.rec-setting__underbar {
-  margin: 2.6429rem 0rem 2.7143rem 0px;
-  border-bottom-color: #454548;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-}
 .rec-setting--tooltip-icon {
-  width: 1.2857rem;
-  height: 1.3214rem;
-  background: url("~assets/image/ic_tool_tip.svg") center no-repeat;
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+  transition: opacity 0.2;
+  &:hover {
+    opacity: 1;
+  }
 }
 .rec-setting__tooltip--body {
   width: 24.4286rem;
@@ -86,10 +105,8 @@
     }
   }
 }
-.modal.local-recsetting-modal {
-  .modal--body {
-    padding: 0 1.2857rem 0 2.1429rem;
-  }
+.modal.local-recsetting-modal .modal--inner .modal--body {
+  padding: 50px 40px 36px;
 }
 
 .popover.rec-setting__custom-popover {

@@ -8,6 +8,7 @@ export const SIGNAL = {
   FLASH: 'signal:flash',
   MIC: 'signal:mic',
   SPEAKER: 'signal:speaker',
+  CONTROL: 'signal:control',
   // HAS_AR_FEATURE: 'signal:hasArFeature',
   AR_FEATURE: 'signal:arFeature',
   AR_DRAWING: 'signal:arDrawing',
@@ -15,10 +16,9 @@ export const SIGNAL = {
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
 }
 
-export const ROLE = {
-  EXPERT_LEADER: 'LEADER',
-  EXPERT: 'EXPERT',
-  WORKER: 'WORKER',
+export const CONTROL = {
+  POINTING: 'pointing',
+  LOCAL_RECORD: 'localRecord',
 }
 
 export const DRAWING = {
@@ -47,7 +47,7 @@ export const AR_POINTING = {
 }
 
 export const AR_FEATURE = {
-  HAS_AR_FEATURE: 'signal:hasArFeature',
+  HAS_AR_FEATURE: 'hasArFeature',
   START_AR_FEATURE: 'startArFeature',
   STOP_AR_FEATURE: 'stopArFeature',
 }
@@ -73,4 +73,10 @@ export const AR_DRAWING = {
   UNDO_ABLE: 'undoAble',
   REDO_ABLE: 'redoAble',
   CLEAR_ABLE: 'clearAble',
+}
+
+export const ROLE = {
+  EXPERT_LEADER: 'LEADER',
+  EXPERT: 'EXPERT',
+  WORKER: 'WORKER',
 }

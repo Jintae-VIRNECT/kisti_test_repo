@@ -2,26 +2,25 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    :height="showPoiniting ? modalHeight : modalSmallHeight"
-    :width="modalWidth"
+    :width="'40.5714rem'"
     :beforeClose="beforeClose"
     :class="'local-recsetting-modal'"
   >
     <div class="rec-setting">
-      <div v-if="showPoiniting" class="rec-setting__header">포인팅 설정</div>
-      <div v-if="showPoiniting" class="rec-setting__row">
-        <p class="rec-setting__text">참가자 포인팅</p>
+      <template v-if="isLeader">
+        <p class="rec-setting__header">포인팅 설정</p>
+        <div class="rec-setting__row underbar">
+          <p class="rec-setting__text">참가자 포인팅</p>
 
-        <r-check
-          :text="'참가자 포인팅 허용'"
-          :value="'allowPointing'"
-          @toggle="toggleAllowPointing"
-        ></r-check>
-      </div>
+          <r-check
+            :text="'참가자 포인팅 허용'"
+            :value="'allowPointing'"
+            @toggle="toggleAllowPointing"
+          ></r-check>
+        </div>
+      </template>
 
-      <div v-if="showPoiniting" class="rec-setting__underbar" />
-
-      <div class="rec-setting__header">로컬 녹화 설정</div>
+      <p class="rec-setting__header">로컬 녹화 설정</p>
 
       <div class="rec-setting__row">
         <p class="rec-setting__text">녹화대상</p>
@@ -57,7 +56,11 @@
             popperClass="rec-setting__custom-popover"
             width="25.4286rem"
           >
-            <div slot="reference" class="rec-setting--tooltip-icon"></div>
+            <img
+              slot="reference"
+              class="rec-setting--tooltip-icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
             <div class="rec-setting__tooltip--body">
               <p class="rec-setting__tooltip--text">
                 장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에
@@ -88,7 +91,11 @@
             popperClass="rec-setting__custom-popover"
             width="25.4286rem"
           >
-            <div slot="reference" class="rec-setting--tooltip-icon"></div>
+            <img
+              slot="reference"
+              class="rec-setting--tooltip-icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
             <div class="rec-setting__tooltip--body">
               <p class="rec-setting__tooltip--text">
                 720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가
@@ -108,8 +115,8 @@
         >
         </r-select>
       </div>
-      <div class="rec-setting__row">
-        <div class="rec-setting__text">참가자 로컬 녹화</div>
+      <div class="rec-setting__row checkbox" v-if="isLeader">
+        <p class="rec-setting__text">참가자 로컬 녹화</p>
         <r-check
           :text="'참가자 로컬 녹화 허용'"
           :value="'allowLocalRecording'"
@@ -130,6 +137,8 @@ import Popover from 'Popover'
 import toastMixin from 'mixins/toast'
 
 import { mapGetters, mapActions } from 'vuex'
+import { ROLE, CONTROL } from 'configs/remote.config'
+import { localRecTimeOpt, localRecResOpt } from 'utils/recordOptions'
 
 export default {
   name: 'ServiceLocalRecordSetting',
@@ -146,54 +155,15 @@ export default {
       selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
-      modalWidth: '40.5714rem',
-      modalHeight: '36.4286rem',
-
-      modalSmallHeight: '26.8571rem',
-
       localRecordingTime: '',
       localRecordingResolution: '',
       joinerPointingApprove: false,
 
       toastFlag: false,
 
-      localRecTimeOpt: [
-        {
-          value: '5',
-          text: '5분',
-        },
-        {
-          value: '10',
-          text: '10분',
-        },
-        {
-          value: '15',
-          text: '15분',
-        },
-        {
-          value: '30',
-          text: '30분',
-        },
-        {
-          value: '60',
-          text: '60분',
-        },
-      ],
+      localRecTimeOpt: localRecTimeOpt,
 
-      localRecResOpt: [
-        {
-          value: '360p',
-          text: '360p',
-        },
-        {
-          value: '480p',
-          text: '480p',
-        },
-        {
-          value: '720p',
-          text: '720p',
-        },
-      ],
+      localRecResOpt: localRecResOpt,
 
       radioOption: {
         options: [
@@ -222,23 +192,24 @@ export default {
       type: Boolean,
       default: false,
     },
-    showPoiniting: {
-      type: Boolean,
-      default: true,
-    },
   },
 
   computed: {
     ...mapGetters([
       'localRecordLength',
       'localRecordInterval',
-      'micDevice',
-      'speakerDevice',
       'recordResolution',
       'allowPointing',
       'allowLocalRecording',
       'screenStream',
     ]),
+    isLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
 
   watch: {
@@ -273,8 +244,6 @@ export default {
     ...mapActions([
       'setLocalRecordLength',
       'setLocalRecordInterval',
-      'setMicDevice',
-      'setSpeakerDevice',
       'setRecordResolution',
       'setAllowPointing',
       'setAllowLocalRecording',
@@ -288,14 +257,6 @@ export default {
     },
     setRecInterval(newInterval) {
       this.setLocalRecordInterval(newInterval.value)
-      this.showToast()
-    },
-    setMic(newMic) {
-      this.setMicDevice(newMic.deviceId)
-      this.showToast()
-    },
-    setSpeaker(newSpeaker) {
-      this.setSpeakerDevice(newSpeaker.deviceId)
       this.showToast()
     },
 
@@ -318,6 +279,7 @@ export default {
       } else {
         this.setAllowPointing(false)
       }
+      this.$call.control(CONTROL.POINTING, !!value)
       this.showToast()
     },
 
@@ -327,6 +289,7 @@ export default {
       } else {
         this.setAllowLocalRecording(false)
       }
+      this.$call.control(CONTROL.LOCAL_RECORD, !!value)
       this.showToast()
     },
 
@@ -339,16 +302,6 @@ export default {
       const interval = localStorage.getItem('recordingInterval')
       if (interval) {
         this.setLocalRecordInterval(interval)
-      }
-
-      const micDefault = localStorage.getItem('micDevice')
-      if (micDefault) {
-        this.setMic(micDefault)
-      }
-
-      const speakerDefault = localStorage.getItem('speakerDevice')
-      if (speakerDefault) {
-        this.setSpeaker(speakerDefault)
       }
 
       const resolution = localStorage.getItem('recordingResolution')

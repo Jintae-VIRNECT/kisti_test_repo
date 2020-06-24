@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL } from 'configs/remote.config'
+import { SIGNAL, CONTROL } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -59,6 +59,7 @@ export const addSessionEventListener = session => {
   //     arFeature: data.hasArFeature,
   //   })
   // })
+  /** AR 기능 사용 가능 여부 */
   session.on(SIGNAL.AR_FEATURE, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
@@ -91,6 +92,19 @@ export const addSessionEventListener = session => {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
     })
+  })
+  /** 리더 컨트롤(pointing, local record) */
+  session.on(SIGNAL.CONTROL, event => {
+    const data = JSON.parse(event.data)
+    if (data.type === CONTROL.POINTING) {
+      Store.commit('deviceControl', {
+        allowPointing: data.enable,
+      })
+    } else if (data.type === CONTROL.LOCAL_RECORD) {
+      Store.commit('deviceControl', {
+        allowLocalRecord: data.enable,
+      })
+    }
   })
   // session.on(SIGNAL.CAPTURE_PERMISSION, event => {
   //   const data = JSON.parse(event.data)

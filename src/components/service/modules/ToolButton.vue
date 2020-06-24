@@ -3,8 +3,7 @@
     <button
       slot="body"
       class="tool"
-      :class="{ active: active }"
-      :disabled="disabled"
+      :class="{ active: active, disabled: disabled }"
       v-on="$listeners"
     >
       <img v-if="onActive" :src="activeSrc" />
@@ -86,7 +85,7 @@ export default {
       content: '';
     }
   }
-  &:disabled {
+  &.disabled {
     cursor: default;
     opacity: 0.5;
     > img {
