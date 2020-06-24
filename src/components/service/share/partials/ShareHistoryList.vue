@@ -62,16 +62,18 @@ export default {
   },
   methods: {
     download() {
-      this.confirmCancel(
-        '해당 저작된 이미지를 저장하시겠습니까?​',
-        {
-          text: '확인',
-          action: this.save,
-        },
-        {
-          text: '취소',
-        },
-      )
+      if (!this.disabled) {
+        this.confirmCancel(
+          '해당 저작된 이미지를 저장하시겠습니까?​',
+          {
+            text: '확인',
+            action: this.save,
+          },
+          {
+            text: '취소',
+          },
+        )
+      }
     },
     async save() {
       const downFile = []
