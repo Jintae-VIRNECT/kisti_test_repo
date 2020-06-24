@@ -163,7 +163,7 @@ export default {
             confirmButtonText: this.$t('common.paymentCenter'),
             customClass: 'no-title',
           }).then(() => {
-            window.open(`${urls.pay[process.env.TARGET_ENV]}`)
+            window.open(`${urls.pay[this.$config.TARGET_ENV]}`)
           })
         } else if (/^Error: 1002/.test(e)) {
           this.$message.error({

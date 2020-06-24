@@ -44,7 +44,7 @@ import plans from '@/models/workspace/plans'
 export default {
   data() {
     return {
-      profileUpdatePage: `${urls.account[process.env.TARGET_ENV]}/profile`,
+      profileUpdatePage: `${urls.account[this.$config.TARGET_ENV]}/profile`,
       profile: {},
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n
