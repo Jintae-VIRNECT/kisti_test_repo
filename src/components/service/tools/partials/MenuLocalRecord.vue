@@ -2,7 +2,7 @@
   <menu-button
     text="로컬 녹화"
     :active="isRecording"
-    :disabled="disabled"
+    :disabled="!canRecord"
     :src="require('assets/image/ic_local_record.svg')"
     :onActive="isRecording"
     :activeSrc="require('assets/image/ic_local_record_on.svg')"
@@ -62,6 +62,7 @@ export default {
       'localRecordInterval',
       'recordResolution',
       'resolutions',
+      'control',
     ]),
     ...mapState({
       room: state => state.room,
@@ -77,6 +78,19 @@ export default {
         }
       }
       return this.resolutions[idx]
+    },
+    canRecord() {
+      if (this.disabled) {
+        return false
+      }
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      }
+      if (this.control.localRecord) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   watch: {
@@ -111,6 +125,11 @@ export default {
     ...mapActions(['setScreenStream']),
 
     async recording() {
+      if (!this.canRecord) {
+        // TODO: MESSAGE
+        this.toastDefault('리더가 로컬 녹화를 막았습니다. >> 문구정의 필요')
+        return
+      }
       console.log('recording!!!')
 
       console.log('this.participants ::', this.participants)

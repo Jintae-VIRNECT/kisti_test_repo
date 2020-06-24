@@ -1,6 +1,6 @@
 <template>
   <div class="ar-view">
-    <ar-video></ar-video>
+    <ar-video :canPointing="!leaderDrawing"></ar-video>
     <ar-canvas
       v-show="isDrawing"
       :file="shareArImage"
@@ -17,7 +17,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
-import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
+import { SIGNAL, AR_DRAWING, ROLE } from 'configs/remote.config'
 import web_test from 'utils/testing'
 
 import ArVideo from './ArVideo'
@@ -32,32 +32,55 @@ export default {
     return {
       chunk: [],
       loadingFrame: false,
+      leaderDrawing: false,
     }
   },
   computed: {
     ...mapGetters(['view', 'viewAction', 'shareArImage']),
     isDrawing() {
+      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+        return false
+      }
       if (this.viewAction === ACTION.AR_DRAWING) {
         return true
       } else {
-        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
+        // this.$call.arDrawing(AR_DRAWING.END_DRAWING)
         return false
+      }
+    },
+  },
+  watch: {
+    viewAction(val, beforeVal) {
+      if (beforeVal === ACTION.AR_DRAWING) {
+        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
       }
     },
   },
   methods: {
     ...mapActions(['showArImage']),
-    receiveCapture(receive) {
+    receiveSignal(receive) {
       const data = JSON.parse(receive.data)
 
       // 웹-웹 테스트용
       if (data.from === this.account.uuid) return
       // if (data.to !== this.account.uuid) return
-      if (web_test) {
-        if (data.type === AR_DRAWING.FRAME_REQUEST) {
-          this.doArCapture()
-          return
+      // if (web_test) {
+      //   if (data.type === AR_DRAWING.FRAME_REQUEST) {
+      //     this.doArCapture()
+      //     return
+      //   }
+      // }
+      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+        if (data.type === AR_DRAWING.START_DRAWING) {
+          this.leaderDrawing = true
+          this.$eventBus.$emit('leaderDrawing', true)
+        } else if (data.type === AR_DRAWING.END_DRAWING) {
+          this.leaderDrawing = false
+          this.$eventBus.$emit('leaderDrawing', false)
         }
+      }
+      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+        return false
       }
 
       // frameResponse 수신
@@ -151,7 +174,7 @@ export default {
     },
   },
   created() {
-    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveCapture)
+    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveSignal)
   },
 }
 </script>

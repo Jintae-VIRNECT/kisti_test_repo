@@ -213,6 +213,7 @@ export default {
     position: absolute;
     top: 1.714em;
     right: 1.857em;
+    z-index: 1;
     width: 1.714em;
     height: 1.714em;
     overflow: hidden;

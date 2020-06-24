@@ -6,11 +6,13 @@
       :src="require('assets/image/ic_local_record_list.svg')"
       @click="list"
     ></menu-button>
+    <record-list :visible.sync="showList"></record-list>
   </div>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
+import RecordList from 'LocalRecordList'
 export default {
   name: 'LocalRecordListMenu',
   mixins: [toolMixin],
@@ -19,12 +21,13 @@ export default {
       showList: false,
     }
   },
-  computed: {},
+  components: {
+    RecordList,
+  },
   watch: {},
   methods: {
     list() {
       this.showList = !this.showList
-      this.$eventBus.$emit('lcRecList:show')
     },
   },
 

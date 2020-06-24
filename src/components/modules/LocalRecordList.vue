@@ -65,7 +65,7 @@ import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 
 export default {
-  name: 'ServiceLocalRecordList',
+  name: 'LocalRecordList',
   data() {
     return {
       visibleFlag: false,

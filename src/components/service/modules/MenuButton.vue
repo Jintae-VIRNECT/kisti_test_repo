@@ -4,7 +4,6 @@
       slot="body"
       class="menu"
       :class="{ active: active, disabled: disabled }"
-      :disabled="disabled"
       v-on="$listeners"
     >
       <img v-if="onActive" :src="activeSrc" />

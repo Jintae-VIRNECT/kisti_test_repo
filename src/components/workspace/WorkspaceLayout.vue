@@ -18,9 +18,7 @@
         v-if="showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
-      <service-local-record-list
-        :visible.sync="showList"
-      ></service-local-record-list>
+      <record-list :visible.sync="showList"></record-list>
     </vue2-scrollbar>
   </section>
 </template>
@@ -31,7 +29,7 @@ import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import { mapActions } from 'vuex'
 import auth from 'utils/auth'
-import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecordList'
+import RecordList from 'LocalRecordList'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
@@ -48,7 +46,7 @@ export default {
     HeaderSection,
     WorkspaceWelcome,
     WorkspaceTab,
-    ServiceLocalRecordList,
+    RecordList,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {

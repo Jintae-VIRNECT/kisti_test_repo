@@ -61,8 +61,7 @@
 </template>
 <script>
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import ServiceLocalRecordList from 'components/workspace/modal/ServiceLocalRecordList'
-import IconButton from 'components/workspace/modules/IconButton'
+import IconButton from 'components/modules/IconButton'
 import RemoteTable from 'RemoteTable'
 export default {
   data() {
@@ -154,7 +153,6 @@ export default {
   },
   components: {
     DeviceDenied,
-    ServiceLocalRecordList,
     RemoteTable,
     IconButton,
   },

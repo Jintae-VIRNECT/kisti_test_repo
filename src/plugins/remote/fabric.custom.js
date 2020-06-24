@@ -173,6 +173,7 @@ Fabric.Object.prototype.cornerSize = 6
 Fabric.Object.prototype.cornerColor = '#FFFFFF'
 Fabric.Object.prototype.cornerStrokeColor = '#000000'
 Fabric.Object.prototype.transparentCorners = false
+Fabric.Object.prototype.hoverCursor = 'text'
 
 // Object - Select options.
 Fabric.Object.prototype.selectable = false
@@ -185,7 +186,6 @@ Fabric.Image.prototype.lockScalingFlip = false
 Fabric.Image.prototype.lockRotation = false
 Fabric.Image.prototype.setControlVisible('mtr', true)
 
-Fabric.IText.prototype.hoverCursor = 'text'
 Fabric.IText.prototype.editable = true
 Fabric.IText.prototype.selectable = true
 

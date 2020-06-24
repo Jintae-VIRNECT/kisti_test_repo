@@ -25,6 +25,7 @@ export default {
   },
   methods: {
     clickHandler() {
+      if (this.disabled) return
       if (this.view === VIEW.AR) return
 
       this.setAction(this.DRAWING_LINE)

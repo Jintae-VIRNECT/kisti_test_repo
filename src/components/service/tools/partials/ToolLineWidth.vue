@@ -60,6 +60,7 @@ export default {
       this.setTool(params)
     },
     clickHandler() {
+      if (this.disabled) return
       const toStatus = !this.status
       this.$eventBus.$emit('control:close')
       this.status = toStatus

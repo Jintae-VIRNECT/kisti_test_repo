@@ -38,6 +38,10 @@ const getDefaultState = () => {
     cameraStatus: 'default', // 'default': 초기세팅
     flash: false, // flash 제어
     flashStatus: 'default', // 'default': 초기세팅
+
+    // user option
+    allowLocalRecord: true,
+    allowPointing: true,
   }
 }
 
@@ -193,6 +197,12 @@ const getters = {
       cameraStatus: state.cameraStatus,
       flash: state.flash,
       flashStatus: state.flashStatus,
+    }
+  },
+  control: state => {
+    return {
+      localRecord: state.allowLocalRecord,
+      pointing: state.allowPointing,
     }
   },
 }
