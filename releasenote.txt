@@ -1,11 +1,10 @@
 
 RELEASE
-- 없음
 
 New Features
-- 없음
+파비콘 경로 적용
 
 Bug Fixes
-- 운영 환경 빌드 명령어 수정
+법인명 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

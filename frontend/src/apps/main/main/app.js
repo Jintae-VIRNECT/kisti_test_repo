@@ -7,7 +7,11 @@ import store from '@/store'
 import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
 import messages from 'languages'
+
 import locale from 'element-ui/lib/locale/lang/ko'
+import elementLocale from 'element-ui/lib/locale'
+elementLocale.use(locale)
+
 import VueQrcodeReader from 'vue-qrcode-reader'
 
 import 'element/row.css'
@@ -28,14 +32,17 @@ import 'assets/css/common.scss'
 sync(store, router)
 Vue.config.productionTip = false
 
-Vue.use(VueI18n)
 Vue.use(VeeValidate)
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, {
+	messages: (key, value) => i18n.t(key, value),
+})
 Vue.use(VueQrcodeReader)
 
+Vue.use(VueI18n)
 const i18n = new VueI18n({
 	locale: 'ko',
-	fallbackLocale: 'en',
+	fallbackLocale: 'ko',
 	messages: messages,
 })
 

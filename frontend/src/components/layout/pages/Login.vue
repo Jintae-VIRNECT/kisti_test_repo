@@ -108,7 +108,7 @@ export default {
 		this.checkToken()
 	},
 	mounted() {
-		console.log(this.rememberEmail)
+		// console.log(this.rememberEmail)
 		if (this.rememberLogin === 'true') {
 			this.login.autoLogin = true
 		}

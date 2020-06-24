@@ -1,344 +1,389 @@
 {
   "policy": {
-    "h2": "주식회사 버넥트 개인정보처리방침",
-    "h2Contents": "주식회사 버넥트(이하 \"회사\"라 함)에서 운영하는 제품, 홈페이지(https://www.virnect.com)는 정보통신망 이용촉진 및 정보보호 등에 관한 법률, 개인정보보호법 등 정보통신제품 제공자가 준수하여야 할 관련 법령상의 개인정보보호 규정을 준수하며, 관련 법령에 의거한 개인정보처리방침을 정하여 이용자('회원'과 '비회원' 모두 포함)의 정보보호에 최선을 다하고 있습니다.",
+    "h2": "Privacy policy of VIRNECT Co., Ltd.",
+    "privacyPolicy": "Privacy policy",
+    "h2Contents": "Products serviced by VIRNECT Co., LTD. (hereinafter referred to as the \"Company\")",
     "infoList": {
-      "contents": "버넥트의 개인정보 보호정책은 아래와 같습니다.",
+      "contents": "VIRNECT's privacy policy is as follows",
       "array": [
-        "개인정보의 수집항목 및 수집방법",
-        "개인정보의 수집 및 이용목적",
-        "개인정보의 제3자 제공",
-        "개인정보처리 제3자 위탁",
-        "개인정보의 보유 및 이용기간",
-        "개인정보 파기절차 및 방법",
-        "휴면계정 개인정보에 대한 별도 관리",
-        "이용자 및 법정대리인의 권리와 행사방법",
-        "이용자의 의무",
-        "개인정보 자동 수집 장치의 설치·운영 및 거부에 관한 사항",
-        "개인정보 보호를 위한 기술적, 관리적 대책",
-        "개인정보 보호책임자 및 담당자의 연락처"
+        "Information we may collect from you",
+        "Uses made of the perosnal information",
+        "Disclosure of your information to third parties",
+        "Consignment of personal information processing to third parties",
+        "Period of use and retention of personal information",
+        "Procedure and method of deleting personal information",
+        "Management of inactive personal information",
+        "Rights and exercise methods of users and legal representatives",
+        "Your rights and duties",
+        "Matters concerning the installation, operation and rejection of automatic collection of personal information\"",
+        "Security of your information",
+        "To question regarding this policy"
       ]
     },
     "lists": [
       {
-        "title": "개인정보 수집항목 및 수집방법",
-        "contents": "회사는 제품 제공, 원활한 고객상담을 위해 아래와 같은 최소한의 개인정보를 수집합니다.",
+        "title": "List of personal data we collect from you and its uses",
+        "contents": "We collects the following minimum personal information to provide products and facilitate customer consultation.",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "수집하는 개인정보 항목",
+            "word": "",
+            "wordContents": "Collected personal information",
             "wordList": {
               "array": [
                 {
-                  "text":"이용계약체결시 수집하는 필수정보 : 성명, 이메일, 문의 내용, 재직 회사"
+                  "text": "Essential information we collect when you agree : name, email address, inquiry and company"
                 }
               ]
             }
-          }, {
-            "word": "나.",
-            "wordContents": "수집방법",
+          },
+          {
+            "word": "B",
+            "wordContents": "Collection method",
             "wordList": {
               "array": [
                 {
-                  "text": "회사는 다음과 같은 방법으로 개인정보를 수집합니다."
-                }, {
-                  "text":"이메일/전화/팩스를 통한 정보수집"
+                  "text": "We use following method to collect your personal information"
+                },
+                {
+                  "text": "Collect through email/phone/fax"
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "개인정보의 수집 및 이용목적",
+      },
+      {
+        "title": "Why and how we use your personal information",
         "contents": "",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "제품 제공에 관한 계약 이행",
+            "word": "A",
+            "wordContents": "Execution of contracts regarding product delivery",
             "wordList": {
               "array": [
                 {
-                  "text": "제품 및 콘텐츠의 제공, 유지 및 관리 보호, 구매 및 요금 결제"
+                  "text": "Payment, purchase, management, maintenance and delivery of our products and contents\""
                 }
               ]
             }
-          }, {
-            "word": "나.",
-            "wordContents": "이용자 관리",
+          },
+          {
+            "word": "B",
+            "wordContents": "Member management",
             "wordList": {
               "array": [
                 {
-                  "text": "제품 제공, 개인 식별, 불량사용자의 부정 이용방지와 비인가 사용방지, 분쟁 조정을 위한 기록보존, 기술지원 등 민원처리, 고지사항 전달, 회원 탈퇴 의사 확인"
+                  "text": "product delivery, personal identification, preventing illegal use of unauthorized users and preventing unauthorized use, keeping records for mediation of disputes, handling technical complaints such as technical support, delivering notices, and confirming intention to withdraw from membership"
                 }
               ]
             }
-          }, {
-            "word": "다.",
-            "wordContents": "제품 개선 자료 활용",
+          },
+          {
+            "word": "C",
+            "wordContents": "Product improvements",
             "wordList": {
               "array": [
                 {
-                  "text":  "제품 개선 및 신규 제품 개발 이용자 경험 및 기능 개선, 신규 제품 개발 및 특화, 접속 빈도 파악 또는 이용자의 제품 이용에 대한 통계 분석"
+                  "text": "Product improvement and new product development, user experience and function improvement, new product development and specialization, user access frequency identification or statistical analysis of user's product use"
                 }
               ]
             }
-          }, {
-            "word": "라.",
-            "wordContents": "마케팅 및 광고활용(선택)",
+          },
+          {
+            "word": "D",
+            "wordContents": "Use for marketing and advertisment purpose (Optional)",
             "wordList": {
               "array": [
                 {
-                  "text": "인구통계학적 특성에 따른 제품 제공 및 광고게재, 제품의 유효성 확인, 이벤트 및 광고성 정보 제공 및 참여기회 제공"
+                  "text": "Providing products and advertising according to demographic characteristics, checking product effectiveness, providing event and advertising opportunities"
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "개인정보의 제3자 제공",
+      },
+      {
+        "title": "Disclosure of your information to third parties",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "회사는 이용자의 개인정보를 \"2. 개인정보 수집 및 이용 목적\"에서 고지한 범위 내에서 사용하며, 이용자의 사전 동의 없이 동 범위를 초과하여 이용하거나 원칙적으로 이용자의 개인정보를 제3자에게 제공하지 않습니다. 다만, 아래의 경우에는 예외로 합니다.",
+            "word": "A",
+            "wordContents": "We use your personal data within the boundary of policy \"Uses made of the personal information\"",
             "wordList": {
               "array": [
                 {
-                  "text": "이용자가 사전에 제3자 제공에 동의한 경우"
-                }, {
-                  "text": "수사·조사 목적으로 법령에 정해진 절차와 방법에 따라 수사기관 및 감독 당국의 요구가 있는 경우"
-                }, {
-                  "text": "그 밖에 개별 법률의 근거규정에 의하는 경우"
-                }, {
-                  "text": "통계작성, 학술 연구 또는 시장조사를 위하여 필요한 경우로서 특정 개인을 식별할 수 없는 형태로 제공하는 경우"
+                  "text": "If you agreed to discluse of information to the third party."
+                },
+                {
+                  "text": "When there is a request from the investigating agency and supervisory authority in accordance with the procedures and methods prescribed by the law for investigation"
+                },
+                {
+                  "text": "Other cases based on the provisions of individual laws"
+                },
+                {
+                  "text": "When it is necessary for statistical writing, academic research, or market research, and a specific individual is provided in an unidentifiable form."
                 }
               ]
             }
-          }, {
-            "word": "나.",
-            "wordContents": "그 밖에 개인정보 제3자 제공이 필요한 경우에는 합당한 절차를 통한 이용자의 동의를 얻어 회사는 제3자에게 개인정보를 제공할 수 있습니다.",
-            "wordList": {}
+          },
+          {
+            "word": "B",
+            "wordContents": "We will get consent from you in a reasonable proecedure in case if we have to provide a thrid party of your personal data for other purposes."
           }
         ]
-      }, {
-        "title": "개인정보처리 제3자 위탁",
-        "contents": "회사는 회사의 제품에 대한 결제를 인터넷상에서 대행하는 PG(Payment Gateway)사에 대하여 신용카드, 계좌이체, 핸드폰 이용결제, ARS 결제 등의 방식으로 제품 대금을 결제하는 업무 일체를 위탁하는 바이며, 해당 위탁업무를 처리하는 과정에서 회원의 개인정보가 제공될 수 있습니다."
-      }, {
-        "title": "개인정보의 보유 및 이용기간",
-        "contents": "회사는 개인정보의 수집 및 이용목적이 달성되거나 이용자의 요청이 있는 경우에는 지체 없이 개인정보를 파기합니다. 단, 다음의 정보에 대해서는 아래의 이유로 명시한 기간 동안 보존합니다.",
+      },
+      {
+        "title": "Consignment processing of perosnal information by third party",
+        "contents": "We consign online payment handling of our products to PG(Payment Gateway) companies in regards to credit card payment, account transfer, mobile phone payment, ARS payment etc. Your personal information may be prodivded during this procedure."
+      },
+      {
+        "title": "Period of use and retention of personal information",
+        "contents": "We delete personal information instantly if you make a request or when there are no reasons to use them. However, the following information is retained for a period spcified for the following reasons.",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "관련법령에 의한 정보보유 사유",
+            "word": "A",
+            "wordContents": "Reasons for retaining information under relevant laws",
             "wordList": {
               "array": [
                 {
-                  "text": "전자상거래 등에서의 소비자보호에 관한 법률, 상법 등 법령의 규정에 의하여 보존할 필요가 있는 경우에는 회사는 관계법령에서 정한 일정한 기간 동안 회원정보를 보관하며, 이 경우 보관하는 정보를 그 보관의 목적으로만 이용하며 보존기간은 아래와 같습니다."
-                }, {
-                  "text": "계약 또는 청약철회 등에 관한 기록",
+                  "text": "If it is necessary to preserve the personal information due to the laws and regulations such as Consumer Protection Act in Electronic Commerce, Commercial Law etc, we are required to keep your information for a certain period of time as stipulated in the relevant laws and regulations. It is used only for this preservation purpose and the retention period is as follows."
+                },
+                {
+                  "text": "Records of contract or withdrawal of subscription",
                   "depthArray": [
-                    "보존 이유 : 전자상거래 등에서의 소비자보호에 관한 법률",
-                    "보존 기간 : 5년"
+                    "Reason for preservation: Laws on Consumer Protection in Electronic Commerce",
+                    "Retention period : 5 years"
                   ]
-                }, {
-                  "text": "대금결제 및 재화 등의 공급에 관한 기록",
+                },
+                {
+                  "text": "Records on payment and supply of goods, etc.",
                   "depthArray": [
-                    "보존 이유 : 전자상거래 등에서의 소비자보호에 관한 법률",
-                    "보존 기간 : 5년"
+                    "Reason for preservation: Laws on Consumer Protection in Electronic Commerce",
+                    "Retention period : 5 years"
                   ]
-                }, {
-                  "text": "소비자의 불만 또는 분쟁처리에 관한 기록",
+                },
+                {
+                  "text": "Records of consumer complaints or disputes",
                   "depthArray": [
-                    "보존 이유 : 전자상거래 등에서의 소비자보호에 관한 법률",
-                    "보존 기간 : 3년"
+                    "Reason for preservation: Laws on Consumer Protection in Electronic Commerce",
+                    "Retention period : 3 years"
                   ]
-                }, {
-                  "text": "웹사이트 방문에 관한 기록",
+                },
+                {
+                  "text": "Records of website visits",
                   "depthArray": [
-                    "보존 이유 : 통신비밀보호법",
-                    "보존 기간 : 3개월"
+                    "Reason for preservation: Communication Secrets Protection Act",
+                    "Retention period : 3 months"
                   ]
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "휴면계정 개인정보에 대한 별도 관리",
-        "contents": "회사는 마지막 접속 시점으로부터 1년의 기간동안 회사의 제품 이용 및 접속을 하지 아니하는 회원에 대한 다음의 정보를 별도로 분리하여 관리합니다.",
+      },
+      {
+        "title": "Separate management of inactive accounts' personal information",
+        "contents": "We separately manages the following information for members who do not use or access the company's products for a period of one year from the last access date",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "<분리 관리 대상 정보>"
-          }, {
-            "word": "가.",
-            "wordContents": "회원가입 및 회원정보 수정 단계에서 수집∙관리되는 개인정보"
-          }, {
-            "word": "나.",
-            "wordContents": "회원의 접속로그, 제품 이용내역 및 결제기록 등 제품 이용과정에서 생성된 정보"
+            "wordContents": "Separately managed information"
+          },
+          {
+            "word": "A",
+            "wordContents": "Personal information collected and managed in the account registration and account modification stages"
+          },
+          {
+            "word": "B",
+            "wordContents": "Information generated in the process of using the product, such as the member's access log, product usage history and payment record"
           }
         ]
-      }, {
-        "title": "이용자 및 법정대리인의 권리와 그 행사방법",
-        "contents": "회사는 마지막 접속 시점으로부터 1년의 기간동안 회사의 솔루션 서비스 이용 및 접속을 하지 아니하는 회원에 대한 다음의 정보를 별도로 분리하여 관리합니다.",
+      },
+      {
+        "title": "Rights of members and legal representatives and how to use them",
+        "contents": "We separately manages the following information for members who do not use or access the company's services for a period of one year from the last access date",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "제품 이용자는 회사의 개인정보관리담당자 또는 개인정보관리책임자에게 서면, 전화 또는 이메일로 연락하여 열람·수정·탈퇴를 요청하실 수 있습니다."
-          }, {
-            "word": "나.",
-            "wordContents": "이용자가 개인정보의 오류에 대한 정정을 요청한 경우에는 정정을 완료하기 전까지 당해 개인정보를 이용 또는 제공하지 않습니다. 또한 잘못된 개인정보를 제3자에게 이미 제공한 경우에는 정정 처리결과를 제3자에게 지체 없이 통지하여 정정이 이루어지도록 하겠습니다."
-          }, {
-            "word": "다.",
-            "wordContents": "회사는 이용자의 요청에 의해 해지 또는 삭제된 개인정보는 \"5. 개인정보의 보유 및 이용기간\"에 명시된 바에 따라 처리하고 그 외의 용도로 열람 또는 이용할 수 없도록 처리하고 있습니다."
+            "word": "A",
+            "wordContents": "All members can request to access, modify and withdraw consent of personal information by contacting personal information manager."
+          },
+          {
+            "word": "B",
+            "wordContents": "If you request correction of an error in personal information, your personal information will not be used or provided until it is amended. In addition, if incorrect personal information has already been provided to a third party, we will notify the third party straight away, so that the correction is made ASAP.\""
+          },
+          {
+            "word": "C",
+            "wordContents": "We handle personal information that is canceled or deleted at the request of the user as specified in \"5. Period of use and retention of personal information\". It cannot be viewed or used in any other purposes."
           }
         ]
-      }, {
-        "title": "이용자의 의무",
-        "contents": "이용자는 자신의 개인정보를 보호할 의무가 있으며, 이용자 본인의 부주의나 인터넷 상의 문제 등으로 개인정보가 유출되어 발생한 문제에 대해 회사는 일체의 책임을 지지 않습니다.",
+      },
+      {
+        "title": "Your obligations",
+        "contents": "It is your responsibility to protect your own personal information and we are not responsible for leakage of personal information due to your negligence or internet problems.",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "이용자는 자신의 개인정보를 최신의 상태로 유지해야 하며, 이용자의 부정확한 정보 입력으로 발생하는 문제의 책임은 이용자 자신에게 있습니다."
-          }, {
-            "word": "나.",
-            "wordContents": "타인의 주민등록번호 등 개인정보를 도용하여 회원가입 또는 물품거래 시 이용자자격 상실과 함께 주민등록법에 의거하여 처벌될 수 있습니다."
-          }, {
-            "word": "다.",
-            "wordContents": "이용자는 아이디, 비밀번호 등에 대해 보안을 유지할 책임이 있으며, 제3자에게 이를 양도하거나 대여할 수 없습니다. 이용자는 회사의 정보보호정책에 따라 보안을 위해 비밀번호의 주기적 변경에 협조할 의무가 있습니다."
-          }, {
-            "word": "라.",
-            "wordContents": "이용자는 회사의 제품을 이용한 후에는 반드시 로그인 계정을 종료하고 웹 브라우저 프로그램을 종료해야 합니다."
-          }, {
-            "word": "마.",
-            "wordContents": "이용자는 \"정보 통신망 이용촉진 및 정보보호 등에 관한 법률\", \"개인정보보호법\", \"주민등록법\" 등 기타 개인정보에 관한 법률을 준수하여야 합니다."
+            "word": "A",
+            "wordContents": "It is best to keep your personal information up-to-date, and it is your responsibility if any problems arise from your incorrect update of information."
+          },
+          {
+            "word": "B",
+            "wordContents": "In accordance with the Resident Registration Act, using somone else's resident registration number is considered as theft and therefore can be punished. This will result in loss of membership and use of our service."
+          },
+          {
+            "word": "C",
+            "wordContents": "You are responsible for managing your ID, password, etc., and cannot transfer or let others use them. You are obliged to cooperate with periodic change of password in accordance with our information protection policy."
+          },
+          {
+            "word": "D",
+            "wordContents": "After using our products, it is your responsibility to sign out your account and close the web browser program"
+          },
+          {
+            "word": "E",
+            "wordContents": "Act on Promotion of User Information and Communication Network Utilization and Information Protection"
           }
         ]
-      }, {
-        "title": "개인정보 자동 수집 장치의 설치·운영 및 거부에 관한 사항",
+      },
+      {
+        "title": "Matters concerning the installation, operation and rejection of automatic personal information collection devices",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "쿠키란?",
+            "word": "A",
+            "wordContents": "What are cookies?",
             "wordList": {
               "array": [
                 {
-                  "text": "쿠키는 웹사이트를 운영하는데 이용되는 서버가 이용자의 브라우저에게 보내는 아주 작은 텍스트 파일로 이용자 컴퓨터의 하드디스크에 저장됩니다. 이후 이용자가 웹 사이트에 방문할 경우 웹 사이트 서버는 이용자의 하드 디스크에 저장되어 있는 쿠키의 내용을 읽어 이용자의 환경설정을 유지하고 맞춤화된 제품을 제공하기 위해 이용됩니다."
-                }, {
-                  "text": "쿠키는 개인을 식별하는 정보를 자동적/능동적으로 수집하지 않으며, 이용자는 언제든지 이러한 쿠키의 저장을 거부하거나 삭제할 수 있습니다."
+                  "text": "small text files that are stored on your hard drive by a Web server��봳o identify return visitors and their preferences. It enable Web sites to remember preferences to provide customized Web site content"
+                },
+                {
+                  "text": "Cookies do not automatically and actively collect personally information, and you may refuse or delete these cookies at any time."
                 }
               ]
             }
-          }, {
-            "word": "나.",
-            "wordContents": "쿠키 사용 목적",
+          },
+          {
+            "word": "B",
+            "wordContents": "Purpose of using cookies",
             "wordList": {
               "array": [
                 {
-                  "text": "회원과 비회원의 접속빈도나 방문시간 등을 분석, 이용자의 취향과 관심분야 파악, 자취 추적 및 방문 횟수 파악 등을 통한 타켓 마케팅 및 개인 맞춤 제품을 제공합니다."
+                  "text": "We provide targeted marketing and personalized products through analysis of visit frequency and duration of visitors, grasping visitor's preferences and interests."
                 }
               ]
             }
-          }, {
-            "word": "다.",
-            "wordContents": "쿠키의 설치/운영 및 거부",
+          },
+          {
+            "word": "C",
+            "wordContents": "Install, use or reject cookies",
             "wordList": {
               "array": [
                 {
-                  "text": "이용자는 쿠키 설치에 대한 선택권을 가지고 있습니다. 따라서 이용자는 웹브라우저에서 옵션을 설정함으로써 모든 쿠키를 허용하거나, 쿠키가 저장될 때마다 확인을 거치거나, 아니며 모든 쿠키의 저장을 거부할 수도 있습니다."
-                }, {
-                  "text": "다만, 쿠키의 저장을 거부할 경우에는 제품의 이용에 어려움이 있을 수 있습니다."
+                  "text": "You have a total control over installation of cookies. For instance, you may allow all cookies by setting an option in the web browser, or check every time before a cookie is stored, or refuse to store any cookies."
+                },
+                {
+                  "text": "However, if you refuse to store cookies, there may be difficulties in using the product.\""
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "개인정보 보호를 위한 기술적, 관리적 대책",
-        "contents": "회사는 이용자의 개인정보를 처리함에 있어 개인정보가 분실, 도난, 유출, 변조 또는 훼손되지 않도록 안정성 확보를 위하여 다음과 같은 기술적/관리적 대책을 강구하고 있습니다.",
+      },
+      {
+        "title": "We take technical and administrative measures to protect your personal information",
+        "contents": "We are taking the following technical and administrative measures to ensure stability so that your personal information is not lost, stolen, leaked, tampered with, or damaged when processing user's personal information.",
         "wordArray": [
           {
-            "word": "가.",
-            "wordContents": "해킹 등에 대비한 대책",
+            "word": "A",
+            "wordContents": "Countermeasures against hacking",
             "wordList": {
               "array": [
                 {
-                  "text": "회사는 해킹이나 컴퓨터 바이러스 등에 의해 회원의 개인정보가 유출되거나 훼손되는 것을 막기 위해 최선을 다하고 있습니다. 개인정보의 훼손에 대비해서 자료를 수시로 백업하고 있고, 최신 백신프로그램을 이용하여 이용자들의 개인정보나 자료가 유출되거나 손상되지 않도록 방지하고 있으며, 암호화통신 등을 통하여 네트워크 상에서 개인정보를 안전하게 전송할 수 있도록 하고 있습니다. 그리고 침입차단시스템을 이용하여 외부로부터의 무단 접근을 통제하고 있으며, 기타 시스템적으로 보안성을 확보하기 위한 가능한 모든 기술적 장치를 갖추려 노력하고 있습니다."
+                  "text": "We are doing our best to prevent the leakage or damage of your personal information from hackers or viruses. To do so, data is backed up from time to time, and the latest vaccine program is used to prevent users' personal information or data from being leaked or damaged, and securely transmit personal information over the network through encrypted communication. In addition, we control unauthorized access from the outside using an intrusion prevention system, and we are trying to equip all possible technical devices to secure security systematically."
                 }
               ]
             }
-          }, {
-            "word": "나.",
-            "wordContents": "처리 직원의 최소화 및 교육",
+          },
+          {
+            "word": "B",
+            "wordContents": "Minimization and training of staffs handling your personal data",
             "wordList": {
               "array": [
                 {
-                  "text": "회사의 개인정보관련 처리 직원은 담당자에게 한정시키고 있고 담당자에 대한 수시 교육을 통하여 개인정보처리방침의 준수를 항상 강조하고 있습니다. 개인정보 관련 처리자의 업무 인수인계는 보안이 유지된 상태에서 철저하게 이루어지고 있으며 입사 및 퇴사 후 개인정보 사고에 대한 책임을 명확히 하고 있습니다."
+                  "text": "We limit personal information handling only to our personal information management team and we train them regularly to make sure they comply with the privacy policy. if anyone moves out or in to the information management team, we maintain high level of security while the work is being taken over. Anyone misusing the personal information will be held liable for their actions, even after they leave the company."
                 }
               ]
             }
-          }, {
-            "word": "다.",
-            "wordContents": "개인정보보호전담기구의 운영",
+          },
+          {
+            "word": "C",
+            "wordContents": "Operating dedicated in-house information protection organization",
             "wordList": {
               "array": [
                 {
-                  "text": "입사 시 전 직원의 보안서약서를 통하여 사람에 의한 정보유출을 사전에 방지하고 사내 개인정보보호전담기구 등을 통하여 개인정보처리방침의 이행사항 및 담당자의 준수여부를 확인하여 문제가 발견될 경우 즉시 수정하고 바로 잡을 수 있도록 노력하고 있습니다. 단, 이용자 본인의 부주의나 인터넷상의 문제로 ID, 비밀번호 등 개인정보가 유출되어 발생한 문제에 대해 회사는 일체의 책임을 지지 않습니다."
+                  "text": "Through our in-house persoanl information protection organization, any employee joining our company must sign \"\"security pledge\"\" to maintain the personal information processing policy. However, we are not responsible for any problems caused by leakage of personal information such as ID and password due to user's negligence or problems on the Internet"
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "개인정보보호책임자 및 담당자의 연락처",
-        "contents": "귀하의 개인정보를 보호하고 개인정보와 관련된 불만 등을 처리하기 위하여 회사는 개인정보담당 부서 및 개인정보보호책임자를 두고 있습니다. 귀하의 개인정보와 관련한 문의사항은 아래의 개인정보담당 부서 또는 개인정보보호책임자에게 연락하여 주시기 바랍니다.",
+      },
+      {
+        "title": "To contact the person in charge of personal information protection and the person in charge",
+        "contents": "In order to protect your personal information and handle complaints related to personal information, We have a department in charge of personal information. For inquiries related to your personal information, please contact the Personal Information Department or the Personal Information Protection Officer below.",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "개인정보보호책임자",
+            "wordContents": "Personal information protection manager",
             "wordList": {
               "array": [
                 {
-                  "text": "이름: 하태진"
-                }, {
-                  "text": "전화: 070-7733-2744"
-                }, {
+                  "text": "Name : Taejin Ha"
+                },
+                {
+                  "text": "Tel : +82 70 7733 2744"
+                },
+                {
                   "text": "E-mail: ha@virnect.com"
                 }
               ]
             }
-          }, {
+          },
+          {
             "word": "",
-            "wordContents": "개인정보보호담당자",
+            "wordContents": "Personal information protection associate",
             "wordList": {
               "array": [
                 {
-                  "text": "이름: 김재인"
-                }, {
-                  "text": "전화: 070-7733-2744"
-                }, {
+                  "text": "Name : Jea In, Kim"
+                },
+                {
+                  "text": "Tel : +82 70 7733 2744"
+                },
+                {
                   "text": "E-mail: zero@virnect.com"
                 }
               ]
             }
-          }, {
+          },
+          {
             "word": "",
-            "wordContents": "기타 개인정보침해에 대한 신고나 상담이 필요하신 경우에는 아래 기관에 문의하시기 바랍니다.",
+            "wordContents": "If you need to report or consult about other personal information infringement, please contact the following government organizations.",
             "wordList": {
               "array": [
                 {
-                  "text": "개인정보침해신고센터",
+                  "text": "Personal Information Infringement Report Center",
                   "depthArray": [
-                    "(https://privacy.kisa.or.kr/ 국번 없이 118)"
+                    "https://privacy.kisa.or.kr/"
                   ]
-                }, {
-                  "text": "대검찰청 사이버범죄 수사단",
+                },
+                {
+                  "text": "Supreme Prosecutors' Office Cyber ​​Crime Investigation Team",
                   "depthArray": [
-                    "(http://www.spo.go.kr/ 국번 없이 1301)"
+                    "http://www.spo.go.kr"
                   ]
-                }, {
-                  "text": "경찰청 사이버안전국",
+                },
+                {
+                  "text": "National Police Agency Cyber ​​Safety Bureau",
                   "depthArray": [
-                    "(http://cyberbureau.police.go.kr/ 국번 없이 182)"
+                    "http://cyberbureau.police.go.kr/"
                   ]
                 }
               ]

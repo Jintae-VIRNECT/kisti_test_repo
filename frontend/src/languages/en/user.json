@@ -1,44 +1,44 @@
 {
   "user": {
-    "title": "추가 정보 입력",
-    "pageInfo": "추가 정보를 입력하시면 VIRNECT 제품을 <br />더 유용하게 사용하실 수 있습니다.",
+    "title": "Enter addtional information",
+    "pageInfo": "Entering additional information allows you to use VIRNECT products to be more utilizable",
     "profileImage": {
-      "title": "프로필 이미지",
-      "subTitle": "프로필 이미지를 등록해 주세요.",
-      "contents": "등록하신 프로필 이미지는 다른 사용자들에게 보여집니다.",
-      "imageSet": "프로필 이미지 설정",
-      "visible": "프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다.",
-      "limit": "최대 5Mb의 Jpg, Png 파일 업로드 가능",
-      "upload": "이미지 업로드",
-      "delete": "삭제",
-      "submit": "이미지 등록"
+      "title": "Profile image",
+      "subTitle": "Register your profile image",
+      "contents": "Your profile image is shared to other members",
+      "imageSet": "Profile image settings",
+      "visible": "Your profile image is shared to all the members using VIRNECT product users",
+      "limit": "Up to 5Mb of Jpg or Png files can be uploaded",
+      "upload": "Image upload",
+      "delete": "Delete",
+      "submit": "Register image files"
     },
     "nickName": {
-      "title": "닉네임",
-      "contents": "국문, 영문, 특수문자(&lt;),(&gt;) 제외, 띄어쓰기 포함 20자 이하로 입력해 주세요."
+      "title": "Nickname",
+      "contents": "Please enter 20 characters or less. You can use Korean, English, special characters (excluding (&lt;), (&gt;)), and spaces.\""
     },
     "recoveryInfo": {
-      "title": "계정 복구 정보 입력",
-      "placeHolder": "계정 분실 시 본인 확인을 위한 정보를 입력해 주세요."
+      "title": "Enter account recovery information",
+      "placeHolder": "In case you forget account information, please enter the verification information.\""
     },
     "phoneNumber": {
-      "title": "연락처",
-      "contents": "전화번호를 입력해 주세요."
+      "title": "Contact detail",
+      "contents": "Enter your phone number"
     },
     "recoveryEmail": {
-      "title": "복구 이메일 주소",
-      "placeHolder": "복구 이메일 주소를 입력해 주세요"
+      "title": "Verification email address",
+      "placeHolder": "Enter your verification eamil address"
     },
-    "confirm": "확인",
-    "later": "나중에 하기",
+    "confirm": "Confirm",
+    "later": "Next time",
     "error": {
       "etc": {
-        "title": "기타 오류",
-        "message": "회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요."
+        "title": "Error",
+        "message": "Failed to proceed with account registration, please try again later\""
       },
       "nickName": {
-        "title": "닉네임 설정 오류",
-        "message": "닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요."
+        "title": "Nickname settup error",
+        "message": "Please enter a nickname of 20 characters or less. You may use Korean, English, special characters, and spaces.\""
       }
     }
   }

@@ -15,7 +15,7 @@ $noto-sans-weight-map: (
     "regular": $noto-sans-weight-regular,
     "medium": $noto-sans-weight-medium,
     "bold": $noto-sans-weight-bold,
-    "black": $noto-sans-weight-black
+    // "black": $noto-sans-weight-black
 ) !default;
 $noto-sans-family: "NotoSansKR" !default;
 $noto-sans-style: normal !default;
@@ -31,8 +31,11 @@ $noto-sans-prefix: "NotoSansCJKkr-" !default;
         font-weight: $weight;
         font-family: $noto-sans-family;
         font-style: $noto-sans-style;
-        src: url(unquote("#{$noto-sans-src}.eot"));
+        -webkit-font-smoothing: antialiased;
+        src: url(unquote("#{$noto-sans-src}.otf"));
         src: local(※), url(unquote("#{$noto-sans-src}.woff")) format("woff"),
+            url(unquote("#{$noto-sans-src}.woff2")) format("woff2"),
             url(unquote("#{$noto-sans-src}.otf")) format("opentype");
+        font-display: auto;
     }
 }
