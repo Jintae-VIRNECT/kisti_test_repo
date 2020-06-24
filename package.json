@@ -28,6 +28,7 @@
     "jszip": "^3.4.0",
     "linkifyjs": "^2.1.9",
     "log4js": "^6.1.0",
+    "mime-types": "^2.1.27",
     "vue": "^2.6.11",
     "vue-raven": "^1.0.3",
     "vue-router": "^3.1.3",
