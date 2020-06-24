@@ -100,7 +100,7 @@ export default {
     },
     resolutions: {
       handler() {
-        if (this.recorder !== null && this.screenStream !== null) {
+        if (this.recorder !== null && this.screenStream === null) {
           this.recorder.changeCanvasOrientation(this.resolution.orientation)
         }
       },

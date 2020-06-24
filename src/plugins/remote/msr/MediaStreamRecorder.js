@@ -573,10 +573,6 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       height = video.stream.height
     }
 
-    console.log('drawImage x ::', x)
-    console.log('drawImage y ::', y)
-    console.log('drawImage width ::', width)
-    console.log('drawImage height ::', height)
     context.drawImage(video, x, y, width, height)
 
     if (typeof video.stream.onRender === 'function') {
