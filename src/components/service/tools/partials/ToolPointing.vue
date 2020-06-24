@@ -40,9 +40,6 @@ export default {
   },
   methods: {
     pointing() {
-      console.log(!this.canPointing)
-      console.log(this.control.pointing)
-      console.log(this.disabled)
       if (!this.canPointing) {
         // TODO: MESSAGE
         this.toastDefault('리더가 포인팅을 막았습니다. << 문구정의 필요')

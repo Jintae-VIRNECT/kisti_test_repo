@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL, CONTROL } from 'configs/remote.config'
+import { SIGNAL, CONTROL, AR_FEATURE } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -25,7 +25,7 @@ export const addSessionEventListener = session => {
       })
     }
   })
-
+  // user leave
   session.on('streamDestroyed', event => {
     console.log('[session] stream destroyed')
     const connectionId = event.stream.connection.connectionId
@@ -50,23 +50,21 @@ export const addSessionEventListener = session => {
       speaker: data.isOn,
     })
   })
-  /**AR 사용 가능 여부 >> AR_FEATURE랑 합쳐져야함 */
-  // session.on(SIGNAL.HAS_AR_FEATURE, event => {
-  //   if (session.connection.connectionId === event.from.connectionId) return
-  //   const data = JSON.parse(event.data)
-  //   Store.commit('updateParticipant', {
-  //     connectionId: event.from.connectionId,
-  //     arFeature: data.hasArFeature,
-  //   })
-  // })
   /** AR 기능 사용 가능 여부 */
   session.on(SIGNAL.AR_FEATURE, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
-    Store.commit('updateParticipant', {
-      connectionId: event.from.connectionId,
-      arFeature: data.hasArFeature,
-    })
+    if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        arFeature: data.hasArFeature,
+      })
+    } else if (data.type === AR_FEATURE.START_AR_FEATURE) {
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        arFeature: data.hasArFeature,
+      })
+    }
   })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
@@ -106,11 +104,12 @@ export const addSessionEventListener = session => {
       })
     }
   })
+  /** screen capture permission 수신 */
   // session.on(SIGNAL.CAPTURE_PERMISSION, event => {
   //   const data = JSON.parse(event.data)
-  //   if (data.type === 'response') {
+  //   if (data.type === CAPTURE_PERMISSION.RESPONSE) {
   //     Store.commit('updateParticipant', {
-  //       connectionId: event.from.connectionId,
+  //       connectionId: data.from.connectionId,
   //       permission: data.isAllowed,
   //     })
   //   }

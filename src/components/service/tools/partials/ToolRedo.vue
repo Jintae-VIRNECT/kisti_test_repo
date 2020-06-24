@@ -31,12 +31,13 @@ export default {
     },
   },
   watch: {
-    view() {
+    viewAction() {
       this.available = false
     },
   },
   methods: {
     clickHandler() {
+      if (!this.isAvailable) return
       this.status = true
       let listener
       if (this.view === VIEW.DRAWING) {

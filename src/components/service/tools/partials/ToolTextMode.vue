@@ -22,6 +22,7 @@ export default {
   },
   methods: {
     clickHandler() {
+      if (this.disabled) return
       this.setAction(this.DRAWING_TEXT)
     },
   },

@@ -30,7 +30,7 @@
       <ar-pointing
         class="ar-pointing"
         :videoSize="videoSize"
-        v-if="currentAction === 'pointing'"
+        v-if="currentAction === 'pointing' && canPointing"
       ></ar-pointing>
     </div>
   </div>
@@ -48,6 +48,12 @@ export default {
   mixins: [toastMixin],
   components: {
     ArPointing,
+  },
+  props: {
+    canPointing: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {

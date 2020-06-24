@@ -1,6 +1,6 @@
 <template>
   <div class="ar-tools tools">
-    <ar-pointing></ar-pointing>
+    <ar-pointing :disabled="leaderDrawing"></ar-pointing>
     <template v-if="isLeader">
       <ar-capture></ar-capture>
       <div class="division"></div>
@@ -47,6 +47,7 @@ export default {
       active: 'pointing',
       isRecording: false,
       EXPERT_LEADER: ROLE.EXPERT_LEADER,
+      leaderDrawing: false,
     }
   },
   computed: {
@@ -70,16 +71,35 @@ export default {
     },
     canPointing() {
       if (this.viewAction === ACTION.AR_POINTING) {
-        return true
+        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+          return true
+        }
+        if (!this.leaderDrawing) {
+          return true
+        } else {
+          return false
+        }
       } else {
         return false
       }
     },
   },
-  methods: {},
+  methods: {
+    setDrawing(val) {
+      this.leaderDrawing = val
+    },
+  },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  created() {
+    if (!this.isLeader) {
+      this.$eventBus.$on('leaderDrawing', this.setDrawing)
+    }
+  },
+  beforeDestroy() {
+    if (!this.isLeader) {
+      this.$eventBus.$off('leaderDrawing', this.setDrawing)
+    }
+  },
 }
 </script>

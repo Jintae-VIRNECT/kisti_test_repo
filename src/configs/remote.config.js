@@ -9,7 +9,6 @@ export const SIGNAL = {
   MIC: 'signal:mic',
   SPEAKER: 'signal:speaker',
   CONTROL: 'signal:control',
-  // HAS_AR_FEATURE: 'signal:hasArFeature',
   AR_FEATURE: 'signal:arFeature',
   AR_DRAWING: 'signal:arDrawing',
   AR_POINTING: 'signal:arPointing',
@@ -73,6 +72,11 @@ export const AR_DRAWING = {
   UNDO_ABLE: 'undoAble',
   REDO_ABLE: 'redoAble',
   CLEAR_ABLE: 'clearAble',
+}
+
+export const CAPTURE_PERMISSION = {
+  REQUEST: 'request',
+  RESPONSE: 'response',
 }
 
 export const ROLE = {

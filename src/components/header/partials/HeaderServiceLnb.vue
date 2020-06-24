@@ -27,7 +27,12 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { SIGNAL, AR_FEATURE, ROLE } from 'configs/remote.config'
+import {
+  SIGNAL,
+  AR_FEATURE,
+  CAPTURE_PERMISSION,
+  ROLE,
+} from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
@@ -56,9 +61,22 @@ export default {
       }
       return ''
     },
+    hasLeader() {
+      const idx = this.participants.findIndex(
+        user => user.roleType === ROLE.EXPERT_LEADER,
+      )
+      if (idx < 0) return false
+      return true
+    },
+    hasWorker() {
+      const idx = this.participants.findIndex(
+        user => user.roleType === ROLE.WORKER,
+      )
+      if (idx < 0) return false
+      return true
+    },
   },
   watch: {
-    'mainView.permission': 'permissionSetting',
     shareFile(file, oldFile) {
       if (
         file &&
@@ -67,6 +85,20 @@ export default {
         this.currentView !== 'drawing'
       ) {
         this.drawingNotice = true
+      }
+    },
+    hasLeader(hear, bHear) {
+      if (!hear && hear !== bHear) {
+        this.toastDefault('리더가 협업을 종료했습니다.')
+        this.setView(VIEW.STREAM)
+      }
+    },
+    hasWorker(hear, bHear) {
+      if (!hear && hear !== bHear) {
+        this.toastDefault('작업자가 협업을 종료했습니다.')
+        if (this.view === VIEW.AR) {
+          this.setView(VIEW.STREAM)
+        }
       }
     },
   },
@@ -92,6 +124,10 @@ export default {
         }
       } // other user
       else {
+        if (this.currentView === VIEW.AR) {
+          this.toastDefault('AR 공유 중에는 다른 메뉴로 이동할 수 없습니다.')
+          return
+        }
         if (type === 'stream') {
           this.setView(VIEW.STREAM)
         }
@@ -124,9 +160,10 @@ export default {
       }
     },
     permissionSetting(permission) {
+      console.log('PERMISSION CHECK', permission)
       if (permission === true) {
-        this.setView(VIEW.AR)
         this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
+        this.setView(VIEW.AR)
       } else if (permission === false) {
         this.toastDefault(
           '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
@@ -150,27 +187,22 @@ export default {
         console.error('본인 영상입니다.')
         return
       }
-      // if (this.mainView.permission === true) {
-      //   this.setView('ar')
-      //   return
-      // }
+      if (this.mainView.hasArFeature === false) {
+        this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
+        return
+      }
       if (this.mainView.permission === false) {
         this.toastDefault(
           '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
         )
         return
       }
-      if (this.mainView.permission === 'noAR') {
-        this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
-        return
-      }
-      this.toastDefault(
-        '상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.',
-      )
-
       this.$call.permission({
         to: this.mainView.id,
       })
+      this.toastDefault(
+        '상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.',
+      )
     },
 
     getPermissionCheck(receive) {
@@ -180,17 +212,17 @@ export default {
       if (data.from === this.account.uuid) return
 
       // 웹-웹 테스트용!!!
-      if (web_test && data.type === 'request') {
-        this.$call.permission({
-          to: data.from,
-          type: 'response',
-          isAllowed: true,
-        })
-        return
-      }
-      if (data.type === 'response') {
+      // if (web_test && data.type === CAPTURE_PERMISSION.REQUEST) {
+      //   this.$call.permission({
+      //     to: data.from,
+      //     type: CAPTURE_PERMISSION.RESPONSE,
+      //     isAllowed: true,
+      //   })
+      //   return
+      // }
+      if (data.type === CAPTURE_PERMISSION.RESPONSE) {
         this.updateParticipant({
-          connectionId: receive.from.connectionId,
+          connectionId: data.from.connectionId,
           permission: data.isAllowed,
         })
         this.permissionSetting(data.isAllowed)

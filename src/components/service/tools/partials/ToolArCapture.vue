@@ -11,7 +11,6 @@
 <script>
 import toolMixin from './toolMixin'
 import { VIEW, ACTION } from 'configs/view.config'
-import { AR_DRAWING } from 'configs/remote.config'
 
 export default {
   name: 'ToolLineMode',
@@ -27,9 +26,9 @@ export default {
   },
   methods: {
     clickHandler() {
+      if (this.disabled) return
       if (this.view !== VIEW.AR) return
 
-      this.$call.arDrawing(AR_DRAWING.START_DRAWING)
       this.setAction(ACTION.AR_AREA)
     },
   },
