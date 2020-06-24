@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,6 +35,7 @@ public class DownloadService {
     private final S3FileUploadService fileUploadService;
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
+    private final MessageSource messageSource;
 
     public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
         this.fileUploadService.upload(file);
@@ -87,7 +86,7 @@ public class DownloadService {
                 .body(this.fileUploadService.fileDownload(fileName));
     }
 
-    public ApiResponse<AppInfoListResponse> getAppList(String productName) {
+    public ApiResponse<AppInfoListResponse> getAppList(String productName, Locale locale) {
         Product product = Product.valueOf(productName.toUpperCase());
         List<App> apps = this.appRepository.getAppList(product);
         Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
@@ -95,7 +94,7 @@ public class DownloadService {
         List<AppInfoListResponse.AppInfo> appInfoList = new ArrayList<>();
         result.forEach((objects, appList) -> {
             AppInfoListResponse.AppInfo appInfo = modelMapper.map(appList.get(0), AppInfoListResponse.AppInfo.class);
-            appInfo.setDevice(appList.get(0).getDevice().getName());
+            appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getType(), null, locale));
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
             appInfo.setOs(appList.get(0).getOs().getName());
             appInfo.setVersion("v." + appList.get(0).getVersion());

@@ -9,18 +9,20 @@ import com.virnect.download.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Locale;
 
 /**
  * Project: base
@@ -85,11 +87,11 @@ public class DownloadController {
             @ApiImplicitParam(name = "productName", value = "제품명(make,remote,view)", dataType = "string", defaultValue = "make", required = true)
     })
     @GetMapping("/list/{productName}")
-    public ResponseEntity<ApiResponse<AppInfoListResponse>> getAppList(@PathVariable("productName") String productName) {
+    public ResponseEntity<ApiResponse<AppInfoListResponse>> getAppList(@PathVariable("productName") String productName, @ApiIgnore Locale locale) {
         if (!StringUtils.hasText(productName)) {
             throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<AppInfoListResponse> apiResponse = this.downloadService.getAppList(productName);
+        ApiResponse<AppInfoListResponse> apiResponse = this.downloadService.getAppList(productName, locale);
         return ResponseEntity.ok(apiResponse);
     }
 }
