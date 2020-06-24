@@ -110,6 +110,7 @@ export const getSignalParams = function getSignalParams(
 
   // if(object) tId = object.id;
   if (object) tId = object.tId
+  let posX, posY
 
   switch (type) {
     /* 
@@ -146,35 +147,51 @@ export const getSignalParams = function getSignalParams(
       break */
     case DRAWING.LINE_DOWN:
     case AR_DRAWING.LINE_DOWN:
+      posX = normalizedPosX(object.left, status.imgWidth)
+      posY = normalizedPosY(object.top, status.imgHeight)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPosX(object.left, status.imgWidth),
-        posY: normalizedPosY(object.top, status.imgHeight),
+        posX,
+        posY,
       }
       break
     case DRAWING.LINE_MOVE:
     case AR_DRAWING.LINE_MOVE:
+      posX = normalizedPosX(object.left, status.imgWidth)
+      posY = normalizedPosY(object.top, status.imgHeight)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPosX(object.left, status.imgWidth),
-        posY: normalizedPosY(object.top, status.imgHeight),
+        posX,
+        posY,
       }
       break
     case DRAWING.LINE_UP:
     case AR_DRAWING.LINE_UP:
+      posX = normalizedPosX(object.left, status.imgWidth)
+      posY = normalizedPosY(object.top, status.imgHeight)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       params = {
         aId: aId - 1,
         color: hexToAHEX(status.color, status.opacity),
         width: status.width,
-        posX: normalizedPosX(object.left, status.imgWidth),
-        posY: normalizedPosY(object.top, status.imgHeight),
+        posX,
+        posY,
       }
       break
     case DRAWING.TEXT_ADD:
+      posX = normalizedPosX(object.left, status.imgWidth)
+      posY = normalizedPosY(object.top, status.imgHeight)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       params = {
         aId,
         text: object.text,
@@ -182,13 +199,17 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: normalizedPosX(object.left, status.imgWidth),
-        posY: normalizedPosY(object.top, status.imgHeight),
+        posX,
+        posY,
         width: object.width,
         height: object.height,
       }
       break
     case DRAWING.TEXT_UPDATE:
+      posX = normalizedPosX(object.left, status.imgWidth)
+      posY = normalizedPosY(object.top, status.imgHeight)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       params = {
         aId,
         tId,
@@ -197,8 +218,8 @@ export const getSignalParams = function getSignalParams(
         // color: status.color,
         //TODO:: dp변환 필요
         size: status.size,
-        posX: normalizedPosX(object.left, status.imgWidth),
-        posY: normalizedPosY(object.top, status.imgHeight),
+        posX,
+        posY,
         width: object.width,
         height: object.height,
       }

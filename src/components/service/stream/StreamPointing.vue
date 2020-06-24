@@ -74,14 +74,18 @@ export default {
     },
     doPointing(event) {
       if (this.viewAction !== ACTION.STREAM_POINTING) return
+      let posX = normalizedPosX(event.offsetX, this.videoSize.width)
+      let posY = normalizedPosY(event.offsetY, this.videoSize.height)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       this.$call.pointing({
         to: this.mainView.id,
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPosX(event.offsetX, this.videoSize.width),
-        posY: normalizedPosY(event.offsetY, this.videoSize.height),
+        posX,
+        posY,
       })
     },
     receivePointing(receive) {

@@ -210,14 +210,14 @@ export default {
         // height에 맞춤
         videoBox.style.height = maxHeight + 'px'
         videoBox.style.width = maxHeight * scale + 'px'
-        video.style.height = maxHeight + 'px'
-        video.style.width = maxHeight * scale + 'px'
+        // video.style.height = maxHeight + 'px'
+        // video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
         videoBox.style.height = maxWidth / scale + 'px'
         videoBox.style.width = maxWidth + 'px'
-        video.style.height = maxWidth / scale + 'px'
-        video.style.width = maxWidth + 'px'
+        // video.style.height = maxWidth / scale + 'px'
+        // video.style.width = maxWidth + 'px'
       }
       this.videoSize.width = video.offsetWidth
       this.videoSize.height = video.offsetHeight

@@ -31,14 +31,18 @@ export default {
   methods: {
     doPointing(event) {
       if (this.viewAction !== ACTION.AR_POINTING) return
+      let posX = normalizedPosX(event.offsetX, this.videoSize.width)
+      let posY = normalizedPosY(event.offsetY, this.videoSize.height)
+      if (posX > 1) posX = 1
+      if (posY > 1) posY = 1
       const params = {
         to: this.mainView.id,
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
-        posX: normalizedPosX(event.offsetX, this.videoSize.width),
-        posY: normalizedPosY(event.offsetY, this.videoSize.height),
+        posX,
+        posY,
       }
       this.$call.arPointing(AR_POINTING.AR_POINTING, params)
     },
