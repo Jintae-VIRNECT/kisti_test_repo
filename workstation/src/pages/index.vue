@@ -78,7 +78,7 @@ export default {
   },
   data() {
     return {
-      install,
+      install: install(this.$config.TARGET_ENV),
       guide,
     }
   },
