@@ -267,8 +267,8 @@ export default {
       canvas.setWidth(canvasSize.width)
       canvas.setHeight(canvasSize.height)
       canvas.backgroundImage.set({
-        scaleX: this.file.width / image.width,
-        scaleY: this.file.height / image.height,
+        scaleX: canvasSize.scale,
+        scaleY: canvasSize.scale,
       })
     },
     receiveRender() {
