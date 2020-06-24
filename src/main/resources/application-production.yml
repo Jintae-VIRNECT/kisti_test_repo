@@ -116,6 +116,19 @@ spring:
                 postLogger: true
       #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
 
+        - id: payletter-api-server
+          uri: https://payapi.virnect.com
+          predicates:
+            - Path=/billing/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "PAYLETTER_BILLING_SERVER"
+                preLogger: true
+                postLogger: true
+      #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
       globalcors:
         cors-configurations:
           '[/**]':
