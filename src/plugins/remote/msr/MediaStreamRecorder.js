@@ -15,6 +15,9 @@
 // ______________________
 // MediaStreamRecorder.js
 
+let canvas = null
+let orientation = 'landscape'
+
 function MediaStreamRecorder(mediaStream) {
   if (!mediaStream) {
     throw 'MediaStream is mandatory.'
@@ -262,6 +265,16 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
     }
   }
 
+  /**
+   * for portrait stream
+   * landscape - maintain width, height
+   * portrait - swith width, heigth
+   * @param {String} orien "landscape","portrait"
+   */
+  this.changeCanvasOrientation = function(orien) {
+    orientation = orien
+  }
+
   this.addStreams = this.addStream = function(streams) {
     if (!streams) {
       throw 'First parameter is required.'
@@ -331,7 +344,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
   var videos = []
   var isStopDrawingFrames = false
 
-  var canvas = document.createElement('canvas')
+  canvas = document.createElement('canvas')
   var context = canvas.getContext('2d')
 
   //so.. where is delete canvas??????
@@ -474,17 +487,32 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       }
     })
 
-    if (fullcanvas) {
-      canvas.width = fullcanvas.stream.width
-      canvas.height = fullcanvas.stream.height
-    } else if (remaining.length) {
-      canvas.width =
-        videosLength > 1 ? remaining[0].width * 2 : remaining[0].width
-      canvas.height =
-        videosLength > 2 ? remaining[0].height * 2 : remaining[0].height
+    if (orientation === 'landscape') {
+      if (fullcanvas) {
+        canvas.width = fullcanvas.stream.width
+        canvas.height = fullcanvas.stream.height
+      } else if (remaining.length) {
+        canvas.width =
+          videosLength > 1 ? remaining[0].width * 2 : remaining[0].width
+        canvas.height =
+          videosLength > 2 ? remaining[0].height * 2 : remaining[0].height
+      } else {
+        canvas.width = self.width || 360
+        canvas.height = self.height || 240
+      }
     } else {
-      canvas.width = self.width || 360
-      canvas.height = self.height || 240
+      if (fullcanvas) {
+        canvas.width = fullcanvas.stream.height
+        canvas.height = fullcanvas.stream.width
+      } else if (remaining.length) {
+        canvas.width =
+          videosLength > 2 ? remaining[0].height * 2 : remaining[0].height
+        canvas.height =
+          videosLength > 1 ? remaining[0].width * 2 : remaining[0].width
+      } else {
+        canvas.width = self.height || 240
+        canvas.height = self.width || 360
+      }
     }
 
     if (fullcanvas && fullcanvas instanceof HTMLVideoElement) {
@@ -503,10 +531,18 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       return
     }
 
-    var x = 0
-    var y = 0
-    var width = video.width
-    var height = video.height
+    let x = 0
+    let y = 0
+    let width = null
+    let height = null
+
+    if (orientation === 'landscape') {
+      width = video.width
+      height = video.height
+    } else {
+      width = video.height
+      height = video.width
+    }
 
     if (idx === 1) {
       x = video.width
@@ -537,6 +573,10 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       height = video.stream.height
     }
 
+    console.log('drawImage x ::', x)
+    console.log('drawImage y ::', y)
+    console.log('drawImage width ::', width)
+    console.log('drawImage height ::', height)
     context.drawImage(video, x, y, width, height)
 
     if (typeof video.stream.onRender === 'function') {
