@@ -30,6 +30,8 @@ import { base64urlToBlob } from 'utils/blobs'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import confirmMixin from 'mixins/confirm'
+import mimeTypes from 'mime-types'
+
 export default {
   name: 'ShareHistoryList',
   mixins: [confirmMixin],
@@ -84,6 +86,7 @@ export default {
               const dataType = spts[0]
                 .replace('data:', '')
                 .replace(';base64', '')
+
               const file = await base64urlToBlob(
                 his.img,
                 dataType,
@@ -93,7 +96,6 @@ export default {
             }
           }
         }
-
         if (downFile.length === 1) {
           FileSaver.saveAs(downFile[0], downFile[0].name)
         } else {
@@ -115,18 +117,14 @@ export default {
     downloadZip(files) {
       const zip = new JSZip()
 
-      files.forEach(file => {
-        file.name
-      })
-
       const fileNameMap = new Map()
       files.forEach(file => {
         if (fileNameMap.has(file.name)) {
           const spts = file.name.split('.')
           let dupName = ''
 
-          //for file name duplication
-          if (spts) {
+          if (spts.length >= 2) {
+            //for file name duplication
             //asdf.aa.bb.cc.jpg -> get asdf.aa.bb.cc
             const name = file.name.slice(
               0,
@@ -138,13 +136,23 @@ export default {
             dupName = `${name} (${fileNameMap.get(file.name)}).${
               spts[spts.length - 1]
             }`
+          } else {
+            dupName = `${name} (${fileNameMap.get(
+              file.name,
+            )}).${mimeTypes.extension(file.type)}`
           }
+
           zip.file(dupName, file)
 
           fileNameMap.set(file.name, fileNameMap.get(file.name) + 1)
         } else {
           fileNameMap.set(file.name, 1)
-          zip.file(file.name, file)
+          if (file.name.split('.').length === 1) {
+            const fullName = `${file.name}.${mimeTypes.extension(file.type)}`
+            zip.file(fullName, file)
+          } else {
+            zip.file(file.name, file)
+          }
         }
       })
 
