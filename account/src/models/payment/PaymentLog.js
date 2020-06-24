@@ -3,9 +3,10 @@ import Model from '@/models/Model'
 export default class PayemntLog extends Model {
   constructor(json) {
     super()
-    this.no = 1
-    this.way = '신용카드'
-    this.price = 300000
-    this.paidDate = new Date()
+    this.no = json.CashNo
+    this.way = json.PGName
+    this.price = json.PayAmt
+    this.priceUnit = json.CurrencyCode
+    this.paidDate = json.PayYMD
   }
 }

@@ -69,41 +69,33 @@
               <h3>{{ $t('payment.log.title') }}</h3>
             </div>
             <el-table
+              ref="table"
               :data="paymentLogs"
               class="clickable"
               @row-click="showPaymentLogDetailModal = true"
             >
-              <column-default
-                :label="$t('payment.log.column.no')"
-                prop="no"
-                sortable
-              />
+              <column-default :label="$t('payment.log.column.no')" prop="no" />
               <column-default
                 :label="$t('payment.log.column.way')"
                 prop="way"
-                :width="120"
-                sortable
+                :width="200"
               />
               <column-price
                 :label="$t('payment.log.column.price')"
                 prop="price"
                 :width="140"
-                sortable
               />
               <column-date
                 :label="$t('payment.log.column.paidDate')"
                 prop="paidDate"
                 :width="100"
-                sortable
               />
             </el-table>
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="paymentLogsTotal"
-              >
-              </el-pagination>
-            </el-row>
+            <searchbar-page
+              ref="page"
+              :value.sync="paymentLogsPage"
+              :total="paymentLogsTotal"
+            />
           </el-card>
         </el-col>
       </el-row>
@@ -117,12 +109,13 @@
 <script>
 import columnMixin from '@/mixins/columns'
 import filterMixin from '@/mixins/filters'
+import searchMixin from '@/mixins/search'
 import paymentService from '@/services/payment'
 import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
 import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
 
 export default {
-  mixins: [columnMixin, filterMixin],
+  mixins: [columnMixin, filterMixin, searchMixin],
   components: {
     AutoPaymentCancelModal,
     PaymentLogDetailModal,
@@ -136,9 +129,19 @@ export default {
   },
   data() {
     return {
+      paymentLogsPage: 1,
       showAutoPaymentCancelModal: false,
       showPaymentLogDetailModal: false,
     }
+  },
+  methods: {
+    async changedSearchParams(searchParams) {
+      const { list, total } = await paymentService.searchPaymentLogs(
+        searchParams,
+      )
+      this.paymentLogs = list
+      this.paymentLogsTotal = total
+    },
   },
 }
 </script>
