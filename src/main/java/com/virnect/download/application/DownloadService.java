@@ -4,7 +4,6 @@ import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoListResponse;
-import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,11 +34,6 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
     private final MessageSource messageSource;
-
-    public ApiResponse<AppUploadResponse> uploadFile(MultipartFile file) throws IOException {
-        this.fileUploadService.upload(file);
-        return null;
-    }
 
     public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
         App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
@@ -94,7 +87,7 @@ public class DownloadService {
         List<AppInfoListResponse.AppInfo> appInfoList = new ArrayList<>();
         result.forEach((objects, appList) -> {
             AppInfoListResponse.AppInfo appInfo = modelMapper.map(appList.get(0), AppInfoListResponse.AppInfo.class);
-            appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getType(), null, locale));
+            appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getType().replaceAll(" ",""), null, locale));
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
             appInfo.setOs(appList.get(0).getOs().getName());
             appInfo.setVersion("v." + appList.get(0).getVersion());

@@ -39,16 +39,6 @@ public class DownloadController {
     private final DownloadService downloadService;
 
     @ApiOperation(
-            value = "어플리케이션 업로드",
-            notes = "어플리케이션 파일을 업로드 합니다."
-    )
-    @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<AppUploadResponse>> uploadFile(@RequestPart("file") MultipartFile file) throws IOException {
-        ApiResponse<AppUploadResponse> apiResponse = this.downloadService.uploadFile(file);
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @ApiOperation(
             value = "어플리케이션 다운로드",
             notes = "어플리케이션 파일을 다운로드 또는 리다이렉트 합니다."
     )
@@ -77,7 +67,6 @@ public class DownloadController {
         }
         return this.downloadService.downloadGuide(uuid);
     }
-
 
     @ApiOperation(
             value = "어플리케이션 조회",
