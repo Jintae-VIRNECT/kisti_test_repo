@@ -20,7 +20,7 @@
 								:key="idx"
 							>
 								<p>
-									<span>{{ idx + 1 }}.</span>{{ list }}
+									<span>{{ idx + 1 }}. </span>{{ list }}
 								</p>
 							</li>
 						</ol>
