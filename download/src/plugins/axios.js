@@ -7,6 +7,7 @@ export default function({ $axios, $config }, inject) {
   const axios = $axios.create({
     baseURL: $config.API_GATEWAY_URL,
     timeout: $config.API_TIMEOUT,
+    withCredentials: /(staging|production)/.test($config.TARGET_ENV),
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
