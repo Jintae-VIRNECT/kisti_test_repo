@@ -14,7 +14,7 @@
         <profile-list
           v-if="selection.length > 0"
           :users="selection"
-          size="52px"
+          size="3.714em"
         ></profile-list>
         <p class="invite-modal__selected-empty" v-else>
           멤버를 추가해 주세요.
@@ -27,7 +27,9 @@
         @inviteRefresh="inviteRefresh"
       ></room-invite>
       <div class="invite-modal__footer">
-        <button class="btn">협업 요청</button>
+        <button class="btn" :disabled="selection.length === 0">
+          협업 요청
+        </button>
       </div>
     </div>
   </modal>
@@ -110,11 +112,7 @@ export default {
       }
     },
     async inviteRefresh() {
-      // const inviteList = await getMemberList({
-      //   workspaceId: this.workspace.uuid,
-      // })
-      // this.users = inviteList.memberInfoList
-      // this.selection = []
+      this.selection = []
     },
   },
 
