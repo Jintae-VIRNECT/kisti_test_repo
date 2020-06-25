@@ -50,38 +50,12 @@
 import RSelect from 'RemoteSelect'
 import Popover from 'Popover'
 import { mapGetters, mapActions } from 'vuex'
+import { localRecTimeOpt, localRecIntervalOpt } from 'utils/recordOptions'
 export default {
   data() {
     return {
-      localRecTimeOpt: [
-        {
-          value: '5',
-          text: '5분',
-        },
-        {
-          value: '10',
-          text: '10분',
-        },
-        {
-          value: '15',
-          text: '15분',
-        },
-        {
-          value: '30',
-          text: '30분',
-        },
-        {
-          value: '60',
-          text: '60분',
-        },
-      ],
-
-      localRecIntervalOpt: [
-        {
-          value: '60',
-          text: '1분',
-        },
-      ],
+      localRecTimeOpt: localRecTimeOpt,
+      localRecIntervalOpt: localRecIntervalOpt,
     }
   },
   components: {
