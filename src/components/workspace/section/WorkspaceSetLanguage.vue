@@ -13,12 +13,15 @@
 </template>
 <script>
 import RRadio from 'RemoteRadio'
-import { mapActions } from 'vuex'
+
+import langMixin from 'mixins/language'
 
 export default {
+  name: 'WorkspaceSetLanguage',
+  mixins: [langMixin],
   props: {},
   data() {
-    const defaultLanguage = this.$store.getters.language
+    const defaultLanguage = this.mx_getLangCode()
 
     return {
       selectLanguage: defaultLanguage,
@@ -47,16 +50,13 @@ export default {
   },
   watch: {
     selectLanguage(language) {
-      this.setLanguage(language)
+      this.mx_changeLang(language)
     },
-  },
-  methods: {
-    ...mapActions(['setLanguage']),
   },
   mounted() {
     const lang = localStorage.getItem('language')
     if (lang) {
-      this.setLanguage(lang)
+      this.mx_changeLang(lang)
     }
   },
 }

@@ -135,16 +135,6 @@ export default {
   },
 
   /**
-   * set language
-   * @param {*} param0
-   * @param {*} payload language
-   */
-  setLanguage({ commit }, payload) {
-    localStorage.setItem('language', payload)
-    commit(types.SETTINGS.SET_LANGUAGE, payload)
-  },
-
-  /**
    * set local record interval
    * @param {*} param0
    * @param {*} payload local record interval

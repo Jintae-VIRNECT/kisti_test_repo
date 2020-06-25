@@ -34,21 +34,7 @@ export default {
   },
   computed: {
     list() {
-      if (this.searchFilter === '') {
-        return this.memberList
-      }
-
-      const array = []
-      for (const list of this.memberList) {
-        if (
-          list.participantName
-            .toLowerCase()
-            .match(this.searchFilter.toLowerCase())
-        ) {
-          array.push(list)
-        }
-      }
-      return array
+      return this.getFilter(this.memberList, ['nickName'])
     },
   },
   watch: {

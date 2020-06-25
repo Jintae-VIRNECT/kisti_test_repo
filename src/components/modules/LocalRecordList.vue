@@ -181,7 +181,7 @@ export default {
         let mText = '분'
         let sText = '초'
 
-        if (hours === 0 && minutes === 0 && seconds <= 1) {
+        if (hours === 0 && minutes === 0 && seconds < 1) {
           hours = ''
           hText = ''
 
@@ -208,8 +208,7 @@ export default {
       }
 
       const fileSizeRender = fileSize => {
-        let fileSizeMB = (fileSize / 1024 / 1204).toFixed(1)
-
+        const fileSizeMB = (fileSize / 1024 / 1024).toFixed(1)
         return `${fileSizeMB}MB`
       }
 

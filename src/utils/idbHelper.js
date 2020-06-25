@@ -78,7 +78,7 @@ async function getDataWithUserId(userId, dataHandler) {
     .equals(userId)
     .toArray()
 
-  if (dataHandler && typeof dataHandler === Function) {
+  if (dataHandler && typeof dataHandler === 'function') {
     result = result.map(dataHandler)
   }
 

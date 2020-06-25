@@ -91,7 +91,7 @@ $share_savebtn_height: 2.929rem;
   margin: 1rem;
   font-weight: normal;
   font-size: 0.857rem;
-  background-color: #213d62;
+  background-color: #0f75f5;
 
   > span {
     display: flex;
@@ -106,6 +106,10 @@ $share_savebtn_height: 2.929rem;
       background: url(~assets/image/ic_save_down.svg) no-repeat;
       content: "";
     }
+  }
+
+  &.disabled {
+    background-color: #213d62;
   }
 }
 
@@ -168,7 +172,7 @@ $share_savebtn_height: 2.929rem;
     max-height: 100%;
   }
   &.active {
-    pointer-events: none;
+    // pointer-events: none;
     &:before {
       position: absolute;
       top: -0.286rem;
@@ -179,10 +183,22 @@ $share_savebtn_height: 2.929rem;
       content: "";
     }
     > .sharing-image__item-active {
-      display: block;
+      display: table;
     }
     & + .sharing-image__remove {
       display: none;
+    }
+  }
+  &.selected {
+    &:before {
+      position: absolute;
+      top: -5px;
+      left: -4px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      background-color: rgba(#0f75f5, 0.4);
+      border: solid 2px #0f75f5;
+      content: "";
     }
   }
 }
@@ -197,6 +213,11 @@ $share_savebtn_height: 2.929rem;
   font-weight: 500;
   font-size: 1.071rem;
   background-color: rgba($color_primary, 0.8);
+  & > p {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
 }
 .sharing-image__name {
   position: absolute;

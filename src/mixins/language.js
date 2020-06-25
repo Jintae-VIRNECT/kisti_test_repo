@@ -1,71 +1,70 @@
-import { localStorage } from 'utils/storage'
+// import { localStorage } from 'utils/storage'
 // import $http from 'api/service/gateway'
 
-const order = ['ko', 'en', 'zh']
+const order = ['en', 'ko']
 const shortLang = new Map([
   ['en', 'en'],
   ['en-us', 'en'],
   ['ko', 'ko'],
   ['ko-kr', 'ko'],
-  ['zh', 'zh'],
-  ['zh-cn', 'zh'],
-  ['zh-hk', 'zh'],
-  ['zh-tw', 'zh'],
 ])
-
-function getLanguageCode() {
-  let langCode = localStorage.getItem('lang')
-
-  if (false == !!langCode) {
-    langCode =
-      navigator.language ||
-      navigator.userLanguage ||
-      navigator.systemLanguage ||
-      'en'
-  }
-
-  return shortLang.get(langCode.toLowerCase())
-}
 
 //언어설정
 export default {
   computed: {
-    mx_currentLanguage() {
+    currentLanguage() {
       return this.$i18n.locale
     },
-    mx_languages() {
+    languages() {
       return this.$i18n.availableLocales.sort(function(langA, langB) {
         return order.indexOf(langA) - order.indexOf(langB)
       })
     },
   },
   methods: {
-    mx_changeLanguage(locale) {
+    mx_initLang() {
+      const langCode = this.mx_getLangCode()
+      localStorage.setItem('language', langCode)
+      document.documentElement.lang = langCode
+    },
+
+    mx_getLangCode() {
+      let langCode = localStorage.getItem('language')
+
+      if (!langCode) {
+        langCode =
+          navigator.language ||
+          navigator.userLanguage || //for IE
+          navigator.systemLanguage || //for IE
+          'en'
+      }
+
+      return shortLang.get(langCode.toLowerCase())
+    },
+
+    mx_changeLang(locale) {
       if (this.isScreenApp) {
-        this.mx_mobileChangeLanguage(locale)
+        this.mx_mobileChangeLang(locale)
         return
       }
 
       if (locale) {
-        localStorage.setItem('lang', locale)
+        localStorage.setItem('language', locale)
       } else {
-        locale = getLanguageCode()
-        localStorage.setItem('lang', locale)
+        locale = this.mx_getLangCode()
+        localStorage.setItem('language', locale)
       }
 
       this.$i18n.locale = locale
       document.documentElement.lang = locale
-      // this.$moment && this.$moment.locale('zh' === locale ? 'zh-cn' : locale)
-      if (!this.account || !this.account.sId) return
-      let params = {
-        sId: this.account.sId,
-        language: locale,
+
+      if (!this.account || !this.account.sId) {
+        return
       }
-      $http('SET_LANGUAGE', params).then(res => {})
     },
-    mx_mobileChangeLanguage(locale) {
+    mx_mobileChangeLang(locale) {
       if (!locale) {
-        locale = getLanguageCode()
+        locale = this.mx_getLangCode()
       }
       this.$i18n.locale = locale
       document.documentElement.lang = locale

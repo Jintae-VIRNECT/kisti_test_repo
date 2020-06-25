@@ -49,6 +49,8 @@ export default {
 
       userId: 'NONE',
       nickName: 'NONE',
+
+      mixer: null,
     }
   },
   computed: {
@@ -59,11 +61,24 @@ export default {
       'screenStream',
       'localRecordInterval',
       'recordResolution',
+      'resolutions',
       'control',
     ]),
     ...mapState({
       room: state => state.room,
     }),
+    resolution() {
+      const idx = this.resolutions.findIndex(
+        data => data.connectionId === this.mainView.connectionId,
+      )
+      if (idx < 0) {
+        return {
+          width: 0,
+          height: 0,
+        }
+      }
+      return this.resolutions[idx]
+    },
     canRecord() {
       if (this.disabled) {
         return false
@@ -96,6 +111,14 @@ export default {
           this.stopRecord(showMsg)
         }
       },
+    },
+    resolutions: {
+      handler() {
+        if (this.recorder !== null && this.screenStream === null) {
+          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        }
+      },
+      deep: true,
     },
   },
   methods: {
