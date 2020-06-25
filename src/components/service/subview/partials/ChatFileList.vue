@@ -1,27 +1,32 @@
 <template>
-  <vue2-scrollbar ref="chatFileListScrollbar">
-    <div>
-      <chat-file-item
-        v-for="(fileItem, index) in chatFileList"
-        :key="index"
-        :id="fileItem.id"
-        :fileName="fileItem.fileName"
-        :ext="fileItem.ext"
-        :checked="fileItem.checked"
-        :validDate="fileItem.validDate"
-        :fileSize="fileItem.fileSize"
-        :isValid="fileItem.isValid"
-      ></chat-file-item>
-    </div>
-  </vue2-scrollbar>
+  <div class="chat-list">
+    <vue2-scrollbar ref="chatFileListScrollbar">
+      <div>
+        <chat-file-item
+          v-for="(fileItem, index) in chatFileList"
+          :key="index"
+          :id="fileItem.id"
+          :fileName="fileItem.fileName"
+          :ext="fileItem.ext"
+          :checked="fileItem.checked"
+          :validDate="fileItem.validDate"
+          :fileSize="fileItem.fileSize"
+          :isValid="fileItem.isValid"
+        ></chat-file-item>
+      </div>
+    </vue2-scrollbar>
+    <chat-file-down></chat-file-down>
+  </div>
 </template>
 
 <script>
 import ChatFileItem from './ChatFileItem'
+import ChatFileDown from './ChatFileDownload'
 export default {
   name: 'ChatFileList',
   components: {
     ChatFileItem,
+    ChatFileDown,
   },
   data() {
     return {
