@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'RemoteRadio',
+  name: 'RemoteCheckBox',
   computed: {},
   data() {
     return {
