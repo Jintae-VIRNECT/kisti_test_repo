@@ -1,9 +1,6 @@
 <template>
   <div class="chat">
     <div class="chat-header">
-      <div v-show="showSubVideo" class="chat-hedaer__sub-vide">
-        <sub-video></sub-video>
-      </div>
       <div class="chat-header__title">
         <div class="chat-header__title--text ">
           {{ room.title }}
@@ -49,7 +46,6 @@
 import { mapGetters, mapState } from 'vuex'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
-import SubVideo from './SubVideo'
 
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
@@ -57,7 +53,6 @@ import ChatFileList from './partials/ChatFileList'
 export default {
   name: 'Chat',
   components: {
-    SubVideo,
     ChatMsgList,
     ChatFileList,
   },

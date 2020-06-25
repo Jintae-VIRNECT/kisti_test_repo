@@ -36,10 +36,11 @@
 }
 .invite-modal__selected {
   flex: 0;
+  min-height: 6.429em;
   margin: 0.714em;
 }
 .invite-modal__selected-title {
-  margin-bottom: 1.143rem;
+  margin-bottom: 1.143em;
   color: #d2d2d2;
 }
 .invite-modal__selected-empty {

@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ChatFileItem from './ChatFileItem'
 import ChatFileDown from './ChatFileDownload'
 export default {
@@ -144,7 +145,7 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters(['chatList']),
+    ...mapGetters(['view']),
   },
   watch: {
     // chatFileList: {

@@ -1,6 +1,6 @@
 <template>
   <div class="chat-list">
-    <vue2-scrollbar ref="chatListScrollbar">
+    <vue2-scrollbar ref="chatListScrollbar" :allowReset="false">
       <ol class="chat-msglist">
         <li class="chat-item date">
           <p>{{ $dayjs().format('LL') }}</p>
@@ -29,7 +29,7 @@ export default {
     ChatItem,
   },
   computed: {
-    ...mapGetters(['chatList']),
+    ...mapGetters(['chatList', 'view']),
   },
   watch: {
     chatList: {
@@ -41,6 +41,11 @@ export default {
         })
       },
       deep: true,
+    },
+    view() {
+      setTimeout(() => {
+        this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+      }, 300)
     },
   },
 }
