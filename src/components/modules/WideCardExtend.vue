@@ -1,5 +1,5 @@
 <template>
-  <div class="widecard" :style="{ height: height + 'px' }" :class="customClass">
+  <div class="widecard" :style="{ height: height }" :class="customClass">
     <div class="card-item"><slot></slot></div>
 
     <div class="card-item"><slot name="column1"></slot></div>
@@ -19,7 +19,7 @@ export default {
   components: {},
   props: {
     height: {
-      type: Number,
+      type: [Number, String],
       default: 86,
     },
     menu: {

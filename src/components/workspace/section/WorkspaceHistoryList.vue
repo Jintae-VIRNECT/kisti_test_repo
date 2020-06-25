@@ -4,6 +4,7 @@
       :menu="true"
       v-for="(history, index) in list"
       v-bind:key="index"
+      height="6.143rem"
     >
       <profile
         :image="history.path"
