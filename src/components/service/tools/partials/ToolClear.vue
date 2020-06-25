@@ -10,7 +10,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   name: 'ToolClear',
@@ -31,8 +31,13 @@ export default {
     },
   },
   watch: {
-    viewAction() {
+    view() {
       this.available = false
+    },
+    viewAction(val) {
+      if ([ACTION.AR_POINTING, ACTION.AR_DRAWING].includes(val)) {
+        this.available = false
+      }
     },
   },
   methods: {
