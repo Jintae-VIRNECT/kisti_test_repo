@@ -125,6 +125,7 @@ export default {
     ...mapActions(['setScreenStream']),
 
     async recording() {
+      if (this.disabled) return
       if (!this.canRecord) {
         // TODO: MESSAGE
         this.toastDefault('리더가 로컬 녹화를 막았습니다. >> 문구정의 필요')
