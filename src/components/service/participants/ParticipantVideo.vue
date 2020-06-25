@@ -85,7 +85,10 @@
               </button>
             </li>
             <li v-if="account.roleType === EXPERT_LEADER">
-              <button class="video-pop__button" @click="disconnectUser">
+              <button
+                class="video-pop__button"
+                @click="disconnectUser(account.nickname)"
+              >
                 내보내기
               </button>
             </li>
@@ -101,9 +104,11 @@ import { mapGetters, mapMutations } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import Profile from 'Profile'
 import Popover from 'Popover'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'ParticipantVideo',
+  mixins: [confirmMixin],
   components: {
     Profile,
     Popover,
@@ -157,7 +162,19 @@ export default {
         this.$eventBus.$emit('popover:close')
       })
     },
-    disconnectUser() {
+    disconnectUser(nickName) {
+      this.confirmCancel(
+        `${nickName}님을 협업에서 제외 하시겠습니까?`,
+        {
+          text: '확인',
+          action: this.kick,
+        },
+        {
+          text: '취소',
+        },
+      )
+    },
+    kick() {
       this.$call.disconnect(this.participant.connectionId)
     },
   },

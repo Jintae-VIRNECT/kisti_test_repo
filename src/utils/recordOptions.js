@@ -36,3 +36,10 @@ export const localRecResOpt = [
     text: '720p',
   },
 ]
+
+export const localRecIntervalOpt = [
+  {
+    value: '60',
+    text: '1분',
+  },
+]

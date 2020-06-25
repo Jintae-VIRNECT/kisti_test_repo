@@ -36,23 +36,12 @@
 import RSelect from 'RemoteSelect'
 import Popover from 'Popover'
 import { mapGetters, mapActions } from 'vuex'
+import { localRecResOpt } from 'utils/recordOptions'
 export default {
+  name: 'WorkspaceSetResolution',
   data() {
     return {
-      localRecResOpt: [
-        {
-          value: '360p',
-          text: '360p',
-        },
-        {
-          value: '480p',
-          text: '480p',
-        },
-        {
-          value: '720p',
-          text: '720p',
-        },
-      ],
+      localRecResOpt: localRecResOpt,
     }
   },
   components: {

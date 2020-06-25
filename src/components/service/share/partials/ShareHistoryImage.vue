@@ -65,9 +65,9 @@ export default {
     select() {
       this.selected = !this.selected
       if (this.selected) {
-        this.$eventBus.$emit('drawingImg::selected', this.imgInfo.id)
+        this.$emit('selected', this.imgInfo.id)
       } else {
-        this.$eventBus.$emit('drawingImg::unSelected', this.imgInfo.id)
+        this.$emit('unSelected', this.imgInfo.id)
       }
     },
   },

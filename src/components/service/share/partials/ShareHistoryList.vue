@@ -7,6 +7,8 @@
             v-for="img of historyList"
             :key="img.id"
             :imgInfo="img"
+            @selected="addSelect"
+            @unSelected="delSelect"
           ></history-image>
         </ol>
       </vue2-scrollbar>
@@ -42,24 +44,19 @@ export default {
     return {
       selected: [],
       zipName: 'vremote_img.zip',
-      disabled: false,
     }
   },
   computed: {
     ...mapGetters(['historyList', 'shareFile']),
-  },
-  watch: {
-    selected: {
-      handler() {
-        if (this.selected.length > 0) {
-          this.disabled = false
-        } else {
-          this.disabled = true
-        }
-      },
-      immediate: true,
+    disabled() {
+      if (this.selected.length > 0) {
+        return false
+      } else {
+        return true
+      }
     },
   },
+  watch: {},
   methods: {
     download() {
       if (!this.disabled) {
@@ -162,16 +159,6 @@ export default {
         FileSaver.saveAs(content, this.zipName)
       })
     },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.$eventBus.$on('drawingImg::selected', this.addSelect)
-    this.$eventBus.$on('drawingImg::unSelected', this.delSelect)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('drawingImg::selected')
-    this.$eventBus.$off('drawingImg::unSelected')
   },
 }
 </script>
