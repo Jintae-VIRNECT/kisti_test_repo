@@ -49,10 +49,7 @@ module.exports = {
   /**
    * env
    */
-  env: {
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-    SSL_ENV: JSON.stringify(process.env.SSL_ENV),
-  },
+  env: { NODE_ENV: process.env.NODE_ENV },
   publicRuntimeConfig: {
     TARGET_ENV: env.TARGET_ENV,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
