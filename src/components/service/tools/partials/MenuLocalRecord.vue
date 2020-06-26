@@ -400,7 +400,7 @@ export default {
     )
   },
   async mounted() {
-    await IDBHelper.initIDB()
+    // await IDBHelper.initIDB()
 
     //get nickname
     if (this.account && this.account.nickname) {

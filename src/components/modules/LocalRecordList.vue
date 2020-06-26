@@ -227,7 +227,7 @@ export default {
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   async created() {
-    await IDBHelper.initIDB()
+    // await IDBHelper.initIDB()
   },
   beforeDestroy() {
     this.$eventBus.$off('table:selectedarray')
