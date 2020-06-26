@@ -47,6 +47,7 @@ public enum ErrorCode {
 
     ERR_NO_CONTENT_TARGET(5920, "Not found Content Target. Transform failed."),
     ERR_ALREADY_TRANSFORMED(5921, "This Content is already Transformed. Transform failed"),
+    ERR_NOT_FOUND_TARGET(5922, "Could not found Target Data. Check your Target Data."),
     // 공통 에러
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
 

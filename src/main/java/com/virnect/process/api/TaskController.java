@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,7 +92,7 @@ public class TaskController {
     }
 
     /**
-     * Metadata API Remark
+     * Metadata API Part
      */
 
     /**
@@ -158,7 +159,7 @@ public class TaskController {
     }
 
     /**
-     *  ISSUES API Remark
+     *  ISSUES API Part
      */
 
     /**
@@ -295,7 +296,7 @@ public class TaskController {
     }
 
     /**
-     * PAPERS API Remark
+     * PAPERS API Part
      */
 
     /**
@@ -353,7 +354,7 @@ public class TaskController {
     }
 
     /**
-     * Statics API Remark
+     * Statics API Part
      */
 
     /**
@@ -434,7 +435,7 @@ public class TaskController {
     }
 
     /**
-     * Process API Remark
+     * Process API Part
      */
 
     /**
@@ -494,13 +495,12 @@ public class TaskController {
     @PutMapping("{taskId}/closed")
     public ResponseEntity<ApiResponse<ProcessInfoResponse>> setClosedProcess(
             @PathVariable(value="taskId") Long taskId,
-            @RequestBody String actorUUID) {
-//            @RequestParam(value = "taskId") Long taskId
-//            , @RequestParam(value = "actorUUID") String actorUUID) {
-//        if (result.hasErrors()) {
-//            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-//        }
-        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(taskId, actorUUID);
+            @RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ProcessInfoResponse> processInfoResponseApiResponse = this.taskService.setClosedProcess(taskId, checkProcessOwnerRequest);
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
@@ -596,7 +596,7 @@ public class TaskController {
     }
 
     /**
-     * SubTask API Remark
+     * SubTask API Part
      */
 
     /**
@@ -770,7 +770,7 @@ public class TaskController {
     }
 
     /**
-     * Step API Remark
+     * Step API Part
      */
 
     /**
@@ -849,6 +849,42 @@ public class TaskController {
     ) {
         ApiResponse<List<WorkspaceUserInfoResponse>> apiResponse = this.taskService.getWorkspaceUserInfo(workspaceUUID);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @ApiOperation(value = "콘텐츠UUID로 다운로드", tags = "Download")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contentUUID", value = "콘텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "e1bd3914-2b69-475f-9f9d-117477dfae05"),
+            @ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
+    })
+    @GetMapping("/download/contentUUID/{contentUUID}")
+    public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam("memberUUID") String memberUUID
+    ) throws IOException {
+        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
+
+        return this.taskService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
+    }
+
+    @ApiOperation(value = "타겟 데이터로 다운로드", tags = "Download")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = true, defaultValue = "a73cca48-dc17-4de8-a1aa-c19316cf773b"),
+            @ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
+    })
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(
+            @RequestParam("targetData") String targetData
+            , @RequestParam("memberUUID") String memberUUID
+    ) throws IOException {
+        if (targetData.isEmpty() || memberUUID.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
+
+        return this.taskService.contentDownloadForTargetHandler(targetData, memberUUID);
     }
 
     @GetMapping("/temp")

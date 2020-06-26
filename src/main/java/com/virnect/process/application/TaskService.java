@@ -18,7 +18,6 @@ import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
-import com.virnect.process.global.common.PageRequest;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.global.util.QRcodeGenerator;
@@ -30,6 +29,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +39,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -465,8 +467,6 @@ public class TaskService {
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(duplicateRequest.getContentUUID());
 
-        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
-
         // 1-1. 에러가 난 경우
         if (contentApiResponse.getCode() != 200) {
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
@@ -521,6 +521,24 @@ public class TaskService {
 
             // 타겟
             addTargetToProcess(newProcess, duplicateRequest.getTargetType());
+
+            // addSubProcessOnProcess에 들어갈 객체
+            ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
+
+            registerNewProcess.setSubTaskList(duplicateRequest.getSubTaskList());
+
+            ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(contentDuplicate.getData().getContentUUID());
+
+            // 5. 복제된 컨텐츠로 세부 공정 정보 리스트 생성
+            log.info("{}", duplicatedContent.getData().getContents().toString());
+            ContentRestDto.Content duplicatedMetadata = duplicatedContent.getData().getContents();
+            Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
+
+            log.debug("Duplicated ConetntMetadata {}", duplicatedMetadata);
+
+            duplicatedMetadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
+
+            addSubProcessOnProcess(registerNewProcess, sceneGroupMap, newProcess);
         }
         // 메뉴얼(컨텐츠)은 필요없고 작업(보고)만 필요한 경우.
         else {
@@ -540,8 +558,12 @@ public class TaskService {
             // 새로운 작업 저장
             this.processRepository.save(newProcess);
 
+            CheckProcessOwnerRequest checkProcessOwnerRequest = new CheckProcessOwnerRequest();
+
+            checkProcessOwnerRequest.setActorUUID(targetProcess.getContentManagerUUID());
+
             // 기존의 작업은 CLOSED
-            this.setClosedProcess(targetProcess.getId(), targetProcess.getContentManagerUUID());
+            this.setClosedProcess(targetProcess.getId(), checkProcessOwnerRequest);
 
             Target target = null;
 
@@ -551,22 +573,22 @@ public class TaskService {
 
             // 기존 작업의 타겟 정보를 가져옴
             getTargetFromTask(newProcess, target);
+
+            // 5. 세부 공정 정보 리스트 생성
+            log.info("{}", contentApiResponse.getData().getContents().toString());
+            ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
+            Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
+
+            log.debug("ConetntMetadata {}", metadata);
+
+            metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
+
+            ProcessRegisterRequest processRegisterRequest = new ProcessRegisterRequest();
+
+            processRegisterRequest.setSubTaskList(duplicateRequest.getSubTaskList());
+
+            addSubProcessOnProcess(processRegisterRequest, sceneGroupMap, newProcess);
         }
-
-        // 5. 세부 공정 정보 리스트 생성
-        log.info("{}", contentApiResponse.getData().getContents().toString());
-        ContentRestDto.Content metadata = contentApiResponse.getData().getContents();
-        Map<String, ContentRestDto.SceneGroup> sceneGroupMap = new HashMap<>();
-
-        log.debug("ConetntMetadata {}", metadata);
-
-        metadata.getSceneGroups().forEach(sceneGroup -> sceneGroupMap.put(sceneGroup.getId(), sceneGroup));
-
-        ProcessRegisterRequest processRegisterRequest = new ProcessRegisterRequest();
-
-        processRegisterRequest.setSubTaskList(duplicateRequest.getSubTaskList());
-
-        addSubProcessOnProcess(processRegisterRequest, sceneGroupMap, newProcess);
 
         List<ProcessTargetResponse> targetResponseList = new ArrayList<>();
         newProcess.getTargetList().forEach(target -> {
@@ -1392,6 +1414,7 @@ public class TaskService {
             List<ProcessTargetResponse> targetList = process.getTargetList().stream().map(target -> {
                 ProcessTargetResponse targetResponse = ProcessTargetResponse.builder()
                         .id(target.getId())
+                        .type(target.getType())
                         .data(target.getData())
                         .imgPath(target.getImgPath())
                         .build();
@@ -1422,12 +1445,14 @@ public class TaskService {
      * @Description 작업 수행 중의 여부와 관계없이 종료됨. 뷰에서는 오프라인으로 작업 후 최종 동기화이기 때문.
      */
     @Transactional
-    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, String actorUUID) {
+    public ApiResponse<ProcessInfoResponse> setClosedProcess(Long taskId, CheckProcessOwnerRequest request) {
         // 공정조회
         Process process = this.processRepository.findById(taskId)
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        
-        if (!actorUUID.equals(process.getContentManagerUUID())) {
+
+        log.info("actorUUID : {}, contentManagerUUID : {}", request.getActorUUID(), process.getContentManagerUUID());
+
+        if (!request.getActorUUID().equals(process.getContentManagerUUID())) {
             throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
         }
 
@@ -1456,6 +1481,7 @@ public class TaskService {
                     .id(target.getId())
                     .type(target.getType())
                     .data(target.getData())
+                    .imgPath(target.getImgPath())
                     .build();
         }).collect(Collectors.toList());
 
@@ -2393,6 +2419,57 @@ public class TaskService {
         }
 
         return new ApiResponse<>(resultList);
+    }
+
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
+
+        return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID);
+    }
+
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+
+        Process process = Optional.ofNullable(this.processRepository.findByTargetDataAndState(checkParameterEncoded(targetData), State.CREATED))
+                .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
+
+        return contentRestService.contentDownloadForUUIDRequestHandler(process.getContentUUID(), memberUUID);
+    }
+
+    /**
+     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
+     * @param targetData
+     * @return
+     */
+    public String checkParameterEncoded(String targetData) {
+        String encodedData = null;
+
+        // 컨텐츠 -> 작업으로 복제하여 작업에서 생성된 타겟데이터
+        if (targetData.contains("-")) {
+            encodedData = targetData;
+        }
+        // 컨텐츠 -> 작업 전환시에는 타겟데이터가 인코딩 된 상태
+        else {
+            // 컨텐츠의 타겟데이터는 이미 원본 값이 URLEncoding된 값인데,
+            // 실제 서버에서는 servlet container에서 decode하여 URLDecoding된 데이터가 들어오게 된다.
+            log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+            // 이 와중에 query 파라미터로 받을 경우 '+'가 '공백'으로 리턴된다.
+            // PathVariable로 받지 않는 이유는 decoding된 값에 '/'가 들어가는 경우가 있기 때문.
+            if (targetData.contains(" ")) {
+                // 임시방편으로 공백은 '+'로 치환한다. 더 좋은 방법이 있다면 수정하면 좋을 듯.
+                targetData = targetData.replace(" ", "+");
+            }
+
+            log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+            try {
+                // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
+                encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return encodedData;
     }
 
     public void temp(String search, String workspaceId) {
