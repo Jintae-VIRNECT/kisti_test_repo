@@ -33,13 +33,22 @@
       </div>
     </div>
     <div class="tab-view__body offsetwidth">
-      <slot v-if="!empty"></slot>
+      <slot v-if="!empty && !loading"></slot>
       <show-empty
         v-else
         :image="emptyImage"
         :title="emptyTitle"
         :description="emptyDescription"
       ></show-empty>
+      <transition name="loading">
+        <div class="tab-view__loading loading" v-if="loading">
+          <div class="tab-view__loading-inner">
+            <div class="tab-view__loading-logo">
+              <img src="~assets/image/gif_loading.svg" />
+            </div>
+          </div>
+        </div>
+      </transition>
     </div>
   </section>
 </template>
@@ -110,22 +119,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
-  data() {
-    return {}
-  },
-  computed: {},
-  watch: {},
-  methods: {
-    refresh() {},
-  },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style lang="scss">
 .tab-view__search {
   margin-right: 1.071em;
+}
+.loading-leave-active {
+  transition: opacity ease 0.4s;
+}
+.loading-leave {
+  opacity: 1;
+}
+.loading-leave-to {
+  opacity: 0;
 }
 </style>

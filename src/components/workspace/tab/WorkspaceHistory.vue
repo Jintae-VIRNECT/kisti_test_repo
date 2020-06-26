@@ -12,7 +12,8 @@
     :showRefreshButton="true"
     :deleteButtonText="'전체삭제'"
     :listCount="historyList.length"
-    @refresh="refresh"
+    :loading="loading"
+    @refresh="getHistory"
     @delete="showDeleteDialog"
   >
     <workspace-history-list :historyList="historyList"></workspace-history-list>
@@ -36,13 +37,11 @@ export default {
   data() {
     return {
       historyList: [],
+      loading: false,
     }
   },
   watch: {},
   methods: {
-    async refresh() {
-      this.getHistory()
-    },
     showDeleteDialog() {
       this.confirmCancel(
         '모든 목록을 삭제하시겠습니까?',
@@ -70,8 +69,10 @@ export default {
           paging: false,
           size: 100,
         }
+        this.loading = true
 
         const datas = await getHistoryList(param)
+        this.loading = false
         this.historyList = datas.rooms
       } catch (err) {
         // 에러처리
