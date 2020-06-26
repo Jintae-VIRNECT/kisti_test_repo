@@ -171,6 +171,20 @@ spring:
                 messagePrefix: "LINK_SERVER"
                 preLogger: true
                 postLogger: true
+
+        - id: payletter-api-server
+          uri: https://devpayapi.virnect.com
+          predicates:
+            - Path=/billing/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "PAYLETTER_BILLING_SERVER"
+                preLogger: true
+                postLogger: true
+                #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
       globalcors:
         corsConfigurations:
           '[/**]':

@@ -2,7 +2,7 @@
 RELEASE
 
 New Features
-- 페이레터 billing system api 라우팅 조건 추가
+- 없음
 
 Bug Fixes
 - 없음

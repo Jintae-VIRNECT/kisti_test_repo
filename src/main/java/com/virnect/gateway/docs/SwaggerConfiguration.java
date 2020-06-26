@@ -51,6 +51,7 @@ public class SwaggerConfiguration {
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
                 .filter(route -> !route.getId().contains("websocket"))
+                .filter(route -> !route.getId().contains("payletter"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
