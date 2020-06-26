@@ -1,7 +1,7 @@
 RELEASE
 
 New Features
-없음
+email 전송 Message pub/sub 기능
 
 Bug Fixes
 없음

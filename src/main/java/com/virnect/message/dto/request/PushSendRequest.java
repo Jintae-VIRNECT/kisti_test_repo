@@ -1,0 +1,47 @@
+package com.virnect.message.dto.request;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+/**
+ * Project: PF-Message
+ * DATE: 2020-06-15
+ * AUTHOR: jkleee (Jukyoung Lee)
+ * EMAIL: ljk@virnect.com
+ * DESCRIPTION:
+ */
+@Getter
+@Setter
+@ToString
+public class PushSendRequest {
+    @ApiModelProperty(value = "푸시 발송 서비스 명", example = "pf-workspace", required = true, position = 0)
+    @NotBlank
+    private String service;
+
+    @ApiModelProperty(value = "워크스페이스 식별자", example = "4ff0606102fbe", required = true, position = 1)
+    @NotBlank
+    private String workspaceId;
+
+    @ApiModelProperty(value = "메세지 발행 유저 식별자", example = "4ff0606102fbe", required = true, position = 2)
+    @NotBlank
+    private String userId;
+
+    @ApiModelProperty(value = "메세지 수신 대상 식별자", example = "[\"4ff0606102fbe\"]", required = true, position = 3)
+    @NotNull
+    private List<String> targetuserIdList;
+
+    @ApiModelProperty(value = "이벤트 이름", example = "WORKSPACE_EXPELED", required = true, position = 4)
+    @NotBlank
+    private String event;
+
+    @ApiModelProperty(value = "메세지 내용", example = "A 사용자가 B 사용자를 워크스페이스에서 내보냈습니다.", required = true, position = 5)
+    @NotBlank
+    private String contents;
+
+}
