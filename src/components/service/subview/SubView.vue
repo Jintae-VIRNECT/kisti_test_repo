@@ -24,7 +24,7 @@ export default {
   computed: {
     ...mapGetters(['view']),
     subView() {
-      if (this.view === VIEW.DRAWING) {
+      if ([VIEW.DRAWING, VIEW.AR].includes(this.view)) {
         return true
       } else {
         return false
