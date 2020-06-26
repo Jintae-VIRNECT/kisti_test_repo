@@ -15,10 +15,15 @@
 }
 .menus {
   position: relative;
-  z-index: 1;
-  display: flex;
+  z-index: 2;
   flex: 0;
+  width: fit-content;
   margin: 1.786rem 0 1.786rem auto;
+}
+
+.menus-box {
+  display: flex;
+  width: fit-content;
 }
 
 .picker {

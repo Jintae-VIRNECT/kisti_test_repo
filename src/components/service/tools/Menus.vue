@@ -1,12 +1,14 @@
 <template>
   <div class="stream-menu menus">
-    <template v-if="isLeader">
-      <capture :disabled="!isMainView"></capture>
-      <record :disabled="!isMainView"></record>
-    </template>
-    <local-record :disabled="!isMainView"></local-record>
-    <local-record-list></local-record-list>
-    <setting></setting>
+    <div class="menus-box">
+      <template v-if="isLeader">
+        <capture :disabled="!isMainView"></capture>
+        <record :disabled="!isMainView"></record>
+      </template>
+      <local-record :disabled="!isMainView"></local-record>
+      <local-record-list></local-record-list>
+      <setting></setting>
+    </div>
   </div>
 </template>
 
