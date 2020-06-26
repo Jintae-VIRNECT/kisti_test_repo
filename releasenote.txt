@@ -1,12 +1,13 @@
 RELEASE
 
 New Features
-없음
+워크스페이스 플랜 사용자 정보 조회 기능
+워크스페이스 플랜 정보 조회 기능
 
 Bug Fixes
 없음
 
 Limitation
-없음
+사용중인 aws s3 access key 값 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
