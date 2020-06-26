@@ -40,7 +40,6 @@ public class ContentUploadRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String metadata;
 
     @NotBlank
@@ -50,7 +49,7 @@ public class ContentUploadRequest {
     private String userUUID;
 
     @Builder
-    public ContentUploadRequest(String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, @NotBlank String metadata, @NotBlank String properties, @NotBlank String userUUID) {
+    public ContentUploadRequest(String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, String metadata, @NotBlank String properties, @NotBlank String userUUID) {
         this.targetData = targetData;
         this.targetType = targetType;
         this.workspaceUUID = workspaceUUID;

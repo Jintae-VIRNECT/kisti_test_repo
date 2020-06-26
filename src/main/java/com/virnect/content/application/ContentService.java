@@ -97,7 +97,7 @@ public class ContentService {
     private static final YesOrNo INIT_IS_SHARED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_CONVERTED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_DELETED = YesOrNo.NO;
-
+    private static final Long MEGA_BYTE = 1024L * 1024L;
     /**
      * 콘텐츠 업로드
      * 컨텐츠UUID는 컨텐츠를 관리하기 위한 서버에서의 식별자이면서 동시에 파일명
@@ -124,6 +124,8 @@ public class ContentService {
 
             // 2-1. 프로퍼티로 메타데이터 생성
             String metadata = makeMetadata(uploadRequest.getName(), uploadRequest.getUserUUID(), uploadRequest.getProperties()).toString();
+
+            log.debug(">>>>>>>>>>> {}", metadata);
 
             // 2-2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
@@ -157,6 +159,8 @@ public class ContentService {
             this.contentRepository.save(content);
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
+
+            result.setLicenseInfo(licenseInfoResponse);
 
             List<Target> targets = content.getTargetList();
             List<ContentTargetResponse> contentTargetResponseList = targets.stream().map(target -> this.modelMapper.map(target, ContentTargetResponse.class)).collect(Collectors.toList());
@@ -1282,38 +1286,58 @@ public class ContentService {
         return meta;
     }
 
+    /**
+     * 라이선스 허용 최대 용량과 워크스페이스 기준 현재 총 용량 + 업로드 하는 콘텐츠의 용량을 비교
+     * @param workspaceUUID
+     * @param uploadContentSize
+     * @return
+     */
     private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
-        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
-        Long maxStorageSize = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
+        Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
 
-        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다.
-        Long workspaceSize = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
+        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
+        Long workspaceCapacity = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
 
-        if (Objects.isNull(workspaceSize)) {
-            workspaceSize = 0L;
+        if (Objects.isNull(workspaceCapacity)) {
+            workspaceCapacity = 0L;
         }
 
         log.info("WorkspaceUUID : {}", workspaceUUID);
-        log.info("WorkspaceMaxStorage : {}", maxStorageSize);
+        log.info("WorkspaceMaxStorage : {}", workspaceCapacity);
         log.info("ContentSize : {}", uploadContentSize);
 
-        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
-        Long sumSize = workspaceSize + uploadContentSize;
+        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다. (byte 단위)
+        Long sumByteSize = workspaceCapacity + uploadContentSize;
+
+        // byte를 MegaByte로 변환
+        Long convertMB = sumByteSize / MEGA_BYTE;
+
+        // 라이선스의 최대 용량이 0인 경우 업로드 프로세스를 수행하지 않는다.
+        if (maxCapacity == 0) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        }
 
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
-        if (maxStorageSize < sumSize) {
+        if (maxCapacity < convertMB) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
         } else {
-            licenseInfoResponse.setMaxStorageSize(maxStorageSize);
-            licenseInfoResponse.setWorkspaceStorage(workspaceSize);
+            licenseInfoResponse.setMaxStorageSize(maxCapacity);
+            licenseInfoResponse.setWorkspaceStorage(workspaceCapacity);
             licenseInfoResponse.setUploadSize(uploadContentSize);
+            licenseInfoResponse.setUsableCapacity(maxCapacity - convertMB);
         }
 
         return licenseInfoResponse;
     }
 
+    /**
+     * 라이선스 총 다운로드 수와 워크스페이스 기준 총 다운로드 수를 비교
+     * @param workspaceUUID
+     * @return
+     */
     private LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
 
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
@@ -1324,6 +1348,11 @@ public class ContentService {
         // 현재 워크스페이스의 다운로드 횟수
         Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
 
+        if (maxDownload == 0) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }
+
+        // 워크스페이스 기준으로 처음 다운로드 받을 경우의 처리
         if (Objects.isNull(sumDownload)) {
             sumDownload = 0L;
         }
@@ -1333,6 +1362,7 @@ public class ContentService {
         }else {
             licenseInfoResponse.setMaxDownloadHit(maxDownload);
             licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
+            licenseInfoResponse.setUsableDownloadHit(maxDownload - sumDownload);
         }
 
         return licenseInfoResponse;
