@@ -35,7 +35,6 @@ export default {
   methods: {
     async getList() {
       try {
-        console.log(this.workspace)
         const params = {
           workspaceId: this.workspace.uuid,
         }

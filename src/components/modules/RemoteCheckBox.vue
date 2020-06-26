@@ -54,6 +54,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
+    this.checked = this.value
     if (this.defaultVal) {
       this.checked = true
     }

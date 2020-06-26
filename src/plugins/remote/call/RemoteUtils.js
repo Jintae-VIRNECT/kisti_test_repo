@@ -8,6 +8,8 @@ export const addSessionEventListener = session => {
       const streamObj = getUserObject(subscriber.stream)
       Store.commit('addStream', streamObj)
       _.sendResolution()
+      console.log(Store.getters['allowPointing'])
+      console.log(Store.getters['allowLocalRecording'])
       _.control(CONTROL.POINTING, Store.getters['allowPointing'])
       _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecording'])
     })
