@@ -82,3 +82,7 @@ body .el-message-box {
     }
   }
 }
+
+body .no-title .el-message-box__header {
+  border-bottom: none;
+}

@@ -36,6 +36,10 @@
       prop="reportedDate"
       :width="150"
     />
+    <template slot="empty">
+      <img src="~assets/images/empty/img-common-empty.jpg" />
+      <p>{{ $t('home.reportList.empty') }}</p>
+    </template>
   </el-table>
 </template>
 
@@ -58,7 +62,7 @@ export default {
       this.$emit('sort-change', params)
     },
     rowClick(row) {
-      this.$router.push(`/tasks/${row.taskId}`)
+      this.$router.push(`/tasks/${row.taskId}/${row.subTaskId}`)
     },
   },
 }

@@ -30,7 +30,11 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>
+              <span>{{
+                $t('contents.allContents.workspaceContentsList')
+              }}</span>
+            </h3>
           </div>
           <el-table
             class="clickable"
@@ -53,7 +57,7 @@
             />
             <column-default
               :label="$t('contents.allContents.column.targetType')"
-              prop="targets"
+              prop="targetType"
               sortable="custom"
               :width="120"
             />
@@ -80,6 +84,7 @@
             />
             <template slot="empty">
               <img src="~assets/images/empty/img-content-empty.jpg" />
+              <p>{{ $t('contents.allContents.empty') }}</p>
             </template>
           </el-table>
         </el-card>
@@ -159,13 +164,21 @@ export default {
         await contentService.deleteContent(selectedContents)
         this.$message.success({
           message: this.$t('contents.info.message.deleteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.emitChangedSearchParams()
-      } catch (e) {
-        this.$message.error({
-          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
-          showClose: true,
+      } catch (errors) {
+        errors.forEach((e, index) => {
+          setTimeout(() => {
+            this.$message.error({
+              message:
+                this.$t('contents.info.message.deleteFail') +
+                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
+              duration: 2000,
+              showClose: true,
+            })
+          }, index * 100)
         })
       }
     },
@@ -175,3 +188,15 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#contents {
+  .el-radio-group {
+    margin-right: 6px;
+  }
+  .searchbar .el-button {
+    height: 34px;
+    padding: 7px 10px;
+  }
+}
+</style>

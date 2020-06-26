@@ -34,13 +34,14 @@
         <!-- 오른쪽 -->
         <el-col class="container__right">
           <user-profile-card />
-          <!-- <link-list-card
+          <link-list-card
+            class="install-list"
             type="link"
-            icon=""
+            :icon="require('assets/images/icon/ic-phonelink.svg')"
             :title="$t('home.install.title')"
             :links="install"
           />
-          <link-list-card
+          <!-- <link-list-card
             type="download"
             icon=""
             :title="$t('home.guide.title')"
@@ -77,7 +78,7 @@ export default {
   },
   data() {
     return {
-      install,
+      install: install(this.$config.TARGET_ENV),
       guide,
     }
   },
@@ -109,8 +110,12 @@ export default {
       opacity: 0.9;
     }
   }
-  .el-card--table .el-table__body-wrapper {
+  .el-card--table .el-table__body-wrapper,
+  .el-card--table .el-table__empty-block {
     min-height: 256px;
+  }
+  .install-list .el-card__body {
+    padding-left: 16px;
   }
 }
 </style>

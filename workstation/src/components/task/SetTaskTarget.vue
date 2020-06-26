@@ -105,6 +105,7 @@ export default {
             : await taskService.duplicateTask(form)
         this.$message.success({
           message: this.$t(`${this.targetI18n}.message.registerSuccess`),
+          duration: 2000,
           showClose: true,
         })
         this.$router.push(`/tasks/${data.taskId}`)
@@ -113,6 +114,7 @@ export default {
           message: /^Error: 4018/.test(e)
             ? this.$t(`${this.targetI18n}.message.registerStroageFail`)
             : this.$t(`${this.targetI18n}.message.registerFail`) + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -127,7 +129,7 @@ export default {
     color: #445168;
     &:last-child {
       margin-bottom: 48px;
-      font-size: 12.6px;
+      font-size: 13px;
     }
   }
   .box {

@@ -1,0 +1,79 @@
+{
+  "role": {
+    "master": "Master",
+    "manager": "Manager",
+    "member": "Member's account"
+  },
+  "card": {
+    "profile": "Profile",
+    "setting": "Member settings",
+    "usingPlans": "Your plan details",
+    "links": "Go to XXX",
+    "contents": "Contents",
+    "work": "Task",
+    "paper": "Paper"
+  },
+  "allMembers": {
+    "title": "All of Workspace members",
+    "addMember": "Add member to Workspace"
+  },
+  "setting": {
+    "title": "Workspace member settings",
+    "info": "Member details",
+    "nickname": "Member's Workspace nickname",
+    "email": "Member's Workspace account",
+    "setting": "Member settings",
+    "role": "Workspace authority",
+    "roleDesc": "If you promote a member as a manager",
+    "givePlans": "Plan allocation",
+    "givePlansDesc": "Select and allocate product plan for the users to use in the Workspace",
+    "givePlansEmpty": "No allocation",
+    "kick": "Remove",
+    "submit": "Edit",
+    "message": {
+      "updateFail": "Failed to update member details from the Workspace",
+      "updateSuccess": "Succesfully updated selected member details"
+    }
+  },
+  "kick": {
+    "title": "Remove member from Workspace",
+    "desc": "The selected members are removed from your workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
+    "back": "Go back",
+    "submit": "Remove",
+    "message": {
+      "kickFail": "Failed to remove Workspace member",
+      "kickSuccess": "Succesfully removed selected member."
+    }
+  },
+  "add": {
+    "title": "Add member to Workspace",
+    "desc": "Would you like other users to use VIRNECT products and services together?",
+    "desc2": "Invite them to your Workspace",
+    "desc3": "You can purchase the plans in advance from the \"Purchase plans\" and easily provide the purhcased plans to the members who are going to join your Workspace. You may buy and assign the plans later when your invited member has joined your Workspace.",
+    "addUser": "Add user",
+    "email": "Invitee's email address",
+    "emailDesc": "Please enter the email address of the person you want to invite. An invitation email for workspace will be sent to the email you entered. If the user who received the invitation email accepts the invitation",
+    "emailPlaceholder": "Enter email address of invitee",
+    "addMember": "Add member",
+    "submit": "Send invitation email",
+    "message": {
+      "inviteFail": "Failed to invite a member to Workspace",
+      "inviteSuccess": "Successfuly sent the invitation email",
+      "enoughPlan": "No plans available to assign to Workspace members",
+      "memberOverflow": "Please note that total of 9 users including the \"Master\" member may participate the \"Public service\" with the Basic plan. Please change your plans if you need more members to use our products and services.",
+      "workspaceOverflow": "In Public Service"
+    }
+  },
+  "activity": {
+    "title": "Workspace member activity",
+    "column": {
+      "member": "Workspace member",
+      "contentsCount": "Uploaded content count",
+      "subTasks": "Responsible subtasks",
+      "subTasksTooltip": "Subtasks in progress / assigned subtasks",
+      "progress": "Progress",
+      "reportedDate": "Time the recent report was made",
+      "link": "Go to Memeber's Activity"
+    }
+  }
+}

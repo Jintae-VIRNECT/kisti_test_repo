@@ -1,7 +1,9 @@
 <template>
   <el-card class="current-member-list el-card--table">
     <div slot="header">
-      <h3>{{ $t('home.memberList.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.memberList.title') }}</span>
+      </h3>
     </div>
     <el-table :data="members" v-loading="loading">
       <column-user

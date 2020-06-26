@@ -14,7 +14,7 @@
         <el-divider />
         <dl>
           <dt>{{ $t('contents.info.id') }}</dt>
-          <dd>{{ content.contentUUID }}</dd>
+          <dd class="content-uuid">{{ content.contentUUID }}</dd>
           <dt>{{ $t('contents.info.name') }}</dt>
           <dd>{{ content.contentName }}</dd>
           <dt>{{ $t('contents.info.uploader') }}</dt>
@@ -57,17 +57,17 @@
             </el-select>
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
-          <dd v-for="target in content.targets" :key="target.id">
-            <span>{{ target.type }}</span>
+          <dd v-if="content.target">
+            <span>{{ content.target.type }}</span>
             <img
-              v-if="target.imgPath"
+              v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
-              @click="print(target.imgPath)"
+              @click="print(content.target.imgPath)"
             />
             <img
-              v-if="target.imgPath"
+              v-if="content.target.imgPath"
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(target.imgPath)"
+              @click="download(content.target.imgPath)"
             />
           </dd>
         </dl>
@@ -161,6 +161,7 @@ export default {
         await contentService.deleteContent([this.content.contentUUID])
         this.$message.success({
           message: this.$t('contents.info.message.deleteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
@@ -168,6 +169,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -177,6 +179,7 @@ export default {
         await contentService.updateContent(this.content.contentUUID, this.form)
         this.$message.success({
           message: this.$t('contents.info.message.updateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.content.shared = this.form.shared
@@ -184,6 +187,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('contents.info.message.updateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }

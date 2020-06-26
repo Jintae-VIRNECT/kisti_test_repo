@@ -11,7 +11,8 @@
       "uploader": "업로드 멤버",
       "createdDate": "콘텐츠 등록일",
       "sharedStatus": "공유 상태"
-    }
+    },
+    "empty": "등록된 콘텐츠가 없습니다"
   },
   "sharedStatus": {
     "shared": "활성화",

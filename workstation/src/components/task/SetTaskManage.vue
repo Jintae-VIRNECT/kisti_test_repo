@@ -78,6 +78,11 @@
       <el-col :span="12">
         <h4>
           <span>{{ $t('task.manage.subTaskCount') }}</span>
+          <div class="column-done">
+            <div>
+              <span>{{ subForm.length }}</span>
+            </div>
+          </div>
         </h4>
         <el-divider />
         <el-collapse v-model="activeSubForms">
@@ -350,12 +355,14 @@ export default {
         await taskService.updateTask(this.taskId, form)
         this.$message.success({
           message: this.$t('task.manage.message.taskUpdateSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
           message: this.$t('task.manage.message.taskUpdateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -372,6 +379,12 @@ export default {
   .el-col:last-child {
     padding-left: 15px;
     overflow: auto;
+  }
+  h4 > .column-done {
+    float: right;
+    & > div > span:first-child {
+      color: #114997;
+    }
   }
   p {
     margin-bottom: 16px;

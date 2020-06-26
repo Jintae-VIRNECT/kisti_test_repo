@@ -17,11 +17,15 @@
     & > * {
       vertical-align: middle;
     }
+    & > img {
+      margin-right: 10px;
+      margin-bottom: -2px;
+    }
   }
   & > div > span {
     margin-left: 20px;
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
     line-height: 16px;
     vertical-align: bottom;
   }
@@ -65,7 +69,7 @@
     margin: -4px 16px;
     padding: 4px 10px;
     color: $font-color-content;
-    font-size: 12.6px;
+    font-size: 13px;
 
     & img {
       margin-right: 4px;
@@ -129,6 +133,7 @@
     padding-right: 14px;
   }
   .el-table__empty-block {
+    min-height: 640px;
     .el-table__empty-text {
       margin-top: 30px;
       margin-bottom: 62px;
@@ -137,7 +142,7 @@
         margin-top: 10px;
         color: $font-color-content;
         font-weight: 500;
-        font-size: 12.6px;
+        font-size: 13px;
         opacity: 0.7;
       }
     }
@@ -174,7 +179,7 @@
     .right > span {
       padding-right: 30px;
       color: $font-color-desc;
-      font-size: 12.6px;
+      font-size: 13px;
       line-height: 48px;
     }
   }

@@ -1,7 +1,9 @@
 <template>
   <el-card class="storage-info">
     <div slot="header">
-      <h3>{{ $t('home.download.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.download.title') }}</span>
+      </h3>
       <router-link to="/">
         {{ $t('home.download.link') }}
       </router-link>

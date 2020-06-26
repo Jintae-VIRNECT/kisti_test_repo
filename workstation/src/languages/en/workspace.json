@@ -1,0 +1,43 @@
+{
+  "welcome": "Hello John",
+  "master": "Workspace master",
+  "manager": "Workspace manager",
+  "member": "Workspace member",
+  "info": {
+    "title": "Workspace details",
+    "descriptionEmpty": "There is no Workspace description",
+    "planMemberCount": "User counts per plans",
+    "planPurchase": "Purchase plans",
+    "addMember": "Add member"
+  },
+  "setting": {
+    "title": "Workspace profile settings",
+    "createdDate": "Workspace generated date",
+    "name": "Worspace name",
+    "namePlaceholder": "John's Workspace",
+    "nameComment": "Enter less than 30 characters for your Workspace name",
+    "desc": "Workspace description",
+    "descPlaceholder": "Enter your workspace description",
+    "descComment": "Enter less than 30 characters for description of your Workspace.",
+    "image": "Workspace profile picture",
+    "imageComment": "Please update your workspace profile picture. The updated workspace profile picture is displayed in the sidebar and notifications.",
+    "start": "Begin Workspace",
+    "update": "Edit",
+    "leave": "Leave Workspace",
+    "leaveInfo": {
+      "title": "Guide to leaving the Workspace",
+      "list": [
+        "Stop participating in the currently connected Workspace. The product and service using the current Workspace plan will be no longer used.",
+        "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
+        "If you would like to rejoin the Workspace"
+      ],
+      "agree": "Have you checked all the guidelines on leaving the workspace before leaving your Workspace?",
+      "success": "Workspace leaving processing is completed.",
+      "fail": "Failed to leave the Workspace"
+    },
+    "message": {
+      "updateSuccess": "Workspace details updated.",
+      "updateFail": "Failed to update the Workspace details"
+    }
+  }
+}

@@ -8,15 +8,15 @@
   >
     <template slot-scope="scope">
       <div class="column-date">
-        <span v-if="!scope.row[prop]">-</span>
+        <span v-if="!format(scope.row[prop])">-</span>
         <span
-          v-if="scope.row[prop]"
+          v-if="format(scope.row[prop])"
           :style="type === 'time-narrow' ? { display: 'block' } : null"
         >
           {{ format(scope.row[prop]) }}
         </span>
-        <span v-if="scope.row[prop2]">-</span>
-        <span v-if="scope.row[prop2]">
+        <span v-if="format(scope.row[prop2])">-</span>
+        <span v-if="format(scope.row[prop2])">
           {{ format(scope.row[prop2]) }}
         </span>
       </div>

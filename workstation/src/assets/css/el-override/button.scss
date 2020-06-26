@@ -3,12 +3,17 @@
   font-weight: 500;
   font-size: 13.5px;
   line-height: 1;
-  background: rgba(237, 240, 244, 0.6);
+  background: $color-button;
   border: none;
 
   &:hover,
   &:focus {
     color: inherit;
+    background: $color-button-hover;
+  }
+  &:active {
+    color: $color-primary;
+    background: $color-button-active;
   }
 
   & span,
@@ -21,7 +26,7 @@
   color: $font-color-content;
 
   & > span {
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 .el-button--text {

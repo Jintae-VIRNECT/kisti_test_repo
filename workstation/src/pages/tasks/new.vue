@@ -1,5 +1,5 @@
 <template>
-  <div id="contents">
+  <div id="tasks-new">
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
@@ -14,12 +14,10 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <el-button @click="showAll">
-            {{ $t('common.all') }}
-          </el-button>
-          <el-button @click="showMine">
-            {{ $t('contents.allContents.myContents') }}
-          </el-button>
+          <searchbar-mine
+            ref="mine"
+            :mineLabel="$t('contents.allContents.myContents')"
+          />
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
@@ -29,7 +27,14 @@
       <el-row>
         <el-card class="el-card--table">
           <div slot="header">
-            <h3>{{ $t('contents.allContents.workspaceContentsList') }}</h3>
+            <h3>
+              <router-link to="/tasks">
+                <img src="~assets/images/icon/ic-arrow-back.svg" />
+              </router-link>
+              <span>{{
+                $t('contents.allContents.workspaceContentsList')
+              }}</span>
+            </h3>
           </div>
           <el-table
             class="clickable"
@@ -50,7 +55,7 @@
             />
             <column-default
               :label="$t('contents.allContents.column.targetType')"
-              prop="targets"
+              prop="targetType"
               sortable="custom"
               :width="120"
             />
@@ -162,14 +167,6 @@ export default {
       this.selectedContentId = row.contentUUID
       this.showNewTaskInfo = true
     },
-    showAll() {
-      this.searchParams.mine = false
-      this.emitChangedSearchParams()
-    },
-    showMine() {
-      this.searchParams.mine = true
-      this.emitChangedSearchParams()
-    },
     // 생성
     taskInfoEnded(contentInfo) {
       this.selectedContentInfo = contentInfo
@@ -194,3 +191,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+#__nuxt #tasks-new {
+  .el-card__header > div > h3 > span {
+    margin-left: 10px;
+    line-height: 21px;
+  }
+}
+</style>

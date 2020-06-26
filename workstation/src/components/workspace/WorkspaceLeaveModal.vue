@@ -67,12 +67,14 @@ export default {
         await workspaceService.workspaceLeave(this.myProfile.uuid)
         this.$message.success({
           message: this.$t('workspace.setting.leaveInfo.success'),
+          duration: 2000,
           showClose: true,
         })
         this.$router.push('/')
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.leaveInfo.fail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -121,7 +123,7 @@ export default {
     }
   }
   .leave-text {
-    font-size: 12.6px;
+    font-size: 13px;
   }
   ul {
     margin-top: 10px;
@@ -131,7 +133,7 @@ export default {
       margin-bottom: 10px;
       padding-left: 24px;
       color: #6a7895;
-      font-size: 12.6px;
+      font-size: 13px;
       word-break: break-all;
       &:before {
         position: absolute;

@@ -1,6 +1,7 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 let axios = null
 /**
@@ -50,6 +51,9 @@ export async function api(name, option = {}) {
 
     if (code === 200) {
       return data
+    } else if (code === 8003 || code === 8005) {
+      if (process.client) location.href = urls.console[$nuxt.$config.TARGET_ENV]
+      throw new Error(`${code}: ${message}`)
     } else {
       const error = new Error(`${code}: ${message}`)
       console.error(error)
@@ -65,11 +69,11 @@ export async function api(name, option = {}) {
   }
 }
 
-export default function({ app, $axios }, inject) {
+export default function({ $config, $axios }, inject) {
   // Create a custom axios instance
   axios = $axios.create({
-    baseURL: app.$env.API_GATEWAY_URL,
-    timeout: app.$env.API_TIMEOUT,
+    baseURL: $config.API_GATEWAY_URL,
+    timeout: $config.API_TIMEOUT,
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,

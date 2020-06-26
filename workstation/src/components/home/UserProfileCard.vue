@@ -1,7 +1,9 @@
 <template>
   <el-card class="user-profile-card">
     <div slot="header">
-      <h3>{{ $t('home.profile.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.profile.title') }}</span>
+      </h3>
       <a :href="profileUpdatePage" target="_blank">
         {{ $t('home.profile.link') }}
       </a>
@@ -42,7 +44,7 @@ import plans from '@/models/workspace/plans'
 export default {
   data() {
     return {
-      profileUpdatePage: `${urls.account[process.env.TARGET_ENV]}/profile`,
+      profileUpdatePage: `${urls.account[this.$config.TARGET_ENV]}/profile`,
       profile: {},
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n

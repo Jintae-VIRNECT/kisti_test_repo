@@ -100,6 +100,7 @@ export default {
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.message.updateFail') + `\n(${e})`,
+          duration: 2000,
           showClose: true,
         })
       }
@@ -128,7 +129,7 @@ main {
     margin: 64px 0;
     span {
       color: $font-color-desc;
-      font-size: 12.6px;
+      font-size: 13px;
     }
     .el-button {
       width: 100%;

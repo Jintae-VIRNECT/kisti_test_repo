@@ -147,7 +147,7 @@ export default {
       line-height: 24px;
     }
     & > span {
-      font-size: 12.6px;
+      font-size: 13px;
       line-height: 20px;
       opacity: 0.75;
     }
@@ -155,7 +155,7 @@ export default {
   .members {
     & > h6 {
       margin-bottom: 16px;
-      font-size: 12.6px;
+      font-size: 13px;
       line-height: 20px;
     }
     & > span {
@@ -180,7 +180,7 @@ export default {
   .plans {
     & > h6 {
       margin-bottom: 16px;
-      font-size: 12.6px;
+      font-size: 13px;
       line-height: 20px;
     }
     .el-col:nth-child(2n) {

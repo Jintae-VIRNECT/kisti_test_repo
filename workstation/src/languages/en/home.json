@@ -1,0 +1,65 @@
+{
+  "storage": {
+    "title": "Storage details",
+    "link": "Purchase",
+    "unit": "GB",
+    "allStorageVolume": "Overall storage capacity",
+    "storageVolume": "Storage capacity",
+    "used": "Used",
+    "available": "Usable"
+  },
+  "download": {
+    "title": "Content download details",
+    "link": "Purchase",
+    "unit": "Count",
+    "allDownloadedVolume": "Total download counts",
+    "downloadedVolume": "Download counts",
+    "downloaded": "Downloaded",
+    "available": "Downloadable"
+  },
+  "banner": {
+    "sub": "",
+    "main": "VIRNECT Workstation",
+    "desc": "Experience systematic member management"
+  },
+  "memberList": {
+    "title": "Newly participated member",
+    "column": {
+      "nickname": "User nickname",
+      "email": "Member's account",
+      "role": "Workstation authority",
+      "joinDate": "Participation date"
+    },
+    "empty": "Add members to your Workstation"
+  },
+  "contentsList": {
+    "title": "Recently updated content and tasks",
+    "contents": "Recently updated content",
+    "task": "Recently updated tasks",
+    "empty": "No contents are updated recently"
+  },
+  "reportList": {
+    "title": "Recent task report",
+    "task": "Tasks",
+    "paper": "Paper",
+    "issue": "Issues",
+    "empty": "There are no reports made"
+  },
+  "profile": {
+    "title": "My profile",
+    "link": "Update profile",
+    "usingNickname": "Your current nickname",
+    "workspaceRole": "Workspace level",
+    "usingPlans": "Your current plan"
+  },
+  "install": {
+    "title": "Install VIRNECT product"
+  },
+  "guide": {
+    "title": "User's guide"
+  },
+  "faq": {
+    "title": "FAQ on Product and Services",
+    "desc": "Are you having difficulty using our products and services?<br>Check out our frequently asked questions."
+  }
+}

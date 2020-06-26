@@ -1,7 +1,9 @@
 <template>
   <el-card class="current-contents-list el-card--table">
     <div slot="header">
-      <h3>{{ $t('home.contentsList.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.contentsList.title') }}</span>
+      </h3>
     </div>
     <el-tabs v-model="activeTab">
       <el-tab-pane
@@ -25,7 +27,7 @@
       />
       <column-default
         :label="$t('contents.allContents.column.targetType')"
-        prop="targets"
+        prop="targetType"
         :width="90"
       />
       <column-user
@@ -98,8 +100,8 @@
         :width="90"
       />
       <template slot="empty">
-        <img src="~assets/images/empty/img-content-empty.jpg" />
-        <p>{{ $t('home.contentsList.empty') }}</p>
+        <img src="~assets/images/empty/img-work-empty.jpg" />
+        <p>{{ $t('home.contentsList.taskEmpty') }}</p>
       </template>
     </el-table>
   </el-card>
@@ -167,7 +169,7 @@ export default {
   }
   .el-tabs .el-tabs__item {
     height: 40px;
-    font-size: 12.6px;
+    font-size: 13px;
     line-height: 40px;
   }
   .el-table {

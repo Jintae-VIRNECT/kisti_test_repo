@@ -21,6 +21,7 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        :show-message="false"
       >
         <el-divider />
         <h6>
@@ -117,6 +118,7 @@ import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
   mixins: [modalMixin],
@@ -150,15 +152,32 @@ export default {
         await workspaceService.inviteMembers(this.userInfoList)
         this.$message.success({
           message: this.$t('members.add.message.inviteSuccess'),
+          duration: 2000,
           showClose: true,
         })
         this.$emit('updated', this.form)
         this.showMe = false
       } catch (e) {
-        this.$message.error({
-          message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
-          showClose: true,
-        })
+        if (/^Error: 2003/.test(e)) {
+          this.$confirm(this.$t('members.add.message.noHavePlans'), {
+            confirmButtonText: this.$t('common.paymentCenter'),
+            customClass: 'no-title',
+          }).then(() => {
+            window.open(`${urls.pay[this.$config.TARGET_ENV]}`)
+          })
+        } else if (/^Error: 1002/.test(e)) {
+          this.$message.error({
+            message: this.$t('members.add.message.memberAlready'),
+            duration: 2000,
+            showClose: true,
+          })
+        } else {
+          this.$message.error({
+            message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
+            duration: 2000,
+            showClose: true,
+          })
+        }
       }
     },
   },
@@ -185,7 +204,7 @@ export default {
   .el_input__label {
     margin-bottom: 8px;
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
 
     & > span,
     & > img {

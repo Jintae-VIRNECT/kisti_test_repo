@@ -1,15 +1,20 @@
-export const install = [
-  {
-    label: 'VIRNECT Make 설치',
-    path: '',
-    image: '',
-  },
-  {
-    label: 'VIRNECT View 설치',
-    path: '',
-    image: '',
-  },
-]
+import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
+
+export function install(env) {
+  const urls = new Url(env)
+  return [
+    {
+      label: 'VIRNECT Make 설치',
+      path: `${urls.download}/make`,
+      image: require('assets/images/logo/logo-make.svg'),
+    },
+    {
+      label: 'VIRNECT View 설치',
+      path: `${urls.download}/view`,
+      image: require('assets/images/logo/logo-view.svg'),
+    },
+  ]
+}
 
 export const guide = [
   {

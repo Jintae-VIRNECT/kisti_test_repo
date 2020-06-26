@@ -1,7 +1,9 @@
 <template>
   <el-card class="current-result-list el-card--table">
     <div slot="header">
-      <h3>{{ $t('home.reportList.title') }}</h3>
+      <h3>
+        <span>{{ $t('home.reportList.title') }}</span>
+      </h3>
     </div>
     <el-tabs v-model="activeTab">
       <el-tab-pane
@@ -210,7 +212,7 @@ export default {
   }
   .el-tabs .el-tabs__item {
     height: 40px;
-    font-size: 12.6px;
+    font-size: 13px;
     line-height: 40px;
   }
   .el-table {
