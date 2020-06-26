@@ -69,6 +69,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    allowReset: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   components: {
@@ -333,8 +337,10 @@ export default {
       }
     },
     reset() {
-      this.scrollToY(0)
-      this.scrollToX(0)
+      if (this.allowReset) {
+        this.scrollToY(0)
+        this.scrollToX(0)
+      }
     },
     windowResize() {
       this.calculateSize(() => {

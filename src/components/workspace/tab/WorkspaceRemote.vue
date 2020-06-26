@@ -9,6 +9,7 @@
     :listCount="rooms.length"
     :empty="rooms.length === 0"
     :showRefreshButton="true"
+    :loading="loading"
     @refresh="refresh"
   >
     <div class="groupcard-list">
@@ -41,6 +42,7 @@ export default {
     return {
       remoteInfo: null,
       rooms: [],
+      loading: false,
     }
   },
   computed: {
@@ -56,7 +58,9 @@ export default {
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear']),
     async refresh() {
+      this.loading = true
       this.remoteInfo = await getRoomList()
+      this.loading = false
       this.rooms = this.remoteInfo.rooms
     },
     async remove(roomId) {

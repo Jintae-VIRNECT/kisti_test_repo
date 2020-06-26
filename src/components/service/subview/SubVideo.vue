@@ -1,43 +1,48 @@
 <template>
   <div class="sub-video">
-    <video
-      class="sub-video--screen"
-      v-if="stream !== null"
-      ref="subVideo"
-      autoplay
-      loop
-      muted
-      :srcObject.prop="stream"
-    ></video>
-    <div v-else class="sub-video--no-stream"></div>
+    <transition name="opacity">
+      <video
+        class="sub-video--screen"
+        v-if="stream !== null"
+        ref="subVideo"
+        autoplay
+        loop
+        muted
+        :srcObject.prop="stream"
+      ></video>
+      <div v-else class="sub-video--no-stream"></div>
+    </transition>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import { CAMERA } from 'configs/device.config'
+import { VIEW, ACTION } from 'configs/view.config'
 export default {
   name: 'SubVideo',
   components: {},
   data() {
-    return {
-      stream: null,
-    }
+    return {}
   },
   props: {},
   computed: {
-    ...mapGetters(['mainView']),
-  },
-  watch: {
-    mainView: {
-      handler(mainView) {
-        if (mainView !== undefined && mainView.hasOwnProperty('stream')) {
-          this.stream = mainView.stream
+    ...mapGetters(['mainView', 'deviceInfo', 'view', 'viewAction']),
+    stream() {
+      if (
+        this.mainView &&
+        this.mainView.id &&
+        this.deviceInfo.cameraStatus === CAMERA.CAMERA_ON
+      ) {
+        if (this.view === VIEW.AR && this.viewAction !== ACTION.AR_DRAWING) {
+          return null
         } else {
-          this.stream = null
+          return this.mainView.stream
         }
-      },
+      } else {
+        return null
+      }
     },
-    deep: true,
   },
 }
 </script>

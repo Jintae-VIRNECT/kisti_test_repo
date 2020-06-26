@@ -39,11 +39,8 @@ export default {
       default: '',
     },
     value: {
-      default: null,
-    },
-    defaultVal: {
       type: Boolean,
-      defaultVal: false,
+      default: null,
     },
   },
   methods: {
@@ -54,9 +51,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.defaultVal) {
-      this.checked = true
-    }
+    this.checked = this.value
   },
 }
 </script>

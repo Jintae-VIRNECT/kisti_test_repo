@@ -1,42 +1,42 @@
 <template>
-  <div class="chat-file-item" :class="{ active: checked, invalid: !isValid }">
-    <div class="chat-file-item--wrapper">
-      <div class="chat-file-item--icon" :class="ext"></div>
-
-      <div class="chat-file-item__body">
-        <div class="chat-file-item__center">
-          <div
-            class="chat-file-item__center--file-name"
-            :class="{ invalid: !isValid }"
-          >
-            {{ fileName }}
-          </div>
-        </div>
-
-        <div class="chat-file-item__sub">
-          <span
-            class="chat-file-item__sub--valid-text"
-            :class="{ invalid: !isValid }"
-          >
-            유효기간
-            {{ validDate }}
-          </span>
-          <span class="chat-file-item__sub--file-size">{{ fileSize }}</span>
-        </div>
-      </div>
-    </div>
-    <div
-      v-if="isValid"
-      class="chat-file-item--check-outer"
-      :class="{ active: checked }"
+  <article>
+    <button
+      class="chat-file-item"
+      :class="{ active: checked, invalid: !isValid }"
       @click="toggle"
     >
+      <div class="chat-file-item--wrapper">
+        <img class="chat-file-item--icon" :src="icon" />
+
+        <div class="chat-file-item__body">
+          <div class="chat-file-item__center">
+            <p
+              class="chat-file-item__center--file-name"
+              :class="{ invalid: !isValid }"
+            >
+              {{ fileName }}
+            </p>
+          </div>
+
+          <div class="chat-file-item__sub">
+            <p
+              class="chat-file-item__sub--valid-text"
+              :class="{ invalid: !isValid }"
+            >
+              유효기간
+              {{ validDate }}
+              <span>{{ fileSize }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
       <div
-        class="chat-file-item--check-inner"
+        v-if="isValid"
+        class="chat-file-item--check-outer"
         :class="{ active: checked }"
       ></div>
-    </div>
-  </div>
+    </button>
+  </article>
 </template>
 
 <script>
@@ -73,6 +73,22 @@ export default {
       default: true,
     },
   },
+  computed: {
+    icon() {
+      switch (this.ext) {
+        case 'pdf':
+          return require('assets/image/call/chat/ic_chat_pdf_w.svg')
+        case 'video':
+          return require('assets/image/call/chat/ic_chat_video_w.svg')
+        case 'mp3':
+          return require('assets/image/call/chat/ic_chat_mp3_w.svg')
+        case 'txt':
+          return require('assets/image/call/chat/ic_chat_file_w.svg')
+        default:
+          return require('assets/image/call/chat/ic_chat_jpgpng_w.svg')
+      }
+    },
+  },
   methods: {
     toggle() {
       this.checked = !this.checked
@@ -88,6 +104,7 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('chatfile::release', this.release)
+    console.log(this.icon)
   },
   beforeDestroy() {
     this.$eventBus.$off('chatfile::release')

@@ -10,6 +10,7 @@
     :listCount="memberList.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
+    :loading="loading"
     @refresh="getList"
     ><workspace-user-list :memberList="memberList"></workspace-user-list>
   </tab-view>
@@ -26,6 +27,7 @@ export default {
   data() {
     return {
       memberList: [],
+      loading: false,
     }
   },
   computed: {},
@@ -33,11 +35,12 @@ export default {
   methods: {
     async getList() {
       try {
-        console.log(this.workspace)
         const params = {
           workspaceId: this.workspace.uuid,
         }
+        this.loading = true
         const datas = await getMemberList(params)
+        this.loading = false
         this.memberList = datas.memberInfoList
       } catch (err) {
         console.log(err)

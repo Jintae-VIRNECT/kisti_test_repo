@@ -125,6 +125,7 @@ export default {
     ...mapActions(['setScreenStream']),
 
     async recording() {
+      if (this.disabled) return
       if (!this.canRecord) {
         // TODO: MESSAGE
         this.toastDefault('리더가 로컬 녹화를 막았습니다. >> 문구정의 필요')
@@ -399,7 +400,7 @@ export default {
     )
   },
   async mounted() {
-    await IDBHelper.initIDB()
+    // await IDBHelper.initIDB()
 
     //get nickname
     if (this.account && this.account.nickname) {

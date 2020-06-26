@@ -49,6 +49,7 @@ import UserList from './participants/ParticipantList'
 import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import IDBHelper from 'utils/idbHelper'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -111,10 +112,11 @@ export default {
   beforeDestroy() {
     window.onbeforeunload = () => {}
   },
-  mounted() {
+  async mounted() {
     // this.$call.getDevices().then(res => {
     //   console.log(res)
     // })
+    await IDBHelper.initIDB()
   },
 }
 </script>

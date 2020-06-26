@@ -36,7 +36,7 @@ import {
 import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
-import web_test from 'utils/testing'
+// import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
   mixins: [toastMixin],
@@ -220,7 +220,10 @@ export default {
       //   })
       //   return
       // }
-      if (data.type === CAPTURE_PERMISSION.RESPONSE) {
+      if (
+        this.account.roleType === ROLE.EXPERT_LEADER &&
+        data.type === CAPTURE_PERMISSION.RESPONSE
+      ) {
         this.updateParticipant({
           connectionId: data.from.connectionId,
           permission: data.isAllowed,
@@ -228,11 +231,36 @@ export default {
         this.permissionSetting(data.isAllowed)
       }
     },
+
+    checkArFeature(receive) {
+      const data = JSON.parse(receive.data)
+
+      if (data.from === this.account.uuid) return
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+          this.updateParticipant({
+            connectionId: data.from.connectionId,
+            arFeature: data.hasArFeature,
+          })
+        }
+      } else {
+        if (data.type === AR_FEATURE.START_AR_FEATURE) {
+          // TODO: MESSAGE
+          this.toastDefault('리더가 AR 공유를 시작했습니다.')
+          this.setView(VIEW.AR)
+        } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
+          // TODO: MESSAGE
+          this.toastDefault('리더가 AR 공유를 종료했습니다.')
+          this.setView(VIEW.STREAM)
+        }
+      }
+    },
   },
 
   /* Lifecycles */
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
 }
 </script>

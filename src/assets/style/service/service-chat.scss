@@ -1,9 +1,11 @@
 .chat {
   position: relative;
+  top: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  transition: all 0.3s;
   > .vue-scrollbar__wrapper {
     width: 100%;
     // height: calc(100% - 120px);
@@ -11,12 +13,16 @@
     margin-right: auto;
     margin-bottom: 0px;
   }
+  &.subView {
+    top: 18rem;
+    height: calc(100% - 18rem);
+  }
 }
 
 .chat-header {
   display: flex;
+  flex: 0 0;
   flex-direction: column;
-  flex-shrink: 0;
   background-color: $color_chat_header;
   border-bottom: solid 1px #26262a;
 }
@@ -47,76 +53,40 @@
 .chat-header__menu {
   display: flex;
   height: 100%;
-
-  .selector__icon--chat {
-    width: 1.4286rem;
-    height: 1.4286rem;
-    margin-right: 0.4286rem;
-    background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
-
-    &.chat__active {
-      background: url(~assets/image/call/chat_ic_chat_w.svg) center no-repeat;
-    }
-  }
-
-  .selector__icon--file {
-    width: 1.4286rem;
-    height: 1.4286rem;
-    margin-right: 0.4286rem;
-    background: url(~assets/image/call/chat_ic_folder_b.svg) center no-repeat;
-
-    &.file__active {
-      background: url(~assets/image/call/chat_ic_folder_w.svg) center no-repeat;
-    }
-  }
 }
 
 .chat-header__selector {
-  display: flex;
-  flex-grow: 0.5;
-  align-items: center;
-  justify-content: center;
+  flex: 1;
   height: 3.2143rem;
+  opacity: 0.3;
+  transition: background-color 0.3s;
+  &:hover {
+    opacity: 0.5;
+  }
 
   &.active {
-    background: rgba(169, 169, 169, 0.2);
+    background-color: rgba(#a9a9a9, 0.2);
+    opacity: 0.87;
+    pointer-events: none;
   }
-  &.active:hover {
-    cursor: default;
-  }
+}
 
-  &:hover {
-    cursor: pointer;
-  }
+.chat-header__selector--button {
+  width: 100%;
+  height: 100%;
+  text-align: center;
 }
 
 .chat-header__selector--text {
-  color: #5f5f5f;
-
-  &.active {
-    color: rgba(255, 255, 255, 0.87);
-  }
-}
-
-.selector__icon--chat {
-  width: 1.4286rem;
-  height: 1.4286rem;
-  margin-right: 0.4286rem;
-  background: url(~assets/image/call/chat_ic_chat_b.svg) center no-repeat;
-
-  &.active {
-    background: url(~assets/image/call/chat_ic_chat_w.svg) center no-repeat;
-  }
-}
-
-.selector__icon--file {
-  width: 1.4286rem;
-  height: 1.4286rem;
-  margin-right: 0.4286rem;
-  background: url(~assets/image/call/chat_ic_folder_b.svg) center no-repeat;
-
-  &.active {
-    background: url(~assets/image/call/chat_ic_folder_w.svg) center no-repeat;
+  position: relative;
+  display: inline-flex;
+  color: #fff;
+  line-height: 1.4286rem;
+  transform: translateY(1px);
+  > img {
+    width: 1.4286rem;
+    height: 1.4286rem;
+    margin-right: 0.4286rem;
   }
 }
 
@@ -137,7 +107,29 @@
   @include ir();
 }
 
+.chat-body {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
 .chat-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  > .vue-scrollbar__wrapper {
+    flex: 1;
+    width: 100%;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-bottom: 0;
+  }
+}
+
+.chat-msglist {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -447,7 +439,8 @@
 
 .chat-input {
   bottom: 0;
-  flex-shrink: 0;
+  left: 0;
+  flex: 0;
   width: 100%;
   background-color: rgba($color_bg_item, 0.3);
 }
@@ -562,10 +555,10 @@
   padding: 1.1429rem 1.4286rem 1.1429rem 1.7857rem;
 
   &:hover {
-    background: #3d3d41;
+    background: rgba(#555559, 0.2);
   }
   &.active {
-    background: #3d3d41;
+    background: rgba(#555559, 0.5);
   }
   &.invalid {
     pointer-events: none;
@@ -582,27 +575,6 @@
   width: 1.7143rem;
   height: 1.7143rem;
   margin-right: 0.8571rem;
-  &.pdf {
-    background: url(~assets/image/call/chat/ic_chat_pdf_w.svg) center no-repeat;
-  }
-  &.txt {
-    background: url(~assets/image/call/chat/ic_chat_file_w.svg) center no-repeat;
-  }
-  &.jpg {
-    background: url(~assets/image/call/chat/ic_chat_jpgpng_w.svg) center
-      no-repeat;
-  }
-  &.png {
-    background: url(~assets/image/call/chat/ic_chat_jpgpng_w.svg) center
-      no-repeat;
-  }
-  &.mp3 {
-    background: url(~assets/image/call/chat/ic_chat_mp3_w.svg) center no-repeat;
-  }
-  &.video {
-    background: url(~assets/image/call/chat/ic_chat_video_w.svg) center
-      no-repeat;
-  }
 }
 
 .chat-file-item__center--file-name {
@@ -613,26 +585,31 @@
   font-weight: 500;
   font-size: 1.1429rem;
   white-space: nowrap;
+  text-align: left;
   text-overflow: ellipsis;
   &.invalid {
     color: rgba(255, 255, 255, 0.3);
   }
+}
+.chat-file-item__sub {
+  text-align: left;
 }
 
 .chat-file-item__sub--valid-text {
   margin: 0px 0.2857rem 0px 0px;
   color: #6bb4f9;
   font-size: 0.9286rem;
+  text-align: left;
 
   &.invalid {
     color: #e34850;
   }
-}
 
-.chat-file-item__sub--file-size {
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 0.9286rem;
-  opacity: 0.6;
+  & > span {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.9286rem;
+    opacity: 0.6;
+  }
 }
 
 .chat-file-item--check-outer {
@@ -644,26 +621,16 @@
   border: 1px solid #979797;
   border-radius: 50%;
   &.active {
+    background: url(~assets/image/call/chat/ic_chat_check.svg) center no-repeat;
     background-color: #0f75f5;
     border: none;
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.chat-file-item--check-inner {
-  &.active {
-    width: 0.9286rem;
-    height: 0.9286rem;
-    background: url(~assets/image/call/chat/ic_chat_check.svg) center no-repeat;
   }
 }
 
 /*for chat files */
 .chat-down {
   bottom: 0;
+  flex: 0;
   flex-shrink: 0;
   width: 100%;
   background-color: rgba($color_bg_item, 0.3);
@@ -679,7 +646,7 @@
 .chat-down__bar--cancel {
   width: 2.2857rem;
   height: 100%;
-  margin: 0px 0.5714rem 0px 0px;
+  margin-right: 0.5714rem;
   background: url(~assets/image/call/chat/ic_chat_cancel_select.svg) center
     no-repeat;
 

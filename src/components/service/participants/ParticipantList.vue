@@ -2,6 +2,7 @@
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <transition-group name="list" tag="div" class="participants__view">
+        <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
           :key="participant.id"
@@ -14,7 +15,7 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible="invite"></invite-modal>
+    <invite-modal :visible.sync="invite"></invite-modal>
   </div>
 </template>
 
@@ -78,7 +79,6 @@ export default {
   },
   methods: {
     more() {
-      console.log('추가 초대하기')
       this.invite = !this.invite
     },
   },
@@ -94,7 +94,7 @@ export default {
 }
 .list-enter,
 .list-leave-to {
-  transform: translateX(11.428rem);
+  /* transform: translateX(11.428rem); */
   opacity: 0;
 }
 </style>

@@ -1,79 +1,64 @@
 <template>
   <div class="chat">
     <div class="chat-header">
-      <div v-show="showSubVideo" class="chat-hedaer__sub-vide">
-        <sub-video></sub-video>
-      </div>
       <div class="chat-header__title">
         <div class="chat-header__title--text ">
-          {{ roomTitle + ' 원격협업' }}
+          {{ room.title }}
         </div>
       </div>
 
-      <div class="chat-header__menu">
-        <div
-          class="chat-header__selector"
-          :class="{ active: showChat }"
-          @click="toggleChatMenu"
-        >
-          <div class="selector__icon--chat" :class="{ active: showChat }"></div>
-          <span
-            class="chat-header__selector--text"
-            :class="{ active: showChat }"
-            >채팅</span
+      <ul class="chat-header__menu">
+        <li class="chat-header__selector" :class="{ active: showChat }">
+          <button
+            class="chat-header__selector--button"
+            @click="toggleMenu('chat')"
           >
-        </div>
-        <div
-          class="chat-header__selector"
-          :class="{ active: showFile }"
-          @click="toggleFileMenu"
-        >
-          <div class="selector__icon--file" :class="{ active: showFile }"></div>
-          <span
-            class="chat-header__selector--text"
-            :class="{ active: showFile }"
-            >파일</span
+            <p class="chat-header__selector--text">
+              <img src="~assets/image/call/chat_ic_folder_w.svg" />채팅
+            </p>
+          </button>
+        </li>
+        <li class="chat-header__selector" :class="{ active: !showChat }">
+          <button
+            class="chat-header__selector--button"
+            @click="toggleMenu('file')"
           >
-        </div>
-      </div>
+            <p class="chat-header__selector--text">
+              <img src="~assets/image/call/chat_ic_chat_w.svg" />파일
+            </p>
+          </button>
+        </li>
+      </ul>
     </div>
 
-    <chat-msg-list v-if="showChat"></chat-msg-list>
-    <chat-input v-if="showChat"></chat-input>
-
-    <chat-file-list v-if="showFile"></chat-file-list>
-    <chat-file-down v-if="showFile"></chat-file-down>
+    <div class="chat-body">
+      <transition name="chat-left">
+        <chat-msg-list v-if="showChat"></chat-msg-list>
+      </transition>
+      <transition name="chat-right">
+        <chat-file-list v-if="!showChat"></chat-file-list>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex'
 
-import ChatInput from './partials/ChatInput'
-
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
-import SubVideo from './SubVideo'
 
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
-import ChatFileDown from './partials/ChatFileDownload'
 
 export default {
   name: 'Chat',
   components: {
-    ChatInput,
-    SubVideo,
     ChatMsgList,
     ChatFileList,
-    ChatFileDown,
-    // Popover,
-    // Tooltip,
   },
   data() {
     return {
-      showChat: true,
-      showFile: false,
-      roomTitle: '',
+      show: 'chat',
       participantsCount: 1,
 
       showSubVideo: false,
@@ -85,6 +70,10 @@ export default {
       room: state => state.room,
       viewMode: state => state.oncall.view,
     }),
+    showChat() {
+      if (this.show === 'chat') return true
+      else return false
+    },
   },
   watch: {
     chatList: {
@@ -134,26 +123,13 @@ export default {
     },
   },
   methods: {
-    toggleChatMenu() {
-      console.log('채팅 clicked')
-      if (!this.showChat) {
-        this.showChat = true
-        this.showFile = false
-      }
-    },
-    toggleFileMenu() {
-      console.log('파일 clicked')
-      if (!this.showFile) {
-        this.showChat = false
-        this.showFile = true
-      }
+    toggleMenu(menu) {
+      this.show = menu
     },
   },
 
   /* Lifecycles */
   mounted() {
-    this.roomTitle = this.room.title ? this.room.title : ''
-
     this.chatList.push(
       new ChatMsgBuilder()
         .setType('system')
@@ -210,3 +186,26 @@ export default {
   },
 }
 </script>
+
+<style>
+.chat-left-enter-active,
+.chat-left-leave-active,
+.chat-right-enter-active,
+.chat-right-leave-active {
+  transition: left ease 0.4s;
+}
+.chat-left-enter,
+.chat-left-leave-to {
+  left: -100%;
+}
+.chat-right-enter,
+.chat-right-leave-to {
+  left: 100%;
+}
+.chat-left-enter-to,
+.chat-left-leave,
+.chat-right-enter-to,
+.chat-right-leave {
+  left: 0;
+}
+</style>

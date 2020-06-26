@@ -6,17 +6,19 @@
   width: $subview_width;
   // z-index: 10;
   color: $color_text_main;
-  background-color: $color_chat_bg_default;
+  background-color: $color_darkgray;
   @include background-border(left);
 }
 
 .sub-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 18rem;
-  background: #111012;
 }
 
 .sub-video--screen {

@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL, CONTROL, AR_FEATURE } from 'configs/remote.config'
+import { SIGNAL, CONTROL } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -8,6 +8,10 @@ export const addSessionEventListener = session => {
       const streamObj = getUserObject(subscriber.stream)
       Store.commit('addStream', streamObj)
       _.sendResolution()
+      console.log(Store.getters['allowPointing'])
+      console.log(Store.getters['allowLocalRecording'])
+      _.control(CONTROL.POINTING, Store.getters['allowPointing'])
+      _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecording'])
     })
     addSubscriber(subscriber)
   })
@@ -50,22 +54,17 @@ export const addSessionEventListener = session => {
       speaker: data.isOn,
     })
   })
-  /** AR 기능 사용 가능 여부 */
-  session.on(SIGNAL.AR_FEATURE, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
-    const data = JSON.parse(event.data)
-    if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        arFeature: data.hasArFeature,
-      })
-    } else if (data.type === AR_FEATURE.START_AR_FEATURE) {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        arFeature: data.hasArFeature,
-      })
-    }
-  })
+  /** AR 기능 사용 가능 여부 -> header에서 처리 */
+  // session.on(SIGNAL.AR_FEATURE, event => {
+  //   if (session.connection.connectionId === event.from.connectionId) return
+  //   const data = JSON.parse(event.data)
+  //   if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+  //     Store.commit('updateParticipant', {
+  //       connectionId: event.from.connectionId,
+  //       arFeature: data.hasArFeature,
+  //     })
+  //   }
+  // })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
     if (session.connection.connectionId === event.from.connectionId) return

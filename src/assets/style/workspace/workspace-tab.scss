@@ -124,3 +124,23 @@
   min-height: 28.571rem;
   // margin-bottom: 1.429rem;
 }
+
+.tab-view__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $color_darkgray_600;
+}
+.tab-view__loading-inner {
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 28.571rem;
+}
+.tab-view__loading-logo {
+  margin: auto;
+  text-align: center;
+}

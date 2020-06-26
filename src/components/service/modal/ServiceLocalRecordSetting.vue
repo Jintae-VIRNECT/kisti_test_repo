@@ -14,7 +14,7 @@
 
           <r-check
             :text="'참가자 포인팅 허용'"
-            :value="'allowPointing'"
+            :value="allowPointing"
             @toggle="toggleAllowPointing"
           ></r-check>
         </div>
@@ -119,7 +119,7 @@
         <p class="rec-setting__text">참가자 로컬 녹화</p>
         <r-check
           :text="'참가자 로컬 녹화 허용'"
-          :value="'allowLocalRecording'"
+          :value="allowLocalRecording"
           @toggle="toggleLocalRecording"
         ></r-check>
       </div>
@@ -274,21 +274,13 @@ export default {
     },
 
     toggleAllowPointing(value) {
-      if (value) {
-        this.setAllowPointing(true)
-      } else {
-        this.setAllowPointing(false)
-      }
+      this.setAllowPointing(!!value)
       this.$call.control(CONTROL.POINTING, !!value)
       this.showToast()
     },
 
     toggleLocalRecording(value) {
-      if (value) {
-        this.setAllowLocalRecording(true)
-      } else {
-        this.setAllowLocalRecording(false)
-      }
+      this.setAllowLocalRecording(!!value)
       this.$call.control(CONTROL.LOCAL_RECORD, !!value)
       this.showToast()
     },
@@ -309,14 +301,15 @@ export default {
         this.setRecResolution(resolution)
       }
 
-      const allowPointing = localStorage.getItem('setAllowPointing')
+      const allowPointing = localStorage.getItem('allowPointing')
+      console.log(allowPointing)
       if (allowPointing) {
-        this.setAllowPointing(allowPointing)
+        this.setAllowPointing(allowPointing === 'true' ? true : false)
       }
 
       const allowLocalRecording = localStorage.getItem('allowLocalRecording')
       if (allowLocalRecording) {
-        this.setAllowLocalRecording(allowLocalRecording)
+        this.setAllowLocalRecording(allowPointing === 'true' ? true : false)
       }
 
       this.toastFlag = true

@@ -178,8 +178,5 @@ export default {
       this.$call.disconnect(this.participant.connectionId)
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

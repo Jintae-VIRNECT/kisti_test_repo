@@ -1,30 +1,35 @@
 <template>
-  <vue2-scrollbar ref="chatListScrollbar">
-    <ol class="chat-list">
-      <li class="chat-item date">
-        <p>{{ $dayjs().format('LL') }}</p>
-      </li>
-      <chat-item
-        v-for="(chat, idx) of chatList"
-        :key="idx"
-        :beforeChat="idx === 0 ? null : chatList[idx - 1]"
-        :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
-        :chat="chat"
-      ></chat-item>
-    </ol>
-  </vue2-scrollbar>
+  <div class="chat-list">
+    <vue2-scrollbar ref="chatListScrollbar" :allowReset="false">
+      <ol class="chat-msglist">
+        <li class="chat-item date">
+          <p>{{ $dayjs().format('LL') }}</p>
+        </li>
+        <chat-item
+          v-for="(chat, idx) of chatList"
+          :key="idx"
+          :beforeChat="idx === 0 ? null : chatList[idx - 1]"
+          :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
+          :chat="chat"
+        ></chat-item>
+      </ol>
+    </vue2-scrollbar>
+    <chat-input></chat-input>
+  </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import ChatItem from './ChatItem'
+import ChatInput from './ChatInput'
 export default {
   name: 'ChatMsgList',
   components: {
+    ChatInput,
     ChatItem,
   },
   computed: {
-    ...mapGetters(['chatList']),
+    ...mapGetters(['chatList', 'view']),
   },
   watch: {
     chatList: {
@@ -36,6 +41,11 @@ export default {
         })
       },
       deep: true,
+    },
+    view() {
+      setTimeout(() => {
+        this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+      }, 300)
     },
   },
 }

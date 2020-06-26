@@ -8,7 +8,7 @@ function newParticipant(info) {
     nickname: info.nickname,
     device: info.device,
     role: info.role,
-    path: info.path,
+    path: info.profile,
   }
 }
 
