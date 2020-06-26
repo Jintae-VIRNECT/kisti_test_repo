@@ -12,10 +12,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
-import org.springframework.amqp.rabbit.annotation.Exchange;
-import org.springframework.amqp.rabbit.annotation.Queue;
-import org.springframework.amqp.rabbit.annotation.QueueBinding;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +34,10 @@ public class MessageService {
     private final MailService mailService;
     private final MailHistoryRepository mailHistoryRepository;
     private final ObjectMapper objectMapper;
+    private final RabbitTemplate rabbitTemplate;
+
+    public static final String HEADER_X_RETRIES_COUNT = "x-retries-count";
+    public static final int MAX_RETRY_COUNT = 2;
 
     public ApiResponse<Boolean> sendMail(MailSendRequest mailSendRequest) {
 
@@ -80,14 +83,47 @@ public class MessageService {
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue,
+            value = @Queue(arguments = {@Argument(name = "x-dead-letter-exchange", value = "dlx"),
+                    @Argument(name = "x-dead-letter-routing-key", value = "dlx.push")}),
             exchange = @Exchange(value = "push", type = ExchangeTypes.TOPIC),
-            key = "push.*"
+            key = "push.#"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getAllPushMessage(PushSendRequest pushSendRequest) throws IOException {
+        //throw new IllegalArgumentException();
         log.info(pushSendRequest.toString());
     }
 
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue,
+            exchange = @Exchange(value = "dlx", type = ExchangeTypes.TOPIC),
+            key = "dlx.*"
+    ), containerFactory = "rabbitListenerContainerFactory")
+    public void getWaitMessage(Message failedMessage) throws IOException {
+        Integer retriesCnt = (Integer) failedMessage.getMessageProperties()
+                .getHeaders().get(HEADER_X_RETRIES_COUNT);
 
+        if (retriesCnt == null) retriesCnt = 1;
+        if (retriesCnt > MAX_RETRY_COUNT) {
+            log.info("Sending message to the parking lot queue");
+
+            rabbitTemplate.send("parkinglot", "parkinglot.push", failedMessage);
+            return;
+        }
+        log.info("Retrying message for the {} time", retriesCnt);
+        failedMessage.getMessageProperties()
+                .getHeaders().put(HEADER_X_RETRIES_COUNT, ++retriesCnt);
+
+        rabbitTemplate.convertAndSend(failedMessage.getMessageProperties().getReceivedExchange(), failedMessage.getMessageProperties().getReceivedRoutingKey(), failedMessage);
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue,
+            exchange = @Exchange(value = "parkinglot", type = ExchangeTypes.TOPIC),
+            key = "parkinglot.*"
+    ), containerFactory = "rabbitListenerContainerFactory")
+    public void getDeadMessage(Message deadMessage) throws IOException {
+
+
+    }
 }
 

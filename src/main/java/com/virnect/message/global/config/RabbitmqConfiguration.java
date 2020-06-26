@@ -42,6 +42,7 @@ public class RabbitmqConfiguration {
         factory.setConnectionFactory(connectionFactory);
         factory.setDefaultRequeueRejected(false);//예외가 발생하면 다시 큐에 쌓임
         factory.setMessageConverter(messageConverter());
+
         /*factory.setAdviceChain(RetryInterceptorBuilder
                 .stateless()
                 .maxAttempts(MAX_TRY_COUNT)

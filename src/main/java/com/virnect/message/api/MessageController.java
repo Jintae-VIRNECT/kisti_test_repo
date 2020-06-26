@@ -22,7 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.function.Supplier;
 
 /**
  * Project: base
@@ -53,7 +52,6 @@ public class MessageController {
         }
         String exchange = MessageType.EMAIL.getValue();
         String routingKey = exchange + "." + emailSendRequest.getService();
-
         rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
     }
 
@@ -68,6 +66,7 @@ public class MessageController {
         String exchange = MessageType.PUSH.getValue();
         String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId() + "." + pushSendRequest.getUserId();
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
+
     }
 
     @ApiOperation(
