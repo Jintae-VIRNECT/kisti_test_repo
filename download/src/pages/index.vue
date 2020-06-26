@@ -7,7 +7,6 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <el-divider />
     <el-tabs v-model="activeTab">
       <el-tab-pane
         v-for="(product, name) in products"
@@ -20,7 +19,7 @@
           <h5 v-html="app.device" />
           <img :src="app.imageUrl" />
           <span class="release">
-            {{ $t('home.release') }}: {{ app.releaseTime | dateFormat }}
+            Release: {{ app.releaseTime | dateFormat }}
           </span>
           <span class="version">{{ app.version }}</span>
           <el-button type="primary" @click="download(app.appUrl)">
@@ -47,6 +46,9 @@ export default {
   data() {
     return {
       activeTab: null,
+      snbSticky: false,
+      snbTop: 0,
+      didScroll: 0,
       products: {
         remote: [],
         make: [],
@@ -77,6 +79,32 @@ export default {
     link(url) {
       window.open(url)
     },
+    snbNav() {
+      const scrollY = window.pageYOffset
+      this.snbTop = document.querySelector('.el-tabs').offsetTop
+      if (scrollY > this.snbTop) {
+        this.snbSticky = true
+        document.querySelector('#headerSection').classList.add('sticky-pushup')
+        this.hasScrolled()
+      } else {
+        this.snbSticky = false
+        document
+          .querySelector('#headerSection')
+          .classList.remove('sticky-pushup')
+      }
+    },
+    hasScrolled() {
+      const header = document.querySelector('#headerSection')
+      const tab = document.querySelector('.el-tabs')
+      if (window.pageYOffset > this.didScroll) {
+        header.classList.add('sticky-pushup')
+        tab.classList.add('sticky')
+      } else {
+        header.classList.remove('sticky-pushup')
+        tab.classList.remove('sticky')
+      }
+      this.didScroll = window.pageYOffset
+    },
   },
   mounted() {
     this.activeTab =
@@ -85,6 +113,11 @@ export default {
         '/make': 'make',
         '/view': 'view',
       }[this.$route.path] || 'remote'
+    window.addEventListener('scroll', this.snbNav)
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.snbNav)
+    window.removeEventListener('scroll', this.hasScrolled)
   },
 }
 </script>
@@ -117,7 +150,7 @@ export default {
     }
   }
   .el-tabs {
-    width: 900px;
+    position: relative;
     margin: 0 auto;
 
     [role='tab'] {
@@ -135,22 +168,30 @@ export default {
     }
   }
   .el-tabs__header {
-    margin-left: 140px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-bottom: solid 1px #f3f6f9;
+    .el-tabs__nav-wrap {
+      width: 630px;
+      margin: 0 auto;
+    }
   }
   .el-tabs__nav-wrap::after {
     display: none;
   }
-  & > .el-divider {
-    top: 64px;
-    width: 100%;
-    height: 1px;
-    margin: 0;
-    background: #f3f6f9;
+  .el-tabs.sticky .el-tabs__header {
+    position: fixed;
+    z-index: 1;
   }
 
   .el-tabs__content {
-    min-height: 530px;
-    margin: 120px auto 160px;
+    width: 900px;
+    min-height: 870px;
+    margin: 0 auto;
+    padding: 184px 0 160px;
   }
   .el-tabs__content .el-card {
     display: inline-block;
