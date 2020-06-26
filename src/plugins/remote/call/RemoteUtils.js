@@ -50,22 +50,17 @@ export const addSessionEventListener = session => {
       speaker: data.isOn,
     })
   })
-  /** AR 기능 사용 가능 여부 */
-  session.on(SIGNAL.AR_FEATURE, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
-    const data = JSON.parse(event.data)
-    if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        arFeature: data.hasArFeature,
-      })
-    } else if (data.type === AR_FEATURE.START_AR_FEATURE) {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        arFeature: data.hasArFeature,
-      })
-    }
-  })
+  /** AR 기능 사용 가능 여부 -> header에서 처리 */
+  // session.on(SIGNAL.AR_FEATURE, event => {
+  //   if (session.connection.connectionId === event.from.connectionId) return
+  //   const data = JSON.parse(event.data)
+  //   if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+  //     Store.commit('updateParticipant', {
+  //       connectionId: event.from.connectionId,
+  //       arFeature: data.hasArFeature,
+  //     })
+  //   }
+  // })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
     if (session.connection.connectionId === event.from.connectionId) return
