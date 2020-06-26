@@ -192,6 +192,27 @@ public class ContentController {
 //                .body(resource);
     }
 
+    @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드(K앱시스트용)", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "path", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
+            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
+    })
+    @GetMapping("/download/targetData/{targetData}")
+    public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler_temp(
+            @PathVariable("targetData") String targetData
+            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
+        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
+        if (targetData.isEmpty() || memberUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        return this.contentService.contentDownloadForTargetHandler_temp(targetData, memberUUID);
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+//                .contentLength(resource.getFile().length())
+//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                .body(resource);
+    }
+
     @ApiOperation(value = "컨텐츠 타겟 추가", notes = "컨텐츠의 타겟을 추가. 이미 타겟이 있어도 추가 가능하며, 여러 형태의 타겟종류들을 등록 가능. 동일 타겟종류도 여러개 등록 가능함.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true),

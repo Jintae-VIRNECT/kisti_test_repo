@@ -463,6 +463,22 @@ public class ContentService {
         return responseEntity;
     }
 
+    // K앱시스트용 View에서 호출 시
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler_temp(final String targetData, final String memberUUID) {
+        // 컨텐츠 데이터 조회
+        Content content = this.contentRepository.getContentOfTarget(targetData);
+
+        if (content == null)
+            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        checkLicenseDownload(content.getWorkspaceUUID());
+
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
+        return responseEntity;
+    }
+
     /**
      * 콘텐츠 파일 다운로드 요청 처리
      *
@@ -1071,7 +1087,7 @@ public class ContentService {
 
         String contentName = content.getName();
         String userUuid    = content.getUserUUID();
-        String properties = content.getProperties();
+        String properties  = content.getProperties();
 
         JsonObject metaObject = makeMetadata(contentName, userUuid, properties);
 
@@ -1093,9 +1109,16 @@ public class ContentService {
         return new ApiResponse<>(metaResponse);
     }
 
+    /**
+     * 컨텐츠의 프로퍼티를 파싱하여 메타데이터 클래스에 맞게 저장
+     * @param contentName
+     * @param userUuid
+     * @param properties
+     * @return
+     */
     public JsonObject makeMetadata(String contentName, String userUuid, String properties){
         JsonObject meta = new JsonObject();
-        // 테스트
+
         try{
             /*
              * TargetID
