@@ -1,6 +1,7 @@
 import fs from 'fs'
 
 import elementKo from 'element-ui/lib/locale/lang/ko'
+import elementEn from 'element-ui/lib/locale/lang/en'
 
 /**
  * json 파일 로더
@@ -31,12 +32,18 @@ function loader(foldername) {
  * i18n
  */
 module.exports = {
-  locales: ['ko'],
+  locales: ['ko', 'en'],
   defaultLocale: 'ko',
+  strategy: 'no_prefix',
+  detectBrowserLanguage: {
+    useCookie: true,
+    cookieKey: 'lang',
+  },
   vueI18n: {
     fallbackLocale: 'ko',
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
+      en: { ...elementEn, ...loader('/en') },
     },
   },
 }

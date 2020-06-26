@@ -1,13 +1,22 @@
 import Ticket from '@/models/payment/Ticket'
 import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
+import { api } from '@/plugins/axios'
 
 export default {
-  searchPaymentLogs() {
-    const data = [0, 1, 2, 3, 4]
+  async searchPaymentLogs(searchParams = {}) {
+    const data = await api('GET_PAYMENT_LOGS', {
+      params: {
+        userno: 71,
+        fromymd: '2020-01-01',
+        toymd: '2999-01-01',
+        pagesize: 10,
+        pageno: searchParams.page || 1,
+      },
+    })
     return {
-      list: data.map(() => new PaymentLog()),
-      total: 30,
+      list: data.payments.map(log => new PaymentLog(log)),
+      total: data.totalcnt,
     }
   },
   getPaymentLogDetail() {

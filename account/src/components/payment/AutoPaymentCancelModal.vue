@@ -54,7 +54,7 @@ export default {
   .caution {
     margin-bottom: 46px;
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>

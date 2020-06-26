@@ -19,4 +19,8 @@ module.exports = {
   ADD_COUPON: ['POST', '/licenses/coupon/register'],
   // 쿠폰 사용
   USE_COUPON: ['PUT', '/licenses/coupon/active'],
+  /**
+   * 페이레터 API
+   */
+  GET_PAYMENT_LOGS: ['GET', '/billing/user/paymentlist'],
 }

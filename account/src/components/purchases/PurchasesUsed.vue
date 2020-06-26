@@ -200,7 +200,7 @@ export default {
       line-height: 20px;
       dt {
         float: left;
-        font-size: 12.6px;
+        font-size: 13px;
       }
       dd {
         margin-bottom: 10px;

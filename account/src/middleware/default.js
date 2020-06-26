@@ -1,13 +1,16 @@
-export default async function({ req, store, redirect }) {
+import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+
+export default async function({ req, store, redirect, $config }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')
 
   if (process.server) {
+    const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(
-        `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
+        `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
           req.headers.referer || req.headers.host,
         )}`,
       )
@@ -20,7 +23,7 @@ export default async function({ req, store, redirect }) {
       // 비정상 토큰
       if (/^Error: (8003|8005)/.test(e)) {
         return redirect(
-          `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
+          `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
             req.headers.referer || req.headers.host,
           )}`,
         )

@@ -30,7 +30,7 @@ pipeline {
                 branch 'develop'
               }
               steps {
-                sh 'NODE_ENV=develop yarn workspace account build'
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount .'
               }
             }
@@ -40,8 +40,8 @@ pipeline {
                 branch 'staging'
               }
               steps {
-                sh 'git checkout ${GIT_TAG}'
-                sh 'NODE_ENV=staging yarn workspace account build'
+                
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount:${GIT_TAG} .'
               }
             }
@@ -52,7 +52,7 @@ pipeline {
               }
               steps {
                 sh 'git checkout ${GIT_TAG}'
-                sh 'NODE_ENV=production yarn workspace account build'
+                sh 'yarn workspace account build'
                 sh 'docker build -t pf-webaccount:${GIT_TAG} .'
               }
             }
@@ -173,7 +173,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=master' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
