@@ -1,23 +1,23 @@
 {
   "login": {
-    "title": "로그인",
-    "email": "이메일",
-    "emailPlaceholder": "이메일을 입력해 주세요",
-    "password": "비밀번호",
-    "passwordPlaceholder": "비밀번호를 입력해 주세요",
-    "remember": "이메일 저장",
-    "autoLogin": "자동 로그인",
-    "findAccount": "이메일 찾기",
-    "resetPassword": "비밀번호 재설정",
-    "signUp": "회원가입",
+    "title": "Log in",
+    "email": "Email address",
+    "emailPlaceholder": "Please enter your email address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "remember": "Remember me",
+    "autoLogin": "Enable auto login",
+    "findAccount": "Find your email account",
+    "resetPassword": "Reset password",
+    "signUp": "Sign up",
     "accountError": {
-      "title": "계정 정보 입력 오류",
-      "contents": "등록하신 계정 정보가 존재하지 않습니다. 이메일 또는 비밀번호를 확인해 주세요.",
-      "btn": "확인"
+      "title": "You have entered incorrect login information.",
+      "contents": "Unauthorized. Please check the email address and password and try again.",
+      "btn": "Confirmed"
     },
     "networkError": {
-      "title": "로그인 오류",
-      "contents": "잠시 후 이용해 주세요."
+      "title": "Login error",
+      "contents": "Please try again later"
     }
   }
 }

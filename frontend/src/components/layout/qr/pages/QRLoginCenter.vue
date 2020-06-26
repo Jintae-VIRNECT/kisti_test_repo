@@ -33,9 +33,12 @@
 					<p class="title">{{ $t('qrLoginCenter.howToLogin') }}</p>
 					<div>
 						<ol>
-							<li v-for="(list, idx) of $t('qrLogin.centerHowTo')" :key="idx">
+							<li
+								v-for="(list, idx) of $t('qrLoginCenter.centerHowTo')"
+								:key="idx"
+							>
 								<p>
-									<span>{{ idx + 1 }}.</span>{{ list }}
+									<span>{{ idx + 1 }}. </span>{{ list }}
 								</p>
 							</li>
 						</ol>

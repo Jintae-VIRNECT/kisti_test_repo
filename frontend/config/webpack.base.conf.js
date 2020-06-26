@@ -55,10 +55,7 @@ const styleLoaderOptions = {
 		sourceMap: true,
 	},
 }
-const cssOptions = [
-	{ loader: 'css-loader', options: { sourceMap: true } },
-	{ loader: 'sass-loader', options: { sourceMap: true } },
-]
+const cssOptions = [{ loader: 'css-loader', options: { sourceMap: true } }]
 
 const sassOptions = [
 	...cssOptions,

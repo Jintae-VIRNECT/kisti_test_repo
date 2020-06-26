@@ -1,11 +1,10 @@
 
 RELEASE
-- 없음
 
 New Features
-- 없음
+영문 번역 적용
 
 Bug Fixes
-- 운영 환경 빌드 명령어 수정
+-
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
