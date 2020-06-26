@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class PushSendRequest {
     private String userId;
 
     @ApiModelProperty(value = "메세지 수신 대상 식별자", example = "[\"4ff0606102fbe\"]", required = true, position = 3)
-    @NotBlank
+    @NotNull
     private List<String> targetuserIdList;
 
     @ApiModelProperty(value = "이벤트 이름", example = "WORKSPACE_EXPELED", required = true, position = 4)

@@ -60,7 +60,7 @@ public class MessageService {
             value = @Queue,
             exchange = @Exchange(value = "email", type = ExchangeTypes.TOPIC),
             key = "email.*"
-    ))
+    ), containerFactory = "rabbitListenerContainerFactory")
     public void sendEmailMessage(EmailSendRequest emailSendRequest) throws IOException {
         for (String receiver : emailSendRequest.getReceivers()) {
             MailHistory mailHistory = MailHistory.builder()
@@ -82,8 +82,8 @@ public class MessageService {
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,
             exchange = @Exchange(value = "push", type = ExchangeTypes.TOPIC),
-            key = "push.#"
-    ))
+            key = "push.*"
+    ), containerFactory = "rabbitListenerContainerFactory")
     public void getAllPushMessage(PushSendRequest pushSendRequest) throws IOException {
         log.info(pushSendRequest.toString());
     }

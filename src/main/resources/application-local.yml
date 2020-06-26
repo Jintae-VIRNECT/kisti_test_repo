@@ -30,8 +30,8 @@ spring:
           stateless: true
     port: 5672
     host: localhost
-    password: guest
-    username: guest
+    username: admin
+    password: admin1234
 
 logging:
   level:
@@ -54,5 +54,6 @@ eureka:
 cloud:
   aws:
     credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
+

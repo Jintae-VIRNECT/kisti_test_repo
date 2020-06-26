@@ -1,5 +1,7 @@
 package com.virnect.message.global.config;
 
+import com.virnect.message.global.error.RabbitmqExceptionHandler;
+import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -40,7 +42,7 @@ public class RabbitmqConfiguration {
         factory.setConnectionFactory(connectionFactory);
         factory.setDefaultRequeueRejected(false);//예외가 발생하면 다시 큐에 쌓임
         factory.setMessageConverter(messageConverter());
-       /* factory.setAdviceChain(RetryInterceptorBuilder
+        /*factory.setAdviceChain(RetryInterceptorBuilder
                 .stateless()
                 .maxAttempts(MAX_TRY_COUNT)
                 .recoverer(new RabbitmqExceptionHandler())
