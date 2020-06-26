@@ -1417,17 +1417,14 @@ public class WorkspaceService {
             return licenseInfo;
         }).collect(Collectors.toList());
 
-
         workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
         DecimalFormat decimalFormat = new DecimalFormat("0");
-        Long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
-        int idx = (int) Math.floor(Math.log(size) / Math.log(1024));
-        double ret = ((size / Math.pow(1024, Math.floor(idx))));
-
-        workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(ret)));
+        long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
+        workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(size/1024.0))); //MB -> GB
         workspaceLicenseInfoResponse.setMaxDownloadHit(workspaceLicensePlanInfoResponse.getMaxDownloadHit());
         workspaceLicenseInfoResponse.setMaxCallTime(workspaceLicenseInfoResponse.getMaxCallTime());
 
         return new ApiResponse<>(workspaceLicenseInfoResponse);
     }
+
 }
