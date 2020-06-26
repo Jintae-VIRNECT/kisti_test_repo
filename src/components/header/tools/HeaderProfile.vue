@@ -20,7 +20,7 @@
         ></profile>
       </div>
       <div class="popover-profile__link">
-        <button @click="link('https://virnect.com')">
+        <button @click="link(urlLink)">
           VIRNECT Workstation
         </button>
       </div>
@@ -37,6 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import urls from '@/server/urls'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
@@ -48,6 +49,9 @@ export default {
   },
   computed: {
     ...mapGetters(['account']),
+    urlLink() {
+      return urls.workstation[process.env.TARGET_ENV]
+    },
   },
   methods: {
     link(url) {

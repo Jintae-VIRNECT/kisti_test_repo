@@ -25,7 +25,7 @@ export default {
     production: 'https://account.virnect.com',
   },
   workstation: {
-    local: 'https://localhost:8878',
+    local: 'https://192.168.6.3:8878',
     develop: 'https://192.168.6.3:8878',
     staging: 'https://stgworkstation.virnect.com',
     production: 'https://workstation.virnect.com',
