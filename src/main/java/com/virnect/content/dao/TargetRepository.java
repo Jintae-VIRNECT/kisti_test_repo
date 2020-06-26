@@ -3,6 +3,7 @@ package com.virnect.content.dao;
 import com.virnect.content.domain.Target;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**

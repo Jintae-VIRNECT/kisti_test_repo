@@ -2,6 +2,7 @@ package com.virnect.content.dto.response;
 
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.rest.LicenseInfoResponse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,8 @@ public class ContentUploadResponse {
     private String contentUUID;
     @ApiModelProperty(value = "타겟", notes = "컨텐츠의 타겟", position = 13)
     private List<ContentTargetResponse> targets;
+    @ApiModelProperty(value = "라이선스 정보")
+    private LicenseInfoResponse licenseInfo;
 
 
     @Override
@@ -55,6 +58,7 @@ public class ContentUploadResponse {
                 ", workspaceUUID='" + workspaceUUID + '\'' +
                 ", contentUUID='" + contentUUID + '\'' +
                 ", targets=" + targets +
+                ", licenseInfo='" + licenseInfo +'\"' +
                 '}';
     }
 }

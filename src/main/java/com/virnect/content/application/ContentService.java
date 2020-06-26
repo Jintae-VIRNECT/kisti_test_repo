@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.hibernate.service.spi.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +53,8 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,7 +97,7 @@ public class ContentService {
     private static final YesOrNo INIT_IS_SHARED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_CONVERTED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_DELETED = YesOrNo.NO;
-
+    private static final Long MEGA_BYTE = 1024L * 1024L;
     /**
      * 콘텐츠 업로드
      * 컨텐츠UUID는 컨텐츠를 관리하기 위한 서버에서의 식별자이면서 동시에 파일명
@@ -121,6 +124,8 @@ public class ContentService {
 
             // 2-1. 프로퍼티로 메타데이터 생성
             String metadata = makeMetadata(uploadRequest.getName(), uploadRequest.getUserUUID(), uploadRequest.getProperties()).toString();
+
+            log.debug(">>>>>>>>>>> {}", metadata);
 
             // 2-2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
@@ -154,6 +159,8 @@ public class ContentService {
             this.contentRepository.save(content);
 
             ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
+
+            result.setLicenseInfo(licenseInfoResponse);
 
             List<Target> targets = content.getTargetList();
             List<ContentTargetResponse> contentTargetResponseList = targets.stream().map(target -> this.modelMapper.map(target, ContentTargetResponse.class)).collect(Collectors.toList());
@@ -367,19 +374,21 @@ public class ContentService {
         // 6. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
-        // 7. 컨텐츠 메타데이터 변경 (속성으로 메타데이터 생성)
-        JsonObject metaObject = makeMetadata(targetContent.getName(), targetContent.getUserUUID(), targetContent.getProperties());
+        // 7. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
+        JsonObject metaObject = makeMetadata(updateRequest.getName(), updateRequest.getUserUUID(), updateRequest.getProperties());
 
         String metadata = metaObject.toString();
 
         targetContent.setMetadata(metadata);
+
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>> metadata : {}", metadata);
 
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
 
         // 7-1. 컨텐츠 씬그룹 수정
         targetContent.getSceneGroupList().clear();
-        addSceneGroupToContent(targetContent, updateRequest.getMetadata());
+        addSceneGroupToContent(targetContent, metadata);
 
         String targetData = updateRequest.getTargetData();
 
@@ -387,7 +396,14 @@ public class ContentService {
         Target target = this.targetRepository.findByContentId(targetContent.getId())
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
-        String originTargetData = target.getData();
+        String originTargetData = null;
+
+        // 기존 타겟 데이터가 없을 경우
+        if (Objects.isNull(target.getData())) {
+            throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
+        } else {
+            originTargetData = target.getData();
+        }
 
         // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
         if (!originTargetData.equals(targetData)) {
@@ -431,8 +447,10 @@ public class ContentService {
 
 
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+        String checkedData = checkParameterEncoded(targetData);
+
+        Content content = this.contentRepository.getContentOfTarget(checkedData);
         // 컨텐츠 데이터 조회
-        Content content = this.contentRepository.getContentOfTarget(targetData);
 
         if (content == null)
             throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
@@ -473,7 +491,7 @@ public class ContentService {
     @Transactional
     public ApiResponse<ContentDeleteListResponse> contentDelete(ContentDeleteRequest contentDeleteRequest)  {
         final String[] contentUUIDs = contentDeleteRequest.getContentUUIDs();
-        final String workerUUID     = contentDeleteRequest.getWorkerUUID();
+        final String workspaceUUID  = contentDeleteRequest.getWorkspaceUUID();
 
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
@@ -491,24 +509,58 @@ public class ContentService {
                     .updatedDate(content.getUpdatedDate())
                     .build();
 
-            // 1-1 권한확인 - 권한이 맞지 않다면 continue.
+            // 1-1 권한확인 - 권한이 맞지 않다면 continue. -> 기존에는 컨텐츠 관리자의 정보를 확인하여 삭제. 혹시 몰라 주석처리.
             // TODO : 관리자 관련 처리 되어있지 않음
-            log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
-            if (!content.getUserUUID().equals(workerUUID)) {
-                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
+//            log.info("Content Delete : contentUploader {}, workerUUID {}", content.getUserUUID(), workerUUID);
+//            if (!content.getUserUUID().equals(workerUUID)) {
+//                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getCode());
+//                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_OWNERSHIP.getMessage());
+//                contentDeleteResponse.setResult(false);
+//                deleteResponseList.add(contentDeleteResponse);
+//                continue;
+//            }
+
+            // 1-1 권한확인 - 권한이 맞지 않다면 continue. -> 컨텐츠를 삭제하려는 워크스페이스UUID를 받아서 처리.
+            log.info("Content Delete : contentWorkspace -> {}, requestWorkspace -> {}", content.getWorkspaceUUID(), workspaceUUID);
+            if (!content.getWorkspaceUUID().equals(workspaceUUID)) {
+                contentDeleteResponse.setCode(ErrorCode.ERROR_WORKSPACE.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERROR_WORKSPACE.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
+
             // 1-2 삭제조건 확인 - 전환/공유/삭제 세가지 모두 아니어야 함.
             log.info("Content Delete : getConverted {}, getShared {}, getDeleted {}", content.getConverted(), content.getShared(), content.getDeleted());
 
-            if (!(content.getConverted() == YesOrNo.NO && content.getShared() == YesOrNo.NO && content.getDeleted() == YesOrNo.NO)) {
+            // 삭제 시 각각의 케이스를 나눔. (웹 쪽 다국어와 관련하여 errorcode 추가)
+            // 작업 전환 여부
+            if (YesOrNo.YES.equals(content.getConverted())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_MANAGED.getCode());
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
                 contentDeleteResponse.setResult(false);
                 deleteResponseList.add(contentDeleteResponse);
                 continue;
             }
+
+            // 컨텐츠 공유 여부
+            if (YesOrNo.YES.equals(content.getShared())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_DELETE_SHARED.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SHARED.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
+
+            // 컨텐츠 논리 삭제 여부 (현재 해당 플래그는 사용하지 않음)
+            if (YesOrNo.YES.equals(content.getDeleted())) {
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_MANAGED.getCode());
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_MANAGED.getMessage());
+                contentDeleteResponse.setResult(false);
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
+
             // 파일을 실제 삭제하지 않을 경우. 복구 프로세스가 필요할 수도 있어 일부 구현해 놓음.
             if (false) {
                 // 2 컨텐츠 삭제 - 삭제여부 YES로 변경, 목록조회시 deleted가 YES인 것은 조회하지 않음.
@@ -580,11 +632,20 @@ public class ContentService {
             log.info("[{}]", userInfoList);
         }
 
-
         // 2. 콘텐츠 조회
         Page<Content> contentPage = this.contentRepository.getContent(workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
 
         contentInfoList = contentPage.stream().map(content -> {
+            List<ContentTargetResponse> targets = content.getTargetList().stream().map(target -> {
+                        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                                .id(target.getId())
+                                .data(target.getData())
+                                .type(target.getType())
+                                .imgPath(target.getImgPath())
+                                .build();
+                        return contentTargetResponse;
+            }).collect(Collectors.toList());
+
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                     .workspaceUUID(content.getWorkspaceUUID())
                     .contentUUID(content.getUuid())
@@ -595,6 +656,7 @@ public class ContentService {
                     .path(content.getPath())
                     .converted(content.getConverted())
                     .createdDate(content.getCreatedDate())
+                    .targets(targets)
                     .build();
 
             if (userInfoMap.containsKey(content.getUserUUID())) {
@@ -972,7 +1034,9 @@ public class ContentService {
     public ApiResponse<Boolean> checkTargetData(String targetData) {
         Boolean isExist = false;
 
-        int cntTargetData = this.targetRepository.countByData(targetData);
+        String checkedData = checkParameterEncoded(targetData);
+
+        int cntTargetData = this.targetRepository.countByData(checkedData);
 
         if (cntTargetData > 0) {
             isExist = true;
@@ -1222,38 +1286,58 @@ public class ContentService {
         return meta;
     }
 
+    /**
+     * 라이선스 허용 최대 용량과 워크스페이스 기준 현재 총 용량 + 업로드 하는 콘텐츠의 용량을 비교
+     * @param workspaceUUID
+     * @param uploadContentSize
+     * @return
+     */
     private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
-        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다.
-        Long maxStorageSize = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
+        Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
 
-        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다.
-        Long workspaceSize = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
+        // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
+        Long workspaceCapacity = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
 
-        if (Objects.isNull(workspaceSize)) {
-            workspaceSize = 0L;
+        if (Objects.isNull(workspaceCapacity)) {
+            workspaceCapacity = 0L;
         }
 
         log.info("WorkspaceUUID : {}", workspaceUUID);
-        log.info("WorkspaceMaxStorage : {}", maxStorageSize);
+        log.info("WorkspaceMaxStorage : {}", workspaceCapacity);
         log.info("ContentSize : {}", uploadContentSize);
 
-        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다.
-        Long sumSize = workspaceSize + uploadContentSize;
+        // 워크스페이스 총 용량에 업로드 파일 용량을 더한다. (byte 단위)
+        Long sumByteSize = workspaceCapacity + uploadContentSize;
+
+        // byte를 MegaByte로 변환
+        Long convertMB = sumByteSize / MEGA_BYTE;
+
+        // 라이선스의 최대 용량이 0인 경우 업로드 프로세스를 수행하지 않는다.
+        if (maxCapacity == 0) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+        }
 
         // 라이센스 서버의 최대 저장용량을 초과할 경우 업로드 프로세스를 수행하지 않는다.
-        if (maxStorageSize < sumSize) {
+        if (maxCapacity < convertMB) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
         } else {
-            licenseInfoResponse.setMaxStorageSize(maxStorageSize);
-            licenseInfoResponse.setWorkspaceStorage(workspaceSize);
+            licenseInfoResponse.setMaxStorageSize(maxCapacity);
+            licenseInfoResponse.setWorkspaceStorage(workspaceCapacity);
             licenseInfoResponse.setUploadSize(uploadContentSize);
+            licenseInfoResponse.setUsableCapacity(maxCapacity - convertMB);
         }
 
         return licenseInfoResponse;
     }
 
+    /**
+     * 라이선스 총 다운로드 수와 워크스페이스 기준 총 다운로드 수를 비교
+     * @param workspaceUUID
+     * @return
+     */
     private LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
 
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
@@ -1264,6 +1348,11 @@ public class ContentService {
         // 현재 워크스페이스의 다운로드 횟수
         Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
 
+        if (maxDownload == 0) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+        }
+
+        // 워크스페이스 기준으로 처음 다운로드 받을 경우의 처리
         if (Objects.isNull(sumDownload)) {
             sumDownload = 0L;
         }
@@ -1273,6 +1362,7 @@ public class ContentService {
         }else {
             licenseInfoResponse.setMaxDownloadHit(maxDownload);
             licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
+            licenseInfoResponse.setUsableDownloadHit(maxDownload - sumDownload);
         }
 
         return licenseInfoResponse;
@@ -1280,6 +1370,7 @@ public class ContentService {
 
     public String decodeData(String encodeURL){
         String imgPath = "";
+
         try {
             String decoder = URLDecoder.decode(encodeURL, "UTF-8");
 
@@ -1318,5 +1409,36 @@ public class ContentService {
         String imgPath = this.fileUploadService.base64ImageUpload(qrString);
 
         return imgPath;
+    }
+
+    /**
+     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
+     * @param targetData
+     * @return
+     */
+    public String checkParameterEncoded(String targetData) {
+        String encodedData = null;
+
+        // 컨텐츠의 타겟데이터는 이미 원본 값이 URLEncoding된 값인데,
+        // 실제 서버에서는 servlet container에서 decode하여 URLDecoding된 데이터가 들어오게 된다.
+        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+        // 이 와중에 query 파라미터로 받을 경우 '+'가 '공백'으로 리턴된다.
+        // PathVariable로 받지 않는 이유는 decoding된 값에 '/'가 들어가는 경우가 있기 때문.
+        if (targetData.contains(" ")) {
+            // 임시방편으로 공백은 '+'로 치환한다. 더 좋은 방법이 있다면 수정하면 좋을 듯.
+            targetData = targetData.replace(" ", "+");
+        }
+
+        log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+
+        try {
+            // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
+            encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return encodedData;
     }
 }
