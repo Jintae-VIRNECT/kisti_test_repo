@@ -2,6 +2,7 @@
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <transition-group name="list" tag="div" class="participants__view">
+        <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
           :key="participant.id"
@@ -94,7 +95,7 @@ export default {
 }
 .list-enter,
 .list-leave-to {
-  transform: translateX(11.428rem);
+  /* transform: translateX(11.428rem); */
   opacity: 0;
 }
 </style>
