@@ -15,7 +15,7 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible="invite"></invite-modal>
+    <invite-modal :visible.sync="invite"></invite-modal>
   </div>
 </template>
 
@@ -79,7 +79,6 @@ export default {
   },
   methods: {
     more() {
-      console.log('추가 초대하기')
       this.invite = !this.invite
     },
   },
