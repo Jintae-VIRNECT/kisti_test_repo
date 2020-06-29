@@ -20,6 +20,7 @@ import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 import IDBHelper from 'utils/idbHelper'
 import { mapGetters, mapActions, mapState } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { getWH } from 'utils/recordOptions'
 
 import uuid from 'uuid'
 export default {
@@ -222,7 +223,11 @@ export default {
       }
 
       const option = {
-        video: this.getWH(this.recordResolution),
+        video: getWH(
+          this.recordResolution,
+          this.resolution.width,
+          this.resolution.height,
+        ),
       }
 
       this.recorder = new MSR.MultiStreamRecorder(recordStream, option)
@@ -295,38 +300,9 @@ export default {
     async setScreenCapture() {
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: this.getWH(this.recordResolution),
+        video: getWH(this.recordResolution),
       })
       this.setScreenStream(displayStream)
-    },
-
-    getWH(resolution) {
-      //default
-      const video = {
-        width: 640,
-        height: 480,
-      }
-
-      switch (resolution) {
-        case '360p':
-          video.width = 480
-          video.height = 360
-          break
-        case '480p':
-          video.width = 640
-          video.height = 480
-          break
-
-        case '720p':
-          video.width = 1280
-          video.height = 720
-          break
-
-        default:
-          console.log('unknown resolution ::', resolution)
-          break
-      }
-      return video
     },
 
     /**

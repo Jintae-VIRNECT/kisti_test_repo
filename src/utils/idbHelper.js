@@ -5,24 +5,28 @@ import Dexie from 'dexie'
  */
 
 let db = null
+let initFlag = true
 const logPrefix = 'IDB :: '
 const USAGE_LIMIT_PERSENTAGE = 80
 
 async function initIDB() {
   //define db structure
 
-  db = new Dexie('RemoteMediaChunk')
+  if (initFlag) {
+    db = new Dexie('RemoteMediaChunk')
 
-  console.log(logPrefix + 'init idb')
+    console.log(logPrefix + 'init idb')
 
-  /**
-   * Warning!! if you change column then
-   * increase version number
-   */
-  db.version(2).stores({
-    RemoteMediaChunk:
-      '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
-  })
+    /**
+     * Warning!! if you change column then
+     * increase version number
+     */
+    db.version(2).stores({
+      RemoteMediaChunk:
+        '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
+    })
+    initFlag = false
+  }
 }
 
 /**

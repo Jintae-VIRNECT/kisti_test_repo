@@ -31,6 +31,7 @@
           class="table__row"
           :class="{ active: selectedArray[index] }"
           :key="index"
+          @click="toggleItem($event, index)"
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
@@ -39,7 +40,6 @@
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_uncheck.svg')"
-              @action="toggleItem($event, index)"
             ></toggle-button>
           </div>
           <div
@@ -69,8 +69,20 @@ export default {
   },
   watch: {
     selectedArray: {
-      handler(newArray) {
-        this.$eventBus.$emit('table:selectedarray', newArray)
+      handler(ary) {
+        this.$eventBus.$emit('table:selectedarray', ary)
+
+        if (ary.length > 0) {
+          const allSelected = ary.every(select => {
+            return select === true
+          })
+
+          if (allSelected) {
+            this.toggleAllFlag = true
+          } else {
+            this.toggleAllFlag = false
+          }
+        }
       },
       deep: true,
     },
@@ -214,6 +226,7 @@ export default {
   }
   &:hover {
     background: $color_darkgray_500;
+    cursor: pointer;
   }
 }
 
