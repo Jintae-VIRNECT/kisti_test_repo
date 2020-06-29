@@ -3,15 +3,18 @@
     <span>
       <div
         class="checkbox__box"
-        :class="{ active: checked }"
-        @click="toggleCheckBox"
+        :class="{ active: value }"
+        @click="$emit('update:value', !value)"
       >
-        <img v-if="checked" src="~assets/image/mdpi_icon_check.svg" />
+        <img v-if="value" src="~assets/image/mdpi_icon_check.svg" />
       </div>
     </span>
-    <label :value="value" class="checkbox__label" @click="toggleCheckBox">{{
-      text
-    }}</label>
+    <label
+      :value="value"
+      class="checkbox__label"
+      @click="$emit('update:value', !value)"
+      >{{ text }}</label
+    >
   </div>
 </template>
 
@@ -20,39 +23,19 @@ export default {
   name: 'RemoteCheckBox',
   computed: {},
   data() {
-    return {
-      checked: false,
-    }
+    return {}
   },
-  watch: {
-    checked() {
-      if (this.checked) {
-        this.$emit('toggle', this.value)
-      } else {
-        this.$emit('toggle', false)
-      }
-    },
-  },
+  watch: {},
   props: {
     text: {
       type: String,
       default: '',
     },
     value: {
-      type: Boolean,
       default: null,
     },
   },
-  methods: {
-    toggleCheckBox() {
-      this.checked = !this.checked
-    },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.checked = this.value
-  },
+  methods: {},
 }
 </script>
 

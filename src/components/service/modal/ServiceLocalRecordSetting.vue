@@ -14,8 +14,7 @@
 
           <r-check
             :text="'참가자 포인팅 허용'"
-            :value="allowPointing"
-            @toggle="toggleAllowPointing"
+            :value.sync="pointing"
           ></r-check>
         </div>
       </template>
@@ -119,8 +118,7 @@
         <p class="rec-setting__text">참가자 로컬 녹화</p>
         <r-check
           :text="'참가자 로컬 녹화 허용'"
-          :value="allowLocalRecording"
-          @toggle="toggleLocalRecording"
+          :value.sync="localRecording"
         ></r-check>
       </div>
     </div>
@@ -152,6 +150,8 @@ export default {
   },
   data() {
     return {
+      localRecording: false,
+      pointing: false,
       selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
@@ -216,6 +216,16 @@ export default {
     visible(flag) {
       this.visibleFlag = flag
     },
+    localRecording(flag) {
+      this.setAllowLocalRecording(!!flag)
+      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
+      this.showToast()
+    },
+    pointing(flag) {
+      this.setAllowPointing(!!flag)
+      this.$call.control(CONTROL.POINTING, !!flag)
+      this.showToast()
+    },
 
     selectParticipantRecTarget(recordTarget) {
       console.log(recordTarget)
@@ -271,18 +281,6 @@ export default {
 
     beforeClose() {
       this.$emit('update:visible', false)
-    },
-
-    toggleAllowPointing(value) {
-      this.setAllowPointing(!!value)
-      this.$call.control(CONTROL.POINTING, !!value)
-      this.showToast()
-    },
-
-    toggleLocalRecording(value) {
-      this.setAllowLocalRecording(!!value)
-      this.$call.control(CONTROL.LOCAL_RECORD, !!value)
-      this.showToast()
     },
 
     init() {
