@@ -2,9 +2,9 @@
   <tool-button
     :text="'플래시 켜기/끄기'"
     :disable="disable"
-    :active="status"
-    :src="require('assets/image/ic_flash_on.svg')"
-    :activeSrc="require('assets/image/ic_flash_off.svg')"
+    :icActive="status"
+    :src="require('assets/image/ic_flash_off.svg')"
+    :activeSrc="require('assets/image/ic_flash_on.svg')"
     @click="clickHandler()"
   ></tool-button>
 </template>
