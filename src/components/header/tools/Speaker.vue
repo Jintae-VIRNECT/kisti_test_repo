@@ -29,10 +29,12 @@ export default {
   methods: {
     ...mapActions(['setDevices']),
     speakerOnOff() {
-      let speaker = !this.speaker
+      let speaker = !this.speaker.isOn
 
-      this.setDevices('speaker', {
-        isOn: speaker,
+      this.setDevices({
+        speaker: {
+          isOn: speaker,
+        },
       })
       this.$call.speaker(speaker)
       this.$localStorage.setDevice('speaker', 'isOn', speaker)

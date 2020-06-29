@@ -70,7 +70,7 @@ const _ = {
       )
       const publishVideo = role === ROLE.WORKER || allowUser
 
-      _.publisher = OV.initPublisher('', {
+      const publisher = OV.initPublisher('', {
         audioSource: undefined, // TODO: setting value
         videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
@@ -80,19 +80,20 @@ const _ = {
         insertMode: 'PREPEND',
         mirror: false,
       })
-      _.publisher.on('streamCreated', () => {
-        Store.commit('addStream', getUserObject(_.publisher.stream))
+      publisher.on('streamCreated', () => {
+        _.publisher = publisher
+        Store.commit('addStream', getUserObject(publisher.stream))
         _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
           Store.commit('updateResolution', {
-            connectionId: _.publisher.stream.connection.connectionId,
+            connectionId: publisher.stream.connection.connectionId,
             width: 0,
             height: 0,
           })
         }
       })
 
-      _.session.publish(_.publisher)
+      _.session.publish(publisher)
       return true
     } catch (err) {
       console.error(err)
@@ -256,11 +257,15 @@ const _ = {
     const params = {
       isOn: active,
     }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: _.session.connection,
-      type: SIGNAL.MIC,
-    })
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: _.session.connection,
+        type: SIGNAL.MIC,
+      })
+    } catch (err) {
+      return false
+    }
   },
   /**
    * my speaker control
@@ -273,11 +278,15 @@ const _ = {
     const params = {
       isOn: active,
     }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: _.session.connection,
-      type: SIGNAL.SPEAKER,
-    })
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: _.session.connection,
+        type: SIGNAL.SPEAKER,
+      })
+    } catch (err) {
+      return false
+    }
   },
   /**
    * other user's flash control

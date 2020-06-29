@@ -29,10 +29,12 @@ export default {
   methods: {
     ...mapActions(['setDevices']),
     micOnOff() {
-      let mic = !this.mic
+      let mic = !this.mic.isOn
 
-      this.setDevices('mic', {
-        isOn: mic,
+      this.setDevices({
+        mic: {
+          isOn: mic,
+        },
       })
       this.$call.mic(mic)
       this.$localStorage.setDevice('mic', 'isOn', mic)
