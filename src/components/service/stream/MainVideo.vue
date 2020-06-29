@@ -4,7 +4,7 @@
       class="main-video__box"
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
-      :class="{ shutter: false }"
+      :class="{ shutter: showShutter }"
     >
       <video
         ref="mainVideo"

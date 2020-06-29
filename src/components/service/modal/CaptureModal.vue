@@ -7,7 +7,7 @@
       </button>
     </div>
     <div class="capture-body">
-      <div class="capture-image">
+      <div class="capture-image" :class="{ shutter: showShutter }">
         <img :src="imageData" />
       </div>
       <div class="capture-tools">
@@ -30,8 +30,10 @@
 
 <script>
 import { mapActions } from 'vuex'
+import shutterMixin from 'mixins/shutter'
 export default {
   name: 'CaptureModal',
+  mixins: [shutterMixin],
   data() {
     return {
       status: false,
@@ -128,6 +130,7 @@ export default {
 .capture-body {
 }
 .capture-image {
+  position: relative;
   width: 25.714rem; //360px;
   height: 14.429rem; // 202px;
   background: #000;
@@ -138,6 +141,35 @@ export default {
     max-width: 100%;
     max-height: 100%;
     transform: translate(-50%, -50%);
+  }
+
+  &.shutter::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #000;
+    opacity: 0;
+    animation: shutter 0.2s linear;
+    content: '';
+    user-select: none;
+
+    @keyframes shutter {
+      0% {
+        opacity: 0;
+      }
+      40% {
+        opacity: 0.52;
+      }
+      60% {
+        opacity: 0.52;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
   }
 }
 .capture-tools {
