@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     changedSearchParams(searchParams) {
-      console.log(searchParams)
       this.searchCoupons(searchParams)
     },
     goGetCouponPage() {

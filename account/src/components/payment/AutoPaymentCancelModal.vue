@@ -34,17 +34,11 @@
 <script>
 import dialogMixin from '@/mixins/dialog'
 import columnMixin from '@/mixins/columns'
-import paymentService from '@/services/payment'
 
 export default {
   mixins: [dialogMixin, columnMixin],
-  data() {
-    return {
-      autoPayments: [],
-    }
-  },
-  async beforeMount() {
-    this.autoPayments = await paymentService.getAutoPayments()
+  props: {
+    autoPayments: Array,
   },
 }
 </script>

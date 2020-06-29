@@ -1,8 +1,10 @@
 import Model from '@/models/Model'
+import jwtDecode from 'jwt-decode'
 
 export default class Profile extends Model {
-  constructor(json) {
+  constructor(json, accessToken) {
     super()
+    this.userId = jwtDecode(accessToken).userId
     this.uuid = json.uuid
     this.lastName = json.lastName
     this.firstName = json.firstName

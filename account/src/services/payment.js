@@ -1,6 +1,6 @@
-import Ticket from '@/models/payment/Ticket'
 import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
+import AutoPaymentInfo from '@/models/payment/AutoPaymentInfo'
 import { api } from '@/plugins/axios'
 
 export default {
@@ -19,15 +19,19 @@ export default {
       total: data.totalcnt,
     }
   },
-  getPaymentLogDetail() {
-    return new PaymentLogDetail()
+  async getPaymentLogDetail(no) {
+    const data = await api('GET_PAYMENT_LOG_DETAIL', {
+      params: {
+        userno: 71,
+        cashno: no,
+      },
+    })
+    return new PaymentLogDetail(data)
   },
   async getAutoPayments() {
-    const data = [0, 1, 2]
-    return data.map(() => new Ticket())
-
-    return await api('GET_AUTO_PAYMENTS', {
+    const data = await api('GET_AUTO_PAYMENTS', {
       params: { userno: 71 },
     })
+    return new AutoPaymentInfo(data)
   },
 }

@@ -26,4 +26,6 @@ module.exports = {
   GET_PAYMENT_LOGS: ['GET', '/billing/user/paymentlist'],
   // 정기결제 정보 조회
   GET_AUTO_PAYMENTS: ['GET', '/billing/user/purchaseinfo'],
+  // 이용자 구매내역 상세 조회
+  GET_PAYMENT_LOG_DETAIL: ['GET', '/billing/user/purchaselist'],
 }

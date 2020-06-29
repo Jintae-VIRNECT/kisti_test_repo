@@ -40,7 +40,10 @@ export default {
   actions: {
     async getAuthInfo({ commit }, params) {
       const data = await api('GET_AUTH_INFO', params)
-      commit('SET_MY_PROFILE', new Profile(data.userInfo))
+      const accessToken = params.headers.cookie.match(
+        /accessToken=(.*?)(?![^;])/,
+      )[1]
+      commit('SET_MY_PROFILE', new Profile(data.userInfo, accessToken))
       commit(
         'SET_MY_WORKSPACES',
         data.workspaceInfoList.map(workspace => new Workspace(workspace)),

@@ -19,16 +19,16 @@
             <dl class="horizon">
               <dt>{{ $t('payment.will.price') }}</dt>
               <dd class="price">
-                <span>{{ (200000).toLocaleString() }}</span>
+                <span>{{ autoPayments.price.toLocaleString() }}</span>
                 <span>{{ $t('payment.monetaryUnit') }}</span>
               </dd>
               <el-divider />
               <dt>{{ $t('payment.will.dueDate') }}</dt>
-              <dd>{{ new Date() | dateFormat }}</dd>
+              <dd>{{ autoPayments.nextPayDate | dateFormat }}</dd>
               <el-divider />
               <dt>{{ $t('payment.will.way') }}</dt>
               <dd>
-                <span>{{ '신용카드' }}</span>
+                <span>{{ autoPayments.way }}</span>
                 <span class="sub">
                   {{ $t('payment.will.autoPaymentEveryMonth') }}
                 </span>
@@ -72,7 +72,7 @@
               ref="table"
               :data="paymentLogs"
               class="clickable"
-              @row-click="showPaymentLogDetailModal = true"
+              @row-click="showLogDetail"
             >
               <column-default :label="$t('payment.log.column.no')" prop="no" />
               <column-default
@@ -101,8 +101,14 @@
       </el-row>
     </div>
     <!-- 모달 -->
-    <auto-payment-cancel-modal :visible.sync="showAutoPaymentCancelModal" />
-    <payment-log-detail-modal :visible.sync="showPaymentLogDetailModal" />
+    <auto-payment-cancel-modal
+      :autoPayments="autoPayments.items"
+      :visible.sync="showAutoPaymentCancelModal"
+    />
+    <payment-log-detail-modal
+      :logInfo="activeLog"
+      :visible.sync="showPaymentLogDetailModal"
+    />
   </div>
 </template>
 
@@ -121,15 +127,20 @@ export default {
     PaymentLogDetailModal,
   },
   async asyncData() {
-    const { list, total } = await paymentService.searchPaymentLogs()
+    const promises = {
+      autoPayments: paymentService.getAutoPayments(),
+      logs: paymentService.searchPaymentLogs(),
+    }
     return {
-      paymentLogs: list,
-      paymentLogsTotal: total,
+      autoPayments: await promises.autoPayments,
+      paymentLogs: (await promises.logs).list,
+      paymentLogsTotal: (await promises.logs).total,
     }
   },
   data() {
     return {
       paymentLogsPage: 1,
+      activeLog: null,
       showAutoPaymentCancelModal: false,
       showPaymentLogDetailModal: false,
     }
@@ -141,6 +152,10 @@ export default {
       )
       this.paymentLogs = list
       this.paymentLogsTotal = total
+    },
+    showLogDetail(log) {
+      this.activeLog = log
+      this.showPaymentLogDetailModal = true
     },
   },
 }
