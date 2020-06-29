@@ -253,7 +253,7 @@ export default {
       }
     },
     optimizeCanvasSize() {
-      if (!this.file || !this.file.id) return
+      if (!this.file || !this.file.id || !this.canvas) return
       const canvas = this.canvas
       const image = canvas.backgroundImage
       const parent = this.$el.parentNode
