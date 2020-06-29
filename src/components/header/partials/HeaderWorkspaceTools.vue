@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
@@ -28,21 +28,6 @@ export default {
   },
   computed: {
     ...mapGetters(['mainView', 'mute']),
-  },
-  watch: {
-    mainView: {
-      deep: true,
-      handler: function(val) {
-        if (val.stream) {
-          // let state = this.$call.getState()
-          // this.callMic(state.audio)
-          // this.callStream(state.video)
-        }
-      },
-    },
-  },
-  methods: {
-    ...mapActions(['callMic']),
   },
 
   /* Lifecycles */

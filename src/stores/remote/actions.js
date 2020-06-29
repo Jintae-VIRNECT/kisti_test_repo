@@ -67,16 +67,6 @@ export default {
   setAction({ commit }, state) {
     commit(types.CALL_ACTION_SET, state)
   },
-
-  callMic({ commit }, state) {
-    localStorage.setItem('mic', state)
-    commit(types.CALL_MIC, state)
-  },
-  callSpeaker({ commit }, state) {
-    localStorage.setItem('speaker', state)
-    commit(types.CALL_SPEAKER, state)
-  },
-
   /**
    * Set device type
    * @param {Object} payload

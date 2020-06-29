@@ -27,21 +27,16 @@ export default {
     ...mapGetters(['speaker']),
   },
   methods: {
-    ...mapActions(['callSpeaker']),
+    ...mapActions(['setDevices']),
     speakerOnOff() {
       let speaker = !this.speaker
-      this.callSpeaker(speaker)
 
+      this.setDevices('speaker', {
+        isOn: speaker,
+      })
       this.$call.speaker(speaker)
+      this.$localStorage.setDevice('speaker', 'isOn', speaker)
     },
-  },
-
-  /* Lifecycles */
-  created() {
-    let speaker = localStorage.getItem('speaker')
-    if (typeof speaker === Boolean) {
-      this.callSpeaker(speaker)
-    }
   },
 }
 </script>

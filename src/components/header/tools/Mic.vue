@@ -27,16 +27,16 @@ export default {
     ...mapGetters(['mic']),
   },
   methods: {
-    ...mapActions(['callMic']),
+    ...mapActions(['setDevices']),
     micOnOff() {
       let mic = !this.mic
-      this.callMic(mic)
 
+      this.setDevices('mic', {
+        isOn: mic,
+      })
       this.$call.mic(mic)
+      this.$localStorage.setDevice('mic', 'isOn', mic)
     },
   },
-
-  /* Lifecycles */
-  created() {},
 }
 </script>
