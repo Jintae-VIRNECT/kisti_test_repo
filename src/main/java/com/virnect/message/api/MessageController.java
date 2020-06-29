@@ -1,7 +1,5 @@
 package com.virnect.message.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EmailSendRequest;
@@ -9,6 +7,7 @@ import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.exception.MessageException;
 import com.virnect.message.global.common.ApiResponse;
+import com.virnect.message.global.config.RabbitmqConfiguration;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 /**
  * Project: base
@@ -40,26 +40,31 @@ public class MessageController {
 
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper;
+    private final RabbitmqConfiguration rabbitmqConfiguration;
 
     @ApiOperation(
             value = "메일 메세지 발행"
     )
     @PostMapping("/email")
-    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String exchange = MessageType.EMAIL.getValue();
-        String routingKey = exchange + "." + emailSendRequest.getService();
-        rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
+        if (rabbitmqConfiguration.active) {
+            String exchange = MessageType.EMAIL.getValue();
+            String routingKey = exchange + "." + emailSendRequest.getService();
+            rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
+            return;
+        }
+        this.messageService.sendEmailMessage(emailSendRequest);
+
     }
 
     @ApiOperation(
             value = "푸시 메세지 발행"
     )
     @PostMapping("/push")
-    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }

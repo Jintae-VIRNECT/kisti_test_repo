@@ -1,12 +1,13 @@
 package com.virnect.message.global.config;
 
-import com.virnect.message.global.error.RabbitmqExceptionHandler;
-import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
+import com.rabbitmq.client.ShutdownSignalException;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.Connection;
+import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,14 +20,47 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RabbitmqConfiguration {
-    private final int MAX_TRY_COUNT = 3;
-    private final int INITIAL_INTERVAL = 3000;
-    private final int MULTIPLIER = 3;
-    private final int MAX_INTERVAL = 10000;
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+    @Value("${spring.rabbitmq.port}")
+    private Integer port;
+
+    public boolean active = false;
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+    public CachingConnectionFactory cachingConnectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setPort(port);
+        connectionFactory.setUsername(username);
+        connectionFactory.setPassword(password);
+        connectionFactory.setHost(host);
+        connectionFactory.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void onCreate(Connection connection) {
+                active = true;
+            }
+
+            @Override
+            public void onClose(Connection connection) {
+                active = false;
+            }
+
+            @Override
+            public void onShutDown(ShutdownSignalException signal) {
+                active = false;
+            }
+        });
+        return connectionFactory;
+    }
+
+
+    @Bean
+    public RabbitTemplate rabbitTemplate() {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory());
         rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
@@ -36,20 +70,11 @@ public class RabbitmqConfiguration {
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-            ConnectionFactory connectionFactory) {
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setDefaultRequeueRejected(false);//예외가 발생하면 다시 큐에 쌓임
+        factory.setConnectionFactory(cachingConnectionFactory());
+        factory.setDefaultRequeueRejected(false);
         factory.setMessageConverter(messageConverter());
-
-        /*factory.setAdviceChain(RetryInterceptorBuilder
-                .stateless()
-                .maxAttempts(MAX_TRY_COUNT)
-                .recoverer(new RabbitmqExceptionHandler())
-                .backOffOptions(INITIAL_INTERVAL, MULTIPLIER, MAX_INTERVAL)
-                .build());*/
         return factory;
     }
-
 }

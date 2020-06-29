@@ -89,8 +89,7 @@ public class MessageService {
             key = "push.#"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getAllPushMessage(PushSendRequest pushSendRequest) throws IOException {
-        //throw new IllegalArgumentException();
-        log.info(pushSendRequest.toString());
+       log.info(pushSendRequest.toString());
     }
 
     @RabbitListener(bindings = @QueueBinding(
@@ -99,31 +98,28 @@ public class MessageService {
             key = "dlx.*"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getWaitMessage(Message failedMessage) throws IOException {
-        Integer retriesCnt = (Integer) failedMessage.getMessageProperties()
-                .getHeaders().get(HEADER_X_RETRIES_COUNT);
+        Integer retriesCnt = (Integer) failedMessage.getMessageProperties().getHeaders().get(HEADER_X_RETRIES_COUNT);
 
         if (retriesCnt == null) retriesCnt = 1;
+
         if (retriesCnt > MAX_RETRY_COUNT) {
             log.info("Sending message to the parking lot queue");
-
-            rabbitTemplate.send("parkinglot", "parkinglot.push", failedMessage);
+            rabbitTemplate.send("plx", "plx."+failedMessage.getMessageProperties().getReceivedExchange(), failedMessage);
             return;
         }
         log.info("Retrying message for the {} time", retriesCnt);
-        failedMessage.getMessageProperties()
-                .getHeaders().put(HEADER_X_RETRIES_COUNT, ++retriesCnt);
+        failedMessage.getMessageProperties().getHeaders().put(HEADER_X_RETRIES_COUNT, ++retriesCnt);
 
         rabbitTemplate.convertAndSend(failedMessage.getMessageProperties().getReceivedExchange(), failedMessage.getMessageProperties().getReceivedRoutingKey(), failedMessage);
     }
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,
-            exchange = @Exchange(value = "parkinglot", type = ExchangeTypes.TOPIC),
-            key = "parkinglot.*"
+            exchange = @Exchange(value = "plx", type = ExchangeTypes.TOPIC),
+            key = "plx.*"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getDeadMessage(Message deadMessage) throws IOException {
-
-
+        log.info(deadMessage.toString());
     }
 }
 

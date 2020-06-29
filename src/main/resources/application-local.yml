@@ -19,15 +19,6 @@ spring:
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
   rabbitmq:
-    listener:
-      simple:
-        retry:
-          enabled: true
-          max-attempts: 3
-          initial-interval: 3000
-          multiplier: 3
-          max-interval: 10000
-          stateless: true
     port: 5672
     host: localhost
     username: admin
