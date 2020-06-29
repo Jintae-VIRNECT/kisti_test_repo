@@ -40,17 +40,17 @@ export default {
   computed: {
     ...mapGetters(['mainView', 'mute', 'view']),
   },
-  watch: {
-    mainView: {
-      deep: true,
-      handler: function(val) {
-        if (val && val.stream) {
-          let state = this.$call.getState()
-          this.callMic(state.audio)
-        }
-      },
-    },
-  },
+  // watch: {
+  //   mainView: {
+  //     deep: true,
+  //     handler: function(val) {
+  //       if (val && val.stream) {
+  //         let state = this.$call.getState()
+  //         this.callMic(state.audio)
+  //       }
+  //     },
+  //   },
+  // },
   methods: {
     ...mapActions(['callMic']),
     leave() {

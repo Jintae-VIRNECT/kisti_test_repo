@@ -4,7 +4,7 @@
       slot="body"
       description="스피커 on/off"
       size="2.429rem"
-      :active="speaker"
+      :active="speaker.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_volum_on.svg')"
       :inactiveSrc="require('assets/image/call/gnb_ic_volum_off.svg')"
       @action="speakerOnOff"

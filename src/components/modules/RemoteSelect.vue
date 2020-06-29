@@ -135,7 +135,6 @@ export default {
     outline: none;
     outline-offset: 0;
     &::after {
-      background: url(~assets/image/ic_dropdown.svg) no-repeat 50%;
       transform: rotate(-180deg);
       content: '';
     }

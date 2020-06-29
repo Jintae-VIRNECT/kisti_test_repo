@@ -10,7 +10,7 @@
           :options="micDevices"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="micDevice"
+          :defaultValue="micId"
         >
         </r-select>
       </figure>
@@ -24,7 +24,7 @@
           :options="speakerDevices"
           :value="'deviceId'"
           :text="'label'"
-          :defaultValue="speakerDevice"
+          :defaultValue="speakerId"
         >
         </r-select>
       </figure>
@@ -49,7 +49,13 @@ export default {
     RSelect,
   },
   computed: {
-    ...mapGetters(['micDevice', 'speakerDevice']),
+    ...mapGetters(['mic', 'speaker']),
+    micId() {
+      return this.mic['deviceId']
+    },
+    speakerId() {
+      return this.speaker['deviceId']
+    },
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
@@ -59,23 +65,19 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMicDevice', 'setSpeakerDevice']),
-    setMic(newMic) {
-      this.setMicDevice(newMic.deviceId)
+    ...mapActions(['setDevices']),
+    setMic(mic) {
+      this.setDevices({
+        mic: { deviceId: mic.deviceId },
+      })
+      this.$localStorage.setDevice('mic', 'deviceId', mic.deviceId)
     },
-    setSpeaker(newSpeaker) {
-      this.setSpeakerDevice(newSpeaker.deviceId)
+    setSpeaker(speaker) {
+      this.setDevices({
+        speaker: { deviceId: speaker.deviceId },
+      })
+      this.$localStorage.setDevice('speaker', 'deviceId', speaker.deviceId)
     },
-  },
-  created() {
-    const micDefault = localStorage.getItem('micDevice')
-    if (micDefault) {
-      this.setMic(micDefault)
-    }
-    const speakerDefault = localStorage.getItem('speakerDevice')
-    if (speakerDefault) {
-      this.setSpeaker(speakerDefault)
-    }
   },
 }
 </script>

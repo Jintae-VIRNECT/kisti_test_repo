@@ -10,7 +10,7 @@
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="localRecordLength"
+          :defaultValue="localRecord.time"
         >
         </r-select>
       </figure>
@@ -39,7 +39,7 @@
           :options="localRecIntervalOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="localRecordInterval"
+          :defaultValue="localRecord.interval"
         >
         </r-select>
       </figure>
@@ -63,27 +63,22 @@ export default {
     Popover,
   },
   computed: {
-    ...mapGetters(['localRecordLength', 'localRecordInterval']),
+    ...mapGetters(['localRecord']),
   },
   methods: {
-    ...mapActions(['setLocalRecordLength', 'setLocalRecordInterval']),
+    ...mapActions(['setRecord']),
     setRecLength(newRecLength) {
-      this.setLocalRecordLength(newRecLength.value)
+      this.setRecord({
+        time: newRecLength.value,
+      })
+      this.$localStorage.setRecord('time', newRecLength.value)
     },
     setRecInterval(newInterval) {
-      this.setLocalRecordInterval(newInterval.value)
+      this.setRecord({
+        interval: newInterval.value,
+      })
+      this.$localStorage.setRecord('interval', newInterval.value)
     },
-  },
-  created() {
-    const time = localStorage.getItem('recordingTime')
-    if (time) {
-      this.setLocalRecordLength(time)
-    }
-
-    const interval = localStorage.getItem('recordingInterval')
-    if (interval) {
-      this.setLocalRecordInterval(interval)
-    }
   },
 }
 </script>

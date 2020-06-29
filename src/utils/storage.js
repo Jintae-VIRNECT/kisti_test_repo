@@ -52,11 +52,44 @@ export const sessionStorage = new SecureStorage(window.sessionStorage, {
   },
 })
 
+const setDevice = (d, i, v) => {
+  let deviceInfo = parsingItem(originLocalStorage.getItem('deviceInfo'))
+  if (!deviceInfo) {
+    deviceInfo = {}
+  }
+  if (!deviceInfo[d]) {
+    deviceInfo[d] = {}
+  }
+  deviceInfo[d][i] = v
+  localStorage.setItem('deviceInfo', deviceInfo)
+}
+
+const setRecord = (i, v) => {
+  let recordInfo = parsingItem(originLocalStorage.getItem('recordInfo'))
+  if (!recordInfo) {
+    recordInfo = {}
+  }
+  recordInfo[i] = v
+  localStorage.setItem('recordInfo', recordInfo)
+}
+
+const setAllow = (i, v) => {
+  let allow = parsingItem(originLocalStorage.getItem('allow'))
+  if (!allow) {
+    allow = {}
+  }
+  allow[i] = v
+  localStorage.setItem('allow', allow)
+}
+
 //로컬 스토리지
 export const localStorage = {
   ...window.localStorage,
   getItem: k => parsingItem(originLocalStorage.getItem(k)),
   setItem: (k, v) => originLocalStorage.setItem(k, stringifyItem(v)),
+  setDevice: (d, i, v) => setDevice(d, i, v),
+  setRecord: (i, v) => setRecord(i, v),
+  setAllow: (i, v) => setAllow(i, v),
   removeItem: k => originLocalStorage.removeItem(k),
   clear: () => originLocalStorage.clear(),
   key: () => originLocalStorage.key(),

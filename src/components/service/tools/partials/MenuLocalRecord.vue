@@ -59,8 +59,7 @@ export default {
       'mainView',
       'localRecordTarget',
       'screenStream',
-      'localRecordInterval',
-      'recordResolution',
+      'localRecord',
       'resolutions',
       'control',
     ]),
@@ -160,7 +159,7 @@ export default {
         return false
       }
 
-      let timeSlice = Number.parseInt(this.localRecordInterval * 1000, 10)
+      let timeSlice = Number.parseInt(this.localRecord.interval * 1000, 10)
       this.recorder.start(timeSlice)
 
       this.toastDefault(
@@ -222,7 +221,7 @@ export default {
       }
 
       const option = {
-        video: this.getWH(this.recordResolution),
+        video: this.getWH(this.localRecord.resolution),
       }
 
       this.recorder = new MSR.MultiStreamRecorder(recordStream, option)
@@ -295,7 +294,7 @@ export default {
     async setScreenCapture() {
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: this.getWH(this.recordResolution),
+        video: this.getWH(this.localRecord.resolution),
       })
       this.setScreenStream(displayStream)
     },
