@@ -69,9 +69,11 @@
     <h6>{{ $t('purchases.info.way') }}</h6>
     <span class="value">{{ '신용카드' }}</span>
     <el-divider />
-    <el-button type="simple">
-      {{ $t('purchases.info.changePlans') }}
-    </el-button>
+    <a :href="$url.pay">
+      <el-button type="simple">
+        {{ $t('purchases.info.changePlans') }}
+      </el-button>
+    </a>
   </div>
 </template>
 

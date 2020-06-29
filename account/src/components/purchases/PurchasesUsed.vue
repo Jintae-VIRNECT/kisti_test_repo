@@ -80,9 +80,11 @@
             {{ capacityUsed.extend }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
-          <el-button type="simple">
-            {{ $t('purchases.change') }}
-          </el-button>
+          <a :href="$url.pay">
+            <el-button type="simple">
+              {{ $t('purchases.change') }}
+            </el-button>
+          </a>
         </dl>
       </el-col>
     </el-row>

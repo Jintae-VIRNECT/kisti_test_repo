@@ -22,8 +22,12 @@ export default {
   getPaymentLogDetail() {
     return new PaymentLogDetail()
   },
-  getAutoPayments() {
+  async getAutoPayments() {
     const data = [0, 1, 2]
     return data.map(() => new Ticket())
+
+    return await api('GET_AUTO_PAYMENTS', {
+      params: { userno: 71 },
+    })
   },
 }

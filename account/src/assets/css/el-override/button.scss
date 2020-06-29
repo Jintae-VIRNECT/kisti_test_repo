@@ -15,7 +15,7 @@
   }
   &:hover,
   &:focus {
-    color: inherit;
+    color: $font-color-content;
     background: $color-button-hover;
   }
   &:active {

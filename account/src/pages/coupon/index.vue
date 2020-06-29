@@ -99,7 +99,6 @@
 import couponService from '@/services/coupon'
 import CouponList from '@/components/coupon/CouponList'
 import searchMixin from '@/mixins/search'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
   mixins: [searchMixin],
@@ -122,7 +121,7 @@ export default {
       this.searchCoupons(searchParams)
     },
     goGetCouponPage() {
-      window.open(`${urls.www[this.$config.TARGET_ENV]}/coupon`)
+      window.open(`${this.$url.www}/coupon`)
     },
     /**
      * 쿠폰 리스트

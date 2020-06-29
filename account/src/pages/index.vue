@@ -91,7 +91,7 @@ export default {
 
 <style lang="scss">
 #home .container {
-  padding-top: 80px;
+  padding-top: 73px;
   .el-table__empty-block {
     min-height: 300px;
   }
@@ -101,7 +101,7 @@ export default {
   width: 100%;
   height: 420px;
   background: url('~assets/images/bg_profile.jpg') center no-repeat;
-  background-size: 100%;
+  background-size: cover;
 }
 .page-description {
   margin-bottom: 60px;
