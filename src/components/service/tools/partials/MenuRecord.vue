@@ -4,7 +4,7 @@
     :active="isRecording"
     :disabled="disabled"
     :src="require('assets/image/ic_record_off.svg')"
-    :onActive="isRecording"
+    :icActive="isRecording"
     :activeSrc="require('assets/image/ic_record_ing.svg')"
     @click="recording"
   ></menu-button>

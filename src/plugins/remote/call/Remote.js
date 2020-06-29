@@ -82,7 +82,7 @@ const _ = {
       })
       _.publisher.on('streamCreated', () => {
         Store.commit('addStream', getUserObject(_.publisher.stream))
-        _.mic(Store.getters['mic'])
+        _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
           Store.commit('updateResolution', {
             connectionId: _.publisher.stream.connection.connectionId,

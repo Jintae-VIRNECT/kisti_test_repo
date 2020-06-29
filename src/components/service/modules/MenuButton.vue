@@ -6,7 +6,7 @@
       :class="{ active: active, disabled: disabled }"
       v-on="$listeners"
     >
-      <img v-if="onActive" :src="activeSrc" />
+      <img v-if="icActive" :src="activeSrc" />
       <img v-else-if="src" :src="src" />
       <slot v-else></slot>
     </button>
@@ -30,7 +30,7 @@ export default {
       default: false,
     },
     src: String,
-    onActive: {
+    icActive: {
       type: Boolean,
       default: false,
     },

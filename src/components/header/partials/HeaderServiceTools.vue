@@ -16,6 +16,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { DRAWING, AR_DRAWING, ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 
 // import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
@@ -36,25 +38,35 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainView', 'mute']),
+    ...mapGetters(['mainView', 'mute', 'view']),
   },
-  watch: {
-    mainView: {
-      deep: true,
-      handler: function(val) {
-        if (val && val.stream) {
-          let state = this.$call.getState()
-          this.callMic(state.audio)
-        }
-      },
-    },
-  },
+  // watch: {
+  //   mainView: {
+  //     deep: true,
+  //     handler: function(val) {
+  //       if (val && val.stream) {
+  //         let state = this.$call.getState()
+  //         this.callMic(state.audio)
+  //       }
+  //     },
+  //   },
+  // },
   methods: {
     ...mapActions(['callMic']),
     leave() {
       try {
-        this.$call.leave()
-        this.$router.push({ name: 'workspace' })
+        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+          if (this.view === VIEW.DRAWING) {
+            this.$call.drawing(DRAWING.END_DRAWING)
+          }
+          if (this.view === VIEW.AR) {
+            this.$call.arDrawing(AR_DRAWING.END_DRAWING)
+          }
+        }
+        this.$nextTick(() => {
+          this.$call.leave()
+          this.$router.push({ name: 'workspace' })
+        })
       } catch (err) {
         this.$router.push({ name: 'workspace' })
       }

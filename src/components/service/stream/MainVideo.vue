@@ -4,7 +4,7 @@
       class="main-video__box"
       @mouseenter="showTools = true"
       @mouseleave="showTools = false"
-      :class="{ shutter: false }"
+      :class="{ shutter: showShutter }"
     >
       <video
         ref="mainVideo"
@@ -26,7 +26,7 @@
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
-        <template v-if="viewAction !== STREAM_POINTING">
+        <template v-if="allowTools">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>
@@ -74,6 +74,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 import { CAMERA } from 'configs/device.config'
 
@@ -92,7 +93,6 @@ export default {
       status: 'good', // good, normal, bad
       showTools: false,
       loaded: false,
-      STREAM_POINTING: ACTION.STREAM_POINTING,
       videoSize: {
         width: 0,
         height: 0,
@@ -142,17 +142,18 @@ export default {
         return -1
       }
     },
+    allowTools() {
+      if (
+        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.viewAction !== ACTION.STREAM_POINTING
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {
-    deviceInfo: {
-      deep: true,
-      handler(e) {
-        console.log(e)
-      },
-    },
-    cameraStatus(val) {
-      console.log('camera status change:', val)
-    },
     speaker(val) {
       this.$refs['mainVideo'].muted = val ? false : true
     },

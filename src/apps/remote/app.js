@@ -17,6 +17,8 @@ import DayJS from 'plugins/remote/dayjs'
 
 import call from 'plugins/remote/call'
 
+import { localStorage } from 'utils/storage'
+
 Vue.use(DayJS)
 Vue.use(VueToasted)
 Vue.use(Alarm)
@@ -29,6 +31,8 @@ Vue.mixin(globalMixin)
 Vue.use(Vue2Scrollbar)
 
 Vue.use(call, { Store })
+
+Vue.prototype.$localStorage = localStorage
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus

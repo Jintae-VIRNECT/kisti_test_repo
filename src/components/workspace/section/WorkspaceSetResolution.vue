@@ -25,7 +25,7 @@
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="recordResolution"
+          :defaultValue="localRecord.resolution"
         >
         </r-select>
       </figure>
@@ -49,25 +49,17 @@ export default {
     Popover,
   },
   computed: {
-    ...mapGetters(['recordResolution']),
+    ...mapGetters(['localRecord']),
   },
   methods: {
-    ...mapActions(['setRecordResolution']),
+    ...mapActions(['setRecord']),
 
     setRecResolution(newResolution) {
-      if (newResolution.value) {
-        this.setRecordResolution(newResolution.value)
-      } else {
-        this.setRecordResolution(newResolution)
-      }
+      this.setRecord({
+        interval: newResolution.value,
+      })
+      this.$localStorage.setRecord('resolution', newResolution.value)
     },
-  },
-  created() {
-    const resolution = localStorage.getItem('recordingResolution')
-    if (resolution) {
-      console.log('resolution :: ', resolution)
-      this.setRecResolution(resolution)
-    }
   },
 }
 </script>

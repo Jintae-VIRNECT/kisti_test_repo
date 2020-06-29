@@ -29,6 +29,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
   SIGNAL,
+  DRAWING,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
@@ -36,10 +37,11 @@ import {
 import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
+import configmMixin from 'mixins/confirm'
 // import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
-  mixins: [toastMixin],
+  mixins: [toastMixin, configmMixin],
   components: {
     LnbButton,
   },
@@ -111,17 +113,30 @@ export default {
       // leader
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         if (this.currentView === 'ar') {
-          this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
+          // TODO: MESSAGE
+          this.confirmCancel('AR 공유를 종료하시겠습니까?', {
+            text: '종료',
+            action: () => {
+              this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
+              this.goTabConfirm(type)
+            },
+          })
+          return
         }
-        if (type === 'stream') {
-          this.setView(VIEW.STREAM)
+        if (this.currentView === 'drawing') {
+          if (this.shareFile && this.shareFile.id) {
+            // TODO: MESSAGE
+            this.confirmCancel('협업보드를 종료하시겠습니까?', {
+              text: '종료',
+              action: () => {
+                this.$call.drawing(DRAWING.END_DRAWING)
+                this.goTabConfirm(type)
+              },
+            })
+            return
+          }
         }
-        if (type === 'drawing') {
-          this.setView(VIEW.DRAWING)
-        }
-        if (type === 'ar') {
-          this.permissionCheck()
-        }
+        this.goTabConfirm(type)
       } // other user
       else {
         if (this.currentView === VIEW.AR) {
@@ -148,6 +163,17 @@ export default {
         }
       }
     },
+    goTabConfirm(type) {
+      if (type === 'stream') {
+        this.setView(VIEW.STREAM)
+      }
+      if (type === 'drawing') {
+        this.setView(VIEW.DRAWING)
+      }
+      if (type === 'ar') {
+        this.permissionCheck()
+      }
+    },
     goDrawing() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         this.setView(VIEW.DRAWING)
@@ -160,7 +186,6 @@ export default {
       }
     },
     permissionSetting(permission) {
-      console.log('PERMISSION CHECK', permission)
       if (permission === true) {
         this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
         this.setView(VIEW.AR)

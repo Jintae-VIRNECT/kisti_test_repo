@@ -34,7 +34,7 @@
         autoplay
       ></audio>
       <!-- for camera permission -->
-      <video autoplay style="width:0px; height:0px"></video>
+      <!-- <video autoplay style="width:0px; height:0px"></video> -->
     </div>
   </section>
 </template>
@@ -42,7 +42,7 @@
 import SoundMeter from 'plugins/remote/soundmeter'
 import ToggleButton from 'ToggleButton'
 import ProgressBar from 'ProgressBar'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   data: function() {
     return {
@@ -70,6 +70,10 @@ export default {
     ProgressBar,
   },
   computed: {
+    ...mapGetters(['mic']),
+    mic() {
+      return this.mic['deviceId']
+    },
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
@@ -77,9 +81,6 @@ export default {
         return 0
       }
     },
-    ...mapState({
-      mic: state => state.settings.mic,
-    }),
   },
   watch: {
     mic: {

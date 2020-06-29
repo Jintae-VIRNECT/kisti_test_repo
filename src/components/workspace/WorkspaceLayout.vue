@@ -50,10 +50,7 @@ export default {
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
-    const cookie = Number.parseInt(
-      localStorage.getItem('ServiceCookiesAgree'),
-      10,
-    )
+    const cookie = localStorage.getItem('ServiceCookiesAgree')
     return {
       tabFix: false,
       tabTop: 0,
@@ -62,7 +59,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateAccount', 'initWorkspace']),
+    ...mapActions([
+      'updateAccount',
+      'initWorkspace',
+      'setDevices',
+      'setRecord',
+      'setAllow',
+    ]),
     init(account) {
       this.updateAccount(account.myInfo)
       this.initWorkspace(account.myWorkspaces)
@@ -81,9 +84,27 @@ export default {
     toggleList() {
       this.showList = true
     },
+    savedStorageDatas() {
+      const deviceInfo = this.$localStorage.getItem('deviceInfo')
+      if (deviceInfo) {
+        this.setDevices(deviceInfo)
+      }
+      const recordInfo = this.$localStorage.getItem('recordInfo')
+      if (recordInfo) {
+        this.setRecord(recordInfo)
+      }
+      const allow = this.$localStorage.getItem('allow')
+      console.log(allow)
+      if (allow) {
+        this.setAllow(allow)
+      }
+    },
   },
 
   /* Lifecycles */
+  created() {
+    this.savedStorageDatas()
+  },
   mounted() {
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('filelist:open', this.toggleList)

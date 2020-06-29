@@ -4,7 +4,7 @@
       slot="body"
       description="마이크 on/off"
       size="2.429rem"
-      :active="mic"
+      :active="mic.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
       :inactiveSrc="require('assets/image/call/gnb_ic_voice_off.svg')"
       @action="micOnOff"
@@ -37,11 +37,6 @@ export default {
   },
 
   /* Lifecycles */
-  created() {
-    let mic = localStorage.getItem('mic')
-    if (typeof mic === Boolean) {
-      this.callMic(mic)
-    }
-  },
+  created() {},
 }
 </script>

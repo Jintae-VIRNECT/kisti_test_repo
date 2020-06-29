@@ -95,73 +95,33 @@ export default {
 
   /** workspace-settings **/
   /**
-   * set mic device
+   * set devices
    * @param {*} param0
-   * @param {String} payload deviceId
+   * @param {Object} payload
    */
-  setMicDevice({ commit }, payload) {
-    localStorage.setItem('micDevice', payload)
-    commit(types.SETTINGS.SET_MIC_DEVICE, payload)
+  setDevices({ commit }, payload) {
+    if ('mic' in payload) {
+      commit(types.SETTINGS.SET_MIC_DEVICE, payload['mic'])
+    }
+    if ('speaker' in payload) {
+      commit(types.SETTINGS.SET_SPEAKER_DEVICE, payload['speaker'])
+    }
   },
-
   /**
-   * set speaker device
+   * set Record
    * @param {*} param0
-   * @param {String} payload deviceId
+   * @param {Object} payload
    */
-  setSpeakerDevice({ commit }, payload) {
-    localStorage.setItem('speakerDevice', payload)
-    commit(types.SETTINGS.SET_SPEAKER_DEVICE, payload)
+  setRecord({ commit }, payload) {
+    commit(types.SETTINGS.SET_RECORD, payload)
   },
-
   /**
-   * set local recording length
+   * set Allow
    * @param {*} param0
-   * @param {Number} payload record length
+   * @param {Object} payload
    */
-  setLocalRecordLength({ commit }, payload) {
-    localStorage.setItem('recordingTime', payload)
-    commit(types.SETTINGS.SET_LOCAL_RECORD_LENGTH, payload)
-  },
-
-  /**
-   * set record resolution
-   * @param {*} param0
-   * @param {String} payload record resolution
-   */
-  setRecordResolution({ commit }, payload) {
-    localStorage.setItem('recordingResolution', payload)
-    commit(types.SETTINGS.SET_RECORD_RESOLUTION, payload)
-  },
-
-  /**
-   * set local record interval
-   * @param {*} param0
-   * @param {*} payload local record interval
-   */
-  setLocalRecordInterval({ commit }, payload) {
-    localStorage.setItem('recordingInterval', payload)
-    commit(types.SETTINGS.SET_LOCAL_RECORD_INTERVAL, payload)
-  },
-
-  /**
-   * set allow pointing
-   * @param {*} param0
-   * @param {*} payload
-   */
-  setAllowPointing({ commit }, payload) {
-    localStorage.setItem('allowPointing', payload)
-    commit(types.SETTINGS.SET_ALLOW_POINTING, payload)
-  },
-
-  /**
-   * set allow local recording
-   * @param {*} param0
-   * @param {*} payload
-   */
-  setAllowLocalRecording({ commit }, payload) {
-    localStorage.setItem('allowLocalRecording', payload)
-    commit(types.SETTINGS.SET_ALLOW_LOCAL_RECORDING, payload)
+  setAllow({ commit }, payload) {
+    commit(types.SETTINGS.SET_ALLOW, payload)
   },
 
   /**

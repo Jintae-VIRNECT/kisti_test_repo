@@ -4,7 +4,7 @@
     :active="isRecording"
     :disabled="!canRecord"
     :src="require('assets/image/ic_local_record.svg')"
-    :onActive="isRecording"
+    :icActive="isRecording"
     :activeSrc="require('assets/image/ic_local_record_on.svg')"
     @click="recording"
   ></menu-button>
@@ -60,8 +60,7 @@ export default {
       'mainView',
       'localRecordTarget',
       'screenStream',
-      'localRecordInterval',
-      'recordResolution',
+      'localRecord',
       'resolutions',
       'control',
     ]),
@@ -161,7 +160,7 @@ export default {
         return false
       }
 
-      let timeSlice = Number.parseInt(this.localRecordInterval * 1000, 10)
+      let timeSlice = Number.parseInt(this.localRecord.interval * 1000, 10)
       this.recorder.start(timeSlice)
 
       this.toastDefault(
@@ -223,8 +222,8 @@ export default {
       }
 
       const option = {
-        video: getWH(
-          this.recordResolution,
+        video: this.getWH(
+          this.localRecord.resolution,
           this.resolution.width,
           this.resolution.height,
         ),
@@ -300,7 +299,7 @@ export default {
     async setScreenCapture() {
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: getWH(this.recordResolution),
+        video: this.getWH(this.localRecord.resolution),
       })
       this.setScreenStream(displayStream)
     },

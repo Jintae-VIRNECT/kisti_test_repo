@@ -2,15 +2,26 @@
 import { SETTINGS } from '../mutation-types'
 
 const state = {
-  micDevice: null,
-  speakerDevice: null,
+  mic: {
+    deviceId: null,
+    isOn: false,
+  },
+  speaker: {
+    deviceId: null,
+    isOn: true,
+  },
+  localRecordInfo: {
+    time: null,
+    interval: '60',
+    resolution: '480p',
+  },
+  allow: {
+    pointing: false,
+    localRecording: false,
+  },
+
   videoDevice: null,
   language: null,
-  localRecordLength: null,
-  recordResolution: '480p',
-  localRecordInterval: '60',
-  allowPointing: false,
-  allowLocalRecording: false,
 
   //may need move other store
   //stream for local steram(screen stream)
@@ -21,33 +32,23 @@ const state = {
 
 const mutations = {
   [SETTINGS.SET_MIC_DEVICE](state, mic) {
-    state.micDevice = mic
+    Object.assign(state.mic, mic)
   },
   [SETTINGS.SET_SPEAKER_DEVICE](state, speaker) {
-    state.speakerDevice = speaker
+    Object.assign(state.speaker, speaker)
   },
+  [SETTINGS.SET_RECORD](state, recordInfo) {
+    Object.assign(state.localRecordInfo, recordInfo)
+  },
+  [SETTINGS.SET_ALLOW](state, allow) {
+    Object.assign(state.allow, allow)
+  },
+
   [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
     state.videoDevice = videoDevice
   },
   [SETTINGS.SET_LANGUAGE](state, language) {
     state.language = language
-  },
-  [SETTINGS.SET_LOCAL_RECORD_LENGTH](state, localRecordLength) {
-    state.localRecordLength = localRecordLength
-  },
-  [SETTINGS.SET_RECORD_RESOLUTION](state, recordResolution) {
-    state.recordResolution = recordResolution
-  },
-  [SETTINGS.SET_LOCAL_RECORD_INTERVAL](state, localRecordInterval) {
-    state.localRecordInterval = localRecordInterval
-  },
-
-  [SETTINGS.SET_ALLOW_POINTING](state, allowPointing) {
-    state.allowPointing = allowPointing
-  },
-
-  [SETTINGS.SET_ALLOW_LOCAL_RECORDING](state, allowLocalRecording) {
-    state.allowLocalRecording = allowLocalRecording
   },
 
   [SETTINGS.SET_SCREEN_STREAM](state, screenStream) {

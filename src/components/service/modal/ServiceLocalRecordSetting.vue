@@ -36,11 +36,11 @@
         <p class="rec-setting__text">최대 녹화 시간</p>
         <r-select
           class="rec-setting__selector"
-          v-on:changeValue="setRecLength"
+          @changeValue="changeSetting('time', $event)"
           :options="localRecTimeOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="localRecordLength"
+          :defaultValue="localRecord.time"
         >
         </r-select>
       </div>
@@ -70,11 +70,11 @@
         </div>
         <r-select
           class="rec-setting__selector"
-          v-on:changeValue="setRecInterval"
+          @changeValue="changeSetting('interval', $event)"
           :options="localRecIntervalOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="localRecordInterval"
+          :defaultValue="localRecord.interval"
         >
         </r-select>
       </div>
@@ -106,11 +106,11 @@
 
         <r-select
           class="rec-setting__selector"
-          v-on:changeValue="setRecResolution"
+          @changeValue="changeSetting('resolution', $event)"
           :options="localRecResOpt"
           :value="'value'"
           :text="'text'"
-          :defaultValue="recordResolution"
+          :defaultValue="localRecord.resolution"
         >
         </r-select>
       </div>
@@ -136,7 +136,11 @@ import toastMixin from 'mixins/toast'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
-import { localRecTimeOpt, localRecResOpt } from 'utils/recordOptions'
+import {
+  localRecTimeOpt,
+  localRecResOpt,
+  localRecIntervalOpt,
+} from 'utils/recordOptions'
 
 export default {
   name: 'ServiceLocalRecordSetting',
@@ -155,15 +159,11 @@ export default {
       selectParticipantRecTarget: 'recordWorker',
       visibleFlag: false,
 
-      localRecordingTime: '',
-      localRecordingResolution: '',
-      joinerPointingApprove: false,
-
       toastFlag: false,
 
       localRecTimeOpt: localRecTimeOpt,
-
       localRecResOpt: localRecResOpt,
+      localRecIntervalOpt: localRecIntervalOpt,
 
       radioOption: {
         options: [
@@ -179,12 +179,6 @@ export default {
         text: 'text',
         value: 'value',
       },
-      localRecIntervalOpt: [
-        {
-          value: '60',
-          text: '1분',
-        },
-      ],
     }
   },
   props: {
@@ -195,14 +189,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'localRecordLength',
-      'localRecordInterval',
-      'recordResolution',
-      'allowPointing',
-      'allowLocalRecording',
-      'screenStream',
-    ]),
+    ...mapGetters(['localRecord', 'allow', 'screenStream']),
     isLeader() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -217,13 +204,19 @@ export default {
       this.visibleFlag = flag
     },
     localRecording(flag) {
-      this.setAllowLocalRecording(!!flag)
+      this.setAllow({
+        localRecording: !!flag,
+      })
       this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
+      this.$localStorage.setAllow('localRecording', !!flag)
       this.showToast()
     },
     pointing(flag) {
-      this.setAllowPointing(!!flag)
+      this.setAllow({
+        pointing: !!flag,
+      })
       this.$call.control(CONTROL.POINTING, !!flag)
+      this.$localStorage.setAllow('pointing', !!flag)
       this.showToast()
     },
 
@@ -252,66 +245,22 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setLocalRecordLength',
-      'setLocalRecordInterval',
-      'setRecordResolution',
-      'setAllowPointing',
-      'setAllowLocalRecording',
+      'setRecord',
+      'setAllow',
       'setScreenStream',
       'setLocalRecordTarget',
     ]),
-
-    setRecLength(newRecLength) {
-      this.setLocalRecordLength(newRecLength.value)
-      this.showToast()
-    },
-    setRecInterval(newInterval) {
-      this.setLocalRecordInterval(newInterval.value)
-      this.showToast()
-    },
-
-    setRecResolution(newResolution) {
-      if (newResolution.value) {
-        this.setRecordResolution(newResolution.value)
-      } else {
-        this.setRecordResolution(newResolution)
-      }
-      this.showToast()
+    changeSetting(item, setting) {
+      const param = {}
+      param[item] = setting.value
+      this.setRecord(param)
+      this.$localStorage.setRecord(item, setting.value)
     },
 
     beforeClose() {
       this.$emit('update:visible', false)
     },
 
-    init() {
-      const time = localStorage.getItem('recordingTime')
-      if (time) {
-        this.setLocalRecordLength(time)
-      }
-
-      const interval = localStorage.getItem('recordingInterval')
-      if (interval) {
-        this.setLocalRecordInterval(interval)
-      }
-
-      const resolution = localStorage.getItem('recordingResolution')
-      if (resolution) {
-        this.setRecResolution(resolution)
-      }
-
-      const allowPointing = localStorage.getItem('allowPointing')
-      console.log(allowPointing)
-      if (allowPointing) {
-        this.setAllowPointing(allowPointing === 'true' ? true : false)
-      }
-
-      const allowLocalRecording = localStorage.getItem('allowLocalRecording')
-      if (allowLocalRecording) {
-        this.setAllowLocalRecording(allowPointing === 'true' ? true : false)
-      }
-
-      this.toastFlag = true
-    },
     showToast() {
       if (this.toastFlag) {
         this.toastNotify('변경사항을 저장했습니다.')
@@ -320,7 +269,8 @@ export default {
   },
 
   created() {
-    this.init()
+    this.localRecording = this.allow.localRecording
+    this.pointing = this.allow.pointing
   },
 }
 </script>
