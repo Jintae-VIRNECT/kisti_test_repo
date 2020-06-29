@@ -33,6 +33,7 @@ export const DRAWING = {
   FIRST_FRAME: 'firstFrame',
   FRAME: 'frame',
   LAST_FRAME: 'lastFrame',
+  END_DRAWING: 'endDrawing',
 }
 
 export const AR_POINTING = {

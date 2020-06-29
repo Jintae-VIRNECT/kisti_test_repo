@@ -78,7 +78,7 @@ export const addSessionEventListener = session => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     Store.commit('deviceControl', {
-      zoom: data.currentZoomLevel,
+      zoomLevel: data.currentZoomLevel,
       zoomMax: data.maxZoomLevel,
       cameraStatus: data.status,
     })

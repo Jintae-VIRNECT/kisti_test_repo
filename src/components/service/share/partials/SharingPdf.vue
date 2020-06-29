@@ -172,7 +172,6 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    console.log(this.fileInfo)
     this.init()
   },
 }
