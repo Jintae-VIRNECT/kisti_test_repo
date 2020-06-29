@@ -96,7 +96,7 @@ const config = mode => {
         },
         {
           test: /assets\/image\/|\.(png|jpg|jpeg|gif|svg|svgz)(\?.+)?$/,
-          exclude: /favicon\.png$/,
+          exclude: /favicon\.ico$/,
           use: [
             {
               loader: 'url-loader',
