@@ -174,6 +174,7 @@ export default {
           if (this.account.roleType === ROLE.EXPERT_LEADER) {
             const params = {
               imgId: this.file.id,
+              imgName: this.file.fileName,
               width: canvas.getWidth(),
               height: canvas.getHeight(),
             }
