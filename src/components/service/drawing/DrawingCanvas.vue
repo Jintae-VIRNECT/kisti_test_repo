@@ -175,8 +175,8 @@ export default {
             const params = {
               imgId: this.file.id,
               imgName: this.file.fileName,
-              width: canvas.getWidth(),
-              height: canvas.getHeight(),
+              width: bgImage.width,
+              height: bgImage.height,
             }
 
             const chunk = getChunk(this.file.img)
