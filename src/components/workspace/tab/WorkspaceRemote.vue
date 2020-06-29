@@ -47,7 +47,11 @@ export default {
   },
   computed: {
     roomList() {
-      return this.getFilter(this.rooms, ['title', 'description'])
+      return this.getFilter(this.rooms, [
+        'title',
+        'description',
+        'participants[].nickname',
+      ])
     },
   },
   watch: {},
