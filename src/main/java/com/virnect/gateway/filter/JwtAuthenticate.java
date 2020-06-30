@@ -47,6 +47,9 @@ public class JwtAuthenticate implements GlobalFilter {
         boolean isAuthenticateSkipUrl = requestUriPath.startsWith("/auth") ||
                 requestUriPath.startsWith("/admin") ||
                 requestUriPath.startsWith("/users/find") ||
+                requestUriPath.startsWith("/licenses/allocate/check") ||
+                requestUriPath.startsWith("/licenses/allocate") ||
+                requestUriPath.startsWith("/licenses/deallocate") ||
                 requestUriPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
         if (isAuthenticateSkipUrl) {
