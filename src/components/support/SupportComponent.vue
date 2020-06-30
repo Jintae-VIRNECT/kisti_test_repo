@@ -1,35 +1,42 @@
 <template>
   <div class="support">
-    <div class="body">
-      <div class="body__graphic">
+    <div class="support-body">
+      <div class="support-body__graphic">
         <img
+          v-if="isScreenDesktop"
           src="~assets/image/support/img_support_404.svg"
           alt="Browser is not supported"
         />
+        <img
+          v-else
+          src="~assets/image/support/img_support_404_m.svg"
+          alt="Browser is not supported"
+        />
       </div>
-      <h2 class="body__title" v-html="$t('support.header_title')"></h2>
+      <h2 class="support-body__title" v-html="$t('support.header_title')"></h2>
       <p
-        class="body--description"
+        class="support-body--description"
         v-html="$t('support.header_description')"
       ></p>
       <p
-        class="body--mobile"
+        class="support-body--mobile"
         v-html="$t('support.header_description_mobile')"
       ></p>
       <div>
-        <el-button v-if="isScreenDesktop" @click="pcWeb">{{
-          $t('support.pc_web_button')
-        }}</el-button>
-        <el-button v-else @click="mobile">{{
-          $t('support.mobile_button')
-        }}</el-button>
+        <button
+          class="support-body--button"
+          v-if="isScreenDesktop"
+          @click="pcWeb"
+        >
+          {{ $t('support.pc_web_button') }}
+        </button>
       </div>
     </div>
 
-    <footer class="footer">
-      <div class="footer__inner">
-        <p class="footer__copyright">
-          &copy; VIRNECT CO., LTD. All Rights Reserved.
+    <footer class="support-footer">
+      <div class="support-footer__inner">
+        <p class="support-footer__copyright">
+          &copy; VIRNECT CO., LTD. All rights reserved.
         </p>
       </div>
     </footer>

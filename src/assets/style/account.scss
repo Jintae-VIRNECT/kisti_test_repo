@@ -2,11 +2,92 @@
 
 @import "common";
 @import "./plugin/material-icons";
-@import "./vendors/elements/index";
 
 $header_height: 80px;
 $footer_height: 100px;
 $header_m_height: 56px;
+.account-wrapper {
+  height: 100vh;
+  max-height: -webkit-fill-available;
+  background: #f8f8f8;
 
-@import "./account/account-layout";
-@import "./account/account-login";
+  @include desktop {
+    position: relative;
+    height: 100vh;
+    min-height: 700px;
+  }
+}
+.login-body {
+  position: relative;
+  display: flex;
+  height: calc(100vh - 180px);
+  min-height: calc(700px - 180px);
+  margin: 0 auto;
+  text-align: center;
+
+  @include tablet {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: $size_m_min;
+    max-width: $size_m_max;
+    height: calc(100% - 57px);
+    max-height: -webkit-fill-available;
+  }
+}
+
+.login-center {
+  padding: 0 $size_m_pad;
+
+  @include desktop {
+    position: relative;
+    top: 50%;
+    display: inline-block;
+    width: 540px;
+    padding: 60px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transform: translateY(-50%);
+  }
+}
+
+//타이틀
+.login--title {
+  padding: 15px 0 25px;
+  color: #222;
+  font-size: 2.71rem;
+  text-align: center;
+
+  @include tablet {
+    padding: 20px 0 25px;
+    font-weight: 500;
+    font-size: 20px;
+  }
+}
+
+//정보입력 영역
+.login-form {
+  display: flex;
+
+  > input {
+    width: calc(100% - 30px);
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: solid 1px #939393;
+    border-radius: 4px;
+  }
+
+  &--submit {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #0f75f5;
+    border-radius: 4px;
+
+    @include tablet {
+      margin-top: 10px;
+    }
+  }
+}

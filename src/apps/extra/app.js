@@ -3,14 +3,11 @@ import 'babel-polyfill'
 
 import Vue from 'vue'
 import Router from 'routers/extra'
-import ElementUI from 'element-ui'
 import i18n from 'plugins/remote/i18n'
 import Store from 'stores/remote/store'
 
 import App from './app.vue'
 import globalMixin from 'mixins/global'
-
-Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 
 Vue.mixin(globalMixin)
 

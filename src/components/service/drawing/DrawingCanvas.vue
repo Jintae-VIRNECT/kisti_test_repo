@@ -174,7 +174,9 @@ export default {
           if (this.account.roleType === ROLE.EXPERT_LEADER) {
             const params = {
               imgId: this.file.id,
-              imgName: this.file.fileName,
+              imgName: this.file.oriName
+                ? this.file.oriName
+                : this.file.fileName,
               width: bgImage.width,
               height: bgImage.height,
             }
@@ -253,7 +255,7 @@ export default {
       }
     },
     optimizeCanvasSize() {
-      if (!this.file || !this.file.id) return
+      if (!this.file || !this.file.id || !this.canvas) return
       const canvas = this.canvas
       const image = canvas.backgroundImage
       const parent = this.$el.parentNode

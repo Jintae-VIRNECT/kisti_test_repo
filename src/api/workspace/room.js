@@ -1,8 +1,4 @@
 import http from 'api/gateway'
-// import roomlist from './roomlist.json'
-// import roomdetail from './roomdetail.json'
-import participants from './participantslist.json'
-// import inviteParticipants from './inviteparticipantslist.json'
 
 /**
  * 진행중인 원격협업 리스트 조회
@@ -68,9 +64,9 @@ export const participantsList = async function({ roomId }) {
   // const returnVal = await http('PARTICIPANTS_LIST', {
   //   roomId,
   // })
-  console.log('PARTICIPANTS_LIST')
-  console.log('param::', roomId)
-  const returnVal = participants
+  // console.log('PARTICIPANTS_LIST')
+  // console.log('param::', roomId)
+  const returnVal = {}
 
   return returnVal
 }

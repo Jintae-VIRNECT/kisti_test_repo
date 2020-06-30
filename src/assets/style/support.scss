@@ -8,140 +8,139 @@
   justify-content: center;
   width: 100%;
   height: 100vh;
-  background: $color_bg_display;
+  font-size: 14px;
+  background: url("~assets/image/support/img_support_bg.svg") $color_bg_display;
+}
+
+.support-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  margin-bottom: 8.5em;
+  text-align: center;
+  @include tablet {
+    margin-top: -3.571em;
+    padding: 0 1.429em;
+  }
+  @include mobile {
+    margin: auto;
+    padding: 0 0 4.5em 0;
+  }
+}
+
+.support-body__graphic {
+  margin: 0 auto;
+  padding: 0.714em 0;
+  line-height: 0;
+  text-align: center;
+
+  @include mobile {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.support-body__title {
+  margin: 2em 1.429em 0;
+  color: $color_text;
+  font-weight: 700;
+  font-size: 2.143em;
+  word-break: keep-all;
 
   @include tablet {
-    background: $color_bg_display;
+    margin-top: 3px;
+    font-size: 1.429em;
+  }
+  .c-emote {
+    color: $color_primary;
+  }
+}
+
+.support-body--description {
+  margin: 1em 0 2.857em;
+  color: $color_text;
+  font-size: 1.143em;
+  line-height: 1.62;
+  opacity: 70%;
+
+  @include tablet {
+    margin: 0.429em 0 1.714em;
+    font-size: 0.929em;
   }
 
-  .body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    margin-bottom: 8.5rem;
-    text-align: center;
-    background-image: url("~assets/image/support/img_support_bg.svg");
-    @include tablet {
-      margin-top: -50px;
-      padding: 0 20px;
-    }
-    @include mobile {
-      margin-bottom: 4.5rem;
-    }
-
-    .el-button {
-      width: 252px;
-      height: 50px;
-      color: $color_primary;
-      background: rgb(255, 255, 255);
-      border: 1px solid rgb(204, 209, 215);
-      border-radius: 4px;
-      box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05);
-
-      &:hover {
-        background: #d8d8d8;
-      }
-
-      &:active {
-        background: #afafaf;
-        border: none;
-      }
-
-      > span {
-        color: $color_primary;
-      }
-
-      @include tablet {
-        width: 200px;
-        padding: 15px 20px;
-        font-size: 12px;
-      }
-      @include mobile {
-        display: none;
-      }
-    }
-  }
-  u {
-    color: #ffffff;
-  }
-
-  .body__graphic {
-    margin: 0 auto;
-    padding: 10px 0;
-    line-height: 0;
-    text-align: center;
-
-    @include mobile {
-      max-width: 80%;
-      margin-bottom: 10px;
-    }
-  }
-
-  .body__title {
-    margin: 28px 20px 0;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 30px;
-    word-break: keep-all;
-
-    @include tablet {
-      margin: 17px 0 0;
-      font-size: 21px;
-    }
-    .c-remote {
-      color: $color_primary;
-    }
-  }
-
-  .body--description {
-    margin: 14px 0 40px;
-    color: #ffffff;
-    font-size: 16px;
-    line-height: 1.62;
-    opacity: 70%;
-
-    @include tablet {
-      margin: 6px 0 24px;
-      font-size: 13px;
-    }
-
-    @include mobile {
-      display: none;
-    }
-  }
-
-  .body--mobile {
+  @include mobile {
     display: none;
-    margin: 14px 0 40px;
-    color: #ffffff;
-    font-size: 16px;
-    line-height: 1.62;
-    opacity: 70%;
+  }
+}
+
+.support-body--mobile {
+  display: none;
+  margin: 1em 0 2.857em;
+  color: $color_text;
+  font-size: 1.143em;
+  line-height: 1.62;
+  opacity: 70%;
+  @include mobile {
+    display: block;
+    margin-top: 1.929em;
+    font-size: 1em;
+  }
+}
+
+.support-body--button {
+  width: 18em;
+  height: 3.571em;
+  color: $color_primary;
+  font-weight: 500;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(204, 209, 215);
+  border-radius: 4px;
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    background: #d8d8d8;
+  }
+
+  &:active {
+    background: #afafaf;
+    border: none;
+  }
+
+  @include tablet {
+    width: 200px;
+    padding: 1.071em 1.429em;
+    font-size: 0.857em;
+  }
+  @include mobile {
+    display: none;
+  }
+}
+
+.support-footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 2.857em;
+  text-align: center;
+
+  .support-footer__inner {
+    margin: 0 auto;
+  }
+
+  .support-footer__copyright {
+    margin-top: 0.429em;
+    color: $color_text;
+    opacity: 50%;
     @include mobile {
-      display: block;
-      margin-top: 27px;
+      font-size: 0.929em;
     }
   }
+}
 
-  .footer {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    padding-bottom: 40px;
-    text-align: center;
-
-    .footer__inner {
-      margin: 0 auto;
-    }
-
-    .footer__copyright {
-      margin-top: 6px;
-      color: #ffffff;
-      opacity: 50%;
-    }
-  }
+.c-remote {
+  color: $color_primary;
 }

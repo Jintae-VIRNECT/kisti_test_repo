@@ -8,7 +8,6 @@ import Store from 'stores/remote/store'
 import App from './app.vue'
 import globalMixin from 'mixins/global'
 
-import ElementUI from 'element-ui'
 import i18n from 'plugins/remote/i18n'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import VueToasted from 'plugins/remote/toasted'
@@ -22,10 +21,6 @@ import { localStorage } from 'utils/storage'
 Vue.use(DayJS)
 Vue.use(VueToasted)
 Vue.use(Alarm)
-
-Vue.use(ElementUI, {
-  i18n: (key, value) => i18n.t(key, value),
-})
 
 Vue.mixin(globalMixin)
 Vue.use(Vue2Scrollbar)

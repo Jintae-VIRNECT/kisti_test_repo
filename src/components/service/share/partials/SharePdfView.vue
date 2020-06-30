@@ -13,6 +13,8 @@
           v-for="(sharing, idx) of sharingList"
           :key="'sharing' + idx"
           :fileInfo="sharing"
+          :pdfName="file.name"
+          :pdfPage="sharing.pageNum"
         ></sharing-image>
       </ol>
     </vue2-scrollbar>
@@ -55,8 +57,5 @@ export default {
       this.$emit('back')
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

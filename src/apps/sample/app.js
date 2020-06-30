@@ -3,7 +3,6 @@ import 'babel-polyfill'
 
 import Vue from 'vue'
 import globalMixin from 'mixins/global'
-import ElementUI from 'element-ui'
 import Router from 'routers/sample'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import DayJS from 'plugins/remote/dayjs'
@@ -11,7 +10,6 @@ import DayJS from 'plugins/remote/dayjs'
 import App from './app.vue'
 
 Vue.use(DayJS)
-Vue.use(ElementUI)
 
 Vue.use(Vue2Scrollbar)
 Vue.mixin(globalMixin)

@@ -101,10 +101,11 @@ export default {
           participantsId: id,
         })
         if (removeRtn) {
-          const participants = await participantsList({
-            roomId: this.roomId,
-          })
-          this.users = participants.participants
+          // TODO: API 생성 필요
+          // const participants = await participantsList({
+          //   roomId: this.roomId,
+          // })
+          // this.users = participants.participants
         }
       } catch (err) {
         console.error(err)

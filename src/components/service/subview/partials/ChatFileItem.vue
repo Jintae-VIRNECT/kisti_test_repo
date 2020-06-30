@@ -104,7 +104,6 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('chatfile::release', this.release)
-    console.log(this.icon)
   },
   beforeDestroy() {
     this.$eventBus.$off('chatfile::release')

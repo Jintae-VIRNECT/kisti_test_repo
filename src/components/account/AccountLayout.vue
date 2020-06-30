@@ -1,64 +1,73 @@
 <template>
   <div class="account-wrapper" android:windowSoftInputMode="adjustResize">
-    <account-header v-if="false"></account-header>
+    <main class="login-body">
+      <div class="login-center">
+        <h2 class="login--title">로그인</h2>
 
-    <router-view></router-view>
-    <!-- <component :is="component"></component> -->
+        <fieldset class="login-form">
+          <input
+            type="text"
+            v-model.trim="form.userId"
+            placeholder="아이디"
+            @keyup.enter="doLogin($event)"
+          />
+          <input
+            type="password"
+            v-model.trim="form.userPw"
+            placeholder="비밀번호"
+            @keyup.enter="doLogin($event)"
+          />
+
+          <button
+            type="primary"
+            size="full"
+            class="login-form--submit"
+            @click="doLogin($event)"
+          >
+            로그인
+          </button>
+        </fieldset>
+      </div>
+    </main>
   </div>
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
-// import { sessionStorage } from 'utils/storage'
-import AccountHeader from './header/AccountHeader'
-// import langMixin from 'mixins/language'
+import { login } from 'api/common/account'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'AccountLayout',
-  beforeRouteEnter(to, from, next) {
-    // const account = sessionStorage.getItem('account')
-    // if (account && account.sId) {
-    //   // 로그인 상태 시 서비스로 이동.
-    //   location.replace('/service')
-    //   return
-    // } else {
-    //   // 비 로그인 상태 시
-    //   sessionStorage.clear()
-    //   next()
-    // }
-  },
-  // mixins: [langMixin],
-  components: {
-    AccountHeader,
-  },
   data() {
     return {
-      component: null,
-      name: '',
+      requestBlocking: false,
+      validId: true,
+      validPw: true,
+      form: {
+        userId: '',
+        userPw: '',
+      },
     }
   },
-  computed: {
-    // ...mapGetters(['isLogin']),
-  },
-  watch: {
-    // isLogin(value) {
-    //   if (value === true) {
-    //     this.$router.push({ name: 'home' })
-    //   }
-    // },
-  },
-
-  /* Lifecycles */
-  created() {
-    // if (
-    //   this.$route.query &&
-    //   this.$route.query.lang &&
-    //   this.mx_languages.findIndex(lang => lang === this.$route.query.lang) > -1
-    // ) {
-    //   this.mx_changeLanguage(this.$route.query.lang)
-    // } else {
-    //   this.mx_changeLanguage()
-    // }
+  methods: {
+    setTokensFromCookies(access, refresh) {
+      Cookies.set('accessToken', access)
+      Cookies.set('refreshToken', refresh)
+      location.href = '/home'
+    },
+    async doLogin() {
+      try {
+        const params = {
+          email: this.form.userId,
+          password: this.form.userPw,
+          rememberMe: false,
+        }
+        const rtn = await login(params)
+        this.setTokensFromCookies(rtn.accessToken, rtn.refreshToken)
+      } catch (err) {
+        console.log(err)
+      }
+    },
   },
 }
 </script>

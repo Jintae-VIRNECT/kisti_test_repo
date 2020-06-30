@@ -129,16 +129,21 @@ export default {
       })
       canvas.width = viewport.width
       canvas.height = viewport.height
-      await renderTask.promise.then(() => {
+      await renderTask.promise
+      const blobData = await this.getCanvasBlob(canvas)
+      blobData.name = fileReader.pageNumber
+      const docPage = {
+        id: this.fileInfo.id,
+        pageNum: fileReader.pageNumber,
+        filedata: blobData,
+      }
+      await this.addPdfPage(docPage)
+    },
+    getCanvasBlob(canvas) {
+      return new Promise(resolve => {
         canvas.toBlob(
-          blobData => {
-            blobData.name = fileReader.pageNumber
-            const docPage = {
-              id: this.fileInfo.id,
-              pageNum: fileReader.pageNumber,
-              filedata: blobData,
-            }
-            this.addPdfPage(docPage)
+          blob => {
+            resolve(blob)
           },
           'image/jpeg',
           1,

@@ -8,8 +8,8 @@ export const addSessionEventListener = session => {
       const streamObj = getUserObject(subscriber.stream)
       Store.commit('addStream', streamObj)
       _.sendResolution()
-      _.control(CONTROL.POINTING, Store.getters['allowPointing'])
-      _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecording'])
+      _.control(CONTROL.POINTING, Store.getters['allow'].pointing)
+      _.control(CONTROL.LOCAL_RECORD, Store.getters['allow'].localRecord)
     })
     addSubscriber(subscriber)
   })
@@ -76,9 +76,9 @@ export const addSessionEventListener = session => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     Store.commit('deviceControl', {
-      zoomLevel: data.currentZoomLevel,
-      zoomMax: data.maxZoomLevel,
-      cameraStatus: data.status,
+      zoomLevel: parseFloat(data.currentZoomLevel),
+      zoomMax: parseInt(data.maxZoomLevel),
+      cameraStatus: parseInt(data.status),
     })
   })
   /** 화면 해상도 설정 */

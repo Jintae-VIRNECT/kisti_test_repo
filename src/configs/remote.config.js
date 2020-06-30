@@ -55,7 +55,6 @@ export const AR_FEATURE = {
 export const AR_DRAWING = {
   FRAME_REQUEST: 'frameRequest',
   FRAME_RESPONSE: 'frameResponse',
-  FRAME_RECEIVED: 'frameReceived',
   FIRST_FRAME: 'firstFrame',
   FRAME: 'frame',
   LAST_FRAME: 'lastFrame',
