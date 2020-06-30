@@ -34,7 +34,11 @@
                 </span>
               </dd>
             </dl>
-            <el-button type="simple" class="wide">
+            <el-button
+              type="simple"
+              class="wide"
+              @click="showAutoPaymentInfoModal = true"
+            >
               {{ $t('common.more') }}
             </el-button>
           </el-card>
@@ -44,9 +48,11 @@
               <dt>{{ $t('payment.way.change') }}</dt>
               <dd>
                 <p>{{ $t('payment.way.changeDesc') }}</p>
-                <el-button type="simple" class="wide">
-                  {{ $t('common.change') }}
-                </el-button>
+                <a :href="$url.pay">
+                  <el-button type="simple" class="wide">
+                    {{ $t('common.change') }}
+                  </el-button>
+                </a>
               </dd>
               <el-divider />
               <dt>{{ $t('payment.way.autoPayment') }}</dt>
@@ -101,14 +107,19 @@
       </el-row>
     </div>
     <!-- 모달 -->
+    <auto-payment-info-modal
+      :autoPaymentItems="autoPayments.items"
+      :visible.sync="showAutoPaymentInfoModal"
+    />
     <auto-payment-cancel-modal
-      :autoPayments="autoPayments.items"
+      :autoPaymentId="autoPayments.id"
+      :autoPaymentItems="autoPayments.items"
       :visible.sync="showAutoPaymentCancelModal"
     />
-    <payment-log-detail-modal
+    <!-- <payment-log-detail-modal
       :logInfo="activeLog"
       :visible.sync="showPaymentLogDetailModal"
-    />
+    /> -->
   </div>
 </template>
 
@@ -117,14 +128,16 @@ import columnMixin from '@/mixins/columns'
 import filterMixin from '@/mixins/filters'
 import searchMixin from '@/mixins/search'
 import paymentService from '@/services/payment'
+import AutoPaymentInfoModal from '@/components/payment/AutoPaymentInfoModal'
 import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
-import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
+// import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
 
 export default {
   mixins: [columnMixin, filterMixin, searchMixin],
   components: {
+    AutoPaymentInfoModal,
     AutoPaymentCancelModal,
-    PaymentLogDetailModal,
+    // PaymentLogDetailModal,
   },
   async asyncData() {
     const promises = {
@@ -141,6 +154,7 @@ export default {
     return {
       paymentLogsPage: 1,
       activeLog: null,
+      showAutoPaymentInfoModal: false,
       showAutoPaymentCancelModal: false,
       showPaymentLogDetailModal: false,
     }
@@ -153,9 +167,11 @@ export default {
       this.paymentLogs = list
       this.paymentLogsTotal = total
     },
-    showLogDetail(log) {
-      this.activeLog = log
-      this.showPaymentLogDetailModal = true
+    async showLogDetail(log) {
+      // this.activeLog = log
+      // this.showPaymentLogDetailModal = true
+      const { slipLink } = await paymentService.getPaymentLogDetail(log.no)
+      if (slipLink) window.open(slipLink)
     },
   },
 }

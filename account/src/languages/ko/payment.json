@@ -26,6 +26,10 @@
       "paidDate": "결제일"
     }
   },
+  "autoPaymentInfoModal": {
+    "desc": "결제 예정 정보를 확인해 주세요.",
+    "submit": "변경하기"
+  },
   "autoPaymentCancelModal": {
     "desc": "해지하실 제품 플랜 및 이용권을 다시 한 번 확인해 주세요.",
     "column": {

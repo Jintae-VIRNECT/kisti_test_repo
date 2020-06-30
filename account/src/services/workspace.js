@@ -20,14 +20,7 @@ export default {
     const masterWorkspace = getMyWorkspaces().find(
       workspace => workspace.role === 'MASTER',
     )
-    const { workspaceInfo } = await api('GET_WORKSPACE_INFO', {
-      route: { workspaceId: masterWorkspace.uuid },
-    })
-    const masterWorkspaceInfo = new Workspace(workspaceInfo)
-    const { nickname, image } = getMyProfile()
-    masterWorkspaceInfo.masterNickName = nickname
-    masterWorkspaceInfo.masterProfile = image
-    return masterWorkspaceInfo
+    return masterWorkspace
   },
   /**
    * 워크스페이스 목록 검색

@@ -4,7 +4,7 @@ import Ticket from './Ticket'
 export default class AutoPaymentInfo extends Model {
   constructor(json) {
     super()
-    this.no = json.MSeqNo
+    this.id = json.MSeqNo
     this.way = json.PGName
     this.price = json.TotalPayAmt
     this.priceUnit = json.CurrencyCode
