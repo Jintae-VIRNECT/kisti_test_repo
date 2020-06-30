@@ -25,9 +25,9 @@
         <p class="rec-setting__text">녹화대상</p>
         <div class="rec-setting__selector">
           <r-radio
-            :options="radioOption.options"
-            :text="radioOption.text"
-            :value="radioOption.value"
+            :options="localRecordTarget"
+            :value="'value'"
+            :text="'text'"
             :selectedOption.sync="selectParticipantRecTarget"
           ></r-radio>
         </div>
@@ -140,6 +140,7 @@ import {
   localRecTimeOpt,
   localRecResOpt,
   localRecIntervalOpt,
+  localRecordTarget,
 } from 'utils/recordOptions'
 
 export default {
@@ -156,29 +157,16 @@ export default {
     return {
       localRecording: false,
       pointing: false,
-      selectParticipantRecTarget: 'recordWorker',
-      visibleFlag: false,
 
+      visibleFlag: false,
       toastFlag: false,
+
+      selectParticipantRecTarget: 'recordWorker',
 
       localRecTimeOpt: localRecTimeOpt,
       localRecResOpt: localRecResOpt,
       localRecIntervalOpt: localRecIntervalOpt,
-
-      radioOption: {
-        options: [
-          {
-            text: '영상 녹화',
-            value: 'recordWorker',
-          },
-          {
-            text: '화면 녹화',
-            value: 'recordScreen',
-          },
-        ],
-        text: 'text',
-        value: 'value',
-      },
+      localRecordTarget: localRecordTarget,
     }
   },
   props: {
@@ -221,8 +209,6 @@ export default {
     },
 
     selectParticipantRecTarget(recordTarget) {
-      console.log(recordTarget)
-
       switch (recordTarget) {
         case 'recordWorker':
           //set worker stream(main view + participants)
@@ -255,6 +241,7 @@ export default {
       param[item] = setting.value
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting.value)
+      this.showToast()
     },
 
     beforeClose() {
@@ -271,6 +258,11 @@ export default {
   created() {
     this.localRecording = this.allow.localRecording
     this.pointing = this.allow.pointing
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.toastFlag = true
+    })
   },
 }
 </script>
