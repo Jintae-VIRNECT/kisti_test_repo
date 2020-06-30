@@ -78,8 +78,11 @@ public class MyWorksResponse {
     @ApiModelProperty(value = "작업 생명주기 상태", notes = "작업 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 18, example = "CREATED")
     private final State state;
 
+    @ApiModelProperty(value = "하위 이슈 수", notes = "하위작업의 이슈 수", position = 19, example = "3")
+    private final Long issueTotal;
+
     @Builder
-    public MyWorksResponse(@NotBlank long taskId, @NotBlank String taskName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank long subTaskId, @NotBlank String subTaskName, @NotBlank int priority, int stepTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile, int doneCount, State state) {
+    public MyWorksResponse(@NotBlank long taskId, @NotBlank String taskName, @NotBlank String contentUUID, @NotBlank String downloadPath, @NotBlank long subTaskId, @NotBlank String subTaskName, @NotBlank int priority, int stepTotal, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reportedDate, Conditions conditions, int progressRate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile, int doneCount, State state, Long issueTotal) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.contentUUID = contentUUID;
@@ -99,5 +102,6 @@ public class MyWorksResponse {
         this.workerProfile = workerProfile;
         this.doneCount = doneCount;
         this.state = state;
+        this.issueTotal = issueTotal;
     }
 }

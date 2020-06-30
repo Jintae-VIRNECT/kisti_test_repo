@@ -1556,6 +1556,7 @@ public class TaskService {
 
         String processName = process.getName();
         State processState = process.getState();
+        String contentUUID = process.getContentUUID();
 
         List<String> userUUIDList = new ArrayList<>();
 
@@ -1601,7 +1602,7 @@ public class TaskService {
                 .totalPage(subProcessPage.getTotalPages())
                 .totalElements(subProcessPage.getTotalElements())
                 .build();
-        return new ApiResponse<>(new SubProcessListResponse(processId, processName, processState, editSubProcessResponseList, pageMetadataResponse));
+        return new ApiResponse<>(new SubProcessListResponse(processId, processName, processState, contentUUID, editSubProcessResponseList, pageMetadataResponse));
     }
 
     /**
@@ -1746,6 +1747,7 @@ public class TaskService {
                     .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
                     .doneCount((int) subProcess.getJobList().stream().filter(job -> job.getConditions() == Conditions.COMPLETED || job.getConditions() == Conditions.SUCCESS).count())
                     .state(process.getState())
+                    .issueTotal(this.issueRepository.countIssuesInSubProcess(subProcess.getId()))
                     .build();
         }).collect(Collectors.toList());
 
