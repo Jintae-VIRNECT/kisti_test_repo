@@ -43,7 +43,8 @@ public class MessageController {
     private final RabbitmqConfiguration rabbitmqConfiguration;
 
     @ApiOperation(
-            value = "메일 메세지 발행"
+            value = "메일 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : email \n routing key : email.서비스명 (예시 routing key : email.pf-workspace)"
     )
     @PostMapping("/email")
     public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws IOException {
@@ -61,7 +62,8 @@ public class MessageController {
     }
 
     @ApiOperation(
-            value = "푸시 메세지 발행"
+            value = "푸시 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : push \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8.498b1839dc29ed7bb2ee90ad6985c608)"
     )
     @PostMapping("/push")
     public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
