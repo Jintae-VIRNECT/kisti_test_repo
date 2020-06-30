@@ -95,7 +95,6 @@ export default {
     },
 
     addSelect(imgId) {
-      console.log(imgId)
       this.selected.push(imgId)
     },
     delSelect(imgId) {

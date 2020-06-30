@@ -222,7 +222,7 @@ export default {
       }
 
       const option = {
-        video: this.getWH(
+        video: getWH(
           this.localRecord.resolution,
           this.resolution.width,
           this.resolution.height,
@@ -299,7 +299,7 @@ export default {
     async setScreenCapture() {
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: this.getWH(this.localRecord.resolution),
+        video: getWH(this.localRecord.resolution),
       })
       this.setScreenStream(displayStream)
     },
