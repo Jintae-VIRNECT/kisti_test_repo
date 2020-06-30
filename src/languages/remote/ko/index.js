@@ -1,5 +1,3 @@
-import elementLocale from 'element-ui/lib/locale/lang/ko'
-
 const files = require.context('.', false, /\.json$/)
 const modules = {}
 
@@ -10,6 +8,5 @@ files.keys().forEach(key => {
 
 module.exports = {
   language_abbr: '한국어',
-  ...elementLocale,
   ...modules,
 }
