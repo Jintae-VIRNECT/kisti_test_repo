@@ -47,6 +47,17 @@ export const localRecIntervalOpt = [
   },
 ]
 
+export const localRecordTarget = [
+  {
+    text: '영상 녹화',
+    value: 'recordWorker',
+  },
+  {
+    text: '화면 녹화',
+    value: 'recordScreen',
+  },
+]
+
 /**
  *
  * get resolution object with adjust ratio
