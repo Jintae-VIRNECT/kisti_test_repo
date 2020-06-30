@@ -1,6 +1,6 @@
 package com.virnect.license.domain;
 
-import com.virnect.license.dto.response.biling.ProductInfoResponse;
+import com.virnect.license.dto.request.LicenseAllocateProductInfoResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -20,8 +20,28 @@ public class LicenseAssignAuthInfo {
     private String uuid;
     private String userName;
     private String email;
-    private List<ProductInfoResponse> productInfoList;
+    private List<LicenseAllocateProductInfoResponse> productInfoList;
     private LocalDateTime assignableCheckDate;
+    private Long totalProductCallTime;
+    private Long totalProductHit;
+    private Long totalProductStorage;
     @TimeToLive
-    private LocalDateTime expiredDate;
+    private Long expiredDate;
+
+    @Override
+    public String toString() {
+        return "LicenseAssignAuthInfo{" +
+                "assignAuthCode='" + assignAuthCode + '\'' +
+                ", userId=" + userId +
+                ", uuid='" + uuid + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", productInfoList=" + productInfoList +
+                ", assignableCheckDate=" + assignableCheckDate +
+                ", totalProductCallTime=" + totalProductCallTime +
+                ", totalProductHit=" + totalProductHit +
+                ", totalProductStorage=" + totalProductStorage +
+                ", expiredDate=" + expiredDate +
+                '}';
+    }
 }

@@ -17,4 +17,13 @@ public class LicenseAllocateCouponInfoResponse {
     private String couponName;
     @ApiModelProperty(value = "생성 일자", position = 2, example = "2020-05-03T18:00:11")
     private LocalDateTime createdDate;
+
+    @Override
+    public String toString() {
+        return "LicenseAllocateCouponInfoResponse{" +
+                "couponId='" + couponId + '\'' +
+                ", couponName='" + couponName + '\'' +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }
