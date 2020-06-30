@@ -99,11 +99,11 @@ export default {
         }
       })
 
-      canvas.on('mouse:out', () => {
+      canvas.on('mouse:out', event => {
         // prevent freedrawing outside of canvas boundaries
         if (canvas._isCurrentlyDrawing) {
           canvas._isCurrentlyDrawing = false
-          canvas.freeDrawingBrush.onMouseUp()
+          canvas.freeDrawingBrush.onMouseUp(event)
           canvas.trigger('mouse:up', { target: canvas })
           return
         }
