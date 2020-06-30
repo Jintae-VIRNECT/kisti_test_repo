@@ -64,12 +64,14 @@ export default {
           .toString()
           .substr(-9),
       )
+      let fileName = this.fileData.name
+      if (this.pdfName) {
+        const idx = this.pdfName.lastIndexOf('.')
+        fileName = `${this.pdfName.slice(0, idx)} [${this.pdfPage}].png`
+      }
       return {
         id: imgId,
-        fileName:
-          this.pdfName && this.pdfName.length > 0
-            ? `${this.pdfName} (${this.pdfPage})`
-            : this.fileData.name,
+        fileName: fileName,
         oriName:
           this.pdfName && this.pdfName.length > 0
             ? this.pdfName

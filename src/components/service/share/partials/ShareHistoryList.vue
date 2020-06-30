@@ -31,6 +31,7 @@ import HistoryImage from './ShareHistoryImage'
 import { mapGetters } from 'vuex'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
+import { base64urlToBlob } from 'utils/blobs'
 import confirmMixin from 'mixins/confirm'
 import mimeTypes from 'mime-types'
 
@@ -74,24 +75,31 @@ export default {
     },
     async save() {
       const downFile = []
+      if (this.selected.length === 0) return
+
+      if (this.selected.length === 1) {
+        const history = this.historyList.find(
+          history => history === this.selected[0],
+        )
+        FileSaver.saveAs(history.img, history.name)
+        this.selected = []
+        return
+      }
 
       //convert to blob(file)
-      if (this.selected.length > 0) {
-        for (const his of this.historyList) {
-          //find selected file
-          for (const selId of this.selected) {
-            if (his.id === selId) {
-              downFile.push(his.img)
-            }
+      for (const his of this.historyList) {
+        //find selected file
+        for (const selId of this.selected) {
+          if (his.id === selId) {
+            const spts = his.img.split(',')
+            const dataType = spts[0].replace('data:', '').replace(';base64', '')
+            const file = await base64urlToBlob(his.img, dataType, his.fileName)
+            downFile.push(file)
           }
         }
-        this.selected = []
-        if (downFile.length === 1) {
-          FileSaver.saveAs(downFile[0], downFile[0].name)
-        } else {
-          this.downloadZip(downFile)
-        }
       }
+      this.downloadZip(downFile)
+      this.selected = []
     },
 
     addSelect(imgId) {
@@ -110,29 +118,13 @@ export default {
       const fileNameMap = new Map()
       files.forEach(file => {
         if (fileNameMap.has(file.name)) {
-          const spts = file.name.split('.')
-          let dupName = ''
+          const idx = file.name.lastIndexOf('.')
 
-          if (spts.length >= 2) {
-            //for file name duplication
-            //asdf.aa.bb.cc.jpg -> get asdf.aa.bb.cc
-            const name = file.name.slice(
-              0,
-              file.name.length - (spts[spts.length - 1].length + 1),
-            )
+          const fileName = `${file.name.slice(0, idx)} (${fileNameMap.get(
+            file.name,
+          )})${file.name.slice(idx)}`
 
-            //increase file count
-            //a.jpg a (1).jpg
-            dupName = `${name} (${fileNameMap.get(file.name)}).${
-              spts[spts.length - 1]
-            }`
-          } else {
-            dupName = `${name} (${fileNameMap.get(
-              file.name,
-            )}).${mimeTypes.extension(file.type)}`
-          }
-
-          zip.file(dupName, file)
+          zip.file(fileName, file)
 
           fileNameMap.set(file.name, fileNameMap.get(file.name) + 1)
         } else {
