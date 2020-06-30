@@ -8,15 +8,14 @@
           <input
             type="text"
             v-model.trim="form.userId"
-            :validate-event="false"
             placeholder="아이디"
-            @keyup.enter.native="doLogin($event)"
+            @keyup.enter="doLogin($event)"
           />
           <input
             type="password"
             v-model.trim="form.userPw"
             placeholder="비밀번호"
-            @keyup.enter.native="doLogin($event)"
+            @keyup.enter="doLogin($event)"
           />
 
           <button
