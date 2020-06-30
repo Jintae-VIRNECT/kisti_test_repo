@@ -118,7 +118,6 @@ export default {
       }
 
       this.showArImage(imageInfo)
-      this.$call.arDrawing(AR_DRAWING.FRAME_RECEIVED)
     },
     /**
      * 웹-웹 테스트용!
