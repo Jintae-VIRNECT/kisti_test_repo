@@ -43,19 +43,15 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
                 stopWatch.start();
                 String uri = request.getURI().toString();
                 String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
-                log.info(MESSAGE_DIVIDE_LINE);
                 log.info("[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
-                request.getHeaders().entrySet().forEach((entry -> log.info("[HEADER] [{}] => {} ", entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
-                log.info(MESSAGE_DIVIDE_LINE);
+                request.getHeaders().entrySet().forEach((entry -> log.info("{} [HEADER] [{}] => {} ", config.getMessagePrefix(), entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 stopWatch.stop();
                 if (config.isPostLogger()) {
                     String uri = request.getURI().toString();
                     String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-                    log.info(MESSAGE_DIVIDE_LINE);
                     log.info("[{}] [RESPONSE] [{}] [{}] [{}] [{}] {} [{} ms]", config.messagePrefix, LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, String.format("%d %s", response.getRawStatusCode(), HttpStatus.valueOf(response.getRawStatusCode()).name()), response.getHeaders().get("Content-Type"), stopWatch.getTotalTimeMillis());
-                    log.info(MESSAGE_DIVIDE_LINE);
                 }
             }));
         };
