@@ -44,7 +44,7 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
                 String uri = request.getURI().toString();
                 String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
                 log.info("[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp, request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type"));
-                request.getHeaders().entrySet().forEach((entry -> log.info("{} [HEADER] [{}] => {} ", config.getMessagePrefix(), entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
+                request.getHeaders().entrySet().forEach((entry -> log.info("[{}] [HEADER] [{}] => {} ", config.getMessagePrefix(), entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 stopWatch.stop();

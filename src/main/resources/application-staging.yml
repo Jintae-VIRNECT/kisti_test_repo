@@ -156,6 +156,8 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
         prefix-enabled: false
+  zipkin:
+    enabled: false
 
 eureka:
   instance:
@@ -166,5 +168,4 @@ eureka:
 
 jwt:
   secret: 2020-tcenriv-platform-392
-
 
