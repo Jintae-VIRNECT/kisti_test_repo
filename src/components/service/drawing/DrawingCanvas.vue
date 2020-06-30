@@ -174,7 +174,9 @@ export default {
           if (this.account.roleType === ROLE.EXPERT_LEADER) {
             const params = {
               imgId: this.file.id,
-              imgName: this.file.fileName,
+              imgName: this.file.oriName
+                ? this.file.oriName
+                : this.file.fileName,
               width: bgImage.width,
               height: bgImage.height,
             }

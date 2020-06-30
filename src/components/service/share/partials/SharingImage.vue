@@ -34,6 +34,10 @@ export default {
       type: String,
       default: null,
     },
+    pdfPage: {
+      type: Number,
+      default: -1,
+    },
   },
   computed: {
     fileData() {
@@ -63,6 +67,10 @@ export default {
       return {
         id: imgId,
         fileName:
+          this.pdfName && this.pdfName.length > 0
+            ? `${this.pdfName} (${this.pdfPage})`
+            : this.fileData.name,
+        oriName:
           this.pdfName && this.pdfName.length > 0
             ? this.pdfName
             : this.fileData.name,
