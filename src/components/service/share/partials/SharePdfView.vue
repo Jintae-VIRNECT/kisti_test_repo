@@ -13,6 +13,7 @@
           v-for="(sharing, idx) of sharingList"
           :key="'sharing' + idx"
           :fileInfo="sharing"
+          :pdfName="file.name"
         ></sharing-image>
       </ol>
     </vue2-scrollbar>

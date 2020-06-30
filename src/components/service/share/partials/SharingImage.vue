@@ -30,6 +30,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    pdfName: {
+      type: String,
+      default: null,
+    },
   },
   computed: {
     fileData() {
@@ -58,7 +62,10 @@ export default {
       )
       return {
         id: imgId,
-        fileName: this.fileData.name,
+        fileName:
+          this.pdfName && this.pdfName.length > 0
+            ? this.pdfName
+            : this.fileData.name,
         img: this.imageData,
       }
     },
