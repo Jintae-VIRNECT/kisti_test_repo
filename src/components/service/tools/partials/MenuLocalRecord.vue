@@ -225,8 +225,6 @@ export default {
         case 'recordWorker':
           if (this.mainView.stream) {
             streams.push(this.mainView.stream)
-          } else {
-            console.error('mainView is not vaild!!')
           }
           break
         case 'recordScreen':
@@ -234,12 +232,9 @@ export default {
 
           if (this.screenStream) {
             streams.push(this.screenStream)
-          } else {
-            console.error('screenStream is not vaild!!')
           }
           break
         default:
-          console.log('local record :: unknown target')
           break
       }
 

@@ -93,7 +93,6 @@ export default class LocalRecorder {
       }
 
       this.timeMark = performance.now()
-      console.log('localRecord started')
     } catch (e) {
       console.error(e)
     }
@@ -102,7 +101,6 @@ export default class LocalRecorder {
   stopRecord() {
     try {
       if (this.recorder) {
-        console.log('stopRecord called')
         this.recorder.stop()
         this.recorder.clearRecordedData()
 
@@ -113,7 +111,6 @@ export default class LocalRecorder {
     } catch (e) {
       console.error(e)
     } finally {
-      console.log('localRecord stopped')
       this.recorder = null
     }
   }
@@ -154,7 +151,6 @@ export default class LocalRecorder {
       }
 
       if (this.totalPlayTime >= this.maxTime) {
-        console.log('max recording time over')
         this.stopRecord()
       }
 
