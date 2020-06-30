@@ -7,8 +7,7 @@ export default class Workspace extends Model {
    */
   constructor(json = {}) {
     super()
-    this.id = json.id
-    this.uuid = json.uuid
+    this.uuid = json.uuid || json.id
     this.masterUserId = json.masterUserId
     this.masterNickName = json.masterNickName
     this.masterProfile =

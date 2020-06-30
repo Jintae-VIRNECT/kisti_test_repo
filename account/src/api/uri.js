@@ -13,6 +13,8 @@ module.exports = {
   GET_AUTH_INFO: ['GET', '/users/info'],
   // 내가 속한 워크스페이스 목록 조회
   GET_WORKSPACES: ['GET', '/workspaces'],
+  // 워크스페이스 정보 조회
+  GET_WORKSPACE_INFO: ['GET', '/workspaces/home/{workspaceId}'],
   // 내 쿠폰 정보 리스트 조회
   GET_COUPONS: ['GET', '/licenses/coupon/{userId}'],
   // 쿠폰 등록

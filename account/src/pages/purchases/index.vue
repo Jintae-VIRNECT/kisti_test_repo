@@ -13,6 +13,22 @@
         <el-col class="container__left">
           <el-card>
             <div slot="header">
+              <h3>{{ $t('home.workspace.title') }}</h3>
+              <i
+                class="el-icon-caret-bottom"
+                v-if="!showWorkspaceInfo"
+                @click="showWorkspaceInfo = true"
+              />
+              <i
+                class="el-icon-caret-top"
+                v-if="showWorkspaceInfo"
+                @click="showWorkspaceInfo = false"
+              />
+            </div>
+            <workspace-info v-if="showWorkspaceInfo" />
+          </el-card>
+          <el-card>
+            <div slot="header">
               <h3>{{ $t('purchases.info.title') }}</h3>
             </div>
             <purchases-info />
@@ -57,6 +73,7 @@
 </template>
 
 <script>
+import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import purchasesService from '@/services/purchases'
 import purchasesInfo from '@/components/purchases/PurchasesInfo'
 import PurchasesUsed from '@/components/purchases/PurchasesUsed'
@@ -65,6 +82,7 @@ import columnMixin from '@/mixins/columns'
 export default {
   mixins: [columnMixin],
   components: {
+    WorkspaceInfo,
     purchasesInfo,
     PurchasesUsed,
   },
@@ -73,6 +91,11 @@ export default {
     return {
       planMembers: list,
       planMembersTotal: total,
+    }
+  },
+  data() {
+    return {
+      showWorkspaceInfo: false,
     }
   },
   methods: {
@@ -95,6 +118,12 @@ export default {
   }
   .el-progress-bar__inner {
     background: #007cfe;
+  }
+  .el-card__header i {
+    float: right;
+    margin-right: -8px;
+    padding: 5px 0;
+    cursor: pointer;
   }
 }
 </style>

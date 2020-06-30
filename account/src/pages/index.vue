@@ -11,21 +11,12 @@
       </el-row>
       <el-row>
         <el-col class="container__left">
-          <el-card class="home__workspace-info">
+          <el-card>
             <div slot="header">
               <h3>{{ $t('home.workspace.title') }}</h3>
               <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
-            <dl>
-              <dt>{{ $t('home.workspace.name') }}</dt>
-              <dd>{{ workspace.name }}</dd>
-            </dl>
-            <dl>
-              <dt>{{ $t('home.workspace.desc') }}</dt>
-              <dd class="desc">
-                {{ workspace.desc || $t('home.workspace.descEmpty') }}
-              </dd>
-            </dl>
+            <workspace-info />
           </el-card>
           <el-card class="el-card--table">
             <div slot="header">
@@ -67,11 +58,13 @@
 </template>
 
 <script>
+import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import PurchasesInfo from '@/components/purchases/PurchasesInfo'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 
 export default {
   components: {
+    WorkspaceInfo,
     LoggedInDeviceList,
     PurchasesInfo,
   },
@@ -79,10 +72,6 @@ export default {
     return {
       me: {
         name: '사용자 닉네임',
-      },
-      workspace: {
-        name: 'VIRNECT’s workspace',
-        desc: '',
       },
     }
   },
@@ -116,24 +105,6 @@ export default {
     font-size: 15px;
     line-height: 1.6;
     opacity: 0.9;
-  }
-}
-.home__workspace-info {
-  .el-card__body > dl {
-    padding: 12px 0;
-
-    dt {
-      color: $font-color-desc;
-      font-size: 12px;
-    }
-    dd {
-      margin-top: 4px;
-      font-size: 20px;
-    }
-    dd.desc {
-      margin-top: 8px;
-      font-size: inherit;
-    }
   }
 }
 </style>
