@@ -7,6 +7,7 @@
             v-for="img of historyList"
             :key="img.id"
             :imgInfo="img"
+            :selected="selected.findIndex(id => id === img.id) > -1"
             @selected="addSelect"
             @unSelected="delSelect"
           ></history-image>
@@ -28,7 +29,6 @@
 <script>
 import HistoryImage from './ShareHistoryImage'
 import { mapGetters } from 'vuex'
-import { base64urlToBlob } from 'utils/blobs'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import confirmMixin from 'mixins/confirm'
@@ -81,20 +81,11 @@ export default {
           //find selected file
           for (const selId of this.selected) {
             if (his.id === selId) {
-              const spts = his.img.split(',')
-              const dataType = spts[0]
-                .replace('data:', '')
-                .replace(';base64', '')
-
-              const file = await base64urlToBlob(
-                his.img,
-                dataType,
-                his.fileName,
-              )
-              downFile.push(file)
+              downFile.push(his.img)
             }
           }
         }
+        this.selected = []
         if (downFile.length === 1) {
           FileSaver.saveAs(downFile[0], downFile[0].name)
         } else {
@@ -104,6 +95,7 @@ export default {
     },
 
     addSelect(imgId) {
+      console.log(imgId)
       this.selected.push(imgId)
     },
     delSelect(imgId) {

@@ -31,6 +31,7 @@
 <script>
 import { mapActions } from 'vuex'
 import shutterMixin from 'mixins/shutter'
+import FileSaver from 'file-saver'
 export default {
   name: 'CaptureModal',
   mixins: [shutterMixin],
@@ -70,7 +71,9 @@ export default {
     recapture() {
       this.$eventBus.$emit('capture')
     },
-    save() {},
+    save() {
+      FileSaver.saveAs(this.imageData, this.file.fileName)
+    },
     share() {
       if (this.imageData && this.imageData.length > 0) {
         const history = this.getHistoryObject()

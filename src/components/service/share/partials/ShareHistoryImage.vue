@@ -29,10 +29,14 @@ export default {
   data() {
     return {
       imageData: '',
-      selected: false,
+      clicking: false,
     }
   },
   props: {
+    selected: {
+      type: Boolean,
+      default: false,
+    },
     imgInfo: {
       type: Object,
     },
@@ -43,6 +47,8 @@ export default {
   methods: {
     ...mapActions(['showImage', 'removeHistory']),
     show() {
+      this.clicking = false
+      if (this.shareFile.id === this.imgInfo.id) return
       this.showImage(this.imgInfo)
       // this.$call.shareImage(this.imgInfo)
     },
@@ -63,11 +69,17 @@ export default {
       this.removeHistory(this.imgInfo.id)
     },
     select() {
-      this.selected = !this.selected
-      if (this.selected) {
-        this.$emit('selected', this.imgInfo.id)
-      } else {
-        this.$emit('unSelected', this.imgInfo.id)
+      if (!this.clicking) {
+        this.clicking = true
+        setTimeout(() => {
+          if (!this.clicking) return
+          this.clicking = false
+          if (!this.selected) {
+            this.$emit('selected', this.imgInfo.id)
+          } else {
+            this.$emit('unSelected', this.imgInfo.id)
+          }
+        }, 300)
       }
     },
   },
