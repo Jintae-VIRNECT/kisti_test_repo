@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL, CONTROL } from 'configs/remote.config'
+import { SIGNAL, CONTROL, CAMERA, FLASH } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -67,6 +67,7 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.FLASH, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
+    if (data.type !== FLASH.STATUS) return
     Store.commit('deviceControl', {
       flash: data.status,
     })
@@ -75,9 +76,18 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAMERA, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
+    // if (web_test && Store.getters['account'].roleType !== 'LEADER') {
+    //   _.camera({
+    //     currentZoomLevel: data.level + '',
+    //     maxZoomLevel: 5,
+    //     status: 1,
+    //   })
+    //   return
+    // }
+    if (data.type !== CAMERA.STATUS) return
     Store.commit('deviceControl', {
-      zoomLevel: parseFloat(data.currentZoomLevel),
-      zoomMax: parseInt(data.maxZoomLevel),
+      zoomLevel: parseFloat(data.currentZoomLevel | 1),
+      zoomMax: parseInt(data.maxZoomLevel | 5),
       cameraStatus: parseInt(data.status),
     })
   })

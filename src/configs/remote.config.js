@@ -15,6 +15,16 @@ export const SIGNAL = {
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
 }
 
+export const CAMERA = {
+  ZOOM: 'zoom',
+  STATUS: 'status',
+}
+
+export const FLASH = {
+  FLASH: 'flash',
+  STATUS: 'status',
+}
+
 export const CONTROL = {
   POINTING: 'pointing',
   LOCAL_RECORD: 'localRecord',

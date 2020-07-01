@@ -33,7 +33,7 @@
         </div>
         <div class="picker--container__division"></div>
         <button class="picker--container__close" @click="hidePicker">
-          {{ $t('service.call_zoom_close') }}
+          닫기
         </button>
       </div>
     </transition>
@@ -139,7 +139,7 @@ export default {
         this.toastDefault('상대방 기기 제어 권한을 요청 중입니다.')
         return
       }
-      this.$call.camera({ level: level })
+      this.$call.zoom(level)
     },
     cameraListener(status) {
       // 응답
