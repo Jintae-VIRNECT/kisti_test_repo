@@ -18,7 +18,7 @@
             </div>
             <workspace-info />
           </el-card>
-          <el-card class="el-card--table">
+          <el-card>
             <div slot="header">
               <h3>{{ $t('home.payment.title') }}</h3>
               <router-link to="/payment">{{ $t('common.link') }}</router-link>

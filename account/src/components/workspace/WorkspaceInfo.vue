@@ -23,7 +23,7 @@
         </div>
         <span>{{ workspace.masterNickName }}</span>
       </dd>
-      <a :href="$url.workstation">
+      <a :href="`${$url.workstation}/workspace/${workspace.uuid}`">
         <el-button type="simple">
           {{ $t('common.workstation') }}
         </el-button>
