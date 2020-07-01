@@ -19,7 +19,7 @@ import toastMixin from 'mixins/toast'
 import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions, mapState } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { getWH } from 'utils/recordOptions'
+import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
 export default {
   name: 'LocalRecordMenu',
@@ -222,12 +222,12 @@ export default {
       }
 
       switch (this.localRecordTarget) {
-        case 'recordWorker':
+        case RECORD_TARGET.WORKER:
           if (this.mainView.stream) {
             streams.push(this.mainView.stream)
           }
           break
-        case 'recordScreen':
+        case RECORD_TARGET.SCREEN:
           await this.setScreenCapture()
 
           if (this.screenStream) {

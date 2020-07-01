@@ -28,7 +28,7 @@
             :options="localRecordTarget"
             :value="'value'"
             :text="'text'"
-            :selectedOption.sync="selectParticipantRecTarget"
+            :selectedOption.sync="recordTarget"
           ></r-radio>
         </div>
       </div>
@@ -141,6 +141,7 @@ import {
   localRecResOpt,
   localRecIntervalOpt,
   localRecordTarget,
+  RECORD_TARGET,
 } from 'utils/recordOptions'
 
 export default {
@@ -161,7 +162,7 @@ export default {
       visibleFlag: false,
       toastFlag: false,
 
-      selectParticipantRecTarget: 'recordWorker',
+      recordTarget: RECORD_TARGET.WORKER,
 
       localRecTimeOpt: localRecTimeOpt,
       localRecResOpt: localRecResOpt,
@@ -208,23 +209,24 @@ export default {
       this.showToast()
     },
 
-    selectParticipantRecTarget(recordTarget) {
-      switch (recordTarget) {
-        case 'recordWorker':
+    recordTarget(target) {
+      console.log(target)
+      switch (target) {
+        case RECORD_TARGET.WORKER:
           //set worker stream(main view + participants)
-          this.setLocalRecordTarget(recordTarget)
+          this.setLocalRecordTarget(target)
 
           //don't need screen stream when record worker.
           this.setScreenStream(null)
           this.showToast()
           break
-        case 'recordScreen':
+        case RECORD_TARGET.SCREEN:
           //set screen stream for local record
-          this.setLocalRecordTarget(recordTarget)
+          this.setLocalRecordTarget(target)
           this.showToast()
           break
         default:
-          console.log('unknown recordTarget ::', recordTarget)
+          console.log('unknown recordTarget ::', target)
           break
       }
     },
