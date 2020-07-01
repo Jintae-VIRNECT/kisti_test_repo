@@ -79,9 +79,9 @@ export default {
 
       if (this.selected.length === 1) {
         const history = this.historyList.find(
-          history => history === this.selected[0],
+          history => history.id === this.selected[0],
         )
-        FileSaver.saveAs(history.img, history.name)
+        FileSaver.saveAs(history.img, history.fileName)
         this.selected = []
         return
       }
@@ -117,23 +117,27 @@ export default {
 
       const fileNameMap = new Map()
       files.forEach(file => {
-        if (fileNameMap.has(file.name)) {
-          const idx = file.name.lastIndexOf('.')
+        const fileName = file.name
+        if (fileNameMap.has(fileName)) {
+          const idx = fileName.lastIndexOf('.')
 
-          const fileName = `${file.name.slice(0, idx)} (${fileNameMap.get(
-            file.name,
-          )})${file.name.slice(idx)}`
+          const name = fileName.slice(0, idx)
+          const count = fileNameMap.get(fileName)
+          const ext = fileName.slice(idx)
+          const fullName = `${name} (${count})${ext}`
 
-          zip.file(fileName, file)
+          zip.file(fullName, file)
 
-          fileNameMap.set(file.name, fileNameMap.get(file.name) + 1)
+          fileNameMap.set(fileName, count + 1)
         } else {
-          fileNameMap.set(file.name, 1)
-          if (file.name.split('.').length === 1) {
-            const fullName = `${file.name}.${mimeTypes.extension(file.type)}`
+          fileNameMap.set(fileName, 1)
+          if (fileName.split('.').length === 1) {
+            const name = fileName
+            const ext = mimeTypes.extension(file.type)
+            const fullName = `${name}.${ext}`
             zip.file(fullName, file)
           } else {
-            zip.file(file.name, file)
+            zip.file(fileName, file)
           }
         }
       })
