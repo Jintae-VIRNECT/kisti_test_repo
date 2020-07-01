@@ -61,7 +61,7 @@ public class MessageService {
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,
-            exchange = @Exchange(value = "email", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(value = "message.email", type = ExchangeTypes.TOPIC),
             key = "email.*"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void sendEmailMessage(EmailSendRequest emailSendRequest) throws IOException {
@@ -85,7 +85,7 @@ public class MessageService {
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(arguments = {@Argument(name = "x-dead-letter-exchange", value = "dlx"),
                     @Argument(name = "x-dead-letter-routing-key", value = "dlx.push")}),
-            exchange = @Exchange(value = "push", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(value = "amq.topic", type = ExchangeTypes.TOPIC),
             key = "push.#"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getAllPushMessage(PushSendRequest pushSendRequest) throws IOException {

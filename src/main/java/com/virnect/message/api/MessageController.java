@@ -63,15 +63,18 @@ public class MessageController {
 
     @ApiOperation(
             value = "푸시 메세지 발행",
-            notes = "전송 타입 : Topics \n exchange name : push \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
+            notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/push")
     public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String exchange = MessageType.PUSH.getValue();
-        String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
+        //String exchange = MessageType.PUSH.getValue();
+        //String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
+        String exchange = "amq.topic";
+        String routingKey = "push" + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
+
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
 
     }

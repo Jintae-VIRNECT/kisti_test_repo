@@ -66,6 +66,11 @@ dependencies {
     // AMQP
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+    // web socket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    compile 'org.webjars:sockjs-client:1.0.2'
+    compile 'org.webjars:stomp-websocket:2.3.3'
+
 }
 
 test {
