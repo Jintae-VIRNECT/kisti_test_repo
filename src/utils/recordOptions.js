@@ -1,6 +1,11 @@
 const RATIO_16_9 = 1.77
 const RATIO_4_3 = 1.33
 
+export const RECORD_TARGET = {
+  WORKER: 'WORKER',
+  SCREEN: 'SCREEN',
+}
+
 // Service Options
 export const localRecTimeOpt = [
   {
@@ -44,6 +49,17 @@ export const localRecIntervalOpt = [
   {
     value: '60',
     text: '1분',
+  },
+]
+
+export const localRecordTarget = [
+  {
+    text: '영상 녹화',
+    value: RECORD_TARGET.WORKER,
+  },
+  {
+    text: '화면 녹화',
+    value: RECORD_TARGET.SCREEN,
   },
 ]
 

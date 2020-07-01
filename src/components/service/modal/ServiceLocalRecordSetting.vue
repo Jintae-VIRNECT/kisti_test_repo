@@ -25,10 +25,10 @@
         <p class="rec-setting__text">녹화대상</p>
         <div class="rec-setting__selector">
           <r-radio
-            :options="radioOption.options"
-            :text="radioOption.text"
-            :value="radioOption.value"
-            :selectedOption.sync="selectParticipantRecTarget"
+            :options="localRecordTarget"
+            :value="'value'"
+            :text="'text'"
+            :selectedOption.sync="recordTarget"
           ></r-radio>
         </div>
       </div>
@@ -140,6 +140,8 @@ import {
   localRecTimeOpt,
   localRecResOpt,
   localRecIntervalOpt,
+  localRecordTarget,
+  RECORD_TARGET,
 } from 'utils/recordOptions'
 
 export default {
@@ -156,29 +158,16 @@ export default {
     return {
       localRecording: false,
       pointing: false,
-      selectParticipantRecTarget: 'recordWorker',
-      visibleFlag: false,
 
+      visibleFlag: false,
       toastFlag: false,
+
+      recordTarget: RECORD_TARGET.WORKER,
 
       localRecTimeOpt: localRecTimeOpt,
       localRecResOpt: localRecResOpt,
       localRecIntervalOpt: localRecIntervalOpt,
-
-      radioOption: {
-        options: [
-          {
-            text: '영상 녹화',
-            value: 'recordWorker',
-          },
-          {
-            text: '화면 녹화',
-            value: 'recordScreen',
-          },
-        ],
-        text: 'text',
-        value: 'value',
-      },
+      localRecordTarget: localRecordTarget,
     }
   },
   props: {
@@ -220,25 +209,24 @@ export default {
       this.showToast()
     },
 
-    selectParticipantRecTarget(recordTarget) {
-      console.log(recordTarget)
-
-      switch (recordTarget) {
-        case 'recordWorker':
+    recordTarget(target) {
+      console.log(target)
+      switch (target) {
+        case RECORD_TARGET.WORKER:
           //set worker stream(main view + participants)
-          this.setLocalRecordTarget(recordTarget)
+          this.setLocalRecordTarget(target)
 
           //don't need screen stream when record worker.
           this.setScreenStream(null)
           this.showToast()
           break
-        case 'recordScreen':
+        case RECORD_TARGET.SCREEN:
           //set screen stream for local record
-          this.setLocalRecordTarget(recordTarget)
+          this.setLocalRecordTarget(target)
           this.showToast()
           break
         default:
-          console.log('unknown recordTarget ::', recordTarget)
+          console.log('unknown recordTarget ::', target)
           break
       }
     },
@@ -255,6 +243,7 @@ export default {
       param[item] = setting.value
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting.value)
+      this.showToast()
     },
 
     beforeClose() {
@@ -271,6 +260,11 @@ export default {
   created() {
     this.localRecording = this.allow.localRecording
     this.pointing = this.allow.pointing
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.toastFlag = true
+    })
   },
 }
 </script>
