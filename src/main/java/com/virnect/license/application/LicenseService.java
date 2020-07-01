@@ -69,7 +69,6 @@ public class LicenseService {
     private final EmailService emailService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
-    private final PasswordEncoder passwordEncoder;
 
     private static long MAX_USER_AMOUNT = 9; // 9 명
     private static long MAX_CALL_TIME = 270; // 270 시간
