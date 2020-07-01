@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE } from 'configs/remote.config'
+import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
 
 let OV
@@ -296,6 +296,7 @@ const _ = {
     const params = {
       enable: active,
       from: _.account.uuid,
+      type: FLASH.FLASH,
     }
     _.session.signal({
       data: JSON.stringify(params),
@@ -307,8 +308,12 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  camera: params => {
-    params['from'] = _.account.uuid
+  zoom: level => {
+    const params = {
+      from: _.account.uuid,
+      type: CAMERA.ZOOM,
+      level: level,
+    }
     _.session.signal({
       data: JSON.stringify(params),
       to: _.session.connection,
