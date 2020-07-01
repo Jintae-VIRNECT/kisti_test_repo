@@ -86,8 +86,8 @@ export const addSessionEventListener = session => {
     // }
     if (data.type !== CAMERA.STATUS) return
     Store.commit('deviceControl', {
-      zoomLevel: parseFloat(data.currentZoomLevel | 1),
-      zoomMax: parseInt(data.maxZoomLevel | 5),
+      zoomLevel: parseFloat(data.currentZoomLevel),
+      zoomMax: parseInt(data.maxZoomLevel),
       cameraStatus: parseInt(data.status),
     })
   })

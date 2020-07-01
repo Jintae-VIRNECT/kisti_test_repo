@@ -84,9 +84,6 @@ export default {
     },
   },
   watch: {
-    zoomLevel(level) {
-      console.log('>> current zoom level change: ', level)
-    },
     cameraStatus(level) {
       this.cameraListener(level)
     },
