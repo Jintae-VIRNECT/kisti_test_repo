@@ -7,9 +7,9 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <el-tabs v-model="activeTab">
+    <el-tabs v-model="state.activeTab">
       <el-tab-pane
-        v-for="(product, name) in products"
+        v-for="(product, name) in state.products"
         :label="$t(`home.${name}`)"
         :name="name"
         :key="name"
@@ -41,84 +41,107 @@
 <script>
 import fileDownload from 'js-file-download'
 import { filters } from '@/plugins/dayjs'
+import {
+  defineComponent,
+  reactive,
+  watchEffect,
+  onMounted,
+  onUnmounted,
+} from 'nuxt-composition-api'
 
-export default {
-  data() {
-    return {
-      activeTab: null,
-      snbSticky: false,
-      snbTop: 0,
-      didScroll: 0,
-      products: {
-        remote: [],
-        make: [],
-        view: [],
-      },
-    }
-  },
-  watch: {
-    async activeTab(tab) {
-      if (this.products[tab].length) return false
-
-      const data = await this.$api('APP_LIST', {
-        route: { productName: tab },
-      })
-      this.products[tab] = data.appInfoList
-    },
-  },
+export default defineComponent({
   filters,
-  methods: {
-    async download(url) {
+  setup(props, context) {
+    const state = useTabs(context.root)
+    useStickyNav()
+
+    /**
+     * 다운로드
+     */
+    function download(url) {
       window.open(url)
-      // const data = await this.$api('DOWNLOAD', {
-      //   headers: { 'Content-Type': 'application/octet-stream' },
-      //   route: { id },
-      // })
-      // fileDownload(data)
-    },
-    link(url) {
+    }
+    function link(url) {
       window.open(url)
-    },
-    snbNav() {
-      const scrollY = window.pageYOffset
-      this.snbTop = document.querySelector('.el-tabs').offsetTop
-      if (scrollY > this.snbTop) {
-        this.snbSticky = true
-        document.querySelector('#headerSection').classList.add('sticky-pushup')
-        this.hasScrolled()
-      } else {
-        this.snbSticky = false
-        document
-          .querySelector('#headerSection')
-          .classList.remove('sticky-pushup')
-      }
-    },
-    hasScrolled() {
-      const header = document.querySelector('#headerSection')
-      const tab = document.querySelector('.el-tabs')
-      if (window.pageYOffset > this.didScroll) {
-        header.classList.add('sticky-pushup')
-        tab.classList.add('sticky')
-      } else {
-        header.classList.remove('sticky-pushup')
-        tab.classList.remove('sticky')
-      }
-      this.didScroll = window.pageYOffset
-    },
+    }
+
+    return { state, download, link }
   },
-  mounted() {
-    this.activeTab =
+})
+
+/**
+ * 탭 변경
+ */
+function useTabs({ $route, $api }) {
+  const state = reactive({
+    activeTab: null,
+    products: {
+      remote: [],
+      make: [],
+      view: [],
+    },
+  })
+
+  watchEffect(async () => {
+    const { products, activeTab } = state
+    if (activeTab && !products[activeTab].length) {
+      const data = await $api('APP_LIST', {
+        route: { productName: activeTab },
+      })
+      products[activeTab] = data.appInfoList
+    }
+  })
+
+  onMounted(() => {
+    state.activeTab =
       {
         '/remote': 'remote',
         '/make': 'make',
         '/view': 'view',
-      }[this.$route.path] || 'remote'
-    window.addEventListener('scroll', this.snbNav)
-  },
-  beforeDestroy() {
-    window.removeEventListener('scroll', this.snbNav)
-    window.removeEventListener('scroll', this.hasScrolled)
-  },
+      }[$route.path] || 'remote'
+  })
+
+  return state
+}
+
+/**
+ * stick nav
+ */
+function useStickyNav() {
+  let snbTop = 0
+  let didScroll = 0
+
+  function hasScrolled() {
+    const header = document.querySelector('#headerSection')
+    const tab = document.querySelector('.el-tabs')
+    if (window.pageYOffset > didScroll) {
+      header.classList.add('sticky-pushup')
+      tab.classList.add('sticky')
+    } else {
+      header.classList.remove('sticky-pushup')
+      tab.classList.remove('sticky')
+    }
+    didScroll = window.pageYOffset
+  }
+  function snbNav() {
+    const scrollY = window.pageYOffset
+    snbTop = document.querySelector('.el-tabs').offsetTop
+    if (scrollY > snbTop) {
+      document.querySelector('#headerSection').classList.add('sticky-pushup')
+      hasScrolled()
+    } else {
+      document.querySelector('#headerSection').classList.remove('sticky-pushup')
+    }
+  }
+
+  // vue hooks
+  onMounted(() => {
+    window.addEventListener('scroll', snbNav)
+  })
+  onUnmounted(() => {
+    window.removeEventListener('scroll', snbNav)
+    window.removeEventListener('scroll', hasScrolled)
+  })
 }
 </script>
 
