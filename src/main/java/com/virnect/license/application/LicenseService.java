@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -718,7 +717,7 @@ public class LicenseService {
         licenseAssignAuthInfoValidation(licenseAllocateRequest, licenseAssignAuthInfo, requestUserInfo);
 
         // 5. 지급 요청 사용자, 워크스페이스 정보 조회
-        ApiResponse<WorkspaceInfoListResponse> workspaceApiResponse = this.workspaceRestService.getMyWorkspaceInfoList(requestUserInfo.getUuid());
+        ApiResponse<WorkspaceInfoListResponse> workspaceApiResponse = this.workspaceRestService.getMyWorkspaceInfoList(requestUserInfo.getUuid(), 50);
         if (workspaceApiResponse.getCode() != 200 || workspaceApiResponse.getData().getWorkspaceList() == null) {
             log.info("User service error response: [{}]", workspaceApiResponse.getMessage());
             throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
@@ -805,8 +804,10 @@ public class LicenseService {
 
         EncodingRequestResponse encodingRequestResponse = new EncodingRequestResponse();
         ApiResponse<LicenseProductAllocateResponse> apiResponse = new ApiResponse<>(allocateResponse);
+        log.info(apiResponse.toString());
         try {
             encodingRequestResponse.setData(AES256Utils.encrypt(SECRET_KEY, objectMapper.writeValueAsString(apiResponse)));
+            encodingRequestResponse.setData(objectMapper.writeValueAsString(apiResponse));
             return encodingRequestResponse;
         } catch (JsonProcessingException e) {
             log.error("[LICENSE_PRODUCT_DEALLOCATE_RESPONSE][ENCRYPT FAIL.]");
