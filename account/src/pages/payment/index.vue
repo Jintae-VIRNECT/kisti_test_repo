@@ -48,24 +48,20 @@
               <dt>{{ $t('payment.way.change') }}</dt>
               <dd>
                 <p>{{ $t('payment.way.changeDesc') }}</p>
-                <a :href="$url.pay">
-                  <el-button type="simple" class="wide">
-                    {{ $t('common.change') }}
-                  </el-button>
-                </a>
               </dd>
               <el-divider />
-              <dt>{{ $t('payment.way.autoPayment') }}</dt>
-              <dd class="auto-payment">
-                <span>{{ $t('payment.way.autoPaymentNow') }}</span>
-                <el-button
-                  type="simple"
-                  @click="showAutoPaymentCancelModal = true"
-                >
-                  {{ $t('payment.way.autoPaymentCancel') }}
-                </el-button>
+              <dt>{{ $t('payment.way.cancel') }}</dt>
+              <dd>
+                <p>{{ $t('payment.way.cancelDesc') }}</p>
               </dd>
             </dl>
+            <el-button
+              type="simple"
+              class="wide"
+              @click="showAutoPaymentCancelModal = true"
+            >
+              {{ $t('payment.way.autoPaymentCancel') }}
+            </el-button>
           </el-card>
         </el-col>
         <!-- 결제 이력 -->
@@ -217,12 +213,8 @@ export default {
       margin: 8px 0 16px;
       line-height: 20px;
     }
-    .auto-payment {
-      margin: 14px 0 8px;
-      .el-button {
-        float: right;
-        margin-top: -5px;
-      }
+    .el-button {
+      margin: 10px 0;
     }
   }
   // 모달 테이블

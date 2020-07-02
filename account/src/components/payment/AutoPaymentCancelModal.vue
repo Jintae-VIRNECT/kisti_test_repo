@@ -26,7 +26,11 @@
       <el-button @click="visible = false">
         {{ $t('common.cancel') }}
       </el-button>
-      <el-button type="primary" @click="autoPaymentCacnel">
+      <el-button
+        type="primary"
+        @click="autoPaymentCacnel"
+        :disabled="!autoPaymentItems.length"
+      >
         {{ $t('payment.autoPaymentCancelModal.submit') }}
       </el-button>
     </template>
