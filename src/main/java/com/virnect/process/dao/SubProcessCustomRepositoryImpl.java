@@ -52,7 +52,7 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
         QProcess qProcess = QProcess.process;
         JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
 
-        if (userUUIDList.size() > 0) {
+        if (userUUIDList != null && userUUIDList.size() > 0) {
             query = query.where(qSubProcess.workerUUID.in(userUUIDList));
         }
 

@@ -92,8 +92,6 @@ public class TaskService {
         // 1. 컨텐츠 메타데이터 가져오기
         ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(registerNewProcess.getContentUUID());
 
-        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
-
         // 1-1. 에러가 난 경우
         if (contentApiResponse.getCode() != 200) {
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
@@ -103,6 +101,7 @@ public class TaskService {
             throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
         }
 
+        log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
         log.debug("----------content uuid : {}", contentApiResponse.getData().getContents().getUuid());
 
         // 4. 공정 정보 저장
@@ -2472,6 +2471,155 @@ public class TaskService {
         }
 
         return encodedData;
+    }
+
+    public ApiResponse<WorkSyncResponse> getSyncMeta(Long taskId, Long[] subTaskIds, String workerUUID) {
+
+        Process process = this.processRepository.findById(taskId).orElseGet(() -> null);
+
+        WorkSyncResponse workSyncResponse = new WorkSyncResponse();
+
+        WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds, workerUUID);
+
+        List<WorkSyncResponse.ProcessResult> resultList = new ArrayList<>();
+
+        resultList.add(processResult);
+
+        workSyncResponse.setTasks(resultList);
+
+        ApiResponse<MemberListResponse> response = this.workspaceRestService.getSimpleWorkspaceUserList(process.getWorkspaceUUID());
+        List<MemberInfoDTO> memberList = response.getData().getMemberInfoList();
+        List<String> userUUIDList = memberList.stream().map(MemberInfoDTO::getUuid).collect(Collectors.toList());
+
+        List<Issue> troubleMemoList = this.issueRepository.findByWorkerUUIDIsInAndJobIsNull(userUUIDList);
+
+        List<WorkSyncResponse.IssueResult> troubleMemoResult = new ArrayList<>();
+
+        for (Issue issueOut : troubleMemoList) {
+            WorkSyncResponse.IssueResult troubleMemo = buildTroubleMemo(issueOut);
+            troubleMemoResult.add(troubleMemo);
+        }
+
+        workSyncResponse.setIssues(troubleMemoResult);
+
+        return new ApiResponse<>(workSyncResponse);
+    }
+
+    private WorkSyncResponse.IssueResult buildTroubleMemo(Issue issue) {
+        return WorkSyncResponse.IssueResult.builder()
+                .workerUUID(issue.getWorkerUUID())
+                .photoFile(issue.getPath())
+                .caption(issue.getContent())
+                .build();
+    }
+
+    private WorkSyncResponse.ProcessResult buildSyncProcess(Process process, Long[] subTaskIds, String workerUUID) {
+        List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = buildSyncSubProcess(process.getSubProcessList(), subTaskIds, workerUUID);
+        if (syncSubProcessList.isEmpty()) return null;
+        else {
+            return WorkSyncResponse.ProcessResult.builder()
+                    .id(process.getId())
+                    .subTasks(syncSubProcessList)
+                    .build();
+        }
+    }
+
+    // CONVERT metadata - SUB PROCESS LIST
+    private List<WorkSyncResponse.SubProcessWorkResult> buildSyncSubProcess(List<SubProcess> subProcesses, Long[] subTaskIds, String workerUUID) {
+        List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = new ArrayList<>();
+        ArrayList<Long> longs = null;
+        for (SubProcess subProcess : subProcesses) {
+            WorkSyncResponse.SubProcessWorkResult syncSubProcess = null;
+
+            // TODO
+            for (Long subTaskId : subTaskIds) {
+                if (subProcess.getId() == subTaskId) {
+                    syncSubProcess = buildSyncDataSubProcess(subProcess, workerUUID);
+                }
+            }
+
+            // 권한으로 인해 세부공정이 없을 수 있으므로 null체크
+            if (!Objects.isNull(syncSubProcess)) {
+                syncSubProcessList.add(syncSubProcess);
+            }
+        }
+        return syncSubProcessList;
+    }
+
+    // CONVERT metadata - SUB PROCESS, worker 권한 확인
+    private WorkSyncResponse.SubProcessWorkResult buildSyncDataSubProcess(SubProcess subProcess, String workerUUID) {
+        String workerSourceUUID = subProcess.getWorkerUUID();
+        // 권한 확인
+
+        WorkSyncResponse.SubProcessWorkResult build;
+        if (workerSourceUUID.equals(workerUUID)) {
+            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(workerUUID);
+            build = WorkSyncResponse.SubProcessWorkResult.builder()
+                    .id(subProcess.getId())
+                    .syncUserUUID(workerUUID)
+                    .steps(buildSyncJobList(subProcess.getJobList()))
+                    .build();
+        } else build = null;
+
+        return build;
+    }
+
+    // CONVERT metadata - JOB LIST
+    private List<WorkSyncResponse.JobWorkResult> buildSyncJobList(List<Job> jobs) {
+        List<WorkSyncResponse.JobWorkResult> syncJobList = new ArrayList<>();
+        for (Job job : jobs) {
+            WorkSyncResponse.JobWorkResult syncDataJob = buildSyncDataJob(job);
+            syncJobList.add(syncDataJob);
+        }
+        return syncJobList;
+    }
+
+    // CONVERT metadata - JOB
+    private WorkSyncResponse.JobWorkResult buildSyncDataJob(Job job) {
+        return WorkSyncResponse.JobWorkResult.builder()
+                .id(job.getId())
+                .isReported(job.getIsReported())
+                .reports(buildSyncReportList(job.getReportList()))
+                .result(job.getResult())
+                .build();
+    }
+
+    // CONVERT metadata - REPORT LIST
+    private List<WorkSyncResponse.ReportWorkResult> buildSyncReportList(List<Report> reports) {
+        List<WorkSyncResponse.ReportWorkResult> syncReportList = new ArrayList<>();
+        for (Report report : reports) {
+            WorkSyncResponse.ReportWorkResult syncDataReport = buildSyncDataReport(report);
+            syncReportList.add(syncDataReport);
+        }
+        return syncReportList;
+    }
+
+    // CONVERT metadata - REPORT
+    private WorkSyncResponse.ReportWorkResult buildSyncDataReport(Report report) {
+        return WorkSyncResponse.ReportWorkResult.builder()
+                .id(report.getId())
+                .actions(buildSyncReportItemList(report.getItemList()))
+                .build();
+    }
+
+    // CONVERT metadata - REPORT ITEM LIST
+    private List<WorkSyncResponse.ReportItemWorkResult> buildSyncReportItemList(List<Item> items) {
+        List<WorkSyncResponse.ReportItemWorkResult> syncReportItemList = new ArrayList<>();
+        for (Item reportItem : items) {
+            WorkSyncResponse.ReportItemWorkResult syncDataReportItem = buildSyncDataReportItem(reportItem);
+            syncReportItemList.add(syncDataReportItem);
+        }
+        return syncReportItemList;
+    }
+
+    // CONVERT metadata - REPORT ITEM
+    private WorkSyncResponse.ReportItemWorkResult buildSyncDataReportItem(Item item) {
+        return WorkSyncResponse.ReportItemWorkResult.builder()
+                .id(item.getId())
+                .answer(item.getAnswer())
+                .photoFile(item.getPath())
+                .result(item.getResult())
+                .build();
     }
 
     public void temp(String search, String workspaceId) {

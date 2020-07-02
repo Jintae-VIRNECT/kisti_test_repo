@@ -139,6 +139,23 @@ public class TaskController {
         return ResponseEntity.ok(processMetadataResponseApiResponse);
     }
 
+    @ApiOperation(value = "커스텀 메타데이터 가져오기", notes = "요청한 사용자가 할당된 작업만 조회됨.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "query", required = true, example = "1"),
+            @ApiImplicitParam(name = "subTaskIds", value = "하위작업 식별자 배열(ex : subTask Ids=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1"),
+            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
+    })
+    @GetMapping("/sync")
+    public ResponseEntity<ApiResponse<WorkSyncResponse>> getSyncData(
+            @RequestParam(value = "taskId") Long taskId
+            , @RequestParam(value = "subTaskIds") Long[] subTaskIds
+            , @RequestParam(value = "workerUUID") String workerUUID
+    ) {
+        ApiResponse<WorkSyncResponse> apiResponse = this.taskService.getSyncMeta(taskId, subTaskIds,workerUUID);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     /**
      * 수행결과 업로드(동기화)
      *
@@ -733,7 +750,7 @@ public class TaskController {
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터 식별자", dataType = "string", required = true, paramType = "path", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updated_at,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc")
     })
     @GetMapping("/target/{targetData}")
     public ResponseEntity<ApiResponse<SubProcessesOfTargetResponse>> getSubProcessesOfTarget(
