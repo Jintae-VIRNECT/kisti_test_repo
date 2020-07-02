@@ -10,7 +10,7 @@ export default async function({ req, store, redirect }) {
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(
         `${url.console}?continue=${encodeURIComponent(
-          req.headers.referer || req.headers.host,
+          req.headers.referer || req.headers.host + req.url,
         )}`,
       )
     }
