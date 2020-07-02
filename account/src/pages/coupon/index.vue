@@ -78,11 +78,7 @@
                 <img src="~assets/images/icon/ic-error.svg" />
               </el-tooltip>
             </div>
-            <coupon-list
-              ref="table"
-              :coupons="coupons"
-              @select="couponSelect"
-            />
+            <coupon-list ref="table" :coupons="coupons" />
             <searchbar-page
               ref="page"
               :value.sync="coponsPage"

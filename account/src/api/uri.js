@@ -32,4 +32,6 @@ module.exports = {
   CANCEL_AUTO_PAYMENTS_ABORT: ['POST', '/billing/user/monthpaycnl/reversal'],
   // 이용자 구매내역 상세 조회
   GET_PAYMENT_LOG_DETAIL: ['GET', '/billing/user/purchaselist'],
+  // 페이레터 쿠폰 정보 리스트 조회
+  GET_PAY_COUPONS: ['GET', '/billing/coupon/holdlist'],
 }

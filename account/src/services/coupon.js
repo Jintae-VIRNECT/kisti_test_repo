@@ -4,14 +4,17 @@ import profileService from '@/services/profile'
 import workspaceService from '@/services/workspace'
 
 export default {
-  async searchCoupons(searchParams) {
-    const { myCouponInfoList, pageMeta } = await api('GET_COUPONS', {
-      route: { userId: profileService.getMyProfile().uuid },
-      params: { size: 10, ...searchParams },
+  async searchCoupons(searchParams = {}) {
+    const { couponholdinfos, totalcnt } = await api('GET_PAY_COUPONS', {
+      params: {
+        userno: profileService.getMyProfile().userId,
+        pagesize: 10,
+        pageNo: searchParams.page || 1,
+      },
     })
     return {
-      list: myCouponInfoList.map(coupon => new Coupon(coupon)),
-      total: pageMeta.totalElements,
+      list: couponholdinfos.map(coupon => new Coupon(coupon)),
+      total: totalcnt,
     }
   },
   async addCouponCode(code) {

@@ -2,39 +2,29 @@
   <el-table
     class="coupon-list clickable"
     :data="coupons"
-    @row-click="select"
     @sort-change="sortChange"
   >
-    <column-default
-      :label="$t('coupon.column.couponName')"
-      prop="name"
-      sortable="custom"
-    />
+    <column-default :label="$t('coupon.column.couponName')" prop="name" />
     <column-date
       :label="$t('coupon.column.registerDate')"
       prop="registerDate"
       :width="88"
-      sortable="custom"
     />
     <column-date
       :label="$t('coupon.column.expireDate')"
       prop="expiredDate"
       :width="88"
-      sortable="custom"
     />
     <column-date
       :label="$t('coupon.column.usedDate')"
-      prop="startDate"
-      prop2="endDate"
+      prop="usedDate"
       :width="160"
-      sortable="custom"
     />
     <column-status
       :label="$t('coupon.column.status')"
       prop="status"
       :statusList="couponStatus"
       :width="120"
-      sortable="custom"
     />
     <template #empty>
       <img src="~assets/images/empty/img-coupon.png" />
