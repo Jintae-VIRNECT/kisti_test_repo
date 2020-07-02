@@ -1,7 +1,6 @@
 package docker
 
 import (
-	"RM-RecordServer/config"
 	"RM-RecordServer/logger"
 	"context"
 	"errors"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	dockerClient "github.com/fsouza/go-dockerclient"
+	"github.com/spf13/viper"
 )
 
 type ContainerParam struct {
@@ -25,8 +25,6 @@ var (
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
 
-const openviduRecorderImage = "openvidu/openvidu-recording:2.9.0"
-
 func DownloadDockerImage() error {
 	cli, err := dockerClient.NewClientFromEnv()
 	if err != nil {
@@ -35,7 +33,7 @@ func DownloadDockerImage() error {
 	}
 
 	err = cli.PullImage(
-		dockerClient.PullImageOptions{Repository: openviduRecorderImage},
+		dockerClient.PullImageOptions{Repository: viper.GetString("record.dockerImage")},
 		dockerClient.AuthConfiguration{},
 	)
 	if err != nil {
@@ -56,20 +54,22 @@ func RunContainer(param ContainerParam) (string, error) {
 	}
 	createOpt := dockerClient.CreateContainerOptions{}
 	createOpt.Name = param.VideoID
-	createOpt.Config = &dockerClient.Config{}
-	createOpt.Config.Image = openviduRecorderImage
-	createOpt.Config.Env = []string{
-		"URL=" + param.LayoutURL + "/" + param.VideoID + "/MY_SECRET/4443/false",
-		"ONLY_VIDEO=" + "false",
-		"RESOLUTION=" + convertResolution(param.Resolution),
-		"FRAMERATE=" + strconv.Itoa(param.Framerate),
-		"VIDEO_ID=" + param.VideoID,
-		"VIDEO_NAME=" + param.VideoName,
-		"VIDEO_FORMAT=" + param.VideoFormat,
-		"RECORDING_JSON=" + "{}",
+	createOpt.Config = &dockerClient.Config{
+		Image: viper.GetString("record.dockerImage"),
+		Env: []string{
+			"URL=" + param.LayoutURL + "/" + param.VideoID + "/MY_SECRET/4443/false",
+			"ONLY_VIDEO=" + "false",
+			"RESOLUTION=" + convertResolution(param.Resolution),
+			"FRAMERATE=" + strconv.Itoa(param.Framerate),
+			"VIDEO_ID=" + param.VideoID,
+			"VIDEO_NAME=" + param.VideoName,
+			"VIDEO_FORMAT=" + param.VideoFormat,
+			"RECORDING_JSON=" + "{}",
+		}}
+
+	createOpt.HostConfig = &dockerClient.HostConfig{
+		Binds: []string{viper.GetString("record.dir") + ":/recordings"},
 	}
-	createOpt.HostConfig = &dockerClient.HostConfig{}
-	createOpt.HostConfig.Binds = []string{config.RecordDir + ":/recordings"}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {
 		logger.Error("CreateContainer:", err)

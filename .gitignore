@@ -1,4 +1,5 @@
 docs/
 recordings/
 .vscode/
+logs/
 recordserver

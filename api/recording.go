@@ -1,10 +1,11 @@
 package api
 
 import (
-	"RM-RecordServer/config"
 	"RM-RecordServer/logger"
 	"RM-RecordServer/recorder"
 	"net/http"
+
+	"github.com/spf13/viper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,9 +44,9 @@ type listRecordingResBody struct {
 // @Router /record [post]
 func StartRecording(c *gin.Context) {
 	req := startRecordingReqBody{
-		Resolution:         config.DefaultResolution,
-		Framerate:          config.DefaultFramerate,
-		RecordingTimeLimit: config.DefaultRecordingTimeLimit,
+		Resolution:         viper.GetString("record.defaultResolution"),
+		Framerate:          viper.GetInt("record.defaultFramerate"),
+		RecordingTimeLimit: viper.GetInt("record.defaultRecordingTimeLimit"),
 	}
 	err := c.BindJSON(&req)
 	if err != nil {

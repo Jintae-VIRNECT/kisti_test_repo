@@ -1,12 +1,13 @@
 package recorder
 
 import (
-	"RM-RecordServer/config"
 	"RM-RecordServer/docker"
 	"RM-RecordServer/logger"
 	"errors"
 	"sync"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 type recording struct {
@@ -49,8 +50,8 @@ func NewRecording(param RecordingParam) error {
 		VideoName:   param.SessionID,
 		Resolution:  param.Resolution,
 		Framerate:   param.Framerate,
-		VideoFormat: config.DefaultVideoFormat,
-		LayoutURL:   config.LayoutURL,
+		VideoFormat: viper.GetString("record.defaultVideoFormat"),
+		LayoutURL:   viper.GetString("record.layoutURL"),
 	}
 
 	constainerID, err := docker.RunContainer(containerParam)

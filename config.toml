@@ -1,0 +1,19 @@
+[general]
+port = 8080
+
+[record]
+dir = "/mnt/c/Users/VIRNECT/dev/virnect/RM-RecordServer/recordings"
+defaultResolution = "720p"
+defaultFramerate = 30
+defaultRecordingTimeLimit = 5 # in minutes
+defaultVideoFormat = "mp4"
+layoutURL = "https://OPENVIDUAPP:MY_SECRET@172.20.194.76:4443/dashboard/#/layout-best-fit"
+dockerImage = "openvidu/openvidu-recording:2.9.0"
+
+[log]
+stdout = false
+filename = "./logs/recordserver.log"
+maxSize = 100 # in MBytes
+maxAge = 7
+maxBackups = 30
+level = "DEBUG"
