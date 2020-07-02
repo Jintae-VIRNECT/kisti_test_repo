@@ -22,8 +22,6 @@ import java.util.List;
 public class WorkSyncResponse {
     @ApiModelProperty(value = "작업 내용")
     private List<ProcessResult> tasks = new ArrayList<>();
-    @ApiModelProperty(value = "작업 외 이슈 리스트", position = 1)
-    private List<IssueResult> issues = new ArrayList<>();
 
     @Getter
     @Setter
@@ -53,14 +51,17 @@ public class WorkSyncResponse {
     public static class SubProcessWorkResult {
         @ApiModelProperty(value = "세부 작업 식별자")
         private long id;
+        @ApiModelProperty(value = "우선순위")
+        private long priority;
         @ApiModelProperty(value = "세부 작업 담당자 식별자", position = 1)
         private String syncUserUUID;
         @ApiModelProperty(value = "세부 작업 작업 진행 정보", position = 2)
         private List<JobWorkResult> steps;
 
         @Builder
-        public SubProcessWorkResult(long id, String syncUserUUID, List<JobWorkResult> steps) {
+        public SubProcessWorkResult(long id, String syncUserUUID, List<JobWorkResult> steps, long priority) {
             this.id = id;
+            this.priority = priority;
             this.syncUserUUID = syncUserUUID;
             this.steps = steps;
         }
@@ -69,6 +70,7 @@ public class WorkSyncResponse {
         public String toString() {
             return "SubTaskWorkResult{" +
                     "id=" + id +
+                    ", priority='" + priority + '\'' +
                     ", syncUserUUID='" + syncUserUUID + '\'' +
                     ", steps=" + steps +
                     '}';
@@ -218,7 +220,6 @@ public class WorkSyncResponse {
     public String toString() {
         return "WorkResultSyncRequest{" +
                 "tasks=" + tasks +
-                ", issues=" + issues +
                 '}';
     }
 }

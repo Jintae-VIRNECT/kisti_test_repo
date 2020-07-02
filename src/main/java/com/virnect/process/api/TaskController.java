@@ -142,16 +142,14 @@ public class TaskController {
     @ApiOperation(value = "커스텀 메타데이터 가져오기", notes = "요청한 사용자가 할당된 작업만 조회됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "taskId", value = "작업 식별자", dataType = "string", paramType = "query", required = true, example = "1"),
-            @ApiImplicitParam(name = "subTaskIds", value = "하위작업 식별자 배열(ex : subTask Ids=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", required = true, example = "1"),
-            @ApiImplicitParam(name = "workerUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
+            @ApiImplicitParam(name = "subTaskIds", value = "하위작업 식별자 배열(ex : subTask Ids=2,4,12,45)", allowMultiple = true, dataType = "array", paramType = "query", example = "1"),
     })
     @GetMapping("/sync")
     public ResponseEntity<ApiResponse<WorkSyncResponse>> getSyncData(
             @RequestParam(value = "taskId") Long taskId
-            , @RequestParam(value = "subTaskIds") Long[] subTaskIds
-            , @RequestParam(value = "workerUUID") String workerUUID
+            , @RequestParam(value = "subTaskIds", required = false) Long[] subTaskIds
     ) {
-        ApiResponse<WorkSyncResponse> apiResponse = this.taskService.getSyncMeta(taskId, subTaskIds,workerUUID);
+        ApiResponse<WorkSyncResponse> apiResponse = this.taskService.getSyncMeta(taskId, subTaskIds);
 
         return ResponseEntity.ok(apiResponse);
     }

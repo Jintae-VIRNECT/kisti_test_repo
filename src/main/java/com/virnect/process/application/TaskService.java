@@ -2473,13 +2473,13 @@ public class TaskService {
         return encodedData;
     }
 
-    public ApiResponse<WorkSyncResponse> getSyncMeta(Long taskId, Long[] subTaskIds, String workerUUID) {
+    public ApiResponse<WorkSyncResponse> getSyncMeta(Long taskId, Long[] subTaskIds) {
 
         Process process = this.processRepository.findById(taskId).orElseGet(() -> null);
 
         WorkSyncResponse workSyncResponse = new WorkSyncResponse();
 
-        WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds, workerUUID);
+        WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds);
 
         List<WorkSyncResponse.ProcessResult> resultList = new ArrayList<>();
 
@@ -2487,34 +2487,12 @@ public class TaskService {
 
         workSyncResponse.setTasks(resultList);
 
-        ApiResponse<MemberListResponse> response = this.workspaceRestService.getSimpleWorkspaceUserList(process.getWorkspaceUUID());
-        List<MemberInfoDTO> memberList = response.getData().getMemberInfoList();
-        List<String> userUUIDList = memberList.stream().map(MemberInfoDTO::getUuid).collect(Collectors.toList());
-
-        List<Issue> troubleMemoList = this.issueRepository.findByWorkerUUIDIsInAndJobIsNull(userUUIDList);
-
-        List<WorkSyncResponse.IssueResult> troubleMemoResult = new ArrayList<>();
-
-        for (Issue issueOut : troubleMemoList) {
-            WorkSyncResponse.IssueResult troubleMemo = buildTroubleMemo(issueOut);
-            troubleMemoResult.add(troubleMemo);
-        }
-
-        workSyncResponse.setIssues(troubleMemoResult);
-
         return new ApiResponse<>(workSyncResponse);
     }
 
-    private WorkSyncResponse.IssueResult buildTroubleMemo(Issue issue) {
-        return WorkSyncResponse.IssueResult.builder()
-                .workerUUID(issue.getWorkerUUID())
-                .photoFile(issue.getPath())
-                .caption(issue.getContent())
-                .build();
-    }
+    private WorkSyncResponse.ProcessResult buildSyncProcess(Process process, Long[] subTaskIds) {
+        List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = buildSyncSubProcess(process.getSubProcessList(), subTaskIds);
 
-    private WorkSyncResponse.ProcessResult buildSyncProcess(Process process, Long[] subTaskIds, String workerUUID) {
-        List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = buildSyncSubProcess(process.getSubProcessList(), subTaskIds, workerUUID);
         if (syncSubProcessList.isEmpty()) return null;
         else {
             return WorkSyncResponse.ProcessResult.builder()
@@ -2525,17 +2503,21 @@ public class TaskService {
     }
 
     // CONVERT metadata - SUB PROCESS LIST
-    private List<WorkSyncResponse.SubProcessWorkResult> buildSyncSubProcess(List<SubProcess> subProcesses, Long[] subTaskIds, String workerUUID) {
+    private List<WorkSyncResponse.SubProcessWorkResult> buildSyncSubProcess(List<SubProcess> subProcesses, Long[] subTaskIds) {
         List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = new ArrayList<>();
         ArrayList<Long> longs = null;
         for (SubProcess subProcess : subProcesses) {
             WorkSyncResponse.SubProcessWorkResult syncSubProcess = null;
 
-            // TODO
-            for (Long subTaskId : subTaskIds) {
-                if (subProcess.getId() == subTaskId) {
-                    syncSubProcess = buildSyncDataSubProcess(subProcess, workerUUID);
+            if (subTaskIds != null && subTaskIds.length > 0) {
+                // TODO
+                for (Long subTaskId : subTaskIds) {
+                    if (subProcess.getId() == subTaskId) {
+                        syncSubProcess = buildSyncDataSubProcess(subProcess);
+                    }
                 }
+            } else {
+                syncSubProcess = buildSyncDataSubProcess(subProcess);
             }
 
             // 권한으로 인해 세부공정이 없을 수 있으므로 null체크
@@ -2547,19 +2529,14 @@ public class TaskService {
     }
 
     // CONVERT metadata - SUB PROCESS, worker 권한 확인
-    private WorkSyncResponse.SubProcessWorkResult buildSyncDataSubProcess(SubProcess subProcess, String workerUUID) {
-        String workerSourceUUID = subProcess.getWorkerUUID();
-        // 권한 확인
-
-        WorkSyncResponse.SubProcessWorkResult build;
-        if (workerSourceUUID.equals(workerUUID)) {
-            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(workerUUID);
-            build = WorkSyncResponse.SubProcessWorkResult.builder()
-                    .id(subProcess.getId())
-                    .syncUserUUID(workerUUID)
-                    .steps(buildSyncJobList(subProcess.getJobList()))
-                    .build();
-        } else build = null;
+    private WorkSyncResponse.SubProcessWorkResult buildSyncDataSubProcess(SubProcess subProcess) {
+        WorkSyncResponse.SubProcessWorkResult build
+                = WorkSyncResponse.SubProcessWorkResult.builder()
+                      .id(subProcess.getId())
+                      .syncUserUUID(subProcess.getWorkerUUID())
+                      .priority(subProcess.getPriority())
+                      .steps(buildSyncJobList(subProcess.getJobList()))
+                      .build();
 
         return build;
     }
@@ -2580,8 +2557,35 @@ public class TaskService {
                 .id(job.getId())
                 .isReported(job.getIsReported())
                 .reports(buildSyncReportList(job.getReportList()))
+                .issues(buildSyncIssue(job.getIssueList()))
                 .result(job.getResult())
                 .build();
+    }
+
+    private List<WorkSyncResponse.WorkIssueResult> buildSyncIssue(List<Issue> issueList) {
+
+        List<WorkSyncResponse.WorkIssueResult> issueResultList = new ArrayList<>();
+
+        if (issueList.size() == 0) {
+            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
+                    .caption("")
+                    .photoFile("")
+                    .build();
+
+            issueResultList.add(issueResult);
+        }
+
+        for (Issue issue : issueList) {
+            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
+                    .caption(issue.getContent())
+                    .photoFile(issue.getPath())
+                    .build();
+
+            issueResultList.add(issueResult);
+        }
+
+        return issueResultList;
+
     }
 
     // CONVERT metadata - REPORT LIST
