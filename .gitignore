@@ -1,4 +1,4 @@
-*.exe
 docs/
 recordings/
 .vscode/
+recordserver
