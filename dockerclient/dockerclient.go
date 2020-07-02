@@ -1,4 +1,4 @@
-package docker
+package dockerclient
 
 import (
 	"RM-RecordServer/logger"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	dockerClient "github.com/fsouza/go-dockerclient"
+	docker "github.com/fsouza/go-dockerclient"
 	"github.com/spf13/viper"
 )
 
@@ -21,20 +21,20 @@ type ContainerParam struct {
 }
 
 var (
-	ErrContainerAlreadyExists = dockerClient.ErrContainerAlreadyExists
+	ErrContainerAlreadyExists = docker.ErrContainerAlreadyExists
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
 
 func DownloadDockerImage() error {
-	cli, err := dockerClient.NewClientFromEnv()
+	cli, err := docker.NewClientFromEnv()
 	if err != nil {
 		logger.Error("NewClientFromEnv:", err)
 		return ErrContainerInternal
 	}
 
 	err = cli.PullImage(
-		dockerClient.PullImageOptions{Repository: viper.GetString("record.dockerImage")},
-		dockerClient.AuthConfiguration{},
+		docker.PullImageOptions{Repository: viper.GetString("record.dockerImage")},
+		docker.AuthConfiguration{},
 	)
 	if err != nil {
 		logger.Error("PullImage:", err)
@@ -47,14 +47,14 @@ func DownloadDockerImage() error {
 // https://OPENVIDUAPP:MY_SECRET@172.20.194.76:4443/dashboard/#/layout-best-fit/ses_R8y9uSOUn7/MY_SECRET/4443/false
 
 func RunContainer(param ContainerParam) (string, error) {
-	cli, err := dockerClient.NewClientFromEnv()
+	cli, err := docker.NewClientFromEnv()
 	if err != nil {
 		logger.Error("NewClientFromEnv:", err)
 		return "", ErrContainerInternal
 	}
-	createOpt := dockerClient.CreateContainerOptions{}
+	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.VideoID
-	createOpt.Config = &dockerClient.Config{
+	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
 			"URL=" + param.LayoutURL + "/" + param.VideoID + "/MY_SECRET/4443/false",
@@ -67,24 +67,24 @@ func RunContainer(param ContainerParam) (string, error) {
 			"RECORDING_JSON=" + "{}",
 		}}
 
-	createOpt.HostConfig = &dockerClient.HostConfig{
+	createOpt.HostConfig = &docker.HostConfig{
 		Binds: []string{viper.GetString("record.dir") + ":/recordings"},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {
 		logger.Error("CreateContainer:", err)
 
-		if err == dockerClient.ErrContainerAlreadyExists {
+		if err == docker.ErrContainerAlreadyExists {
 			return "", ErrContainerAlreadyExists
 		}
 
 		return "", ErrContainerInternal
 	}
 
-	err = cli.StartContainer(container.ID, &dockerClient.HostConfig{})
+	err = cli.StartContainer(container.ID, &docker.HostConfig{})
 	if err != nil {
 		logger.Error("StartContainer:", err)
-		err = cli.RemoveContainer(dockerClient.RemoveContainerOptions{ID: container.ID})
+		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: container.ID})
 		if err != nil {
 			logger.Error("RemoveContainer:", err)
 		}
@@ -101,7 +101,7 @@ func StopContainer(containerID string) error {
 }
 
 func stopAndRemoveContainer(containerID string) {
-	cli, err := dockerClient.NewClientFromEnv()
+	cli, err := docker.NewClientFromEnv()
 	if err != nil {
 		logger.Error("NewClientFromEnv:", err)
 		return
@@ -117,7 +117,7 @@ func stopAndRemoveContainer(containerID string) {
 			logger.Info("stop container:", containerID)
 		}()
 
-		cmd := dockerClient.CreateExecOptions{
+		cmd := docker.CreateExecOptions{
 			Cmd:          []string{"bash", "-c", "echo 'q' > stop"},
 			Container:    containerID,
 			AttachStdout: true,
@@ -127,7 +127,7 @@ func stopAndRemoveContainer(containerID string) {
 		if err != nil {
 			logger.Error("CreateExec:", err)
 		}
-		err = cli.StartExec(exec.ID, dockerClient.StartExecOptions{Context: ctx})
+		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
 		if err != nil {
 			logger.Error("StartExec:", err)
 		}
@@ -138,7 +138,7 @@ func stopAndRemoveContainer(containerID string) {
 		}
 		logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
 
-		err = cli.RemoveContainer(dockerClient.RemoveContainerOptions{ID: containerID, Force: true})
+		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: containerID, Force: true})
 		if err != nil {
 			logger.Error("RemoveContainer:", err)
 		}

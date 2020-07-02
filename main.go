@@ -2,7 +2,7 @@ package main
 
 import (
 	"RM-RecordServer/api"
-	"RM-RecordServer/docker"
+	"RM-RecordServer/dockerclient"
 	_ "RM-RecordServer/docs"
 	"RM-RecordServer/logger"
 	"fmt"
@@ -30,7 +30,7 @@ func main() {
 	logger.Init()
 	displayConfig()
 
-	docker.DownloadDockerImage()
+	dockerclient.DownloadDockerImage()
 
 	r := SetupRouter()
 	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition

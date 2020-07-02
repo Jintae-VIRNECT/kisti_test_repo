@@ -1,7 +1,7 @@
 package recorder
 
 import (
-	"RM-RecordServer/docker"
+	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
 	"errors"
 	"sync"
@@ -45,7 +45,7 @@ func NewRecording(param RecordingParam) error {
 		return ErrSessionIDAlreadyExists
 	}
 
-	containerParam := docker.ContainerParam{
+	containerParam := dockerclient.ContainerParam{
 		VideoID:     param.SessionID,
 		VideoName:   param.SessionID,
 		Resolution:  param.Resolution,
@@ -54,7 +54,7 @@ func NewRecording(param RecordingParam) error {
 		LayoutURL:   viper.GetString("record.layoutURL"),
 	}
 
-	constainerID, err := docker.RunContainer(containerParam)
+	constainerID, err := dockerclient.RunContainer(containerParam)
 	if err != nil {
 		return ErrInternalError
 	}
@@ -97,7 +97,7 @@ func DelRecording(sessionID string, reason string) error {
 
 	r.timeout.Stop()
 
-	docker.StopContainer(r.containerID)
+	dockerclient.StopContainer(r.containerID)
 
 	delete(recorderMap, sessionID)
 	return nil
