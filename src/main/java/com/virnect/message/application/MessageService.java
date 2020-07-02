@@ -104,7 +104,7 @@ public class MessageService {
 
         if (retriesCnt > MAX_RETRY_COUNT) {
             log.info("Sending message to the parking lot queue");
-            rabbitTemplate.send("plx", "plx."+failedMessage.getMessageProperties().getReceivedExchange(), failedMessage);
+            rabbitTemplate.send("plx", "plx." + failedMessage.getMessageProperties().getReceivedExchange(), failedMessage);
             return;
         }
         log.info("Retrying message for the {} time", retriesCnt);
