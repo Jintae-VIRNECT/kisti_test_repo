@@ -15,7 +15,7 @@ import java.util.List;
  * DATE: 2020-02-25
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
- * DESCRIPTION:
+ * DESCRIPTION: (Post) /tasks/sync와 동일한 구조를 가진 데이터를 리턴하기 위해 생성
  */
 @Getter
 @Setter
@@ -88,16 +88,13 @@ public class WorkSyncResponse {
         private Result result;
         @ApiModelProperty(value = "작업의 레포트 내용", position = 3)
         private List<ReportWorkResult> reports;
-        @ApiModelProperty(value = "작업 이슈 리스트", position = 4)
-        private List<WorkIssueResult> issues;
 
         @Builder
-        public JobWorkResult(long id, YesOrNo isReported, Result result, List<ReportWorkResult> reports, List<WorkIssueResult> issues) {
+        public JobWorkResult(long id, YesOrNo isReported, Result result, List<ReportWorkResult> reports) {
             this.id = id;
             this.isReported = isReported;
             this.result = result;
             this.reports = reports;
-            this.issues = issues;
         }
 
         @Override
@@ -107,7 +104,6 @@ public class WorkSyncResponse {
                     ", isReported=" + isReported +
                     ", result=" + result +
                     ", reports=" + reports +
-                    ", issues=" + issues +
                     '}';
         }
     }
@@ -162,56 +158,6 @@ public class WorkSyncResponse {
                     ", answer='" + answer + '\'' +
                     ", photoFile=" + photoFile +
                     ", result=" + result +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class WorkIssueResult {
-        @ApiModelProperty(value = "작업 이슈 사진")
-        private String photoFile;
-        @ApiModelProperty(value = "작업 이슈 사진 설명", position = 1)
-        private String caption;
-
-        @Builder
-        public WorkIssueResult(String photoFile, String caption) {
-            this.photoFile = photoFile;
-            this.caption = caption;
-        }
-
-        @Override
-        public String toString() {
-            return "WorkIssueResult{" +
-                    ", photoFile=" + photoFile +
-                    ", caption='" + caption + '\'' +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class IssueResult {
-        @ApiModelProperty(value = "<글로벌> 이슈 보고자의 식별자")
-        private String workerUUID;
-        @ApiModelProperty(value = "<글로벌> 이슈 사진", position = 1)
-        private String photoFile;
-        @ApiModelProperty(value = "<글로벌> 이슈 사진 설명", position = 2)
-        private String caption;
-
-        @Builder
-        public IssueResult(String workerUUID, String photoFile, String caption){
-            this.workerUUID = workerUUID;
-            this.photoFile = photoFile;
-            this.caption = caption;
-        }
-
-        @Override
-        public String toString() {
-            return "IssueResult{" +
-                    "workerUUID='" + workerUUID + '\'' +
-                    ", photoFile=" + photoFile +
-                    ", caption='" + caption + '\'' +
                     '}';
         }
     }

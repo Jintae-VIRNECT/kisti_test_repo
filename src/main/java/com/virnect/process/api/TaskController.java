@@ -173,6 +173,20 @@ public class TaskController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    @ApiOperation(value = "트러블메모 업로드", tags = "Issues")
+    @PostMapping("/troubleMemo/upload")
+    public ResponseEntity<ApiResponse<TroubleMemoUploadResponse>> setTroubleMemo(
+            @RequestBody @Valid TroubleMemoUploadRequest troubleMemoUploadRequest, BindingResult result
+    ) {
+        if (result.hasErrors()) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<TroubleMemoUploadResponse> responseMessage = this.taskService.uploadTroubleMemo(troubleMemoUploadRequest);
+
+        return ResponseEntity.ok(responseMessage);
+    }
+
     /**
      *  ISSUES API Part
      */

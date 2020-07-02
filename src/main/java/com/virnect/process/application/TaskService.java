@@ -1168,6 +1168,8 @@ public class TaskService {
                 if (subProcessWorkResult.getSteps() != null) {
                     syncJobWork(subProcessWorkResult.getSteps(), subProcessWorkResult.getSyncUserUUID());
                 }
+            } else {
+                throw new ProcessServiceException(ErrorCode.ERR_WORKER_NOT_EQUAL_SYNC);
             }
         });
 
@@ -2475,7 +2477,7 @@ public class TaskService {
 
     public ApiResponse<WorkSyncResponse> getSyncMeta(Long taskId, Long[] subTaskIds) {
 
-        Process process = this.processRepository.findById(taskId).orElseGet(() -> null);
+        Process process = this.processRepository.findById(taskId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
         WorkSyncResponse workSyncResponse = new WorkSyncResponse();
 
@@ -2557,35 +2559,8 @@ public class TaskService {
                 .id(job.getId())
                 .isReported(job.getIsReported())
                 .reports(buildSyncReportList(job.getReportList()))
-                .issues(buildSyncIssue(job.getIssueList()))
                 .result(job.getResult())
                 .build();
-    }
-
-    private List<WorkSyncResponse.WorkIssueResult> buildSyncIssue(List<Issue> issueList) {
-
-        List<WorkSyncResponse.WorkIssueResult> issueResultList = new ArrayList<>();
-
-//        if (issueList.size() == 0) {
-//            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
-//                    .caption("")
-//                    .photoFile("")
-//                    .build();
-//
-//            issueResultList.add(issueResult);
-//        }
-
-        for (Issue issue : issueList) {
-            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
-                    .caption(issue.getContent())
-                    .photoFile(issue.getPath())
-                    .build();
-
-            issueResultList.add(issueResult);
-        }
-
-        return issueResultList;
-
     }
 
     // CONVERT metadata - REPORT LIST
@@ -2626,6 +2601,19 @@ public class TaskService {
                 .photoFile(item.getPath())
                 .result(item.getResult())
                 .build();
+    }
+
+    public ApiResponse<TroubleMemoUploadResponse> uploadTroubleMemo(TroubleMemoUploadRequest request) {
+        Issue issue = Issue.builder()
+                .path(request.getPhotoFile())
+                .content(request.getCaption())
+                .workerUUID(request.getWorkerUUID())
+                .build();
+
+        this.issueRepository.save(issue);
+
+        // TODO : 응답을 동기화 결과 반환해야 함..
+        return new ApiResponse<>(new TroubleMemoUploadResponse(true, LocalDateTime.now()));
     }
 
     public void temp(String search, String workspaceId) {
