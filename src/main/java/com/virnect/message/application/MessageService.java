@@ -89,7 +89,7 @@ public class MessageService {
             key = "push.#"
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getAllPushMessage(PushSendRequest pushSendRequest) throws IOException {
-       log.info(pushSendRequest.toString());
+        log.info(pushSendRequest.toString());
     }
 
     @RabbitListener(bindings = @QueueBinding(

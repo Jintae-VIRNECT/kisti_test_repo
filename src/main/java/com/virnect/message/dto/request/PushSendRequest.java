@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Project: PF-Message
@@ -40,8 +41,9 @@ public class PushSendRequest {
     @NotBlank
     private String event;
 
-    @ApiModelProperty(value = "메세지 내용", example = "A 사용자가 B 사용자를 워크스페이스에서 내보냈습니다.", required = true, position = 5)
-    @NotBlank
-    private String contents;
+    //@ApiModelProperty(value = "메세지 내용", example = "A 사용자가 B 사용자를 워크스페이스에서 내보냈습니다.", required = true, position = 5)
+    @ApiModelProperty(value = "메세지 내용", required = true, position = 5)
+    @NotNull
+    private List<Map<String, String>> contents;
 
 }

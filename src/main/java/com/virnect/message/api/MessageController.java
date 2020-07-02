@@ -1,5 +1,10 @@
 package com.virnect.message.api;
 
+import com.amazonaws.util.XmlUtils;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EmailSendRequest;
@@ -14,14 +19,22 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.DefaultMessagePropertiesConverter;
+import org.springframework.amqp.rabbit.support.MessagePropertiesConverter;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Project: base
@@ -37,10 +50,10 @@ import java.io.IOException;
 @Api(produces = MediaType.APPLICATION_JSON_VALUE, value = "MESSAGE API", consumes = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class MessageController {
-
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
     private final RabbitmqConfiguration rabbitmqConfiguration;
+    private final ObjectMapper objectMapper;
 
     @ApiOperation(
             value = "메일 메세지 발행",
@@ -66,7 +79,7 @@ public class MessageController {
             notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/push")
-    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
+    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) throws JSONException, JsonProcessingException {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -74,7 +87,6 @@ public class MessageController {
         //String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
         String exchange = "amq.topic";
         String routingKey = "push" + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
-
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
 
     }
