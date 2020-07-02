@@ -1,6 +1,6 @@
 //var ws = new SockJS("/Signaling");
-var ws = new WebSocket('ws://127.0.0.1:15674/message');
-var client = Stomp.over(ws);
+var ws = new WebSocket('wss://192.168.6.3:8073/messages');
+    var client = Stomp.over(ws);
 
 // RabbitMQ Web-Stomp does not support heartbeats so disable them
 client.heartbeat.outgoing = 0;
@@ -9,7 +9,7 @@ client.heartbeat.incoming = 0;
 client.debug = onDebug;
 
 // Make sure the user has limited access rights
-client.connect("admin", "admin1234", onConnect, onError, "/");
+client.connect("guest", "guest", onConnect, onError, "/");
 
 //Start subscribing to the chat queue
 function onConnect() {
@@ -18,7 +18,7 @@ function onConnect() {
         console.log(d.body);
         //var node = document.createTextNode(d.body + '\n');
 
-       // document.getElementById('chat').appendChild(node);
+        // document.getElementById('chat').appendChild(node);
 
     });
 }

@@ -41,9 +41,10 @@ public class PushSendRequest {
     @NotBlank
     private String event;
 
-    //@ApiModelProperty(value = "메세지 내용", example = "A 사용자가 B 사용자를 워크스페이스에서 내보냈습니다.", required = true, position = 5)
-    @ApiModelProperty(value = "메세지 내용", required = true, position = 5)
-    @NotNull
-    private List<Map<String, String>> contents;
+    @ApiModelProperty(value = "메세지 내용", example = "{\n" +
+            "  \"custom1\": \"string\",\n" +
+            "  \"custom2\": \"string\"\n" +
+            "}", required = true, position = 5)
+    private Map<Object, Object> contents;
 
 }
