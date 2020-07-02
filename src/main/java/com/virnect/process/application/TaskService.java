@@ -2566,14 +2566,14 @@ public class TaskService {
 
         List<WorkSyncResponse.WorkIssueResult> issueResultList = new ArrayList<>();
 
-        if (issueList.size() == 0) {
-            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
-                    .caption("")
-                    .photoFile("")
-                    .build();
-
-            issueResultList.add(issueResult);
-        }
+//        if (issueList.size() == 0) {
+//            WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
+//                    .caption("")
+//                    .photoFile("")
+//                    .build();
+//
+//            issueResultList.add(issueResult);
+//        }
 
         for (Issue issue : issueList) {
             WorkSyncResponse.WorkIssueResult issueResult = WorkSyncResponse.WorkIssueResult.builder()
@@ -2609,6 +2609,7 @@ public class TaskService {
     // CONVERT metadata - REPORT ITEM LIST
     private List<WorkSyncResponse.ReportItemWorkResult> buildSyncReportItemList(List<Item> items) {
         List<WorkSyncResponse.ReportItemWorkResult> syncReportItemList = new ArrayList<>();
+
         for (Item reportItem : items) {
             WorkSyncResponse.ReportItemWorkResult syncDataReportItem = buildSyncDataReportItem(reportItem);
             syncReportItemList.add(syncDataReportItem);
@@ -2618,6 +2619,7 @@ public class TaskService {
 
     // CONVERT metadata - REPORT ITEM
     private WorkSyncResponse.ReportItemWorkResult buildSyncDataReportItem(Item item) {
+
         return WorkSyncResponse.ReportItemWorkResult.builder()
                 .id(item.getId())
                 .answer(item.getAnswer())
