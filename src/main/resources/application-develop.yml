@@ -108,13 +108,13 @@ spring:
         - id: message-server
           uri: lb:http://message-server
           predicates:
-            - Path=/message/**
+            - Path=/messages/**
           filters:
             - StripPrefix=0
-            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/messages/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "MESSAGE_SERVER"
+                messagePrefix: "MESSAGES_SERVER"
                 preLogger: true
                 postLogger: true
 
