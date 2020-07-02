@@ -162,9 +162,6 @@ spring:
         - id: rabbitmq-websocket
           uri: ws://192.168.6.3:15674
           predicates:
-            - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, \s+
-            - Header=Upgrade, websocket
             - Path=/message/**
           filters:
             - StripPrefix=0
