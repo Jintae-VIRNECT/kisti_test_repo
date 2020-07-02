@@ -8,11 +8,14 @@
     >
       <div class="workspace-wrapper">
         <workspace-welcome ref="welcomeSection"></workspace-welcome>
+
         <workspace-tab
+          v-if="license"
           ref="tabSection"
           :fix="tabFix"
           @tabChange="tabChange"
         ></workspace-tab>
+        <workspace-license v-else></workspace-license>
       </div>
       <cookie-policy
         v-if="showCookie"
@@ -27,6 +30,7 @@
 import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
+import WorkspaceLicense from './section/WorkspaceLicense'
 import { mapActions } from 'vuex'
 import auth from 'utils/auth'
 import RecordList from 'LocalRecordList'
@@ -46,6 +50,7 @@ export default {
     HeaderSection,
     WorkspaceWelcome,
     WorkspaceTab,
+    WorkspaceLicense,
     RecordList,
     CookiePolicy: () => import('CookiePolicy'),
   },
@@ -56,6 +61,7 @@ export default {
       tabTop: 0,
       showCookie: !cookie,
       showList: false,
+      license: false,
     }
   },
   methods: {
@@ -106,8 +112,10 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    this.tabTop = this.$refs['tabSection'].$el.offsetTop
-    this.$eventBus.$on('filelist:open', this.toggleList)
+    if (this.license) {
+      this.tabTop = this.$refs['tabSection'].$el.offsetTop
+      this.$eventBus.$on('filelist:open', this.toggleList)
+    }
   },
 }
 </script>

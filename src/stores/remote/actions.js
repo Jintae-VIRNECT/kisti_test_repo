@@ -228,4 +228,9 @@ export default {
   clearCapture({ commit }) {
     commit(types.CLEAR_CAPTURE)
   },
+
+  /**license */
+  setLicense({ commit }, status) {
+    commit(types)
+  },
 }
