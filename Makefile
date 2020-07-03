@@ -8,7 +8,7 @@ build: check
 	go build -race -o build/${TARGET} main.go
 
 check:	
-	@bin/swag init
+	@swag init
 	@go vet ./...
 	@go fmt ./...
 
