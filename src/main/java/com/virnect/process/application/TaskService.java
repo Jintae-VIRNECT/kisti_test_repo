@@ -2547,7 +2547,7 @@ public class TaskService {
                 for (Long subTaskId : subTaskIds) {
                     log.info(">>>>>>>>>>>> 2548 ubTaskId : {}", subTaskId);
                     log.info(">>>>>>>>>>>> 2549 subProcess.getId() : {}", subProcess.getId());
-                    if (subProcess.getId() == subTaskId) {
+                    if (subProcess.getId().equals(subTaskId)) {
                         log.info(">>>>>>>>>>> 2551 subTaskIds : {}", subTaskIds);
                         log.info(">>>>>>>>>>> 2552 subProcess.getId() : {}", subProcess.getId());
                         syncSubProcess = buildSyncDataSubProcess(subProcess);
