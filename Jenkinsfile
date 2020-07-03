@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo 'Pre-Build Stage'
                 catchError() {
-                    sh 'go get -u http://github.com/swaggo/swag/cmd/swag'
+                    sh 'go get -u github.com/swaggo/swag/cmd/swag'
                     sh 'cp docker/Dockerfile ./'
                 }
             }
