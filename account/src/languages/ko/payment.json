@@ -42,7 +42,8 @@
     "submitDone": "자동 결제 해지 완료",
     "submitDoneDesc": "자동 결제가 해지되었습니다. 자동 결제를 다시 유지하고 싶으신 경우 익일부터 이용권 만료일 하루 전까지 [자동 결제 해지 취소]가 가능합니다.",
     "cancelRequestCancel": "자동 결제 해지 신청 취소",
-    "cancelRequestCancelDesc": "자동 결제 해지 신청을 취소하실 경우 자동결제가 재개됩니다."
+    "cancelRequestCancelDesc": "자동 결제 해지 신청을 취소하실 경우 자동결제가 재개됩니다.",
+    "cancelRequestCancelDone": "자동 결제 해지 신청 취소 완료"
   },
   "logDetail": {
     "title": "결제 이력 정보",

@@ -87,11 +87,11 @@ export default {
     PurchasesUsed,
   },
   async asyncData() {
-    const { list, total } = await purchasesService.searchPlanMembers()
-    return {
-      planMembers: list,
-      planMembersTotal: total,
-    }
+    // const { list, total } = await purchasesService.searchPlanMembers()
+    // return {
+    //   planMembers: list,
+    //   planMembersTotal: total,
+    // }
   },
   data() {
     return {

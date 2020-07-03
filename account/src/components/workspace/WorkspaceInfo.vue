@@ -42,7 +42,7 @@ export default {
     }
   },
   async beforeMount() {
-    this.workspace = await workspaceService.getMasterWorkspaceInfo()
+    this.workspace = workspaceService.getMasterWorkspaceInfo()
   },
 }
 </script>

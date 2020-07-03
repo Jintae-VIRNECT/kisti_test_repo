@@ -7,21 +7,19 @@ import profileServices from '@/services/profile'
 function getMyWorkspaces() {
   return store.getters['auth/myWorkspaces']
 }
-function getMyProfile() {
-  return store.getters['auth/myProfile']
+/**
+ * 마스터 워크스페이스 정보 가져오기
+ */
+function getMasterWorkspaceInfo() {
+  const masterWorkspace = getMyWorkspaces().find(
+    workspace => workspace.role === 'MASTER',
+  )
+  return masterWorkspace
 }
 
 export default {
   getMyWorkspaces,
-  /**
-   * 마스터 워크스페이스 정보 가져오기
-   */
-  async getMasterWorkspaceInfo() {
-    const masterWorkspace = getMyWorkspaces().find(
-      workspace => workspace.role === 'MASTER',
-    )
-    return masterWorkspace
-  },
+  getMasterWorkspaceInfo,
   /**
    * 워크스페이스 목록 검색
    * @param {Object} searchParams

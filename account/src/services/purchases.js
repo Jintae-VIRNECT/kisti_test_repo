@@ -1,11 +1,23 @@
+import { api } from '@/plugins/axios'
 import PlanMember from '@/models/purchases/PlanMember'
+import workspaceService from '@/services/workspace'
 
 export default {
-  searchPlanMembers() {
-    const data = [0, 1, 2, 3, 4]
+  /**
+   * 라이센스 멤버 검색
+   * @param {Object} searchParams
+   */
+  async searchPlanMembers(searchParams = {}) {
+    const { workspaceUserLicenseInfoList, pageMeta } = await api(
+      'GET_LICENSE_MEMBERS',
+      {
+        route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
+        params: { ...searchParams },
+      },
+    )
     return {
-      list: data.map(member => new PlanMember(member)),
-      total: data.length,
+      list: workspaceUserLicenseInfoList.map(member => new PlanMember(member)),
+      total: pageMeta.totalElements,
     }
   },
   getStorageCapacity() {

@@ -52,6 +52,7 @@ export default {
     async autoPaymentCacnel() {
       try {
         await paymentService.cancelAutoPayments(this.autoPaymentId)
+        this.$emit('updated')
         await this.$alert(
           this.$t('payment.autoPaymentCancelModal.submitDoneDesc'),
           this.$t('payment.autoPaymentCancelModal.submitDone'),

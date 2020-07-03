@@ -27,7 +27,7 @@
               <dd>{{ autoPayments.nextPayDate | dateFormat }}</dd>
               <el-divider />
               <dt>{{ $t('payment.will.way') }}</dt>
-              <dd>
+              <dd v-if="autoPayments.payFlag === 'Y'">
                 <span>{{ autoPayments.way }}</span>
                 <span class="sub">
                   {{ $t('payment.will.autoPaymentEveryMonth') }}
@@ -55,7 +55,18 @@
                 <p>{{ $t('payment.way.cancelDesc') }}</p>
               </dd>
             </dl>
+            <!-- 자동 결제 해지 신청 취소 -->
             <el-button
+              v-if="autoPayments.payFlag === 'N'"
+              type="simple"
+              class="wide"
+              @click="autoPaymentAbort"
+            >
+              {{ $t('payment.autoPaymentCancelModal.cancelRequestCancel') }}
+            </el-button>
+            <!-- 자동 결제 해지 -->
+            <el-button
+              v-else
               type="simple"
               class="wide"
               @click="showAutoPaymentCancelModal = true"
@@ -111,6 +122,7 @@
       :autoPaymentId="autoPayments.id"
       :autoPaymentItems="autoPayments.items"
       :visible.sync="showAutoPaymentCancelModal"
+      @updated="autoPaymentsCancled"
     />
     <!-- <payment-log-detail-modal
       :logInfo="activeLog"
@@ -168,6 +180,35 @@ export default {
       // this.showPaymentLogDetailModal = true
       const { slipLink } = await paymentService.getPaymentLogDetail(log.no)
       if (slipLink) window.open(slipLink)
+    },
+    // 해지됨
+    async autoPaymentsCancled() {
+      this.autoPayments = await paymentService.getAutoPayments()
+    },
+    // 해지 신청 취소
+    autoPaymentAbort() {
+      this.$confirm(
+        this.$t('payment.autoPaymentCancelModal.cancelRequestCancelDesc'),
+        this.$t('payment.autoPaymentCancelModal.cancelRequestCancel'),
+      ).then(async () => {
+        try {
+          await paymentService.cancelAutoPaymentsAbort(this.autoPayments.id)
+          this.$notify.success({
+            message: this.$t(
+              'payment.autoPaymentCancelModal.cancelRequestCancelDone',
+            ),
+            position: 'bottom-left',
+            duration: 2000,
+          })
+          this.autoPayments = await paymentService.getAutoPayments()
+        } catch (e) {
+          this.$notify.error({
+            message: e,
+            position: 'bottom-left',
+            duration: 2000,
+          })
+        }
+      })
     },
   },
 }

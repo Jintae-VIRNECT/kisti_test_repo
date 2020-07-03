@@ -2,7 +2,6 @@ import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
 import AutoPaymentInfo from '@/models/payment/AutoPaymentInfo'
 import { api } from '@/plugins/axios'
-import { CANCEL_AUTO_PAYMENTS } from '../api/uri'
 
 export default {
   /**
@@ -42,7 +41,7 @@ export default {
    */
   async getAutoPayments() {
     const data = await api('GET_AUTO_PAYMENTS', {
-      params: { userno: 71 },
+      params: { userno: 20001 },
     })
     return new AutoPaymentInfo(data)
   },
@@ -52,8 +51,20 @@ export default {
   async cancelAutoPayments(no) {
     const data = await api('CANCEL_AUTO_PAYMENTS', {
       params: {
-        userno: 71,
+        userno: 20001,
         MSeqNo: no,
+      },
+    })
+    return data
+  },
+  /**
+   * 정기결제 해지요청 취소
+   */
+  async cancelAutoPaymentsAbort(no) {
+    const data = await api('CANCEL_AUTO_PAYMENTS_ABORT', {
+      params: {
+        userno: 20001,
+        MSeqNo: 242,
       },
     })
     return data

@@ -19,6 +19,8 @@ module.exports = {
   ADD_COUPON: ['POST', '/licenses/coupon/register'],
   // 쿠폰 사용
   USE_COUPON: ['PUT', '/licenses/coupon/active'],
+  // 워크스페이스 플랜 사용자 조회
+  GET_LICENSE_MEMBERS: ['GET', '/workspaces/{workspaceId}/members/license'],
   /**
    * 페이레터 API
    */

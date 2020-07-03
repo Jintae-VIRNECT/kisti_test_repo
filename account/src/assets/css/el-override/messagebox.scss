@@ -64,9 +64,12 @@ body .el-message-box {
       margin-top: 0;
       padding: 7px 20px;
       font-size: 14px;
+      border-color: transparent;
+      border-radius: 3px;
+    }
+    .el-button--primary {
       background-color: #1468e2;
       border-color: #1468e2;
-      border-radius: 3px;
     }
   }
 }
