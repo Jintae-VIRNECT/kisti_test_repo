@@ -3,6 +3,7 @@ pipeline {
       environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        PATH = '/usr/local/go/bin'
         GOPATH = '/home/virn/go'
       }
     stages {
@@ -10,7 +11,7 @@ pipeline {
             steps {
                 echo 'Pre-Build Stage'
                 catchError() {
-                    
+                    sh 'cp docker/Dockerfile ./'
                 }
             }
         }
@@ -29,6 +30,7 @@ pipeline {
                     }                    
                     steps {
                         sh 'make'
+                        sh 'docker build -t rm-recordserver .'
                     }
                 }
 
