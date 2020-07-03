@@ -21,10 +21,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
-            sh 'go version'
-                    
+        stage('Build') {            
             parallel {
                 stage('Build') {
                     steps {
@@ -36,9 +33,13 @@ pipeline {
                     when {
                         branch 'develop'
                     }                   
-                    steps {                     
-                        sh 'make'
+                    steps {
+                        withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
+                         sh 'go version'
+                         sh 'make'
                         sh 'docker build -t rm-recordserver .'
+                        }
+                        
                     }
                 }
 
@@ -64,7 +65,7 @@ pipeline {
                     }
                 }
             }
-        }
+        
         }
 
         stage('Test') {
