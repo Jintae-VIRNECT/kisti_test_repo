@@ -1,8 +1,8 @@
 pipeline {
-    agent { docker 'golang:1.14-buster'}
+    agent any
       environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()                
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
       }
     stages {
         stage('Pre-Build') {
@@ -27,6 +27,7 @@ pipeline {
                         branch 'develop'
                     }                    
                     steps {
+                        withEnv()
                         sh 'make'
                         sh 'docker build -t rm-recordserver .'
                     }
@@ -46,17 +47,13 @@ pipeline {
                 stage('Master Branch') {
                     when {
                         branch 'master'
-                    }
-                    environment {
-                        NODE_ENV = 'production'
-                    }
+                    }                    
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         sh 'make'
                         sh 'docker build -t rm-recordserver:${GIT_TAG} .'
                     }
                 }
-
             }
         }
 
