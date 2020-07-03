@@ -33,8 +33,7 @@ pipeline {
                     when {
                         branch 'develop'
                     }                   
-                    steps {                       
-                        sh 'go version'
+                    steps {
                         sh 'make'
                         sh 'docker build -t rm-recordserver .'                                                
                     }
