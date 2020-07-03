@@ -33,13 +33,10 @@ pipeline {
                     when {
                         branch 'develop'
                     }                   
-                    steps {
-                        withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
-                         sh 'go version'
-                         sh 'make'
-                        sh 'docker build -t rm-recordserver .'
-                        }
-                        
+                    steps {                       
+                        sh 'go version'
+                        sh 'make'
+                        sh 'docker build -t rm-recordserver .'                                                
                     }
                 }
 
