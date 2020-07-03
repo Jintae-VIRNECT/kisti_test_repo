@@ -2499,7 +2499,7 @@ public class TaskService {
 
         WorkSyncResponse workSyncResponse = new WorkSyncResponse();
 
-        log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
+        log.info(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
 
         WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds);
 
@@ -2532,13 +2532,13 @@ public class TaskService {
         for (SubProcess subProcess : subProcesses) {
             WorkSyncResponse.SubProcessWorkResult syncSubProcess = null;
 
-            log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
+            log.info(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
 
             if (subTaskIds != null && subTaskIds.length > 0) {
                 for (Long subTaskId : subTaskIds) {
                     if (subProcess.getId() == subTaskId) {
-                        log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
-                        log.debug(">>>>>>>>>>> subProcess.getId() : {}", subProcess.getId());
+                        log.info(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
+                        log.info(">>>>>>>>>>> subProcess.getId() : {}", subProcess.getId());
                         syncSubProcess = buildSyncDataSubProcess(subProcess);
                     }
                 }
