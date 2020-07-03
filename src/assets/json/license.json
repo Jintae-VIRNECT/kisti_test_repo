@@ -229,8 +229,8 @@
         },
         {
           "name": "서버 녹화",
-          "property": "미포함",
-          "style": "negative"
+          "property": "포함",
+          "style": "positivie"
         }
       ]
     }

@@ -36,6 +36,7 @@ $color_positivie: #66aaff;
   font-size: 18px;
 }
 
+/*license card*/
 .license-card {
   display: flex;
   flex-direction: column;
@@ -66,6 +67,22 @@ $color_positivie: #66aaff;
   height: 142px;
 }
 
+.license-card__header--count {
+  color: $color_white;
+  font-size: 23px;
+  text-align: center;
+}
+.license-card__header--price {
+  color: $color_white;
+  font-weight: bold;
+  font-size: 36px;
+  text-align: center;
+
+  &.nocount {
+    padding-bottom: 30px;
+  }
+}
+
 .license-card--badge {
   display: flex;
   align-items: center;
@@ -93,41 +110,24 @@ $color_positivie: #66aaff;
   border-top: solid 1px rgba($color_sub_border, 0.2);
 }
 
-.license-card__header--count {
-  color: $color_white;
-  font-size: 18px;
-  text-align: center;
-}
-.license-card__header--price {
-  color: $color_white;
-  font-weight: bold;
-  font-size: 36px;
-  text-align: center;
-
-  &.nocount {
-    padding-bottom: 30px;
-  }
-}
-
 .license-card__sub-header {
   width: 100%;
-  // height: 128px;
   margin-bottom: 51px;
 }
 
 .license-card__sub-header--name {
-  float: left;
   padding: 0 0 18px 0;
   color: rgba($color_white, 0.7);
   font-size: 16px;
+  text-align: left;
 }
 
 .license-card__sub-header--price {
-  float: right;
   padding: 0 0 18px 0;
   color: $color_white;
   font-weight: 500;
   font-size: 16px;
+  text-align: right;
 }
 
 .license-card__info {
@@ -135,19 +135,19 @@ $color_positivie: #66aaff;
 }
 
 .license-card__info--name {
-  float: left;
   padding: 0 0 18px 0;
   color: $color_white;
   font-weight: 500;
   font-size: 16px;
+  text-align: left;
 }
 
 .license-card__info--property {
-  float: right;
   padding: 0 0 18px 0;
   color: $color_white;
   font-weight: 500;
   font-size: 16px;
+  text-align: right;
 
   &.negative {
     color: $color_negative;

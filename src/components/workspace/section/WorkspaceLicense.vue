@@ -27,12 +27,11 @@
 
 <script>
 import WorkspaceLicenseCard from '../partials/WorkspaceLicenseCard'
-import licenseData from '../../../assets/json/license.json'
+import licenseData from 'assets/json/license.json'
 export default {
   components: {
     WorkspaceLicenseCard,
   },
-
   data() {
     return {
       licenseData: licenseData.licenseInfo,
