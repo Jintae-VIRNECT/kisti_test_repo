@@ -2424,11 +2424,23 @@ public class TaskService {
         return new ApiResponse<>(resultList);
     }
 
+    /**
+     * 컨텐츠UUID로 컨텐츠 다운로드
+     * @param contentUUID
+     * @param memberUUID
+     * @return
+     */
     public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
 
         return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID);
     }
 
+    /**
+     * 타겟 데이터로 컨텐츠 다운로드
+     * @param targetData
+     * @param memberUUID
+     * @return
+     */
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
 
         Process process = Optional.ofNullable(this.processRepository.findByTargetDataAndState(checkParameterEncoded(targetData), State.CREATED))
@@ -2475,11 +2487,19 @@ public class TaskService {
         return encodedData;
     }
 
+    /**
+     * sync시 필요한 데이터와 동일한 형태의 데이터를 만들기
+     * @param taskId
+     * @param subTaskIds
+     * @return
+     */
     public ApiResponse<WorkSyncResponse> getSyncMeta(Long taskId, Long[] subTaskIds) {
 
         Process process = this.processRepository.findById(taskId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
         WorkSyncResponse workSyncResponse = new WorkSyncResponse();
+
+        log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
 
         WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds);
 
@@ -2492,6 +2512,7 @@ public class TaskService {
         return new ApiResponse<>(workSyncResponse);
     }
 
+    // CONVERT syncdata - PROCESS LIST
     private WorkSyncResponse.ProcessResult buildSyncProcess(Process process, Long[] subTaskIds) {
         List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = buildSyncSubProcess(process.getSubProcessList(), subTaskIds);
 
@@ -2504,17 +2525,20 @@ public class TaskService {
         }
     }
 
-    // CONVERT metadata - SUB PROCESS LIST
+    // CONVERT syncdata - SUB PROCESS LIST
     private List<WorkSyncResponse.SubProcessWorkResult> buildSyncSubProcess(List<SubProcess> subProcesses, Long[] subTaskIds) {
         List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = new ArrayList<>();
         ArrayList<Long> longs = null;
         for (SubProcess subProcess : subProcesses) {
             WorkSyncResponse.SubProcessWorkResult syncSubProcess = null;
 
+            log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
+
             if (subTaskIds != null && subTaskIds.length > 0) {
-                // TODO
                 for (Long subTaskId : subTaskIds) {
                     if (subProcess.getId() == subTaskId) {
+                        log.debug(">>>>>>>>>>> subTaskIds : {}", subTaskIds);
+                        log.debug(">>>>>>>>>>> subProcess.getId() : {}", subProcess.getId());
                         syncSubProcess = buildSyncDataSubProcess(subProcess);
                     }
                 }
@@ -2530,7 +2554,7 @@ public class TaskService {
         return syncSubProcessList;
     }
 
-    // CONVERT metadata - SUB PROCESS, worker 권한 확인
+    // CONVERT syncdata - SUB PROCESS, worker 권한 확인
     private WorkSyncResponse.SubProcessWorkResult buildSyncDataSubProcess(SubProcess subProcess) {
         WorkSyncResponse.SubProcessWorkResult build
                 = WorkSyncResponse.SubProcessWorkResult.builder()
@@ -2543,7 +2567,7 @@ public class TaskService {
         return build;
     }
 
-    // CONVERT metadata - JOB LIST
+    // CONVERT syncdata - JOB LIST
     private List<WorkSyncResponse.JobWorkResult> buildSyncJobList(List<Job> jobs) {
         List<WorkSyncResponse.JobWorkResult> syncJobList = new ArrayList<>();
         for (Job job : jobs) {
@@ -2553,7 +2577,7 @@ public class TaskService {
         return syncJobList;
     }
 
-    // CONVERT metadata - JOB
+    // CONVERT syncdata - JOB
     private WorkSyncResponse.JobWorkResult buildSyncDataJob(Job job) {
         return WorkSyncResponse.JobWorkResult.builder()
                 .id(job.getId())
@@ -2563,7 +2587,7 @@ public class TaskService {
                 .build();
     }
 
-    // CONVERT metadata - REPORT LIST
+    // CONVERT syncdata - REPORT LIST
     private List<WorkSyncResponse.ReportWorkResult> buildSyncReportList(List<Report> reports) {
         List<WorkSyncResponse.ReportWorkResult> syncReportList = new ArrayList<>();
         for (Report report : reports) {
@@ -2573,7 +2597,7 @@ public class TaskService {
         return syncReportList;
     }
 
-    // CONVERT metadata - REPORT
+    // CONVERT syncdata - REPORT
     private WorkSyncResponse.ReportWorkResult buildSyncDataReport(Report report) {
         return WorkSyncResponse.ReportWorkResult.builder()
                 .id(report.getId())
@@ -2581,7 +2605,7 @@ public class TaskService {
                 .build();
     }
 
-    // CONVERT metadata - REPORT ITEM LIST
+    // CONVERT syncdata - REPORT ITEM LIST
     private List<WorkSyncResponse.ReportItemWorkResult> buildSyncReportItemList(List<Item> items) {
         List<WorkSyncResponse.ReportItemWorkResult> syncReportItemList = new ArrayList<>();
 
@@ -2592,7 +2616,7 @@ public class TaskService {
         return syncReportItemList;
     }
 
-    // CONVERT metadata - REPORT ITEM
+    // CONVERT syncdata - REPORT ITEM
     private WorkSyncResponse.ReportItemWorkResult buildSyncDataReportItem(Item item) {
 
         return WorkSyncResponse.ReportItemWorkResult.builder()
@@ -2603,6 +2627,11 @@ public class TaskService {
                 .build();
     }
 
+    /**
+     * 트러블 메모 업로드
+     * @param request
+     * @return
+     */
     public ApiResponse<TroubleMemoUploadResponse> uploadTroubleMemo(TroubleMemoUploadRequest request) {
         Issue issue = Issue.builder()
                 .path(request.getPhotoFile())
@@ -2612,7 +2641,6 @@ public class TaskService {
 
         this.issueRepository.save(issue);
 
-        // TODO : 응답을 동기화 결과 반환해야 함..
         return new ApiResponse<>(new TroubleMemoUploadResponse(true, LocalDateTime.now()));
     }
 
