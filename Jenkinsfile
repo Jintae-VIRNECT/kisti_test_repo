@@ -94,7 +94,7 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep rm-recordserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8083:8083 --restart=always -d --name=rm-recordserver rm-recordserver'
+                        sh 'docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver rm-recordserver'
                         sh 'docker image prune -a -f'
                     }
                 }
