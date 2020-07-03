@@ -3,7 +3,7 @@ package main
 import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/dockerclient"
-	_ "RM-RecordServer/docs"
+	//_ "RM-RecordServer/docs"
 	"RM-RecordServer/logger"
 	"fmt"
 	"strconv"

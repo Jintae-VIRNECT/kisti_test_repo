@@ -1,20 +1,27 @@
 pipeline {
     agent any
-      environment {
+    tools {
+        go 'go-1.14'
+    }
+
+    environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
-      }
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()        
+        GO111MODULE = 'on'
+    }
+
     stages {
         stage('Pre-Build') {
             steps {
                 echo 'Pre-Build Stage'
                 catchError() {
-                    
+                    sh 'go get -u github.com/swaggo/swag/cmd/swag'
+                    sh 'cp docker/Dockerfile ./'
                 }
             }
         }
 
-        stage('Build') {
+        stage('Build') {            
             parallel {
                 stage('Build') {
                     steps {
@@ -25,9 +32,10 @@ pipeline {
                 stage('Develop Branch') {
                     when {
                         branch 'develop'
-                    }                    
+                    }                   
                     steps {
                         sh 'make'
+                        sh 'docker build -t rm-recordserver .'                                                
                     }
                 }
 
@@ -45,18 +53,15 @@ pipeline {
                 stage('Master Branch') {
                     when {
                         branch 'master'
-                    }
-                    environment {
-                        NODE_ENV = 'production'
-                    }
+                    }                    
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         sh 'make'
                         sh 'docker build -t rm-recordserver:${GIT_TAG} .'
                     }
                 }
-
             }
+        
         }
 
         stage('Test') {
@@ -89,7 +94,7 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep rm-recordserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8083:8083 --restart=always -d --name=rm-recordserver rm-recordserver'
+                        sh 'docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver rm-recordserver'
                         sh 'docker image prune -a -f'
                     }
                 }
@@ -125,7 +130,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -d --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -170,7 +175,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -d --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
