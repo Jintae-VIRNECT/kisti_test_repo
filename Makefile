@@ -6,8 +6,8 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 build: check
 	go build -race -o ${TARGET} main.go
 
-check:
-	@${GOPATH}/bin/swag init
+check:	
+        @GOPATH=$(GOPATH) bin/swag init
 	@go vet ./...
 	@go fmt ./...
 
