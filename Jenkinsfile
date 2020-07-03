@@ -34,6 +34,7 @@ pipeline {
                         branch 'develop'
                     }                    
                     steps {
+                        sh 'echo $GOPATH'                        
                         sh 'make'
                         sh 'docker build -t rm-recordserver .'
                     }
