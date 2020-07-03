@@ -7,7 +7,10 @@
       @onScroll="onScroll"
     >
       <div class="workspace-wrapper">
-        <workspace-welcome ref="welcomeSection"></workspace-welcome>
+        <workspace-welcome
+          ref="welcomeSection"
+          :license="license"
+        ></workspace-welcome>
 
         <workspace-tab
           v-if="license"
@@ -34,9 +37,12 @@ import WorkspaceLicense from './section/WorkspaceLicense'
 import { mapActions } from 'vuex'
 import auth from 'utils/auth'
 import RecordList from 'LocalRecordList'
+import { getLicense } from 'api/workspace/license'
+
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
+    console.log('beforeRouteEnter :: ')
     const account = await auth.init()
     if (!auth.isLogin) {
       auth.login()
@@ -61,7 +67,7 @@ export default {
       tabTop: 0,
       showCookie: !cookie,
       showList: false,
-      license: false,
+      license: true,
     }
   },
   methods: {
@@ -112,6 +118,18 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
+    // console.log('this.workspace :: ', this.workspace)
+    // console.log('this.account.uuid ::', await this.account.uuid)
+
+    this.$nextTick(async () => {
+      const licenseCheck = await getLicense(
+        this.workspace.uuid,
+        await this.account.uuid,
+      )
+      console.log('license', licenseCheck)
+      this.license = licenseCheck
+    })
+
     if (this.license) {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
       this.$eventBus.$on('filelist:open', this.toggleList)

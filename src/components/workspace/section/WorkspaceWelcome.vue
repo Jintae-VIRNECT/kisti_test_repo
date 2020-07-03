@@ -3,11 +3,14 @@
     <div class="workspace-welcome__body offsetwidth">
       <p class="workspace-welcome__group">
         리모트원격솔루션 <role :role="'Manager'"></role>
+        <role v-if="!license" :role="'라이선스 없음'" :opt="'expired'"></role>
       </p>
       <p class="workspace-welcome__name">
         {{ account.nickname }}님, 반갑습니다.
       </p>
-      <button class="btn" @click="createRoom">원격 협업 생성</button>
+      <button class="btn" :class="{ disabled: !license }" @click="createRoom">
+        원격 협업 생성
+      </button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
     <device-denied :visible.sync="showDenied"></device-denied>
@@ -32,15 +35,23 @@ export default {
       showDenied: false,
     }
   },
+  props: {
+    license: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {},
   watch: {},
   methods: {
     async createRoom() {
-      this.visible = !this.visible
+      if (this.license) {
+        this.visible = !this.visible
 
-      const permission = await getPermission()
-      if (!permission && this.visible === true) {
-        this.showDenied = true
+        const permission = await getPermission()
+        if (!permission && this.visible === true) {
+          this.showDenied = true
+        }
       }
     },
   },
