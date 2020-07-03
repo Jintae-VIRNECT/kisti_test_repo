@@ -130,7 +130,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -d --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -175,7 +175,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -d --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8083:8083 --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
