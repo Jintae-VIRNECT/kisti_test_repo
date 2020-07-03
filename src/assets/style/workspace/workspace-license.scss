@@ -1,4 +1,22 @@
-.workspace-license {
+$color_license_white: #fbfbfb;
+$color_plan_basic: #0f75f5;
+$color_plan_business_term: #36ba6b;
+$color_plan_business_permanent: #f9b300;
+
+$color_negative: #ff7070;
+$color_positivie: #66aaff;
+
+.workspace-license.offsetwidth {
+  position: relative;
+  width: 1337px;
+  max-width: 80vw;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.workspace-license__description {
+  margin-top: 53px;
+  margin-bottom: 38px;
 }
 
 .workspace-license__cards {
@@ -6,22 +24,39 @@
   justify-content: center;
 }
 
+.workspace-license__description--title {
+  color: $color_license_white;
+  font-weight: 500;
+  font-size: 30px;
+}
+
+.workspace-license__description--sub-title {
+  color: rgba($color_license_white, 0.6);
+  font-weight: 500;
+  font-size: 18px;
+}
+
 .license-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   width: 420px;
   height: 970px;
   margin-right: 26px;
-  padding: 53px 56px 75px 54px;
-  background: rgb(41, 41, 44);
+  padding: 53px 56px 57px 56px;
+  background: $color_darkgray_600;
+  border-top: solid 2px;
   border-radius: 2px;
-  // &.basic {
-  //   background-color: #0f75f5;
-  // }
-  // &.business_term {
-  //   background-color: #36ba6b;
-  // }
-  // &.business_permanent {
-  //   background-color: #f9b300;
-  // }
+  &.basic {
+    border-color: $color_primary;
+  }
+  &.business_term {
+    border-color: $color_plan_business_term;
+  }
+  &.business_permanent {
+    border-color: $color_plan_business_permanent;
+  }
 }
 
 .license-card__header {
@@ -41,30 +76,30 @@
   text-align: center;
   border-radius: 20px;
   &.basic {
-    background-color: #0f75f5;
+    background-color: $color_plan_basic;
   }
   &.business_term {
-    background-color: #36ba6b;
+    background-color: $color_plan_business_term;
   }
   &.business_permanent {
-    background-color: #f9b300;
+    background-color: $color_plan_business_permanent;
   }
 }
 
 .license-card--underbar {
   width: 328px;
   height: 1px;
-  margin-bottom: 15px;
-  border-top: solid 1px rgba(#979797, 0.2);
+  margin-bottom: 18px;
+  border-top: solid 1px rgba($color_sub_border, 0.2);
 }
 
 .license-card__header--count {
-  color: rgb(255, 255, 255);
+  color: $color_white;
   font-size: 18px;
   text-align: center;
 }
 .license-card__header--price {
-  color: rgb(255, 255, 255);
+  color: $color_white;
   font-weight: bold;
   font-size: 36px;
   text-align: center;
@@ -75,53 +110,54 @@
 }
 
 .license-card__sub-header {
-  height: 128px;
-  > li {
-    height: 35px;
-  }
+  width: 100%;
+  // height: 128px;
+  margin-bottom: 51px;
 }
 
 .license-card__sub-header--name {
   float: left;
-  color: rgb(255, 255, 255);
+  padding: 0 0 18px 0;
+  color: rgba($color_white, 0.7);
   font-size: 16px;
 }
 
 .license-card__sub-header--price {
   float: right;
-  color: rgb(255, 255, 255);
+  padding: 0 0 18px 0;
+  color: $color_white;
   font-weight: 500;
   font-size: 16px;
 }
 
 .license-card__info {
-  > li {
-    padding-bottom: 40px;
-  }
+  width: 100%;
 }
 
 .license-card__info--name {
   float: left;
-  color: rgb(255, 255, 255);
+  padding: 0 0 18px 0;
+  color: $color_white;
   font-weight: 500;
   font-size: 16px;
 }
 
 .license-card__info--property {
   float: right;
-  color: rgb(255, 255, 255);
+  padding: 0 0 18px 0;
+  color: $color_white;
   font-weight: 500;
   font-size: 16px;
 
   &.negative {
-    color: #ff7070;
+    color: $color_negative;
   }
 
   &.positivie {
-    color: #66aaff;
+    color: $color_positivie;
   }
 
   &.default {
-    color: #ffffff;
+    color: $color_white;
   }
 }

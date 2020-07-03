@@ -1,7 +1,7 @@
 <template>
   <div class="license-card" :class="getClass">
     <div class="license-card--badge" :class="getClass">
-      <p>{{ badgeName }}</p>
+      <p>{{ planName }}</p>
     </div>
     <div class="license-card__header">
       <p class="license-card__header--count">{{ perCount }}</p>
@@ -16,34 +16,32 @@
     </div>
     <div class="license-card--underbar"></div>
 
-    <ol class="license-card__sub-header">
-      <li v-for="(item, idx) in condition" :key="idx">
-        <p class="license-card__sub-header--name">{{ item.name }}</p>
-        <p class="license-card__sub-header--price">
-          {{ item.price }}
-        </p>
-      </li>
-    </ol>
+    <table class="license-card__sub-header">
+      <tr v-for="(item, idx) in condition" :key="idx">
+        <td class="license-card__sub-header--name">{{ item.name }}</td>
+        <td class="license-card__sub-header--price">{{ item.price }}</td>
+      </tr>
+    </table>
 
-    <ol class="license-card__info">
-      <li v-for="(item, idx) in items" :key="idx">
-        <p class="license-card__info--name">{{ item.name }}</p>
-        <p class="license-card__info--property" :class="item.style">
+    <table class="license-card__info">
+      <tr v-for="(item, idx) in items" :key="idx">
+        <td class="license-card__info--name">{{ item.name }}</td>
+        <td class="license-card__info--property" :class="item.style">
           {{ item.property }}
-        </p>
-      </li>
-    </ol>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    level: {
+    plan: {
       type: String,
       default: '',
     },
-    badgeName: {
+    planName: {
       type: String,
       default: '',
     },
@@ -67,9 +65,9 @@ export default {
   computed: {
     getClass() {
       return {
-        basic: this.level === 'BASIC',
-        business_term: this.level === 'BUSINESS_TERM​',
-        business_permanent: this.level === 'BUSINESS_PERMANENT',
+        basic: this.plan === 'BASIC',
+        business_term: this.plan === 'BUSINESS_TERM​',
+        business_permanent: this.plan === 'BUSINESS_PERMANENT',
       }
     },
   },

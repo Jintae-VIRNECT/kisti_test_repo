@@ -1,8 +1,8 @@
 {
   "licenseInfo": [
     {
-      "level": "BASIC",
-      "badgeName": "Basic",
+      "plan": "BASIC",
+      "planName": "Basic",
       "perCount": "1라이선스당",
       "perPerice": "100,000/월",
       "condition": [
@@ -79,8 +79,8 @@
       ]
     },
     {
-      "level": "BUSINESS_TERM​",
-      "badgeName": "Business Term​",
+      "plan": "BUSINESS_TERM​",
+      "planName": "Business Term​",
       "perCount": "1 라이선스당",
       "perPerice": "3,600,000/월",
       "condition": [
@@ -157,8 +157,8 @@
       ]
     },
     {
-      "level": "BUSINESS_PERMANENT",
-      "badgeName": "Business Permanent​",
+      "plan": "BUSINESS_PERMANENT",
+      "planName": "Business Permanent​",
       "perCount": "",
       "perPerice": "견적문의",
       "condition": [

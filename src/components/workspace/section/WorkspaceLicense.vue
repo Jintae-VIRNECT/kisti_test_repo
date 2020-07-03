@@ -1,25 +1,27 @@
 <template>
   <div class="workspace-license offsetwidth">
-    <hgroup>
-      <h1>VIRNECT Remote2.0을 사용할 수 있는 라이선스가 만료되었습니다.</h1>
-      <h3>
+    <section class="workspace-license__description">
+      <p class="workspace-license__description--title">
+        VIRNECT Remote2.0을 사용할 수 있는 라이선스가 만료되었습니다.
+      </p>
+      <p class="workspace-license__description--sub-title">
         다음 라이선스 적용 전에 남은 기간 동안 Remote2.0을 사용하시려면 추가
         라이선스를 구매하여 이용해 주세요.
-      </h3>
-    </hgroup>
-    <div class="workspace-license__cards">
+      </p>
+    </section>
+    <section class="workspace-license__cards">
       <workspace-license-card
         v-for="(data, idx) in licenseData"
         :key="idx"
-        :level="data.level"
-        :badgeName="data.badgeName"
+        :plan="data.plan"
+        :planName="data.planName"
         :perCount="data.perCount"
         :perPerice="data.perPerice"
         :condition="data.condition"
         :items="data.items"
       >
       </workspace-license-card>
-    </div>
+    </section>
   </div>
 </template>
 
