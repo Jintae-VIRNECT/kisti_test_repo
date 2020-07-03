@@ -2499,8 +2499,6 @@ public class TaskService {
 
         WorkSyncResponse workSyncResponse = new WorkSyncResponse();
 
-        log.info(">>>>>>>>>>> 2502 subTaskIds : {}", subTaskIds);
-
         WorkSyncResponse.ProcessResult processResult = buildSyncProcess(process, subTaskIds);
 
         List<WorkSyncResponse.ProcessResult> resultList = new ArrayList<>();
@@ -2514,8 +2512,6 @@ public class TaskService {
 
     // CONVERT syncdata - PROCESS LIST
     private WorkSyncResponse.ProcessResult buildSyncProcess(Process process, Long[] subTaskIds) {
-
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>> 2518 process.getSubProcessList() : {}", process.getSubProcessList());
 
         List<WorkSyncResponse.SubProcessWorkResult> syncSubProcessList = buildSyncSubProcess(process.getSubProcessList(), subTaskIds);
 
@@ -2535,21 +2531,10 @@ public class TaskService {
         for (SubProcess subProcess : subProcesses) {
             WorkSyncResponse.SubProcessWorkResult syncSubProcess = null;
 
-
-            log.info(">>>>>>>>>>> 2539 subProcess.getId() : {}", subProcess.getId());
-            log.info(">>>>>>>>>>> 2540 subTaskIds : {}", subTaskIds);
-
-            log.info(">>>>>>>>>>>> 2542 subTaskIds -> : {}", subTaskIds.length);
-
             if (subTaskIds != null && subTaskIds.length > 0) {
 
-                log.info(">>>>>>>>>> 2546 subTaskIds is not null");
                 for (Long subTaskId : subTaskIds) {
-                    log.info(">>>>>>>>>>>> 2548 ubTaskId : {}", subTaskId);
-                    log.info(">>>>>>>>>>>> 2549 subProcess.getId() : {}", subProcess.getId());
                     if (subProcess.getId().equals(subTaskId)) {
-                        log.info(">>>>>>>>>>> 2551 subTaskIds : {}", subTaskIds);
-                        log.info(">>>>>>>>>>> 2552 subProcess.getId() : {}", subProcess.getId());
                         syncSubProcess = buildSyncDataSubProcess(subProcess);
                     }
                 }
