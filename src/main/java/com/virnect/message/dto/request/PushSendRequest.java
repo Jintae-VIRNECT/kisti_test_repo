@@ -35,7 +35,7 @@ public class PushSendRequest {
 
     @ApiModelProperty(value = "메세지 수신 대상 식별자", example = "[\"4ff0606102fbe\"]", required = true, position = 3)
     @NotNull
-    private List<String> targetuserIdList;
+    private List<String> targetUserIds;
 
     @ApiModelProperty(value = "이벤트 이름", example = "WORKSPACE_EXPELED", required = true, position = 4)
     @NotBlank
