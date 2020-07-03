@@ -3,6 +3,7 @@ pipeline {
       environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        GOPATH = '/home/virn/go'
       }
     stages {
         stage('Pre-Build') {
