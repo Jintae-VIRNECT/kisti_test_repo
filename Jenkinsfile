@@ -27,7 +27,6 @@ pipeline {
                         branch 'develop'
                     }                    
                     steps {
-                        withEnv()
                         sh 'make'
                         sh 'docker build -t rm-recordserver .'
                     }
