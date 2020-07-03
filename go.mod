@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/containerd/containerd v1.3.0
 	github.com/fsouza/go-dockerclient v1.6.5
 	github.com/gin-gonic/gin v1.6.3
 	github.com/sirupsen/logrus v1.6.0

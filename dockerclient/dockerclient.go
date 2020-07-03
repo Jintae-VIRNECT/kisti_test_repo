@@ -4,6 +4,7 @@ import (
 	"RM-RecordServer/logger"
 	"context"
 	"errors"
+	"os"
 	"strconv"
 	"time"
 
@@ -26,6 +27,7 @@ var (
 )
 
 func DownloadDockerImage() error {
+	logger.Info("DOCKER_HOST:", os.Getenv("DOCKER_HOST"))
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
 		logger.Error("NewClientFromEnv:", err)

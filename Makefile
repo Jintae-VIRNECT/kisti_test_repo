@@ -4,7 +4,8 @@ BUILD=`git rev-parse HEAD`
 LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 
 build: check
-	go build -race -o ${TARGET} main.go
+	@mkdir -p build
+	go build -race -o build/${TARGET} main.go
 
 check:
 	@${GOPATH}/bin/swag init
@@ -12,4 +13,7 @@ check:
 	@go fmt ./...
 
 clean:
-	rm -fr ${TARGET}
+	rm -fr build/${TARGET}
+
+docker: build
+	docker build --tag rm-recordserver . -f docker/Dockerfile

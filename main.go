@@ -30,7 +30,10 @@ func main() {
 	logger.Init()
 	displayConfig()
 
-	dockerclient.DownloadDockerImage()
+	err := dockerclient.DownloadDockerImage()
+	if err != nil {
+		panic(err)
+	}
 
 	r := SetupRouter()
 	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
@@ -41,7 +44,10 @@ func main() {
 
 func readConfig() {
 	var configPath string
-	pflag.StringVarP(&configPath, "config", "c", "config.toml", "path to config file")
+	var logStdout bool
+	pflag.StringVarP(&configPath, "config", "c", "config.ini", "path to config file")
+	pflag.BoolVarP(&logStdout, "stdout", "s", false, "only output to stdout")
+
 	pflag.Parse()
 
 	viper.SetConfigType("toml")
@@ -50,6 +56,10 @@ func readConfig() {
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {             // Handle errors reading the config file
 		panic(fmt.Errorf("Fatal error config file: %s\n", err))
+	}
+
+	if logStdout {
+		viper.Set("log.stdout", true)
 	}
 }
 
