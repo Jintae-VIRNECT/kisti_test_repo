@@ -7,8 +7,8 @@ build: check
 	@mkdir -p build
 	go build -race -o build/${TARGET} main.go
 
-check:
-	@${GOPATH}/bin/swag init
+check:	
+        @GOPATH=$(GOPATH) bin/swag init
 	@go vet ./...
 	@go fmt ./...
 
