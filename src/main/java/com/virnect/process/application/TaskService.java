@@ -2630,10 +2630,14 @@ public class TaskService {
      */
     public ApiResponse<TroubleMemoUploadResponse> uploadTroubleMemo(TroubleMemoUploadRequest request) {
         Issue issue = Issue.builder()
-                .path(request.getPhotoFile())
                 .content(request.getCaption())
                 .workerUUID(request.getWorkerUUID())
                 .build();
+
+        // Base64로 받은 이미지 처리
+        if (!StringUtils.isEmpty(request.getPhotoFile())) {
+            issue.setPath(getFileUploadUrl(request.getPhotoFile()));
+        }
 
         this.issueRepository.save(issue);
 
