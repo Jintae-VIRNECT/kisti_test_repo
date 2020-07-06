@@ -3,9 +3,8 @@ package main
 import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/dockerclient"
+	_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
-
-	//_ "RM-RecordServer/docs"
 	"RM-RecordServer/logger"
 	"context"
 	"fmt"
@@ -36,7 +35,7 @@ func SetupRouter() *gin.Engine {
 		c.Writer.WriteHeader(200)
 	})
 
-	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+	url := ginSwagger.URL("http://localhost:8083/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	return r
 }

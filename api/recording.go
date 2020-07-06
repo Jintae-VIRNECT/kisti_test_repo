@@ -9,40 +9,38 @@ import (
 	"github.com/spf13/viper"
 )
 
-type startRecordingReqBody struct {
+type StartRecordingRequest struct {
 	SessionID          string `json:"sessionId"`
 	Resolution         string `json:"resolution,omitempty"`
 	Framerate          int    `json:"framerate,omitempty"`
 	RecordingTimeLimit int    `json:"recordingTimeLimit,omitempty"`
 }
 
-type startRecordingResBody struct {
-	SessionID string `json:"sessionId"`
+type StartRecordingResponse struct {
+	RecordingID string `json:"recordingId"`
 }
 
-type stopRecordingResBody struct {
-	SessionID string `json:"sessionId"`
-	Filename  string `json:"filename"`
-	Duration  int    `json:"duration"`
+type StopRecordingResponse struct {
+	RecordingID string `json:"recordingId"`
+	Filename    string `json:"filename"`
+	Duration    int    `json:"duration"`
 }
 
-type listRecordingResBody struct {
-	SessionIds []string `json:"sessionIds"`
+type ListRecordingResponse struct {
+	RecordingIDs []string `json:"recordingIds"`
 }
 
 // @Summary Start Recording
 // @Description Start Recording
 // @Accept json
 // @Produce json
-// @Param sessionId body startRecordingReqBody true "information for recording"
-// @Param RecordingTimeLimit body startRecordingReqBody true "information for recording"
-// @Param Resolution body startRecordingReqBody true "information for recording"
-// @Success 200 {object} startRecordingResBody	"ok"
-// @Failure 400 {string} Error "We need ID!!"
-// @Failure 404 {string} Error "Can not find ID"
+// @Param body body StartRecordingRequest true "information for recording"
+// @Success 200 {object} StartRecordingResponse
+// @Failure 400 {} json "{"error":"error invalid parameter"}"
+// @Failure 500 {} json "{"error":"error message"}"
 // @Router /record [post]
 func StartRecording(c *gin.Context) {
-	req := startRecordingReqBody{
+	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
 		Framerate:          viper.GetInt("record.defaultFramerate"),
 		RecordingTimeLimit: viper.GetInt("record.defaultRecordingTimeLimit"),
@@ -61,9 +59,9 @@ func StartRecording(c *gin.Context) {
 		return
 	}
 
-	exist := recorder.ExistSessionID(req.SessionID)
+	exist := recorder.ExistRecordingID(req.SessionID)
 	if exist == true {
-		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrSessionIDAlreadyExists.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrRecordingIDAlreadyExists.Error()})
 		return
 	}
 
@@ -83,48 +81,42 @@ func StartRecording(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"response": "ok",
-	})
+	c.Writer.WriteHeader(200)
 }
 
 // @Summary Stop Recording
 // @Description Stop Recording
 // @Produce json
-// @Param sessionId path string true "recording id"
-// @Success 200 {object} stopRecordingResBody
-// @Failure 400 {string} Error "We need ID!!"
-// @Failure 404 {string} Error "Can not find ID"
-// @Router /record/{sessionId} [delete]
+// @Param id path string true "recording id"
+// @Success 200 {object} StopRecordingResponse
+// @Failure 404 {} json "{ "error": "not found id" }"
+// @Router /record/{id} [delete]
 func StopRecording(c *gin.Context) {
-	sessionID := c.Param("id")
-	logger.Info("stop recording (sessionId:", sessionID, ")")
+	recordingID := c.Param("id")
+	logger.Info("stop recording (id:", recordingID, ")")
 
-	exist := recorder.ExistSessionID(sessionID)
+	exist := recorder.ExistRecordingID(recordingID)
 	if exist == false {
-		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrNotFoundSessionID.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrNotFoundRecordingID.Error()})
 		return
 	}
 
-	recorder.DelRecording(sessionID, "stop")
+	recorder.DelRecording(recordingID, "stop")
 
-	c.JSON(200, gin.H{
-		"duration": 10,
-	})
+	c.Writer.WriteHeader(200)
 }
 
 // @Summary List Recordings
 // @Description List Recordings
 // @Produce json
-// @Success 200 {object} listRecordingResBody
-// @Failure 400 {string} Error "We need ID!!"
-// @Failure 404 {string} Error "Can not find ID"
+// @Success 200 {object} ListRecordingResponse
+// @Failure 500 {} json "{"error":"error message"}"
 // @Router /records [get]
 func ListRecordings(c *gin.Context) {
-	result := make([]string, 0)
-	list := recorder.ListSessionIDs()
+	body := ListRecordingResponse{make([]string, 0)}
+	list := recorder.ListRecordingIDs()
 	logger.Debug("ListRecordings:", list)
 	c.JSON(200, gin.H{
-		"recordings": append(result, list...),
+		"recordingIds": append(body.RecordingIDs, list...),
 	})
 }
