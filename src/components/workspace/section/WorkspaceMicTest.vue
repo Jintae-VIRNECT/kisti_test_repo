@@ -71,9 +71,6 @@ export default {
   },
   computed: {
     ...mapGetters(['mic']),
-    mic() {
-      return this.mic['deviceId']
-    },
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
