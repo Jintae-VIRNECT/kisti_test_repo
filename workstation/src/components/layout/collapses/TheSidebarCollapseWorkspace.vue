@@ -45,13 +45,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      activeWorkspace: 'workspace/activeWorkspace',
-      myWorkspaces: 'workspace/myWorkspaces',
+      activeWorkspace: 'auth/activeWorkspace',
+      myWorkspaces: 'auth/myWorkspaces',
     }),
   },
   methods: {
     workspaceActive(uuid) {
-      this.$store.commit('workspace/SET_ACTIVE_WORKSPACE', uuid)
+      this.$store.commit('auth/SET_ACTIVE_WORKSPACE', uuid)
       this.$emit('closeCollapse')
     },
     isActive(uuid) {

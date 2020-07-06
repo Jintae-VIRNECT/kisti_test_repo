@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      activeWorkspace: 'workspace/activeWorkspace',
+      activeWorkspace: 'auth/activeWorkspace',
     }),
     canSettingMemberInfo() {
       return this.activeWorkspace.role !== 'MEMBER'

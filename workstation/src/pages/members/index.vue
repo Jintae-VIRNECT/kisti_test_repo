@@ -73,7 +73,7 @@ export default {
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
-      activeWorkspace: 'workspace/activeWorkspace',
+      activeWorkspace: 'auth/activeWorkspace',
     }),
     canAddMember() {
       return this.activeWorkspace.role !== 'MEMBER'

@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      activeWorkspace: 'workspace/activeWorkspace',
+      activeWorkspace: 'auth/activeWorkspace',
     }),
     canChangeRole() {
       return (

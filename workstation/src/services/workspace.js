@@ -7,7 +7,7 @@ import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
 
 function activeWorkspaceGetter() {
-  return store.getters['workspace/activeWorkspace']
+  return store.getters['auth/activeWorkspace']
 }
 function myProfileGetter() {
   return store.getters['auth/myProfile']
@@ -79,7 +79,7 @@ export default {
     const options = { params: form }
     const formData = new FormData()
     Object.entries(form)
-      .filter(([key, val]) => val)
+      .filter(([, val]) => val)
       .forEach(([key, val]) => {
         formData.append(key, val)
       })
@@ -110,7 +110,7 @@ export default {
     const options = { params: form }
     const formData = new FormData()
     Object.entries(form)
-      .filter(([key, val]) => val)
+      .filter(([, val]) => val)
       .forEach(([key, val]) => {
         formData.append(key, val)
       })
@@ -120,8 +120,8 @@ export default {
     }
     const data = await api('WORKSPACE_EDIT', options)
     // 변경된 내용 적용
-    await store.dispatch('workspace/getMyWorkspaces', myProfileGetter().uuid)
-    store.commit('workspace/SET_ACTIVE_WORKSPACE', data.uuid)
+    await store.dispatch('auth/getAuthInfo')
+    store.commit('auth/SET_ACTIVE_WORKSPACE', data.uuid)
   },
   /**
    * 워크스페이스 나가기
@@ -133,7 +133,7 @@ export default {
     formData.append('userId', myProfileGetter().uuid)
     formData.append('workspaceId ', activeWorkspaceGetter().uuid)
 
-    const data = await api('WORKSPACE_LEAVE', {
+    await api('WORKSPACE_LEAVE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })
@@ -143,7 +143,7 @@ export default {
    * @param {form} form
    */
   async updateMembersRole(form) {
-    const data = await api('MEMBER_ROLE_UPDATE', {
+    await api('MEMBER_ROLE_UPDATE', {
       route: {
         workspaceId: activeWorkspaceGetter().uuid,
       },
@@ -162,7 +162,7 @@ export default {
     formData.append('kickedUserId', uuid)
     formData.append('userId', myProfileGetter().uuid)
 
-    const data = await api('MEMBER_KICK', {
+    await api('MEMBER_KICK', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })
@@ -172,7 +172,7 @@ export default {
    * @param {[InviteMember]} userInfoList
    */
   async inviteMembers(userInfoList) {
-    const data = await api('MEMBERS_INVITE', {
+    await api('MEMBERS_INVITE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
         userId: myProfileGetter().uuid,
