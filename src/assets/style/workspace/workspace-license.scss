@@ -46,12 +46,22 @@ $color_positivie: #66aaff;
   margin: 0 1.8571rem 0 0;
   padding: 4.2857rem 2.2857rem 2.2857rem 2.2857rem;
   background: $color_darkgray_600;
-  border: solid 0.0714rem $color_darkgray_400;
+  border: solid 1px $color_darkgray_400;
   border-radius: 10px;
 
   &:hover {
+    padding: 4.2143rem 2.2143rem 2.2143rem 2.2143rem;
     border: solid 2px $color_primary;
     border-radius: 10px;
+
+    > .license-card__info {
+      top: 26.9286rem;
+      left: 3.4286rem;
+    }
+
+    > .license-card--buy {
+      top: 1034.0004px;
+    }
   }
 }
 
