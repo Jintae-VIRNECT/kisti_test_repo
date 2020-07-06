@@ -15,16 +15,19 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
-
-	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/swaggo/gin-swagger/swaggerFiles"
+	"gopkg.in/yaml.v2"
 )
 
 func SetupRouter() *gin.Engine {
+	if viper.GetBool("general.devMode") == false {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.New()
 	r.POST("/recording", api.StartRecording)
 	r.DELETE("/recording/:id", api.StopRecording)
@@ -32,6 +35,9 @@ func SetupRouter() *gin.Engine {
 	r.GET("/health", func(c *gin.Context) {
 		c.Writer.WriteHeader(200)
 	})
+
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	return r
 }
 
@@ -46,8 +52,6 @@ func main() {
 	}
 
 	router := SetupRouter()
-	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	srv := &http.Server{
 		Addr:    ":" + strconv.Itoa(viper.GetInt("general.port")),
@@ -55,14 +59,18 @@ func main() {
 	}
 
 	go func() {
+		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Errorf("listen: %s", err)
 			panic(err)
 		}
 	}()
 
-	euraka := eurekaclient.NewClient()
-	euraka.Register()
+	var euraka *eurekaclient.EurekaClient
+	if viper.GetBool("eureka.enable") == true {
+		euraka = eurekaclient.NewClient()
+		euraka.Register()
+	}
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
@@ -70,7 +78,10 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	euraka.DeRegister()
+	if viper.GetBool("eureka.enable") == true {
+		euraka.DeRegister()
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
