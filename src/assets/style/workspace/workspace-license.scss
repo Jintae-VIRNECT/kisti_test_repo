@@ -6,12 +6,8 @@ $color_plan_business_permanent: #111012;
 $color_negative: #ff7070;
 $color_positivie: #66aaff;
 
-.workspace-license.offsetwidth {
-  position: relative;
-  width: 95.5rem;
-  max-width: 80vw;
-  margin-right: auto;
-  margin-left: auto;
+.workspace-license {
+  background-color: $color_bg_display;
 }
 
 .workspace-license__description {

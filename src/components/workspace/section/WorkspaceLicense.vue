@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace-license offsetwidth">
+  <div class="workspace-license">
     <section class="workspace-license__description">
       <p class="workspace-license__description--title">
         VIRNECT Remote2.0을 사용할 수 있는 라이선스가 만료되었습니다.
