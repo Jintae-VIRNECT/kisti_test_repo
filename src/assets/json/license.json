@@ -72,6 +72,11 @@
           "style": "positivie"
         },
         {
+          "name": "로컬 녹화",
+          "property": "포함",
+          "style": "positivie"
+        },
+        {
           "name": "서버 녹화",
           "property": "미포함",
           "style": "negative"
@@ -82,21 +87,17 @@
       "plan": "BUSINESS_TERM​",
       "planName": "Business Term​",
       "perCount": "1 라이선스당",
-      "perPerice": "3,600,000/월",
+      "perPerice": "3,600,000/년",
       "condition": [
         {
           "name": "사용 제한",
-          "price": "1 라이선스 당,  30시간 / 월"
-        },
-        {
-          "name": "추가 구매 비용",
-          "price": "10시간 / 50,000 / 월​"
+          "price": "무제한"
         }
       ],
       "items": [
         {
           "name": "사용자 수 제한",
-          "property": "최대 9명",
+          "property": "무제한",
           "style": "default"
         },
         {
@@ -106,23 +107,23 @@
         },
         {
           "name": "제품 컨설팅",
-          "property": "미포함",
-          "style": "negative"
+          "property": "포함",
+          "style": "positivie"
         },
         {
-          "name": "제품 커스텀",
-          "property": "미포함",
-          "style": "negative"
+          "name": "제품 커스텀(로고, 도메인)",
+          "property": "포함",
+          "style": "positivie"
         },
         {
           "name": "실시간 통화 최대 인원",
-          "property": "3명 (1:2)",
+          "property": "6명",
           "style": "default"
         },
         {
           "name": "FHD 영상 지원",
-          "property": "미포함",
-          "style": "negative"
+          "property": "포함",
+          "style": "positivie"
         },
         {
           "name": "실시간 채팅",
@@ -146,6 +147,11 @@
         },
         {
           "name": "이력 관리",
+          "property": "포함",
+          "style": "positivie"
+        },
+        {
+          "name": "로컬 녹화",
           "property": "포함",
           "style": "positivie"
         },
@@ -159,48 +165,48 @@
     {
       "plan": "BUSINESS_PERMANENT",
       "planName": "Business Permanent​",
-      "perCount": "",
-      "perPerice": "견적문의",
+      "perCount": "1 라이선스당",
+      "perPerice": "100,000/월",
       "condition": [
         {
           "name": "사용 제한",
-          "price": "1 라이선스 당,  30시간 / 월"
+          "price": "계약 조건"
         },
         {
-          "name": "추가 구매 비용",
-          "price": "10시간 / 50,000 / 월​"
+          "name": "On-premise 구축 ",
+          "price": "가능​"
         }
       ],
       "items": [
         {
           "name": "사용자 수 제한",
-          "property": "최대 9명",
+          "property": "계약 조건",
           "style": "default"
         },
         {
           "name": "업데이트 지원",
+          "property": "계약 조건",
+          "style": "default"
+        },
+        {
+          "name": "제품 컨설팅",
           "property": "포함",
           "style": "positivie"
         },
         {
-          "name": "제품 컨설팅",
-          "property": "미포함",
-          "style": "negative"
-        },
-        {
           "name": "제품 커스텀",
-          "property": "미포함",
-          "style": "negative"
+          "property": "포함",
+          "style": "positivie"
         },
         {
           "name": "실시간 통화 최대 인원",
-          "property": "3명 (1:2)",
+          "property": "6명",
           "style": "default"
         },
         {
           "name": "FHD 영상 지원",
           "property": "미포함",
-          "style": "negative"
+          "style": "positivie"
         },
         {
           "name": "실시간 채팅",
@@ -224,6 +230,11 @@
         },
         {
           "name": "이력 관리",
+          "property": "포함",
+          "style": "positivie"
+        },
+        {
+          "name": "로컬 녹화",
           "property": "포함",
           "style": "positivie"
         },

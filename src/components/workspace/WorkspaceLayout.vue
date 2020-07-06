@@ -13,12 +13,11 @@
         ></workspace-welcome>
 
         <workspace-tab
-          v-if="license"
           ref="tabSection"
           :fix="tabFix"
+          :license="license"
           @tabChange="tabChange"
         ></workspace-tab>
-        <workspace-license v-else></workspace-license>
       </div>
       <cookie-policy
         v-if="showCookie"
@@ -33,7 +32,6 @@
 import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import WorkspaceLicense from './section/WorkspaceLicense'
 import { mapActions } from 'vuex'
 import auth from 'utils/auth'
 import RecordList from 'LocalRecordList'
@@ -42,7 +40,6 @@ import { getLicense } from 'api/workspace/license'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
-    console.log('beforeRouteEnter :: ')
     const account = await auth.init()
     if (!auth.isLogin) {
       auth.login()
@@ -56,7 +53,6 @@ export default {
     HeaderSection,
     WorkspaceWelcome,
     WorkspaceTab,
-    WorkspaceLicense,
     RecordList,
     CookiePolicy: () => import('CookiePolicy'),
   },
@@ -118,9 +114,6 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    // console.log('this.workspace :: ', this.workspace)
-    // console.log('this.account.uuid ::', await this.account.uuid)
-
     this.$nextTick(async () => {
       const licenseCheck = await getLicense(
         this.workspace.uuid,

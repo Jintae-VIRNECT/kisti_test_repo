@@ -49,6 +49,7 @@ import UserList from './participants/ParticipantList'
 import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import alarmMixin from 'mixins/alarm'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -66,6 +67,7 @@ export default {
       vm.$store.commit('clear')
     })
   },
+  mixins: [alarmMixin],
   components: {
     HeaderSection,
     SubView,
@@ -112,9 +114,9 @@ export default {
     window.onbeforeunload = () => {}
   },
   async mounted() {
-    // this.$call.getDevices().then(res => {
-    //   console.log(res)
-    // })
+    //test noti alarm message
+    this.alarmInfo()
+    this.alarmLicense()
   },
 }
 </script>

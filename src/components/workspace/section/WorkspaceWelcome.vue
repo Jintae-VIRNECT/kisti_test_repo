@@ -5,10 +5,14 @@
         리모트원격솔루션 <role :role="'Manager'"></role>
         <role v-if="!license" :role="'라이선스 없음'" :opt="'expired'"></role>
       </p>
-      <p class="workspace-welcome__name">
+      <p v-if="license" class="workspace-welcome__name">
         {{ account.nickname }}님, 반갑습니다.
       </p>
-      <button class="btn" :class="{ disabled: !license }" @click="createRoom">
+      <p v-else class="workspace-welcome__name">
+        {{ account.nickname }}님,<br />
+        라이선스가 만료되었습니다.
+      </p>
+      <button v-if="license" class="btn" @click="createRoom">
         원격 협업 생성
       </button>
     </div>
