@@ -2,6 +2,7 @@ import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
 import AutoPaymentInfo from '@/models/payment/AutoPaymentInfo'
 import { api } from '@/plugins/axios'
+import profileServices from '@/services/profile'
 
 export default {
   /**
@@ -11,7 +12,7 @@ export default {
   async searchPaymentLogs(searchParams = {}) {
     const data = await api('GET_PAYMENT_LOGS', {
       params: {
-        userno: 71,
+        userno: profileServices.getMyProfile().userId,
         fromymd: '2020-01-01',
         toymd: '2999-01-01',
         pagesize: 10,
@@ -30,7 +31,7 @@ export default {
   async getPaymentLogDetail(no) {
     const data = await api('GET_PAYMENT_LOG_DETAIL', {
       params: {
-        userno: 71,
+        userno: profileServices.getMyProfile().userId,
         cashno: no,
       },
     })
@@ -41,7 +42,7 @@ export default {
    */
   async getAutoPayments() {
     const data = await api('GET_AUTO_PAYMENTS', {
-      params: { userno: 20001 },
+      params: { userno: profileServices.getMyProfile().userId },
     })
     return new AutoPaymentInfo(data)
   },
@@ -51,7 +52,7 @@ export default {
   async cancelAutoPayments(no) {
     const data = await api('CANCEL_AUTO_PAYMENTS', {
       params: {
-        userno: 20001,
+        userno: profileServices.getMyProfile().userId,
         MSeqNo: no,
       },
     })
@@ -63,8 +64,8 @@ export default {
   async cancelAutoPaymentsAbort(no) {
     const data = await api('CANCEL_AUTO_PAYMENTS_ABORT', {
       params: {
-        userno: 20001,
-        MSeqNo: 242,
+        userno: profileServices.getMyProfile().userId,
+        MSeqNo: no,
       },
     })
     return data
