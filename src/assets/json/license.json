@@ -165,8 +165,8 @@
     {
       "plan": "BUSINESS_PERMANENT",
       "planName": "Business Permanent​",
-      "perCount": "1 라이선스당",
-      "perPerice": "100,000/월",
+      "perCount": "",
+      "perPerice": "견적 문의",
       "condition": [
         {
           "name": "사용 제한",

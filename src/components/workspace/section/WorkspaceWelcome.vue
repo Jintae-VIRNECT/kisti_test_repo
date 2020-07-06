@@ -3,7 +3,7 @@
     <div class="workspace-welcome__body offsetwidth">
       <p class="workspace-welcome__group">
         리모트원격솔루션 <role :role="'Manager'"></role>
-        <role v-if="!license" :role="'라이선스 없음'" :opt="'expired'"></role>
+        <role v-if="!license" :role="'라이선스 만료'" :opt="'expired'"></role>
       </p>
       <p v-if="license" class="workspace-welcome__name">
         {{ account.nickname }}님, 반갑습니다.
