@@ -19,7 +19,7 @@ type recording struct {
 type RecordingParam struct {
 	SessionID          string
 	Resolution         string
-	Framerate          int
+	Framerate          uint
 	RecordingTimeLimit int
 }
 
