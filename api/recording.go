@@ -5,9 +5,8 @@ import (
 	"RM-RecordServer/recorder"
 	"net/http"
 
-	"github.com/spf13/viper"
-
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 type startRecordingReqBody struct {

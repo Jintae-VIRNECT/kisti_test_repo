@@ -3,7 +3,11 @@ package eurekaclient
 import (
 	"RM-RecordServer/logger"
 	"RM-RecordServer/util"
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"net"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -12,43 +16,35 @@ import (
 )
 
 type EurekaClient struct {
-	instanceID string
-	config     fargo.Config
-	conn       fargo.EurekaConnection
-	instance   *fargo.Instance
-	ticker     *time.Ticker
-	done       chan bool
+	instance  *Instance
+	serverURL string
+	ticker    *time.Ticker
+	done      chan bool
 }
 
 func NewClient() *EurekaClient {
-	conf := fargo.Config{}
-	conf.Eureka.ServiceUrls = []string{viper.GetString("eureka.serverURL")}
-	return &EurekaClient{
-		instanceID: util.GetHostName() + ":" + viper.GetString("eureka.app") + ":" + strconv.Itoa(viper.GetInt("general.port")),
-		config:     conf}
-}
-
-func (c *EurekaClient) Register() {
-	c.conn = fargo.NewConnFromConfig(c.config)
-	c.conn.UseJson = true
-
 	port := viper.GetInt("general.port")
 	appName := viper.GetString("eureka.app")
 	baseURL := "http://" + util.GetLocalIP() + ":" + strconv.Itoa(port) + "/"
-	c.instance = &fargo.Instance{
-		InstanceId:        c.instanceID,
+	c := &EurekaClient{
+		serverURL: viper.GetString("eureka.serverURL") + "/apps/" + viper.GetString("eureka.app"),
+	}
+	c.instance = &Instance{
+		InstanceId:        util.GetHostName() + ":" + viper.GetString("eureka.app") + ":" + strconv.Itoa(port),
 		HostName:          util.GetLocalIP(),
 		App:               appName,
 		IPAddr:            util.GetLocalIP(),
-		Status:            fargo.UP,
-		Overriddenstatus:  fargo.UNKNOWN,
+		Status:            UP,
+		Overriddenstatus:  UNKNOWN,
 		Port:              port,
 		PortEnabled:       true,
 		SecurePort:        443,
 		SecurePortEnabled: false,
 		CountryId:         1,
-		DataCenterInfo:    fargo.DataCenterInfo{Name: fargo.MyOwn},
-		LeaseInfo: fargo.LeaseInfo{
+		DataCenterInfo: DataCenterInfo{
+			Name: fargo.MyOwn,
+		},
+		LeaseInfo: LeaseInfo{
 			RenewalIntervalInSecs: 30,
 			DurationInSecs:        90,
 		},
@@ -57,12 +53,25 @@ func (c *EurekaClient) Register() {
 		HealthCheckUrl:   baseURL + "actuator/health",
 		VipAddress:       appName,
 		SecureVipAddress: appName,
+		Metadata:         InstanceMetadata{parsed: map[string]interface{}{}},
 	}
-	c.instance.SetMetadataString("management.port", strconv.Itoa(port))
+	c.instance.Metadata.parsed["management.port"] = strconv.Itoa(port)
+	return c
+}
 
-	err := c.conn.RegisterInstance(c.instance)
+func (c *EurekaClient) Register() {
+	body, _ := json.Marshal(RegisterInstanceJson{c.instance})
+	logger.Info(c.serverURL, " : ", string(body))
+	req, _ := http.NewRequest(http.MethodPost, c.serverURL, bytes.NewReader(body))
+
+	resp, rc, err := c.sendHttpRequest(req)
 	if err != nil {
-		logger.Warn("Eureka Registration fail: ", err)
+		logger.Error("Eureka Registration. error:", err)
+		return
+	}
+
+	if rc != http.StatusNoContent {
+		logger.Errorf("Eureka Registration. response:%d body:%s", rc, resp)
 		return
 	}
 
@@ -73,13 +82,23 @@ func (c *EurekaClient) Register() {
 func (c *EurekaClient) DeRegister() {
 	c.stopHeartBeat()
 
-	c.instance.Status = fargo.DOWN
-	c.conn.RegisterInstance(c.instance)
-	err := c.conn.DeregisterInstance(c.instance)
+	c.instance.Status = DOWN
+	body, _ := json.Marshal(RegisterInstanceJson{c.instance})
+	req, _ := http.NewRequest(http.MethodPost, c.serverURL, bytes.NewReader(body))
+	_, _, err := c.sendHttpRequest(req)
 	if err != nil {
-		logger.Error("eureka: Deregister:", err)
+		logger.Error("Eureka DeRegister. error:", err)
 		return
 	}
+
+	// Deregister
+	req, _ = http.NewRequest(http.MethodDelete, c.serverURL+"/"+c.instance.InstanceId, nil)
+	_, _, err = c.sendHttpRequest(req)
+	if err != nil {
+		logger.Error("Eureka DeRegister. error:", err)
+		return
+	}
+
 	logger.Info("Eureka Deregister.")
 }
 
@@ -90,14 +109,20 @@ func (c *EurekaClient) sendHeartBeat() {
 
 	go func() {
 		defer func() {
-			fmt.Println("stop SendHeartBeat")
+			logger.Error("stop SendHeartBeat")
 			c.ticker.Stop()
 		}()
 
 		for {
 			select {
 			case <-c.ticker.C:
-				c.conn.HeartBeatInstance(c.instance)
+				rc, err := c.heartbeat()
+				if err != nil {
+					logger.Error(err)
+				}
+				if rc == http.StatusNotFound {
+					logger.Error(err)
+				}
 			case <-c.done:
 				return
 			}
@@ -105,8 +130,49 @@ func (c *EurekaClient) sendHeartBeat() {
 	}()
 }
 
+func (c *EurekaClient) heartbeat() (int, error) {
+	req, _ := http.NewRequest(http.MethodPut, c.serverURL+"/"+c.instance.InstanceId, nil)
+	_, rc, err := c.sendHttpRequest(req)
+	if err != nil {
+		return -1, err
+	}
+	return rc, nil
+}
+
 func (c *EurekaClient) stopHeartBeat() {
 	if c.done != nil {
 		close(c.done)
 	}
+}
+
+var HttpClient = &http.Client{
+	Transport: transport,
+	Timeout:   10 * time.Second,
+}
+
+var transport = &http.Transport{
+	Dial: (&net.Dialer{
+		Timeout: 3 * time.Second,
+	}).Dial,
+	ResponseHeaderTimeout: 3 * time.Second,
+}
+
+func (c *EurekaClient) sendHttpRequest(req *http.Request) ([]byte, int, error) {
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := HttpClient.Do(req)
+	if err != nil {
+		return nil, -1, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	logger.Debug(string(body))
+
+	return body, resp.StatusCode, nil
 }
