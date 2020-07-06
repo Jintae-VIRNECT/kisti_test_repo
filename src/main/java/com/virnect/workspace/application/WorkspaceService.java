@@ -1346,7 +1346,15 @@ public class WorkspaceService {
                 }
             }
         }
-
+        if (workspaceUserLicenseInfoList.isEmpty()) {
+            PageMetadataRestResponse pageMetadataRestResponse = new PageMetadataRestResponse();
+            pageMetadataRestResponse.setCurrentPage(pageable.getPageNumber());
+            pageMetadataRestResponse.setCurrentSize(pageable.getPageSize());
+            pageMetadataRestResponse.setTotalElements(0);
+            pageMetadataRestResponse.setTotalPage(0);
+            WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = new WorkspaceUserLicenseListResponse(workspaceUserLicenseInfoList, new PageMetadataRestResponse());
+            return new ApiResponse<>(workspaceUserLicenseListResponse);
+        }
         List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList = new ArrayList<>();
 
         //sort
@@ -1398,7 +1406,6 @@ public class WorkspaceService {
         pageMetadataResponse.setTotalPage(resultPage);
         pageMetadataResponse.setCurrentPage(pageNum + 1);
         pageMetadataResponse.setCurrentSize(pageSize);
-
         return new WorkspaceUserLicenseListResponse(result.get(pageNum), pageMetadataResponse);
     }
 
@@ -1420,7 +1427,7 @@ public class WorkspaceService {
         workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
         DecimalFormat decimalFormat = new DecimalFormat("0");
         long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
-        workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(size/1024.0))); //MB -> GB
+        workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(size / 1024.0))); //MB -> GB
         workspaceLicenseInfoResponse.setMaxDownloadHit(workspaceLicensePlanInfoResponse.getMaxDownloadHit());
         workspaceLicenseInfoResponse.setMaxCallTime(workspaceLicenseInfoResponse.getMaxCallTime());
 
