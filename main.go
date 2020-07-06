@@ -3,10 +3,17 @@ package main
 import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/dockerclient"
+	"RM-RecordServer/eurekaclient"
+
 	//_ "RM-RecordServer/docs"
 	"RM-RecordServer/logger"
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"time"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -22,6 +29,9 @@ func SetupRouter() *gin.Engine {
 	r.POST("/recording", api.StartRecording)
 	r.DELETE("/recording/:id", api.StopRecording)
 	r.GET("/recordings", api.ListRecordings)
+	r.GET("/health", func(c *gin.Context) {
+		c.Writer.WriteHeader(200)
+	})
 	return r
 }
 
@@ -35,11 +45,38 @@ func main() {
 		panic(err)
 	}
 
-	r := SetupRouter()
+	router := SetupRouter()
 	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	r.Run(":" + strconv.Itoa(viper.GetInt("general.port")))
+	srv := &http.Server{
+		Addr:    ":" + strconv.Itoa(viper.GetInt("general.port")),
+		Handler: router,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			logger.Errorf("listen: %s", err)
+			panic(err)
+		}
+	}()
+
+	euraka := eurekaclient.NewClient()
+	euraka.Register()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	euraka.DeRegister()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error("Server Shutdown:", err)
+	}
+	logger.Info("Record Server stopped")
 }
 
 func readConfig() {
