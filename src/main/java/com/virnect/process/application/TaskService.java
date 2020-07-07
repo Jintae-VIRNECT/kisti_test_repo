@@ -1937,10 +1937,20 @@ public class TaskService {
                 jobResponse.setPaper(paper);
             }
             if (job.getIssueList().size() > 0) {
-                JobResponse.Issue issue = JobResponse.Issue.builder()
-                        .id(job.getIssueList().get(0).getId())
-                        .build();
-                jobResponse.setIssue(issue);
+                List<JobResponse.Issue> jobIssueList = new ArrayList<>();
+
+                for (Issue issue : job.getIssueList()){
+                    JobResponse.Issue jobIssue = JobResponse.Issue.builder()
+                            .issueId(issue.getId())
+                            .caption(issue.getContent())
+                            .photoFilePath(issue.getPath())
+                            .workerUUID(issue.getWorkerUUID())
+                            .build();
+
+                    jobIssueList.add(jobIssue);
+                }
+
+                jobResponse.setIssueList(jobIssueList);
             }
             return jobResponse;
         }).collect(Collectors.toList());
@@ -2405,8 +2415,6 @@ public class TaskService {
                 percent = (int)(((double) ing / (double) subProcessList.size()) * 100);
             }
 
-            log.debug(">>>>>>>>>>>>>>> {} ", percent);
-
             WorkspaceUserInfoResponse response = WorkspaceUserInfoResponse.builder()
                     .workerUUID(memberInfo.getUuid())
                     .workerName(memberInfo.getNickName())
@@ -2473,7 +2481,6 @@ public class TaskService {
                 // 임시방편으로 공백은 '+'로 치환한다. 더 좋은 방법이 있다면 수정하면 좋을 듯.
                 targetData = targetData.replace(" ", "+");
             }
-
             log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
 
             try {

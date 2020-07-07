@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,10 +36,10 @@ public class JobResponse {
     private Paper paper;
 
     @ApiModelProperty(value = "이슈", notes = "현재 작업의 이슈", position = 7, example = "1")
-    private Issue issue;
+    private List<Issue> issueList;
 
     @Builder
-    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Paper paper, Issue issue) {
+    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Paper paper, List<Issue> issueList) {
         this.id = id;
         this.name = name;
         this.priority = priority;
@@ -46,7 +47,7 @@ public class JobResponse {
         this.progressRate = progressRate;
         this.conditions = conditions;
         this.paper = paper;
-        this.issue = issue;
+        this.issueList = issueList;
     }
 
     @Getter
@@ -67,11 +68,23 @@ public class JobResponse {
     @ToString
     public static class Issue {
         @ApiModelProperty(value = "이슈 식별자", notes = "현재 작업의 이슈 식별자", example = "1")
-        private long id;
+        private long issueId;
 
+        @ApiModelProperty(value = "이슈 내용", notes = "현재 작업의 이슈 내용", example = "issue content")
+        private String caption;
+
+        @ApiModelProperty(value = "이슈 파일 경로", notes = "현재 작업의 이슈 파일 경로", example = "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/profile/2020-06-25_3b8baadef4be4bbd8d97a9f3815ab6bfjpg")
+        private String photoFilePath;
+
+        @ApiModelProperty(value = "작업자 식별자", notes = "현재 작업의 작업자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
+        private String workerUUID;
+        
         @Builder
-        public Issue(long id) {
-            this.id = id;
+        public Issue(long issueId, String caption, String photoFilePath, String workerUUID) {
+            this.issueId = issueId;
+            this.caption = caption;
+            this.photoFilePath = photoFilePath;
+            this.workerUUID = workerUUID;
         }
     }
 }
