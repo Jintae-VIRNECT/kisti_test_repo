@@ -19,7 +19,7 @@ type recording struct {
 type RecordingParam struct {
 	SessionID          string
 	Resolution         string
-	Framerate          int
+	Framerate          uint
 	RecordingTimeLimit int
 }
 
@@ -27,9 +27,9 @@ var recorderMap = map[string]*recording{}
 var recorderMapMux sync.RWMutex
 
 var (
-	ErrSessionIDAlreadyExists = errors.New("Session ID Already Exists")
-	ErrNotFoundSessionID      = errors.New("Not Found Session ID")
-	ErrInternalError          = errors.New("Internal Error")
+	ErrRecordingIDAlreadyExists = errors.New("Recording ID Already Exists")
+	ErrNotFoundRecordingID      = errors.New("Not Found Recording ID")
+	ErrInternalError            = errors.New("Internal Error")
 )
 
 var timeoutCh chan string
@@ -42,7 +42,7 @@ func init() {
 func NewRecording(param RecordingParam) error {
 	_, ok := recorderMap[param.SessionID]
 	if ok {
-		return ErrSessionIDAlreadyExists
+		return ErrRecordingIDAlreadyExists
 	}
 
 	containerParam := dockerclient.ContainerParam{
@@ -72,54 +72,54 @@ func NewRecording(param RecordingParam) error {
 	return nil
 }
 
-func FindRecording(sessionID string) (string, error) {
+func FindRecording(recordingID string) (string, error) {
 	recorderMapMux.RLock()
 	defer recorderMapMux.RUnlock()
 
-	r, ok := recorderMap[sessionID]
+	r, ok := recorderMap[recordingID]
 	if ok {
 		return r.containerID, nil
 	}
 
-	return "", ErrNotFoundSessionID
+	return "", ErrNotFoundRecordingID
 }
 
-func DelRecording(sessionID string, reason string) error {
-	logger.Infof("recording stop. (id:%s reason:%s)", sessionID, reason)
+func DelRecording(recordingID string, reason string) error {
+	logger.Infof("recording stop. (id:%s reason:%s)", recordingID, reason)
 
 	recorderMapMux.Lock()
 	defer recorderMapMux.Unlock()
 
-	r, ok := recorderMap[sessionID]
+	r, ok := recorderMap[recordingID]
 	if !ok {
-		return ErrNotFoundSessionID
+		return ErrNotFoundRecordingID
 	}
 
 	r.timeout.Stop()
 
 	dockerclient.StopContainer(r.containerID)
 
-	delete(recorderMap, sessionID)
+	delete(recorderMap, recordingID)
 	return nil
 }
 
-func ListSessionIDs() []string {
+func ListRecordingIDs() []string {
 	recorderMapMux.RLock()
 	defer recorderMapMux.RUnlock()
 
-	var sessionIds []string
+	var recordingIds []string
 	for _, r := range recorderMap {
-		sessionIds = append(sessionIds, r.sessionID)
+		recordingIds = append(recordingIds, r.sessionID)
 	}
 
-	return sessionIds
+	return recordingIds
 }
 
-func ExistSessionID(sessionID string) bool {
+func ExistRecordingID(recordingID string) bool {
 	recorderMapMux.RLock()
 	defer recorderMapMux.RUnlock()
 
-	_, ok := recorderMap[sessionID]
+	_, ok := recorderMap[recordingID]
 	return ok
 }
 
@@ -130,8 +130,15 @@ func timeoutHandler() {
 
 	for {
 		select {
-		case sessionID := <-timeoutCh:
-			DelRecording(sessionID, "timeout")
+		case recordingID := <-timeoutCh:
+			DelRecording(recordingID, "timeout")
 		}
 	}
+}
+
+func GetNumCurrentRecordings() int {
+	recorderMapMux.RLock()
+	defer recorderMapMux.RUnlock()
+
+	return len(recorderMap)
 }

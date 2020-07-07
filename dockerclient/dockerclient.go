@@ -16,7 +16,7 @@ type ContainerParam struct {
 	VideoID     string
 	VideoName   string
 	Resolution  string
-	Framerate   int
+	Framerate   uint
 	VideoFormat string
 	LayoutURL   string
 }
@@ -61,8 +61,8 @@ func RunContainer(param ContainerParam) (string, error) {
 		Env: []string{
 			"URL=" + param.LayoutURL + "/" + param.VideoID + "/MY_SECRET/4443/false",
 			"ONLY_VIDEO=" + "false",
-			"RESOLUTION=" + convertResolution(param.Resolution),
-			"FRAMERATE=" + strconv.Itoa(param.Framerate),
+			"RESOLUTION=" + param.Resolution,
+			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
 			"VIDEO_ID=" + param.VideoID,
 			"VIDEO_NAME=" + param.VideoName,
 			"VIDEO_FORMAT=" + param.VideoFormat,
@@ -145,17 +145,4 @@ func stopAndRemoveContainer(containerID string) {
 			logger.Error("RemoveContainer:", err)
 		}
 	}(containerID, ctx)
-}
-
-func convertResolution(res string) string {
-	switch res {
-	case "480p":
-		return "640x480"
-	case "720p":
-		return "1280x720"
-	case "1080p":
-		return "1920x1080"
-	default:
-		return "1280x720"
-	}
 }
