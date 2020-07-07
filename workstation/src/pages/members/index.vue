@@ -47,7 +47,11 @@
           <member-profile-card :data="member" />
         </el-col>
       </el-row>
-      <searchbar-page :value.sync="membersPage" :total="membersTotal" />
+      <searchbar-page
+        ref="page"
+        :value.sync="membersPage"
+        :total="membersTotal"
+      />
     </div>
     <member-add-modal :visible.sync="showAddModal" />
   </div>

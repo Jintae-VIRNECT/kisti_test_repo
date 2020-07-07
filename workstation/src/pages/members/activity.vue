@@ -20,12 +20,7 @@
 
       <el-row>
         <el-card class="el-card--table">
-          <el-table
-            ref="table"
-            :data="activityList"
-            v-loading="loading"
-            @row-click="rowClick"
-          >
+          <el-table ref="table" :data="activityList" v-loading="loading">
             <column-user
               :label="$t('members.activity.column.member')"
               prop="workerName"
@@ -111,10 +106,19 @@ export default {
     }
   },
   methods: {
-    rowClick() {},
-    async searchMembersActivity() {
-      this.activityList = await workspaceService.searchMembersActivity()
+    changedSearchParams(searchParams) {
+      this.searchMembersActivity(searchParams)
     },
+    async searchMembersActivity(searchParams) {
+      this.activityList = await workspaceService.searchMembersActivity(
+        searchParams,
+      )
+    },
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, () =>
+      this.searchMembersActivity(this.searchParams),
+    )
   },
 }
 </script>

@@ -52,6 +52,7 @@ export default {
       },
       params: {
         sort: 'role,asc',
+        size: 10,
         ...searchParams,
       },
     })
@@ -189,7 +190,10 @@ export default {
       route: {
         workspaceUUID: activeWorkspaceGetter().uuid,
       },
-      params: searchParams,
+      params: {
+        size: 10,
+        ...searchParams,
+      },
     })
     return data.map(activity => new MemberActivity(activity))
   },
