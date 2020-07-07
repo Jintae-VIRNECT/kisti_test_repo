@@ -71,7 +71,7 @@ export default {
   },
   computed: {
     ...mapGetters(['mic']),
-    mic() {
+    micId() {
       return this.mic['deviceId']
     },
     soundWidth() {
@@ -83,7 +83,7 @@ export default {
     },
   },
   watch: {
-    mic: {
+    micId: {
       handler(newMic) {
         this.handleInputAudioStream(newMic)
       },
