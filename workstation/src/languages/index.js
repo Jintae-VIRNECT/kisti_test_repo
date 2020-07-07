@@ -32,7 +32,7 @@ function loader(foldername) {
  * i18n
  */
 module.exports = {
-  locales: ['ko', 'en'],
+  locales: ['ko', 'en', 'keyname'],
   defaultLocale: 'ko',
   strategy: 'no_prefix',
   detectBrowserLanguage: {
@@ -40,7 +40,7 @@ module.exports = {
     cookieKey: 'lang',
   },
   vueI18n: {
-    fallbackLocale: 'ko',
+    // fallbackLocale: 'ko',
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
       en: { ...elementEn, ...loader('/en') },
