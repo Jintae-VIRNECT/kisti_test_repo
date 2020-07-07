@@ -39,8 +39,9 @@ type ListRecordingResponse struct {
 // @Param body body StartRecordingRequest true "information for recording"
 // @Success 200 {object} StartRecordingResponse
 // @Failure 400 {} json "{"error":"error message"}"
+// @Failure 429 {} json "{"error":"error message"}""
 // @Failure 500 {} json "{"error":"error message"}"
-// @Router /record [post]
+// @Router /media/record [post]
 func StartRecording(c *gin.Context) {
 	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
@@ -55,12 +56,21 @@ func StartRecording(c *gin.Context) {
 	}
 	logger.Debugf("StartRecording:%+v", req)
 
+	max := viper.GetInt("record.numOfConcurrentRecordings")
+	cur := recorder.GetNumCurrentRecordings()
+	if max <= cur {
+		logger.Errorf("too many recording: current: %d limit:%d", cur, max)
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too Many Recordings"})
+		return
+	}
+
 	err = checkValidation(&req)
 	if err != nil {
 		logger.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	exist := recorder.ExistRecordingID(req.SessionID)
 	if exist == true {
 		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrRecordingIDAlreadyExists.Error()})
@@ -77,9 +87,7 @@ func StartRecording(c *gin.Context) {
 	err = recorder.NewRecording(param)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -127,7 +135,7 @@ func convertResolution(resolution string) (string, error) {
 // @Param id path string true "recording id"
 // @Success 200 {object} StopRecordingResponse
 // @Failure 404 {} json "{ "error": "not found id" }"
-// @Router /record/{id} [delete]
+// @Router /media/record/{id} [delete]
 func StopRecording(c *gin.Context) {
 	recordingID := c.Param("id")
 	logger.Info("stop recording (id:", recordingID, ")")
@@ -148,7 +156,7 @@ func StopRecording(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} ListRecordingResponse
 // @Failure 500 {} json "{"error":"error message"}"
-// @Router /records [get]
+// @Router /media/records [get]
 func ListRecordings(c *gin.Context) {
 	body := ListRecordingResponse{make([]string, 0)}
 	list := recorder.ListRecordingIDs()

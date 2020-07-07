@@ -135,3 +135,10 @@ func timeoutHandler() {
 		}
 	}
 }
+
+func GetNumCurrentRecordings() int {
+	recorderMapMux.RLock()
+	defer recorderMapMux.RUnlock()
+
+	return len(recorderMap)
+}
