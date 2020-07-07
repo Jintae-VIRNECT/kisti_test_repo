@@ -42,8 +42,9 @@ func SetupRouter() *gin.Engine {
 		c.Writer.WriteHeader(200)
 	})
 
-	url := ginSwagger.URL("http://localhost:8083/swagger/doc.json") // The url pointing to API definition
+	url := ginSwagger.URL("http://localhost:8083/swagger/doc.json")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	r.GET("/v2/api-docs/*any", swaggerMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }
 
@@ -133,6 +134,13 @@ func RequestLoggerMiddleware() gin.HandlerFunc {
 			logbuf = fmt.Sprintf("%s\nbody:%s", logbuf, string(body))
 		}
 		logger.Info(logbuf)
+		c.Next()
+	}
+}
+
+func swaggerMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Request.RequestURI = c.Request.RequestURI + "/doc.json"
 		c.Next()
 	}
 }
