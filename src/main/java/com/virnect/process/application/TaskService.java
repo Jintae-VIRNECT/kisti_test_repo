@@ -25,6 +25,7 @@ import com.virnect.process.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.jdbc.Work;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -2370,7 +2371,7 @@ public class TaskService {
      * @param workspaceUUID
      * @return
      */
-    public ApiResponse<List<WorkspaceUserInfoResponse>> getWorkspaceUserInfo(String workspaceUUID) {
+    public ApiResponse<WorkspaceUserListResponse> getWorkspaceUserInfo(String workspaceUUID, Pageable pageable) {
         log.debug(workspaceUUID);
         List<MemberInfoDTO> memberList = this.workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData().getMemberInfoList();
 
@@ -2429,7 +2430,42 @@ public class TaskService {
             resultList.add(response);
         }
 
-        return new ApiResponse<>(resultList);
+        List<WorkspaceUserInfoResponse> list = new ArrayList<>();
+        
+        int currentPage = pageable.getPageNumber();
+        int currentSize = pageable.getPageSize();
+        int totalElements = resultList.size();
+        int totalPage = totalElements / currentSize;
+
+        if (totalElements % currentSize != 0) {
+            totalPage += 1;
+        }
+
+        int fromIdx = 0;
+        int toIdx = 0;
+
+        if (currentPage == 0) {
+            fromIdx = currentPage;
+            toIdx = currentSize;
+        } else {
+            fromIdx = currentPage * currentSize;
+            toIdx = (currentPage + 1) * currentSize;
+        }
+
+        if (toIdx > resultList.size()) {
+            toIdx = resultList.size();
+        }
+
+        list = resultList.subList(fromIdx, toIdx);
+
+        PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+                .currentPage(pageable.getPageNumber())
+                .currentSize(pageable.getPageSize())
+                .totalPage(totalPage)
+                .totalElements(totalElements)
+                .build();
+
+        return new ApiResponse<>(new WorkspaceUserListResponse(list, pageMetadataResponse));
     }
 
     /**
