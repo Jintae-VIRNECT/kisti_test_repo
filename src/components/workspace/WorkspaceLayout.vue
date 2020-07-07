@@ -69,6 +69,9 @@ export default {
     init(account) {
       this.updateAccount(account.myInfo)
       this.initWorkspace(account.myWorkspaces)
+      this.$nextTick(() => {
+        this.$push.connection(this.workspace.uuid)
+      })
     },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {

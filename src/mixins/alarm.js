@@ -13,12 +13,12 @@ export default {
         icon: require('assets/image/profile.png'),
       })
     },
-    alarmInvite() {
+    alarmInvite({ nickName, profile }) {
       this.callNotify({
         type: 'invite',
-        info: 'Nari Han 님',
+        info: `${nickName} 님`,
         description: '참가자로 협업을 요청하였습니다.',
-        icon: require('assets/image/profile.png'),
+        icon: profile,
         options: {
           action: [
             {
@@ -94,7 +94,25 @@ export default {
         icon = require('assets/image/ic_system.svg')
       } else if (payload.type === 'fail') {
         icon = require('assets/image/ic_notice.svg')
+      } else if (!icon || icon.length === 0 || icon === 'default') {
+        icon = false
       }
+      let iconTemplate = `
+      <div class="toasted--thumb">
+        <div class="toasted--image" ${payload.type}>
+      `
+      if (icon) {
+        iconTemplate += `
+        <img
+        src="${icon}"
+        @error="${this.onImageError}"
+        />
+        `
+      }
+      iconTemplate += `
+        </div>
+      </div>
+      `
       let template = ``
       if (payload.options && 'action' in payload.options) {
         template = `<div class="toasted__buttons"></div>`
@@ -102,9 +120,7 @@ export default {
       this.$alarm.show(
         `
         <figure>
-          <div class="toasted__thumb ${payload.type}">
-            <img src="${icon}" />
-          </div>
+        ${iconTemplate}
           <figcaption>
             <p class="toasted__info ${payload.type}">${payload.info}</p>
             <p class="toasted__description">${payload.description}</p>

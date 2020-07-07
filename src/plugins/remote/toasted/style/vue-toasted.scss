@@ -1,4 +1,5 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 @import "~assets/style/plugin/material-icons";
 
 .toasted {
@@ -75,13 +76,19 @@
     white-space: nowrap;
     opacity: 0.7;
   }
-  .toasted__thumb {
+  .toasted--thumb {
+    position: relative;
     width: 3.143rem;
     height: 3.143rem;
     margin-right: 1.143rem;
     overflow: hidden;
-    border-radius: 50%;
-    img {
+  }
+  .toasted--image {
+    width: 100%;
+    height: 100%;
+    @include image();
+
+    > img {
       width: 100%;
       height: 100%;
       object-fit: cover;

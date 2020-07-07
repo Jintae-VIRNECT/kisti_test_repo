@@ -16,9 +16,12 @@ import DayJS from 'plugins/remote/dayjs'
 
 import call from 'plugins/remote/call'
 
+import PUSH from 'plugins/remote/push'
+
 import { localStorage } from 'utils/storage'
 
 Vue.use(DayJS)
+Vue.use(PUSH)
 Vue.use(VueToasted)
 Vue.use(Alarm)
 

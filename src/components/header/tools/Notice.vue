@@ -18,7 +18,7 @@
     <div>
       <div class="popover-notice__header">
         <span>알림</span>
-        <switcher text="Push" :value.sync="push">Push</switcher>
+        <switcher text="Push" :value.sync="onPush">Push</switcher>
       </div>
       <div class="popover-notice__body">
         <scroller height="28.571rem">
@@ -78,8 +78,12 @@ import Popover from 'Popover'
 import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
 import NoticeItem from './NoticeItem'
+import alarmMixin from 'mixins/alarm'
+import { DESTINATION, KEY, EVENT } from 'configs/push.config'
+
 export default {
   name: 'Notice',
+  mixins: [alarmMixin],
   components: {
     Switcher,
     Popover,
@@ -89,21 +93,57 @@ export default {
   },
   data() {
     return {
-      push: false,
+      onPush: true,
     }
   },
-  watch: {},
+  watch: {
+    onPush(push) {
+      console.log(push)
+      if (push) {
+        this.$localStorage.setItem('push', 'true')
+      } else {
+        this.$localStorage.setItem('push', 'false')
+      }
+    },
+  },
   methods: {
     notice() {
+      if (this.onPush) return
+      console.log('refresh')
       // this.$nextTick(() => {
       //   console.log(this.$refs['noticeScroller'])
       //   this.$refs['noticeScroller'].scrollReset()
       // })
     },
+    alarmListener(listen) {
+      if (!this.onPush) return
+      const body = JSON.parse(listen.body)
+      console.log(body)
+      if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
+      if (body.userId === this.account.uuid) return
+
+      switch (body.event) {
+        case 'invitation':
+          this.alarmInvite(body.contents)
+
+          break
+      }
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    const push = this.$localStorage.getItem('push')
+    if (push === 'true') {
+      this.onPush = true
+    } else {
+      this.onPush = false
+    }
+    this.$push.addListener(this.$route.name, this.alarmListener)
+  },
+  beforeDestroy() {
+    this.$push.removeListener(this.$route.name)
+  },
 }
 </script>
 
