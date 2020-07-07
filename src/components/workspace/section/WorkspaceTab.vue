@@ -19,7 +19,11 @@
         </transition>
       </ul>
     </nav>
-    <component v-if="license" :is="component" :class="{ fix: fix }"></component>
+    <component
+      v-if="!showLicensePage"
+      :is="component"
+      :class="{ fix: fix }"
+    ></component>
     <workspace-license v-else></workspace-license>
   </div>
 </template>
@@ -45,6 +49,7 @@ export default {
   },
   data() {
     return {
+      showLicensePage: false,
       tabComponents: [
         {
           name: 'history',
@@ -87,9 +92,17 @@ export default {
     createRoom() {
       this.$eventBus.$emit('openCreateRoom')
     },
+    activeLicensePage() {
+      this.showLicensePage = true
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('showLicensePage', this.activeLicensePage)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('showLicensePage')
+  },
 }
 </script>

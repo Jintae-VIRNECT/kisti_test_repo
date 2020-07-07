@@ -32,11 +32,12 @@
 import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import { mapActions } from 'vuex'
 import auth from 'utils/auth'
+import { checkLicense } from 'utils/license'
 import RecordList from 'LocalRecordList'
-import { getLicense } from 'api/workspace/license'
+import confirmMixin from 'mixins/confirm'
 
+import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
@@ -49,6 +50,7 @@ export default {
       })
     }
   },
+  mixins: [confirmMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -115,18 +117,24 @@ export default {
   },
   mounted() {
     this.$nextTick(async () => {
-      const licenseCheck = await getLicense(
+      const noLicenseCallback = () => {
+        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
+          text: '확인',
+          action: () => {
+            this.$eventBus.$emit('showLicensePage')
+          },
+        })
+      }
+      const license = await checkLicense(
         this.workspace.uuid,
         await this.account.uuid,
+        noLicenseCallback,
       )
-      console.log('license', licenseCheck)
-      this.license = licenseCheck
+      this.license = license
     })
 
-    if (this.license) {
-      this.tabTop = this.$refs['tabSection'].$el.offsetTop
-      this.$eventBus.$on('filelist:open', this.toggleList)
-    }
+    this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    this.$eventBus.$on('filelist:open', this.toggleList)
   },
 }
 </script>

@@ -2,12 +2,16 @@ import http from 'api/gateway'
 
 export const getLicense = async function(workspaceId, userId) {
   const result = await http('GET_LICENSE', { workspaceId, userId })
-  const licenseInfo = result.licenseInfoList
-
-  console.log('license information ::', licenseInfo)
+  if (result.licenseInfoList) {
+    const licenseInfo = result.licenseInfoList
+    console.log('license information ::', licenseInfo)
+  } else {
+    return false
+  }
 
   //test code
-  //test 16 will return false
+  //test 16 account will return false
+
   if (userId === '4d127135f699616fb88e6bc4fa6d784a') {
     return false
   } else {
