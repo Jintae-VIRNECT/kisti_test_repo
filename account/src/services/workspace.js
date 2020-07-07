@@ -14,7 +14,7 @@ function getMasterWorkspaceInfo() {
   const masterWorkspace = getMyWorkspaces().find(
     workspace => workspace.role === 'MASTER',
   )
-  return masterWorkspace
+  return masterWorkspace || {}
 }
 
 export default {
