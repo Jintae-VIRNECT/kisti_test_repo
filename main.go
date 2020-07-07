@@ -6,8 +6,11 @@ import (
 	//_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -28,6 +31,8 @@ func SetupRouter() *gin.Engine {
 	}
 
 	r := gin.New()
+	r.Use(RequestLoggerMiddleware())
+
 	r.POST("/media/recorder/recording", api.StartRecording)
 	r.DELETE("/media/recorder/recording/:id", api.StopRecording)
 	r.GET("/media/recorder/recordings", api.ListRecordings)
@@ -115,4 +120,19 @@ func displayConfig() {
 	// show all settings
 	bs, _ := yaml.Marshal(viper.AllSettings())
 	logger.Info("settings\n", string(bs))
+}
+
+func RequestLoggerMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var buf bytes.Buffer
+		tee := io.TeeReader(c.Request.Body, &buf)
+		body, _ := ioutil.ReadAll(tee)
+		c.Request.Body = ioutil.NopCloser(&buf)
+		logbuf := fmt.Sprintf("Request method:%s path:%s user-agent:%s", c.Request.Method, c.Request.URL.Path, c.GetHeader("User-Agent"))
+		if len(body) > 0 {
+			logbuf = fmt.Sprintf("%s\nbody:%s", logbuf, string(body))
+		}
+		logger.Info(logbuf)
+		c.Next()
+	}
 }
