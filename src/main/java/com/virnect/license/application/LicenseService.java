@@ -1,10 +1,11 @@
 package com.virnect.license.application;
 
+import com.virnect.license.application.rest.ContentRestService;
 import com.virnect.license.application.rest.UserRestService;
-import com.virnect.license.dao.product.LicenseProductRepository;
-import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.coupon.CouponRepository;
+import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;
+import com.virnect.license.dao.product.LicenseProductRepository;
 import com.virnect.license.dao.product.ProductRepository;
 import com.virnect.license.domain.coupon.Coupon;
 import com.virnect.license.domain.coupon.CouponPeriodType;
@@ -22,6 +23,7 @@ import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.dto.response.admin.AdminCouponInfoResponse;
+import com.virnect.license.dto.rest.ContentResourceUsageInfoResponse;
 import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
@@ -61,6 +63,7 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
 
     private final UserRestService userRestService;
+    private final ContentRestService contentRestService;
     private final EmailService emailService;
     private final ModelMapper modelMapper;
 
@@ -387,10 +390,13 @@ public class LicenseService {
             licenseProductInfoResponses.add(licenseProductInfo);
         });
 
-
+        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
+        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = workspaceResourceUsageApiResponse.getData();
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
         workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
+        workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
+        workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
 
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
     }
