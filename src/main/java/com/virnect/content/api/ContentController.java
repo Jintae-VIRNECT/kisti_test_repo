@@ -1,6 +1,5 @@
 package com.virnect.content.api;
 
-import com.querydsl.core.Tuple;
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.*;
@@ -17,17 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Project: PF-ContentManagement
@@ -99,7 +95,7 @@ public class ContentController {
     @GetMapping("/countContents")
     public ResponseEntity<ApiResponse<List<ContentCountResponse>>> countContents(
             @RequestParam(value = "workspaceUUID") String workspaceUUID
-            , @RequestParam(value = "userUUIDList") List<String> userUUIDList){
+            , @RequestParam(value = "userUUIDList") List<String> userUUIDList) {
         if (userUUIDList.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -359,8 +355,8 @@ public class ContentController {
 
     @ApiOperation(value = "컨텐츠 공유", notes = "컨텐츠의 공유 여부를 변경. 2.0기능인 컨텐츠 타입 변경. 차후 컨텐츠의 세부정보들을 변경할 수 있는 기능으로 확장 예정")
     @ApiImplicitParams({
-            @ApiImplicitParam(value="컨텐츠 식별자"   , name="contentUUID"        , dataType="string"            , required=true, paramType="path", example="73624941-8c65-4e0a-8e81-9f52547fa8d0"),
-            @ApiImplicitParam(value="컨텐츠 수정 정보", name="contentInfoRequest" , dataType="ContentInfoRequest", required=true, paramType="body")
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "73624941-8c65-4e0a-8e81-9f52547fa8d0"),
+            @ApiImplicitParam(value = "컨텐츠 수정 정보", name = "contentInfoRequest", dataType = "ContentInfoRequest", required = true, paramType = "body")
     })
     @PutMapping("/info/{contentUUID}")
     public ResponseEntity<ApiResponse<ContentInfoResponse>> modifyContentInfo(
@@ -441,10 +437,10 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value="프로퍼티 -> 메타데이터", tags="test")
+    @ApiOperation(value = "프로퍼티 -> 메타데이터", tags = "test")
     @GetMapping("/propertyToMetadata/{contentUUID}")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="contentUUID", example="16ac0c7e-9e64-409a-b412-7583ca3e3be4")
+            @ApiImplicitParam(name = "contentUUID", example = "16ac0c7e-9e64-409a-b412-7583ca3e3be4")
     })
     public ResponseEntity<ApiResponse<MetadataInfoResponse>> propertyToMetadata(
             @PathVariable("contentUUID") String contentUUID
@@ -458,12 +454,26 @@ public class ContentController {
             @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "query", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
     })
     @GetMapping("/target/isExist")
-    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam(value="targetData") String targetData) {
+    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam(value = "targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
         ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+
+    @ApiOperation(value = "워크스페이스 사용 용량 및 다운로드 횟수 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path")
+    })
+    @GetMapping("/resources/report/{workspaceId}")
+    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId) {
+        if (StringUtils.isEmpty(workspaceId)) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId);
         return ResponseEntity.ok(responseMessage);
     }
 }
