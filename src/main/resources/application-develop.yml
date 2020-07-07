@@ -131,8 +131,8 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: remote-service-server
-          uri: lb:https://remote-service-server
+        - id: remote-record-server
+          uri: lb:http://remote-record-server
           predicates:
             - Path=/media/**
           filters:
@@ -140,7 +140,7 @@ spring:
             - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "REMOTE_SERVICE_SERVER_REST"
+                messagePrefix: "REMOTE_RECORD_SERVER_REST"
                 preLogger: true
                 postLogger: true
 
