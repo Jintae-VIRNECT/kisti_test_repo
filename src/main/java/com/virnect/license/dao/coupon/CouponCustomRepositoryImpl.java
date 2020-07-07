@@ -1,7 +1,7 @@
 package com.virnect.license.dao.coupon;
 
 import com.querydsl.jpa.JPQLQuery;
-import com.virnect.license.domain.*;
+import com.virnect.license.domain.coupon.Coupon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

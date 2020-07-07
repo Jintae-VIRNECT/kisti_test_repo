@@ -1,12 +1,21 @@
 package com.virnect.license.application;
 
 import com.virnect.license.application.rest.UserRestService;
-import com.virnect.license.dao.LicenseProductRepository;
-import com.virnect.license.dao.LicenseRepository;
+import com.virnect.license.dao.product.LicenseProductRepository;
+import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.coupon.CouponRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;
 import com.virnect.license.dao.product.ProductRepository;
-import com.virnect.license.domain.*;
+import com.virnect.license.domain.coupon.Coupon;
+import com.virnect.license.domain.coupon.CouponPeriodType;
+import com.virnect.license.domain.coupon.CouponStatus;
+import com.virnect.license.domain.license.License;
+import com.virnect.license.domain.license.LicenseStatus;
+import com.virnect.license.domain.licenseplan.LicensePlan;
+import com.virnect.license.domain.licenseplan.PlanStatus;
+import com.virnect.license.domain.product.LicenseProduct;
+import com.virnect.license.domain.product.Product;
+import com.virnect.license.domain.product.ProductType;
 import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;

@@ -1,7 +1,7 @@
 package com.virnect.license.dao.product;
 
-import com.virnect.license.domain.Product;
-import com.virnect.license.domain.ProductDisplayStatus;
+import com.virnect.license.domain.product.Product;
+import com.virnect.license.domain.product.ProductDisplayStatus;
 import com.virnect.license.domain.QProduct;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 

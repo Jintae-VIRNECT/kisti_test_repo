@@ -1,6 +1,6 @@
 package com.virnect.license.dto.response;
 
-import com.virnect.license.domain.PlanStatus;
+import com.virnect.license.domain.licenseplan.PlanStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
