@@ -195,6 +195,9 @@ export default {
         ...searchParams,
       },
     })
-    return data.map(activity => new MemberActivity(activity))
+    return {
+      list: data.infos.map(activity => new MemberActivity(activity)),
+      total: data.pageMeta.totalElements,
+    }
   },
 }
