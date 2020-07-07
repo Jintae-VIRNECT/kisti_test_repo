@@ -70,7 +70,7 @@ func RunContainer(param ContainerParam) (string, error) {
 		}}
 
 	createOpt.HostConfig = &docker.HostConfig{
-		Binds: []string{viper.GetString("record.dir") + ":/recordings"},
+		Binds: []string{viper.GetString("record.dir") + ":" + viper.GetString("record.dirInDocker")},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {

@@ -33,6 +33,11 @@ type ListRecordingResponse struct {
 	RecordingIDs []string `json:"recordingIds"`
 }
 
+type ListRecordingFilesResponse struct {
+	Count     int                          `json:"numberOfInfos"`
+	FileInfos []recorder.RecordingFileInfo `json:"infos"`
+}
+
 // @Summary Start Recording
 // @Description Start Recording
 // @Accept json
@@ -43,7 +48,7 @@ type ListRecordingResponse struct {
 // @Failure 429 {} json "{"error":"Too Many Recordings"}""
 // @Failure 500 {} json "{"error":"error message"}"
 // @Failure 507 {} json "{"error":"not enough free space"}"
-// @Router /media/record [post]
+// @Router /media/recorder/recording [post]
 func StartRecording(c *gin.Context) {
 	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
@@ -147,7 +152,7 @@ func convertResolution(resolution string) (string, error) {
 // @Param id path string true "recording id"
 // @Success 200 {object} StopRecordingResponse
 // @Failure 404 {} json "{ "error": "not found id" }"
-// @Router /media/record/{id} [delete]
+// @Router /media/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
 	recordingID := c.Param("id")
 	logger.Info("stop recording (id:", recordingID, ")")
@@ -168,7 +173,7 @@ func StopRecording(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} ListRecordingResponse
 // @Failure 500 {} json "{"error":"error message"}"
-// @Router /media/records [get]
+// @Router /media/recorder/recordings [get]
 func ListRecordings(c *gin.Context) {
 	body := ListRecordingResponse{make([]string, 0)}
 	list := recorder.ListRecordingIDs()
@@ -176,4 +181,21 @@ func ListRecordings(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"recordingIds": append(body.RecordingIDs, list...),
 	})
+}
+
+// @Summary List Recording Files
+// @Description List Recordings Files
+// @Produce json
+// @Success 200 {object} ListRecordingFilesResponse
+// @Failure 500 {} json "{"error":"error message"}"
+// @Router /media/recorder/files [get]
+func ListRecordingFiles(c *gin.Context) {
+	list, err := recorder.ListRecordingFiles()
+	if err != nil {
+		logger.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	response := ListRecordingFilesResponse{FileInfos: list, Count: len(list)}
+	c.JSON(200, response)
 }

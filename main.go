@@ -31,6 +31,7 @@ func SetupRouter() *gin.Engine {
 	r.POST("/media/recorder/recording", api.StartRecording)
 	r.DELETE("/media/recorder/recording/:id", api.StopRecording)
 	r.GET("/media/recorder/recordings", api.ListRecordings)
+	r.GET("/media/recorder/files", api.ListRecordingFiles)
 	r.GET("/health", func(c *gin.Context) {
 		c.Writer.WriteHeader(200)
 	})
@@ -61,7 +62,6 @@ func main() {
 		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Errorf("listen: %s", err)
-			panic(err)
 		}
 	}()
 
