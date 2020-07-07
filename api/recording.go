@@ -3,6 +3,7 @@ package api
 import (
 	"RM-RecordServer/logger"
 	"RM-RecordServer/recorder"
+	"RM-RecordServer/util"
 	"errors"
 	"fmt"
 	"net/http"
@@ -39,8 +40,9 @@ type ListRecordingResponse struct {
 // @Param body body StartRecordingRequest true "information for recording"
 // @Success 200 {object} StartRecordingResponse
 // @Failure 400 {} json "{"error":"error message"}"
-// @Failure 429 {} json "{"error":"error message"}""
+// @Failure 429 {} json "{"error":"Too Many Recordings"}""
 // @Failure 500 {} json "{"error":"error message"}"
+// @Failure 507 {} json "{"error":"not enough free space"}"
 // @Router /media/record [post]
 func StartRecording(c *gin.Context) {
 	req := StartRecordingRequest{
@@ -61,6 +63,16 @@ func StartRecording(c *gin.Context) {
 	if max <= cur {
 		logger.Errorf("too many recording: current: %d limit:%d", cur, max)
 		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too Many Recordings"})
+		return
+	}
+
+	diskUsage, err := util.DiskUsage(viper.GetString("record.dir"))
+	if float64(diskUsage.Free)/float64(util.GB) < viper.GetFloat64("record.diskFreeThreshold") {
+		logger.Errorf("not enough free space: all:%f used:%f free:%f",
+			float64(diskUsage.All)/float64(util.GB),
+			float64(diskUsage.Used)/float64(util.GB),
+			float64(diskUsage.Free)/float64(util.GB))
+		c.JSON(http.StatusInsufficientStorage, gin.H{"error": "not enough free space"})
 		return
 	}
 

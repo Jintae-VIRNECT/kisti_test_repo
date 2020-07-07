@@ -28,9 +28,9 @@ func SetupRouter() *gin.Engine {
 	}
 
 	r := gin.New()
-	r.POST("/media/recording", api.StartRecording)
-	r.DELETE("/media/recording/:id", api.StopRecording)
-	r.GET("/media/recordings", api.ListRecordings)
+	r.POST("/media/recorder/recording", api.StartRecording)
+	r.DELETE("/media/recorder/recording/:id", api.StopRecording)
+	r.GET("/media/recorder/recordings", api.ListRecordings)
 	r.GET("/health", func(c *gin.Context) {
 		c.Writer.WriteHeader(200)
 	})
