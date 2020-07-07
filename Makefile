@@ -5,12 +5,13 @@ LDFLAGS=-ldflags "-X=main.Version=${VERSION} -X=main.Build=${BUILD}"
 
 .PHONY: clean check build docker
 
-build: check
+build: 
+    #check
 	@mkdir -p build
 	go build -race -o build/${TARGET} main.go
 
 check:	
-	@${GOPATH}/bin/swag init
+	@swag init
 	@go vet ./...
 	@go fmt ./...
 

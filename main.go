@@ -3,8 +3,7 @@ package main
 import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/dockerclient"
-	_ "RM-RecordServer/docs"
-	"RM-RecordServer/eurekaclient"
+	//_ "RM-RecordServer/docs"
 	"RM-RecordServer/logger"
 	"bytes"
 	"context"
