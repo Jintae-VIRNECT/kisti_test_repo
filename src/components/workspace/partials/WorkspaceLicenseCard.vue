@@ -1,5 +1,9 @@
 <template>
-  <div class="license-card">
+  <div
+    @mouseover="active = true"
+    @mouseleave="active = false"
+    class="license-card"
+  >
     <div class="license-card--badge" :class="getClass">
       <p>{{ planName }}</p>
     </div>
@@ -36,12 +40,23 @@
       </table>
     </div>
 
-    <button @click="buy" class="license-card--buy btn">구매 이동</button>
+    <button
+      @click="buy"
+      class="license-card--buy btn"
+      :class="{ disabled: !active }"
+    >
+      구매 이동
+    </button>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      active: false,
+    }
+  },
   props: {
     plan: {
       type: String,
