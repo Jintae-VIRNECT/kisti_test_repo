@@ -2,8 +2,10 @@ package util
 
 import (
 	"RM-RecordServer/logger"
+	"io/ioutil"
 	"net"
 	"os"
+	"path"
 	"syscall"
 )
 
@@ -50,4 +52,21 @@ func DiskUsage(path string) (DiskStatus, error) {
 	disk.Free = fs.Bfree * uint64(fs.Bsize)
 	disk.Used = disk.All - disk.Free
 	return disk, nil
+}
+
+func RemoveContents(dirname string) (int, error) {
+	dir, err := ioutil.ReadDir(dirname)
+	if err != nil {
+		return 0, err
+	}
+	var count int
+	for _, d := range dir {
+		err = os.RemoveAll(path.Join([]string{dirname, d.Name()}...))
+		if err != nil {
+			logger.Warn("remove:", err)
+			continue
+		}
+		count++
+	}
+	return count, nil
 }

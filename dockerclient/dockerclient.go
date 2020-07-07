@@ -34,8 +34,16 @@ func DownloadDockerImage() error {
 		return ErrContainerInternal
 	}
 
+	imageName := viper.GetString("record.dockerImage")
+	image, err := cli.InspectImage(imageName)
+	if image != nil {
+		logger.Info("already exist image:", imageName)
+		return nil
+	}
+
+	logger.Info("Downloading docker image:", imageName)
 	err = cli.PullImage(
-		docker.PullImageOptions{Repository: viper.GetString("record.dockerImage")},
+		docker.PullImageOptions{Repository: imageName},
 		docker.AuthConfiguration{},
 	)
 	if err != nil {
@@ -70,7 +78,7 @@ func RunContainer(param ContainerParam) (string, error) {
 		}}
 
 	createOpt.HostConfig = &docker.HostConfig{
-		Binds: []string{viper.GetString("record.dir") + ":/recordings"},
+		Binds: []string{viper.GetString("record.dir") + ":" + viper.GetString("record.dirInDocker")},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {

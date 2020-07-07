@@ -3,8 +3,17 @@ package recorder
 import (
 	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
+	"RM-RecordServer/util"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/spf13/viper"
@@ -21,6 +30,14 @@ type RecordingParam struct {
 	Resolution         string
 	Framerate          uint
 	RecordingTimeLimit int
+}
+
+type RecordingFileInfo struct {
+	Filename   string `json:"filename"`
+	FullPath   string `json:"fullPath"`
+	Duration   int    `json:"duration"`
+	Size       int    `json:"size"`
+	CreateTime string `json:"ceateTime"`
 }
 
 var recorderMap = map[string]*recording{}
@@ -141,4 +158,71 @@ func GetNumCurrentRecordings() int {
 	defer recorderMapMux.RUnlock()
 
 	return len(recorderMap)
+}
+
+func ListRecordingFiles() ([]RecordingFileInfo, error) {
+	var files []string
+	infos := []RecordingFileInfo{}
+	root := viper.GetString("record.dir")
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		ext := ".info"
+		if filepath.Ext(path) == ext {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return infos, err
+	}
+	for _, file := range files {
+		info, err := readInfoFile(file)
+		if err != nil {
+			continue
+		}
+		infos = append(infos, info)
+	}
+	return infos, nil
+}
+
+func RemoveRecordingFiles() (int, error) {
+	count, err := util.RemoveContents(viper.GetString("record.dir"))
+	logger.Info("delete all recording files. count:", count)
+	return count, err
+}
+
+func readInfoFile(file string) (RecordingFileInfo, error) {
+	info := RecordingFileInfo{}
+
+	infoFile, err := os.Open(file)
+	if err != nil {
+		logger.Error("open file:", err)
+		return info, err
+	}
+	defer infoFile.Close()
+	byteValue, err := ioutil.ReadAll(infoFile)
+	if err != nil {
+		logger.Error("json parse file:", err)
+		return info, err
+	}
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	format := result["format"].(map[string]interface{})
+	duration, _ := strconv.ParseFloat(format["duration"].(string), 32)
+	filenameWithPath := format["filename"].(string)
+	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirInDocker"))
+	finfo, _ := os.Stat(fullPath)
+	stat := finfo.Sys().(*syscall.Stat_t)
+	ts := stat.Ctim
+
+	info.Filename = filepath.Base(filenameWithPath)
+	info.FullPath = fullPath
+	info.Duration = int(duration)
+	info.Size, _ = strconv.Atoi(format["size"].(string))
+	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
+
+	return info, nil
 }
