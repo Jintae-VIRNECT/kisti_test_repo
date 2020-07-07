@@ -4,6 +4,7 @@ import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/dockerclient"
 	//_ "RM-RecordServer/docs"
+	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
 	"context"
 	"fmt"
