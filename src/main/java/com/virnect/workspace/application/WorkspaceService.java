@@ -1336,9 +1336,8 @@ public class WorkspaceService {
                 if (licenseInfoResponse.getStatus().equals("USE")) {
                     UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(licenseInfoResponse.getUserId()).getData();
                     WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = new WorkspaceUserLicenseInfoResponse();
-                    workspaceUserLicenseInfo.setUserId(userInfoRestResponse.getUuid());
+                    workspaceUserLicenseInfo.setUuid(userInfoRestResponse.getUuid());
                     workspaceUserLicenseInfo.setProfile(userInfoRestResponse.getProfile());
-                    workspaceUserLicenseInfo.setName(userInfoRestResponse.getName());
                     workspaceUserLicenseInfo.setNickName(userInfoRestResponse.getNickname());
                     workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
                     workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
@@ -1367,11 +1366,11 @@ public class WorkspaceService {
         if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("desc")) {
             beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
         }
-        if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("asc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
+        if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("asc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         }
-        if (sortName.equalsIgnoreCase("name") && sortDirection.equalsIgnoreCase("desc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
+        if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("desc")) {
+            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream().sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName, Comparator.nullsFirst(Comparator.reverseOrder()))).collect(Collectors.toList());
         }
         return new ApiResponse<>(paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList));
     }
@@ -1382,7 +1381,7 @@ public class WorkspaceService {
         int totalPage = totalElements / pageSize;
         int resultPage = totalPage;
         int lastElements = totalElements % pageSize;
-
+        int currentPage = pageNum + 1;
         if (lastElements > 0) {
             totalPage = totalPage + 1;
             resultPage = resultPage + 1;
@@ -1404,8 +1403,11 @@ public class WorkspaceService {
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(totalElements);
         pageMetadataResponse.setTotalPage(resultPage);
-        pageMetadataResponse.setCurrentPage(pageNum + 1);
+        pageMetadataResponse.setCurrentPage(currentPage);
         pageMetadataResponse.setCurrentSize(pageSize);
+        if (currentPage > result.size()) {
+            return new WorkspaceUserLicenseListResponse(new ArrayList<>(), pageMetadataResponse);
+        }
         return new WorkspaceUserLicenseListResponse(result.get(pageNum), pageMetadataResponse);
     }
 
