@@ -10,9 +10,14 @@ export default class Coupon extends Model {
     this.registerDate = json.RegYMD
     this.expiredDate = json.ExpYMD
     this.usedDate = json.UseYMD
-    this.status = json.StateM
     this.applyItemId = json.ApplyItemID
     this.applyItemName = json.ApplyItemName
+    this.status =
+      {
+        사용완료: 'USE',
+        사용대기: 'UNUSE',
+        만료: 'EXPIRED',
+      }[json.StateM] || json.StateM
   }
 }
 
@@ -20,7 +25,4 @@ export const status = [
   { value: 'USE', label: 'coupon.status.use' },
   { value: 'UNUSE', label: 'coupon.status.unuse' },
   { value: 'EXPIRED', label: 'coupon.status.expired' },
-  { value: '사용', label: 'coupon.status.use' },
-  { value: '사용대기', label: 'coupon.status.unuse' },
-  { value: '만료', label: 'coupon.status.expired' },
 ]
