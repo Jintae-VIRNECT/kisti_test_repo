@@ -38,6 +38,10 @@ type ListRecordingFilesResponse struct {
 	FileInfos []recorder.RecordingFileInfo `json:"infos"`
 }
 
+type RemoveRecordingFilesResponse struct {
+	Count int `json:"count"`
+}
+
 // @Summary Start Recording
 // @Description Start Recording
 // @Accept json
@@ -197,5 +201,22 @@ func ListRecordingFiles(c *gin.Context) {
 		return
 	}
 	response := ListRecordingFilesResponse{FileInfos: list, Count: len(list)}
+	c.JSON(200, response)
+}
+
+// @Summary Remove All Recording Files
+// @Description Remove All Recordings Files
+// @Produce json
+// @Success 200 {object} RemoveRecordingFilesResponse
+// @Failure 500 {} json "{"error":"error message"}"
+// @Router /media/recorder/files [delete]
+func RemoveRecordingFiles(c *gin.Context) {
+	count, err := recorder.RemoveRecordingFiles()
+	if err != nil {
+		logger.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	response := RemoveRecordingFilesResponse{count}
 	c.JSON(200, response)
 }

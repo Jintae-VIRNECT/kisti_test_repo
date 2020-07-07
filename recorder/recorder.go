@@ -3,6 +3,7 @@ package recorder
 import (
 	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
+	"RM-RecordServer/util"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -184,6 +185,12 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 		infos = append(infos, info)
 	}
 	return infos, nil
+}
+
+func RemoveRecordingFiles() (int, error) {
+	count, err := util.RemoveContents(viper.GetString("record.dir"))
+	logger.Info("delete all recording files. count:", count)
+	return count, err
 }
 
 func readInfoFile(file string) (RecordingFileInfo, error) {
