@@ -466,7 +466,7 @@ public class ContentController {
 
     @ApiOperation(value = "워크스페이스 사용 용량 및 다운로드 횟수 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path")
+            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8")
     })
     @GetMapping("/resources/report/{workspaceId}")
     public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId) {
