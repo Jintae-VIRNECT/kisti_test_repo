@@ -13,18 +13,48 @@ import (
 )
 
 type ContainerParam struct {
-	VideoID     string
-	VideoName   string
-	Resolution  string
-	Framerate   uint
-	VideoFormat string
-	LayoutURL   string
+	VideoID            string
+	VideoName          string
+	Resolution         string
+	Framerate          uint
+	VideoFormat        string
+	LayoutURL          string
+	RecordingTimeLimit int
 }
 
 var (
 	ErrContainerAlreadyExists = docker.ErrContainerAlreadyExists
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
+
+type Container struct {
+	ID          string
+	RecordingID string
+	EndTime     int64
+}
+
+func ListContainers() []Container {
+	containers := []Container{}
+
+	cli, err := docker.NewClientFromEnv()
+	if err != nil {
+		logger.Error("NewClientFromEnv:", err)
+		return containers
+	}
+
+	filter := map[string][]string{"label": []string{"recordingId"}}
+	cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
+	for _, c := range cons {
+		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
+		containers = append(containers, Container{
+			ID:          c.ID,
+			RecordingID: c.Labels["recordingId"],
+			EndTime:     endTime,
+		})
+	}
+
+	return containers
+}
 
 func DownloadDockerImage() error {
 	logger.Info("DOCKER_HOST:", os.Getenv("DOCKER_HOST"))
@@ -62,6 +92,8 @@ func RunContainer(param ContainerParam) (string, error) {
 		logger.Error("NewClientFromEnv:", err)
 		return "", ErrContainerInternal
 	}
+	now := time.Now().Unix()
+	endTime := now + int64(param.RecordingTimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.VideoID
 	createOpt.Config = &docker.Config{
@@ -75,7 +107,12 @@ func RunContainer(param ContainerParam) (string, error) {
 			"VIDEO_NAME=" + param.VideoName,
 			"VIDEO_FORMAT=" + param.VideoFormat,
 			"RECORDING_JSON=" + "{}",
-		}}
+		},
+		Labels: map[string]string{
+			"recordingId": param.VideoID,
+			"endTime":     strconv.FormatInt(endTime, 10),
+		},
+	}
 
 	createOpt.HostConfig = &docker.HostConfig{
 		Binds: []string{viper.GetString("record.dir") + ":" + viper.GetString("record.dirInDocker")},

@@ -63,15 +63,16 @@ func NewRecording(param RecordingParam) error {
 	}
 
 	containerParam := dockerclient.ContainerParam{
-		VideoID:     param.SessionID,
-		VideoName:   param.SessionID,
-		Resolution:  param.Resolution,
-		Framerate:   param.Framerate,
-		VideoFormat: viper.GetString("record.defaultVideoFormat"),
-		LayoutURL:   viper.GetString("record.layoutURL"),
+		VideoID:            param.SessionID,
+		VideoName:          param.SessionID,
+		Resolution:         param.Resolution,
+		Framerate:          param.Framerate,
+		VideoFormat:        viper.GetString("record.defaultVideoFormat"),
+		LayoutURL:          viper.GetString("record.layoutURL"),
+		RecordingTimeLimit: param.RecordingTimeLimit,
 	}
 
-	constainerID, err := dockerclient.RunContainer(containerParam)
+	containerID, err := dockerclient.RunContainer(containerParam)
 	if err != nil {
 		return ErrInternalError
 	}
@@ -84,7 +85,7 @@ func NewRecording(param RecordingParam) error {
 	recorderMapMux.Lock()
 	defer recorderMapMux.Unlock()
 
-	r := &recording{param.SessionID, constainerID, timer}
+	r := &recording{param.SessionID, containerID, timer}
 	recorderMap[param.SessionID] = r
 	return nil
 }
@@ -118,6 +119,26 @@ func DelRecording(recordingID string, reason string) error {
 
 	delete(recorderMap, recordingID)
 	return nil
+}
+
+func RestoreRecording(recordingID string, containerID string, recordingTimeLimit int64) {
+	logger.Infof("RestoreRecording: recordingId:%s containerID:%s recordingTimeLimit:%d)", recordingID, containerID, recordingTimeLimit)
+
+	if recordingTimeLimit <= 0 {
+		dockerclient.StopContainer(containerID)
+		return
+	}
+
+	timeout := time.Duration(recordingTimeLimit) * time.Second
+	timer := time.AfterFunc(timeout, func() {
+		timeoutCh <- recordingID
+	})
+
+	recorderMapMux.Lock()
+	defer recorderMapMux.Unlock()
+
+	r := &recording{recordingID, containerID, timer}
+	recorderMap[recordingID] = r
 }
 
 func ListRecordingIDs() []string {

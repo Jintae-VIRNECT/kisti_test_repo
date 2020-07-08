@@ -6,6 +6,7 @@ import (
 	_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
+	"RM-RecordServer/recorder"
 	"bytes"
 	"context"
 	"fmt"
@@ -31,7 +32,7 @@ func SetupRouter() *gin.Engine {
 	}
 
 	r := gin.New()
-	r.Use(RequestLoggerMiddleware())
+	r.Use(requestLoggerMiddleware())
 
 	r.POST("/media/recorder/recording", api.StartRecording)
 	r.DELETE("/media/recorder/recording/:id", api.StopRecording)
@@ -52,6 +53,7 @@ func main() {
 	readConfig()
 	logger.Init()
 	displayConfig()
+	restoreRecordingFromContainer()
 
 	err := dockerclient.DownloadDockerImage()
 	if err != nil {
@@ -118,7 +120,7 @@ func displayConfig() {
 	logger.Info("settings\n", string(bs))
 }
 
-func RequestLoggerMiddleware() gin.HandlerFunc {
+func requestLoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var buf bytes.Buffer
 		tee := io.TeeReader(c.Request.Body, &buf)
@@ -138,4 +140,16 @@ func swaggerMiddleware() gin.HandlerFunc {
 		c.Request.RequestURI = c.Request.RequestURI + "/doc.json"
 		c.Next()
 	}
+}
+
+func restoreRecordingFromContainer() {
+	logger.Info("Start: Restore Recording From Container")
+	constainers := dockerclient.ListContainers()
+	now := time.Now().Unix()
+
+	for _, container := range constainers {
+		recordingTimeLimit := container.EndTime - now
+		recorder.RestoreRecording(container.RecordingID, container.ID, recordingTimeLimit)
+	}
+	logger.Info("End: Restore Recording From Container")
 }
