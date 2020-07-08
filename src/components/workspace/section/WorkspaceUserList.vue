@@ -7,7 +7,7 @@
       :imageUrl="userinfo.profile"
       :email="userinfo.email"
       :role="userinfo.role"
-      :license="userinfo.license"
+      :license="userinfo.licenseProducts.length > 0"
     >
     </member-card>
   </div>
