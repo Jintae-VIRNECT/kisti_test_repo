@@ -40,29 +40,7 @@
             <div slot="header">
               <h3>{{ $t('purchases.planMembersInfo.title') }}</h3>
             </div>
-            <el-table :data="planMembers">
-              <column-plan
-                :label="$t('purchases.planMembersInfo.column.name')"
-                prop="product"
-                productProp="product"
-                gradeProp="grade"
-              />
-              <column-user
-                :label="$t('purchases.planMembersInfo.column.user')"
-                prop="memberName"
-                nameProp="memberName"
-                imageProp="memberProfile"
-                :width="140"
-              />
-            </el-table>
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="planMembersTotal"
-                @current-change="searchPlanMembers"
-              >
-              </el-pagination>
-            </el-row>
+            <purchases-plan-member-list />
           </el-card>
           <!-- 사용량 -->
           <purchases-used />
@@ -74,9 +52,9 @@
 
 <script>
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import purchasesService from '@/services/purchases'
 import purchasesInfo from '@/components/purchases/PurchasesInfo'
 import PurchasesUsed from '@/components/purchases/PurchasesUsed'
+import PurchasesPlanMemberList from '@/components/purchases/PurchasesPlanMemberList'
 import columnMixin from '@/mixins/columns'
 
 export default {
@@ -85,25 +63,12 @@ export default {
     WorkspaceInfo,
     purchasesInfo,
     PurchasesUsed,
-  },
-  async asyncData() {
-    // const { list, total } = await purchasesService.searchPlanMembers()
-    // return {
-    //   planMembers: list,
-    //   planMembersTotal: total,
-    // }
+    PurchasesPlanMemberList,
   },
   data() {
     return {
       showWorkspaceInfo: false,
     }
-  },
-  methods: {
-    async searchPlanMembers() {
-      const { list, total } = await purchasesService.searchPlanMembers()
-      this.planMembers = list
-      this.planMembersTotal = total
-    },
   },
 }
 </script>

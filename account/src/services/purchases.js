@@ -12,7 +12,11 @@ export default {
       'GET_LICENSE_MEMBERS',
       {
         route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
-        params: { ...searchParams },
+        params: {
+          sort: 'plan,desc',
+          size: 8,
+          ...searchParams,
+        },
       },
     )
     return {
