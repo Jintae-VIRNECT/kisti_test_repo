@@ -8,7 +8,7 @@ import com.virnect.license.dto.response.LicenseProductDeallocateResponse;
 import com.virnect.license.dto.response.biling.ProductInfoListResponse;
 import com.virnect.license.dto.response.biling.ProductInfoResponse;
 import com.virnect.license.dto.response.biling.ProductTypeInfoListResponse;
-import com.virnect.license.exception.LicenseServiceException;
+import com.virnect.license.exception.BillingServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.error.ErrorCode;
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class BillingController {
     public ApiResponse<ProductInfoListResponse> createNewProductRequest(@RequestBody CreateNewProductRequest createNewProductRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.createNewProductHandler(createNewProductRequest);
     }
@@ -51,7 +51,7 @@ public class BillingController {
     public ApiResponse<ProductInfoResponse> changeProductInfoRequest(@RequestBody @Valid ProductInfoUpdateRequest productInfoUpdateRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.updateProductInfo(productInfoUpdateRequest);
     }
@@ -60,7 +60,7 @@ public class BillingController {
     @DeleteMapping("/product/{productId}")
     public ApiResponse<ProductInfoListResponse> deleteProductRequest(@PathVariable("productId") long productId) {
         if (productId <= 0) {
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.deleteProduct(productId);
     }
@@ -70,7 +70,7 @@ public class BillingController {
     public ApiResponse<ProductTypeInfoListResponse> createNewProductTypeInfo(@RequestBody @Valid CreateNewProductTypeRequest createNewProductTypeRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.createNewProductTypeHandler(createNewProductTypeRequest);
     }
@@ -86,7 +86,7 @@ public class BillingController {
     public ApiResponse<ProductTypeInfoListResponse> updateProductTypeInfoRequest(@RequestBody @Valid ProductTypeUpdateRequest productTypeUpdateRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.updateProductTypeInfo(productTypeUpdateRequest);
     }
@@ -96,7 +96,7 @@ public class BillingController {
     public ApiResponse<LicenseProductAllocateResponse> licenseProductAllocateToUser(@RequestBody @Valid LicenseProductAllocateRequest licensePRoductAllocateRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.licenseAllocateRequest(licensePRoductAllocateRequest);
     }
@@ -106,7 +106,7 @@ public class BillingController {
     public ApiResponse<LicenseProductDeallocateResponse> licenseProductDeallocateToUser(@RequestBody @Valid LicenseProductDeallocateRequest licenseDeallocateRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.licenseDeallocateRequest(licenseDeallocateRequest);
     }
@@ -116,7 +116,7 @@ public class BillingController {
     public ApiResponse<LicenseProductAllocateCheckResponse> licenseAllocateCheckRequest(@RequestBody @Valid LicenseAllocateCheckRequest allocateCheckRequest, BindingResult result) {
         if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
-            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return this.billingService.licenseAllocateCheckRequest(allocateCheckRequest);
     }

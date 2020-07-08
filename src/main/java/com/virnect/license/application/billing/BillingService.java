@@ -29,7 +29,7 @@ import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.dto.rest.WorkspaceInfoListResponse;
 import com.virnect.license.dto.rest.WorkspaceInfoResponse;
 import com.virnect.license.exception.LicenseAllocateDeniedException;
-import com.virnect.license.exception.LicenseServiceException;
+import com.virnect.license.exception.BillingServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -108,7 +108,7 @@ public class BillingService {
     @Transactional
     public ApiResponse<ProductInfoResponse> updateProductInfo(ProductInfoUpdateRequest updateRequest) {
         Product product = productRepository.findById(updateRequest.getProductId())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_NOT_FOUND));
 
         // max call time update
         if (updateRequest.getProductMaxCallTime() > 0) {
@@ -125,7 +125,7 @@ public class BillingService {
         // productType update
         if (updateRequest.getProductTypeId() > 0) {
             ProductType productType = productTypeRepository.findById(updateRequest.getProductTypeId())
-                    .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_INFO_UPDATE));
+                    .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_INFO_UPDATE));
             product.setProductType(productType);
         }
 
@@ -153,7 +153,7 @@ public class BillingService {
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(allocateCheckRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData().getEmail() == null) {
             log.info("User service error response: [{}]", userInfoApiResponse.getMessage());
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR);
         }
 
         UserInfoRestResponse requestUserInfo = userInfoApiResponse.getData();
@@ -222,14 +222,14 @@ public class BillingService {
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(licenseDeallocateRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData().getEmail() == null) {
             log.info("User service error response: [{}]", userInfoApiResponse.getMessage());
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR);
         }
         // 1. 계정 정보 조회
         UserInfoRestResponse requestUserInfo = userInfoApiResponse.getData();
 
         // 2. 라이선스 플랜 정보 조회
         LicensePlan licensePlan = licensePlanRepository.findByUserIdAndPaymentId(requestUserInfo.getUuid(), licenseDeallocateRequest.getPaymentId())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR));
 
         // 3. 라이선스 플랜 정보 수정 기록 및 비활성화
         licensePlan.setModifiedUser(licenseDeallocateRequest.getOperatedBy());
@@ -253,7 +253,7 @@ public class BillingService {
     public ApiResponse<LicenseProductAllocateResponse> licenseAllocateRequest(LicenseProductAllocateRequest licenseAllocateRequest) {
         // 1. 상품 지급 인증 정보 조회
         LicenseAssignAuthInfo licenseAssignAuthInfo = licenseAssignAuthInfoRepository.findById(licenseAllocateRequest.getAssignAuthCode())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE));
 
         log.info("[FOUND ASSIGNMENT AUTH INFO]: {}", licenseAssignAuthInfo.toString());
 
@@ -261,7 +261,7 @@ public class BillingService {
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(licenseAllocateRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData().getEmail() == null) {
             log.info("[USER REST SERVICE ERROR RESPONSE]: [{}]", userInfoApiResponse.getMessage());
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
         }
 
         UserInfoRestResponse requestUserInfo = userInfoApiResponse.getData();
@@ -273,14 +273,14 @@ public class BillingService {
         ApiResponse<WorkspaceInfoListResponse> workspaceApiResponse = this.workspaceRestService.getMyWorkspaceInfoList(requestUserInfo.getUuid(), 50);
         if (workspaceApiResponse.getCode() != 200 || workspaceApiResponse.getData().getWorkspaceList() == null) {
             log.info("User service error response: [{}]", workspaceApiResponse.getMessage());
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
         }
 
         // 6. 마스터 워크스페이스 정보 추출
         WorkspaceInfoResponse workspaceInfo = workspaceApiResponse.getData().getWorkspaceList()
                 .stream()
                 .filter(w -> w.getRole().equals("MASTER")).findFirst()
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED));
 
         // 7. 라이선스 플랜 정보 조회
         Optional<LicensePlan> userLicensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(requestUserInfo.getUuid(), workspaceInfo.getUuid(), PlanStatus.ACTIVE);
@@ -361,7 +361,7 @@ public class BillingService {
     private void licenseAssignAuthInfoValidation(LicenseProductAllocateRequest licenseAllocateRequest, LicenseAssignAuthInfo licenseAssignAuthInfo, UserInfoRestResponse requestUserInfo) {
         if (!licenseAssignAuthInfo.getUserId().equals(licenseAllocateRequest.getUserId()) || !licenseAssignAuthInfo.getUuid().equals(requestUserInfo.getUuid())) {
             log.info("[LICENSE PRODUCT ALLOCATE AUTHENTICATION INFO CHECK] - FAIL.");
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE);
         }
     }
 
@@ -375,7 +375,7 @@ public class BillingService {
      */
     private void licenseAllocatePropertyValidationCheck(LicenseAssignAuthInfo licenseAssignAuthInfo, Long calculateMaxCallTime, Long calculateMaxStorage, Long calculateMaxHit) {
         if (!licenseAssignAuthInfo.getTotalProductCallTime().equals(calculateMaxCallTime) || !licenseAssignAuthInfo.getTotalProductHit().equals(calculateMaxHit) || !licenseAssignAuthInfo.getTotalProductStorage().equals(calculateMaxStorage)) {
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_AUTHENTICATION_CODE);
         }
     }
 
@@ -388,7 +388,7 @@ public class BillingService {
     @Transactional
     public void licenseRegisterByProduct(List<LicenseAllocateProductInfoResponse> productList, LicensePlan licensePlan) {
         if (productList == null || productList.isEmpty()) {
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
         }
         productList.stream()
                 .filter(p -> !p.getProductType().getId().equals("service"))
@@ -396,7 +396,7 @@ public class BillingService {
                     Product product = this.productRepository.findById(productInfo.getProductId())
                             .orElseThrow(() -> {
                                 log.info("ASSIGN REQUEST PRODUCT NOT FOUND -> [{}] ", productInfo.toString());
-                                return new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
+                                return new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
                             });
 
                     LicenseProduct licenseProduct = LicenseProduct.builder()
@@ -437,7 +437,7 @@ public class BillingService {
     public ApiResponse<ProductInfoListResponse> deleteProduct(long productId) {
         long result = productRepository.updateProductDisplayStatusToHide(productId);
         if (result <= 0) {
-            throw new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_DISABLE);
+            throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_DISABLE);
         }
         return getAllProductInfo();
     }
@@ -451,7 +451,7 @@ public class BillingService {
     @Transactional
     public ApiResponse<ProductTypeInfoListResponse> updateProductTypeInfo(ProductTypeUpdateRequest productTypeUpdateRequest) {
         ProductType productType = productTypeRepository.findById(productTypeUpdateRequest.getProductTypeId())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_TYPE_INFO_UPDATE));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_TYPE_INFO_UPDATE));
         productType.setName(productTypeUpdateRequest.getProductTypeName());
         productTypeRepository.save(productType);
 
@@ -467,7 +467,7 @@ public class BillingService {
     @Transactional
     public ApiResponse<ProductInfoListResponse> createNewProductHandler(CreateNewProductRequest createNewProductRequest) {
         ProductType productType = this.productTypeRepository.findById(createNewProductRequest.getProductTypeId())
-                .orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_BILLING_PRODUCT_CREATE));
+                .orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_CREATE));
         Product newProduct = Product.builder()
                 .name(createNewProductRequest.getProductName())
                 .maxStorageSize(createNewProductRequest.getMaxStorageSize())
