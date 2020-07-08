@@ -73,6 +73,9 @@ const URL = {
     'GET',
     'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
   ],
+
+  /* CHAT FILE */
+  SEND_FILE: ['POST', 'http://192.168.13.94:2000', { type: 'form' }],
 }
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)

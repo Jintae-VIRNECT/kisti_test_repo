@@ -49,7 +49,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
+import { sendFile } from 'api/workspace/call'
 export default {
   name: 'ChatInput',
   components: {},
@@ -64,6 +65,9 @@ export default {
   },
   computed: {
     ...mapGetters(['chatList']),
+    ...mapState({
+      room: state => state.room,
+    }),
   },
   watch: {
     fileList: {
@@ -121,6 +125,24 @@ export default {
         e.preventDefault()
       }
       this.$call.sendChat(this.inputText)
+
+      if (this.fileList.length > 0) {
+        console.log(this.fileList)
+        console.log('do someting with fileList')
+        this.fileList.forEach(file => {
+          const params = {
+            fileName: file.filedata.name,
+            mimeType: file.filedata.type,
+            size: file.filedata.size,
+            fileDownloadUrl: 'test url',
+          }
+
+          const response = sendFile(file, this.room.roomId, this.workspace.uuid)
+          console.log(response)
+
+          this.$call.sendFile(params)
+        })
+      }
 
       this.inputText = ''
     },
