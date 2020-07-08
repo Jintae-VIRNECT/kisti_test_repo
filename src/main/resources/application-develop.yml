@@ -134,10 +134,10 @@ spring:
         - id: remote-record-server
           uri: lb:http://remote-record-server
           predicates:
-            - Path=/remote/record/**
+            - Path=/remote/recorder/**
           filters:
             - StripPrefix=0
-            - RewritePath=/remote/record/v2/(?<segment>.*), /v2/$\{segment}/
+            - RewritePath=/remote/recorder/v2/(?<segment>.*), /v2/$\{segment}/
             - name: Logging
               args:
                 messagePrefix: "REMOTE_RECORD_SERVER"
