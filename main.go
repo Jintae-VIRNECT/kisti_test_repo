@@ -72,11 +72,8 @@ func main() {
 		}
 	}()
 
-	var euraka *eurekaclient.EurekaClient
-	if viper.GetBool("eureka.enable") == true {
-		euraka = eurekaclient.NewClient()
-		euraka.Register()
-	}
+	euraka := eurekaclient.NewClient()
+	euraka.Run()
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
@@ -84,9 +81,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	if viper.GetBool("eureka.enable") == true {
-		euraka.DeRegister()
-	}
+	euraka.Stop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

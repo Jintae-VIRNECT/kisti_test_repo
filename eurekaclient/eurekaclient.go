@@ -4,6 +4,7 @@ import (
 	"RM-RecordServer/logger"
 	"RM-RecordServer/util"
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net"
@@ -15,11 +16,96 @@ import (
 	"github.com/spf13/viper"
 )
 
+type State int
+
+const (
+	StateRegistration State = iota
+	StateHeartBeat
+	StateDeRegistration
+)
+
 type EurekaClient struct {
 	instance  *Instance
 	serverURL string
 	ticker    *time.Ticker
 	done      chan bool
+	ctx       context.Context
+	stop      context.CancelFunc
+	state     chan State
+}
+
+func (c *EurekaClient) Run() {
+	if viper.GetBool("eureka.enable") == false {
+		logger.Info("eureka client disabled")
+		return
+	}
+
+	c.ctx, c.stop = context.WithCancel(context.Background())
+
+	go func(c *EurekaClient) {
+		c.state = make(chan State, 1)
+		c.state <- StateRegistration
+		for {
+			switch <-c.state {
+			case StateRegistration:
+				go c.runRegister()
+			case StateHeartBeat:
+				go c.runHeartBeat()
+			case StateDeRegistration:
+				go c.runDeRegister()
+			}
+		}
+	}(c)
+}
+
+func (c *EurekaClient) Stop() {
+	if c.stop == nil {
+		return
+	}
+	c.stop()
+}
+
+func (c *EurekaClient) runRegister() {
+	logger.Info("eureka state: register")
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			err := c.Register()
+			if err == nil {
+				c.state <- StateHeartBeat
+				return
+			}
+		case <-c.ctx.Done():
+			c.state <- StateDeRegistration
+			return
+		}
+	}
+}
+
+func (c *EurekaClient) runHeartBeat() {
+	logger.Info("eureka state: heartbeat")
+	ticker := time.NewTicker(time.Duration(viper.GetInt("eureka.heartbeatInterval")) * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			err := c.Heartbeat()
+			if err != nil {
+				c.state <- StateRegistration
+				return
+			}
+		case <-c.ctx.Done():
+			c.state <- StateDeRegistration
+			return
+		}
+	}
+}
+
+func (c *EurekaClient) runDeRegister() {
+	logger.Info("eureka state: deregister")
+	c.DeRegister()
 }
 
 func NewClient() *EurekaClient {
@@ -59,29 +145,27 @@ func NewClient() *EurekaClient {
 	return c
 }
 
-func (c *EurekaClient) Register() {
+func (c *EurekaClient) Register() error {
 	body, _ := json.Marshal(RegisterInstanceJson{c.instance})
-	logger.Info(c.serverURL, " : ", string(body))
 	req, _ := http.NewRequest(http.MethodPost, c.serverURL, bytes.NewReader(body))
 
 	resp, rc, err := c.sendHttpRequest(req)
 	if err != nil {
 		logger.Error("Eureka Registration. error:", err)
-		return
+		return err
 	}
 
 	if rc != http.StatusNoContent {
 		logger.Errorf("Eureka Registration. response:%d body:%s", rc, resp)
-		return
+		return err
 	}
 
-	c.sendHeartBeat()
 	logger.Info("Eureka Registration.")
+	return nil
 }
 
 func (c *EurekaClient) DeRegister() {
-	c.stopHeartBeat()
-
+	// Status "DOWN"
 	c.instance.Status = DOWN
 	body, _ := json.Marshal(RegisterInstanceJson{c.instance})
 	req, _ := http.NewRequest(http.MethodPost, c.serverURL, bytes.NewReader(body))
@@ -102,47 +186,13 @@ func (c *EurekaClient) DeRegister() {
 	logger.Info("Eureka Deregister.")
 }
 
-func (c *EurekaClient) sendHeartBeat() {
-	interval := viper.GetInt("eureka.heartbeatInterval")
-	c.ticker = time.NewTicker(time.Duration(interval) * time.Second)
-	c.done = make(chan bool, 1)
-
-	go func() {
-		defer func() {
-			logger.Error("stop SendHeartBeat")
-			c.ticker.Stop()
-		}()
-
-		for {
-			select {
-			case <-c.ticker.C:
-				rc, err := c.heartbeat()
-				if err != nil {
-					logger.Error(err)
-				}
-				if rc == http.StatusNotFound {
-					logger.Error(err)
-				}
-			case <-c.done:
-				return
-			}
-		}
-	}()
-}
-
-func (c *EurekaClient) heartbeat() (int, error) {
+func (c *EurekaClient) Heartbeat() error {
 	req, _ := http.NewRequest(http.MethodPut, c.serverURL+"/"+c.instance.InstanceId, nil)
-	_, rc, err := c.sendHttpRequest(req)
+	_, _, err := c.sendHttpRequest(req)
 	if err != nil {
-		return -1, err
+		return err
 	}
-	return rc, nil
-}
-
-func (c *EurekaClient) stopHeartBeat() {
-	if c.done != nil {
-		close(c.done)
-	}
+	return nil
 }
 
 var HttpClient = &http.Client{
@@ -169,10 +219,9 @@ func (c *EurekaClient) sendHttpRequest(req *http.Request) ([]byte, int, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		logger.Error(string(body))
 		return nil, -1, err
 	}
-
-	logger.Debug(string(body))
 
 	return body, resp.StatusCode, nil
 }
