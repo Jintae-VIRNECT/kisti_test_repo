@@ -113,19 +113,7 @@ export default {
   beforeDestroy() {
     window.onbeforeunload = () => {}
   },
-  async mounted() {
-    //test noti alarm message
-    //this logic work only test 17 account
-    const LICENSE_EXPIRED_LIMIT = 60000
-    if (this.account.uuid === '4705cf50e6d02c59b0eef9591666e2a3') {
-      this.alarmInfo()
-      this.alarmLicenseClose()
-      setTimeout(() => {
-        this.$call.leave()
-        this.$router.push({ name: 'workspace' })
-      }, LICENSE_EXPIRED_LIMIT)
-    }
-  },
+  async mounted() {},
 }
 </script>
 
