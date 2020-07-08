@@ -67,7 +67,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
-			"URL=" + param.LayoutURL + "/" + param.VideoID + "/MY_SECRET/4443/false",
+			"URL=" + param.LayoutURL + "?sessionId=" + param.VideoID + "&secret=" + viper.GetString("record.secret"),
 			"ONLY_VIDEO=" + "false",
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
