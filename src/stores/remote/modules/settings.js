@@ -1,5 +1,6 @@
 //Definition of workspace store
 import { SETTINGS } from '../mutation-types'
+import { RECORD_TARGET } from 'utils/recordOptions'
 
 const state = {
   mic: {
@@ -27,7 +28,7 @@ const state = {
   //stream for local steram(screen stream)
   screenStream: null,
 
-  localRecordTarget: 'recordWorker',
+  localRecordTarget: RECORD_TARGET.WORKER,
 }
 
 const mutations = {
