@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,11 +35,21 @@ func SetupRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(requestLoggerMiddleware())
 
-	r.POST("/media/recorder/recording", api.StartRecording)
-	r.DELETE("/media/recorder/recording/:id", api.StopRecording)
-	r.GET("/media/recorder/recordings", api.ListRecordings)
-	r.GET("/media/recorder/files", api.ListRecordingFiles)
-	r.DELETE("/media/recorder/files", api.RemoveRecordingFiles)
+	recorder := r.Group("/remote/recorder")
+	{
+		recording := recorder.Group("/recording")
+		{
+			recording.POST("", api.StartRecording)
+			recording.DELETE(":id", api.StopRecording)
+			recording.GET("", api.ListRecordings)
+		}
+		file := recorder.Group("/file")
+		{
+			file.DELETE("", api.RemoveRecordingFiles)
+			file.GET("", api.ListRecordingFiles)
+		}
+	}
+
 	r.GET("/health", func(c *gin.Context) {
 		c.Writer.WriteHeader(200)
 	})
@@ -49,6 +60,9 @@ func SetupRouter() *gin.Engine {
 	return r
 }
 
+// @title VIRNECT Remote Record Server API Document
+// @version 1.0
+// @description This is Remote Record Server API Document
 func main() {
 	readConfig()
 	logger.Init()
@@ -122,6 +136,10 @@ func displayConfig() {
 
 func requestLoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if strings.Contains(c.Request.RequestURI, "swagger") {
+			c.Next()
+			return
+		}
 		var buf bytes.Buffer
 		tee := io.TeeReader(c.Request.Body, &buf)
 		body, _ := ioutil.ReadAll(tee)

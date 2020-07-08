@@ -33,26 +33,22 @@ type ListRecordingResponse struct {
 	RecordingIDs []string `json:"recordingIds"`
 }
 
-type ListRecordingFilesResponse struct {
-	Count     int                          `json:"numberOfInfos"`
-	FileInfos []recorder.RecordingFileInfo `json:"infos"`
-}
-
-type RemoveRecordingFilesResponse struct {
-	Count int `json:"count"`
-}
-
 // @Summary Start Recording
 // @Description Start Recording
+// @tags Recording
 // @Accept json
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
+// @Param sessionId body string true "session id"
+// @Param recordingTimeLimit body int false "recording time(in minute)" mininum(5) maxinum(60) default(5)
+// @Param resolution body string false "video resolution" enums(480p, 720p, 1080p) default(720p)
+// @Param framerate body int false "video framerate" mininum(1) maxinum(30) default(30)
 // @Success 200 {object} StartRecordingResponse
 // @Failure 400 {} json "{"error":"error message"}"
 // @Failure 429 {} json "{"error":"Too Many Recordings"}""
 // @Failure 500 {} json "{"error":"error message"}"
 // @Failure 507 {} json "{"error":"not enough free space"}"
-// @Router /media/recorder/recording [post]
+// @Router /remote/recorder/recording [post]
 func StartRecording(c *gin.Context) {
 	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
@@ -152,11 +148,12 @@ func convertResolution(resolution string) (string, error) {
 
 // @Summary Stop Recording
 // @Description Stop Recording
+// @tags Recording
 // @Produce json
 // @Param id path string true "recording id"
 // @Success 200 {object} StopRecordingResponse
 // @Failure 404 {} json "{ "error": "not found id" }"
-// @Router /media/recorder/recording/{id} [delete]
+// @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
 	recordingID := c.Param("id")
 	logger.Info("stop recording (id:", recordingID, ")")
@@ -174,10 +171,11 @@ func StopRecording(c *gin.Context) {
 
 // @Summary List Recordings
 // @Description List Recordings
+// @tags Recording
 // @Produce json
 // @Success 200 {object} ListRecordingResponse
 // @Failure 500 {} json "{"error":"error message"}"
-// @Router /media/recorder/recordings [get]
+// @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {
 	body := ListRecordingResponse{make([]string, 0)}
 	list := recorder.ListRecordingIDs()
@@ -185,38 +183,4 @@ func ListRecordings(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"recordingIds": append(body.RecordingIDs, list...),
 	})
-}
-
-// @Summary List Recording Files
-// @Description List Recordings Files
-// @Produce json
-// @Success 200 {object} ListRecordingFilesResponse
-// @Failure 500 {} json "{"error":"error message"}"
-// @Router /media/recorder/files [get]
-func ListRecordingFiles(c *gin.Context) {
-	list, err := recorder.ListRecordingFiles()
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	response := ListRecordingFilesResponse{FileInfos: list, Count: len(list)}
-	c.JSON(200, response)
-}
-
-// @Summary Remove All Recording Files
-// @Description Remove All Recordings Files
-// @Produce json
-// @Success 200 {object} RemoveRecordingFilesResponse
-// @Failure 500 {} json "{"error":"error message"}"
-// @Router /media/recorder/files [delete]
-func RemoveRecordingFiles(c *gin.Context) {
-	count, err := recorder.RemoveRecordingFiles()
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	response := RemoveRecordingFilesResponse{count}
-	c.JSON(200, response)
 }
