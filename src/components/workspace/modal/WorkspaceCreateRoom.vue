@@ -38,6 +38,7 @@ import { ROLE } from 'configs/remote.config'
 import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import { KEY, EVENT } from 'configs/push.config'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -134,13 +135,13 @@ export default {
           this.$eventBus.$emit('popover:close')
 
           const params = {
-            service: 'rm-message',
+            service: KEY.SERVICE_TYPE,
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
             targetUserIds: selectedUser,
-            event: 'invitation',
+            event: EVENT.INVITE,
             contents: {
-              roomId: createRoom.roomId,
+              roomId: createdRoom.roomId,
               nickName: this.account.nickname,
               profile: this.account.profile,
             },

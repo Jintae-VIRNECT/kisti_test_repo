@@ -1,9 +1,15 @@
 export default {
   methods: {
     /**
-     * 알림 토스트
-     * @param type ['message', 'invite', 'info', 'fail', 'license', 'file']
+     * 라이선스 만료 안내
+     * @param {String} time
      */
+    alarmLicenseExpiration(time) {
+      this.alarmInfo(
+        '[만료안내]',
+        `라이선스 만료 <em>[${time}분]</em> 남았습니다.`,
+      )
+    },
     alarmMessage() {
       this.callNotify({
         type: 'message',
@@ -13,8 +19,29 @@ export default {
         icon: require('assets/image/profile.png'),
       })
     },
-    alarmInvite({ nickName, profile }) {
-      this.callNotify({
+    /**
+     * 참가자 협업 초대
+     * @param {String, String} userInfo { nickName, profile }
+     * @param {function} accept
+     */
+    alarmInvite({ nickName, profile }, accept) {
+      const refuse = () => {
+        inviteNotify.text(
+          this.buildTemplate({
+            type: 'invite',
+            info: `${nickName} 님`,
+            description: '참가자로 협업을 요청하였습니다.',
+            icon: profile,
+            options: {
+              changed: {
+                text: '협업 요청을 거절하였습니다.',
+                class: 'btn small disabled',
+              },
+            },
+          }),
+        )
+      }
+      const inviteNotify = this.callNotify({
         type: 'invite',
         info: `${nickName} 님`,
         description: '참가자로 협업을 요청하였습니다.',
@@ -24,26 +51,47 @@ export default {
             {
               text: '수락',
               class: 'btn small',
-              onClick: e => {
-                console.log('수락')
-              },
+              onClick: accept,
             },
             {
               text: '거절',
               class: 'btn small sub',
-              onClick: e => {
-                console.log('거절')
-              },
+              onClick: refuse,
             },
           ],
         },
       })
+      console.log(inviteNotify)
     },
-    alarmInfo() {
+    /**
+     * 시스템 알림 메시지
+     * @param {String} title
+     * @param {String} description
+     */
+    alarmInfo(title, description) {
       this.callNotify({
         type: 'info',
+        info: title,
+        description: description,
+      })
+    },
+    /**
+     * 라이선스 만료 메시지
+     */
+    alarmLicense() {
+      this.callNotify({
+        type: 'license',
         info: '[만료안내]',
-        description: '라이선스 만료 <em>[60분]</em> 남았습니다.',
+        description: '라이선스가 만료되었습니다.<br> 1분 뒤에 자동 종료됩니다.',
+        // options: {
+        //   action: {
+        //     text: '라이선스 구매하기',
+        //     class: 'btn small',
+        //     onClick: (e, toastObject) => {
+        //       toastObject.goAway(0)
+        //     },
+        //   },
+        // },
       })
     },
     alarmFail() {
@@ -51,22 +99,6 @@ export default {
         type: 'fail',
         info: '[협업 참가 실패]',
         description: '최대 참가인원이 초과하였습니다.',
-      })
-    },
-    alarmLicense() {
-      this.callNotify({
-        type: 'license',
-        info: '[만료안내]',
-        description: '라이선스가 만료되었습니다.',
-        options: {
-          action: {
-            text: '라이선스 구매하기',
-            class: 'btn small',
-            onClick: (e, toastObject) => {
-              toastObject.goAway(0)
-            },
-          },
-        },
       })
     },
     alarmFile() {
@@ -88,7 +120,7 @@ export default {
         },
       })
     },
-    callNotify(payload) {
+    buildTemplate(payload) {
       let icon = payload.icon
       if (payload.type === 'info' || payload.type === 'license') {
         icon = require('assets/image/ic_system.svg')
@@ -99,13 +131,13 @@ export default {
       }
       let iconTemplate = `
       <div class="toasted--thumb">
-        <div class="toasted--image" ${payload.type}>
+        <div class="toasted--image">
       `
       if (icon) {
         iconTemplate += `
         <img
         src="${icon}"
-        @error="${this.onImageError}"
+        class="${payload.type}"
         />
         `
       }
@@ -113,31 +145,46 @@ export default {
         </div>
       </div>
       `
-      let template = ``
+      let btnTemplate = ``
       if (payload.options && 'action' in payload.options) {
-        template = `<div class="toasted__buttons"></div>`
+        btnTemplate = `<div class="toasted__buttons"></div>`
       }
-      this.$alarm.show(
+      if (payload.options && 'changed' in payload.options) {
+        btnTemplate = `
+        <div class="toasted__buttons">
+          <button class="${payload.options.changed.class}">${payload.options.changed.text}</button>
+        </div>`
+      }
+
+      const fullTemplate =
         `
-        <figure>
-        ${iconTemplate}
-          <figcaption>
-            <p class="toasted__info ${payload.type}">${payload.info}</p>
-            <p class="toasted__description">${payload.description}</p>
-        ` +
-          template +
-          `
-          </figcaption>
-        </figure>`,
-        {
-          position: 'top-right',
-          duration: 50000,
-          fitToScreen: true,
-          keepOnHover: true,
-          type: 'notify',
-          ...payload.options,
-        },
-      )
+      <figure>
+      ${iconTemplate}
+        <figcaption>
+          <p class="toasted__info ${payload.type}">${payload.info}</p>
+          <p class="toasted__description">${payload.description}</p>
+      ` +
+        btnTemplate +
+        `
+        </figcaption>
+      </figure>`
+      console.log(fullTemplate)
+
+      return fullTemplate
+    },
+    /**
+     * 알림 토스트
+     * @param type ['message', 'invite', 'info', 'fail', 'license', 'file']
+     */
+    callNotify(payload) {
+      return this.$alarm.show(this.buildTemplate(payload), {
+        position: 'top-right',
+        duration: 50000000,
+        fitToScreen: true,
+        keepOnHover: true,
+        type: 'notify',
+        ...payload.options,
+      })
     },
   },
 }

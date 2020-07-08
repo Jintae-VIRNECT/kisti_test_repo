@@ -69,6 +69,9 @@
         <span>알림은 30일 동안 보관됩니다.</span>
       </div>
     </div>
+    <audio preload="auto" ref="noticeAudio">
+      <source src="~assets/media/end.mp3" />
+    </audio>
   </popover>
 </template>
 
@@ -79,11 +82,13 @@ import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
 import NoticeItem from './NoticeItem'
 import alarmMixin from 'mixins/alarm'
-import { DESTINATION, KEY, EVENT } from 'configs/push.config'
+import { mapActions } from 'vuex'
+import { EVENT } from 'configs/push.config'
+import roomMixin from 'mixins/room'
 
 export default {
   name: 'Notice',
-  mixins: [alarmMixin],
+  mixins: [roomMixin, alarmMixin],
   components: {
     Switcher,
     Popover,
@@ -107,6 +112,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setRoomInfo', 'roomClear']),
     notice() {
       if (this.onPush) return
       console.log('refresh')
@@ -116,6 +122,7 @@ export default {
       // })
     },
     alarmListener(listen) {
+      console.log(this.onPush)
       if (!this.onPush) return
       const body = JSON.parse(listen.body)
       console.log(body)
@@ -123,9 +130,17 @@ export default {
       if (body.userId === this.account.uuid) return
 
       switch (body.event) {
-        case 'invitation':
-          this.alarmInvite(body.contents)
-
+        case EVENT.INVITE:
+          this.$refs['noticeAudio'].play()
+          this.alarmInvite(body.contents, () =>
+            this.joinRoom(body.contents.roomId),
+          )
+          break
+        case EVENT.LICENSE_EXPIRATION:
+          this.alarmLicenseExpiration(body.contents.leftLicenseTime)
+          break
+        case EVENT.LICENSE_EXPIRED:
+          this.alarmLicense()
           break
       }
     },

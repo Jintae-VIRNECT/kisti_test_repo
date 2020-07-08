@@ -10,7 +10,7 @@ const config = {
   debug: function(str) {
     console.log(str)
   },
-  reconnectDelay: 5000,
+  reconnectDelay: 3000,
   heartbeatIncoming: 0,
   heartbeatOutgoing: 0,
 }

@@ -3,7 +3,7 @@ export const DESTINATION = {
 }
 
 export const KEY = {
-  SERVICE_TYPE: 'rm-message',
+  SERVICE_TYPE: 'remote',
 }
 
 export const EVENT = {
