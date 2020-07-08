@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 
 @Slf4j
-@Profile(value = {"local", "staging", "production"})
+@Profile(value = {"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticate implements GlobalFilter {

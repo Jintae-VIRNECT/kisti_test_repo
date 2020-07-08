@@ -108,13 +108,13 @@ spring:
         - id: message-server
           uri: lb:http://message-server
           predicates:
-            - Path=/message/**
+            - Path=/messages/**
           filters:
             - StripPrefix=0
-            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/messages/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "MESSAGE_SERVER"
+                messagePrefix: "MESSAGES_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -131,8 +131,8 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: remote-service-server
-          uri: lb:https://remote-service-server
+        - id: remote-record-server
+          uri: lb:http://remote-record-server
           predicates:
             - Path=/media/**
           filters:
@@ -140,7 +140,7 @@ spring:
             - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "REMOTE_SERVICE_SERVER_REST"
+                messagePrefix: "REMOTE_RECORD_SERVER_REST"
                 preLogger: true
                 postLogger: true
 
@@ -156,6 +156,20 @@ spring:
             - name: Logging
               args:
                 messagePrefix: "REMOTE_SERVICE_SERVER_WEBSOCKET"
+                preLogger: true
+                postLogger: true
+
+        - id: rabbitmq-websocket
+          uri: ws://192.168.6.3:15674
+          predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, \w+\W+
+            - Header=Upgrade, websocket
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
                 preLogger: true
                 postLogger: true
 

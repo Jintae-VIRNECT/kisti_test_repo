@@ -150,7 +150,7 @@ spring:
       x-forwarded:
         prefix-enabled: false
   zipkin:
-    enabled: false
+    base-url: http://zipkin.virnect.com
 
 eureka:
   instance:
