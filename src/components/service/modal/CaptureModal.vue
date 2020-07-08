@@ -130,8 +130,6 @@ export default {
   transform: translateY(-50%);
   @include ir();
 }
-.capture-body {
-}
 .capture-image {
   position: relative;
   width: 25.714rem; //360px;

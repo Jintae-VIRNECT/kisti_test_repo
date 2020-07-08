@@ -85,16 +85,16 @@ export default {
   .card-item:first-of-type {
     display: inherit;
     flex-grow: 0.8;
-    min-width: 20rem;
-    padding-right: 10px;
+    min-width: 21.4286rem;
+    padding-right: 0.7143rem;
   }
   .card-item:nth-of-type(2) {
     flex-grow: 0.8;
-    padding-right: 10px;
+    padding-right: 0.7143rem;
   }
   .card-item:nth-last-child(2) {
     flex-grow: 0.7;
-    padding-right: 10px;
+    padding-right: 0.7143rem;
   }
   .card-item:last-of-type {
     flex-grow: 0.6;

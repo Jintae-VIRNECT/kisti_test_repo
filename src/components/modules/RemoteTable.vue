@@ -9,7 +9,7 @@
       >
         <toggle-button
           slot="body"
-          :size="'34px'"
+          :size="'2.4286rem'"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
           :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="table__body">
-      <scroller v-if="datas.length > 0">
+      <scroller height="24.4286rem" v-if="datas.length > 0">
         <div
           v-for="(data, index) in renderArray"
           class="table__row"
@@ -35,8 +35,7 @@
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
-              slot="body"
-              :size="'34px'"
+              :size="'2.4286rem'"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -193,7 +192,7 @@ export default {
   border-top-width: 1px;
 }
 .table__column--toggle {
-  margin: 22px 19px 19px 22px;
+  margin: 1.5714rem 1.3571rem 1.3571rem 1.5714rem;
 }
 .table__column--cell {
   flex-basis: 0;
@@ -210,7 +209,7 @@ export default {
 }
 
 .table__body {
-  height: 342px;
+  height: 24.4286rem;
 }
 
 .table__row {
