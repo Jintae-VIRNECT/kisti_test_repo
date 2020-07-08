@@ -390,13 +390,14 @@ public class LicenseService {
             licenseProductInfoResponses.add(licenseProductInfo);
         });
 
-        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
-        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = workspaceResourceUsageApiResponse.getData();
+//        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
+//        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = workspaceResourceUsageApiResponse.getData();
+//        log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
         workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
-        workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
-        workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
+//        workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
+//        workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
 
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
     }
