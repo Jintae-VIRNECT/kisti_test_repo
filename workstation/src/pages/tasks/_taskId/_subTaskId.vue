@@ -148,7 +148,7 @@
               <template slot-scope="scope">
                 <el-button
                   v-if="scope.row.issue"
-                  @click="moveToIssue(scope.row.issue.id)"
+                  @click="moveToIssue(scope.row.issue.issueId)"
                 >
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
