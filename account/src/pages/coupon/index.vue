@@ -146,17 +146,11 @@ export default {
           position: 'bottom-left',
           duration: 2000,
         })
+        this.searchCoupons()
+        this.addCouponForm.newCouponCode = ''
       } catch (e) {
-        const code = e.toString().match(/Error: ([0-9]*)/)[1]
-        const messages = {
-          '2000': this.$t('coupon.message.registerNotExist'),
-          '2001': this.$t('coupon.message.registerAlready'),
-          '2002': this.$t('coupon.message.registerExpired'),
-        }
         this.$notify.error({
-          message:
-            messages[code] ||
-            this.$t('coupon.message.registerFail') + `\n(${e})`,
+          message: e.message,
           position: 'bottom-left',
           duration: 2000,
         })

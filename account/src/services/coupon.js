@@ -18,10 +18,13 @@ export default {
     }
   },
   async addCouponCode(code) {
-    const data = await api('ADD_COUPON', {
+    const { userId, email, nickname } = profileService.getMyProfile()
+    const data = await api('ADD_PAY_COUPON', {
       params: {
-        couponSerialKey: code,
-        userId: profileService.getMyProfile().uuid,
+        userno: userId,
+        userId: email,
+        username: nickname,
+        couponno: code,
       },
     })
     return data

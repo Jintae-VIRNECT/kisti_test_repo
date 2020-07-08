@@ -44,27 +44,31 @@ export async function api(name, option = {}) {
   }
 
   if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
-  try {
-    // payletter api
-    if (/^\/billing/.test(uri)) {
+
+  // payletter api
+  if (/^\/billing/.test(uri)) {
+    try {
       if (method === 'get') params.params.sitecode = 1
       else if (method === 'delete') params.data.sitecode = 1
       else params.sitecode = 1
 
       const response = await axios[method](uri, params, { headers })
-      const { data, result } = response.data
+      const { data } = response.data
       if (process.client) $nuxt.$loading.finish()
-
-      if (result.code === 0) {
-        return data
-      } else {
-        const error = new Error(`${result.code}: ${result.message}`)
-        console.error(error)
-        throw error
+      return data
+    } catch (e) {
+      if (process.client) {
+        $nuxt.$loading.fail()
+        $nuxt.$loading.finish()
       }
+      console.error(`URL: ${uri}`)
+      const { code, message } = e.response.data.result
+      throw new Error(`${code}: ${message}`)
     }
-    // platform api
-    else {
+  }
+  // platform api
+  else {
+    try {
       const response = await axios[method](uri, params, { headers })
       const { code, data, message, service } = response.data
       if (process.client) $nuxt.$loading.finish()
@@ -79,14 +83,14 @@ export async function api(name, option = {}) {
         console.error(error)
         throw error
       }
+    } catch (e) {
+      if (process.client) {
+        $nuxt.$loading.fail()
+        $nuxt.$loading.finish()
+      }
+      console.error(`URL: ${uri}`)
+      throw e
     }
-  } catch (e) {
-    if (process.client) {
-      $nuxt.$loading.fail()
-      $nuxt.$loading.finish()
-    }
-    console.error(`URL: ${uri}`)
-    throw e
   }
 }
 

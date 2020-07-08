@@ -36,4 +36,6 @@ module.exports = {
   GET_PAYMENT_LOG_DETAIL: ['GET', '/billing/user/purchaselist'],
   // 페이레터 쿠폰 정보 리스트 조회
   GET_PAY_COUPONS: ['GET', '/billing/coupon/holdlist'],
+  // 페이레터 쿠폰 등록
+  ADD_PAY_COUPON: ['POST', '/billing/coupon/register'],
 }
