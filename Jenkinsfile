@@ -29,7 +29,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'docker build -t pf-rabbitmq .'
+              sh 'docker build -t pf-rabbitmq:develop .'
             }
           }
         }
@@ -40,8 +40,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-rabbitmq:${GIT_TAG} .'
+              sh 'docker build -t pf-rabbitmq:staging .'
             }
           }
         }
@@ -52,8 +51,7 @@ pipeline {
           }
           steps {
             catchError() {
-              sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-rabbitmq:${GIT_TAG} .'
+              sh 'docker build -t pf-rabbitmq:master .'
             }
           }
         }
@@ -91,7 +89,7 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps -a | grep pf-rabbitmq | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-rabbitmq && docker rm pf-rabbitmq; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 -d --restart=always --name=pf-rabbitmq pf-rabbitmq'
+              sh 'docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 -d --restart=always --name=pf-rabbitmq pf-rabbitmq:develop'
               sh 'docker image prune -a -f'
             }
           }
@@ -105,7 +103,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-rabbitmq:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-rabbitmq:staging").push("staging")
                 }
               }
 
@@ -121,13 +119,13 @@ pipeline {
                           execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                         ),
                         sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-rabbitmq:\\${GIT_TAG}"
+                          execCommand: "docker pull $aws_ecr_address/pf-rabbitmq:staging"
                         ),
                         sshTransfer(
                           execCommand: 'count=`docker ps -a | grep pf-rabbitmq | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-rabbitmq && docker rm pf-rabbitmq; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 --restart=always -d --name=pf-rabbitmq $aws_ecr_address/pf-rabbitmq:\\${GIT_TAG}"
+                          execCommand: "docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 --restart=always -d --name=pf-rabbitmq $aws_ecr_address/pf-rabbitmq:staging"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -149,7 +147,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-rabbitmq:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-rabbitmq:master").push("master")
                 }
               }
 
@@ -165,13 +163,13 @@ pipeline {
                           execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                         ),
                         sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-rabbitmq:\\${GIT_TAG}"
+                          execCommand: "docker pull $aws_ecr_address/pf-rabbitmq:master"
                         ),
                         sshTransfer(
                           execCommand: 'count=`docker ps -a | grep pf-rabbitmq | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-rabbitmq && docker rm pf-rabbitmq; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 --restart=always -d --name=pf-rabbitmq $aws_ecr_address/pf-rabbitmq:\\${GIT_TAG}"
+                          execCommand: "docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 --restart=always -d --name=pf-rabbitmq $aws_ecr_address/pf-rabbitmq:master"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
