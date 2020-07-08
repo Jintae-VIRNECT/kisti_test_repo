@@ -134,13 +134,13 @@ spring:
         - id: remote-record-server
           uri: lb:http://remote-record-server
           predicates:
-            - Path=/media/**
+            - Path=/remote/record/**
           filters:
             - StripPrefix=0
-            - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/remote/record/v2/(?<segment>.*), /v2/$\{segment}/
             - name: Logging
               args:
-                messagePrefix: "REMOTE_RECORD_SERVER_REST"
+                messagePrefix: "REMOTE_RECORD_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -148,7 +148,7 @@ spring:
           uri: lb:wss://remote-service-server
           predicates:
             - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, \s+
+            - Header=Sec-WebSocket-Key, \w+\W+
             - Header=Upgrade, websocket
             - Path=/media/websocket/**
           filters:

@@ -58,10 +58,6 @@ public class SwaggerConfiguration {
     }
 
     private String getRouteLocation(RouteDefinition route) {
-        log.info("ROUTE LOCATION:: [{}]",Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
-                .map(String::valueOf)
-                .map(s -> s.replace("*", ""))
-                .orElse(null));
         return Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
                 .map(String::valueOf)
                 .map(s -> s.replace("*", ""))
