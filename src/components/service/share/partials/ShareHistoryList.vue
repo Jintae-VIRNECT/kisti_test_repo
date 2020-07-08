@@ -114,37 +114,50 @@ export default {
     },
     downloadZip(files) {
       const zip = new JSZip()
+      const nameMap = new Map()
 
-      const fileNameMap = new Map()
       files.forEach(file => {
         const fileName = file.name
-        if (fileNameMap.has(fileName)) {
-          const idx = fileName.lastIndexOf('.')
+        let fullName = ''
+        const checkDup = nameMap.has(fileName)
 
-          const name = fileName.slice(0, idx)
-          const count = fileNameMap.get(fileName)
-          const ext = fileName.slice(idx)
-          const fullName = `${name} (${count})${ext}`
-
-          zip.file(fullName, file)
-
-          fileNameMap.set(fileName, count + 1)
+        if (checkDup) {
+          const count = nameMap.get(fileName)
+          fullName = this.getFileName(fileName, count)
+          nameMap.set(fileName, count + 1)
         } else {
-          fileNameMap.set(fileName, 1)
-          if (fileName.split('.').length === 1) {
-            const name = fileName
+          const noExt = fileName.split('.').length === 1
+
+          if (noExt) {
             const ext = mimeTypes.extension(file.type)
-            const fullName = `${name}.${ext}`
-            zip.file(fullName, file)
+            fullName = this.getFileName(fileName, 0, ext)
           } else {
-            zip.file(fileName, file)
+            fullName = fileName
           }
+          nameMap.set(fileName, 1)
         }
+
+        zip.file(fullName, file)
       })
 
       zip.generateAsync({ type: 'blob' }).then(content => {
         FileSaver.saveAs(content, this.zipName)
       })
+    },
+    getFileName(fileName, count, ext) {
+      let fullName = ''
+
+      if (count) {
+        const idx = fileName.lastIndexOf('.')
+        const name = fileName.slice(0, idx)
+        const ext = fileName.slice(idx)
+        fullName = `${name} (${count})${ext}`
+      } else {
+        const name = fileName
+        fullName = `${name}.${ext}`
+      }
+
+      return fullName
     },
   },
 }
