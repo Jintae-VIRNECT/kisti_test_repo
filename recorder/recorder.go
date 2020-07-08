@@ -185,6 +185,9 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 	var files []string
 	infos := []RecordingFileInfo{}
 	root := viper.GetString("record.dir")
+	if _, err := os.Stat(root); os.IsNotExist(err) {
+		return infos, err
+	}
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
