@@ -51,7 +51,7 @@ export default {
       this.accessLogs = list
       this.accessLogsTotal = total
       // 현재기기 텍스트 삽입
-      if (this.accessLogs[0]) {
+      if (this.accessLogs[0] && this.accessLogsPage === 1) {
         this.accessLogs[0].device += `
         <span class="now">
           ${this.$t('security.now')}
