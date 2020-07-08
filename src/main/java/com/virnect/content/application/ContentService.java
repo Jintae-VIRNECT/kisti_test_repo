@@ -147,13 +147,14 @@ public class ContentService {
             addSceneGroupToContent(content, content.getMetadata());
 
             // 타겟 저장 후 타겟데이터 반환
-            String targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
-            // 추후 반영 예정
-//            if (isExistTargetData(uploadRequest.getTargetData())){
-//                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-//            } else {
-//                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
-//            }
+            String targetData = null;
+
+            // 이미 있는 타겟 데이터인지 체크
+            if (isExistTargetData(uploadRequest.getTargetData())){
+                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+            } else {
+                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+            }
 
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
@@ -261,14 +262,14 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
-        String targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+        String targetData = null;
 
-        // 이미 있는 타겟 데이터인지 체크 - 추후 반영 예정
-//        if (isExistTargetData(targetRequest.getTargetData())) {
-//            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-//        } else {
-//            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
-//        }
+        // 이미 있는 타겟 데이터인지 체크
+        if (isExistTargetData(targetRequest.getTargetData())) {
+            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+        } else {
+            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+        }
 
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
