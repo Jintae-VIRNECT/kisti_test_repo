@@ -22,8 +22,9 @@
           loop
         ></audio>
         <img
+          v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
-          :src="participant.path ? participant.path : 'default'"
+          :src="participant.path"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -141,6 +142,9 @@ export default {
     speaker(val) {
       if (this.$el.querySelector('video')) {
         this.$el.querySelector('video').muted = val
+      }
+      if (this.$el.querySelector('audio')) {
+        this.$el.querySelector('audio').muted = val
       }
     },
   },

@@ -150,8 +150,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-export const getUserObject = stream => {
-  console.log(stream)
+const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
@@ -198,7 +197,7 @@ export const getUserObject = stream => {
 
   return streamObj
 }
-
+/*
 export const getStream = async constraints => {
   if (!navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia 없음')
@@ -221,3 +220,4 @@ export const getStream = async constraints => {
     console.error(err)
   }
 }
+*/
