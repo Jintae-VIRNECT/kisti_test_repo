@@ -3,11 +3,14 @@
     <menu-button
       text="로컬 녹화 설정"
       :active="status"
-      :disabled="!canRecord || recording"
+      :disabled="!canRecord"
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
-    <record-setting :visible.sync="status"></record-setting>
+    <record-setting
+      :visible.sync="status"
+      :recording="recording"
+    ></record-setting>
   </div>
 </template>
 

@@ -8,7 +8,7 @@
   >
     <div class="rec-setting">
       <template v-if="isLeader">
-        <p class="rec-setting__header">포인팅 설정</p>
+        <p class="rec-setting--header">포인팅 설정</p>
         <div class="rec-setting__row underbar">
           <p class="rec-setting__text">참가자 포인팅</p>
 
@@ -19,9 +19,16 @@
         </div>
       </template>
 
-      <p class="rec-setting__header">로컬 녹화 설정</p>
-
       <div class="rec-setting__row">
+        <p class="rec-setting--header" :class="{ disable: recording }">
+          로컬 녹화 설정
+        </p>
+        <p v-if="recording" class="rec-setting--warning">
+          *로컬 녹화 중에서는 설정을 변경 할 수 없습니다.
+        </p>
+      </div>
+
+      <div class="rec-setting__row" :class="{ disable: recording }">
         <p class="rec-setting__text">녹화대상</p>
         <div class="rec-setting__selector">
           <r-radio
@@ -32,7 +39,7 @@
           ></r-radio>
         </div>
       </div>
-      <div class="rec-setting__row">
+      <div class="rec-setting__row" :class="{ disable: recording }">
         <p class="rec-setting__text">최대 녹화 시간</p>
         <r-select
           class="rec-setting__selector"
@@ -44,7 +51,7 @@
         >
         </r-select>
       </div>
-      <div class="rec-setting__row">
+      <div class="rec-setting__row" :class="{ disable: recording }">
         <div class="rec-setting__text custom">
           <p>
             녹화 간격
@@ -79,7 +86,7 @@
         </r-select>
       </div>
 
-      <div class="rec-setting__row">
+      <div class="rec-setting__row" :class="{ disable: recording }">
         <div class="rec-setting__text custom">
           <p>
             녹화 영상 해상도
@@ -114,7 +121,11 @@
         >
         </r-select>
       </div>
-      <div class="rec-setting__row checkbox" v-if="isLeader">
+      <div
+        class="rec-setting__row checkbox"
+        v-if="isLeader"
+        :class="{ disable: recording }"
+      >
         <p class="rec-setting__text">참가자 로컬 녹화</p>
         <r-check
           :text="'참가자 로컬 녹화 허용'"
@@ -142,6 +153,7 @@ import {
   localRecIntervalOpt,
   localRecordTarget,
   RECORD_TARGET,
+  LCOAL_RECORD_STAUTS,
 } from 'utils/recordOptions'
 
 export default {
@@ -175,10 +187,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    recording: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
-    ...mapGetters(['localRecord', 'allow', 'screenStream']),
+    ...mapGetters([
+      'localRecord',
+      'allow',
+      'screenStream',
+      'localRecordStatus',
+    ]),
+    lrStatus() {
+      return this.localRecordStatus
+    },
     isLeader() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -228,6 +252,14 @@ export default {
         default:
           console.log('unknown recordTarget ::', target)
           break
+      }
+    },
+
+    lrStatus(status) {
+      if (status === LCOAL_RECORD_STAUTS.START) {
+        this.isRecording = true
+      } else {
+        this.isRecording = false
       }
     },
   },
