@@ -5,16 +5,17 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.video">
+      <!-- <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
         ></video>
-      </div>
-      <div class="participant-video__profile" v-else>
+      </div> -->
+      <div class="participant-video__profile">
         <audio
+          v-if="!participant.video"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
