@@ -106,9 +106,12 @@ const _ = {
   leave: () => {
     try {
       _.session.disconnect()
-      _.subscribers = []
+      _.account = null
       _.session = null
       _.publisher = null
+      _.subscribers = []
+      _.resolution = null
+      // 필요여부 체크할 것
     } catch (err) {
       throw err
     }
