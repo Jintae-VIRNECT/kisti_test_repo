@@ -106,6 +106,7 @@ const _ = {
   leave: () => {
     try {
       _.session.disconnect()
+      _.subscribers = []
       _.session = null
       _.publisher = null
     } catch (err) {

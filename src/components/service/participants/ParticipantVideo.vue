@@ -15,7 +15,7 @@
       </div> -->
       <div class="participant-video__profile">
         <audio
-          v-if="!participant.video"
+          v-if="!participant.video && !participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
