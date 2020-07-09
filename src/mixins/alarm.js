@@ -69,6 +69,14 @@ export default {
         },
       })
     },
+    alarmLicenseClose() {
+      this.callNotify({
+        type: 'license',
+        info: '[만료안내]',
+        description:
+          '라이선스가 만료되었습니다. <em>1분</em> 뒤에 자동 종료됩니다.',
+      })
+    },
     alarmFile() {
       this.callNotify({
         type: 'file',

@@ -270,7 +270,7 @@ export default {
   overflow: hidden;
   // background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 2px 4px 0 rgba(16, 16, 17, 0.5);
+  box-shadow: 0 2px 4px 0 rgba(#101011, 0.5);
 
   &--header {
     position: relative;

@@ -1,12 +1,6 @@
 import http from 'api/gateway'
 
 /**
- * ----------------------------------------------------------------
- * | !!!!!Warning! these functions return mocking response!!!!!!! |
- * ----------------------------------------------------------------
- */
-
-/**
  * 최근 협업 목록 요청
  * @param {Object} param params for http request
  * @param {Number} param.page history page number

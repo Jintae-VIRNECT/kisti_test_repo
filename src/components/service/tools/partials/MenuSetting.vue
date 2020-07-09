@@ -3,7 +3,7 @@
     <menu-button
       text="로컬 녹화 설정"
       :active="status"
-      :disabled="!canRecord"
+      :disabled="!canRecord || recording"
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       status: false,
+      recording: false,
     }
   },
   computed: {
@@ -55,10 +56,23 @@ export default {
       this.status = !this.status
       this.$eventBus.$emit('lcRecSet:show')
     },
+    blockSetting(isStart) {
+      if (isStart) {
+        this.recording = true
+      } else {
+        this.recording = false
+      }
+    },
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  beforeDestroy() {
+    this.$eventBus.$off('localRecord')
+    this.$eventBus.$off('serverRecord')
+  },
+  mounted() {
+    this.$eventBus.$on('localRecord', this.blockSetting)
+    this.$eventBus.$on('serverRecord', this.blockSetting)
+  },
 }
 </script>
