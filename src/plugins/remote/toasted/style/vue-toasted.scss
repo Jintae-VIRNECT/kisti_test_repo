@@ -92,22 +92,23 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-    &.info,
-    &.license {
-      background-color: $color_primary;
-    }
-    &.fail {
-      background-color: $color_yellow;
+      &.info,
+      &.fail,
+      &.license {
+        background-color: transparent;
+      }
     }
   }
   p {
     margin-top: 0.214rem;
     font-weight: 500;
     font-size: 1.071rem;
+    &.toasted__description {
+      line-height: 22px;
+    }
   }
   .toasted__info {
-    margin-bottom: 0.357rem;
+    // margin-bottom: 0.357rem;
     color: $color_text_red;
     font-weight: 400;
     font-size: 0.857rem;
@@ -164,6 +165,12 @@
             no-repeat;
           content: "";
         }
+      }
+      &.disabled {
+        color: #bfddff;
+        font-weight: normal;
+        background-color: rgba(#bfddff, 0.06);
+        border: none;
       }
     }
   }
