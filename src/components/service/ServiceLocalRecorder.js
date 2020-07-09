@@ -81,8 +81,12 @@ export default {
     },
     resolutions: {
       handler() {
-        if (this.recorder !== null && this.screenStream === null) {
-          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        if (this.recorder !== null) {
+          if (this.screenStream === null) {
+            this.recorder.changeCanvasOrientation(this.resolution.orientation)
+          } else {
+            this.recorder.changeCanvasOrientation('landscape')
+          }
         }
       },
       deep: true,
@@ -156,7 +160,11 @@ export default {
 
       this.recorder.setConfig(config)
       if (await this.recorder.initRecorder()) {
-        this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        if (this.screenStream === null) {
+          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        } else {
+          this.recorder.changeCanvasOrientation('landscape')
+        }
         return true
       } else {
         return false
@@ -171,6 +179,12 @@ export default {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
+          if (this.screenStream !== null) {
+            this.screenStream.getTracks().forEach(track => {
+              track.stop()
+            })
+          }
+
           if (showMsg) {
             this.toastDefault(
               '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
@@ -227,7 +241,6 @@ export default {
         default:
           break
       }
-      console.log('getStreams ::', streams)
       return streams
     },
 
