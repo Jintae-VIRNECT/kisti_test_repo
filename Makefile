@@ -21,5 +21,5 @@ check:
 clean:
 	rm -fr build/${TARGET}
 
-docker: build
+docker:
 	docker build --tag rm-recordserver . -f docker/Dockerfile

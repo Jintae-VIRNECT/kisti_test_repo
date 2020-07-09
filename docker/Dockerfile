@@ -1,8 +1,9 @@
 FROM golang:1.14-buster
 
-COPY ./config.ini ./config.ini
-COPY ./build/recordserver ./recordserver
+RUN mkdir /app
+ADD . /app
+WORKDIR /app
+RUN go get -u github.com/swaggo/swag/cmd/swag && make  
 
 EXPOSE 8083
-
-CMD ["./recordserver", "--stdout"]
+CMD ["./build/recordserver", "--stdout"]

@@ -126,6 +126,16 @@ func readConfig() {
 	if logStdout {
 		viper.Set("log.stdout", true)
 	}
+
+	var recDir string
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		logger.Info("running in docker container.")
+		recDir = viper.GetString("record.dirOnDocker")
+	} else {
+		recDir = viper.GetString("record.dirOnHost")
+	}
+	viper.Set("record.dir", recDir)
+	logger.Info("record Dir:", recDir)
 }
 
 func displayConfig() {

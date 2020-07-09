@@ -4,7 +4,6 @@ import (
 	"RM-RecordServer/logger"
 	"context"
 	"errors"
-	"os"
 	"strconv"
 	"time"
 
@@ -57,7 +56,6 @@ func ListContainers() []Container {
 }
 
 func DownloadDockerImage() error {
-	logger.Info("DOCKER_HOST:", os.Getenv("DOCKER_HOST"))
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
 		logger.Error("NewClientFromEnv:", err)
@@ -115,7 +113,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	}
 
 	createOpt.HostConfig = &docker.HostConfig{
-		Binds: []string{viper.GetString("record.dir") + ":" + viper.GetString("record.dirInDocker")},
+		Binds: []string{viper.GetString("record.dirOnHost") + ":" + viper.GetString("record.dirOnDocker")},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {

@@ -237,13 +237,17 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	format := result["format"].(map[string]interface{})
 	duration, _ := strconv.ParseFloat(format["duration"].(string), 32)
 	filenameWithPath := format["filename"].(string)
-	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirInDocker"))
-	finfo, _ := os.Stat(fullPath)
+	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
+	finfo, err := os.Stat(fullPath)
+	if err != nil {
+		logger.Error(err)
+		return info, err
+	}
 	stat := finfo.Sys().(*syscall.Stat_t)
 	ts := stat.Ctim
 
 	info.Filename = filepath.Base(filenameWithPath)
-	info.FullPath = fullPath
+	info.FullPath = viper.GetString("record.dirOnHost") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
 	info.Duration = int(duration)
 	info.Size, _ = strconv.Atoi(format["size"].(string))
 	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
