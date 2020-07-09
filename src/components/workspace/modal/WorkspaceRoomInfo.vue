@@ -10,11 +10,13 @@
   >
     <div class="roominfo">
       <section class="roominfo-nav">
-        <img
-          class="roominfo-nav__image"
-          :src="image"
-          @error="onImageErrorGroup"
-        />
+        <div class="roominfo-nav__image">
+          <profile
+            :group="true"
+            :image="image"
+            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+          ></profile>
+        </div>
         <button
           class="roominfo-nav__menu"
           :class="{ active: tabview === 'group' }"
@@ -54,11 +56,13 @@ import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
 import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
+import Profile from 'Profile'
 
 export default {
   name: 'WorkspaceRoomInfo',
   components: {
     Modal,
+    Profile,
     RoomInfo,
     ParticipantsInfo,
   },
@@ -108,6 +112,9 @@ export default {
       }
       this.visibleFlag = flag
     },
+    image(image) {
+      console.log(image)
+    },
   },
   methods: {
     async initRemote() {
@@ -134,13 +141,9 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    async update(data) {
+    async update(params) {
       try {
-        const updateRtn = await updateRoomInfo({
-          title: data.name,
-          description: data.description,
-          image: this.image,
-        })
+        const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
           this.$emit('update:visible', false)
         }
