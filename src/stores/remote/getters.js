@@ -42,5 +42,8 @@ export default {
 
   //screen stream for local recording
   screenStream: state => state.settings.screenStream,
+
+  //local record
   localRecordTarget: state => state.settings.localRecordTarget,
+  localRecordStatus: state => state.settings.localRecordStatus,
 }

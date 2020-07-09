@@ -6,6 +6,11 @@ export const RECORD_TARGET = {
   SCREEN: 'SCREEN',
 }
 
+export const LCOAL_RECORD_STAUTS = {
+  START: 'START',
+  STOP: 'STOP',
+}
+
 // Service Options
 export const localRecTimeOpt = [
   {

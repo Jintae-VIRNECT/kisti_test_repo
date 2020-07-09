@@ -50,6 +50,7 @@ import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
+import ServiceLocalRecorder from './ServiceLocalRecorder'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -67,7 +68,7 @@ export default {
       vm.$store.commit('clear')
     })
   },
-  mixins: [alarmMixin],
+  mixins: [alarmMixin, ServiceLocalRecorder],
   components: {
     HeaderSection,
     SubView,
@@ -112,8 +113,11 @@ export default {
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
+
+    this.stopRecord()
+    this.$eventBus.$off('startLocalRecord')
+    this.$eventBus.$off('stopLocalRecord')
   },
-  async mounted() {},
 }
 </script>
 
