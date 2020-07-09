@@ -58,6 +58,10 @@ export default {
         //   path: [] / {},
         // }
       ],
+      originSize: {
+        width: 0,
+        height: 0,
+      },
     }
   },
   computed: {
@@ -93,6 +97,8 @@ export default {
             scaleX: canvasSize.scale,
             scaleY: canvasSize.scale,
           })
+          this.originSize.width = canvasSize.width
+          this.originSize.height = canvasSize.height
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
 
@@ -257,6 +263,7 @@ export default {
     optimizeCanvasSize() {
       if (!this.file || !this.file.id || !this.canvas) return
       const canvas = this.canvas
+      const cursor = this.cursor.canvas
       const image = canvas.backgroundImage
       const parent = this.$el.parentNode
 
@@ -267,12 +274,15 @@ export default {
         image.height,
       )
 
+      const scale = canvasSize.width / this.originSize.width
+
+      canvas.setZoom(scale)
+      cursor.setZoom(scale)
+
       canvas.setWidth(canvasSize.width)
       canvas.setHeight(canvasSize.height)
-      canvas.backgroundImage.set({
-        scaleX: canvasSize.scale,
-        scaleY: canvasSize.scale,
-      })
+      cursor.setWidth(canvas.getWidth())
+      cursor.setHeight(canvas.getHeight())
     },
     receiveRender() {
       if (this.receivedList.length === 0) return
