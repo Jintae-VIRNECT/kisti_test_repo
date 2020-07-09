@@ -58,7 +58,7 @@ export default {
         //   path: [] / {},
         // }
       ],
-      originSize: {
+      origin: {
         width: 0,
         height: 0,
       },
@@ -97,8 +97,9 @@ export default {
             scaleX: canvasSize.scale,
             scaleY: canvasSize.scale,
           })
-          this.originSize.width = canvasSize.width
-          this.originSize.height = canvasSize.height
+          this.origin.width = canvasSize.width
+          this.origin.height = canvasSize.height
+          this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
 
@@ -274,7 +275,14 @@ export default {
         image.height,
       )
 
-      const scale = canvasSize.width / this.originSize.width
+      if (this.origin.width === 0) {
+        this.origin.width = canvasSize.width
+        this.origin.height = canvasSize.height
+      }
+
+      const scale = canvasSize.width / this.origin.width
+
+      this.origin.scale = scale
 
       canvas.setZoom(scale)
       cursor.setZoom(scale)
@@ -283,6 +291,10 @@ export default {
       canvas.setHeight(canvasSize.height)
       cursor.setWidth(canvas.getWidth())
       cursor.setHeight(canvas.getHeight())
+      canvas.backgroundImage.set({
+        scaleX: canvasSize.scale / scale,
+        scaleY: canvasSize.scale / scale,
+      })
     },
     receiveRender() {
       if (this.receivedList.length === 0) return
