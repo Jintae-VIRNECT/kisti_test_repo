@@ -1,4 +1,4 @@
-FROM node:14.5-buster
+FROM node:12-alpine
 
 WORKDIR /
 COPY cert/* cert/

@@ -39,7 +39,7 @@ make docker
 ```
 혹은
 ```bash
-docker build --tag rm-recordserver . -f docker/Dockerfile
+docker build --tag virnect/remote-recordserver . -f docker/Dockerfile
 ```
 
 ### Run
@@ -52,9 +52,9 @@ Linux
 ```bash
 docker run -it --rm -p 8083:8083 \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /mnt/c/Users/VIRNECT/RM-RecordServer/recordings:/recordings \
-    -v /mnt/c/Users/VIRNECT/RM-RecordServer/config.dev.ini:/app/config.ini \
-    --name recordserver rm-recordserver
+    -v /Users/VIRNECT/RM-RecordServer/recordings:/recordings \
+    -v /Users/VIRNECT/RM-RecordServer/config.dev.ini:/config.ini \
+    --name remote-recordserver virnect/remote-recordserver
 ```
 
 Windows
@@ -62,8 +62,8 @@ Windows
 docker run -it --rm -p 8083:8083 `
     -v /var/run/docker.sock:/var/run/docker.sock `
     -v //c/Users/VIRNECT/RM-RecordServer/recordings:/recordings `
-    -v //c/Users/VIRNECT/RM-RecordServer/config.win.ini:/app/config.ini `
-    --name recordserver rm-recordserver
+    -v //c/Users/VIRNECT/RM-RecordServer/config.win.ini:/config.ini `
+    --name remote-recordserver virnect/remote-recordserver
 ```
 
 ## Custom Layout Server

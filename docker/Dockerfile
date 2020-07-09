@@ -1,9 +1,19 @@
-FROM golang:1.14-buster
+# bulid stage
+FROM golang:1.14 AS build
+LABEL stage=builder
 
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
-RUN go get -u github.com/swaggo/swag/cmd/swag && make  
+WORKDIR /src
+COPY . .
+RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN make build-linux
+
+# final stage
+FROM scratch
+
+WORKDIR /
+COPY --from=build /src/config.ini /config.ini 
+COPY --from=build /src/build/recordserver-linux-amd64 /recordserver
 
 EXPOSE 8083
-CMD ["./build/recordserver", "--stdout"]
+
+CMD ["/recordserver", "--stdout"]
