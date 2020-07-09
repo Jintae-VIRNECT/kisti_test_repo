@@ -35,7 +35,6 @@ export default {
       localRecordStatus: state => state.settings.localRecordStatus,
     }),
     lrStatus() {
-      // return this.$store.state.settings.localRecordStatus
       return this.localRecordStatus
     },
     canRecord() {

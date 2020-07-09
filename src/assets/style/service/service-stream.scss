@@ -61,16 +61,22 @@
   position: absolute;
   top: 1.429rem;
   left: 1.429rem;
+  width: 6.7143rem;
+  height: 2.4286rem;
+  border-radius: 4px;
+
+  &.show {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
   > p {
-    margin-bottom: 0.571rem;
-    padding-left: 1.857rem;
-    color: $color_red;
+    margin-left: 0.7143rem;
+    padding: 0.5357rem 0 0.5714rem 1.4rem;
+    color: $color_white;
     font-weight: 500;
     font-size: 0.857rem;
-    line-height: 1.429rem;
-    text-align: left;
-    text-shadow: 1px 1px 1px rgba($color_darkgray_500, 0.3);
-    background: 0 center/1.429rem no-repeat;
+    text-align: center;
+    background: 0 center/1.2857rem no-repeat;
     &.server {
       background-image: url(~assets/image/ic_record_ing.svg);
     }
