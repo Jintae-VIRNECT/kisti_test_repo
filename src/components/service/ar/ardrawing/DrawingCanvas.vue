@@ -36,8 +36,6 @@ export default {
       isInit: false,
       canvas: null,
       cursor: null,
-      receiveUndoList: {},
-      receiveRedoList: {},
       undoList: [],
       redoList: [],
     }
