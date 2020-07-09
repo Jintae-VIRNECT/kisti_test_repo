@@ -95,6 +95,19 @@
 import purchasesService from '@/services/purchases'
 
 export default {
+  props: {
+    plansInfo: {
+      type: Object,
+      default: () => ({}),
+    },
+    paymentInfo: {
+      type: Object,
+      default: () => ({
+        basisAvailable: {},
+        extendAvailable: {},
+      }),
+    },
+  },
   data() {
     return {
       activeTab: 'storage',

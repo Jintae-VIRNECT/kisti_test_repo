@@ -1,6 +1,20 @@
 import Model from '@/models/Model'
 import Ticket from './Ticket'
 
+function sumAvilable(items) {
+  const available = items.reduce(
+    (p, n) => {
+      p.storage += n.storage
+      p.viewCount += n.viewCount
+      p.callTime += n.callTime
+      return p
+    },
+    { storage: 0, viewCount: 0, callTime: 0 },
+  )
+  available.viewCount = available.viewCount.toLocaleString()
+  return available
+}
+
 export default class AutoPaymentInfo extends Model {
   constructor(json) {
     super()
@@ -11,6 +25,13 @@ export default class AutoPaymentInfo extends Model {
     this.nextPayDate = json.NextPayDate
     this.payFlag = json.PayFlag
     this.items = json.products.map(product => new Ticket(product))
+    this.basisAvailable = sumAvilable(
+      this.items.filter(item => item.productType.name === 'product'),
+    )
+
+    this.extendAvailable = sumAvilable(
+      this.items.filter(item => item.productType.name === 'extend'),
+    )
 
     // 자동 결제 해지 신청중
     if (json.PayFlag === 'N') {

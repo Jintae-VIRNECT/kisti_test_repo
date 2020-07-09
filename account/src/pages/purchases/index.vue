@@ -31,7 +31,7 @@
             <div slot="header">
               <h3>{{ $t('purchases.info.title') }}</h3>
             </div>
-            <purchases-info />
+            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
           </el-card>
         </el-col>
         <el-col class="container__right">
@@ -43,7 +43,7 @@
             <purchases-plan-member-list />
           </el-card>
           <!-- 사용량 -->
-          <purchases-used />
+          <purchases-used :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
         </el-col>
       </el-row>
     </div>
@@ -55,6 +55,8 @@ import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import purchasesInfo from '@/components/purchases/PurchasesInfo'
 import PurchasesUsed from '@/components/purchases/PurchasesUsed'
 import PurchasesPlanMemberList from '@/components/purchases/PurchasesPlanMemberList'
+import purchaseService from '@/services/purchases'
+import paymentService from '@/services/payment'
 import columnMixin from '@/mixins/columns'
 
 export default {
@@ -64,6 +66,16 @@ export default {
     purchasesInfo,
     PurchasesUsed,
     PurchasesPlanMemberList,
+  },
+  async asyncData() {
+    const promises = {
+      plansInfo: purchaseService.getWorkspacePlansInfo(),
+      paymentInfo: paymentService.getAutoPayments(),
+    }
+    return {
+      plansInfo: await promises.plansInfo,
+      paymentInfo: await promises.paymentInfo,
+    }
   },
   data() {
     return {

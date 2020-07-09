@@ -10,5 +10,9 @@ export default class Ticket extends Model {
     this.count = json.ItemCnt || json.ProductCnt
     this.price = json.PayAmt
     this.priceUnit = json.CurrencyCode
+    this.callTime = json.productCallTime
+    this.viewCount = json.productHit
+    this.storage = json.productStorage
+    this.productType = json.productType
   }
 }

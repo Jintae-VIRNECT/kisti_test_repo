@@ -1,5 +1,6 @@
 import { api } from '@/plugins/axios'
 import PlanMember from '@/models/purchases/PlanMember'
+import PlansInfo from '@/models/purchases/PlansInfo'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -23,6 +24,12 @@ export default {
       list: workspaceUserLicenseInfoList.map(member => new PlanMember(member)),
       total: pageMeta.totalElements,
     }
+  },
+  async getWorkspacePlansInfo() {
+    const data = await api('GET_WORKSPACE_PLAN_INFO', {
+      route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
+    })
+    return new PlansInfo(data)
   },
   getStorageCapacity() {
     return {

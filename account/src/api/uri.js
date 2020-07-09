@@ -15,14 +15,10 @@ module.exports = {
   GET_ACCESS_LOGS: ['GET', '/users/access/{userId}'],
   // 내가 속한 워크스페이스 목록 조회
   GET_WORKSPACES: ['GET', '/workspaces'],
-  // 내 쿠폰 정보 리스트 조회
-  GET_COUPONS: ['GET', '/licenses/coupon/{userId}'],
-  // 쿠폰 등록
-  ADD_COUPON: ['POST', '/licenses/coupon/register'],
-  // 쿠폰 사용
-  USE_COUPON: ['PUT', '/licenses/coupon/active'],
   // 워크스페이스 플랜 사용자 조회
   GET_LICENSE_MEMBERS: ['GET', '/workspaces/{workspaceId}/members/license'],
+  // 워크스페이스 라이선스 플랜 정보 조회
+  GET_WORKSPACE_PLAN_INFO: ['GET', '/licenses/{workspaceId}/plan'],
   /**
    * 페이레터 API
    */
