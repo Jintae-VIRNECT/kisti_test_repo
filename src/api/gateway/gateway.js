@@ -67,6 +67,12 @@ const URL = {
 
   /* CALL */
   GET_TOKEN: ['POST', '/media/tokens'],
+
+  /* LICENSE */
+  GET_LICENSE: [
+    'GET',
+    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
+  ],
 }
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)

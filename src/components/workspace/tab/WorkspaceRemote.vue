@@ -28,12 +28,13 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-
 import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
-import { mapActions } from 'vuex'
+import { checkLicense } from 'utils/license'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 import { ROLE } from 'configs/remote.config'
+
+import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin],
@@ -77,6 +78,27 @@ export default {
     async joinRoom(room) {
       console.log('>>> JOIN ROOM')
       try {
+        const noLicenseCallback = () => {
+          this.confirmDefault(
+            '라이선스가 만료되어 서비스 사용이 불가 합니다.​',
+            {
+              text: '확인',
+              action: () => {
+                this.$eventBus.$emit('showLicensePage')
+              },
+            },
+          )
+        }
+        const license = await checkLicense(
+          this.workspace.uuid,
+          await this.account.uuid,
+          noLicenseCallback,
+        )
+
+        if (!license) {
+          return false
+        }
+
         const roomInfo = await getRoomInfo({
           roomId: room.roomId,
         })

@@ -1,5 +1,6 @@
 //Definition of workspace store
 import { SETTINGS } from '../mutation-types'
+import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
 
 const state = {
   mic: {
@@ -23,11 +24,11 @@ const state = {
   videoDevice: null,
   language: null,
 
-  //may need move other store
   //stream for local steram(screen stream)
   screenStream: null,
 
-  localRecordTarget: 'recordWorker',
+  localRecordTarget: RECORD_TARGET.WORKER,
+  localRecordStatus: LCOAL_RECORD_STAUTS.STOP,
 }
 
 const mutations = {
@@ -57,6 +58,10 @@ const mutations = {
 
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
     state.localRecordTarget = localRecordTarget
+  },
+
+  [SETTINGS.SET_LCOAL_RECORD_STAUTS](state, localRecordStatus) {
+    state.localRecordStatus = localRecordStatus
   },
 }
 export default {

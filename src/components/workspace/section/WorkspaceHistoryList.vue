@@ -84,8 +84,9 @@ import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
 
 import { deleteHistorySingleItem } from 'api/workspace/history'
-import confirmMixin from 'mixins/confirm'
+import { checkLicense } from 'utils/license'
 
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'WorkspaceHistoryList',
   mixins: [searchMixin, confirmMixin],
@@ -159,6 +160,25 @@ export default {
 
     //재시작
     async createRoom(roomId) {
+      const noLicenseCallback = () => {
+        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
+          text: '확인',
+          action: () => {
+            this.$eventBus.$emit('showLicensePage')
+          },
+        })
+      }
+
+      const license = await checkLicense(
+        this.workspace.uuid,
+        await this.account.uuid,
+        noLicenseCallback,
+      )
+
+      if (!license) {
+        return false
+      }
+
       this.roomId = roomId
       this.showRestart = !this.showRestart
 

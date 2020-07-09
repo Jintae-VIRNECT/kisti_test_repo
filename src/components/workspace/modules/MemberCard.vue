@@ -1,7 +1,7 @@
 <template>
   <div class="card" :class="{ no__button: !showMessageButton }">
     <div class="card-center">
-      <div class="card-profile--thumb" :class="{ expired: !license }">
+      <div class="card-profile--thumb">
         <profile
           :image="imageUrl"
           :thumbStyle="{ width: '4.571rem', height: '4.571rem' }"

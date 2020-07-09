@@ -66,6 +66,12 @@
         width: 100%;
       }
     }
+    &.nolicense {
+      cursor: default;
+      &:hover {
+        opacity: 0.25;
+      }
+    }
   }
 }
 
