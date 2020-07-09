@@ -1,5 +1,5 @@
 import { OpenVidu } from './openvidu'
-import { addSessionEventListener, getUserObject } from './RemoteUtils'
+import { addSessionEventListener } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
@@ -82,7 +82,6 @@ const _ = {
       })
       publisher.on('streamCreated', () => {
         _.publisher = publisher
-        Store.commit('addStream', getUserObject(publisher.stream))
         _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
           Store.commit('updateResolution', {
@@ -94,6 +93,21 @@ const _ = {
       })
 
       _.session.publish(publisher)
+      Store.commit('addStream', {
+        id: _.account.uuid,
+        stream: null,
+        connectionId: publisher.stream.session.connection.connectionId,
+        nickname: _.account.nickname,
+        path: _.account.path,
+        audio: false,
+        video: false,
+        speaker: true,
+        mute: false,
+        status: 'good',
+        roleType: role,
+        permission: 'default',
+        me: true,
+      })
       return true
     } catch (err) {
       console.error(err)

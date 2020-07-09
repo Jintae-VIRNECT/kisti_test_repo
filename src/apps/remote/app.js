@@ -45,7 +45,7 @@ export default new Vue({
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote v.${version}`,
+    `%cVIRNECT Remote v${version}`,
     'padding:4px 18px;font-size:25px;color:#0f75f5;font-weight:500;',
   ),
 )
