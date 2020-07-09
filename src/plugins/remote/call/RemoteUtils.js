@@ -197,7 +197,7 @@ const getUserObject = stream => {
 
   return streamObj
 }
-
+/*
 export const getStream = async constraints => {
   if (!navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia 없음')
