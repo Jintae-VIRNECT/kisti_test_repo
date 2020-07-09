@@ -9,8 +9,14 @@ export default class AutoPaymentInfo extends Model {
     this.price = json.TotalPayAmt
     this.priceUnit = json.CurrencyCode
     this.nextPayDate = json.NextPayDate
-    this.nextPayDate = json.NextPayDate
     this.payFlag = json.PayFlag
     this.items = json.products.map(product => new Ticket(product))
+
+    // 자동 결제 해지 신청중
+    if (json.PayFlag === 'N') {
+      this.price = 0
+      this.nextPayDate = null
+      this.items = []
+    }
   }
 }
