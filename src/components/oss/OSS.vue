@@ -1,6 +1,6 @@
 <template>
   <main class="oss">
-    <h1 id="title">OSS Notice | VIRNECT Remote - Android</h1>
+    <h1 id="title">Open Source Software - {{ type }}</h1>
     <div id="notice">
       <p>
         This application is Copyright © 2019, VIRNECT corp. All Rights Reserved.
@@ -765,192 +765,68 @@ export default {
   name: 'policy-oss',
   data() {
     return {
-      licenses: [
-        {
-          libName: 'com.squareup.okhttp3:okhttp',
-          link: 'https://github.com/square/okhttp/blob/master/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.squareup.okhttp3:logging-interceptor',
-          link: 'https://github.com/square/okhttp/blob/master/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.squareup.retrofit2:retrofit',
-          link: 'https://github.com/square/retrofit/blob/master/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.squareup.retrofit2:converter-gson',
-          link: 'https://github.com/square/retrofit/blob/master/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.scottyab:rootbeer-lib',
-          link: 'https://github.com/scottyab/rootbeer/blob/master/LICENSE',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.github.chrisbanes:PhotoView',
-          link: 'https://github.com/chrisbanes/PhotoView/blob/master/LICENSE',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.github.bumptech.glide',
-          link: '	https://github.com/bumptech/glide/blob/master/LICENSE',
-          licenseName: 'Apache 2.0 / BSD 2-clause',
-        },
-        {
-          libName: 'com.github.bumptech.glide:compiler',
-          link: '	https://github.com/bumptech/glide/blob/master/LICENSE',
-          licenseName: 'Apache 2.0 / BSD 2-clause',
-        },
-        {
-          libName: 'com.airbnb.android:lottie',
-          link: 'https://github.com/airbnb/lottie-android/blob/master/LICENSE',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'org.jetbrains.kotlin:kotlin-stdlib-jdk7',
-          link:
-            'https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.android.support:appcompat-v7',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.android.support:design',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.android.support.constraint:constraint-layout',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'android.arch.lifecycle:extensions',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'android.arch.lifecycle:viewmodel',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'android.arch.lifecycle:compiler',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'android.arch.persistence.room:runtime',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'android.arch.persistence.room:compiler',
-          link: 'https://developer.android.com/license',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.google.guava:guava',
-          link: 'https://github.com/google/guava/blob/master/COPYING',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'org.webrtc:google-webrtc',
-          link: 'https://webrtc.org/license/software/',
-          licenseName: 'Like most BSD licenses',
-        },
-        {
-          libName: 'com.google.code.findbugs',
-          link: 'http://www.apache.org/licenses/LICENSE-2.0',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'org.apache.commons.codec',
-          link:
-            'https://github.com/apache/commons-codec/blob/master/LICENSE.txt',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'io.crossbar.autobahn:autobahn-android',
-          link:
-            'https://github.com/crossbario/autobahn-java/blob/master/LICENSE',
-          licenseName: 'MIT',
-        },
-        {
-          libName: 'com.github.joshjdevl.libsodiumjni',
-          link:
-            'https://github.com/joshjdevl/libsodium-jni/blob/master/LICENSE',
-          licenseName: 'GPL 3.0',
-        },
-        {
-          libName: 'org.msgpack:jackson-dataformat-msgpack',
-          link: 'http://www.apache.org/licenses/LICENSE-2.0',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.fasterxml.jackson.core:jackson-core',
-          link: 'http://www.apache.org/licenses/LICENSE-2.0',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.fasterxml.jackson.core:jackson-databi,nd',
-          link: 'http://www.apache.org/licenses/LICENSE-2.0',
-          licenseName: 'Apache 2.0',
-        },
-        {
-          libName: 'com.fasterxml.jackson.dataformat:jackson-,dataformat-cbor',
-          link: 'http://www.apache.org/licenses/LICENSE-2.0',
-          licenseName: 'Apache 2.0',
-        },
-      ],
+      serviceType: 'Android',
+      licenses: require(`./${this.type}.json`),
     }
+  },
+  props: {
+    type: {
+      type: String,
+      validator: value => {
+        return ['android', 'realwear'].includes(value)
+      },
+    },
   },
 }
 </script>
 <style lang="scss">
+@import '~assets/style/vars';
+@import '~assets/style/font';
 @import '~assets/style/mixin';
 @import '~assets/style/reset';
 
 .oss {
   color: #888;
+  background-color: #000;
 
   h1 {
-    font-size: 1.25em;
+    // font-size: 1.25em;
+    font-size: 22px;
   }
   h1,
   h2,
   h3,
   h4 {
-    color: #000;
+    color: #fff;
   }
   #title {
     position: relative;
     margin: 0;
     padding: 1.25em 1em 1em;
     color: #fff;
+    font-weight: bold;
+    text-transform: capitalize;
     background: #000;
   }
   #notice,
   #oss,
   #licenses div {
-    padding: 10px;
+    padding: 0 20px;
+  }
+  #notice p {
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
   }
   h3 {
     margin-top: 1em;
-    color: #000;
-    font-weight: bold;
+
+    // color: #fff;
+    // font-weight: bold;
     font-size: 14px;
   }
   p {
-    margin-left: 20px;
+    // margin-left: 20px;
   }
   pre,
   p a {
@@ -961,8 +837,8 @@ export default {
   }
   #oss,
   #licenses div {
-    padding-top: 1em;
-    border-top: 1px solid #ccc;
+    padding-top: 35px;
+    // border-top: 1px solid #ccc;
   }
   #licenses div {
     display: block;
