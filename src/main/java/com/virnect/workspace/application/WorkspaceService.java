@@ -82,6 +82,12 @@ public class WorkspaceService {
     @Value("${contactUrl}")
     private String contactUrl;
 
+    @Value("${accountUrl}")
+    private String accountUrl;
+
+    @Value("${supportUrl}")
+    private String supportUrl;
+
     /**
      * 워크스페이스 생성
      *
@@ -413,7 +419,7 @@ public class WorkspaceService {
      * @param workspaceInviteRequest - 초대 유저 정보
      * @return
      */
-    public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
+    public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale) {
         // 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
         if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
@@ -551,11 +557,16 @@ public class WorkspaceService {
                     context.setVariable("responseUserNickName", inviteUserResponse.getNickname());
                     context.setVariable("role", userInfo.getRole());
                     context.setVariable("plan", generatePlanString(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView()));
+                    context.setVariable("supportUrl", supportUrl);
 
-                    String html = springTemplateEngine.process("workspace_invite", context);
+                    String subject = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
+                    String template = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
+                    String html = springTemplateEngine.process(template, context);
+
                     List<String> emailReceiverList = new ArrayList<>();
                     emailReceiverList.add(inviteUserResponse.getEmail());
-                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE);
+
+                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
                 }
             });
         });
@@ -571,12 +582,12 @@ public class WorkspaceService {
      * @param mailSender
      * @param mailSubject
      */
-    private void sendMailRequest(String html, List<String> receivers, MailSender mailSender, MailSubject mailSubject) {
+    private void sendMailRequest(String html, List<String> receivers, String sender, String subject) {
         MailRequest mailRequest = new MailRequest();
         mailRequest.setHtml(html);
         mailRequest.setReceivers(receivers);
-        mailRequest.setSender(mailSender.getSender());
-        mailRequest.setSubject(mailSubject.getSubject());
+        mailRequest.setSender(sender);
+        mailRequest.setSubject(subject);
         this.messageRestService.sendMail(mailRequest);
     }
 
@@ -619,13 +630,18 @@ public class WorkspaceService {
             context.setVariable("planViewType", userInvite.getPlanViewType());
             context.setVariable("workstationHomeUrl", redirectUrl);
             context.setVariable("workstationMembersUrl", redirectUrl + "/members");
+            context.setVariable("supportUrl", supportUrl);
 
-            String html = springTemplateEngine.process("workspace_over_join_fail", context);
-            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_JOIN_FAIL);
+            String subject = this.messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getSubject(), null, locale);
+            String template = this.messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getTemplate(), null, locale);
+            String html = springTemplateEngine.process(template, context);
+
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
 
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=members.add.message.workspaceOverflow");
+            redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -651,12 +667,16 @@ public class WorkspaceService {
             context.setVariable("planViewType", userInvite.getPlanViewType());
             context.setVariable("contactUrl", contactUrl);
             context.setVariable("workstationHomeUrl", redirectUrl);
+            context.setVariable("supportUrl", supportUrl);
 
-            String html = springTemplateEngine.process("workspace_over_max_user_fail", context);
-            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_MAX_USER_FAIL);
+            String subject = this.messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getSubject(), null, locale);
+            String template = this.messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getTemplate(), null, locale);
+            String html = springTemplateEngine.process(template, context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=members.add.message.memberOverflow");
+            redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_MAX_USER_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -709,14 +729,17 @@ public class WorkspaceService {
             context.setVariable("planViewType", userInvite.getPlanViewType());
             context.setVariable("workstationHomeUrl", redirectUrl);
             context.setVariable("workstationMembersUrl", redirectUrl + "/members");
+            context.setVariable("supportUrl", supportUrl);
 
-            String html = springTemplateEngine.process("workspace_over_plan_fail", context);
-            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_OVER_PLAN_FAIL);
+            String subject = this.messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getSubject(), null, locale);
+            String template = this.messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getTemplate(), null, locale);
+            String html = springTemplateEngine.process(template, context);
+            this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
             this.userInviteRepository.deleteById(userId + "-" + workspaceId);
 
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=members.add.message.enoughPlan");
+            redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_PLAN_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
 
@@ -745,9 +768,12 @@ public class WorkspaceService {
         context.setVariable("role", userInvite.getRole());
         context.setVariable("workstationHomeUrl", redirectUrl);
         context.setVariable("plan", generatePlanString(userInvite.getPlanRemote(), userInvite.getPlanMake(), userInvite.getPlanView()));
+        context.setVariable("supportUrl", supportUrl);
 
-        String html = springTemplateEngine.process("workspace_invite_accept", context);
-        this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_ACCEPT);
+        String subject = this.messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getSubject(), null, locale);
+        String template = this.messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getTemplate(), null, locale);
+        String html = springTemplateEngine.process(template, context);
+        this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
         //redis 에서 삭제
         this.userInviteRepository.deleteById(userId + "-" + workspaceId);
@@ -813,9 +839,13 @@ public class WorkspaceService {
         context.setVariable("rejectUserNickname", userInvite.getResponseUserNickName());
         context.setVariable("rejectUserEmail", userInvite.getResponseUserEmail());
         context.setVariable("workspaceName", workspace.getName());
+        context.setVariable("accountUrl", accountUrl);
+        context.setVariable("supportUrl", supportUrl);
 
-        String html = springTemplateEngine.process("workspace_invite_reject", context);
-        this.sendMailRequest(html, emailReceiverList, MailSender.MASTER, MailSubject.WORKSPACE_INVITE_REJECT);
+        String subject = this.messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getSubject(), null, locale);
+        String template = this.messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getTemplate(), null, locale);
+        String html = springTemplateEngine.process(template, context);
+        this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
 
         RedirectView redirectView = new RedirectView();
@@ -959,6 +989,8 @@ public class WorkspaceService {
             context.setVariable("workspaceMasterEmail", masterUser.getEmail());
             context.setVariable("responseUserNickName", user.getNickname());
             context.setVariable("responseUserEmail", user.getEmail());
+            context.setVariable("supportUrl", supportUrl);
+
             StringBuilder plan = new StringBuilder();
             if (remoteLicense) {
                 plan.append("REMOTE");
@@ -973,8 +1005,10 @@ public class WorkspaceService {
 
             List<String> receiverEmailList = new ArrayList<>();
             receiverEmailList.add(user.getEmail());
-            String html = springTemplateEngine.process("workspace_user_plan_update", context);
-            this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_USER_PLAN_UPDATE);
+            String subject = this.messageSource.getMessage(Mail.WORKSPACE_USER_PLAN_UPDATE.getSubject(), null, locale);
+            String template = this.messageSource.getMessage(Mail.WORKSPACE_USER_PLAN_UPDATE.getTemplate(), null, locale);
+            String html = springTemplateEngine.process(template, context);
+            this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
         }
 
     }
@@ -1007,12 +1041,15 @@ public class WorkspaceService {
         context.setVariable("responseUserEmail", user.getEmail());
         context.setVariable("role", workspaceRole.getRole());
         context.setVariable("workstationHomeUrl", redirectUrl);
+        context.setVariable("supportUrl", supportUrl);
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
-        String html = springTemplateEngine.process("workspace_user_permission_update", context);
+        String subject = this.messageSource.getMessage(Mail.WORKSPACE_USER_PERMISSION_UPDATE.getSubject(), null, locale);
+        String template = this.messageSource.getMessage(Mail.WORKSPACE_USER_PERMISSION_UPDATE.getTemplate(), null, locale);
+        String html = springTemplateEngine.process(template, context);
 
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_USER_PERMISSION_UPDATE);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
 
         // 히스토리 적재
         String message;
@@ -1072,7 +1109,7 @@ public class WorkspaceService {
         return new ApiResponse<>(workspaceNewMemberInfoList);
     }
 
-    public ApiResponse<WorkspaceInfoDTO> setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest) {
+    public ApiResponse<WorkspaceInfoDTO> setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest, Locale locale) {
         if (!StringUtils.hasText(workspaceUpdateRequest.getUserId()) || !StringUtils.hasText(workspaceUpdateRequest.getName())
                 || !StringUtils.hasText(workspaceUpdateRequest.getDescription()) || !StringUtils.hasText(workspaceUpdateRequest.getWorkspaceId())) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -1112,6 +1149,8 @@ public class WorkspaceService {
         Context context = new Context();
         context.setVariable("beforeWorkspaceName", oldWorkspaceName);
         context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
+        context.setVariable("supportUrl", supportUrl);
+
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid());
         workspaceUserList.stream().forEach(workspaceUser -> {
             UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
@@ -1122,8 +1161,10 @@ public class WorkspaceService {
             }
         });
 
-        String html = springTemplateEngine.process("workspace_info_update", context);
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_INFO_UPDATE);
+        String subject = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getSubject(), null, locale);
+        String template = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getTemplate(), null, locale);
+        String html = springTemplateEngine.process(template, context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
 
         return new ApiResponse<>(workspaceInfoDTO);
     }
@@ -1195,14 +1236,17 @@ public class WorkspaceService {
         context.setVariable("workspaceName", workspace.getName());
         context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
         context.setVariable("workspaceMasterEmail", userInfoRestResponse.getEmail());
+        context.setVariable("supportUrl", supportUrl);
 
         UserInfoRestResponse kickedUser = this.userRestService.getUserInfoByUserId(memberKickOutRequest.getKickedUserId()).getData();
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
 
-        String html = springTemplateEngine.process("workspace_kickout", context);
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER, MailSubject.WORKSPACE_KICKOUT);
+        String subject = this.messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getSubject(), null, locale);
+        String template = this.messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getTemplate(), null, locale);
+        String html = springTemplateEngine.process(template, context);
+        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
 
         //history 저장
         String message = this.messageSource.getMessage("WORKSPACE_EXPELED", new String[]{userInfoRestResponse.getNickname(), kickedUser.getNickname()}, locale);
