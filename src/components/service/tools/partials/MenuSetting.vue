@@ -3,11 +3,14 @@
     <menu-button
       text="로컬 녹화 설정"
       :active="status"
-      :disabled="!canRecord || recording"
+      :disabled="!canRecord"
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
-    <record-setting :visible.sync="status"></record-setting>
+    <record-setting
+      :visible.sync="status"
+      :recording="recording"
+    ></record-setting>
   </div>
 </template>
 
@@ -56,7 +59,10 @@ export default {
       this.status = !this.status
       this.$eventBus.$emit('lcRecSet:show')
     },
-    blockSetting(isStart) {
+    serverRecording(isStart) {
+      console.log('server record status :: ', isStart)
+    },
+    localRecording(isStart) {
       if (isStart) {
         this.recording = true
       } else {
@@ -71,8 +77,8 @@ export default {
     this.$eventBus.$off('serverRecord')
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.blockSetting)
-    this.$eventBus.$on('serverRecord', this.blockSetting)
+    this.$eventBus.$on('localRecord', this.localRecording)
+    this.$eventBus.$on('serverRecord', this.serverRecording)
   },
 }
 </script>

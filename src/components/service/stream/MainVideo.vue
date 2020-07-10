@@ -17,7 +17,10 @@
         loop
       ></video>
       <template v-if="loaded">
-        <div class="main-video__recording">
+        <div
+          class="main-video__recording"
+          :class="{ show: serverTimer || localTimer }"
+        >
           <p class="server" v-if="serverTimer">{{ serverTime | timeFilter }}</p>
           <p class="local" v-if="localTimer">{{ localTime | timeFilter }}</p>
         </div>
