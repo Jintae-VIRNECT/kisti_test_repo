@@ -59,7 +59,10 @@ export default {
       this.status = !this.status
       this.$eventBus.$emit('lcRecSet:show')
     },
-    blockSetting(isStart) {
+    serverRecording(isStart) {
+      console.log('server record status :: ', isStart)
+    },
+    localRecording(isStart) {
       if (isStart) {
         this.recording = true
       } else {
@@ -74,8 +77,8 @@ export default {
     this.$eventBus.$off('serverRecord')
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.blockSetting)
-    this.$eventBus.$on('serverRecord', this.blockSetting)
+    this.$eventBus.$on('localRecord', this.localRecording)
+    this.$eventBus.$on('serverRecord', this.serverRecording)
   },
 }
 </script>
