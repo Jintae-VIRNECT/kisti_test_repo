@@ -131,7 +131,6 @@ const sender = async function(constant, params, headers = {}, custom) {
       let paramsOption = parameter
       parameter = new FormData()
       for (let param in paramsOption) {
-        console.log('param ::', param)
         parameter.append(param, params[param])
       }
       console.log(option)
