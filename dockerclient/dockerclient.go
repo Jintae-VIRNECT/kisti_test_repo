@@ -32,6 +32,44 @@ type Container struct {
 	EndTime     int64
 }
 
+func init() {
+	go garbageCollector()
+}
+
+func garbageCollector() {
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+	for range ticker.C {
+		go func() {
+			cli, err := docker.NewClientFromEnv()
+			if err != nil {
+				logger.Error("NewClientFromEnv:", err)
+				return
+			}
+			now := time.Now().Unix()
+			filter := map[string][]string{
+				"label": []string{"recordingId"},
+			}
+			cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
+			for _, c := range cons {
+				if c.State == "running" {
+					continue
+				}
+				endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
+				if now > endTime+60 {
+					logger.Infof("remove container which state is not running. id:%s state:%s recordId:%s createTime:%d endTime:%d",
+						c.ID,
+						c.State,
+						c.Labels["recordingId"],
+						c.Created,
+						endTime)
+					StopContainer(c.ID)
+				}
+			}
+		}()
+	}
+}
+
 func ListContainers() []Container {
 	containers := []Container{}
 
@@ -41,7 +79,10 @@ func ListContainers() []Container {
 		return containers
 	}
 
-	filter := map[string][]string{"label": []string{"recordingId"}}
+	filter := map[string][]string{
+		"label":  []string{"recordingId"},
+		"status": []string{"running"},
+	}
 	cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
 	for _, c := range cons {
 		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
@@ -168,20 +209,20 @@ func stopAndRemoveContainer(containerID string) {
 			AttachStdout: true,
 			AttachStderr: true,
 		}
-		exec, err := cli.CreateExec(cmd)
-		if err != nil {
+		if exec, err := cli.CreateExec(cmd); err == nil {
+			err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
+			if err != nil {
+				logger.Error("StartExec:", err)
+			}
+
+			rc, err := cli.WaitContainerWithContext(containerID, ctx)
+			if err != nil {
+				logger.Error("WaitContainer:", err)
+			}
+			logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
+		} else {
 			logger.Error("CreateExec:", err)
 		}
-		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
-		if err != nil {
-			logger.Error("StartExec:", err)
-		}
-
-		rc, err := cli.WaitContainerWithContext(containerID, ctx)
-		if err != nil {
-			logger.Error("WaitContainer:", err)
-		}
-		logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
 
 		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: containerID, Force: true})
 		if err != nil {
