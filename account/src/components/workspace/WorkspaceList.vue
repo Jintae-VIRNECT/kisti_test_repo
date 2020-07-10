@@ -1,12 +1,11 @@
 <template>
-  <el-card class="el-card--table">
-    <div slot="header">
-      <h3>{{ $t('workspace.list.title') }}</h3>
-    </div>
+  <div>
     <el-table ref="table" :data="workspaces">
-      <column-default
+      <column-user
         :label="$t('workspace.list.column.name')"
         prop="name"
+        nameProp="name"
+        imageProp="profile"
         sortable
       />
       <column-user
@@ -31,11 +30,12 @@
       />
     </el-table>
     <searchbar-page
+      v-if="!isHome"
       ref="page"
       :value.sync="workspacesPage"
       :total="workspacesTotal"
     />
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -45,6 +45,9 @@ import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [columnMixin, searchMixin],
+  props: {
+    isHome: Boolean,
+  },
   data() {
     return {
       workspaces: [],
@@ -65,7 +68,9 @@ export default {
     },
   },
   beforeMount() {
-    this.searchWorkspaces()
+    this.searchWorkspaces({
+      size: this.isHome ? 5 : 10,
+    })
   },
 }
 </script>

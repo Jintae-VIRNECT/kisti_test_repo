@@ -21,37 +21,37 @@
           <el-card>
             <div slot="header">
               <h3>{{ $t('home.payment.title') }}</h3>
-              <router-link to="/payment">{{ $t('common.link') }}</router-link>
+              <router-link to="/purchases">{{ $t('common.link') }}</router-link>
             </div>
-            <purchases-info />
+            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
           </el-card>
         </el-col>
         <el-col class="container__right">
+          <!-- 워크스페이스 리스트 -->
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>{{ $t('home.usingPlan.title') }}</h3>
-              <span>{{ $t('home.usingPlan.desc') }}</span>
-              <router-link to="/plan">{{ $t('common.link') }}</router-link>
+              <h3>{{ $t('workspace.list.title') }}</h3>
+              <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
+            <workspace-list :isHome="true" />
           </el-card>
+          <!-- 플랜 리스트 -->
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>{{ $t('home.workspacePlan.title') }}</h3>
-              <span>{{ $t('home.workspacePlan.desc') }}</span>
-              <router-link to="/plan">{{ $t('common.link') }}</router-link>
+              <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
+              <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
+            <using-plan-list :isHome="true" />
+          </el-card>
+          <!-- 로그인된 기기 -->
+          <el-card class="el-card--table">
+            <div slot="header">
+              <h3>{{ $t('home.LoggedInDevice.title') }}</h3>
+              <router-link to="/security">{{ $t('common.link') }}</router-link>
+            </div>
+            <logged-in-device-list :isHome="true" />
           </el-card>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-card class="el-card--table">
-          <div slot="header">
-            <h3>{{ $t('home.LoggedInDevice.title') }}</h3>
-            <span>{{ $t('home.LoggedInDevice.desc') }}</span>
-            <router-link to="/security">{{ $t('common.link') }}</router-link>
-          </div>
-          <logged-in-device-list />
-        </el-card>
       </el-row>
     </div>
   </div>
@@ -60,13 +60,29 @@
 <script>
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import PurchasesInfo from '@/components/purchases/PurchasesInfo'
+import WorkspaceList from '@/components/workspace/WorkspaceList'
+import UsingPlanList from '@/components/workspace/UsingPlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
+import purchaseService from '@/services/purchases'
+import paymentService from '@/services/payment'
 
 export default {
   components: {
     WorkspaceInfo,
+    WorkspaceList,
+    UsingPlanList,
     LoggedInDeviceList,
     PurchasesInfo,
+  },
+  async asyncData() {
+    const promises = {
+      plansInfo: purchaseService.getWorkspacePlansInfo(),
+      paymentInfo: paymentService.getAutoPayments(),
+    }
+    return {
+      plansInfo: await promises.plansInfo,
+      paymentInfo: await promises.paymentInfo,
+    }
   },
   data() {
     return {
@@ -81,8 +97,9 @@ export default {
 <style lang="scss">
 #home .container {
   padding-top: 73px;
-  .el-table__empty-block {
-    min-height: 300px;
+  .el-table__empty-block,
+  .el-card--table .el-card__body .el-table__body-wrapper {
+    min-height: 320px;
   }
 }
 .home__bg {

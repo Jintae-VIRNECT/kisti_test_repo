@@ -19,6 +19,7 @@
       />
     </el-table>
     <searchbar-page
+      v-if="!isHome"
       ref="page"
       :value.sync="accessLogsPage"
       :total="accessLogsTotal"
@@ -33,6 +34,9 @@ import searchMixin from '@/mixins/search'
 
 export default {
   mixins: [columnMixin, searchMixin],
+  props: {
+    isHome: Boolean,
+  },
   data() {
     return {
       accessLogs: [],
@@ -60,7 +64,9 @@ export default {
     },
   },
   beforeMount() {
-    this.getLoggedInDeviceList()
+    this.getLoggedInDeviceList({
+      size: this.isHome ? 5 : 10,
+    })
   },
 }
 </script>
