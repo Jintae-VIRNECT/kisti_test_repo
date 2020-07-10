@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -188,9 +189,12 @@ func (c *EurekaClient) DeRegister() {
 
 func (c *EurekaClient) Heartbeat() error {
 	req, _ := http.NewRequest(http.MethodPut, c.serverURL+"/"+c.instance.InstanceId, nil)
-	_, _, err := c.sendHttpRequest(req)
+	_, rc, err := c.sendHttpRequest(req)
 	if err != nil {
 		return err
+	}
+	if rc != 200 {
+		return errors.New("eureka server is restarted")
 	}
 	return nil
 }
