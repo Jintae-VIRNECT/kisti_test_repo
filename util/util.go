@@ -3,10 +3,12 @@ package util
 import (
 	"RM-RecordServer/logger"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"os"
 	"path"
 	"syscall"
+	"time"
 )
 
 const (
@@ -21,6 +23,12 @@ type DiskStatus struct {
 	Used uint64 `json:"used"`
 	Free uint64 `json:"free"`
 }
+
+const charset = "abcdefghijklmnopqrstuvwxyz" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var seededRand *rand.Rand = rand.New(
+	rand.NewSource(time.Now().UnixNano()))
 
 func GetHostName() string {
 	hostname, err := os.Hostname()
@@ -69,4 +77,12 @@ func RemoveContents(dirname string) (int, error) {
 		count++
 	}
 	return count, nil
+}
+
+func RandomString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }

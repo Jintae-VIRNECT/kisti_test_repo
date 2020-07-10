@@ -88,12 +88,6 @@ func StartRecording(c *gin.Context) {
 		return
 	}
 
-	exist := recorder.ExistRecordingID(req.SessionID)
-	if exist == true {
-		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrRecordingIDAlreadyExists.Error()})
-		return
-	}
-
 	param := recorder.RecordingParam{
 		SessionID:          req.SessionID,
 		Resolution:         req.Resolution,
@@ -101,14 +95,14 @@ func StartRecording(c *gin.Context) {
 		RecordingTimeLimit: req.RecordingTimeLimit,
 	}
 
-	err = recorder.NewRecording(param)
+	recordingId, err := recorder.NewRecording(param)
 	if err != nil {
 		logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.Writer.WriteHeader(200)
+	c.JSON(200, StartRecordingResponse{recordingId})
 }
 
 func checkValidation(req *StartRecordingRequest) error {

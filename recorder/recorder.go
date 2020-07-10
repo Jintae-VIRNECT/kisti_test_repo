@@ -20,6 +20,7 @@ import (
 )
 
 type recording struct {
+	ID          string
 	sessionID   string
 	containerID string
 	timeout     *time.Timer
@@ -56,13 +57,19 @@ func init() {
 	go timeoutHandler()
 }
 
-func NewRecording(param RecordingParam) error {
-	_, ok := recorderMap[param.SessionID]
-	if ok {
-		return ErrRecordingIDAlreadyExists
-	}
+func makeRecordingID(sessionID string) string {
+	return sessionID + "-" + util.RandomString(8)
+}
+
+func getSessionID(recordingID string) string {
+	return strings.Split(recordingID, "-")[0]
+}
+
+func NewRecording(param RecordingParam) (string, error) {
+	var recordingId = makeRecordingID(param.SessionID)
 
 	containerParam := dockerclient.ContainerParam{
+		RecordingID:        recordingId,
 		VideoID:            param.SessionID,
 		VideoName:          param.SessionID,
 		Resolution:         param.Resolution,
@@ -74,20 +81,20 @@ func NewRecording(param RecordingParam) error {
 
 	containerID, err := dockerclient.RunContainer(containerParam)
 	if err != nil {
-		return ErrInternalError
+		return recordingId, ErrInternalError
 	}
 
 	timeout := time.Duration(param.RecordingTimeLimit) * time.Minute
 	timer := time.AfterFunc(timeout, func() {
-		timeoutCh <- param.SessionID
+		timeoutCh <- recordingId
 	})
 
 	recorderMapMux.Lock()
 	defer recorderMapMux.Unlock()
 
-	r := &recording{param.SessionID, containerID, timer}
-	recorderMap[param.SessionID] = r
-	return nil
+	r := &recording{recordingId, param.SessionID, containerID, timer}
+	recorderMap[recordingId] = r
+	return recordingId, nil
 }
 
 func FindRecording(recordingID string) (string, error) {
@@ -137,7 +144,8 @@ func RestoreRecording(recordingID string, containerID string, recordingTimeLimit
 	recorderMapMux.Lock()
 	defer recorderMapMux.Unlock()
 
-	r := &recording{recordingID, containerID, timer}
+	sessionID := getSessionID(recordingID)
+	r := &recording{recordingID, sessionID, containerID, timer}
 	recorderMap[recordingID] = r
 }
 
@@ -147,7 +155,7 @@ func ListRecordingIDs() []string {
 
 	var recordingIds []string
 	for _, r := range recorderMap {
-		recordingIds = append(recordingIds, r.sessionID)
+		recordingIds = append(recordingIds, r.ID)
 	}
 
 	return recordingIds

@@ -12,6 +12,7 @@ import (
 )
 
 type ContainerParam struct {
+	RecordingID        string
 	VideoID            string
 	VideoName          string
 	Resolution         string
@@ -134,7 +135,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	now := time.Now().Unix()
 	endTime := now + int64(param.RecordingTimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
-	createOpt.Name = param.VideoID
+	createOpt.Name = param.RecordingID
 	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
@@ -142,13 +143,13 @@ func RunContainer(param ContainerParam) (string, error) {
 			"ONLY_VIDEO=" + "false",
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
-			"VIDEO_ID=" + param.VideoID,
-			"VIDEO_NAME=" + param.VideoName,
+			"VIDEO_ID=" + param.RecordingID,
+			"VIDEO_NAME=" + param.RecordingID,
 			"VIDEO_FORMAT=" + param.VideoFormat,
 			"RECORDING_JSON=" + "{}",
 		},
 		Labels: map[string]string{
-			"recordingId": param.VideoID,
+			"recordingId": param.RecordingID,
 			"endTime":     strconv.FormatInt(endTime, 10),
 		},
 	}
