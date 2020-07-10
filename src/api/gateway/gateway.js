@@ -75,7 +75,11 @@ const URL = {
   ],
 
   /* CHAT FILE */
-  SEND_FILE: ['POST', 'http://192.168.13.94:2000', { type: 'form' }],
+  SEND_FILE: [
+    'POST',
+    'https://192.168.13.94:4443/file/upload',
+    { type: 'form' },
+  ],
 }
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
@@ -127,6 +131,7 @@ const sender = async function(constant, params, headers = {}, custom) {
       let paramsOption = parameter
       parameter = new FormData()
       for (let param in paramsOption) {
+        console.log('param ::', param)
         parameter.append(param, params[param])
       }
       console.log(option)

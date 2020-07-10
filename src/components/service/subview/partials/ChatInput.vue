@@ -136,8 +136,12 @@ export default {
             size: file.filedata.size,
             fileDownloadUrl: 'test url',
           }
-
-          const response = sendFile(file, this.room.roomId, this.workspace.uuid)
+          console.log(file)
+          const response = sendFile(
+            file.filedata,
+            this.room.roomId,
+            this.workspace.uuid,
+          )
           console.log(response)
 
           this.$call.sendFile(params)
