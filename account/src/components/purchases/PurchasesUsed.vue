@@ -17,14 +17,14 @@
       </el-col>
       <el-col :span="18">
         <el-progress
-          :percentage="capacityUsed.used"
+          :percentage="plansInfo[activeTab].percent"
           :show-text="false"
           :stroke-width="12"
           stroke-linecap="square"
         />
         <div class="used-text">
           <span>
-            {{ capacityUsed.used }}
+            {{ plansInfo[activeTab].current }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
           <span>{{ $t('purchases.used') }}</span>
@@ -32,8 +32,8 @@
         <div class="remain-text">
           {{
             $t('purchases.remainOfMax', {
-              max: capacityUsed.max,
-              remain: capacityUsed.remain,
+              max: plansInfo[activeTab].max,
+              remain: plansInfo[activeTab].max - plansInfo[activeTab].current,
               unit: $t(`${usedI18n}.unit`),
             })
           }}
@@ -49,7 +49,7 @@
       </el-col>
       <el-col :span="18">
         <el-progress
-          :percentage="capacityUsed.default"
+          :percentage="basisRate"
           type="circle"
           :show-text="false"
           :stroke-width="12"
@@ -59,25 +59,25 @@
         <div class="progress-text">
           <span>{{ $t(`${usedI18n}.maxShort`) }}</span>
           <span>
-            {{ capacityUsed.max }}
+            {{ plansInfo[activeTab].max }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
         </div>
         <dl>
           <dt>{{ $t(`${usedI18n}.max`) }}</dt>
           <dd>
-            {{ capacityUsed.max }}
+            {{ plansInfo[activeTab].max }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <el-divider />
           <dt class="default">{{ $t(`${usedI18n}.default`) }}</dt>
           <dd>
-            {{ capacityUsed.default }}
+            {{ paymentInfo.basisAvailable[activeTab] }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <dt class="extend">{{ $t(`${usedI18n}.extend`) }}</dt>
           <dd>
-            {{ capacityUsed.extend }}
+            {{ paymentInfo.extendAvailable[activeTab] }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <a :href="$url.pay">
@@ -118,12 +118,12 @@ export default {
           i18nGroup: 'purchases.arStorage',
         },
         {
-          name: 'contents',
+          name: 'viewCount',
           label: 'purchases.info.arContentsViewCount',
           i18nGroup: 'purchases.arContent',
         },
         {
-          name: 'call',
+          name: 'callTime',
           label: 'purchases.info.callTime',
           i18nGroup: 'purchases.call',
         },
@@ -134,6 +134,14 @@ export default {
   computed: {
     usedI18n() {
       return this.tabs.find(tab => tab.name === this.activeTab).i18nGroup
+    },
+    basisRate() {
+      const rate =
+        this.paymentInfo.basisAvailable[this.activeTab] /
+        this.paymentInfo.extendAvailable[this.activeTab]
+      if (isNaN(rate)) return 0
+      else if (rate === Infinity) return 100
+      else return rate * 100
     },
   },
 }

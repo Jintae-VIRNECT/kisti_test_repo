@@ -1,6 +1,10 @@
 import Model from '@/models/Model'
 import products from '@/models/products'
 
+function mb2gb(mb) {
+  return (mb / 1024).toFixed(2) * 1
+}
+
 export default class PlansInfo extends Model {
   /**
    * 플랜 구조
@@ -8,9 +12,9 @@ export default class PlansInfo extends Model {
    */
   constructor(json) {
     super()
-    this.stoage = {
-      max: json.maxStorageSize,
-      current: json.currentUsageStorage,
+    this.storage = {
+      max: mb2gb(json.maxStorageSize),
+      current: mb2gb(json.currentUsageStorage),
       percent: (json.currentUsageStorage / json.maxStorageSize) * 100,
     }
     this.viewCount = {

@@ -58,7 +58,7 @@
     <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
     <el-divider />
     <h6>{{ $t('purchases.info.way') }}</h6>
-    <span class="value">{{ paymentInfo.way }}</span>
+    <span class="value">{{ paymentInfo.way || '-' }}</span>
     <el-divider />
     <a :href="$url.pay">
       <el-button type="simple">
