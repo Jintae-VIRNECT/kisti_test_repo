@@ -61,11 +61,7 @@
           <span class="data-value">15:20:25</span>
         </div>
         <div class="roominfo-view__button" v-if="leader">
-          <button
-            class="btn"
-            :disabled="!canSave"
-            @click="$emit('update', { name, description })"
-          >
+          <button class="btn" :disabled="!canSave" @click="saveInfo">
             저장하기
           </button>
         </div>
@@ -123,18 +119,14 @@ export default {
       handler(room) {
         this.name = room.title
         this.description = room.description
-        this.image = room.path
-        this.imageUrl = this.image
+        // this.imageUrl = room.path
       },
       deep: true,
     },
     imageURL(url) {
       if (url === '') {
         // 기본 이미지
-        this.$emit(
-          'update:image',
-          require('assets/image/img_default_group.svg'),
-        )
+        this.$emit('update:image', '')
       } else {
         this.$emit('update:image', url)
       }
@@ -143,7 +135,13 @@ export default {
   methods: {
     remove() {
       this.imageRemove()
-      this.$emit('update:image', require('assets/image/img_default_group.svg'))
+    },
+    saveInfo() {
+      const params = { name: this.name, description: this.description }
+      if (this.room.path !== this.imageUrl) {
+        params.image = this.imageFile
+      }
+      this.$emit('update', params)
     },
   },
 
@@ -152,7 +150,7 @@ export default {
     if (this.room) {
       this.name = this.room.title
       this.description = this.room.description
-      this.image = this.room.path
+      this.imageUrl = this.room.path
     }
   },
 }

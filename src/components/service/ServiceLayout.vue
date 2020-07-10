@@ -50,6 +50,7 @@ import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
+import ServiceLocalRecorder from './ServiceLocalRecorder'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -67,7 +68,7 @@ export default {
       vm.$store.commit('clear')
     })
   },
-  mixins: [alarmMixin],
+  mixins: [alarmMixin, ServiceLocalRecorder],
   components: {
     HeaderSection,
     SubView,
@@ -112,19 +113,10 @@ export default {
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
-  },
-  async mounted() {
-    //test noti alarm message
-    //this logic work only test 17 account
-    const LICENSE_EXPIRED_LIMIT = 60000
-    if (this.account.uuid === '4705cf50e6d02c59b0eef9591666e2a3') {
-      this.alarmInfo()
-      this.alarmLicenseClose()
-      setTimeout(() => {
-        this.$call.leave()
-        this.$router.push({ name: 'workspace' })
-      }, LICENSE_EXPIRED_LIMIT)
-    }
+
+    this.stopRecord()
+    this.$eventBus.$off('startLocalRecord')
+    this.$eventBus.$off('stopLocalRecord')
   },
 }
 </script>

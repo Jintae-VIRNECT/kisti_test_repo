@@ -244,18 +244,17 @@ export const getSignalParams = function getSignalParams(
   return params
 }
 
-export const getReceiveParams = function getReceiveParams(type, params) {
+export const getReceiveParams = function getReceiveParams(type, params, scale) {
   //calculate scale
   // if (!params['scale'] || params['scale'] === 0) params['scale'] = 1
   for (let key in params) {
     if ('posX' === key) {
-      params['posX'] = originalPosX(parseFloat(params['posX']), params.imgWidth)
+      params['posX'] =
+        originalPosX(parseFloat(params['posX']), params.imgWidth) / scale
     }
     if ('posY' === key) {
-      params['posY'] = originalPosY(
-        parseFloat(params['posY']),
-        params.imgHeight,
-      )
+      params['posY'] =
+        originalPosY(parseFloat(params['posY']), params.imgHeight) / scale
     }
     // if (['width', 'height', 'size'].indexOf(key) >= 0) {
     //   params[key] = parseFloat(params[key]) / params.scale

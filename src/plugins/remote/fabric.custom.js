@@ -187,6 +187,6 @@ Fabric.Image.prototype.lockRotation = false
 Fabric.Image.prototype.setControlVisible('mtr', true)
 
 Fabric.IText.prototype.editable = true
-Fabric.IText.prototype.selectable = true
+Fabric.IText.prototype.selectable = false
 
 export const fabric = Fabric

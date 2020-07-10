@@ -22,7 +22,6 @@
   width: 5.143em;
   height: 5.143em;
   margin: 0 auto 2.5em;
-  background-color: $color_white;
   border-radius: 50%;
 }
 .roominfo-nav__menu {
@@ -65,7 +64,7 @@
     opacity: 0.5;
   }
 }
-.imageinput {
+.imageinput.btn {
   &.regist {
     margin-right: 1.143em;
     padding: 0.857em 3.071em;

@@ -1,6 +1,6 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
-import { SIGNAL, CONTROL, CAMERA, FLASH } from 'configs/remote.config'
+import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -150,8 +150,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-export const getUserObject = stream => {
-  console.log(stream)
+const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
@@ -177,7 +176,7 @@ export const getUserObject = stream => {
     nickname: participant.nickname,
     path: participant.path,
     audio: stream.audioActive,
-    video: stream.videoActive,
+    video: roleType === ROLE.WORKER,
     speaker: true,
     mute: false,
     status: 'good',
@@ -198,7 +197,7 @@ export const getUserObject = stream => {
 
   return streamObj
 }
-
+/*
 export const getStream = async constraints => {
   if (!navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia 없음')
@@ -221,3 +220,4 @@ export const getStream = async constraints => {
     console.error(err)
   }
 }
+*/

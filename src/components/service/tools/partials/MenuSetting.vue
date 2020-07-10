@@ -7,7 +7,10 @@
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
-    <record-setting :visible.sync="status"></record-setting>
+    <record-setting
+      :visible.sync="status"
+      :recording="recording"
+    ></record-setting>
   </div>
 </template>
 
@@ -26,6 +29,7 @@ export default {
   data() {
     return {
       status: false,
+      recording: false,
     }
   },
   computed: {
@@ -55,10 +59,26 @@ export default {
       this.status = !this.status
       this.$eventBus.$emit('lcRecSet:show')
     },
+    serverRecording(isStart) {
+      console.log('server record status :: ', isStart)
+    },
+    localRecording(isStart) {
+      if (isStart) {
+        this.recording = true
+      } else {
+        this.recording = false
+      }
+    },
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  beforeDestroy() {
+    this.$eventBus.$off('localRecord')
+    this.$eventBus.$off('serverRecord')
+  },
+  mounted() {
+    this.$eventBus.$on('localRecord', this.localRecording)
+    this.$eventBus.$on('serverRecord', this.serverRecording)
+  },
 }
 </script>

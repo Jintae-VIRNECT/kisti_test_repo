@@ -17,6 +17,7 @@ import DayJS from 'plugins/remote/dayjs'
 import call from 'plugins/remote/call'
 
 import { localStorage } from 'utils/storage'
+import { version } from '@/package.json'
 
 Vue.use(DayJS)
 Vue.use(VueToasted)
@@ -31,7 +32,7 @@ Vue.prototype.$localStorage = localStorage
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.version = '2.0.0'
+Vue.prototype.version = version
 
 export default new Vue({
   el: '#container',
@@ -44,7 +45,7 @@ export default new Vue({
 setTimeout(
   console.log.bind(
     console,
-    `%c VIRNECT Remote Service `,
-    'padding:4px 18px;background:linear-gradient(to right, #0064ff, #6700ff);font-size:32px;color:#fff;border-radius:15px',
+    `%cVIRNECT Remote v${version}`,
+    'padding:4px 18px;font-size:25px;color:#0f75f5;font-weight:500;',
   ),
 )
