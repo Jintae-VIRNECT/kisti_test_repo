@@ -1,0 +1,17 @@
+{
+  "name": "perf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "run.js",
+  "dependencies": {
+    "puppeteer-core": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "video": "node run.js video-element",
+    "2d": "node run.js 2d-canvas",
+    "3d": "node run.js 3d-canvas"
+  },
+  "author": "",
+  "license": "ISC"
+}

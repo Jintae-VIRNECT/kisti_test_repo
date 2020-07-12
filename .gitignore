@@ -4,3 +4,4 @@ recordings/
 build/
 logs/
 recordserver
+node_modules
