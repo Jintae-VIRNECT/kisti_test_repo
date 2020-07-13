@@ -64,6 +64,8 @@ cloud:
 serverUrl: "https://api.virnect.com"
 redirectUrl: "https://workstation.virnect.com"
 contactUrl: "https://virnect.com/contact/inquiry"
+accountUrl: "https://account.virnect.com"
+supportUrl: "https://virnect.com/contact/inquiry"
 
 ## Feign
 feign:

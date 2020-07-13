@@ -10,7 +10,6 @@ import lombok.Getter;
  * DESCRIPTION:
  */
 public enum Permission {
-    //workspace, group
     ALL(1L),
     MEMBER_MANAGEMENT(2L),
     GROUP_MANAGEMENT(3L),
