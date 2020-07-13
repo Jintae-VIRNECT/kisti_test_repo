@@ -3,6 +3,7 @@ export default {
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
   TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
   ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
+  // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
   GET_HISTORY_LIST: ['GET', '/media/history'],
@@ -34,6 +35,11 @@ export default {
   /* CALL */
   GET_TOKEN: ['POST', '/media/tokens'],
 
+  /* LICENSE */
+  GET_LICENSE: [
+    'GET',
+    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
+  ],
   /* MESSAGE */
   SEND_PUSH: ['POST', 'https://192.168.6.3:8073/messages/push'],
 }
