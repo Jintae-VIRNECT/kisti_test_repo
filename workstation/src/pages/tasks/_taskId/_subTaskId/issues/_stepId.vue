@@ -15,7 +15,7 @@
         :name="issue.issueId"
       >
         <template slot="title">
-          <span>{{ $t('results.issue') }} {{ index + 1 }}</span>
+          <span>{{ $t('results.issue') }} {{ issues.length - index }}</span>
           <el-divider direction="vertical" />
           <span>{{ issue.reportedDate | localTimeFormat }}</span>
         </template>
@@ -60,7 +60,7 @@ export default {
     })
     return {
       issues: list,
-      activeIssues: list.length === 1 ? [list[0].issueId] : [],
+      activeIssues: [list[0].issueId],
     }
   },
   data() {
