@@ -5,24 +5,26 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.video">
+      <!-- <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
         ></video>
-      </div>
-      <div class="participant-video__profile" v-else>
+      </div> -->
+      <div class="participant-video__profile">
         <audio
+          v-if="!participant.video && !participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
         ></audio>
         <img
+          v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
-          :src="participant.path ? participant.path : 'default'"
+          :src="participant.path"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -140,6 +142,9 @@ export default {
     speaker(val) {
       if (this.$el.querySelector('video')) {
         this.$el.querySelector('video').muted = val
+      }
+      if (this.$el.querySelector('audio')) {
+        this.$el.querySelector('audio').muted = val
       }
     },
   },

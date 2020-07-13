@@ -4,7 +4,6 @@
  */
 
 // import axios from 'api/axios'
-import ErrorList from './gateway.error.json'
 import { merge } from 'lodash'
 import Axios from 'axios'
 import Cookies from 'js-cookie'

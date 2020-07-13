@@ -82,7 +82,6 @@ const _ = {
       })
       publisher.on('streamCreated', () => {
         _.publisher = publisher
-        Store.commit('addStream', getUserObject(publisher.stream))
         _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
           Store.commit('updateResolution', {
@@ -90,10 +89,28 @@ const _ = {
             width: 0,
             height: 0,
           })
+          Store.commit('addStream', getUserObject(publisher.stream))
         }
       })
 
       _.session.publish(publisher)
+      if (!publishVideo) {
+        Store.commit('addStream', {
+          id: _.account.uuid,
+          stream: null,
+          connectionId: publisher.stream.session.connection.connectionId,
+          nickname: _.account.nickname,
+          path: _.account.path,
+          audio: false,
+          video: false,
+          speaker: true,
+          mute: false,
+          status: 'good',
+          roleType: role,
+          permission: 'default',
+          me: true,
+        })
+      }
       return true
     } catch (err) {
       console.error(err)
@@ -106,8 +123,12 @@ const _ = {
   leave: () => {
     try {
       _.session.disconnect()
+      _.account = null
       _.session = null
       _.publisher = null
+      _.subscribers = []
+      _.resolution = null
+      // 필요여부 체크할 것
     } catch (err) {
       throw err
     }

@@ -12,7 +12,7 @@
         <div class="profile__image">
           <profile
             :group="true"
-            :image="room.orgPath"
+            :image="room.path"
             :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
           ></profile>
         </div>

@@ -2,12 +2,7 @@
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
       <div class="profile--image" :class="{ group: group, image: useImage }">
-        <img
-          v-if="useImage"
-          :src="image"
-          :alt="mainText"
-          @error="onImageError"
-        />
+        <img v-if="useImage" :src="image" :alt="mainText" />
       </div>
       <!-- <span v-if="status" class="profile--badge" :class="status">{{
         status

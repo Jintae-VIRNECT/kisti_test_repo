@@ -51,7 +51,6 @@ export default {
       this.$refs['inputImage'].click()
     },
     imageRemove() {
-      if (!this.imageURL) return
       this.imageURL = ''
       this.imageFile = null
     },

@@ -33,8 +33,6 @@
         :srcObject.prop="audioStream"
         autoplay
       ></audio>
-      <!-- for camera permission -->
-      <!-- <video autoplay style="width:0px; height:0px"></video> -->
     </div>
   </section>
 </template>

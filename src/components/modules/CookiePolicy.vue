@@ -44,9 +44,9 @@ export default {
 
   .cookie-policy-wrapper__text {
     color: #ffffff;
-    font-size: 14px;
+    font-size: 1rem;
 
-    a {
+    > a {
       color: #fff;
       text-decoration: underline;
       text-decoration-color: #ffffff;
@@ -56,16 +56,16 @@ export default {
   @include mobile {
     .cookie-policy-wrapper {
       display: block;
-      padding: 18px 25px;
+      padding: 1.2857rem 1.7857rem;
       text-align: right;
     }
     .cookie-policy-wrapper__text {
-      font-size: 12px;
+      font-size: 0.8571rem;
       text-align: left;
     }
     .cookie-policy-wrapper__submit-button {
-      height: 34px;
-      margin-top: 12px;
+      height: 2.4286rem;
+      margin: 0.8571rem 0 0 0;
     }
   }
 }
@@ -76,16 +76,16 @@ export default {
   justify-content: space-between;
   max-width: 1080px;
   margin: auto;
-  padding: 28px 25px;
+  padding: 2rem 1.7857rem;
   text-align: left;
 }
 
 .cookie-policy-wrapper__submit-button {
-  width: 132px;
-  height: 42px;
+  width: 9.4286rem;
+  height: 3rem;
   color: #265da1;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
   background: #ffffff;
   border: 1px solid #ccd1d7;

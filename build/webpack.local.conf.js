@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const path = require('path')
 const fs = require('fs')
-const host = '127.0.0.1'
+const host = '0.0.0.0'
 const port = '8886'
 const logger = require('../server/logger')
 const Dotenv = require('dotenv-webpack')
@@ -42,6 +42,18 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         },
         {
           from: /support(\/.*)?/,
+          to: '/extra/index.html',
+        },
+        {
+          from: /policy(\/.*)?/,
+          to: '/extra/index.html',
+        },
+        {
+          from: /(\/)m(\/.*)?/,
+          to: '/extra/index.html',
+        },
+        {
+          from: /OSS(\/.*)?/,
           to: '/extra/index.html',
         },
         {

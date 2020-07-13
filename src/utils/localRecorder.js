@@ -150,6 +150,11 @@ export default class LocalRecorder {
         )
       }
 
+      if (this.maxTime === null) {
+        console.log('this.maxTime is null')
+        this.maxTime = 60
+      }
+
       if (this.totalPlayTime >= this.maxTime) {
         this.stopRecord()
       }

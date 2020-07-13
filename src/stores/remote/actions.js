@@ -228,4 +228,11 @@ export default {
   clearCapture({ commit }) {
     commit(types.CLEAR_CAPTURE)
   },
+
+  /**
+   * update local record status
+   */
+  setLocalRecordStatus({ commit }, status) {
+    commit(types.SETTINGS.SET_LCOAL_RECORD_STAUTS, status)
+  },
 }

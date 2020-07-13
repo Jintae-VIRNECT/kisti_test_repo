@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import { DRAWING, AR_DRAWING, ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 
