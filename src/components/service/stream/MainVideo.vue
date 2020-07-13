@@ -128,7 +128,6 @@ export default {
       serverTime: 0,
       serverStart: 0,
 
-      //기본순서 : 서버 시간, 로컬 시간
       firstClock: null,
       secondClock: null,
     }
