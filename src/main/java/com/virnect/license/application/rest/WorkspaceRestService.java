@@ -32,6 +32,6 @@ public interface WorkspaceRestService {
      * @param workspaceId - 워크스페이스 식별자
      * @return - 워크스페이스 정보
      */
-    @GetMapping("/workspaces/{workspaceId}")
+    @GetMapping("/workspaces/{workspaceId}/info")
     ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(@PathVariable("workspaceId") String workspaceId);
 }
