@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -38,7 +39,7 @@ public class CustomLicenseRepositoryImpl extends QuerydslRepositorySupport imple
                 .join(qLicenseProduct).on(qLicense.licenseProduct.eq(qLicenseProduct)).fetchJoin()
                 .join(qProduct).on(qLicenseProduct.product.eq(qProduct)).fetchJoin()
                 .join(qLicensePlan).on(qLicenseProduct.licensePlan.eq(qLicensePlan)).fetchJoin()
-                .where(qLicense.userId.eq(userId));
+                .where(qLicense.userId.eq(userId).and(qProduct.name.in(Arrays.asList("MAKE", "VIEW", "REMOTE"))));
 
         query.offset(pageable.getOffset());
         query.limit(pageable.getPageSize());
