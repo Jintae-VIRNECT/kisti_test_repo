@@ -100,7 +100,7 @@ const _ = {
           stream: null,
           connectionId: publisher.stream.session.connection.connectionId,
           nickname: _.account.nickname,
-          path: _.account.path,
+          path: _.account.profile,
           audio: false,
           video: false,
           speaker: true,

@@ -80,7 +80,8 @@ async function getAllDataArray() {
 async function getDataWithUserId(userId, dataHandler) {
   let result = await db.RemoteMediaChunk.where('userId')
     .equals(userId)
-    .toArray()
+    .reverse()
+    .sortBy('id')
 
   if (dataHandler && typeof dataHandler === 'function') {
     result = result.map(dataHandler)
