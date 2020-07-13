@@ -60,24 +60,16 @@
 .main-video__recording {
   position: absolute;
   top: 1rem;
-  left: 1rem;
+  display: flex;
+  margin: 0 0 0 0.4286rem;
+}
+
+.main-video__recording--time {
   width: 5.8571rem;
   height: 2.4286rem;
+  margin: 0 0 0 0.5714rem;
+  background: rgba($color_darkgray_1000, 0.6);
   border-radius: 4px;
-
-  &.first {
-    top: 1rem;
-    left: 1rem;
-  }
-
-  &.second {
-    top: 1rem;
-    left: 7.4286rem;
-  }
-
-  &.show {
-    background: rgba($color_darkgray_1000, 0.6);
-  }
 
   > p {
     margin-left: 0.7143rem;
