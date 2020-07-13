@@ -109,28 +109,15 @@ function useTabs({ $route, $api }) {
  */
 function useStickyNav() {
   let snbTop = 0
-  let didScroll = 0
 
-  function hasScrolled() {
-    const header = document.querySelector('#headerSection')
-    const tab = document.querySelector('.el-tabs')
-    if (window.pageYOffset > didScroll) {
-      header.classList.add('sticky-pushup')
-      tab.classList.add('sticky')
-    } else {
-      header.classList.remove('sticky-pushup')
-      tab.classList.remove('sticky')
-    }
-    didScroll = window.pageYOffset
-  }
   function snbNav() {
     const scrollY = window.pageYOffset
-    snbTop = document.querySelector('.el-tabs').offsetTop
+    const tab = document.querySelector('.el-tabs')
+    snbTop = tab.offsetTop
     if (scrollY > snbTop) {
-      document.querySelector('#headerSection').classList.add('sticky-pushup')
-      hasScrolled()
+      tab.classList.add('sticky')
     } else {
-      document.querySelector('#headerSection').classList.remove('sticky-pushup')
+      tab.classList.remove('sticky')
     }
   }
 
@@ -140,7 +127,6 @@ function useStickyNav() {
   })
   onUnmounted(() => {
     window.removeEventListener('scroll', snbNav)
-    window.removeEventListener('scroll', hasScrolled)
   })
 }
 </script>
@@ -194,8 +180,9 @@ function useStickyNav() {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 10;
     width: 100%;
-    background: #fff;
+    background: transparent;
     border-bottom: solid 1px #f3f6f9;
     .el-tabs__nav-wrap {
       width: 630px;
@@ -207,7 +194,6 @@ function useStickyNav() {
   }
   .el-tabs.sticky .el-tabs__header {
     position: fixed;
-    z-index: 1;
   }
 
   .el-tabs__content {
