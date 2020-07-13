@@ -458,7 +458,6 @@ public class TaskService {
         }
     }
 
-    // TODO 수정필요.
     @Transactional
     public ApiResponse<ProcessRegisterResponse> duplicateTheProcess(ProcessDuplicateRequest duplicateRequest) {
         // 공정 생성 요청 처리
@@ -1930,6 +1929,8 @@ public class TaskService {
                     .progressRate(job.getProgressRate())
                     .conditions(job.getConditions())
                     .build();
+
+
             // report, issue는 job 하위에 1개씩만 생성하는 것으로 메이크와 협의됨.
             if (job.getReportList().size() > 0) {
                 JobResponse.Paper paper = JobResponse.Paper.builder()
@@ -1937,8 +1938,9 @@ public class TaskService {
                         .build();
                 jobResponse.setPaper(paper);
             }
+            List<JobResponse.Issue> jobIssueList = new ArrayList<>();
+
             if (job.getIssueList().size() > 0) {
-                List<JobResponse.Issue> jobIssueList = new ArrayList<>();
 
                 for (Issue issue : job.getIssueList()){
                     JobResponse.Issue jobIssue = JobResponse.Issue.builder()
@@ -1950,9 +1952,9 @@ public class TaskService {
 
                     jobIssueList.add(jobIssue);
                 }
-
-                jobResponse.setIssueList(jobIssueList);
             }
+            // null 값이 아닌 [] 값을 리턴하기 위해 밖으로 뺌.
+            jobResponse.setIssueList(jobIssueList);
             return jobResponse;
         }).collect(Collectors.toList());
 
@@ -2431,7 +2433,8 @@ public class TaskService {
         }
 
         List<WorkspaceUserInfoResponse> list = new ArrayList<>();
-        
+
+        // 기존 페이징 처리와는 다른 부분이어서 따로 페이징 처리함.
         int currentPage = pageable.getPageNumber();
         int currentSize = pageable.getPageSize();
         int totalElements = resultList.size();
