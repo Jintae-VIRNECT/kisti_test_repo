@@ -69,21 +69,24 @@
         <span>알림은 30일 동안 보관됩니다.</span>
       </div>
     </div>
-    <!-- <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio> -->
+    </audio>
   </popover>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import { KEY, EVENT } from 'configs/push.config'
+import { sendPush } from 'api/common/message'
+
 import Switcher from 'Switcher'
 import Popover from 'Popover'
 import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
 import NoticeItem from './NoticeItem'
+
 import alarmMixin from 'mixins/alarm'
-import { mapActions } from 'vuex'
-import { EVENT } from 'configs/push.config'
 import roomMixin from 'mixins/room'
 
 export default {
@@ -99,6 +102,7 @@ export default {
   data() {
     return {
       onPush: true,
+      key: this.$route.name,
     }
   },
   watch: {
@@ -116,18 +120,24 @@ export default {
       if (this.onPush) return
       console.log('notice list refresh logic')
     },
-    alarmListener(listen) {
+    async alarmListener(listen) {
       if (!this.onPush) return
       const body = JSON.parse(listen.body)
+
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
 
       switch (body.event) {
         case EVENT.INVITE:
-          // this.$refs['noticeAudio'].play()
-          this.alarmInvite(body.contents, () =>
-            this.joinRoom(body.contents.roomId),
+          this.$refs['noticeAudio'].play()
+          this.alarmInvite(
+            body.contents,
+            () => this.joinRoom(body.contents.roomId),
+            () => this.inviteDenied(body.userId),
           )
+          break
+        case EVENT.INVITE_DENIED:
+          this.alarmInviteDenied(body.contents.nickName)
           break
         case EVENT.LICENSE_EXPIRATION:
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
@@ -137,6 +147,20 @@ export default {
           break
       }
     },
+    async inviteDenied(userId) {
+      const params = {
+        service: KEY.SERVICE_TYPE,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        targetUserIds: [userId],
+        event: EVENT.INVITE_DENIED,
+        contents: {
+          nickName: this.account.nickname,
+        },
+      }
+
+      await sendPush(params)
+    },
   },
 
   /* Lifecycles */
@@ -144,13 +168,13 @@ export default {
     const push = this.$localStorage.getItem('push')
     if (push === 'true') {
       this.onPush = true
-    } else {
+    } else if (push === 'false') {
       this.onPush = false
     }
-    this.$push.addListener(this.$route.name, this.alarmListener)
+    this.$push.addListener(this.key, this.alarmListener)
   },
   beforeDestroy() {
-    this.$push.removeListener(this.$route.name)
+    this.$push.removeListener(this.key)
   },
 }
 </script>

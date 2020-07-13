@@ -15,7 +15,7 @@ export default {
      * @param {String, String} userInfo { nickName, profile }
      * @param {function} accept
      */
-    alarmInvite({ nickName, profile }, accept) {
+    alarmInvite({ nickName, profile }, accept, deny) {
       const refuse = () => {
         inviteNotify.text(
           this.buildTemplate({
@@ -51,12 +51,24 @@ export default {
             {
               text: '거절',
               class: 'btn small sub',
-              onClick: refuse,
+              onClick: () => {
+                refuse()
+                deny()
+              },
             },
           ],
         },
       })
-      console.log(inviteNotify)
+    },
+    /**
+     * 참가자 협업 초대 거절
+     * @param {String} nickName
+     */
+    alarmInviteDenied(nickName) {
+      this.alarmInfo(
+        '[협업 거절]',
+        `${nickName}님이<br> 협업 요청을 거절하였습니다.`,
+      )
     },
     /**
      * 시스템 알림 메시지
@@ -172,7 +184,6 @@ export default {
         `
         </figcaption>
       </figure>`
-      console.log(fullTemplate)
 
       return fullTemplate
     },
