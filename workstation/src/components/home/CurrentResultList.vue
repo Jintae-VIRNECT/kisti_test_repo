@@ -181,8 +181,8 @@ export default {
     moveToPaper({ taskId, subTaskId, paperId }) {
       this.$router.push(`/tasks/${taskId}/${subTaskId}/papers/${paperId}`)
     },
-    moveToIssue({ taskId, subTaskId, issueId }) {
-      this.$router.push(`/tasks/${taskId}/${subTaskId}/issues/${issueId}`)
+    moveToIssue({ taskId, subTaskId, stepId }) {
+      this.$router.push(`/tasks/${taskId}/${subTaskId}/issues/${stepId}`)
     },
     async searchTabItems() {
       if (this.activeTab === 'task') {

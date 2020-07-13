@@ -147,7 +147,7 @@
             >
               <template slot-scope="scope">
                 <el-button
-                  v-if="scope.row.issue"
+                  v-if="scope.row.hasIssue"
                   @click="moveToIssue(scope.row.id)"
                 >
                   {{ $t('task.subTaskDetail.showIssue') }}
