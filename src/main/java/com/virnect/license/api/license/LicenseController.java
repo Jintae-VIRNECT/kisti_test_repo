@@ -174,7 +174,7 @@ public class LicenseController {
         if (StringUtils.isEmpty(userId)) {
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MyLicensePlanInfoListResponse> responseMessage = licenseService.getMyLicensePlanInfoList(userId, pageRequest.of());
+        ApiResponse<MyLicensePlanInfoListResponse> responseMessage = licenseService.getMyLicensePlanInfoList(userId, pageRequest);
         return ResponseEntity.ok(responseMessage);
     }
 }

@@ -8,13 +8,15 @@ import com.virnect.license.domain.licenseplan.QLicensePlan;
 import com.virnect.license.domain.product.QLicenseProduct;
 import com.virnect.license.domain.product.QProduct;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;    
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
 
+@Slf4j
 public class CustomLicenseRepositoryImpl extends QuerydslRepositorySupport implements CustomLicenseRepository {
     public CustomLicenseRepositoryImpl() {
         super(License.class);
@@ -38,8 +40,9 @@ public class CustomLicenseRepositoryImpl extends QuerydslRepositorySupport imple
                 .join(qLicensePlan).on(qLicenseProduct.licensePlan.eq(qLicensePlan)).fetchJoin()
                 .where(qLicense.userId.eq(userId));
 
-        List<UserLicenseDetailsInfo> userLicenseDetailsInfoList = getQuerydsl().applyPagination(pageable, query).fetch();
-
+        query.offset(pageable.getOffset());
+        query.limit(pageable.getPageSize());
+        List<UserLicenseDetailsInfo> userLicenseDetailsInfoList = query.fetch();
         return new PageImpl<>(userLicenseDetailsInfoList, pageable, query.fetchCount());
     }
 }

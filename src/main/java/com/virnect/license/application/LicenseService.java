@@ -29,6 +29,7 @@ import com.virnect.license.dto.rest.WorkspaceInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageMetadataResponse;
+import com.virnect.license.global.common.PageRequest;
 import com.virnect.license.global.error.ErrorCode;
 import com.virnect.license.infra.mail.EmailMessage;
 import com.virnect.license.infra.mail.EmailService;
@@ -494,7 +495,9 @@ public class LicenseService {
         }
     }
 
-    public ApiResponse<MyLicensePlanInfoListResponse> getMyLicensePlanInfoList(String userId, Pageable pageable) {
+    public ApiResponse<MyLicensePlanInfoListResponse> getMyLicensePlanInfoList(String userId, PageRequest pageRequest) {
+        Pageable pageable = pageRequest.of();
+        log.info("{}", pageRequest.toString());
         Page<UserLicenseDetailsInfo> licenseDetailsInfoList = licenseRepository.findAllMyLicenseInfo(userId, pageable);
         List<MyLicensePlanInfoResponse> myLicensePlanInfoList = new ArrayList<>();
 
@@ -517,6 +520,37 @@ public class LicenseService {
                 .totalElements(licenseDetailsInfoList.getTotalElements())
                 .build();
 
+        // sorting
+        myLicensePlanInfoList = myLicensePlanInfoList.stream()
+                .sorted(getComparatorOfMyLicensePlainListResponse(pageRequest.getSort()))
+                .collect(Collectors.toList());
+
         return new ApiResponse<>(new MyLicensePlanInfoListResponse(myLicensePlanInfoList, pageMetadataResponse));
+    }
+
+    /**
+     * MyLicensePlainInfo 정렬 함수
+     * @param sortString - 정렬 필드 및 방법 (renewalDate, planProduct, workspaceName)
+     * @return
+     */
+    private Comparator<? super MyLicensePlanInfoResponse> getComparatorOfMyLicensePlainListResponse(String sortString) {
+        String[] sortQuery = sortString.split(",");
+        String properties = sortQuery[0];
+        String sort = sortQuery[1].toUpperCase();
+        Comparator comparator;
+
+        log.info("[CUSTOM_SORTING] - [{} -> {}]", properties, sort);
+        if (properties.equals("planProduct")) {
+            comparator = Comparator.comparing(MyLicensePlanInfoResponse::getPlanProduct);
+        } else if (properties.equals("workspaceName")) {
+            comparator = Comparator.comparing(MyLicensePlanInfoResponse::getWorkspaceName);
+        } else {
+            comparator = Comparator.comparing(MyLicensePlanInfoResponse::getRenewalDate).reversed();
+        }
+
+        if (sort.equals("DESC")) {
+            return comparator.reversed();
+        }
+        return comparator;
     }
 }
