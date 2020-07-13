@@ -24,6 +24,10 @@ export default new VueRouter({
       children: MobileRouter,
     },
     {
+      path: '/OSS',
+      redirect: '/OSS/mobile',
+    },
+    {
       path: '/OSS/:type',
       name: 'OSS',
       props: true,

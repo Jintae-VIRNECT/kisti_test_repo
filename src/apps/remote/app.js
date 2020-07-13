@@ -46,6 +46,6 @@ setTimeout(
   console.log.bind(
     console,
     `%cVIRNECT Remote v${version}`,
-    'padding:4px;font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
+    'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )

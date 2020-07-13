@@ -763,18 +763,24 @@
 <script>
 export default {
   name: 'policy-oss',
+  beforeRouteEnter(to, from, next) {
+    if (to.params && ['mobile', 'realwear'].includes(to.params.type)) {
+      next()
+      return
+    }
+    next('/OSS/mobile')
+  },
   data() {
     return {
-      serviceType: 'Android',
       licenses: require(`./${this.type}.json`),
     }
   },
   props: {
     type: {
       type: String,
-      validator: value => {
-        return ['android', 'realwear'].includes(value)
-      },
+      // validator: value => {
+      //   return ['mobile', 'realwear'].includes(value)
+      // },
     },
   },
 }

@@ -1,6 +1,6 @@
 import Terms from 'components/policy/PolicyTerms'
 import Privacy from 'components/policy/PolicyPrivacy'
-import Cookie from 'components/policy/CookieAgree'
+// import Cookie from 'components/policy/CookieAgree'
 // import OSSComponent from 'components/OpenSourceSW'
 
 export default [
@@ -20,12 +20,12 @@ export default [
     name: 'privacy',
     component: Privacy,
   },
-  {
-    // 쿠키취급방침
-    path: 'cookie',
-    name: 'cookie',
-    component: Cookie,
-  },
+  // {
+  //   // 쿠키취급방침
+  //   path: 'cookie',
+  //   name: 'cookie',
+  //   component: Cookie,
+  // },
   {
     path: '*',
     redirect: { name: 'terms' },

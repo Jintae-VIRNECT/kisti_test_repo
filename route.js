@@ -53,7 +53,19 @@ router.get('/support', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
 })
 
+router.get('/policy/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+})
+
+router.get('/policy', function(req, res) {
+  res.redirect('/policy/terms')
+})
+
 router.get('/OSS/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+})
+
+router.get('/OSS', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
 })
 

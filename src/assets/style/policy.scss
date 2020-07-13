@@ -42,16 +42,6 @@
     padding: 20px;
   }
 
-  .tit_virnectcorp {
-    display: none;
-  }
-  .link_nav {
-    display: none;
-  }
-  .box_opt {
-    display: block;
-  }
-
   .list_opt {
     display: flex;
     overflow: hidden;
@@ -97,16 +87,6 @@
 @media only screen and (min-width: $size_pc_min+1) {
   .head_virnectcorp {
     padding-top: 80px;
-  }
-
-  .tit_virnectcorp {
-    display: none;
-  }
-  .link_nav {
-    display: none;
-  }
-  .box_opt {
-    display: block;
   }
 
   .list_opt {
