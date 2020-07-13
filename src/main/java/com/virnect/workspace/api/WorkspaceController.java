@@ -149,7 +149,7 @@ public class WorkspaceController {
     }
 
     @ApiOperation(
-            value = "워크스페이스 정보 조회",
+            value = "워크스페이스 상세 정보 조회",
             notes = "워크스페이스 홈에서 워크스페이스의 정보를 조회합니다."
     )
     @GetMapping("/home/{workspaceId}")
