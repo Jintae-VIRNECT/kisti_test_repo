@@ -350,7 +350,7 @@ public class WorkspaceService {
      * @param userId      - 사용자 uuid
      * @return - 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceInfoResponse> getWorkspaceInfo(String workspaceId) {
+    public ApiResponse<WorkspaceInfoResponse> getWorkspaceDetailInfo(String workspaceId) {
         //workspace 정보 set
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceInfoDTO workspaceInfo = modelMapper.map(workspace, WorkspaceInfoDTO.class);
@@ -392,6 +392,15 @@ public class WorkspaceService {
             }
         }
         return new ApiResponse<>(new WorkspaceInfoResponse(workspaceInfo, userInfoList, masterUserCount, managerUserCount, memberUserCount, remotePlanCount, makePlanCount, viewPlanCount));
+    }
+
+
+    public ApiResponse<WorkspaceInfoDTO> getWorkspaceInfo(String workspaceId) {
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId)
+                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(workspace, WorkspaceInfoDTO.class);
+        workspaceInfoDTO.setMasterUserId(workspace.getUserId());
+        return new ApiResponse<>(workspaceInfoDTO);
     }
 
     /**
