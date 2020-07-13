@@ -42,10 +42,18 @@ export default {
    * @param {Object} searchParams
    */
   async searchUsingPlans(searchParams) {
-    const data = [0, 1, 2, 3, 4]
+    const { myPlanInfoList, pageMeta } = await api('GET_MY_PLAN_LIST', {
+      route: {
+        userId: profileServices.getMyProfile().uuid,
+      },
+      params: {
+        size: 6,
+        ...searchParams,
+      },
+    })
     return {
-      list: data.map(plan => new Plan(plan)),
-      total: data.length,
+      list: myPlanInfoList.map(plan => new Plan(plan)),
+      total: pageMeta.totalElements,
     }
   },
 }

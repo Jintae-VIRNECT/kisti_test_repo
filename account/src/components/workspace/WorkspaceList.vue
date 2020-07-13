@@ -33,6 +33,7 @@
       v-if="!isHome"
       ref="page"
       :value.sync="workspacesPage"
+      :pageSize="6"
       :total="workspacesTotal"
     />
   </div>
@@ -69,7 +70,7 @@ export default {
   },
   beforeMount() {
     this.searchWorkspaces({
-      size: this.isHome ? 5 : 10,
+      size: this.isHome ? 5 : 6,
     })
   },
 }

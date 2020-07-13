@@ -27,6 +27,7 @@
       v-if="!isHome"
       ref="page"
       :value.sync="plansPage"
+      :pageSize="6"
       :total="plansTotal"
     />
   </div>
@@ -63,7 +64,7 @@ export default {
   },
   beforeMount() {
     this.searchUsingPlans({
-      size: this.isHome ? 5 : 10,
+      size: this.isHome ? 5 : 6,
     })
   },
 }

@@ -19,6 +19,8 @@ module.exports = {
   GET_LICENSE_MEMBERS: ['GET', '/workspaces/{workspaceId}/members/license'],
   // 워크스페이스 라이선스 플랜 정보 조회
   GET_WORKSPACE_PLAN_INFO: ['GET', '/licenses/{workspaceId}/plan'],
+  // 사용중인 플랜 목록 조회
+  GET_MY_PLAN_LIST: ['GET', '/licenses/plan/{userId}'],
   /**
    * 페이레터 API
    */

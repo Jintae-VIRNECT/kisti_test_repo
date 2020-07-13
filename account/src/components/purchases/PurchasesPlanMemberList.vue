@@ -18,6 +18,7 @@
     <searchbar-page
       ref="page"
       :value.sync="planMembersPage"
+      :pageSize="8"
       :total="planMembersTotal"
     />
   </div>
