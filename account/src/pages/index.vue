@@ -4,8 +4,10 @@
     <div class="container">
       <el-row>
         <section class="page-description">
-          <div class="avatar"></div>
-          <h2>{{ $t('home.title.welcome', { username: me.name }) }}</h2>
+          <div class="avatar">
+            <div class="image" :style="`background-image: url(${me.image})`" />
+          </div>
+          <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
         </section>
       </el-row>
@@ -65,6 +67,7 @@ import UsingPlanList from '@/components/workspace/UsingPlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
 import purchaseService from '@/services/purchases'
 import paymentService from '@/services/payment'
+import profileService from '@/services/profile'
 
 export default {
   components: {
@@ -86,9 +89,7 @@ export default {
   },
   data() {
     return {
-      me: {
-        name: '사용자 닉네임',
-      },
+      me: profileService.getMyProfile(),
     }
   },
 }
