@@ -51,6 +51,8 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { sendFile } from 'api/workspace/call'
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
+
 export default {
   name: 'ChatInput',
   components: {},
@@ -119,7 +121,7 @@ export default {
       // })
     },
 
-    doSend(e) {
+    async doSend(e) {
       console.log(e)
       if (e) {
         e.preventDefault()
@@ -127,25 +129,41 @@ export default {
       this.$call.sendChat(this.inputText)
 
       if (this.fileList.length > 0) {
-        console.log(this.fileList)
-        console.log('do someting with fileList')
-        this.fileList.forEach(file => {
-          const params = {
-            fileName: file.filedata.name,
-            mimeType: file.filedata.type,
-            size: file.filedata.size,
-            fileDownloadUrl: 'test url',
-          }
+        for (const file of this.fileList) {
           console.log(file)
-          const response = sendFile(
+          const response = await sendFile(
             file.filedata,
             this.room.roomId,
             this.workspace.uuid,
           )
           console.log(response)
 
+          const params = {
+            fileName: file.filedata.name,
+            mimeType: file.filedata.type,
+            size: file.filedata.size,
+            fileDownloadUrl: response.downloadUrl,
+          }
+
           this.$call.sendFile(params)
-        })
+
+          this.chatList.push(
+            new ChatMsgBuilder()
+              .setType('me')
+              .setName('펭수')
+              .setFile([
+                {
+                  fileName: file.filedata.name,
+                  fileSize: file.filedata.size,
+                  fileUrl: response.downloadUrl,
+                },
+              ])
+              .build(),
+          )
+
+          this.clearUploadFile()
+          this.fileList = []
+        }
       }
 
       this.inputText = ''
@@ -154,6 +172,7 @@ export default {
       this.$refs['inputFile'].click()
     },
     fileUpload(e) {
+      console.log('fileUpload :: ', e)
       const files = e.target.files
       if (files.length > 0) {
         this.loadFile(files[0])

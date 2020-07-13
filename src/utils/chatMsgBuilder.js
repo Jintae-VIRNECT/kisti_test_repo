@@ -1,9 +1,5 @@
 import linkifyHtml from 'linkifyjs/html'
 
-/**
- * @author ykmo-VIRNECT
- */
-
 const typeList = ['me', 'opponent', 'system']
 const subTypeList = ['alarm', 'people', 'cancel', 'ar', 'board']
 
