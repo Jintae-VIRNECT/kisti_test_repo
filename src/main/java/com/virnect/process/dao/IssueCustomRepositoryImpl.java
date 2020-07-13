@@ -64,7 +64,7 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public Page<Issue> getIssuesIn(String myUUID, String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable) {
+    public Page<Issue> getIssuesIn(String myUUID, String workspaceUUID, String search, Long stepId, List<String> userUUIDList, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(myUUID, workspaceUUID);
 
         // 문제의 소지가 될 수 있는 쿼리.
@@ -73,6 +73,10 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
             query.where(QIssue.issue.content.contains(search));
             query.where(QSubProcess.subProcess.name.contains(search));
             query.where(QProcess.process.name.contains(search));
+        }
+
+        if (Objects.nonNull(stepId)) {
+            query.where(QJob.job.id.eq(stepId));
         }
 
         if (!userUUIDList.isEmpty()) {
@@ -110,7 +114,7 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     public Page<Issue> getIssuesInSearchJobTitle(String userUUID, String workspaceUUID, String title, Pageable pageable) {
         JPQLQuery<Issue> query = defaultQuery(userUUID, workspaceUUID);
 
-        query.where(QJob.job.job.name.contains(title));
+        query.where(QJob.job.name.contains(title));
 
         List<Issue> issueList = getQuerydsl().applyPagination(pageable, query).fetch();
 

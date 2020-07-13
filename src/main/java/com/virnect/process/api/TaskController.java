@@ -206,15 +206,17 @@ public class TaskController {
             @ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 이슈용)", dataType = "string", paramType = "query", defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
+            @ApiImplicitParam(name = "stepId", value = "스텝ID", dataType = "string", paramType = "query")
     })
     @GetMapping("/issues")
     public ResponseEntity<ApiResponse<IssuesResponse>> getIssues(
             @RequestParam(value = "workspaceUUID", required = false, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8") String workspaceUUID
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "myUUID", required = false) String myUUID
+            , @RequestParam(value = "stepId", required = false) Long stepId
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<IssuesResponse> issuesResponseApiResponse = this.taskService.getIssuesIn(myUUID, workspaceUUID, search, pageable.of());
+        ApiResponse<IssuesResponse> issuesResponseApiResponse = this.taskService.getIssuesIn(myUUID, workspaceUUID, search, stepId, pageable.of());
         // 검색어가 없다면 검색분류도 없는 것으로 처리.
 //        if (search == null || search.isEmpty()) {
 //            searchType = SearchType.NONE;

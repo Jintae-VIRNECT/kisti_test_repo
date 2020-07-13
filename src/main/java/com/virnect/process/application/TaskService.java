@@ -946,7 +946,7 @@ public class TaskService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesIn(String userUUID, String workspaceUUID, String search, Pageable pageable) {
+    public ApiResponse<IssuesResponse> getIssuesIn(String userUUID, String workspaceUUID, String search, Long stepId, Pageable pageable) {
 
         List<String> userUUIDList = new ArrayList<>();
 
@@ -956,7 +956,7 @@ public class TaskService {
             userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         }
 
-        Page<Issue> issuePage = this.issueRepository.getIssuesIn(userUUID, workspaceUUID, search, userUUIDList, pageable);
+        Page<Issue> issuePage = this.issueRepository.getIssuesIn(userUUID, workspaceUUID, search, stepId, userUUIDList, pageable);
 
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
