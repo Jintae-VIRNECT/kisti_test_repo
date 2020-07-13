@@ -10,15 +10,6 @@ export default {
         `라이선스 만료 <em>[${time}분]</em> 남았습니다.`,
       )
     },
-    alarmMessage() {
-      this.callNotify({
-        type: 'message',
-        info: 'Nari Han 님',
-        description:
-          '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십',
-        icon: require('assets/image/profile.png'),
-      })
-    },
     /**
      * 참가자 협업 초대
      * @param {String, String} userInfo { nickName, profile }
@@ -40,6 +31,7 @@ export default {
             },
           }),
         )
+        inviteNotify.goAway(3000)
       }
       const inviteNotify = this.callNotify({
         type: 'invite',
@@ -51,7 +43,10 @@ export default {
             {
               text: '수락',
               class: 'btn small',
-              onClick: accept,
+              onClick: () => {
+                inviteNotify.goAway()
+                accept()
+              },
             },
             {
               text: '거절',
@@ -92,6 +87,15 @@ export default {
         //     },
         //   },
         // },
+      })
+    },
+    alarmMessage() {
+      this.callNotify({
+        type: 'message',
+        info: 'Nari Han 님',
+        description:
+          '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십',
+        icon: require('assets/image/profile.png'),
       })
     },
     alarmFail() {

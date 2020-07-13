@@ -69,9 +69,9 @@
         <span>알림은 30일 동안 보관됩니다.</span>
       </div>
     </div>
-    <audio preload="auto" ref="noticeAudio">
+    <!-- <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio>
+    </audio> -->
   </popover>
 </template>
 
@@ -103,7 +103,6 @@ export default {
   },
   watch: {
     onPush(push) {
-      console.log(push)
       if (push) {
         this.$localStorage.setItem('push', 'true')
       } else {
@@ -115,23 +114,17 @@ export default {
     ...mapActions(['setRoomInfo', 'roomClear']),
     notice() {
       if (this.onPush) return
-      console.log('refresh')
-      // this.$nextTick(() => {
-      //   console.log(this.$refs['noticeScroller'])
-      //   this.$refs['noticeScroller'].scrollReset()
-      // })
+      console.log('notice list refresh logic')
     },
     alarmListener(listen) {
-      console.log(this.onPush)
       if (!this.onPush) return
       const body = JSON.parse(listen.body)
-      console.log(body)
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
 
       switch (body.event) {
         case EVENT.INVITE:
-          this.$refs['noticeAudio'].play()
+          // this.$refs['noticeAudio'].play()
           this.alarmInvite(body.contents, () =>
             this.joinRoom(body.contents.roomId),
           )
