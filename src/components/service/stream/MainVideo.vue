@@ -18,11 +18,31 @@
       ></video>
       <template v-if="loaded">
         <div
-          class="main-video__recording"
-          :class="{ show: serverTimer || localTimer }"
+          v-if="firstClock"
+          class="main-video__recording first"
+          :class="{ show: firstClock }"
         >
-          <p class="server" v-if="serverTimer">{{ serverTime | timeFilter }}</p>
-          <p class="local" v-if="localTimer">{{ localTime | timeFilter }}</p>
+          <p
+            :class="{
+              server: serverTimer,
+              local: !serverTimer && localTimer,
+            }"
+          >
+            {{ firstClock | timeFilter }}
+          </p>
+        </div>
+        <div
+          v-if="secondClock"
+          class="main-video__recording second"
+          :class="{ show: secondClock }"
+        >
+          <p
+            :class="{
+              local: localTimer,
+            }"
+          >
+            {{ secondClock | timeFilter }}
+          </p>
         </div>
 
         <pointing
@@ -107,6 +127,9 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
+
+      firstClock: null,
+      secondClock: null,
     }
   },
   computed: {
@@ -267,10 +290,22 @@ export default {
           this.localTime = this.$dayjs
             .duration(diff, 'seconds')
             .as('milliseconds')
+
+          if (this.serverTimer) {
+            this.secondClock = this.localTime
+          } else {
+            this.firstClock = this.localTime
+          }
         }, 1000)
       } else {
         clearInterval(this.localTimer)
         this.localTimer = null
+
+        if (this.serverTimer) {
+          this.secondClock = null
+        } else {
+          this.firstClock = null
+        }
       }
     },
     serverRecord(isStart) {
@@ -282,10 +317,24 @@ export default {
           this.serverTime = this.$dayjs
             .duration(diff, 'seconds')
             .as('milliseconds')
+
+          if (this.localTimer) {
+            this.firstClock = this.serverTime
+            this.secondClock = this.localTime
+          } else {
+            this.firstClock = this.serverTime
+          }
         }, 1000)
       } else {
         clearInterval(this.serverTimer)
         this.serverTimer = null
+
+        if (this.localTimer) {
+          this.firstClock = this.localTimer
+          this.secondClock = null
+        } else {
+          this.firstClock = null
+        }
       }
     },
   },

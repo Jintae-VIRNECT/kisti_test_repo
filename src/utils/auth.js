@@ -16,7 +16,7 @@ let refreshToken = null
 let myInfo = {}
 let myWorkspaces = []
 const intervalTime = 5 * 60 * 1000 // 5 minutes
-const renewvalTime = 5 * 60 // 5 minutes
+const renewvalTime = 10 * 60 // 5 minutes
 let interval
 
 /**

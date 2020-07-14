@@ -16,10 +16,13 @@ import DayJS from 'plugins/remote/dayjs'
 
 import call from 'plugins/remote/call'
 
+import PUSH from 'plugins/remote/push'
+
 import { localStorage } from 'utils/storage'
 import { version } from '@/package.json'
 
 Vue.use(DayJS)
+Vue.use(PUSH)
 Vue.use(VueToasted)
 Vue.use(Alarm)
 
@@ -46,6 +49,6 @@ setTimeout(
   console.log.bind(
     console,
     `%cVIRNECT Remote v${version}`,
-    'padding:4px 18px;font-size:25px;color:#0f75f5;font-weight:500;',
+    'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )

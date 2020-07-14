@@ -1,5 +1,5 @@
 import { OpenVidu } from './openvidu'
-import { addSessionEventListener } from './RemoteUtils'
+import { addSessionEventListener, getUserObject } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
@@ -89,25 +89,28 @@ const _ = {
             width: 0,
             height: 0,
           })
+          Store.commit('addStream', getUserObject(publisher.stream))
         }
       })
 
       _.session.publish(publisher)
-      Store.commit('addStream', {
-        id: _.account.uuid,
-        stream: null,
-        connectionId: publisher.stream.session.connection.connectionId,
-        nickname: _.account.nickname,
-        path: _.account.path,
-        audio: false,
-        video: false,
-        speaker: true,
-        mute: false,
-        status: 'good',
-        roleType: role,
-        permission: 'default',
-        me: true,
-      })
+      if (!publishVideo) {
+        Store.commit('addStream', {
+          id: _.account.uuid,
+          stream: null,
+          connectionId: publisher.stream.session.connection.connectionId,
+          nickname: _.account.nickname,
+          path: _.account.profile,
+          audio: false,
+          video: false,
+          speaker: true,
+          mute: false,
+          status: 'good',
+          roleType: role,
+          permission: 'default',
+          me: true,
+        })
+      }
       return true
     } catch (err) {
       console.error(err)

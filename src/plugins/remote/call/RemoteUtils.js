@@ -2,6 +2,7 @@ import Store from 'stores/remote/store'
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
+import { allowCamera } from 'utils/testing'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
@@ -182,7 +183,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-const getUserObject = stream => {
+export const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
@@ -199,6 +200,10 @@ const getUserObject = stream => {
     console.error('참여자 정보를 찾을 수 없습니다.')
     return
   }
+  let allowUser = false
+  if (allowCamera.includes(_.account.email)) {
+    allowUser = true
+  }
 
   streamObj = {
     id: uuid,
@@ -208,7 +213,7 @@ const getUserObject = stream => {
     nickname: participant.nickname,
     path: participant.path,
     audio: stream.audioActive,
-    video: roleType === ROLE.WORKER,
+    video: roleType === ROLE.WORKER || allowUser,
     speaker: true,
     mute: false,
     status: 'good',

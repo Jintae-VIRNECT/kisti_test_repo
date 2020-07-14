@@ -53,10 +53,11 @@
     <button
       class="btn large createroom-info__button"
       :class="{ disabled: btnDisabled }"
-      @click="start"
+      @click="startRemote"
     >
       시작하기
     </button>
+    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
@@ -64,12 +65,11 @@
 import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
+import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
-import { createRoom, getRoomInfo } from 'api/workspace/room'
-import { mapActions } from 'vuex'
+import { getPermission } from 'utils/deviceCheck'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
-import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ModalCreateRoomInfo',
@@ -78,6 +78,7 @@ export default {
     ProfileImage,
     InputRow,
     ProfileList,
+    DeviceDenied,
   },
   data() {
     return {
@@ -85,6 +86,7 @@ export default {
       description: '',
       image: null,
       titleValid: false,
+      showDenied: false,
     }
   },
   props: {
@@ -139,55 +141,28 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'roomClear']),
     reset() {
       this.title = `${this.shortName}'s Room`
       this.description = ''
     },
-    async start() {
-      // if (this.btnDisabled) {
-      //   this.confirmDefault(
-      //     '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
-      //   )
-      //   return
-      // }
-      try {
-        const selectedUser = []
-
-        for (let select of this.selection) {
-          selectedUser.push(select.uuid)
-        }
-        selectedUser.push(this.account.uuid)
-
-        const createdRoom = await createRoom({
-          file: this.imageFile,
-          title: this.title,
-          description: this.description,
-          leaderId: this.account.uuid,
-          participants: selectedUser,
-          workspaceId: this.workspace.uuid,
-        })
-
-        const joinRtn = await this.$call.join(createdRoom, ROLE.EXPERT_LEADER)
-        if (joinRtn) {
-          this.$eventBus.$emit('popover:close')
-
-          const roomInfo = await getRoomInfo({
-            roomId: createdRoom.roomId,
-          })
-
-          this.setRoomInfo(roomInfo)
-          this.$nextTick(() => {
-            this.$router.push({ name: 'service' })
-          })
-        } else {
-          this.roomClear()
-          console.error('>>>join room 실패')
-        }
-      } catch (err) {
-        this.roomClear()
-        console.log(err)
+    async startRemote() {
+      if (this.btnDisabled) {
+        this.confirmDefault(
+          '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
+        )
+        return
       }
+
+      const permission = await getPermission()
+      if (!permission) {
+        this.showDenied = true
+        return
+      }
+      this.$emit('startRemote', {
+        title: this.title,
+        description: this.description,
+        imageFile: this.imageFile,
+      })
     },
     checkEmpty() {
       if (this.title === '') {
