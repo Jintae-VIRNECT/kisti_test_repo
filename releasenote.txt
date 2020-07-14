@@ -1,12 +1,11 @@
 RELEASE
 
 New Features
-없음
+파일 이름 다국어 처리
 
 Bug Fixes
-서버 어플리케이션 사용 메모리 이슈 해결
+없음
 
 Limitation
-없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

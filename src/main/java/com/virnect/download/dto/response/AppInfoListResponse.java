@@ -22,6 +22,7 @@ public class AppInfoListResponse {
     @Setter
     public static class AppInfo{
         private Long id;
+        private String uuid;
         private LocalDateTime releaseTime;
         private String version;
         private Long appDownloadCount;
@@ -30,5 +31,6 @@ public class AppInfoListResponse {
         private String device;
         private String appUrl;
         private String guideUrl;
+        private String imageUrl;
     }
 }

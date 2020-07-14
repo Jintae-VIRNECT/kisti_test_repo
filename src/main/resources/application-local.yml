@@ -7,7 +7,7 @@ spring:
     password: root
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -23,7 +23,7 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
+  upload-path: "app/"
   url: "http://localhost:${server.port}/"
   allow-extension: "exe,apk"
 
@@ -39,8 +39,8 @@ eureka:
 cloud:
   aws:
     credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
     region:
       auto: true
     s3:
