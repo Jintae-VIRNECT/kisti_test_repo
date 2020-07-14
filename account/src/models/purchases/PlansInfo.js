@@ -11,21 +11,9 @@ export default class PlansInfo extends Model {
    */
   constructor(json) {
     super()
-    this.storage = {
-      max: mb2gb(json.maxStorageSize),
-      current: mb2gb(json.currentUsageStorage),
-      percent: (json.currentUsageStorage / json.maxStorageSize) * 100,
-    }
-    this.viewCount = {
-      max: json.maxDownloadHit,
-      current: json.currentUsageDownloadHit,
-      percent: (json.currentUsageDownloadHit / json.maxDownloadHit) * 100,
-    }
-    this.callTime = {
-      max: json.maxCallTime,
-      current: json.currentUsageCallTime,
-      percent: (json.currentUsageCallTime / json.maxCallTime) * 100,
-    }
+    this.storage = mb2gb(json.currentUsageStorage)
+    this.viewCount = json.currentUsageDownloadHit
+    this.callTime = json.currentUsageCallTime
     this.products = json.licenseProductInfoList.map(license => {
       const { value, label, logo } = products[license.productName.toLowerCase()]
       return {

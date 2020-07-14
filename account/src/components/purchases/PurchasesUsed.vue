@@ -2,9 +2,9 @@
   <el-card class="purchases-used">
     <el-tabs slot="header" v-model="activeTab">
       <el-tab-pane
-        v-for="tab in tabs"
-        :key="tab.name"
-        :name="tab.name"
+        v-for="[name, tab] in Object.entries(tabs)"
+        :key="name"
+        :name="name"
         :label="$t(tab.label)"
       />
     </el-tabs>
@@ -17,14 +17,14 @@
       </el-col>
       <el-col :span="18">
         <el-progress
-          :percentage="plansInfo[activeTab].percent"
+          :percentage="tabs[activeTab].percent"
           :show-text="false"
           :stroke-width="12"
           stroke-linecap="square"
         />
         <div class="used-text">
           <span>
-            {{ plansInfo[activeTab].current.toLocaleString() }}
+            {{ tabs[activeTab].current }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
           <span>{{ $t('purchases.used') }}</span>
@@ -32,10 +32,8 @@
         <div class="remain-text">
           {{
             $t('purchases.remainOfMax', {
-              max: plansInfo[activeTab].max.toLocaleString(),
-              remain: (
-                plansInfo[activeTab].max - plansInfo[activeTab].current
-              ).toLocaleString(),
+              max: tabs[activeTab].max,
+              remain: tabs[activeTab].remain,
               unit: $t(`${usedI18n}.unit`),
             })
           }}
@@ -61,14 +59,14 @@
         <div class="progress-text">
           <span>{{ $t(`${usedI18n}.maxShort`) }}</span>
           <span>
-            {{ plansInfo[activeTab].max.toLocaleString() }}
+            {{ tabs[activeTab].max }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
         </div>
         <dl>
           <dt>{{ $t(`${usedI18n}.max`) }}</dt>
           <dd>
-            {{ plansInfo[activeTab].max.toLocaleString() }}
+            {{ tabs[activeTab].max }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <el-divider />
@@ -94,7 +92,26 @@
 </template>
 
 <script>
-import purchasesService from '@/services/purchases'
+/**
+ * 퍼센트 계산
+ */
+function rate(now, max) {
+  const rate = now / max
+  if (isNaN(rate)) return 0
+  else if (rate === Infinity) return 100
+  else return rate * 100
+}
+/**
+ * 차트에 필요한 계산 처리
+ */
+function calc(used, max) {
+  return {
+    current: used.toLocaleString(),
+    max: max.toLocaleString(),
+    percent: rate(used, max),
+    remain: (max - used).toLocaleString(),
+  }
+}
 
 export default {
   props: {
@@ -105,6 +122,7 @@ export default {
     paymentInfo: {
       type: Object,
       default: () => ({
+        maxAvailable: {},
         basisAvailable: {},
         extendAvailable: {},
       }),
@@ -113,37 +131,43 @@ export default {
   data() {
     return {
       activeTab: 'storage',
-      tabs: [
-        {
-          name: 'storage',
+      tabs: {
+        storage: {
           label: 'purchases.info.arStorageCapacity',
           i18nGroup: 'purchases.arStorage',
+          ...calc(
+            this.plansInfo.storage,
+            this.paymentInfo.maxAvailable.storage,
+          ),
         },
-        {
-          name: 'viewCount',
+        viewCount: {
           label: 'purchases.info.arContentsViewCount',
           i18nGroup: 'purchases.arContent',
+          ...calc(
+            this.plansInfo.viewCount,
+            this.paymentInfo.maxAvailable.viewCount,
+          ),
         },
-        {
-          name: 'callTime',
+        callTime: {
           label: 'purchases.info.callTime',
           i18nGroup: 'purchases.call',
+          ...calc(
+            this.plansInfo.callTime,
+            this.paymentInfo.maxAvailable.callTime,
+          ),
         },
-      ],
-      capacityUsed: purchasesService.getStorageCapacity(),
+      },
     }
   },
   computed: {
     usedI18n() {
-      return this.tabs.find(tab => tab.name === this.activeTab).i18nGroup
+      return this.tabs[this.activeTab].i18nGroup
     },
     basisRate() {
-      const rate =
-        this.paymentInfo.basisAvailable[this.activeTab] /
-        this.paymentInfo.extendAvailable[this.activeTab]
-      if (isNaN(rate)) return 0
-      else if (rate === Infinity) return 100
-      else return rate * 100
+      return rate(
+        this.paymentInfo.basisAvailable[this.activeTab],
+        this.paymentInfo.extendAvailable[this.activeTab],
+      )
     },
   },
 }
