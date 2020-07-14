@@ -78,7 +78,11 @@
                 <img src="~assets/images/icon/ic-error.svg" />
               </el-tooltip>
             </div>
-            <coupon-list ref="table" :coupons="coupons" />
+            <coupon-list
+              ref="table"
+              :coupons="coupons"
+              @select="couponSelect"
+            />
             <searchbar-page
               ref="page"
               :value.sync="coponsPage"
@@ -88,18 +92,24 @@
         </el-col>
       </el-row>
     </div>
+    <coupon-detail-modal
+      :visible.sync="showCouponDetailModal"
+      :coupon="activeCoupon"
+    />
   </div>
 </template>
 
 <script>
 import couponService from '@/services/coupon'
 import CouponList from '@/components/coupon/CouponList'
+import CouponDetailModal from '@/components/coupon/CouponDetailModal'
 import searchMixin from '@/mixins/search'
 
 export default {
   mixins: [searchMixin],
   components: {
     CouponList,
+    CouponDetailModal,
   },
   data() {
     return {
@@ -109,6 +119,8 @@ export default {
       addCouponForm: {
         newCouponCode: '',
       },
+      activeCoupon: {},
+      showCouponDetailModal: false,
     }
   },
   methods: {
@@ -159,35 +171,9 @@ export default {
     /**
      * 쿠폰 사용
      */
-    async couponSelect(column) {
-      try {
-        await this.$confirm(
-          this.$t('coupon.useModal.desc'),
-          this.$t('coupon.useModal.title'),
-          {
-            confirmButtonText: this.$t('coupon.useModal.submit'),
-            showCancelButton: false,
-          },
-        )
-      } catch (e) {
-        return false
-      }
-
-      try {
-        await couponService.useCoupon(column.id)
-        this.$notify.success({
-          message: this.$t('coupon.message.useSuccess'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-        this.getCoupons()
-      } catch (e) {
-        this.$notify.error({
-          message: this.$t('coupon.message.useFail') + `\n(${e})`,
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      }
+    couponSelect(row) {
+      this.showCouponDetailModal = true
+      this.activeCoupon = row
     },
   },
   created() {

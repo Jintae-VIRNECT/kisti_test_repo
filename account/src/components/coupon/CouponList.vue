@@ -2,6 +2,7 @@
   <el-table
     class="coupon-list clickable"
     :data="coupons"
+    @row-click="select"
     @sort-change="sortChange"
   >
     <column-default :label="$t('coupon.column.couponName')" prop="name" />
@@ -48,22 +49,8 @@ export default {
     }
   },
   methods: {
-    async select(row) {
-      if (row.status === 'UNUSE') {
-        this.$emit('select', row)
-      } else if (row.status === 'USE') {
-        this.$notify.error({
-          message: this.$t('coupon.message.useAlready'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      } else if (row.status === 'EXPIRED') {
-        this.$notify.error({
-          message: this.$t('coupon.message.useExpired'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      }
+    select(row) {
+      this.$emit('select', row)
     },
     sortChange(params) {
       this.$emit('sort-change', params)
