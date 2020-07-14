@@ -1,8 +1,8 @@
 package com.virnect.license.application;
 
-import com.virnect.license.application.rest.ContentRestService;
-import com.virnect.license.application.rest.UserRestService;
-import com.virnect.license.application.rest.WorkspaceRestService;
+import com.virnect.license.application.rest.content.ContentRestService;
+import com.virnect.license.application.rest.user.UserRestService;
+import com.virnect.license.application.rest.workspace.WorkspaceRestService;
 import com.virnect.license.dao.coupon.CouponRepository;
 import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;

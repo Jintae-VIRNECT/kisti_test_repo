@@ -1,4 +1,4 @@
-package com.virnect.license.api.license;
+package com.virnect.license.api;
 
 import com.virnect.license.application.LicenseService;
 import com.virnect.license.dto.request.CouponActiveRequest;
