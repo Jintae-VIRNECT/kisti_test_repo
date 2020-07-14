@@ -290,6 +290,9 @@ public class TaskService {
         // 타겟데이터
         try {
             String targetData = UUID.randomUUID().toString();
+            // cd07565a-dfe8-4441-8924-b047d525ea79
+
+            log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
 
             // 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
             String imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
@@ -298,7 +301,11 @@ public class TaskService {
             // 컨텐츠 서버와 targetData 인코딩을 맞춰주기 위해서 해당 인코딩을 수행한다.
             String aes256Encoded = AES256EncryptUtils.encryptByBytes("virnect", targetData);
 
+            log.info(">>>>>>>>>>>>>>>>>>>>> aes256Encoded : {}", aes256Encoded);
+
             String urlEncoded = URLEncoder.encode(aes256Encoded, "UTF-8");
+
+            log.info(">>>>>>>>>>>>>>>>>>>>> urlEncoded : {}", urlEncoded);
 
             Target target = Target.builder()
                     .type(targetType)
