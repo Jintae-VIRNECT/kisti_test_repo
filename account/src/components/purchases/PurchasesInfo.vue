@@ -28,12 +28,12 @@
       <dd>{{ paymentInfo.basisAvailable.storage }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.callTime }}
+        {{ paymentInfo.basisAvailable.viewCount | toLocaleString }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.viewCount }}
+        {{ paymentInfo.basisAvailable.callTime }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
@@ -44,12 +44,12 @@
       <dd>{{ paymentInfo.extendAvailable.storage }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.callTime }}
+        {{ paymentInfo.extendAvailable.viewCount | toLocaleString }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.viewCount }}
+        {{ paymentInfo.extendAvailable.callTime }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>

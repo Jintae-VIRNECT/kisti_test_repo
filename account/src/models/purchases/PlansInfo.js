@@ -1,9 +1,8 @@
 import Model from '@/models/Model'
 import products from '@/models/products'
+import filters from '@/mixins/filters'
 
-function mb2gb(mb) {
-  return (mb / 1024).toFixed(2) * 1
-}
+const { mb2gb } = filters.methods
 
 export default class PlansInfo extends Model {
   /**

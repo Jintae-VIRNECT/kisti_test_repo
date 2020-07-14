@@ -1,5 +1,8 @@
 import Model from '@/models/Model'
 import Ticket from './Ticket'
+import filters from '@/mixins/filters'
+
+const { mb2gb } = filters.methods
 
 function sumAvilable(items) {
   const available = items.reduce(
@@ -11,7 +14,7 @@ function sumAvilable(items) {
     },
     { storage: 0, viewCount: 0, callTime: 0 },
   )
-  available.viewCount = available.viewCount.toLocaleString()
+  available.storage = mb2gb(available.storage)
   return available
 }
 

@@ -124,10 +124,6 @@
       :visible.sync="showAutoPaymentCancelModal"
       @updated="autoPaymentsCancled"
     />
-    <!-- <payment-log-detail-modal
-      :logInfo="activeLog"
-      :visible.sync="showPaymentLogDetailModal"
-    /> -->
   </div>
 </template>
 
@@ -138,14 +134,12 @@ import searchMixin from '@/mixins/search'
 import paymentService from '@/services/payment'
 import AutoPaymentInfoModal from '@/components/payment/AutoPaymentInfoModal'
 import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
-// import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
 
 export default {
   mixins: [columnMixin, filterMixin, searchMixin],
   components: {
     AutoPaymentInfoModal,
     AutoPaymentCancelModal,
-    // PaymentLogDetailModal,
   },
   async asyncData() {
     const promises = {
@@ -176,8 +170,6 @@ export default {
       this.paymentLogsTotal = total
     },
     async showLogDetail(log) {
-      // this.activeLog = log
-      // this.showPaymentLogDetailModal = true
       const { slipLink } = await paymentService.getPaymentLogDetail(log.no)
       if (slipLink) window.open(slipLink)
     },

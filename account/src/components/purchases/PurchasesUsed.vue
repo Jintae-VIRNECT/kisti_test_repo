@@ -24,7 +24,7 @@
         />
         <div class="used-text">
           <span>
-            {{ plansInfo[activeTab].current }}
+            {{ plansInfo[activeTab].current.toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
           <span>{{ $t('purchases.used') }}</span>
@@ -32,8 +32,10 @@
         <div class="remain-text">
           {{
             $t('purchases.remainOfMax', {
-              max: plansInfo[activeTab].max,
-              remain: plansInfo[activeTab].max - plansInfo[activeTab].current,
+              max: plansInfo[activeTab].max.toLocaleString(),
+              remain: (
+                plansInfo[activeTab].max - plansInfo[activeTab].current
+              ).toLocaleString(),
               unit: $t(`${usedI18n}.unit`),
             })
           }}
@@ -59,25 +61,25 @@
         <div class="progress-text">
           <span>{{ $t(`${usedI18n}.maxShort`) }}</span>
           <span>
-            {{ plansInfo[activeTab].max }}
+            {{ plansInfo[activeTab].max.toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </span>
         </div>
         <dl>
           <dt>{{ $t(`${usedI18n}.max`) }}</dt>
           <dd>
-            {{ plansInfo[activeTab].max }}
+            {{ plansInfo[activeTab].max.toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <el-divider />
           <dt class="default">{{ $t(`${usedI18n}.default`) }}</dt>
           <dd>
-            {{ paymentInfo.basisAvailable[activeTab] }}
+            {{ paymentInfo.basisAvailable[activeTab].toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <dt class="extend">{{ $t(`${usedI18n}.extend`) }}</dt>
           <dd>
-            {{ paymentInfo.extendAvailable[activeTab] }}
+            {{ paymentInfo.extendAvailable[activeTab] | toLocaleString }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <a :href="$url.pay">
