@@ -20,7 +20,7 @@ public class LicenseAllocateCheckRequest {
     @NotNull
     @AssertTrue
     @AssertFalse
-    private boolean isRegularRequest = false;
+    private boolean regularRequest = false;
     @ApiModelProperty(value = "상품 정보 리스트", position = 2)
     @NotNull
     @Size(min = 1)
@@ -32,7 +32,7 @@ public class LicenseAllocateCheckRequest {
     public String toString() {
         return "LicenseAllocateCheckRequest{" +
                 "userId=" + userId +
-                ", isRegularRequest=" + isRegularRequest +
+                ", regularRequest=" + regularRequest +
                 ", productList=" + productList +
                 ", couponList=" + couponList +
                 '}';

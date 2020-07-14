@@ -21,7 +21,7 @@ public class LicenseProductAllocateRequest {
     @NotNull
     @AssertTrue
     @AssertFalse
-    private boolean isRegularRequest = false;
+    private boolean regularRequest = false;
     @NotBlank
     @ApiModelProperty(value = "결제 식별자", position = 2, example = "202019239941")
     private String paymentId;
@@ -41,11 +41,11 @@ public class LicenseProductAllocateRequest {
     @ApiModelProperty(value = "결제에 사용된 쿠폰 정보", position = 7)
     private List<LicenseAllocateCouponInfoResponse> couponList;
 
-
     @Override
     public String toString() {
         return "LicenseProductAllocateRequest{" +
                 "userId=" + userId +
+                ", regularRequest=" + regularRequest +
                 ", paymentId='" + paymentId + '\'' +
                 ", paymentDate=" + paymentDate +
                 ", userCountryCode='" + userCountryCode + '\'' +
