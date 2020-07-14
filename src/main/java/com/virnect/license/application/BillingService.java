@@ -89,7 +89,7 @@ public class BillingService {
         }
 
         // 3. 상품 주문 정보 추가 및 구매 정보 검사 (정기 결제가 아닌건에 대해서만 검증)
-        if (!allocateCheckRequest.isRegularRequest()) {
+//        if (!allocateCheckRequest.isRegularRequest()) {
             calculateMaxCallTime += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum();
             calculateMaxStorage += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum();
             calculateMaxHit += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum();
@@ -100,7 +100,7 @@ public class BillingService {
             } else {
                 log.info("USER : [{}] -> CALCULATE CALL TIME : [{}] , CALCULATE STORAGE: [{}] , CALCULATE DOWNLOAD: [{}]", allocateCheckRequest.getUserId(), calculateMaxCallTime, calculateMaxStorage, calculateMaxHit);
             }
-        }
+//        }
 
         // 5. 지급 인증 정보 생성
         String assignAuthCoe = UUID.randomUUID().toString();
@@ -216,23 +216,23 @@ public class BillingService {
             LicensePlan licensePlan = userLicensePlan.get();
 
             //10. 라이선스 플랜 정보가 있으며, 정기 결제 요청 건인 아닌 경우(상품 지급 건에 따른 서비스 이용 정보 갱신)
-            if (!licenseAllocateRequest.isRegularRequest()) {
+//            if (!licenseAllocateRequest.isRegularRequest()) {
                 licenseRegisterByProduct(licenseAllocateRequest.getProductList(), licensePlan);
                 licensePlan.setMaxCallTime(licensePlan.getMaxCallTime() + calculateMaxCallTime);
                 licensePlan.setMaxDownloadHit(licensePlan.getMaxDownloadHit() + calculateMaxHit);
                 licensePlan.setMaxStorageSize(licensePlan.getMaxStorageSize() + calculateMaxStorage);
                 // 베이직 플랜 구매 시(Make, Remote) 활성화 계정  갯수 9개 제공
 //            licensePlan.setMaxUserAmount(licensePlan.getMaxUserAmount() + calculateMaxUserAmount);
-            }
+//            }
             licensePlan.setPaymentId(licenseAllocateRequest.getPaymentId());
             licensePlan.setCountryCode(licenseAllocateRequest.getUserCountryCode());
             licensePlan.setEndDate(licensePlan.getEndDate().plusDays(30));
             licensePlanRepository.save(licensePlan);
 
             // 11. 지급 상품 라이선스 생성
-            if (!licenseAllocateRequest.isRegularRequest()) {
+//            if (!licenseAllocateRequest.isRegularRequest()) {
                 licenseRegisterByProduct(licenseAllocateRequest.getProductList(), licensePlan);
-            }
+//            }
 
             LicenseProductAllocateResponse allocateResponse = new LicenseProductAllocateResponse();
             allocateResponse.setUserId(licenseAllocateRequest.getUserId());
