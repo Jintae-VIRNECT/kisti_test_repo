@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.global.config;
+package com.virnect.serviceserver.gateway.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,12 +48,28 @@ public class SwaggerConfiguration {
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.rest"))
+                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.gateway.api"))
                 //.paths(PathSelectors.any())
-                .paths(PathSelectors.ant("/remote/service/**"))
+                .paths(PathSelectors.ant("/remote/**"))
                 .build()
                 .groupName(groupName)
                 .apiInfo(apiInfo(title, version));
 
     }
+
+    /*@Bean
+    public Docket apiV2() {
+        version = "V2";
+        title = "victolee API " + version;
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.victolee.swaggerexam.api.v2"))
+                .paths(PathSelectors.ant("/v2/api/**"))
+                .build()
+                .apiInfo(apiInfo(title, version));
+
+    }*/
 }

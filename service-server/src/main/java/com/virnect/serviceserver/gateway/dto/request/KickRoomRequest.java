@@ -1,0 +1,20 @@
+package com.virnect.serviceserver.gateway.dto.request;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
+public class KickRoomRequest {
+    @ApiModelProperty(value = "리더 유저 uuid", position = 4, example = "410df50ca6e32db0b6acba09bcb457ff")
+    @NotNull
+    private String leaderId;
+
+    @ApiModelProperty(value = "참여자 유저 uuid", position = 4, example = "473b12854daa6afeb9e505551d1b2743")
+    @NotNull
+    private String participantId;
+
+}

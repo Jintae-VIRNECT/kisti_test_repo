@@ -74,6 +74,7 @@ import com.virnect.serviceserver.utils.RecordingUtils;
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
+//@RequestMapping("/remote/service")
 public class SessionRestController {
 
 	private static final Logger log = LoggerFactory.getLogger(SessionRestController.class);
