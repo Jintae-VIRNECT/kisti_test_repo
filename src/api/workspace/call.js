@@ -24,7 +24,7 @@ export const getToken = async function({
 }
 
 export const sendFile = async (file, roomId, workspaceId) => {
-  const returnVal = await http('SEND_FILE', { file, roomId, workspaceId })
-
+  // const returnVal = await http('SEND_FILE', { file, roomId, workspaceId })
+  return true
   return returnVal
 }

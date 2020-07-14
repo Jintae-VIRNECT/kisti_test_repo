@@ -144,6 +144,31 @@ export const addSessionEventListener = session => {
     }
     Store.commit('addChat', chat)
   })
+
+  session.on(SIGNAL.FILE, event => {
+    const connectionId = event.from.connectionId
+    const participants = Store.getters['participants']
+    const idx = participants.findIndex(
+      user => user.connectionId === connectionId,
+    )
+    if (idx < 0) return
+    let data = event.data
+
+    //add file
+    let chat = {
+      text: data.replace(/\</g, '&lt;'),
+      name: participants[idx].nickname,
+      date: new Date(),
+      nodeId: event.from.connectionId,
+      type: false,
+    }
+    // if (session.connection.connectionId === event.from.connectionId) {
+    //   // 본인
+    //   chat.type = 'me'
+    // }
+    Store.commit('addChat', chat)
+  })
+
   /** 내보내기 */
   session.on('forceDisconnectByUser', event => {
     console.log(event)

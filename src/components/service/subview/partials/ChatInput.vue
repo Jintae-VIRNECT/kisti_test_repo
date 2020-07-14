@@ -136,13 +136,15 @@ export default {
             this.room.roomId,
             this.workspace.uuid,
           )
+          // const downUrl = response.downloadUrl
+          const downUrl = true
           console.log(response)
 
           const params = {
             fileName: file.filedata.name,
             mimeType: file.filedata.type,
             size: file.filedata.size,
-            fileDownloadUrl: response.downloadUrl,
+            fileDownloadUrl: downUrl,
           }
 
           this.$call.sendFile(params)
@@ -155,7 +157,7 @@ export default {
                 {
                   fileName: file.filedata.name,
                   fileSize: file.filedata.size,
-                  fileUrl: response.downloadUrl,
+                  fileUrl: downUrl,
                 },
               ])
               .build(),

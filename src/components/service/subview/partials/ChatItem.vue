@@ -19,7 +19,7 @@
               {{ chat.file[0].fileName }}
             </div>
           </div>
-          <p class="chat-item__file--size">{{ chat.file[0].fileSize }}</p>
+          <p class="chat-item__file--size">{{ fileSize }}</p>
         </div>
         <p
           v-if="chat.text !== undefined"
@@ -38,7 +38,6 @@
       <span v-if="!hideTime" class="time">{{
         $dayjs(chat.date).format('A hh:mm')
       }}</span>
-      <!-- <span v-if="!hideTime" class="time">{{ chat.date }}</span> -->
     </div>
   </li>
 </template>
@@ -119,6 +118,8 @@ export default {
         ext = 'video'
       }
 
+      ext = ext.toLowerCase()
+
       return ext
     },
     getClass() {
@@ -138,6 +139,10 @@ export default {
     },
     chatText() {
       return this.chat.text.replace(/\n/gi, '<br>')
+    },
+    fileSize() {
+      const fileSizeMB = (this.chat.file[0].fileSize / 1024 / 1024).toFixed(1)
+      return `${fileSizeMB}MB`
     },
   },
   watch: {},
