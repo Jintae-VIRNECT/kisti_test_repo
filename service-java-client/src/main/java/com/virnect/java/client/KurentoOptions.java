@@ -18,7 +18,7 @@
 package com.virnect.java.client;
 
 /**
- * See {@link io.openvidu.java.client.TokenOptions#getKurentoOptions()}
+ * See {@link com.virnect.java.client.TokenOptions#getKurentoOptions()}
  */
 public class KurentoOptions {
 

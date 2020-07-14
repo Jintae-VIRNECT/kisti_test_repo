@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "2.3.1.RELEASE"
@@ -20,6 +21,7 @@ configurations {
 
 springBoot {
     buildInfo()
+    mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
 }
 
 repositories {
@@ -66,6 +68,23 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+/*tasks.getByName<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    main = "com.virnect.serviceserver.ServiceServerApplication" // MainClass 경로
+}*/
+
+tasks.getByName<BootJar>("bootJar") {
+    enabled= true
+    mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
+}
+
+/*
+tasks.getByName<BootJar>("bootJar") {
+    manifest {
+        attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
+    }
+}
+*/
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {

@@ -112,41 +112,41 @@ public class RemoteServiceConfig {
 
 	// Config properties
 
-	private boolean openviduCdr;
+	private boolean remoteServiceCdr;
 
-	private String openviduCdrPath;
+	private String remoteServiceCdrPath;
 
-	private boolean openviduRecording;
+	private boolean remoteServiceRecording;
 
-	private boolean openViduRecordingDebug;
+	private boolean remoteServiceRecordingDebug;
 
-	private boolean openviduRecordingPublicAccess;
+	private boolean remoteServiceRecordingPublicAccess;
 
-	private Integer openviduRecordingAutostopTimeout;
+	private Integer remoteServiceRecordingAutostopTimeout;
 
-	private String openviduRecordingPath;
+	private String remoteServiceRecordingPath;
 
-	private RecordingNotification openviduRecordingNotification;
+	private RecordingNotification remoteServiceRecordingNotification;
 
-	private String openviduRecordingCustomLayout;
+	private String remoteServiceRecordingCustomLayout;
 
-	private String openviduRecordingVersion;
+	private String remoteServiceRecordingVersion;
 
-	private Integer openviduStreamsVideoMaxRecvBandwidth;
+	private Integer remoteServiceStreamsVideoMaxRecvBandwidth;
 
-	private Integer openviduStreamsVideoMinRecvBandwidth;
+	private Integer remoteServiceStreamsVideoMinRecvBandwidth;
 
-	private Integer openviduStreamsVideoMaxSendBandwidth;
+	private Integer remoteServiceStreamsVideoMaxSendBandwidth;
 
-	private Integer openviduStreamsVideoMinSendBandwidth;
+	private Integer remoteServiceStreamsVideoMinSendBandwidth;
 
 	private String coturnIp;
 
 	private String coturnRedisIp;
 
-	private boolean openviduWebhookEnabled;
+	private boolean remoteServiceWebhookEnabled;
 
-	private String openviduWebhookEndpoint;
+	private String remoteServiceWebhookEndpoint;
 
 	private List<Header> webhookHeadersList;
 
@@ -156,13 +156,13 @@ public class RemoteServiceConfig {
 
 	private String domainOrPublicIp;
 
-	private String openviduPublicUrl;
+	private String remoteServicePublicUrl;
 
 	private Integer httpsPort;
 
-	private String openviduSecret;
+	private String remoteServiceSecret;
 
-	private String openviduRecordingComposedUrl;
+	private String remoteServiceRecordingComposedUrl;
 
 	private String coturnRedisDbname;
 
@@ -172,9 +172,9 @@ public class RemoteServiceConfig {
 
 	private String certificateType;
 
-	protected int openviduSessionsGarbageInterval;
+	protected int remoteServiceSessionsGarbageInterval;
 
-	protected int openviduSessionsGarbageThreshold;
+	protected int remoteServiceSessionsGarbageThreshold;
 
 	private String dotenvPath;
 
@@ -202,108 +202,108 @@ public class RemoteServiceConfig {
 		return this.domainOrPublicIp;
 	}
 
-	public String getOpenViduPublicUrl() {
-		return this.openviduPublicUrl;
+	public String getRemoteServicePublicUrl() {
+		return this.remoteServicePublicUrl;
 	}
 
 	public Integer getHttpsPort() {
 		return this.httpsPort;
 	}
 
-	public String getOpenViduSecret() {
-		return this.openviduSecret;
+	public String getRemoteServiceSecret() {
+		return this.remoteServiceSecret;
 	}
 
 	public boolean isCdrEnabled() {
-		return this.openviduCdr;
+		return this.remoteServiceCdr;
 	}
 
-	public String getOpenviduCdrPath() {
-		return this.openviduCdrPath;
+	public String getRemoteServiceCdrPath() {
+		return this.remoteServiceCdrPath;
 	}
 
 	public boolean isRecordingModuleEnabled() {
-		return this.openviduRecording;
+		return this.remoteServiceRecording;
 	}
 
-	public boolean isOpenViduRecordingDebug() {
-		return openViduRecordingDebug;
+	public boolean isRemoteServiceRecordingDebug() {
+		return remoteServiceRecordingDebug;
 	}
 
-	public String getOpenViduRecordingPath() {
-		return this.openviduRecordingPath;
+	public String getRemoteServiceRecordingPath() {
+		return this.remoteServiceRecordingPath;
 	}
 
-	public String getOpenViduRemoteRecordingPath() {
-		return getOpenViduRecordingPath();
+	public String getRemoteServiceRemoteRecordingPath() {
+		return getRemoteServiceRecordingPath();
 	}
 
-	public boolean getOpenViduRecordingPublicAccess() {
-		return this.openviduRecordingPublicAccess;
+	public boolean getRemoteServiceRecordingPublicAccess() {
+		return this.remoteServiceRecordingPublicAccess;
 	}
 
-	public String getOpenviduRecordingCustomLayout() {
-		return this.openviduRecordingCustomLayout;
+	public String getRemoteServiceRecordingCustomLayout() {
+		return this.remoteServiceRecordingCustomLayout;
 	}
 
-	public String getOpenViduRecordingVersion() {
-		return this.openviduRecordingVersion;
+	public String getRemoteServiceRecordingVersion() {
+		return this.remoteServiceRecordingVersion;
 	}
 
-	public int getOpenviduRecordingAutostopTimeout() {
-		return this.openviduRecordingAutostopTimeout;
+	public int getRemoteServiceRecordingAutostopTimeout() {
+		return this.remoteServiceRecordingAutostopTimeout;
 	}
 
 	public int getVideoMaxRecvBandwidth() {
-		return this.openviduStreamsVideoMaxRecvBandwidth;
+		return this.remoteServiceStreamsVideoMaxRecvBandwidth;
 	}
 
 	public int getVideoMinRecvBandwidth() {
-		return this.openviduStreamsVideoMinRecvBandwidth;
+		return this.remoteServiceStreamsVideoMinRecvBandwidth;
 	}
 
 	public int getVideoMaxSendBandwidth() {
-		return this.openviduStreamsVideoMaxSendBandwidth;
+		return this.remoteServiceStreamsVideoMaxSendBandwidth;
 	}
 
 	public int getVideoMinSendBandwidth() {
-		return this.openviduStreamsVideoMinSendBandwidth;
+		return this.remoteServiceStreamsVideoMinSendBandwidth;
 	}
 
 	public String getCoturnIp() {
 		return this.coturnIp;
 	}
 
-	public RecordingNotification getOpenViduRecordingNotification() {
-		return this.openviduRecordingNotification;
+	public RecordingNotification getRemoteServiceRecordingNotification() {
+		return this.remoteServiceRecordingNotification;
 	}
 
-	public String getOpenViduRecordingComposedUrl() {
-		return this.openviduRecordingComposedUrl;
+	public String getRemoteServiceRecordingComposedUrl() {
+		return this.remoteServiceRecordingComposedUrl;
 	}
 
 	public boolean isWebhookEnabled() {
-		return this.openviduWebhookEnabled;
+		return this.remoteServiceWebhookEnabled;
 	}
 
-	public String getOpenViduWebhookEndpoint() {
-		return this.openviduWebhookEndpoint;
+	public String getRemoteServiceWebhookEndpoint() {
+		return this.remoteServiceWebhookEndpoint;
 	}
 
-	public List<Header> getOpenViduWebhookHeaders() {
+	public List<Header> getRemoteServiceWebhookHeaders() {
 		return webhookHeadersList;
 	}
 
-	public List<CDREventName> getOpenViduWebhookEvents() {
+	public List<CDREventName> getRemoteServiceWebhookEvents() {
 		return webhookEventsList;
 	}
 
 	public int getSessionGarbageInterval() {
-		return openviduSessionsGarbageInterval;
+		return remoteServiceSessionsGarbageInterval;
 	}
 
 	public int getSessionGarbageThreshold() {
-		return openviduSessionsGarbageThreshold;
+		return remoteServiceSessionsGarbageThreshold;
 	}
 
 	public String getDotenvPath() {
@@ -334,7 +334,7 @@ public class RemoteServiceConfig {
 
 	public RemoteServiceRole[] getRolesFromRecordingNotification() {
 		RemoteServiceRole[] roles;
-		switch (this.openviduRecordingNotification) {
+		switch (this.remoteServiceRecordingNotification) {
 		case none:
 			roles = new RemoteServiceRole[0];
 			break;
@@ -353,8 +353,8 @@ public class RemoteServiceConfig {
 		return roles;
 	}
 
-	public boolean isOpenViduSecret(String secret) {
-		return secret.equals(this.getOpenViduSecret());
+	public boolean isRemoteServiceSecret(String secret) {
+		return secret.equals(this.getRemoteServiceSecret());
 	}
 
 	public String getCoturnDatabaseString() {
@@ -362,24 +362,24 @@ public class RemoteServiceConfig {
 				+ this.coturnRedisPassword + " connect_timeout=" + this.coturnRedisConnectTimeout + "\"";
 	}
 
-	public boolean openviduRecordingCustomLayoutChanged(String path) {
-		return !"/opt/openvidu/custom-layout".equals(path);
+	public boolean remoteServiceRecordingCustomLayoutChanged(String path) {
+		return !"/opt/remoteService/custom-layout".equals(path);
 	}
 
-	public String getOpenViduFrontendDefaultPath() {
+	public String getRemoteServiceFrontendDefaultPath() {
 		return "dashboard";
 	}
 
 	// Properties management methods
 
 	public RemoteServiceConfig deriveWithAdditionalPropertiesSource(Map<String, ?> propertiesSource) {
-		RemoteServiceConfig config = newOpenviduConfig();
+		RemoteServiceConfig config = newRemoteServiceConfig();
 		config.propertiesSource = propertiesSource;
 		config.env = env;
 		return config;
 	}
 
-	protected RemoteServiceConfig newOpenviduConfig() {
+	protected RemoteServiceConfig newRemoteServiceConfig() {
 		return new RemoteServiceConfig();
 	}
 
@@ -469,42 +469,41 @@ public class RemoteServiceConfig {
 		checkDomainOrPublicIp();
 		populateSpringServerPort();
 
-		coturnRedisDbname = getValue("COTURN_REDIS_DBNAME");
+		coturnRedisDbname = getValue("service.coturn_redis_dbname");
+		coturnRedisPassword = getValue("service.coturn_redis_password");
+		coturnRedisConnectTimeout = getValue("service.coturn_redis_connect_timeout");
 
-		coturnRedisPassword = getValue("COTURN_REDIS_PASSWORD");
+		remoteServiceSecret = asNonEmptyString("service.remote_secret");
+		remoteServiceCdr = asBoolean("service.remote_cdr");
+		remoteServiceCdrPath = remoteServiceCdr ? asWritableFileSystemPath("service.remote_cdr_path") : asFileSystemPath("service.remote_cdr_path");
+		remoteServiceRecording = asBoolean("service.remote_recording");
+		remoteServiceRecordingDebug = asBoolean("service.remote_recording_debug");
+		remoteServiceRecordingPath = remoteServiceRecording ? asWritableFileSystemPath("service.remote_recording_path") : asFileSystemPath("service.remote_recording_path");
+		remoteServiceRecordingPublicAccess = asBoolean("service.remote_recording_public_access");
+		remoteServiceRecordingAutostopTimeout = asNonNegativeInteger("service.remote_recording_autostop_timeout");
+		remoteServiceRecordingCustomLayout = asFileSystemPath("service.remote_recording_custom_layout");
+		remoteServiceRecordingVersion = asNonEmptyString("service.remote_recording_version");
+		remoteServiceRecordingComposedUrl = asOptionalURL("service.remote_recording_composed_url");
+		checkRemoteServiceRecordingNotification();
 
-		coturnRedisConnectTimeout = getValue("COTURN_REDIS_CONNECT_TIMEOUT");
+		remoteServiceStreamsVideoMaxRecvBandwidth = asNonNegativeInteger("service.remote_streams_video_max_recv_bandwidth");
+		remoteServiceStreamsVideoMinRecvBandwidth = asNonNegativeInteger("service.remote_streams_video_min_recv_bandwidth");
 
-		openviduSecret = asNonEmptyString("OPENVIDU_SECRET");
+		remoteServiceStreamsVideoMaxSendBandwidth = asNonNegativeInteger("service.remote_streams_video_max_send_bandwidth");
+		remoteServiceStreamsVideoMinSendBandwidth = asNonNegativeInteger("service.remote_streams_video_min_send_bandwidth");
 
-		openviduCdr = asBoolean("OPENVIDU_CDR");
-		openviduCdrPath = openviduCdr ? asWritableFileSystemPath("OPENVIDU_CDR_PATH")
-				: asFileSystemPath("OPENVIDU_CDR_PATH");
 
-		openviduRecording = asBoolean("OPENVIDU_RECORDING");
-		openViduRecordingDebug = asBoolean("OPENVIDU_RECORDING_DEBUG");
-		openviduRecordingPath = openviduRecording ? asWritableFileSystemPath("OPENVIDU_RECORDING_PATH")
-				: asFileSystemPath("OPENVIDU_RECORDING_PATH");
-		openviduRecordingPublicAccess = asBoolean("OPENVIDU_RECORDING_PUBLIC_ACCESS");
-		openviduRecordingAutostopTimeout = asNonNegativeInteger("OPENVIDU_RECORDING_AUTOSTOP_TIMEOUT");
-		openviduRecordingCustomLayout = asFileSystemPath("OPENVIDU_RECORDING_CUSTOM_LAYOUT");
-		openviduRecordingVersion = asNonEmptyString("OPENVIDU_RECORDING_VERSION");
-		openviduRecordingComposedUrl = asOptionalURL("OPENVIDU_RECORDING_COMPOSED_URL");
-		checkOpenviduRecordingNotification();
-
-		openviduStreamsVideoMaxRecvBandwidth = asNonNegativeInteger("OPENVIDU_STREAMS_VIDEO_MAX_RECV_BANDWIDTH");
-		openviduStreamsVideoMinRecvBandwidth = asNonNegativeInteger("OPENVIDU_STREAMS_VIDEO_MIN_RECV_BANDWIDTH");
-		openviduStreamsVideoMaxSendBandwidth = asNonNegativeInteger("OPENVIDU_STREAMS_VIDEO_MAX_SEND_BANDWIDTH");
-		openviduStreamsVideoMinSendBandwidth = asNonNegativeInteger("OPENVIDU_STREAMS_VIDEO_MIN_SEND_BANDWIDTH");
-
-		openviduSessionsGarbageInterval = asNonNegativeInteger("OPENVIDU_SESSIONS_GARBAGE_INTERVAL");
-		openviduSessionsGarbageThreshold = asNonNegativeInteger("OPENVIDU_SESSIONS_GARBAGE_THRESHOLD");
+		remoteServiceSessionsGarbageInterval = asNonNegativeInteger("service.remote_sessions_garbage_interval");
+		remoteServiceSessionsGarbageThreshold = asNonNegativeInteger("service.remote_sessions_garbage_threshold");
 
 		kmsUrisList = checkKmsUris();
 
+		/**
+		 * check later...
+		 */
 		checkCoturnIp();
 
-		coturnRedisIp = asOptionalInetAddress("COTURN_REDIS_IP");
+		coturnRedisIp = asOptionalInetAddress("service.coturn_redis_ip");
 
 		checkWebhook();
 
@@ -513,7 +512,7 @@ public class RemoteServiceConfig {
 	}
 
 	private void checkCertificateType() {
-		String property = "CERTIFICATE_TYPE";
+		String property = "service.certificate_type";
 		certificateType = asNonEmptyString(property);
 
 		if (certificateType != null && !certificateType.isEmpty()) {
@@ -532,48 +531,48 @@ public class RemoteServiceConfig {
 			try {
 				this.coturnIp = new URL(this.getFinalUrl()).getHost();
 			} catch (MalformedURLException e) {
-				log.error("Can't get Domain name from OpenVidu public Url: " + e.getMessage());
+				log.error("Can't get Domain name from RemoteService public Url: " + e.getMessage());
 			}
 		}
 	}
 
 	private void checkWebhook() {
-		openviduWebhookEnabled = asBoolean("OPENVIDU_WEBHOOK");
-		openviduWebhookEndpoint = asOptionalURL("OPENVIDU_WEBHOOK_ENDPOINT");
+		remoteServiceWebhookEnabled = asBoolean("service.remote_webhook");
+		remoteServiceWebhookEndpoint = asOptionalURL("service.remote_webhook_endpoint");
 		webhookHeadersList = checkWebhookHeaders();
 		webhookEventsList = getWebhookEvents();
 
-		if (openviduWebhookEnabled && (openviduWebhookEndpoint == null || openviduWebhookEndpoint.isEmpty())) {
-			addError("OPENVIDU_WEBHOOK_ENDPOINT", "With OPENVIDU_WEBHOOK=true, this property cannot be empty");
+		if (remoteServiceWebhookEnabled && (remoteServiceWebhookEndpoint == null || remoteServiceWebhookEndpoint.isEmpty())) {
+			addError("remoteService_WEBHOOK_ENDPOINT", "With remoteService_WEBHOOK=true, this property cannot be empty");
 		}
 	}
 
-	private void checkOpenviduRecordingNotification() {
-		String recordingNotif = asNonEmptyString("OPENVIDU_RECORDING_NOTIFICATION");
+	private void checkRemoteServiceRecordingNotification() {
+		String recordingNotif = asNonEmptyString("service.remote_recording_notification");
 		try {
-			openviduRecordingNotification = RecordingNotification.valueOf(recordingNotif);
+			remoteServiceRecordingNotification = RecordingNotification.valueOf(recordingNotif);
 		} catch (IllegalArgumentException e) {
-			addError("OPENVIDU_RECORDING_NOTIFICATION",
-					"Must be one of the values " + Arrays.asList(RecordingNotification.values()));
+			//addError("OPENVIDU_RECORDING_NOTIFICATION", "Must be one of the values " + Arrays.asList(RecordingNotification.values()));
+			addError("service.remote_recording_notification", "Must be one of the values " + Arrays.asList(RecordingNotification.values()));
 		}
 	}
 
 	private void checkDomainOrPublicIp() {
-		final String property = "DOMAIN_OR_PUBLIC_IP";
+		final String property = "service.domain_or_public_ip";
 		String domain = asOptionalInetAddress(property);
 
 		// TODO: remove when possible deprecated OPENVIDU_DOMAIN_OR_PUBLIC_IP
 		if (domain == null || domain.isEmpty()) {
-			domain = asOptionalInetAddress("OPENVIDU_DOMAIN_OR_PUBLIC_IP");
-			this.configProps.put("DOMAIN_OR_PUBLIC_IP", domain);
-			this.configProps.remove("OPENVIDU_DOMAIN_OR_PUBLIC_IP");
+			domain = asOptionalInetAddress("service.domain_or_public_ip");
+			this.configProps.put("service.domain_or_public_ip", domain);
+			this.configProps.remove("service.domain_or_public_ip");
 		}
 
 		if (domain != null && !domain.isEmpty()) {
 			this.domainOrPublicIp = domain;
-			this.openviduPublicUrl = "https://" + domain;
+			this.remoteServicePublicUrl = "https://" + domain;
 			if (this.httpsPort != null && this.httpsPort != 443) {
-				this.openviduPublicUrl += (":" + this.httpsPort);
+				this.remoteServicePublicUrl += (":" + this.httpsPort);
 			}
 			calculatePublicUrl();
 		} else {
@@ -582,7 +581,7 @@ public class RemoteServiceConfig {
 	}
 
 	private void checkHttpsPort() {
-		String property = "HTTPS_PORT";
+		String property = "service.https_port";
 		String httpsPort = getValue(property);
 		if (httpsPort == null) {
 			addError(property, "Cannot be undefined");
@@ -619,7 +618,7 @@ public class RemoteServiceConfig {
 	}
 
 	private void calculatePublicUrl() {
-		final String publicUrl = this.getOpenViduPublicUrl();
+		final String publicUrl = this.getRemoteServicePublicUrl();
 		if (publicUrl.startsWith("https://")) {
 			ServiceServerApplication.wsUrl = publicUrl.replace("https://", "wss://");
 		} else if (publicUrl.startsWith("http://")) {
@@ -635,7 +634,7 @@ public class RemoteServiceConfig {
 
 	public List<String> checkKmsUris() {
 
-		String property = "KMS_URIS";
+		String property = "service.kms_uris";
 
 		return asKmsUris(property, getValue(property));
 
@@ -666,7 +665,7 @@ public class RemoteServiceConfig {
 	}
 
 	private List<Header> checkWebhookHeaders() {
-		String property = "OPENVIDU_WEBHOOK_HEADERS";
+		String property = "service.remote_webhook_headers";
 		List<String> headers = asJsonStringsArray(property);
 		List<Header> headerList = new ArrayList<>();
 
@@ -691,7 +690,7 @@ public class RemoteServiceConfig {
 	}
 
 	private List<CDREventName> getWebhookEvents() {
-		String property = "OPENVIDU_WEBHOOK_EVENTS";
+		String property = "service.remote_webhook_events";
 		List<String> events = asJsonStringsArray(property);
 		List<CDREventName> eventList = new ArrayList<>();
 
@@ -824,13 +823,11 @@ public class RemoteServiceConfig {
 			f.toURI().toString();
 			if (!f.exists()) {
 				if (!f.mkdirs()) {
-					throw new Exception(
-							"The path does not exist and OpenVidu Server does not have enough permissions to create it");
+					throw new Exception("The path does not exist and RemoteService Server does not have enough permissions to create it");
 				}
 			}
 			if (!f.canWrite()) {
-				throw new Exception(
-						"OpenVidu Server does not have permissions to write on path " + f.getCanonicalPath());
+				throw new Exception("RemoteService Server does not have permissions to write on path " + f.getCanonicalPath());
 			}
 			stringPath = stringPath.endsWith("/") ? stringPath : (stringPath + "/");
 			return stringPath;
@@ -900,7 +897,7 @@ public class RemoteServiceConfig {
 					addError(null, e.getMessage());
 				}
 			} else {
-				log.error("OpenVidu does not have read permissions over .env file at {}", this.getDotenvPath());
+				log.error("RemoteService does not have read permissions over .env file at {}", this.getDotenvPath());
 			}
 		}
 	}

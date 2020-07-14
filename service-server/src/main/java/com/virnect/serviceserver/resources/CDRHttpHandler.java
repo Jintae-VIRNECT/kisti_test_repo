@@ -28,11 +28,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CDRHttpHandler implements WebMvcConfigurer {
 
 	@Autowired
-	RemoteServiceConfig openviduConfig;
+	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String cdrPath = openviduConfig.getOpenviduCdrPath();
+		String cdrPath = remoteServiceConfig.getRemoteServiceCdrPath();
 		registry.addResourceHandler("/cdr/**.log").addResourceLocations("file:" + cdrPath);
 	}
 

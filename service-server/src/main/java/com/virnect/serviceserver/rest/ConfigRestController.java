@@ -49,96 +49,93 @@ public class ConfigRestController {
 	private static final Logger log = LoggerFactory.getLogger(ConfigRestController.class);
 
 	@Autowired
-	private RemoteServiceConfig openviduConfig;
+	private RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
-	private RemoteServiceBuildInfo openviduBuildInfo;
+	private RemoteServiceBuildInfo remoteServiceBuildInfo;
 
-	@RequestMapping(value = "/openvidu-version", method = RequestMethod.GET)
-	public String getOpenViduServerVersion() {
+	@RequestMapping(value = "/remoteservice-version", method = RequestMethod.GET)
+	public String getRemoteServiceServerVersion() {
 
-		log.info("REST API: GET /config/openvidu-version");
+		log.info("REST API: GET /config/remoteservice-version");
 
-		return openviduBuildInfo.getOpenViduServerVersion();
+		return remoteServiceBuildInfo.getRemoteServiceServerVersion();
 	}
 
-	@RequestMapping(value = "/openvidu-publicurl", method = RequestMethod.GET)
-	public String getOpenViduPublicUrl() {
+	@RequestMapping(value = "/remoteservice-publicurl", method = RequestMethod.GET)
+	public String getRemoteServicePublicUrl() {
 
-		log.info("REST API: GET /config/openvidu-publicurl");
+		log.info("REST API: GET /config/remoteservice-publicurl");
 
-		return openviduConfig.getFinalUrl();
+		return remoteServiceConfig.getFinalUrl();
 	}
 
-	@RequestMapping(value = "/openvidu-recording", method = RequestMethod.GET)
-	public Boolean getOpenViduRecordingEnabled() {
+	@RequestMapping(value = "/remoteservice-recording", method = RequestMethod.GET)
+	public Boolean getRemoteServiceRecordingEnabled() {
 
-		log.info("REST API: GET /config/openvidu-recording");
+		log.info("REST API: GET /config/remoteservice-recording");
 
-		return openviduConfig.isRecordingModuleEnabled();
+		return remoteServiceConfig.isRecordingModuleEnabled();
 	}
 
-	@RequestMapping(value = "/openvidu-recording-path", method = RequestMethod.GET)
-	public String getOpenViduRecordingPath() {
+	@RequestMapping(value = "/remoteservice-recording-path", method = RequestMethod.GET)
+	public String getRemoteServiceRecordingPath() {
 
-		log.info("REST API: GET /config/openvidu-recording-path");
+		log.info("REST API: GET /config/remoteservice-recording-path");
 
-		return openviduConfig.getOpenViduRecordingPath();
+		return remoteServiceConfig.getRemoteServiceRecordingPath();
 	}
 
-	@RequestMapping(value = "/openvidu-cdr", method = RequestMethod.GET)
-	public Boolean getOpenViduCdrEnabled() {
+	@RequestMapping(value = "/remoteservice-cdr", method = RequestMethod.GET)
+	public Boolean getRemoteServiceCdrEnabled() {
 
-		log.info("REST API: GET /config/openvidu-cdr");
+		log.info("REST API: GET /config/remoteservice-cdr");
 
-		return openviduConfig.isCdrEnabled();
+		return remoteServiceConfig.isCdrEnabled();
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<String> getOpenViduConfiguration() {
+	public ResponseEntity<String> getRemoteServiceConfiguration() {
 
 		log.info("REST API: GET /config");
 
 		JsonObject json = new JsonObject();
-		json.addProperty("VERSION", openviduBuildInfo.getVersion());
-		json.addProperty("DOMAIN_OR_PUBLIC_IP", openviduConfig.getDomainOrPublicIp());
-		json.addProperty("HTTPS_PORT", openviduConfig.getHttpsPort());
-		json.addProperty("OPENVIDU_PUBLICURL", openviduConfig.getOpenViduPublicUrl());
-		json.addProperty("OPENVIDU_CDR", openviduConfig.isCdrEnabled());
-		json.addProperty("OPENVIDU_STREAMS_VIDEO_MAX_RECV_BANDWIDTH", openviduConfig.getVideoMaxRecvBandwidth());
-		json.addProperty("OPENVIDU_STREAMS_VIDEO_MIN_RECV_BANDWIDTH", openviduConfig.getVideoMinRecvBandwidth());
-		json.addProperty("OPENVIDU_STREAMS_VIDEO_MAX_SEND_BANDWIDTH", openviduConfig.getVideoMaxSendBandwidth());
-		json.addProperty("OPENVIDU_STREAMS_VIDEO_MIN_SEND_BANDWIDTH", openviduConfig.getVideoMinSendBandwidth());
-		json.addProperty("OPENVIDU_SESSIONS_GARBAGE_INTERVAL", openviduConfig.getSessionGarbageInterval());
-		json.addProperty("OPENVIDU_SESSIONS_GARBAGE_THRESHOLD", openviduConfig.getSessionGarbageThreshold());
-		json.addProperty("OPENVIDU_RECORDING", openviduConfig.isRecordingModuleEnabled());
-		if (openviduConfig.isRecordingModuleEnabled()) {
-			json.addProperty("OPENVIDU_RECORDING_VERSION", openviduConfig.getOpenViduRecordingVersion());
-			json.addProperty("OPENVIDU_RECORDING_PATH", openviduConfig.getOpenViduRecordingPath());
-			json.addProperty("OPENVIDU_RECORDING_PUBLIC_ACCESS", openviduConfig.getOpenViduRecordingPublicAccess());
-			json.addProperty("OPENVIDU_RECORDING_NOTIFICATION",
-					openviduConfig.getOpenViduRecordingNotification().name());
-			json.addProperty("OPENVIDU_RECORDING_CUSTOM_LAYOUT", openviduConfig.getOpenviduRecordingCustomLayout());
-			json.addProperty("OPENVIDU_RECORDING_AUTOSTOP_TIMEOUT",
-					openviduConfig.getOpenviduRecordingAutostopTimeout());
-			if (openviduConfig.getOpenViduRecordingComposedUrl() != null
-					&& !openviduConfig.getOpenViduRecordingComposedUrl().isEmpty()) {
-				json.addProperty("OPENVIDU_RECORDING_COMPOSED_URL", openviduConfig.getOpenViduRecordingComposedUrl());
+		json.addProperty("version", remoteServiceBuildInfo.getVersion());
+		json.addProperty("domain_or_public_ip", remoteServiceConfig.getDomainOrPublicIp());
+		json.addProperty("https_port", remoteServiceConfig.getHttpsPort());
+		json.addProperty("remote_service_publicurl", remoteServiceConfig.getRemoteServicePublicUrl());
+		json.addProperty("remote_service_cdr", remoteServiceConfig.isCdrEnabled());
+		json.addProperty("remote_service_streams_video_max_recv_bandwidth", remoteServiceConfig.getVideoMaxRecvBandwidth());
+		json.addProperty("remote_service_streams_video_min_recv_bandwidth", remoteServiceConfig.getVideoMinRecvBandwidth());
+		json.addProperty("remote_service_streams_video_max_send_bandwidth", remoteServiceConfig.getVideoMaxSendBandwidth());
+		json.addProperty("remote_service_streams_video_min_send_bandwidth", remoteServiceConfig.getVideoMinSendBandwidth());
+		json.addProperty("remote_service_sessions_garbage_interval", remoteServiceConfig.getSessionGarbageInterval());
+		json.addProperty("remote_service_sessions_garbage_threshold", remoteServiceConfig.getSessionGarbageThreshold());
+		json.addProperty("remote_service_recording", remoteServiceConfig.isRecordingModuleEnabled());
+		if (remoteServiceConfig.isRecordingModuleEnabled()) {
+			json.addProperty("remote_service_recording_version", remoteServiceConfig.getRemoteServiceRecordingVersion());
+			json.addProperty("remote_service_recording_path", remoteServiceConfig.getRemoteServiceRecordingPath());
+			json.addProperty("remote_service_recording_public_access", remoteServiceConfig.getRemoteServiceRecordingPublicAccess());
+			json.addProperty("remote_service_recording_notification", remoteServiceConfig.getRemoteServiceRecordingNotification().name());
+			json.addProperty("remote_service_recording_custom_layout", remoteServiceConfig.getRemoteServiceRecordingCustomLayout());
+			json.addProperty("remote_service_recording_autostop_timeout", remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout());
+			if (remoteServiceConfig.getRemoteServiceRecordingComposedUrl() != null	&& !remoteServiceConfig.getRemoteServiceRecordingComposedUrl().isEmpty()) {
+				json.addProperty("remote_service_recording_composed_url", remoteServiceConfig.getRemoteServiceRecordingComposedUrl());
 			}
 		}
-		json.addProperty("OPENVIDU_WEBHOOK", openviduConfig.isWebhookEnabled());
-		if (openviduConfig.isWebhookEnabled()) {
-			json.addProperty("OPENVIDU_WEBHOOK_ENDPOINT", openviduConfig.getOpenViduWebhookEndpoint());
+		json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
+		if (remoteServiceConfig.isWebhookEnabled()) {
+			json.addProperty("remote_service_webhook_endpoint", remoteServiceConfig.getRemoteServiceWebhookEndpoint());
 			JsonArray webhookHeaders = new JsonArray();
-			for (Header header : openviduConfig.getOpenViduWebhookHeaders()) {
+			for (Header header : remoteServiceConfig.getRemoteServiceWebhookHeaders()) {
 				webhookHeaders.add(header.getName() + ": " + header.getValue());
 			}
-			json.add("OPENVIDU_WEBHOOK_HEADERS", webhookHeaders);
+			json.add("remote_service_webhook_headers", webhookHeaders);
 			JsonArray webhookEvents = new JsonArray();
-			for (CDREventName eventName : openviduConfig.getOpenViduWebhookEvents()) {
+			for (CDREventName eventName : remoteServiceConfig.getRemoteServiceWebhookEvents()) {
 				webhookEvents.add(eventName.name());
 			}
-			json.add("OPENVIDU_WEBHOOK_EVENTS", webhookEvents);
+			json.add("remote_service_webhook_events", webhookEvents);
 		}
 
 		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);

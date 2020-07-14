@@ -19,8 +19,19 @@ package com.virnect.serviceserver.core;
 
 public enum EndReason {
 
-	unsubscribe, unpublish, disconnect, forceUnpublishByUser, forceUnpublishByServer, forceDisconnectByUser,
-	forceDisconnectByServer, lastParticipantLeft, networkDisconnect, mediaServerDisconnect, openviduServerStopped,
-	recordingStoppedByServer, automaticStop, sessionClosedByServer
+	unsubscribe,
+	unpublish,
+	disconnect,
+	forceUnpublishByUser,
+	forceUnpublishByServer,
+	forceDisconnectByUser,
+	forceDisconnectByServer,
+	lastParticipantLeft,
+	networkDisconnect,
+	mediaServerDisconnect,
+	remoteServiceServerStopped,
+	recordingStoppedByServer,
+	automaticStop,
+	sessionClosedByServer
 
 }

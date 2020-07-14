@@ -32,7 +32,7 @@ subprojects {
             maven(MavenPublication) {
                 from(components.java)
             }
-        }
+        }de
     }
 */
     /*tasks.withType(JavaCompile) {
@@ -74,10 +74,6 @@ subprojects {
         options.encoding = 'UTF-8'
     }*/
 }
-project(":remote-service-server") {
-
-}
-
 project(":service-server") {
 
 }

@@ -89,8 +89,8 @@ public class PublisherEndpoint extends MediaEndpoint {
 	public ReadWriteLock closingLock = new ReentrantReadWriteLock();
 
 	public PublisherEndpoint(EndpointType endpointType, KurentoParticipant owner, String endpointName,
-			MediaPipeline pipeline, RemoteServiceConfig openviduConfig, PassThrough passThru) {
-		super(endpointType, owner, endpointName, pipeline, openviduConfig, log);
+			MediaPipeline pipeline, RemoteServiceConfig remoteServiceConfig, PassThrough passThru) {
+		super(endpointType, owner, endpointName, pipeline, remoteServiceConfig, log);
 		this.passThru = passThru;
 	}
 

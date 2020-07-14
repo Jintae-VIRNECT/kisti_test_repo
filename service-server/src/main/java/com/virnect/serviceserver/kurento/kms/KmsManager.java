@@ -93,7 +93,7 @@ public abstract class KmsManager {
 	}
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
 	protected LoadManager loadManager;

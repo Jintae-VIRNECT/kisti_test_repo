@@ -72,7 +72,7 @@ public abstract class SessionManager {
 	protected RecordingManager recordingManager;
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
 	protected CoturnCredentialsService coturnCredentialsService;
@@ -281,7 +281,7 @@ public abstract class SessionManager {
 	}
 
 	public Session storeSessionNotActive(String sessionId, SessionProperties sessionProperties) {
-		Session sessionNotActive = new Session(sessionId, sessionProperties, openviduConfig, recordingManager);
+		Session sessionNotActive = new Session(sessionId, sessionProperties, remoteServiceConfig, recordingManager);
 		return this.storeSessionNotActive(sessionNotActive);
 	}
 
@@ -310,7 +310,7 @@ public abstract class SessionManager {
 
 	public Token newTokenForInsecureUser(Session session, String token, String serverMetadata) throws Exception {
 		Token tokenObj = new Token(token, RemoteServiceRole.PUBLISHER, serverMetadata != null ? serverMetadata : "",
-				this.openviduConfig.isTurnadminAvailable() ? this.coturnCredentialsService.createUser() : null, null);
+				this.remoteServiceConfig.isTurnadminAvailable() ? this.coturnCredentialsService.createUser() : null, null);
 		session.storeToken(tokenObj);
 		session.showTokens("Token created for insecure user");
 		return tokenObj;
@@ -418,7 +418,7 @@ public abstract class SessionManager {
 		log.info("Closing all sessions");
 		for (String sessionId : sessions.keySet()) {
 			try {
-				closeSession(sessionId, EndReason.openviduServerStopped);
+				closeSession(sessionId, EndReason.remoteServiceServerStopped);
 			} catch (Exception e) {
 				log.warn("Error closing session '{}': {}", sessionId, e.getMessage());
 			}
@@ -427,9 +427,8 @@ public abstract class SessionManager {
 
 	@PostConstruct
 	private void startSessionGarbageCollector() {
-		if (openviduConfig.getSessionGarbageInterval() == 0) {
-			log.info(
-					"Garbage collector for non active sessions is disabled (property 'OPENVIDU_SESSIONS_GARBAGE_INTERVAL' is 0)");
+		if (remoteServiceConfig.getSessionGarbageInterval() == 0) {
+			log.info("Garbage collector for non active sessions is disabled (property 'REMOTE_SESSIONS_GARBAGE_INTERVAL' is 0)");
 			return;
 		}
 		new UpdatableTimerTask(() -> {
@@ -444,7 +443,7 @@ public abstract class SessionManager {
 				final Session sessionNotActive = iter.next().getValue();
 				final String sessionId = sessionNotActive.getSessionId();
 				long sessionExistsSince = currentMillis - sessionNotActive.getStartTime();
-				if (sessionExistsSince > (openviduConfig.getSessionGarbageThreshold() * 1000)) {
+				if (sessionExistsSince > (remoteServiceConfig.getSessionGarbageThreshold() * 1000)) {
 					try {
 						if (sessionNotActive.closingLock.writeLock().tryLock(15, TimeUnit.SECONDS)) {
 							try {
@@ -478,11 +477,11 @@ public abstract class SessionManager {
 					log.warn("Possible ghost session {}", sessionActive.getSessionId());
 				}
 			}
-		}, () -> new Long(openviduConfig.getSessionGarbageInterval() * 1000)).updateTimer();
+		}, () -> new Long(remoteServiceConfig.getSessionGarbageInterval() * 1000)).updateTimer();
 
 		log.info(
 				"Garbage collector for non active sessions initialized. Running every {} seconds and cleaning up non active Sessions more than {} seconds old",
-				openviduConfig.getSessionGarbageInterval(), openviduConfig.getSessionGarbageThreshold());
+				remoteServiceConfig.getSessionGarbageInterval(), remoteServiceConfig.getSessionGarbageThreshold());
 	}
 
 	/**
@@ -543,7 +542,7 @@ public abstract class SessionManager {
 
 	public void closeSessionAndEmptyCollections(Session session, EndReason reason, boolean stopRecording) {
 
-		if (openviduConfig.isRecordingModuleEnabled()) {
+		if (remoteServiceConfig.isRecordingModuleEnabled()) {
 			if (stopRecording && this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 				try {
 					recordingManager.stopRecording(session, null, RecordingManager.finalReason(reason));
@@ -591,7 +590,7 @@ public abstract class SessionManager {
 	private void initializeCollections(String sessionId) {
 		this.sessionidParticipantpublicidParticipant.putIfAbsent(sessionId, new ConcurrentHashMap<>());
 		this.sessionidFinalUsers.putIfAbsent(sessionId, new ConcurrentHashMap<>());
-		if (this.openviduConfig.isRecordingModuleEnabled()) {
+		if (this.remoteServiceConfig.isRecordingModuleEnabled()) {
 			this.sessionidAccumulatedRecordings.putIfAbsent(sessionId, new ConcurrentLinkedQueue<>());
 		}
 	}

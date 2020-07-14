@@ -27,9 +27,9 @@ public class CDRLoggerWebhook implements CDRLogger {
 
 	private HttpWebhookSender webhookSender;
 
-	public CDRLoggerWebhook(RemoteServiceConfig openviduConfig) {
-		this.webhookSender = new HttpWebhookSender(openviduConfig.getOpenViduWebhookEndpoint(),
-				openviduConfig.getOpenViduWebhookHeaders(), openviduConfig.getOpenViduWebhookEvents());
+	public CDRLoggerWebhook(RemoteServiceConfig remoteServiceConfig) {
+		this.webhookSender = new HttpWebhookSender(remoteServiceConfig.getRemoteServiceWebhookEndpoint(),
+				remoteServiceConfig.getRemoteServiceWebhookHeaders(), remoteServiceConfig.getRemoteServiceWebhookEvents());
 	}
 
 	@Override

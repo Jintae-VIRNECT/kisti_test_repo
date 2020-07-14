@@ -35,7 +35,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	RemoteServiceConfig openviduConf;
+	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// /api
 				.antMatchers("/api/**").authenticated()
 				// /config
-				.antMatchers(HttpMethod.GET, "/config/openvidu-publicurl").permitAll()
+				.antMatchers(HttpMethod.GET, "/config/remoteservice-publicurl").permitAll()
 				.antMatchers(HttpMethod.GET, "/config/**").authenticated()
 				// /cdr
 				.antMatchers(HttpMethod.GET, "/cdr/**").authenticated()
@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		conf.antMatchers("/layouts/**").authenticated();
 
 		// Security for recorded video files
-		if (openviduConf.getOpenViduRecordingPublicAccess()) {
+		if (remoteServiceConfig.getRemoteServiceRecordingPublicAccess()) {
 			conf = conf.antMatchers("/recordings/**").permitAll();
 		} else {
 			conf = conf.antMatchers("/recordings/**").authenticated();
@@ -81,7 +81,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + openviduConf.getOpenViduSecret())
+		/*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
+				.roles("ADMIN");*/
+		auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
 				.roles("ADMIN");
 	}
 

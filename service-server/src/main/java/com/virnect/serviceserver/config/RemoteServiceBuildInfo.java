@@ -27,8 +27,8 @@ public class RemoteServiceBuildInfo {
 	@Autowired
 	private BuildProperties buildProperties;
 
-	public String getOpenViduServerVersion() {
-		String v = this.buildProperties.get("version.openvidu.server");
+	public String getRemoteServiceServerVersion() {
+		String v = this.buildProperties.get("version.remoteservice.server");
 		if (v == null) {
 			v = this.getVersion();
 		}

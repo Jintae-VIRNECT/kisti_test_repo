@@ -38,14 +38,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class FrontendResourceHandler extends WebMvcConfigurerAdapter {
 
 	@Autowired
-	RemoteServiceConfig openviduConfig;
+	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/" + openviduConfig.getOpenViduFrontendDefaultPath())
-				.setViewName("redirect:/" + openviduConfig.getOpenViduFrontendDefaultPath() + "/");
-		registry.addViewController("/" + openviduConfig.getOpenViduFrontendDefaultPath() + "/")
-				.setViewName("forward:/" + openviduConfig.getOpenViduFrontendDefaultPath() + "/index.html");
+		registry.addViewController("/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath())
+				.setViewName("redirect:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/");
+		registry.addViewController("/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/")
+				.setViewName("forward:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/index.html");
 		super.addViewControllers(registry);
 	}
 

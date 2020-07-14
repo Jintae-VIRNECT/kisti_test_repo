@@ -76,8 +76,8 @@ public class SingleStreamRecordingService extends RecordingService {
 	private final String INDIVIDUAL_STREAM_METADATA_FILE = ".stream.";
 
 	public SingleStreamRecordingService(RecordingManager recordingManager, RecordingDownloader recordingDownloader,
-										RemoteServiceConfig openviduConfig, CallDetailRecord cdr, QuarantineKiller quarantineKiller) {
-		super(recordingManager, recordingDownloader, openviduConfig, cdr, quarantineKiller);
+										RemoteServiceConfig remoteServiceConfig, CallDetailRecord cdr, QuarantineKiller quarantineKiller) {
+		super(recordingManager, recordingDownloader, remoteServiceConfig, cdr, quarantineKiller);
 	}
 
 	@Override
@@ -251,7 +251,7 @@ public class SingleStreamRecordingService extends RecordingService {
 					MediaPipeline pipeline = kurentoParticipant.getPublisher().getPipeline();
 
 					RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline,
-							"file://" + openviduConfig.getOpenViduRemoteRecordingPath() + recordingId + "/"
+							"file://" + remoteServiceConfig.getRemoteServiceRemoteRecordingPath() + recordingId + "/"
 									+ participant.getPublisherStreamId() + ".webm").withMediaProfile(profile).build();
 
 					recorder.addRecordingListener(new EventListener<RecordingEvent>() {
@@ -415,7 +415,7 @@ public class SingleStreamRecordingService extends RecordingService {
 
 	private void commonWriteIndividualMetadataFile(RecorderEndpointWrapper wrapper,
 			BiFunction<String, String, Boolean> writeFunction) {
-		String filesPath = this.openviduConfig.getOpenViduRecordingPath() + wrapper.getRecordingId() + "/";
+		String filesPath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + wrapper.getRecordingId() + "/";
 		File videoFile = new File(filesPath + wrapper.getStreamId() + ".webm");
 		wrapper.setSize(videoFile.length());
 		String metadataFilePath = filesPath + INDIVIDUAL_STREAM_METADATA_FILE + wrapper.getStreamId();
@@ -427,7 +427,7 @@ public class SingleStreamRecordingService extends RecordingService {
 		// Must update recording "status" (to stopped), "duration" (min startTime of all
 		// individual recordings) and "size" (sum of all individual recordings size)
 
-		String folderPath = this.openviduConfig.getOpenViduRecordingPath() + recording.getId() + "/";
+		String folderPath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/";
 		String metadataFilePath = folderPath + RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
 		String syncFilePath = folderPath + recording.getName() + ".json";
 

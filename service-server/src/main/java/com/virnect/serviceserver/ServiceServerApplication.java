@@ -55,9 +55,13 @@ import java.util.concurrent.Semaphore;
 @EnableWebSecurity
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
+
+    //mvn -DDOMAIN_OR_PUBLIC_IP=localhost -DHTTPS_PORT=4443 -DOPENVIDU_SECRET=MY_SECRET exec:java
+    //ng serve --host 0.0.0.0 --ssl true
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
     public static final String WS_PATH = "/openvidu";
+    //public static final String WS_PATH = "/remoteservice";
     public static String wsUrl;
     public static String httpUrl;
 
@@ -72,7 +76,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
         }
         String firstKmsWsUri = remoteServiceConfig.getKmsUris().get(0);
-        log.info("OpenVidu Server using one KMS: {}", firstKmsWsUri);
+        log.info("RemoteService Server using one KMS: {}", firstKmsWsUri);
         return new FixedOneKmsManager();
     }
 
@@ -82,16 +86,16 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
         List<CDRLogger> loggers = new ArrayList<>();
         if (remoteServiceConfig.isCdrEnabled()) {
-            log.info("OpenVidu CDR service is enabled");
+            log.info("RemoteService CDR service is enabled");
             loggers.add(new CDRLoggerFile());
         } else {
-            log.info("OpenVidu CDR service is disabled (may be enable with 'OPENVIDU_CDR=true')");
+            log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
         }
         if (remoteServiceConfig.isWebhookEnabled()) {
-            log.info("OpenVidu Webhook service is enabled");
+            log.info("RemoteService Webhook service is enabled");
             loggers.add(new CDRLoggerWebhook(remoteServiceConfig));
         } else {
-            log.info("OpenVidu Webhook service is disabled (may be enabled with 'OPENVIDU_WEBHOOK=true')");
+            log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
         }
         return new CallDetailRecord(loggers);
     }
@@ -192,9 +196,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     }
 
     public static void main(String[] args) throws Exception {
-        //Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
+        /*Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
 
-        /*if (CONFIG_PROPS.get("SERVER_PORT") != null) {
+        if (CONFIG_PROPS.get("SERVER_PORT") != null) {
 
             // Configuration property SERVER_PORT has been explicitly defined.
             // Must initialize the application in that port on the host regardless of what
@@ -203,24 +207,24 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             System.setProperty("server.port", CONFIG_PROPS.get("SERVER_PORT"));
 
             log.warn(
-                    "You have set property server.port (or SERVER_PORT). This will serve OpenVidu Server on your host at port "
+                    "You have set property server.port (or SERVER_PORT). This will serve RemoteService Server on your host at port "
                             + CONFIG_PROPS.get("SERVER_PORT") + ". But property HTTPS_PORT ("
-                            + CONFIG_PROPS.get("HTTPS_PORT")
-                            + ") still configures the port that should be used to connect to OpenVidu Server from outside. "
-                            + "Bear this in mind when configuring a proxy in front of OpenVidu Server");
+                            + CONFIG_PROPS.get("service.https_port")
+                            + ") still configures the port that should be used to connect to RemoteService Server from outside. "
+                            + "Bear this in mind when configuring a proxy in front of RemoteService Server");
 
-        } else if (CONFIG_PROPS.get("HTTPS_PORT") != null) {
+        } else if (CONFIG_PROPS.get("service.https_port") != null) {
 
             // Configuration property SERVER_PORT has NOT been explicitly defined.
             // Must initialize the application in port HTTPS_PORT on the host. HTTPS_PORT
             // does get used in the public URL as well.
-            System.setProperty("server.port", CONFIG_PROPS.get("HTTPS_PORT"));
+            System.setProperty("server.port", CONFIG_PROPS.get("service.https_port"));
 
         }*/
 
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
-        //SpringApplication.run(RemoteServiceConfig.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+        //SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
         SpringApplication.run(ServiceServerApplication.class, args);
     }
 
@@ -246,8 +250,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             }
             msg += "\n" + "\n" + "   Fix config errors\n" + "   ---------------\n" + "\n"
                     + "   1) Return to shell pressing Ctrl+C\n"
-                    + "   2) Set correct values in '.env' configuration file\n" + "   3) Restart OpenVidu with:\n"
-                    + "\n" + "      $ ./openvidu restart\n" + "\n";
+                    + "   2) Set correct values in '.env' configuration file\n" + "   3) Restart RemoteService with:\n"
+                    + "\n" + "      $ ./remoteservice restart\n" + "\n";
             // @formatter:on
             log.info(msg);
             // Wait forever
@@ -278,9 +282,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         String dashboardUrl = httpUrl + "dashboard/";
 
         // @formatter:off
-        String msg = "\n\n----------------------------------------------------\n" + "\n" + "   OpenVidu is ready!\n"
-                + "   ---------------------------\n" + "\n" + "   * OpenVidu Server: " + httpUrl + "\n" + "\n"
-                + "   * OpenVidu Dashboard: " + dashboardUrl + "\n" + "\n"
+        String msg = "\n\n----------------------------------------------------\n" + "\n" + "   RemoteService is ready!\n"
+                + "   ---------------------------\n" + "\n" + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
+                + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on
 

@@ -34,10 +34,10 @@ public class TokenGeneratorDefault implements TokenGenerator {
 	private CoturnCredentialsService coturnCredentialsService;
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
-	protected RemoteServiceBuildInfo openviduBuildConfig;
+	protected RemoteServiceBuildInfo remoteServiceBuildInfo;
 
 	@Override
 	public Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata,
@@ -47,12 +47,12 @@ public class TokenGeneratorDefault implements TokenGenerator {
 		token += "&token=" + IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
 				+ RandomStringUtils.randomAlphanumeric(15);
 		token += "&role=" + role.name();
-		token += "&version=" + openviduBuildConfig.getOpenViduServerVersion();
+		token += "&version=" + remoteServiceBuildInfo.getRemoteServiceServerVersion();
 		TurnCredentials turnCredentials = null;
-		if (this.openviduConfig.isTurnadminAvailable()) {
+		if (this.remoteServiceConfig.isTurnadminAvailable()) {
 			turnCredentials = coturnCredentialsService.createUser();
 			if (turnCredentials != null) {
-				token += "&coturnIp=" + openviduConfig.getCoturnIp();
+				token += "&coturnIp=" + remoteServiceConfig.getCoturnIp();
 				token += "&turnUsername=" + turnCredentials.getUsername();
 				token += "&turnCredential=" + turnCredentials.getCredential();
 			}

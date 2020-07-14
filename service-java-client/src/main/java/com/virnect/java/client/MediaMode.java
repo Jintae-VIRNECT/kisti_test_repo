@@ -29,7 +29,7 @@ public enum MediaMode {
 	RELAYED,
 
 	/**
-	 * The session will transmit streams using OpenVidu Media Node
+	 * The session will transmit streams using RemoteService Media Node
 	 */
 	ROUTED
 }

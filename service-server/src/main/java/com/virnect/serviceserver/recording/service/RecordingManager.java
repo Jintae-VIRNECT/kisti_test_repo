@@ -97,7 +97,7 @@ public class RecordingManager {
 	private RecordingDownloader recordingDownloader;
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
 	private KmsManager kmsManager;
@@ -129,7 +129,7 @@ public class RecordingManager {
 
 	@PostConstruct
 	public void init() {
-		if (this.openviduConfig.isRecordingModuleEnabled()) {
+		if (this.remoteServiceConfig.isRecordingModuleEnabled()) {
 			log.info("OpenVidu recording service is enabled");
 			try {
 				this.initializeRecordingManager();
@@ -139,11 +139,11 @@ public class RecordingManager {
 					finalErrorMessage = "Error connecting to Docker daemon. Enabling OpenVidu recording module requires Docker";
 				} else if (e.getCodeValue() == Code.RECORDING_PATH_NOT_VALID.getValue()) {
 					finalErrorMessage = "Error initializing recording path \""
-							+ this.openviduConfig.getOpenViduRecordingPath()
+							+ this.remoteServiceConfig.getRemoteServiceRecordingPath()
 							+ "\" set with system property \"OPENVIDU_RECORDING_PATH\"";
 				} else if (e.getCodeValue() == Code.RECORDING_FILE_EMPTY_ERROR.getValue()) {
 					finalErrorMessage = "Error initializing recording custom layouts path \""
-							+ this.openviduConfig.getOpenviduRecordingCustomLayout()
+							+ this.remoteServiceConfig.getRemoteServiceRecordingCustomLayout()
 							+ "\" set with system property \"OPENVIDU_RECORDING_CUSTOM_LAYOUT\"";
 				}
 				log.error(finalErrorMessage + ". Shutting down OpenVidu Server");
@@ -156,21 +156,21 @@ public class RecordingManager {
 
 	public void initializeRecordingManager() throws RemoteServiceException {
 
-		RecordingManager.IMAGE_TAG = openviduConfig.getOpenViduRecordingVersion();
+		RecordingManager.IMAGE_TAG = remoteServiceConfig.getRemoteServiceRecordingVersion();
 
 		this.dockerManager = new DockerManager();
-		this.composedRecordingService = new ComposedRecordingService(this, recordingDownloader, openviduConfig, cdr,
+		this.composedRecordingService = new ComposedRecordingService(this, recordingDownloader, remoteServiceConfig, cdr,
 				quarantineKiller);
 		this.composedQuickStartRecordingService = new ComposedQuickStartRecordingService(this, recordingDownloader,
-				openviduConfig, cdr, quarantineKiller);
-		this.singleStreamRecordingService = new SingleStreamRecordingService(this, recordingDownloader, openviduConfig,
+				remoteServiceConfig, cdr, quarantineKiller);
+		this.singleStreamRecordingService = new SingleStreamRecordingService(this, recordingDownloader, remoteServiceConfig,
 				cdr, quarantineKiller);
 
 		log.info("Recording module required: Downloading openvidu/openvidu-recording:"
-				+ openviduConfig.getOpenViduRecordingVersion() + " Docker image (350MB aprox)");
+				+ remoteServiceConfig.getRemoteServiceRecordingVersion() + " Docker image (350MB aprox)");
 
-		this.checkRecordingRequirements(this.openviduConfig.getOpenViduRecordingPath(),
-				this.openviduConfig.getOpenviduRecordingCustomLayout());
+		this.checkRecordingRequirements(this.remoteServiceConfig.getRemoteServiceRecordingPath(),
+				this.remoteServiceConfig.getRemoteServiceRecordingCustomLayout());
 
 		if (dockerManager.dockerImageExistsLocally(IMAGE_NAME + ":" + IMAGE_TAG)) {
 			log.info("Docker image already exists locally");
@@ -216,7 +216,7 @@ public class RecordingManager {
 			dockerManager.checkDockerEnabled();
 		} catch (RemoteServiceException e) {
 			String message = e.getMessage();
-			if ("docker".equals(openviduConfig.getSpringProfile())) {
+			if ("docker".equals(remoteServiceConfig.getSpringProfile())) {
 				final String NEW_LINE = System.getProperty("line.separator");
 				message += ": make sure you include the following flags in your \"docker run\" command:" + NEW_LINE
 						+ "    -e OPENVIDU_RECORDING_PATH=/YOUR/PATH/TO/VIDEO/FILES" + NEW_LINE
@@ -282,7 +282,7 @@ public class RecordingManager {
 							// Init automatic recording stop if there are now publishers when starting
 							// recording
 							log.info("No publisher in session {}. Starting {} seconds countdown for stopping recording",
-									session.getSessionId(), this.openviduConfig.getOpenviduRecordingAutostopTimeout());
+									session.getSessionId(), this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout());
 							this.initAutomaticRecordingStopThread(session);
 						}
 						return recording;
@@ -473,7 +473,7 @@ public class RecordingManager {
 			this.recordingDownloader.cancelDownload(recording.getId());
 		}
 
-		File folder = new File(this.openviduConfig.getOpenViduRecordingPath());
+		File folder = new File(this.remoteServiceConfig.getRemoteServiceRecordingPath());
 		File[] files = folder.listFiles();
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory() && files[i].getName().equals(recordingId)) {
@@ -509,7 +509,7 @@ public class RecordingManager {
 	}
 
 	public String getRecordingUrl(Recording recording) {
-		return openviduConfig.getFinalUrl() + "recordings/" + recording.getId() + "/" + recording.getName() + "."
+		return remoteServiceConfig.getFinalUrl() + "recordings/" + recording.getId() + "/" + recording.getName() + "."
 				+ this.getExtensionFromRecording(recording);
 	}
 
@@ -530,7 +530,7 @@ public class RecordingManager {
 
 			ScheduledFuture<?> future = this.automaticRecordingStopExecutor.schedule(() -> {
 				log.info("Stopping recording {} after {} seconds wait (no publisher published before timeout)",
-						recordingId, this.openviduConfig.getOpenviduRecordingAutostopTimeout());
+						recordingId, this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout());
 
 				if (this.automaticRecordingStopThreads.remove(session.getSessionId()) != null) {
 					boolean alreadyUnlocked = false;
@@ -577,7 +577,7 @@ public class RecordingManager {
 					// This code shouldn't be reachable
 					log.warn("Recording {} was already automatically stopped by a previous thread", recordingId);
 				}
-			}, this.openviduConfig.getOpenviduRecordingAutostopTimeout(), TimeUnit.SECONDS);
+			}, this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout(), TimeUnit.SECONDS);
 
 			return future;
 		});
@@ -622,9 +622,9 @@ public class RecordingManager {
 	}
 
 	private Recording getRecordingFromHost(String recordingId) {
-		log.info(this.openviduConfig.getOpenViduRecordingPath() + recordingId + "/"
+		log.info(this.remoteServiceConfig.getRemoteServiceRecordingPath() + recordingId + "/"
 				+ RecordingManager.RECORDING_ENTITY_FILE + recordingId);
-		File file = new File(this.openviduConfig.getOpenViduRecordingPath() + recordingId + "/"
+		File file = new File(this.remoteServiceConfig.getRemoteServiceRecordingPath() + recordingId + "/"
 				+ RecordingManager.RECORDING_ENTITY_FILE + recordingId);
 		log.info("File exists: " + file.exists());
 		Recording recording = this.getRecordingFromEntityFile(file);
@@ -632,7 +632,7 @@ public class RecordingManager {
 	}
 
 	private Set<Recording> getAllRecordingsFromHost() {
-		File folder = new File(this.openviduConfig.getOpenViduRecordingPath());
+		File folder = new File(this.remoteServiceConfig.getRemoteServiceRecordingPath());
 		File[] files = folder.listFiles();
 
 		Set<Recording> recordingEntities = new HashSet<>();
@@ -651,7 +651,7 @@ public class RecordingManager {
 	}
 
 	private Set<String> getRecordingIdsFromHost() {
-		File folder = new File(this.openviduConfig.getOpenViduRecordingPath());
+		File folder = new File(this.remoteServiceConfig.getRemoteServiceRecordingPath());
 		File[] files = folder.listFiles();
 
 		Set<String> fileNamesNoExtension = new HashSet<>();
@@ -768,7 +768,7 @@ public class RecordingManager {
 			}
 		}
 
-		if (openviduConfig.openviduRecordingCustomLayoutChanged(openviduRecordingCustomLayout)) {
+		if (remoteServiceConfig.remoteServiceRecordingCustomLayoutChanged(openviduRecordingCustomLayout)) {
 			// Property OPENVIDU_RECORDING_CUSTOM_LAYOUT changed
 			File dir = new File(openviduRecordingCustomLayout);
 			if (dir.exists()) {

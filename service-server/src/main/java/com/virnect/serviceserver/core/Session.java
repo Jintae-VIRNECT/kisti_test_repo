@@ -49,7 +49,7 @@ public class Session implements SessionInterface {
 
 	private static final Logger log = LoggerFactory.getLogger(Session.class);
 
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 	protected RecordingManager recordingManager;
 
 	protected ConcurrentMap<String, Token> tokens = new ConcurrentHashMap<>();
@@ -90,17 +90,17 @@ public class Session implements SessionInterface {
 		this.sessionId = previousSession.getSessionId();
 		this.startTime = previousSession.getStartTime();
 		this.sessionProperties = previousSession.getSessionProperties();
-		this.openviduConfig = previousSession.openviduConfig;
+		this.remoteServiceConfig = previousSession.remoteServiceConfig;
 		this.recordingManager = previousSession.recordingManager;
 		this.tokens = previousSession.tokens;
 	}
 
-	public Session(String sessionId, SessionProperties sessionProperties, RemoteServiceConfig openviduConfig,
+	public Session(String sessionId, SessionProperties sessionProperties, RemoteServiceConfig remoteServiceConfig,
 			RecordingManager recordingManager) {
 		this.sessionId = sessionId;
 		this.startTime = System.currentTimeMillis();
 		this.sessionProperties = sessionProperties;
-		this.openviduConfig = openviduConfig;
+		this.remoteServiceConfig = remoteServiceConfig;
 		this.recordingManager = recordingManager;
 	}
 

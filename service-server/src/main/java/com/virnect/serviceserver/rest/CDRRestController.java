@@ -51,14 +51,14 @@ public class CDRRestController {
 	private static final Logger log = LoggerFactory.getLogger(CDRRestController.class);
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> listCdrFiles() {
 
 		log.info("REST API: GET /cdr");
 
-		String cdrPath = openviduConfig.getOpenviduCdrPath();
+		String cdrPath = remoteServiceConfig.getRemoteServiceCdrPath();
 		JsonArray cdrFiles = new JsonArray();
 
 		try (Stream<Path> walk = Files.walk(Paths.get(cdrPath))) {

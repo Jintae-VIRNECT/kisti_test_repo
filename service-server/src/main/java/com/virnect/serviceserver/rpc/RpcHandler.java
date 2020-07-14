@@ -60,7 +60,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 	private static final Logger log = LoggerFactory.getLogger(RpcHandler.class);
 
 	@Autowired
-	RemoteServiceConfig openviduConfig;
+	RemoteServiceConfig remoteServiceConfig;
 
 	@Autowired
 	GeoLocationByIp geoLocationByIp;
@@ -240,7 +240,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 
 		boolean generateRecorderParticipant = false;
 
-		if (openviduConfig.isOpenViduSecret(secret)) {
+		if (remoteServiceConfig.isRemoteServiceSecret(secret)) {
 			sessionManager.newInsecureParticipant(participantPrivatetId);
 			token = IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
 					+ RandomStringUtils.randomAlphanumeric(15);

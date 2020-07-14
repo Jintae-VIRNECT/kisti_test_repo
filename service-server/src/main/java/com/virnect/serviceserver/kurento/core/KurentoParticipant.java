@@ -62,7 +62,7 @@ public class KurentoParticipant extends Participant {
 
 	private static final Logger log = LoggerFactory.getLogger(KurentoParticipant.class);
 
-	private RemoteServiceConfig openviduConfig;
+	private RemoteServiceConfig remoteServiceConfig;
 	private RecordingManager recordingManager;
 
 	private final KurentoSession session;
@@ -75,21 +75,21 @@ public class KurentoParticipant extends Participant {
 	private final ConcurrentMap<String, SubscriberEndpoint> subscribers = new ConcurrentHashMap<String, SubscriberEndpoint>();
 
 	public KurentoParticipant(Participant participant, KurentoSession kurentoSession,
-			KurentoParticipantEndpointConfig endpointConfig, RemoteServiceConfig openviduConfig,
+			KurentoParticipantEndpointConfig endpointConfig, RemoteServiceConfig remoteServiceConfig,
 			RecordingManager recordingManager) {
 		super(participant.getFinalUserId(), participant.getParticipantPrivateId(), participant.getParticipantPublicId(),
 				kurentoSession.getSessionId(), participant.getToken(), participant.getClientMetadata(),
 				participant.getLocation(), participant.getPlatform(), participant.getEndpointType(),
 				participant.getCreatedAt());
 		this.endpointConfig = endpointConfig;
-		this.openviduConfig = openviduConfig;
+		this.remoteServiceConfig = remoteServiceConfig;
 		this.recordingManager = recordingManager;
 		this.session = kurentoSession;
 
 		if (!RemoteServiceRole.SUBSCRIBER.equals(participant.getToken().getRole())) {
 			// Initialize a PublisherEndpoint
 			this.publisher = new PublisherEndpoint(endpointType, this, participant.getParticipantPublicId(),
-					this.session.getPipeline(), this.openviduConfig, null);
+					this.session.getPipeline(), this.remoteServiceConfig, null);
 		}
 	}
 
@@ -181,7 +181,7 @@ public class KurentoParticipant extends Participant {
 		log.info("PARTICIPANT {}: Is now publishing video in room {}", this.getParticipantPublicId(),
 				this.session.getSessionId());
 
-		if (this.openviduConfig.isRecordingModuleEnabled()
+		if (this.remoteServiceConfig.isRecordingModuleEnabled()
 				&& this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 			this.recordingManager.startOneIndividualStreamRecording(session, null, null, this);
 		}
@@ -388,7 +388,7 @@ public class KurentoParticipant extends Participant {
 	 */
 	public SubscriberEndpoint getNewOrExistingSubscriber(String senderPublicId) {
 		SubscriberEndpoint subscriberEndpoint = new SubscriberEndpoint(endpointType, this, senderPublicId,
-				this.getPipeline(), this.openviduConfig);
+				this.getPipeline(), this.remoteServiceConfig);
 
 		SubscriberEndpoint existingSendingEndpoint = this.subscribers.putIfAbsent(senderPublicId, subscriberEndpoint);
 		if (existingSendingEndpoint != null) {
@@ -447,7 +447,7 @@ public class KurentoParticipant extends Participant {
 		// Remove streamId from publisher's map
 		this.session.publishedStreamIds.remove(this.getPublisherStreamId());
 
-		if (this.openviduConfig.isRecordingModuleEnabled()
+		if (this.remoteServiceConfig.isRecordingModuleEnabled()
 				&& this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 			this.recordingManager.stopOneIndividualStreamRecording(session, this.getPublisherStreamId(),
 					kmsDisconnectionTime);
@@ -550,7 +550,7 @@ public class KurentoParticipant extends Participant {
 	public void resetPublisherEndpoint(MediaOptions mediaOptions, PassThrough passThru) {
 		log.info("Resetting publisher endpoint for participant {}", this.getParticipantPublicId());
 		this.publisher = new PublisherEndpoint(endpointType, this, this.getParticipantPublicId(),
-				this.session.getPipeline(), this.openviduConfig, passThru);
+				this.session.getPipeline(), this.remoteServiceConfig, passThru);
 		this.publisher.setMediaOptions(mediaOptions);
 		this.publisherLatch = new CountDownLatch(1);
 	}

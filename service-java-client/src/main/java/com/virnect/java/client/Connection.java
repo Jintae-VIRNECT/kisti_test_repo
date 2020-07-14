@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * See {@link io.openvidu.java.client.Session#getActiveConnections()}
+ * See {@link com.virnect.java.client.Session#getActiveConnections()}
  */
 public class Connection {
 

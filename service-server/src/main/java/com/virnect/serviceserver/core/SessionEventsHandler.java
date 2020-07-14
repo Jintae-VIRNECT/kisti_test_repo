@@ -60,7 +60,7 @@ public class SessionEventsHandler {
 	protected CallDetailRecord CDR;
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	Map<String, Recording> recordingsStarted = new ConcurrentHashMap<>();
 
@@ -440,7 +440,7 @@ public class SessionEventsHandler {
 		if (recording.recordingNotificationSent.compareAndSet(false, true)) {
 			// Filter participants by roles according to "OPENVIDU_RECORDING_NOTIFICATION"
 			Set<Participant> filteredParticipants = this.filterParticipantsByRole(
-					this.openviduConfig.getRolesFromRecordingNotification(), session.getParticipants());
+					this.remoteServiceConfig.getRolesFromRecordingNotification(), session.getParticipants());
 
 			JsonObject params = new JsonObject();
 			params.addProperty(ProtocolElements.RECORDINGSTARTED_ID_PARAM, recording.getId());
@@ -469,7 +469,7 @@ public class SessionEventsHandler {
 			return;
 		}
 		Set<Participant> filteredParticipants = this.filterParticipantsByRole(
-				this.openviduConfig.getRolesFromRecordingNotification(), existingParticipants);
+				this.remoteServiceConfig.getRolesFromRecordingNotification(), existingParticipants);
 
 		JsonObject params = new JsonObject();
 		params.addProperty(ProtocolElements.RECORDINGSTOPPED_ID_PARAM, recording.getId());

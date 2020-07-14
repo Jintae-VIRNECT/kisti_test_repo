@@ -78,10 +78,10 @@ import com.virnect.serviceserver.webhook.CDRLoggerWebhook;
  * - recordingLayout:	string
  * - size: 				number
  * - status:            string
- * - webrtcConnectionDestroyed.reason: 	"unsubscribe", "unpublish", "disconnect", "networkDisconnect", "mediaServerDisconnect", "openviduServerStopped"
- * - participantLeft.reason: 			"unsubscribe", "unpublish", "disconnect", "networkDisconnect", "mediaServerDisconnect", "openviduServerStopped"
- * - sessionDestroyed.reason: 			"lastParticipantLeft", "mediaServerDisconnect", "openviduServerStopped"
- * - recordingStopped.reason:			"recordingStoppedByServer", "lastParticipantLeft", "sessionClosedByServer", "automaticStop", "mediaServerDisconnect", "openviduServerStopped"
+ * - webrtcConnectionDestroyed.reason: 	"unsubscribe", "unpublish", "disconnect", "networkDisconnect", "mediaServerDisconnect", "remoteServiceServerStopped"
+ * - participantLeft.reason: 			"unsubscribe", "unpublish", "disconnect", "networkDisconnect", "mediaServerDisconnect", "remoteServiceServerStopped"
+ * - sessionDestroyed.reason: 			"lastParticipantLeft", "mediaServerDisconnect", "remoteServiceServerStopped"
+ * - recordingStopped.reason:			"recordingStoppedByServer", "lastParticipantLeft", "sessionClosedByServer", "automaticStop", "mediaServerDisconnect", "remoteServiceServerStopped"
  * 
  * [OPTIONAL_PROPERTIES]:
  * - receivingFrom:		only if connection = "INBOUND"

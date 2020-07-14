@@ -77,7 +77,7 @@ public class RemoteService {
 	protected final static String API_RECORDINGS_STOP = "/stop";
 
 	/**
-	 * @param hostname Public accessible IP where your instance of OpenVidu
+	 * @param hostname Public accessible IP where your instance of RemoteService
 	 *                          Server is up an running
 	 * @param secret            Secret used on OpenVidu Server initialization
 	 */
@@ -100,6 +100,7 @@ public class RemoteService {
 
 		CredentialsProvider provider = new BasicCredentialsProvider();
 		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("OPENVIDUAPP", this.secret);
+		//UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("remote", this.secret);
 		provider.setCredentials(AuthScope.ANY, credentials);
 
 		SSLContext sslContext;

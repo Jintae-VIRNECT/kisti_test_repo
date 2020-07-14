@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(properties = { "OPENVIDU_SESSIONS_GARBAGE_INTERVAL=1", "OPENVIDU_SESSIONS_GARBAGE_THRESHOLD=1" })
+@SpringBootTest(properties = { "service.remote_sessions_garbage_interval=1", "service.remote_sessions_garbage_threshold=1" })
 @TestPropertySource(locations = "classpath:integration-test.properties")
 @ContextConfiguration(classes = { IntegrationTestConfiguration.class })
 @WebAppConfiguration

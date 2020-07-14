@@ -30,7 +30,7 @@ public abstract class CoturnCredentialsService {
 	protected static final Logger log = LoggerFactory.getLogger(CoturnCredentialsService.class);
 
 	@Autowired
-	protected RemoteServiceConfig openviduConfig;
+	protected RemoteServiceConfig remoteServiceConfig;
 
 	protected String coturnDatabaseString;
 	protected String trimmedCoturnDatabaseString;
@@ -41,7 +41,7 @@ public abstract class CoturnCredentialsService {
 
 	@PostConstruct
 	protected void initDatabse() {
-		this.coturnDatabaseString = this.openviduConfig.getCoturnDatabaseString();
+		this.coturnDatabaseString = this.remoteServiceConfig.getCoturnDatabaseString();
 		this.trimmedCoturnDatabaseString = this.coturnDatabaseString.replaceAll("^\"|\"$", "");
 	}
 

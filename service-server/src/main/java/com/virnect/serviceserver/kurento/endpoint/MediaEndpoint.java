@@ -70,7 +70,7 @@ import com.virnect.serviceserver.kurento.core.KurentoTokenOptions;
  */
 public abstract class MediaEndpoint {
 	private static Logger log;
-	private RemoteServiceConfig openviduConfig;
+	private RemoteServiceConfig remoteServiceConfig;
 
 	private EndpointType endpointType;
 
@@ -85,7 +85,7 @@ public abstract class MediaEndpoint {
 
 	private KurentoParticipant owner;
 	protected String endpointName; // KMS media object identifier. Unique for every MediaEndpoint
-	protected String streamId; // OpenVidu Stream identifier. Common property for a
+	protected String streamId; // RemoteService Stream identifier. Common property for a
 								// PublisherEndpoint->SubscriberEndpoint flow. Equal to endpointName for
 								// PublisherEndpoints, different for SubscriberEndpoints
 	protected Long createdAt; // Timestamp when this [publisher / subscriber] started [publishing / receiving]
@@ -115,7 +115,7 @@ public abstract class MediaEndpoint {
 	 * @param log
 	 */
 	public MediaEndpoint(EndpointType endpointType, KurentoParticipant owner, String endpointName,
-			MediaPipeline pipeline, RemoteServiceConfig openviduConfig, Logger log) {
+			MediaPipeline pipeline, RemoteServiceConfig remoteServiceConfig, Logger log) {
 		if (log == null) {
 			MediaEndpoint.log = LoggerFactory.getLogger(MediaEndpoint.class);
 		} else {
@@ -126,27 +126,27 @@ public abstract class MediaEndpoint {
 		this.setEndpointName(endpointName);
 		this.setMediaPipeline(pipeline);
 
-		this.openviduConfig = openviduConfig;
+		this.remoteServiceConfig = remoteServiceConfig;
 
 		KurentoTokenOptions kurentoTokenOptions = this.owner.getToken().getKurentoTokenOptions();
 		if (kurentoTokenOptions != null) {
 			this.maxRecvKbps = kurentoTokenOptions.getVideoMaxRecvBandwidth() != null
 					? kurentoTokenOptions.getVideoMaxRecvBandwidth()
-					: this.openviduConfig.getVideoMaxRecvBandwidth();
+					: this.remoteServiceConfig.getVideoMaxRecvBandwidth();
 			this.minRecvKbps = kurentoTokenOptions.getVideoMinRecvBandwidth() != null
 					? kurentoTokenOptions.getVideoMinRecvBandwidth()
-					: this.openviduConfig.getVideoMinRecvBandwidth();
+					: this.remoteServiceConfig.getVideoMinRecvBandwidth();
 			this.maxSendKbps = kurentoTokenOptions.getVideoMaxSendBandwidth() != null
 					? kurentoTokenOptions.getVideoMaxSendBandwidth()
-					: this.openviduConfig.getVideoMaxSendBandwidth();
+					: this.remoteServiceConfig.getVideoMaxSendBandwidth();
 			this.minSendKbps = kurentoTokenOptions.getVideoMinSendBandwidth() != null
 					? kurentoTokenOptions.getVideoMinSendBandwidth()
-					: this.openviduConfig.getVideoMinSendBandwidth();
+					: this.remoteServiceConfig.getVideoMinSendBandwidth();
 		} else {
-			this.maxRecvKbps = this.openviduConfig.getVideoMaxRecvBandwidth();
-			this.minRecvKbps = this.openviduConfig.getVideoMinRecvBandwidth();
-			this.maxSendKbps = this.openviduConfig.getVideoMaxSendBandwidth();
-			this.minSendKbps = this.openviduConfig.getVideoMinSendBandwidth();
+			this.maxRecvKbps = this.remoteServiceConfig.getVideoMaxRecvBandwidth();
+			this.minRecvKbps = this.remoteServiceConfig.getVideoMinRecvBandwidth();
+			this.maxSendKbps = this.remoteServiceConfig.getVideoMaxSendBandwidth();
+			this.minSendKbps = this.remoteServiceConfig.getVideoMinSendBandwidth();
 		}
 	}
 
@@ -289,9 +289,9 @@ public abstract class MediaEndpoint {
 				public void onSuccess(WebRtcEndpoint result) throws Exception {
 					webEndpoint = result;
 
-					if (openviduConfig.getCoturnIp() != null && !openviduConfig.getCoturnIp().isEmpty()
-							&& openviduConfig.isTurnadminAvailable()) {
-						webEndpoint.setStunServerAddress(openviduConfig.getCoturnIp());
+					if (remoteServiceConfig.getCoturnIp() != null && !remoteServiceConfig.getCoturnIp().isEmpty()
+							&& remoteServiceConfig.isTurnadminAvailable()) {
+						webEndpoint.setStunServerAddress(remoteServiceConfig.getCoturnIp());
 						webEndpoint.setStunServerPort(3478);
 					}
 
