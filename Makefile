@@ -30,5 +30,5 @@ clean:
 	rm -fr build/${TARGET}*
 
 docker:
-	docker build --tag ${DOCKER_TAG} . -f docker/Dockerfile
+	docker build --rm --tag ${DOCKER_TAG} . -f docker/Dockerfile
 	docker image prune -f --filter label=stage=builder
