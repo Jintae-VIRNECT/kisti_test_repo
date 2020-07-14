@@ -30,6 +30,8 @@ spring:
   messages:
     encoding: UTF-8
     basename: classpath:/messages
+  zipkin:
+    base-url: http://192.168.6.3:9411
 
 logging:
   level:
