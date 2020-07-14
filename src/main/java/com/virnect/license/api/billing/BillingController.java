@@ -2,8 +2,9 @@ package com.virnect.license.api.billing;
 
 import com.virnect.license.application.billing.BillingService;
 import com.virnect.license.dto.request.*;
+import com.virnect.license.dto.request.billing.*;
 import com.virnect.license.dto.response.LicenseProductAllocateCheckResponse;
-import com.virnect.license.dto.response.LicenseProductAllocateResponse;
+import com.virnect.license.dto.response.biling.LicenseProductAllocateResponse;
 import com.virnect.license.dto.response.LicenseProductDeallocateResponse;
 import com.virnect.license.dto.response.biling.ProductInfoListResponse;
 import com.virnect.license.dto.response.biling.ProductInfoResponse;

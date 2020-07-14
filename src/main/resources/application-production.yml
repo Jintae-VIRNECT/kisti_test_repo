@@ -30,3 +30,8 @@ eureka:
 
 server:
   port: 8632
+
+# feign configuration
+feign:
+  hystrix:
+    enabled: true

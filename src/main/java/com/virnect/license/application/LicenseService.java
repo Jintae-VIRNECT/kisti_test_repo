@@ -1,5 +1,6 @@
 package com.virnect.license.application;
 
+import com.virnect.license.application.rest.ContentRestService;
 import com.virnect.license.application.rest.UserRestService;
 import com.virnect.license.application.rest.WorkspaceRestService;
 import com.virnect.license.dao.coupon.CouponRepository;
@@ -24,6 +25,7 @@ import com.virnect.license.dto.request.EventCouponRequest;
 import com.virnect.license.dto.response.*;
 import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.dto.response.admin.AdminCouponInfoResponse;
+import com.virnect.license.dto.rest.ContentResourceUsageInfoResponse;
 import com.virnect.license.dto.rest.UserInfoRestResponse;
 import com.virnect.license.dto.rest.WorkspaceInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
@@ -65,7 +67,7 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
 
     private final UserRestService userRestService;
-    //    private final ContentRestService contentRestService;
+    private final ContentRestService contentRestService;
     private final WorkspaceRestService workspaceRestService;
     private final EmailService emailService;
     private final ModelMapper modelMapper;
@@ -368,22 +370,8 @@ public class LicenseService {
             licenseProductInfo.setProductName(product.getName());
             licenseProductInfo.setLicenseType(product.getProductType().getName());
 
-            // License Info
-            List<LicenseInfoResponse> licenseInfoList = new ArrayList<>();
-            licenseProduct.getLicenseList().forEach(license -> {
-                LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
-                licenseInfoResponse.setLicenseKey(license.getSerialKey());
-                licenseInfoResponse.setStatus(license.getStatus());
-                if (license.getStatus().equals(LicenseStatus.USE)) {
-                    usedLicenseAmount.getAndIncrement();
-                } else {
-                    unUsedLicenseAmount.getAndIncrement();
-                }
-                licenseInfoResponse.setUserId(license.getUserId() == null ? "" : license.getUserId());
-                licenseInfoResponse.setCreatedDate(license.getCreatedDate());
-                licenseInfoResponse.setUpdatedDate(license.getUpdatedDate());
-                licenseInfoList.add(licenseInfoResponse);
-            });
+            // Get License Information from license product
+            List<LicenseInfoResponse> licenseInfoList = getLicenseInfoResponses(licenseProduct, unUsedLicenseAmount, usedLicenseAmount);
 
             licenseProductInfo.setLicenseInfoList(licenseInfoList);
             licenseProductInfo.setQuantity(licenseInfoList.size());
@@ -393,18 +381,44 @@ public class LicenseService {
             licenseProductInfoResponses.add(licenseProductInfo);
         });
 
-//        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
-//        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = workspaceResourceUsageApiResponse.getData();
-//        log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
+        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(workspaceId);
+        log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
         workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
-//        workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
-//        workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
-
+        workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
+        workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
         return new ApiResponse<>(workspaceLicensePlanInfoResponse);
     }
 
+    private List<LicenseInfoResponse> getLicenseInfoResponses(LicenseProduct licenseProduct, AtomicInteger unUsedLicenseAmount, AtomicInteger usedLicenseAmount) {
+        List<LicenseInfoResponse> licenseInfoList = new ArrayList<>();
+        licenseProduct.getLicenseList().forEach(license -> {
+            LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+            licenseInfoResponse.setLicenseKey(license.getSerialKey());
+            licenseInfoResponse.setStatus(license.getStatus());
+            if (license.getStatus().equals(LicenseStatus.USE)) {
+                usedLicenseAmount.getAndIncrement();
+            } else {
+                unUsedLicenseAmount.getAndIncrement();
+            }
+            licenseInfoResponse.setUserId(license.getUserId() == null ? "" : license.getUserId());
+            licenseInfoResponse.setCreatedDate(license.getCreatedDate());
+            licenseInfoResponse.setUpdatedDate(license.getUpdatedDate());
+            licenseInfoList.add(licenseInfoResponse);
+        });
+        return licenseInfoList;
+    }
+
+    /**
+     * 워크스페이스 사용량 정보 조회
+     * @param workspaceId
+     * @return
+     */
+    private ContentResourceUsageInfoResponse getContentResourceUsageInfoFromContentService(final String workspaceId) {
+        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
+        return workspaceResourceUsageApiResponse.getData();
+    }
 
     /**
      * 워크스페이스에서 내 라이선스 정보 가져오기
@@ -530,6 +544,7 @@ public class LicenseService {
 
     /**
      * MyLicensePlainInfo 정렬 함수
+     *
      * @param sortString - 정렬 필드 및 방법 (renewalDate, planProduct, workspaceName)
      * @return
      */
