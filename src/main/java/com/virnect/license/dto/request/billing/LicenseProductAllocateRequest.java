@@ -18,8 +18,7 @@ public class LicenseProductAllocateRequest {
     @ApiModelProperty(value = "사용자 대표 식별자", example = "1")
     private long userId;
     @ApiModelProperty(value = "정기 결제 요청 여부(최초 요청 건 or 정기 결제 요청 건)", position = 1, example = "false")
-    @NotNull
-    private boolean regularRequest = false;
+    private boolean regularRequest;
     @NotBlank
     @ApiModelProperty(value = "결제 식별자", position = 2, example = "202019239941")
     private String paymentId;
