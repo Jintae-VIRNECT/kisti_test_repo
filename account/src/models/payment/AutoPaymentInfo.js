@@ -31,9 +31,8 @@ export default class AutoPaymentInfo extends Model {
     this.basisAvailable = sumAvilable(
       this.items.filter(item => item.productType.name === 'product'),
     )
-
     this.extendAvailable = sumAvilable(
-      this.items.filter(item => item.productType.name === 'extend'),
+      this.items.filter(item => item.productType.name === 'service'),
     )
 
     // 자동 결제 해지 신청중

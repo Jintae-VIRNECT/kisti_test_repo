@@ -79,7 +79,7 @@
           </dd>
           <dt class="extend">{{ $t(`${usedI18n}.extend`) }}</dt>
           <dd>
-            {{ paymentInfo.extendAvailable[activeTab] | toLocaleString }}
+            {{ paymentInfo.extendAvailable[activeTab].toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <a :href="$url.pay">

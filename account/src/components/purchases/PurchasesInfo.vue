@@ -25,15 +25,15 @@
         </div>
       </dd>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.basisAvailable.storage }} GB</dd>
+      <dd>{{ paymentInfo.basisAvailable.storage.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.viewCount | toLocaleString }}
+        {{ paymentInfo.basisAvailable.viewCount.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.callTime }}
+        {{ paymentInfo.basisAvailable.callTime.toLocaleString() }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
@@ -41,15 +41,15 @@
     <h5>{{ $t('purchases.info.extendPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.extendAvailable.storage }} GB</dd>
+      <dd>{{ paymentInfo.extendAvailable.storage.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.viewCount | toLocaleString }}
+        {{ paymentInfo.extendAvailable.viewCount.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.callTime }}
+        {{ paymentInfo.extendAvailable.callTime.toLocaleString() }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
