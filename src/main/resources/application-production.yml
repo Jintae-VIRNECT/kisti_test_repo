@@ -17,6 +17,8 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+  zipkin:
+    base-url: http://zipkin.virnect.com
 
 #logging:
 #  level:
@@ -37,7 +39,7 @@ server:
 upload:
   dir: "upload/"
   serverUrl: "https://api.virnect.com/processes/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
+  allowed-extension: ".ares,.mars,.Ares,.Mars"
 
 ## FEIGN Configuration
 feign:
