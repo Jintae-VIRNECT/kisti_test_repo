@@ -150,10 +150,11 @@ func convertResolution(resolution string) (string, error) {
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
 	recordingID := c.Param("id")
-	logger.Info("stop recording (id:", recordingID, ")")
+	logger.Debug("stop recording (id:", recordingID, ")")
 
 	exist := recorder.ExistRecordingID(recordingID)
 	if exist == false {
+		logger.Error("stop recording: ", recorder.ErrNotFoundRecordingID.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrNotFoundRecordingID.Error()})
 		return
 	}
