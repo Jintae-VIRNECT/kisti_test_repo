@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  zipkin:
+    base-url: http://stgzipkin.virnect.com
 logging:
   level:
     com.virnect.download.application.*: DEBUG

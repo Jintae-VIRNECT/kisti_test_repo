@@ -17,6 +17,8 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  zipkin:
+    base-url: http://192.168.6.3:9411
 logging:
   level:
     com.virnect.download.application.*: DEBUG
