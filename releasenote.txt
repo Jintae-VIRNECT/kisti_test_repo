@@ -1,0 +1,13 @@
+
+RELEASE
+
+New Features
+- 빌링 시스템 연동 API 예외처리 수정
+
+Bug Fixes
+- 없음
+
+Limitation
+- 없음
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

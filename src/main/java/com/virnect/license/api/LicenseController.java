@@ -4,9 +4,8 @@ import com.virnect.license.application.LicenseService;
 import com.virnect.license.dto.request.CouponActiveRequest;
 import com.virnect.license.dto.request.CouponRegisterRequest;
 import com.virnect.license.dto.request.EventCouponRequest;
-import com.virnect.license.dto.response.EventCouponResponse;
-import com.virnect.license.dto.response.MyCouponInfoListResponse;
-import com.virnect.license.dto.response.MyCouponInfoResponse;
+import com.virnect.license.dto.response.*;
+import com.virnect.license.dto.response.admin.AdminCouponInfoListResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageRequest;
@@ -17,19 +16,20 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-License
  * @email practice1356@gmail.com
- * @description
+ * @description license related request controller
  * @since 2020.04.09
  */
 
@@ -40,6 +40,7 @@ import javax.validation.Valid;
 @RequestMapping("/licenses")
 public class LicenseController {
     private final LicenseService licenseService;
+    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     @ApiOperation(value = "이벤트 쿠폰 발급 요청")
     @PostMapping("/event/coupon")
@@ -54,8 +55,8 @@ public class LicenseController {
 
     @ApiOperation(value = "쿠폰 등록")
     @PostMapping("/coupon/register")
-    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponRegisterRequestHandler(@RequestBody @Valid CouponRegisterRequest couponRegisterRequest, BindingResult result){
-        if(result.hasErrors()){
+    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponRegisterRequestHandler(@RequestBody @Valid CouponRegisterRequest couponRegisterRequest, BindingResult result) {
+        if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -71,8 +72,8 @@ public class LicenseController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
     })
     @GetMapping("/coupon/{userId}")
-    public ResponseEntity<ApiResponse<MyCouponInfoListResponse>> getMyCouponInfoListRequestHandler(@PathVariable("userId") String userId, @ApiIgnore PageRequest pageable){
-        if(StringUtils.isEmpty(userId)){
+    public ResponseEntity<ApiResponse<MyCouponInfoListResponse>> getMyCouponInfoListRequestHandler(@PathVariable("userId") String userId, @ApiIgnore PageRequest pageable) {
+        if (StringUtils.isEmpty(userId)) {
             log.info("[userId] is invalid");
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -82,8 +83,8 @@ public class LicenseController {
 
     @ApiOperation(value = "내 쿠폰 사용")
     @PutMapping("/coupon/active")
-    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponActiveRequestHandler(@RequestBody @Valid CouponActiveRequest couponActiveRequest, BindingResult result){
-        if(result.hasErrors()){
+    public ResponseEntity<ApiResponse<MyCouponInfoResponse>> couponActiveRequestHandler(@RequestBody @Valid CouponActiveRequest couponActiveRequest, BindingResult result) {
+        if (result.hasErrors()) {
             result.getAllErrors().forEach(System.out::println);
             throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -91,5 +92,90 @@ public class LicenseController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    @ApiOperation(value = "전체 쿠폰 정보 조회", tags = "ADMIN")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(0부터 시작)", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+    })
+    @GetMapping("/coupons")
+    public ResponseEntity<ApiResponse<AdminCouponInfoListResponse>> getAllCouponInfoRequestHandler(@ApiIgnore PageRequest pageRequest) {
+        ApiResponse<AdminCouponInfoListResponse> responseMessage = this.licenseService.getAllCouponInfo(pageRequest.of());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+
+    @ApiOperation(value = "워크스페이스 라이선스 플랜 정보 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+    })
+    @GetMapping("/{workspaceId}/plan")
+    public ResponseEntity<ApiResponse<WorkspaceLicensePlanInfoResponse>> getWorkspaceLicensePlanInfo(@PathVariable("workspaceId") String workspaceId) {
+        if (!StringUtils.hasText(workspaceId)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<WorkspaceLicensePlanInfoResponse> responseMessage = this.licenseService.getWorkspaceLicensePlanInfo(workspaceId);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스페이스에서 할당받은 내 라이선스 정보 조회")
+    @GetMapping("/{workspaceId}/{userId}")
+    public ResponseEntity<ApiResponse<MyLicenseInfoListResponse>> getMyLicenseInfoRequestHandler(@PathVariable("userId") @NotBlank String userId, @PathVariable("workspaceId")
+    @NotBlank String workspaceId) {
+        if (!StringUtils.hasText(userId)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MyLicenseInfoListResponse> responseMessage = this.licenseService.getMyLicenseInfoList(userId, workspaceId);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스페이스내에서 라이선스 할당")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", required = true),
+            @ApiImplicitParam(name = "userId", value = "워크스페이스 유저 식별자", paramType = "path", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
+            @ApiImplicitParam(name = "productName", value = "제품명", paramType = "query", defaultValue = "make", required = true),
+    })
+    @PutMapping("/{workspaceId}/{userId}/grant")
+    public ResponseEntity<ApiResponse<MyLicenseInfoResponse>> grantWorkspaceLicenseToUser(
+            @PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(productName)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MyLicenseInfoResponse> responseMessage = this.licenseService.grantWorkspaceLicenseToUser(workspaceId, userId, productName, true);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "워크스페이스내에서 라이선스 할당 해제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "userId", value = "워크스페이스 유저 식별자", paramType = "path", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+            @ApiImplicitParam(name = "productName", value = "제품명", paramType = "query", defaultValue = "make"),
+    })
+    @PutMapping("/{workspaceId}/{userId}/revoke")
+    public ResponseEntity<ApiResponse<Boolean>> revokeWorkspaceLicenseToUser(
+            @PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName) {
+        if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(productName)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<Boolean> responseMessage = this.licenseService.grantWorkspaceLicenseToUser(workspaceId, userId, productName, false);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+
+    @ApiOperation(value = "사용중인 플랜 목록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "사용자 식별자", paramType = "path", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "renewalDate,desc")
+    })
+    @GetMapping("/plan/{userId}")
+    public ResponseEntity<ApiResponse<MyLicensePlanInfoListResponse>> getMyLicensePlanInfoList(@PathVariable("userId") String userId, @ApiIgnore PageRequest pageRequest) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MyLicensePlanInfoListResponse> responseMessage = licenseService.getMyLicensePlanInfoList(userId, pageRequest);
+        return ResponseEntity.ok(responseMessage);
+    }
 }
 

@@ -1,5 +1,7 @@
 package com.virnect.license.global.common;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
@@ -9,7 +11,8 @@ import java.util.Objects;
  * @email practice1356@gmail.com
  * @since 2020.03.02
  */
-
+@Getter
+@Setter
 public final class PageRequest {
     private int page = 1;
     private int size = 20;
@@ -25,8 +28,8 @@ public final class PageRequest {
         this.size = size > MAX_SIZE ? DEFAULT_SIZE : size;
     }
 
-    public void setSort(String sort) {
-        this.sort = sort;
+    public String getSort() {
+        return Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate,DESC" : sort;
     }
 
     public org.springframework.data.domain.PageRequest of() {
@@ -41,5 +44,14 @@ public final class PageRequest {
         }
 
         return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
+    }
+
+    @Override
+    public String toString() {
+        return "PageRequest{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sort='" + sort + '\'' +
+                '}';
     }
 }
