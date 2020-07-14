@@ -15,6 +15,8 @@ spring:
     port: 587
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  zipkin:
+    base-url: http://192.168.6.3:9411
 
 eureka:
   instance:
