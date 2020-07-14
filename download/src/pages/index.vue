@@ -111,9 +111,11 @@ function useStickyNav() {
   let snbTop = 0
 
   function snbNav() {
+    const isDesktop = window.innerWidth > 1200
     const scrollY = window.pageYOffset
+    const header = document.querySelector('#headerSection')
     const tab = document.querySelector('.el-tabs')
-    snbTop = tab.offsetTop
+    snbTop = isDesktop ? tab.offsetTop : tab.offsetTop - header.offsetHeight
     if (scrollY > snbTop) {
       tab.classList.add('sticky')
     } else {
@@ -132,127 +134,5 @@ function useStickyNav() {
 </script>
 
 <style lang="scss">
-#home {
-  color: $font-color-content;
-  font-weight: 500;
-  text-align: center;
-
-  .ribbon {
-    width: 100%;
-    height: 50px;
-    line-height: 50px;
-    background: #e6f0ff;
-  }
-  .visual {
-    height: 340px;
-    padding: 93px;
-    color: #fff;
-    background: url('~assets/images/img-top.jpg') center;
-    background-size: cover;
-
-    h3 {
-      font-size: 30px;
-    }
-    p {
-      margin-top: 10px;
-      font-size: 15px;
-    }
-  }
-  .el-tabs {
-    position: relative;
-    margin: 0 auto;
-
-    [role='tab'] {
-      height: 64px;
-      padding: 0 60px;
-      font-size: 18px;
-      line-height: 64px;
-
-      &:nth-child(2) {
-        padding-left: 0;
-      }
-      &:last-child {
-        padding-right: 0;
-      }
-    }
-  }
-  .el-tabs__header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    width: 100%;
-    background: transparent;
-    border-bottom: solid 1px #f3f6f9;
-    .el-tabs__nav-wrap {
-      width: 630px;
-      margin: 0 auto;
-    }
-  }
-  .el-tabs__nav-wrap::after {
-    display: none;
-  }
-  .el-tabs.sticky .el-tabs__header {
-    position: fixed;
-  }
-
-  .el-tabs__content {
-    width: 900px;
-    min-height: 870px;
-    margin: 0 auto;
-    padding: 184px 0 160px;
-  }
-  .el-tabs__content .el-card {
-    display: inline-block;
-    width: 372px;
-    margin: 0 18px 32px;
-    box-shadow: none;
-  }
-  .el-card .el-card__body {
-    padding: 36px 44px 30px;
-    h6 {
-      font-size: 18px;
-    }
-    h5 {
-      font-size: 26px;
-      span {
-        color: $color-primary;
-      }
-    }
-    img {
-      margin: 10px auto 16px;
-    }
-    & > span {
-      display: block;
-    }
-    .release {
-      color: #8e95a1;
-      font-weight: normal;
-    }
-    .version {
-      margin-bottom: 23px;
-      color: #3f465a;
-      font-size: 18px;
-    }
-    .el-button {
-      display: block;
-      height: 36px;
-      margin: 5px auto;
-    }
-  }
-
-  // transition
-  .rise-enter {
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  .rise-enter-to {
-    transform: translateY(0);
-    opacity: 1;
-    transition: 0.5s 0.3s;
-    &-2 {
-      transition: 0.5s 0.5s;
-    }
-  }
-}
+@import '@/assets/css/home.scss';
 </style>
