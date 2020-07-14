@@ -187,7 +187,7 @@ export const getUserObject = stream => {
     status: 'good',
     roleType: roleType,
     permission: 'default',
-    hasArFeature: 'default',
+    hasArFeature: false,
   }
   if (stream.videoActive) {
     // Store.commit('updateResolution', {

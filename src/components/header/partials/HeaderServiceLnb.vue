@@ -203,9 +203,7 @@ export default {
       // }
       if (!this.mainView || !this.mainView.stream) {
         // TODO: MESSAGE
-        this.toastDefault(
-          '작업자가 존재하지 않습니다.?? 이 경우 메시지 정의 필요',
-        )
+        this.toastDefault('작업자가 존재하지 않습니다.')
         return
       }
       if (this.mainView.id === this.account.uuid) {
