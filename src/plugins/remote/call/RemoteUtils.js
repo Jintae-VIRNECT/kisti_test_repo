@@ -1,4 +1,5 @@
 import Store from 'stores/remote/store'
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
 
@@ -145,6 +146,7 @@ export const addSessionEventListener = session => {
     Store.commit('addChat', chat)
   })
 
+  /** 채팅 파일 수신 */
   session.on(SIGNAL.FILE, event => {
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
@@ -152,20 +154,25 @@ export const addSessionEventListener = session => {
       user => user.connectionId === connectionId,
     )
     if (idx < 0) return
-    let data = event.data
+    let data = JSON.parse(event.data)
 
-    //add file
-    let chat = {
-      text: data.replace(/\</g, '&lt;'),
-      name: participants[idx].nickname,
-      date: new Date(),
-      nodeId: event.from.connectionId,
-      type: false,
+    let chatBuilder = new ChatMsgBuilder()
+      .setType('opponent')
+      .setName(participants[idx].nickname)
+      .setFile([
+        {
+          fileName: data.fileName,
+          fileSize: data.size,
+          fileUrl: data.fileDownloadUrl,
+        },
+      ])
+
+    if (session.connection.connectionId === event.from.connectionId) {
+      // 본인
+      chatBuilder.setType('me')
     }
-    // if (session.connection.connectionId === event.from.connectionId) {
-    //   // 본인
-    //   chat.type = 'me'
-    // }
+
+    let chat = chatBuilder.build()
     Store.commit('addChat', chat)
   })
 

@@ -51,7 +51,6 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { sendFile } from 'api/workspace/call'
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
 
 export default {
   name: 'ChatInput',
@@ -84,43 +83,6 @@ export default {
     },
   },
   methods: {
-    /**
-     * 채팅 object 추가
-     * @param {String} chatType : 'system' | 'me' | 'opponent'
-     * @param {Object | String} msg
-     *        'system' : { type: 'start'|'file'|'document'|'camera'|'ar', name: filename|username }
-     *        'me'|'opponent' : text message
-     */
-    addChatItem(chatType, msg) {
-      // const datetime = this.$moment()
-      const datetime = this.$dayjs()
-      // 작성시간 노출 계산
-      if (this.chatList.length > 0) {
-        const pastChat = this.chatList[0]
-        if (pastChat) {
-          if (pastChat.chatType === chatType) {
-            if (
-              this.$dayjs(pastChat.datetime).format('HHmm') ===
-              datetime.format('HHmm')
-            ) {
-              this.$set(pastChat, 'datetime', false)
-            }
-          }
-        }
-      }
-
-      this.chatList.push({
-        text: msg,
-        date: new Date(),
-        type: 'me',
-      })
-      // this.$nextTick(() => {
-      //   if (this.$refs['chatScrollbar']) {
-      //     this.$refs['chatScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
-      //   }
-      // })
-    },
-
     async doSend(e) {
       console.log(e)
       if (e) {
@@ -130,15 +92,13 @@ export default {
 
       if (this.fileList.length > 0) {
         for (const file of this.fileList) {
-          console.log(file)
           const response = await sendFile(
             file.filedata,
             this.room.roomId,
             this.workspace.uuid,
           )
-          // const downUrl = response.downloadUrl
-          const downUrl = true
           console.log(response)
+          const downUrl = response.downloadUrl
 
           const params = {
             fileName: file.filedata.name,
@@ -148,33 +108,22 @@ export default {
           }
 
           this.$call.sendFile(params)
-
-          this.chatList.push(
-            new ChatMsgBuilder()
-              .setType('me')
-              .setName('펭수')
-              .setFile([
-                {
-                  fileName: file.filedata.name,
-                  fileSize: file.filedata.size,
-                  fileUrl: downUrl,
-                },
-              ])
-              .build(),
-          )
-
-          this.clearUploadFile()
-          this.fileList = []
         }
+
+        this.clearUploadFile()
+        this.fileList = []
       }
 
       this.inputText = ''
     },
     clickUpload() {
+      if (this.fileList.length > 0) {
+        console.log('현재 파일 업로드는 1개씩만 지원합니다.')
+        return
+      }
       this.$refs['inputFile'].click()
     },
     fileUpload(e) {
-      console.log('fileUpload :: ', e)
       const files = e.target.files
       if (files.length > 0) {
         this.loadFile(files[0])
@@ -251,15 +200,6 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    //console.log(this.$dayjs)
-    // const message = `${this.opponent.name || '알수없는 사용자'}님과 통화를 시작합니다.`
-    // const message = this.$t('service.chat_call_start', { name: `${this.opponent.name || this.$t('service.chat_anonymous_user')}` })
-    // this.addChatItem('system', '알수없는 누군가와 통신하겠소')
-  },
-  beforeDestroy() {
-    //this.$remoteSDK.removeMessageListener(this.receiveMessage)
-    this.$eventBus.$off('addChatItem', this.addChatItem)
-  },
+  mounted() {},
 }
 </script>
