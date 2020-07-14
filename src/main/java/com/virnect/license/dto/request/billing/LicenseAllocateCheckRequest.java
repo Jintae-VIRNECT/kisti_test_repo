@@ -18,8 +18,6 @@ public class LicenseAllocateCheckRequest {
     private long userId;
     @ApiModelProperty(value = "정기 결제 요청 여부(최초 요청 건 or 정기 결제 요청 건)", position = 1, example = "false")
     @NotNull
-    @AssertTrue
-    @AssertFalse
     private boolean regularRequest = false;
     @ApiModelProperty(value = "상품 정보 리스트", position = 2)
     @NotNull
