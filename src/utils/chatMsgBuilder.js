@@ -57,10 +57,14 @@ class ChatMsgBuilder {
     let replaced = chatText
 
     try {
-      replaced = linkifyHtml(chatText, {
-        defaultProtocol: 'https',
-        className: 'chat-url',
-      })
+      if (replaced) {
+        replaced = linkifyHtml(chatText, {
+          defaultProtocol: 'https',
+          className: 'chat-url',
+        })
+      } else {
+        replaced = ''
+      }
     } catch (e) {
       console.log(e)
     }

@@ -133,18 +133,18 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = event.data
-    let chat = {
-      text: data.replace(/\</g, '&lt;'),
-      name: participants[idx].nickname,
-      date: new Date(),
-      nodeId: event.from.connectionId,
-      type: false,
-    }
+
+    const chatBuilder = new ChatMsgBuilder()
+      .setName(participants[idx].nickname)
+      .setText(data.replace(/\</g, '&lt;'))
+      .setType('opponent')
+
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chat.type = 'me'
+      chatBuilder.setType('me')
     }
-    Store.commit('addChat', chat)
+
+    Store.commit('addChat', chatBuilder.build())
   })
 
   /** 채팅 파일 수신 */
@@ -157,7 +157,7 @@ export const addSessionEventListener = session => {
     if (idx < 0) return
     let data = JSON.parse(event.data)
 
-    let chatBuilder = new ChatMsgBuilder()
+    const chatBuilder = new ChatMsgBuilder()
       .setType('opponent')
       .setName(participants[idx].nickname)
       .setFile([
@@ -173,8 +173,7 @@ export const addSessionEventListener = session => {
       chatBuilder.setType('me')
     }
 
-    let chat = chatBuilder.build()
-    Store.commit('addChat', chat)
+    Store.commit('addChat', chatBuilder.build())
   })
 
   /** 내보내기 */
