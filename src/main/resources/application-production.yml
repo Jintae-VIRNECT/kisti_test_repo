@@ -34,6 +34,8 @@ spring:
     host: localhost
     username: admin
     password: admin1234
+  zipkin:
+    base-url: http://zipkin.virnect.com
 
 logging:
   level:

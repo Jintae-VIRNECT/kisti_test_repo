@@ -36,6 +36,8 @@ spring:
     host: 10.0.10.143
     username: admin
     password: admin1234
+  zipkin:
+    base-url: http://stgzipkin.virnect.com
 
 logging:
   level:
@@ -60,4 +62,3 @@ cloud:
     credentials:
       access-key: AKIARQGLJD3UCFBXNUWQ
       secret-key: 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
-
