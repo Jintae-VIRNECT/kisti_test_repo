@@ -29,7 +29,11 @@
         />
         <div class="participant-video__profile-dim"></div>
         <profile
-          :thumbStyle="{ width: '64px', height: '64px', margin: '10px auto 0' }"
+          :thumbStyle="{
+            width: '4.571rem',
+            height: '4.571rem',
+            margin: '10px auto 0',
+          }"
           :image="participant.path"
         ></profile>
       </div>
@@ -174,10 +178,9 @@ export default {
         //this.$root.$el.append(this.$refs['popover'])
         document.body.append(statusTooltip)
       }
-      console.log(statusTooltip)
       const top = window.pageYOffset + status.getBoundingClientRect().top
       const left = window.pageXOffset + status.getBoundingClientRect().left
-      console.log(top, left)
+
       this.$set(this.statusHover, 'top', top + 'px')
       this.$set(this.statusHover, 'left', left + 'px')
       this.hover = true

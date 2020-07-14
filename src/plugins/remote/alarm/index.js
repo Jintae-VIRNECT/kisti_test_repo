@@ -9,7 +9,7 @@ const Toasted = {
 
     const Toast = new T(options)
     Vue.component('alarm', ToastComponent)
-    Vue.alarm = Vue.prototype.$alarm = Toast
+    Vue.prototype.$alarm = Toast
   },
 }
 

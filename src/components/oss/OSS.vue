@@ -764,7 +764,10 @@
 export default {
   name: 'policy-oss',
   beforeRouteEnter(to, from, next) {
-    if (to.params && ['mobile', 'realwear'].includes(to.params.type)) {
+    if (
+      to.params &&
+      ['mobile', 'realwear', 'hololens'].includes(to.params.type)
+    ) {
       next()
       return
     }
