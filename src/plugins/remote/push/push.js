@@ -1,8 +1,9 @@
 import { Client } from '@stomp/stompjs'
 import pushListener from './pushListener'
+import urls from '@/server/urls'
 
 const config = {
-  brokerURL: 'wss://192.168.6.3:8073/message',
+  brokerURL: urls.message[process.env.TARGET_ENV],
   connectHeaders: {
     login: 'guest',
     passcode: 'guest',
