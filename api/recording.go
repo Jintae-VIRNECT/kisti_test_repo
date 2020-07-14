@@ -145,7 +145,7 @@ func convertResolution(resolution string) (string, error) {
 // @tags Recording
 // @Produce json
 // @Param id path string true "recording id"
-// @Success 200 {object} StopRecordingResponse
+// @Success 200 {} json
 // @Failure 404 {} json "{ "error": "not found id" }"
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
