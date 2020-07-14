@@ -20,6 +20,7 @@ import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
+import com.virnect.process.global.util.AES256EncryptUtils;
 import com.virnect.process.global.util.QRcodeGenerator;
 import com.virnect.process.infra.file.FileUploadService;
 import lombok.AccessLevel;
@@ -290,12 +291,19 @@ public class TaskService {
         try {
             String targetData = UUID.randomUUID().toString();
 
+            // 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
             String imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+
+            // 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
+            // 컨텐츠 서버와 targetData 인코딩을 맞춰주기 위해서 해당 인코딩을 수행한다.
+            String aes256Encoded = AES256EncryptUtils.encryptByBytes("virnect", targetData);
+
+            String urlEncoded = URLEncoder.encode(aes256Encoded, "UTF-8");
 
             Target target = Target.builder()
                     .type(targetType)
                     .process(newProcess)
-                    .data(targetData)
+                    .data(urlEncoded)
                     .imgPath(imgPath)
                     .build();
 
