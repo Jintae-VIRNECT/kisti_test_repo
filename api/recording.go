@@ -42,7 +42,7 @@ type ListRecordingResponse struct {
 // @Param sessionId body string true "session id"
 // @Param recordingTimeLimit body int false "recording time(in minute)" mininum(5) maxinum(60) default(5)
 // @Param resolution body string false "video resolution" enums(480p, 720p, 1080p) default(720p)
-// @Param framerate body int false "video framerate" mininum(1) maxinum(30) default(30)
+// @Param framerate body int false "video framerate" mininum(1) maxinum(30) default(20)
 // @Success 200 {object} StartRecordingResponse
 // @Failure 400 {} json "{"error":"error message"}"
 // @Failure 429 {} json "{"error":"Too Many Recordings"}""
