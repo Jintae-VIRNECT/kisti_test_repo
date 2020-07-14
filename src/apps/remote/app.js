@@ -35,7 +35,7 @@ Vue.prototype.$localStorage = localStorage
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.version = version
+Vue.prototype.$version = version
 
 export default new Vue({
   el: '#container',

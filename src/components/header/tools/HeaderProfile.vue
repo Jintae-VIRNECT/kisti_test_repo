@@ -30,7 +30,7 @@
       <div class="popover-profile__link">
         <button @click="logout">로그아웃</button>
       </div>
-      <div class="popover-profile__version">{{ `web v.${version}` }}</div>
+      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
     </div>
   </popover>
 </template>
