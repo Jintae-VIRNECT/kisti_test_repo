@@ -66,6 +66,8 @@ public class BillingService {
     @Transactional
     public ApiResponse<LicenseProductAllocateCheckResponse> licenseAllocateCheckRequest(LicenseAllocateCheckRequest allocateCheckRequest) {
         log.info("[BILLING][LICENSE ALLOCATE CHECK] -> [{}]", allocateCheckRequest.toString());
+
+        // 1. 라이선스 지급 여부 검사 요청 사용자 정보 조회
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(allocateCheckRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData() == null) {
             log.info("User service error response: [{}]", userInfoApiResponse.getMessage());
@@ -74,35 +76,35 @@ public class BillingService {
 
         UserInfoRestResponse requestUserInfo = userInfoApiResponse.getData();
 
-        // 1. 현재 사용중인 라이선스 플랜 조회
+        // 2. 사용자의 현재 사용중인 라이선스 플랜 조회
         LicensePlan licensePlan = licensePlanRepository.findByUserIdAndPlanStatus(requestUserInfo.getUuid(), PlanStatus.ACTIVE);
         long calculateMaxCallTime = 0;
         long calculateMaxStorage = 0;
         long calculateMaxHit = 0;
 
-        // 2. 현재 사용 중인 라이선스 플랜 정보가 있는 경우
+        // 3. 현재 사용 중인 라이선스 플랜 정보가 있는 경우
         if (licensePlan != null) {
-            //2.1  기존 라이선스 플랜의 서비스 이용 정보 추가
+            // 2.1  기존 라이선스 플랜의 서비스 이용 정보 추가
             calculateMaxCallTime += licensePlan.getMaxCallTime();
             calculateMaxStorage += licensePlan.getMaxStorageSize();
             calculateMaxHit += licensePlan.getMaxDownloadHit();
         }
 
-        // 3. 상품 주문 정보 추가 및 구매 정보 검사 (정기 결제가 아닌건에 대해서만 검증)
-//        if (!allocateCheckRequest.isRegularRequest()) {
+        // 4. 상품 주문 정보 추가 및 구매 정보 검사 (정기 결제가 아닌건에 대해서만 검증)
+        if (!allocateCheckRequest.isRegularRequest()) {
             calculateMaxCallTime += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum();
             calculateMaxStorage += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum();
             calculateMaxHit += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum();
 
-            // 4. 최대 통화 수 , 최대 용량, 최대 다운로드 횟수 비교
+            // 5. 최대 통화 수 , 최대 용량, 최대 다운로드 횟수 비교
             if (calculateMaxCallTime > MAX_CALL_TIME || calculateMaxStorage > MAX_STORAGE_AMOUNT || calculateMaxHit > MAX_DOWNLOAD_HITS) {
                 throw new LicenseAllocateDeniedException(ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED, allocateCheckRequest.getUserId());
             } else {
                 log.info("USER : [{}] -> CALCULATE CALL TIME : [{}] , CALCULATE STORAGE: [{}] , CALCULATE DOWNLOAD: [{}]", allocateCheckRequest.getUserId(), calculateMaxCallTime, calculateMaxStorage, calculateMaxHit);
             }
-//        }
+        }
 
-        // 5. 지급 인증 정보 생성
+        // 6. 지급 인증 정보 생성
         String assignAuthCoe = UUID.randomUUID().toString();
         LocalDateTime assignDate = LocalDateTime.now();
         LicenseAssignAuthInfo licenseAssignAuthInfo = new LicenseAssignAuthInfo();
@@ -117,10 +119,10 @@ public class BillingService {
         licenseAssignAuthInfo.setTotalProductStorage(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum());
         licenseAssignAuthInfo.setExpiredDate(Duration.ofMinutes(LICENSE_ASSIGN_AUTH_CODE_TTL_MINUTE).getSeconds());
 
-        // 6. 지급 인증 정보 저장
+        // 7. 지급 인증 정보 저장
         licenseAssignAuthInfoRepository.save(licenseAssignAuthInfo);
 
-        // 7. 지급 여부 결과 정보 생성
+        // 8. 지급 여부 결과 정보 생성
         LicenseProductAllocateCheckResponse checkResponse = new LicenseProductAllocateCheckResponse();
         checkResponse.setAssignable(true);
         checkResponse.setAssignAuthCode(assignAuthCoe);
@@ -211,28 +213,29 @@ public class BillingService {
         // 8.지급 인증 정보 확인 - 통화 횟수, 용량, 다운로드 횟수
         licenseAllocatePropertyValidationCheck(licenseAssignAuthInfo, calculateMaxCallTime, calculateMaxStorage, calculateMaxHit);
 
-        //9. 기존 라이선스 플랜 정보가 있는 경우
+        //9. 기존 활성화 된 라이선스 플랜 정보가 있는 경우
         if (userLicensePlan.isPresent()) {
             LicensePlan licensePlan = userLicensePlan.get();
 
             //10. 라이선스 플랜 정보가 있으며, 정기 결제 요청 건인 아닌 경우(상품 지급 건에 따른 서비스 이용 정보 갱신)
-//            if (!licenseAllocateRequest.isRegularRequest()) {
+            if (!licenseAllocateRequest.isRegularRequest()) {
                 licenseRegisterByProduct(licenseAllocateRequest.getProductList(), licensePlan);
                 licensePlan.setMaxCallTime(licensePlan.getMaxCallTime() + calculateMaxCallTime);
                 licensePlan.setMaxDownloadHit(licensePlan.getMaxDownloadHit() + calculateMaxHit);
                 licensePlan.setMaxStorageSize(licensePlan.getMaxStorageSize() + calculateMaxStorage);
                 // 베이직 플랜 구매 시(Make, Remote) 활성화 계정  갯수 9개 제공
 //            licensePlan.setMaxUserAmount(licensePlan.getMaxUserAmount() + calculateMaxUserAmount);
-//            }
+            }
+
             licensePlan.setPaymentId(licenseAllocateRequest.getPaymentId());
             licensePlan.setCountryCode(licenseAllocateRequest.getUserCountryCode());
             licensePlan.setEndDate(licensePlan.getEndDate().plusDays(30));
             licensePlanRepository.save(licensePlan);
 
-            // 11. 지급 상품 라이선스 생성
-//            if (!licenseAllocateRequest.isRegularRequest()) {
+            // 11. 지급 상품 라이선스 생성 (정기 결제 건이 아닌 경우)
+            if (!licenseAllocateRequest.isRegularRequest()) {
                 licenseRegisterByProduct(licenseAllocateRequest.getProductList(), licensePlan);
-//            }
+            }
 
             LicenseProductAllocateResponse allocateResponse = new LicenseProductAllocateResponse();
             allocateResponse.setUserId(licenseAllocateRequest.getUserId());
