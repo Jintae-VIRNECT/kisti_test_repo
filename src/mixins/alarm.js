@@ -119,7 +119,7 @@ export default {
     alarmInviteDenied(nickName) {
       this.alarmInfo(
         '',
-        `<em>${nickName}</em>님이<br> 협업 요청을 거절하였습니다.`,
+        `<em>[${nickName}] </em>님이<br> 협업 요청을 거절하였습니다.`,
       )
     },
     /**
@@ -129,7 +129,7 @@ export default {
     alarmInviteAccepted(nickName) {
       this.alarmInfo(
         '',
-        `<em>${nickName}</em>님이<br> 협업 요청을 수락하였습니다.`,
+        `<em>[${nickName}] </em>님이<br> 협업 요청을 수락하였습니다.`,
       )
     },
     /**
