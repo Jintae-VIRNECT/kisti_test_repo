@@ -54,11 +54,29 @@
       </dd>
     </dl>
     <el-divider />
-    <h6>{{ $t('purchases.info.nextPaymentDate') }}</h6>
+    <h6>
+      <span>{{ $t('purchases.info.licenseExpireDate') }}</span>
+      <el-tooltip
+        :content="$t('purchases.info.licenseExpireDateDesc')"
+        placement="right"
+      >
+        <img src="~assets/images/icon/ic-error.svg" />
+      </el-tooltip>
+    </h6>
+    <span class="value">{{ plansInfo.endDate | dateFormat }}</span>
+    <h6>
+      <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
+      <el-tooltip
+        :content="$t('purchases.info.nextPaymentDateDesc')"
+        placement="right"
+      >
+        <img src="~assets/images/icon/ic-error.svg" />
+      </el-tooltip>
+    </h6>
     <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
     <el-divider />
     <h6>{{ $t('purchases.info.way') }}</h6>
-    <span class="value">{{ paymentInfo.way || '-' }}</span>
+    <span class="value">{{ way }}</span>
     <el-divider />
     <a :href="$url.pay">
       <el-button type="simple">
@@ -86,6 +104,19 @@ export default {
       }),
     },
   },
+  computed: {
+    way() {
+      const { payFlag, way } = this.paymentInfo
+      const { planStatus } = this.plansInfo
+      if (payFlag === 'Y') {
+        return way
+      } else if (payFlag === 'D' && planStatus === 'ACTIVE') {
+        return this.$t('purchases.info.freePlan')
+      } else {
+        return '-'
+      }
+    },
+  },
 }
 </script>
 
@@ -97,6 +128,11 @@ export default {
   dt,
   h6 {
     float: left;
+    & > * {
+      display: inline-block;
+      margin-right: 2px;
+      vertical-align: middle;
+    }
   }
   dt {
     color: $font-color-desc;
@@ -109,6 +145,9 @@ export default {
     margin-bottom: 16px;
     line-height: 20px;
     text-align: right;
+  }
+  .value {
+    margin-bottom: 12px;
   }
   .el-button {
     width: 100%;

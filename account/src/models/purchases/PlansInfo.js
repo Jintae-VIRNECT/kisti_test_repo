@@ -14,6 +14,8 @@ export default class PlansInfo extends Model {
     this.storage = mb2gb(json.currentUsageStorage)
     this.viewCount = json.currentUsageDownloadHit
     this.callTime = json.currentUsageCallTime
+    this.endDate = json.endDate
+    this.planStatus = json.planStatus
     this.products = json.licenseProductInfoList.map(license => {
       const { value, label, logo } = products[license.productName.toLowerCase()]
       return {
