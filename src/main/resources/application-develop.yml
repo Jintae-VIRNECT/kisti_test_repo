@@ -18,6 +18,8 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+  zipkin:
+    base-url: http://192.168.6.3:9411
 
 #logging:
 #  level:
@@ -38,7 +40,7 @@ server:
 upload:
   dir: "upload/"
   serverUrl: "http://192.168.6.3:${server.port}/contents/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
+  allowed-extension: ".ares,.mars,.Ares,.Mars"
 
 ## FEIGN Configuration
 feign:

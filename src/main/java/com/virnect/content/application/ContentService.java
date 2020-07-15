@@ -105,6 +105,17 @@ public class ContentService {
      */
     @Transactional
     public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
+        /**
+         * 1.   콘텐츠 업로드 파일 저장
+         * 2-1. 프로퍼티 메타데이터 생성
+         * 2-2. 업로드 컨텐츠 정보 수집
+         * 3.   컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
+         * 3-1. 메타데이터 파싱
+         * 3-2. 씬그룹 데이터 파싱
+         * 3-3. 씬그룹 데이터 컨텐츠에 추가
+         * 4.   업로드 요청 컨텐츠 정보 저장
+         */
+
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
@@ -146,11 +157,14 @@ public class ContentService {
             // 타겟 저장 후 타겟데이터 반환
             String targetData = null;
 
-            // 이미 있는 타겟 데이터인지 체크
-            if (isExistTargetData(uploadRequest.getTargetData())){
-                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-            } else {
-                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+            // contentDuplicate의 경우 targetData가 없을 수 있으므로 체크한다.
+            if (Objects.nonNull(uploadRequest.getTargetData())) {
+                // 이미 있는 타겟 데이터인지 체크
+                if (isExistTargetData(uploadRequest.getTargetData())) {
+                    throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+                } else {
+                    targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+                }
             }
 
             // 4. 업로드 요청 컨텐츠 정보 저장
@@ -175,6 +189,11 @@ public class ContentService {
         }
     }
 
+    /**
+     * 컨텐츠 객체에 씬그룹 추가
+     * @param content
+     * @param metadata
+     */
     private void addSceneGroupToContent(Content content, String metadata) {
         try {
             // 3-1. 메타데이터 파싱
