@@ -1874,7 +1874,11 @@ public class TaskService {
      * @return
      */
     public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
-        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, targetData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
+
+        // URLDecode된 데이터를 다시 encoding
+        String encodedData = checkParameterEncoded(targetData);
+
+        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, encodedData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
 //        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
         Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(null, process.getId(), null, null, pageable);
         SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
@@ -2368,7 +2372,10 @@ public class TaskService {
      * @return
      */
     public ApiResponse<ProcessInfoResponse> getProcessInfoByTarget(String targetData) {
-        Process process = this.processRepository.findByTargetDataAndState(targetData, State.CREATED);
+        // URLDecode된 데이터를 다시 URLEncoding
+        String encodedData = checkParameterEncoded(targetData);
+
+        Process process = this.processRepository.findByTargetDataAndState(encodedData, State.CREATED);
 
         if (Objects.isNull(process)) {
             throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
@@ -2608,7 +2615,7 @@ public class TaskService {
     }
 
     /**
-     * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
+     * get방식에서 URLEncode된 값의 URLEncoding이 풀려서 오는 케이스를 체크.
      * @param targetData
      * @return
      */

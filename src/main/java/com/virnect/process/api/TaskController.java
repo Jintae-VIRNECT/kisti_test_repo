@@ -818,7 +818,7 @@ public class TaskController {
             log.info("[targetData] => [{}]", targetData);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        log.info(">>>>>>>>>> {}", targetData);
+
         ApiResponse<SubProcessesOfTargetResponse> subProcessesOfTargetResponseApiResponse = this.taskService.getSubProcessesOfTarget(workspaceUUID, targetData, pageable.of());
         return ResponseEntity.ok(subProcessesOfTargetResponseApiResponse);
     }
