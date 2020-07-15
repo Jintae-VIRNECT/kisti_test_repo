@@ -52,9 +52,10 @@
 import { mapGetters } from 'vuex'
 import { sendFile } from 'api/workspace/call'
 import toastMixin from 'mixins/toast'
+import betaCheckMixin from 'mixins/betaCheck'
 export default {
   name: 'ChatInput',
-  mixins: [toastMixin],
+  mixins: [toastMixin, betaCheckMixin],
   components: {},
   data() {
     return {
@@ -114,6 +115,9 @@ export default {
       this.inputText = ''
     },
     clickUpload() {
+      if (this.checkBeta()) {
+        return false
+      }
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
         this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
