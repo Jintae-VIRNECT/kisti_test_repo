@@ -9,6 +9,7 @@ import Axios from 'axios'
 import Cookies from 'js-cookie'
 import urls from '@/server/urls'
 import API from './api'
+import logger from 'utils/logger'
 
 const TOKEN = Cookies.get('accessToken')
 const axios = Axios.create({
@@ -78,7 +79,7 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      console.log(option)
+      logger(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
 
@@ -101,7 +102,7 @@ const sender = async function(constant, params, headers = {}, custom) {
   })
 
   try {
-    console.log(method.toUpperCase(), url, parameter, headers)
+    logger(method.toUpperCase(), url, parameter, headers)
     const request = {
       method: method,
       data: parameter,
@@ -125,7 +126,7 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        console.log(res.data['data'])
+        logger(res.data['data'])
         return res.data['data']
       } else {
         return true
@@ -172,7 +173,7 @@ const errorHandler = function(err) {
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  console.log(axios.defaults.headers)
+  logger('TOKEN::'.axios.defaults.headers)
 }
 
 export default sender
