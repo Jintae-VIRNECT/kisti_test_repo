@@ -1,3 +1,6 @@
+const ALARM_DURATION = 3000
+const ALARM_DURATION_BUTTON = 30000
+
 const buildTemplate = payload => {
   console.log(payload)
   let icon = payload.icon
@@ -86,6 +89,7 @@ export default {
         info: `${nickName} 님`,
         description: '참가자로 협업을 요청하였습니다.',
         icon: profile,
+        duration: ALARM_DURATION_BUTTON,
         options: {
           action: [
             {
@@ -202,7 +206,7 @@ export default {
     callNotify(payload) {
       return this.$alarm.show(buildTemplate(payload), {
         position: 'top-right',
-        duration: 50000000,
+        duration: payload.duration | ALARM_DURATION,
         fitToScreen: true,
         keepOnHover: true,
         type: 'notify',
