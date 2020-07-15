@@ -21,6 +21,8 @@ import PUSH from 'plugins/remote/push'
 import { localStorage } from 'utils/storage'
 import { version } from '@/package.json'
 
+import logger from 'utils/logger'
+
 Vue.use(DayJS)
 Vue.use(PUSH)
 Vue.use(VueToasted)
@@ -32,6 +34,7 @@ Vue.use(Vue2Scrollbar)
 Vue.use(call, { Store })
 
 Vue.prototype.$localStorage = localStorage
+Vue.prototype.logger = logger
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
