@@ -137,52 +137,6 @@ export default {
         .setText('협업이 생성 되었습니다.')
         .build(),
     )
-
-    //test messages.
-    // this.chatList.push(
-    //   new ChatMsgBuilder()
-    //     .setType('me')
-    //     .setName('펭수')
-    //     .setText('hihi')
-    //     .build(),
-    // )
-
-    // this.chatList.push(
-    //   new ChatMsgBuilder()
-    //     .setType('me')
-    //     .setName('펭수')
-    //     .setText('hihi')
-    //     .setFile([
-    //       {
-    //         filename: 'Webex.png',
-    //         filesize: '10MB',
-    //       },
-    //     ])
-    //     .build(),
-    // )
-
-    // this.chatList.push(
-    //   new ChatMsgBuilder()
-    //     .setType('opponent')
-    //     .setName('펭수')
-    //     .setText('hihi')
-    //     .setFile([
-    //       {
-    //         filename: 'Webex.png',
-    //         filesize: '10MB',
-    //       },
-    //     ])
-    //     .build(),
-    // )
-
-    // this.chatList.push(
-    //   new ChatMsgBuilder()
-    //     .setType('system')
-    //     .setName('테스트2', true)
-    //     .setSubType('cancel')
-    //     .setText('cancel File Transfer')
-    //     .build(),
-    // )
   },
 }
 </script>
