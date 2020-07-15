@@ -1,9 +1,5 @@
 import linkifyHtml from 'linkifyjs/html'
 
-/**
- * @author ykmo-VIRNECT
- */
-
 const typeList = ['me', 'opponent', 'system']
 const subTypeList = ['alarm', 'people', 'cancel', 'ar', 'board']
 
@@ -58,17 +54,19 @@ class ChatMsgBuilder {
   }
 
   urlHyliter(chatText) {
-    let replaced = chatText
-
     try {
-      replaced = linkifyHtml(chatText, {
-        defaultProtocol: 'https',
-        className: 'chat-url',
-      })
+      if (chatText) {
+        chatText = linkifyHtml(chatText, {
+          defaultProtocol: 'https',
+          className: 'chat-url',
+        })
+      } else {
+        chatText = ''
+      }
     } catch (e) {
       console.log(e)
     }
-    return replaced
+    return chatText
   }
 
   nameHyliter(name) {

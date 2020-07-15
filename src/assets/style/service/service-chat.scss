@@ -200,6 +200,7 @@
             color: $color_primary_700;
             font-size: 0.9375rem;
             text-decoration: underline;
+            word-break: break-word;
           }
         }
       }
@@ -246,6 +247,7 @@
             color: $color_primary_700;
             font-size: 0.9375rem;
             text-decoration: underline;
+            word-break: break-word;
           }
         }
       }
@@ -373,7 +375,8 @@
 
 .chat-item__file--wrapper {
   display: flex;
-  margin-top: 0.7857rem;
+  align-items: center;
+  margin-top: 0.0714rem;
 }
 
 .chat-item__file--icon {
@@ -405,15 +408,15 @@
   overflow: hidden;
   color: rgba($color_darkgray_1000, 0.78);
   font-weight: 500;
-  font-size: 1.2143rem;
+  font-size: 1.0714rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   background: url() no-repeat;
 }
 
 .chat-item__file--size {
-  margin: 0.3571rem 0;
-  color: rgb(122, 122, 122);
+  margin: 0.5rem 0 0.3571rem 0;
+  color: #7a7a7a;
   font-size: 0.8571rem;
 }
 

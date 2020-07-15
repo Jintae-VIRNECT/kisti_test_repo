@@ -146,6 +146,21 @@ const _ = {
       type: SIGNAL.CHAT,
     })
   },
+
+  /**
+   * chatting-file
+   */
+  sendFile: params => {
+    if (!_.session) return
+
+    //파일 관련 정보 전송하기
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.FILE,
+    })
+  },
+
   /**
    * resolution
    * @param {Object} resolution = {width, height, orientation}

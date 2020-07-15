@@ -1,4 +1,5 @@
 import Store from 'stores/remote/store'
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
@@ -132,19 +133,49 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = event.data
-    let chat = {
-      text: data.replace(/\</g, '&lt;'),
-      name: participants[idx].nickname,
-      date: new Date(),
-      nodeId: event.from.connectionId,
-      type: false,
-    }
+
+    const chatBuilder = new ChatMsgBuilder()
+      .setName(participants[idx].nickname)
+      .setText(data.replace(/\</g, '&lt;'))
+      .setType('opponent')
+
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chat.type = 'me'
+      chatBuilder.setType('me')
     }
-    Store.commit('addChat', chat)
+
+    Store.commit('addChat', chatBuilder.build())
   })
+
+  /** 채팅 파일 수신 */
+  session.on(SIGNAL.FILE, event => {
+    const connectionId = event.from.connectionId
+    const participants = Store.getters['participants']
+    const idx = participants.findIndex(
+      user => user.connectionId === connectionId,
+    )
+    if (idx < 0) return
+    let data = JSON.parse(event.data)
+
+    const chatBuilder = new ChatMsgBuilder()
+      .setType('opponent')
+      .setName(participants[idx].nickname)
+      .setFile([
+        {
+          fileName: data.fileName,
+          fileSize: data.size,
+          fileUrl: data.fileDownloadUrl,
+        },
+      ])
+
+    if (session.connection.connectionId === event.from.connectionId) {
+      // 본인
+      chatBuilder.setType('me')
+    }
+
+    Store.commit('addChat', chatBuilder.build())
+  })
+
   /** 내보내기 */
   session.on('forceDisconnectByUser', event => {
     console.log(event)
