@@ -14,7 +14,7 @@ public class PageRequest {
     protected int page = 1;
     protected int size = 20;
     protected String sort;
-    private final static int MAX_SIZE = 50;
+    private static final int MAX_SIZE = 50;
 
 
     public void setPage(int page) {
