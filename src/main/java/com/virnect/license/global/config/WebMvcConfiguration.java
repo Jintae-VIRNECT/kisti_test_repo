@@ -14,20 +14,20 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer, WebMvcRegistrations {
     private static final List<String> BILLING_API_URLS = Arrays.asList("/licenses/allocate/check", "/licenses/allocate", "/licenses/deallocate");
-//
-//    @Bean
-//    public FilterRegistrationBean<BillingRequestBodyDecryptFilter> decodingFilter() {
-//        FilterRegistrationBean<BillingRequestBodyDecryptFilter> requestDecodingFilterBean = new FilterRegistrationBean<>();
-//        requestDecodingFilterBean.setFilter(new BillingRequestBodyDecryptFilter());
-//        requestDecodingFilterBean.setUrlPatterns(BILLING_API_URLS);
-//        return requestDecodingFilterBean;
-//    }
-//
-//    @Bean
-//    public FilterRegistrationBean<BillingResponseBodyEncryptFilter> encodingFilter(){
-//        FilterRegistrationBean<BillingResponseBodyEncryptFilter> responseEncodingFilterBean = new FilterRegistrationBean<>();
-//        responseEncodingFilterBean.setFilter(new BillingResponseBodyEncryptFilter());
-//        responseEncodingFilterBean.setUrlPatterns(BILLING_API_URLS);
-//        return responseEncodingFilterBean;
-//    }
+
+    @Bean
+    public FilterRegistrationBean<BillingRequestBodyDecryptFilter> decodingFilter() {
+        FilterRegistrationBean<BillingRequestBodyDecryptFilter> requestDecodingFilterBean = new FilterRegistrationBean<>();
+        requestDecodingFilterBean.setFilter(new BillingRequestBodyDecryptFilter());
+        requestDecodingFilterBean.setUrlPatterns(BILLING_API_URLS);
+        return requestDecodingFilterBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<BillingResponseBodyEncryptFilter> encodingFilter() {
+        FilterRegistrationBean<BillingResponseBodyEncryptFilter> responseEncodingFilterBean = new FilterRegistrationBean<>();
+        responseEncodingFilterBean.setFilter(new BillingResponseBodyEncryptFilter());
+        responseEncodingFilterBean.setUrlPatterns(BILLING_API_URLS);
+        return responseEncodingFilterBean;
+    }
 }
