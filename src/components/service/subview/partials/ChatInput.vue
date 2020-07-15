@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { sendFile } from 'api/workspace/call'
 import toastMixin from 'mixins/toast'
 export default {
@@ -66,10 +66,7 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList']),
-    ...mapState({
-      room: state => state.room,
-    }),
+    ...mapGetters(['chatList', 'roomInfo']),
   },
   watch: {
     fileList: {
@@ -95,7 +92,7 @@ export default {
         for (const file of this.fileList) {
           const response = await sendFile(
             file.filedata,
-            this.room.roomId,
+            this.roomInfo.roomId,
             this.workspace.uuid,
           )
           console.log(response)
@@ -119,7 +116,7 @@ export default {
     },
     clickUpload() {
       if (this.fileList.length > 0) {
-        //문구 지정 필요
+        // @TODO: MESSAGE
         this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
         return
       }
@@ -134,7 +131,7 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size / 1024 / 1024 > 20) {
-          //문구 지정 필요
+          // @TODO: MESSAGE
           this.toastDefault('첨부 가능한 용량을 초과하였습니다.')
           this.clearUploadFile()
           return false
@@ -173,7 +170,7 @@ export default {
           }
           oReader.readAsDataURL(file)
         } else {
-          //문구 지정 필요
+          // @TODO: MESSAGE
           this.toastDefault('지원하지 않는 파일 형식입니다.')
           this.clearUploadFile()
           return false

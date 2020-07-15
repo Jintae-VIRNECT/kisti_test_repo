@@ -54,21 +54,19 @@ class ChatMsgBuilder {
   }
 
   urlHyliter(chatText) {
-    let replaced = chatText
-
     try {
-      if (replaced) {
-        replaced = linkifyHtml(chatText, {
+      if (chatText) {
+        chatText = linkifyHtml(chatText, {
           defaultProtocol: 'https',
           className: 'chat-url',
         })
       } else {
-        replaced = ''
+        chatText = ''
       }
     } catch (e) {
       console.log(e)
     }
-    return replaced
+    return chatText
   }
 
   nameHyliter(name) {

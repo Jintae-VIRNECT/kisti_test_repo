@@ -30,7 +30,7 @@
         <button
           v-if="chat.file && chat.file.length > 0"
           class="chat-item__file--button"
-          @click="download(chat.file[0].fileUrl)"
+          @click="download"
         >
           <span class="button-text">다운로드</span>
         </button>
@@ -147,9 +147,8 @@ export default {
   },
   watch: {},
   methods: {
-    download(url) {
-      console.log(url)
-      FileSaver.saveAs(url, this.chat.file[0].fileName)
+    download() {
+      FileSaver.saveAs(this.chat.file[0].fileUrl, this.chat.file[0].fileName)
     },
   },
 
