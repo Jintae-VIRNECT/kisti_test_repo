@@ -13,6 +13,7 @@ export const SIGNAL = {
   AR_DRAWING: 'signal:arDrawing',
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
+  FILE: 'signal:file',
 }
 
 export const CAMERA = {
