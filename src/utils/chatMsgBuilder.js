@@ -1,7 +1,5 @@
 import linkifyHtml from 'linkifyjs/html'
-
-const typeList = ['me', 'opponent', 'system']
-const subTypeList = ['alarm', 'people', 'cancel', 'ar', 'board']
+import { TYPE, SUB_TYPE } from 'configs/chat.config'
 
 class ChatMsg {
   constructor() {}
@@ -23,16 +21,16 @@ class ChatMsgBuilder {
   }
 
   setType(type) {
-    if (typeList.indexOf(type) < 0) {
-      throw 'ChatMsgBuilder :: wrong type!! type :' + `${type}`
-    } else {
+    if (TYPE.hasOwnProperty(type)) {
       this.msg.type = type
+    } else {
+      throw 'ChatMsgBuilder :: wrong type!! type :' + `${type}`
     }
     return this
   }
 
   setSubType(subType) {
-    if (subTypeList.indexOf(subType) >= 0) {
+    if (SUB_TYPE.hasOwnProperty(subType)) {
       this.msg.subType = subType
     } else {
       throw 'ChatMsgBuilder :: wrong type!! subType :' + `${subType}`
@@ -89,18 +87,19 @@ class ChatMsgBuilder {
   }
 
   build() {
-    if (this.msg.type === 'system' && this.msg.subType !== undefined) {
+    if (this.msg.type === TYPE.SYSTEM && this.msg.subType !== undefined) {
       this.msg.text = this.sysHyliter(this.msg.text)
     }
 
-    if (this.msg.type !== 'system') {
+    if (this.msg.type !== TYPE.SYSTEM) {
       this.msg.text = this.urlHyliter(this.msg.text)
     }
 
     //need hylite name
     if (
-      this.msg.type === 'system' &&
-      (this.msg.subType === 'people' || this.msg.subType === 'cancel')
+      this.msg.type === TYPE.SYSTEM &&
+      (this.msg.subType === SUB_TYPE.PEOPLE ||
+        this.msg.subType === SUB_TYPE.CANCEL)
     ) {
       this.msg.text = this.msg.name + ' ' + this.msg.text
     }

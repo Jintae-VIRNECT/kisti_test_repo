@@ -97,7 +97,6 @@ export default {
             workspaceId: this.workspace.uuid,
           })
 
-          console.log(response)
           const downUrl = response.downloadUrl
 
           this.$call.sendFile({

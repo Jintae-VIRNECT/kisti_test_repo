@@ -3,7 +3,7 @@
     <div class="chat-header">
       <div class="chat-header__title">
         <div class="chat-header__title--text ">
-          {{ room.title }}
+          {{ roomInfo.title }}
         </div>
       </div>
 
@@ -43,12 +43,14 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import { VIEW } from 'configs/view.config'
+import { TYPE, SUB_TYPE } from 'configs/chat.config'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
-
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
+
 import betaCheckMixin from 'mixins/betaCheck'
 export default {
   name: 'Chat',
@@ -61,16 +63,10 @@ export default {
     return {
       show: 'chat',
       participantsCount: 1,
-
-      showSubVideo: false,
     }
   },
   computed: {
-    ...mapGetters(['chatList']),
-    ...mapState({
-      room: state => state.room,
-      viewMode: state => state.oncall.view,
-    }),
+    ...mapGetters(['chatList', 'roomInfo', 'view']),
     showChat() {
       if (this.show === 'chat') return true
       else return false
@@ -87,37 +83,28 @@ export default {
       },
       deep: true,
     },
-    viewMode: {
+    view: {
       handler(mode) {
         switch (mode) {
-          case 'stream':
-            console.log('실시간 공유')
-            this.showSubVideo = false
-            break
-          case 'drawing':
-            console.log('협업 보드')
-            this.showSubVideo = true
-
+          case VIEW.DRAWING:
             this.chatList.push(
               new ChatMsgBuilder()
-                .setType('system')
-                .setSubType('board')
+                .setType(TYPE.SYSTEM)
+                .setSubType(SUB_TYPE.BOARD)
                 .setText('협업 보드를 사용합니다.')
                 .build(),
             )
             break
-          case 'ar':
-            this.showSubVideo = true
+          case VIEW.AR:
             this.chatList.push(
               new ChatMsgBuilder()
-                .setType('system')
-                .setSubType('ar')
+                .setType(TYPE.SYSTEM)
+                .setSubType(SUB_TYPE.AR)
                 .setText('AR 기능을 사용합니다.')
                 .build(),
             )
             break
           default:
-            console.log('unknown viewMode :: ', mode)
             break
         }
       },
@@ -137,8 +124,8 @@ export default {
   mounted() {
     this.chatList.push(
       new ChatMsgBuilder()
-        .setType('system')
-        .setSubType('alarm')
+        .setType(TYPE.SYSTEM)
+        .setSubType(SUB_TYPE.ALARM)
         .setText('협업이 생성 되었습니다.')
         .build(),
     )

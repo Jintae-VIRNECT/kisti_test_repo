@@ -4,11 +4,6 @@
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
     <profile class="profile" v-if="!hideProfile"></profile>
-    <!-- <img
-      class="profile"
-      src="~assets/image/call/chat_img_user.svg"
-      v-if="!hideProfile"
-    /> -->
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
@@ -45,6 +40,7 @@
 <script>
 import Profile from 'Profile'
 import FileSaver from 'file-saver'
+import { TYPE, SUB_TYPE } from 'configs/chat.config'
 export default {
   name: 'ChatItem',
   components: {
@@ -60,9 +56,9 @@ export default {
   },
   computed: {
     type() {
-      if (false === this.chat.type || this.chat.type === 'opponent') {
+      if (false === this.chat.type || this.chat.type === TYPE.OPPONENT) {
         return 'opponent'
-      } else if (this.chat.type === 'me') {
+      } else if (this.chat.type === TYPE.ME) {
         return 'me'
       } else {
         return 'system'
@@ -88,7 +84,7 @@ export default {
         return false
       }
 
-      if (this.chat.uuid === null && this.chat.name === 'alarm') {
+      if (this.chat.uuid === null) {
         return false
       }
 
@@ -110,8 +106,9 @@ export default {
     },
     extension() {
       let ext = ''
-      if (this.chat.file && this.chat.file.length > 0) {
-        ext = this.chat.file[0].fileName.split('.').pop()
+      const file = this.chat.file
+      if (file && file.length > 0) {
+        ext = file[0].fileName.split('.').pop()
       }
 
       if (ext === 'avi' || ext === 'mp4') {
@@ -130,25 +127,38 @@ export default {
         mp3: this.extension === 'mp3',
         jpg: this.extension === 'jpg',
         video: this.extension === 'video',
-        alarm: this.type === 'system' && this.chat.subType === 'alarm',
-        people: this.type === 'system' && this.chat.subType === 'people',
-        cancel: this.type === 'system' && this.chat.subType === 'cancel',
-        ar: this.type === 'system' && this.chat.subType === 'ar',
-        board: this.type === 'system' && this.chat.subType === 'board',
+        ar: this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.AR,
+        alarm:
+          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.ALARM,
+        people:
+          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.PEOPLE,
+        cancel:
+          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.CANCEL,
+        board:
+          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.BOARD,
       }
     },
     chatText() {
       return this.chat.text.replace(/\n/gi, '<br>')
     },
     fileSize() {
-      const fileSizeMB = (this.chat.file[0].fileSize / 1024 / 1024).toFixed(1)
-      return `${fileSizeMB}MB`
+      let size = this.chat.file[0].fileSize
+      const mb = 1048576
+
+      if (size >= mb) {
+        size = size / 1024 / 1024
+        return `${size.toFixed(1)}MB`
+      } else {
+        size = size / 1024
+        return `${size.toFixed(1)}KB`
+      }
     },
   },
   watch: {},
   methods: {
     download() {
-      FileSaver.saveAs(this.chat.file[0].fileUrl, this.chat.file[0].fileName)
+      const file = this.chat.file[0]
+      FileSaver.saveAs(file.fileUrl, file.fileName)
     },
   },
 
