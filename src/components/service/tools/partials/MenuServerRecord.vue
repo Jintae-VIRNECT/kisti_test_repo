@@ -12,9 +12,10 @@
 
 <script>
 import toolMixin from './toolMixin'
+import betaCheckMixin from 'mixins/betaCheck'
 export default {
-  name: 'RecordMenu',
-  mixins: [toolMixin],
+  name: 'ServerRecordMenu',
+  mixins: [toolMixin, betaCheckMixin],
   data() {
     return {
       isRecording: false,
@@ -24,6 +25,9 @@ export default {
   watch: {},
   methods: {
     recording() {
+      if (this.checkBeta()) {
+        return false
+      }
       // this.active = 'recording'
       if (this.disabled) return
       if (!this.isRecording) {
