@@ -42,4 +42,11 @@ export default {
   ],
   /* MESSAGE */
   SEND_PUSH: ['POST', 'https://192.168.6.3:8073/messages/push'],
+
+  /* CHAT FILE */
+  SEND_FILE: [
+    'POST',
+    'https://192.168.13.94:4443/file/upload',
+    { type: 'form' },
+  ],
 }

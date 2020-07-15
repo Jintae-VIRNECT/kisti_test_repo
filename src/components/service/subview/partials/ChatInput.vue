@@ -50,8 +50,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { sendFile } from 'api/workspace/call'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',
+  mixins: [toastMixin],
   components: {},
   data() {
     return {
@@ -63,7 +66,7 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList']),
+    ...mapGetters(['chatList', 'roomInfo']),
   },
   watch: {
     fileList: {
@@ -78,53 +81,44 @@ export default {
     },
   },
   methods: {
-    /**
-     * 채팅 object 추가
-     * @param {String} chatType : 'system' | 'me' | 'opponent'
-     * @param {Object | String} msg
-     *        'system' : { type: 'start'|'file'|'document'|'camera'|'ar', name: filename|username }
-     *        'me'|'opponent' : text message
-     */
-    addChatItem(chatType, msg) {
-      // const datetime = this.$moment()
-      const datetime = this.$dayjs()
-      // 작성시간 노출 계산
-      if (this.chatList.length > 0) {
-        const pastChat = this.chatList[0]
-        if (pastChat) {
-          if (pastChat.chatType === chatType) {
-            if (
-              this.$dayjs(pastChat.datetime).format('HHmm') ===
-              datetime.format('HHmm')
-            ) {
-              this.$set(pastChat, 'datetime', false)
-            }
-          }
-        }
-      }
-
-      this.chatList.push({
-        text: msg,
-        date: new Date(),
-        type: 'me',
-      })
-      // this.$nextTick(() => {
-      //   if (this.$refs['chatScrollbar']) {
-      //     this.$refs['chatScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
-      //   }
-      // })
-    },
-
-    doSend(e) {
+    async doSend(e) {
       console.log(e)
       if (e) {
         e.preventDefault()
       }
       this.$call.sendChat(this.inputText)
 
+      if (this.fileList.length > 0) {
+        for (const file of this.fileList) {
+          const response = await sendFile({
+            file: file.filedata,
+            roomId: this.roomInfo.roomId,
+            workspaceId: this.workspace.uuid,
+          })
+
+          console.log(response)
+          const downUrl = response.downloadUrl
+
+          this.$call.sendFile({
+            fileName: file.filedata.name,
+            mimeType: file.filedata.type,
+            size: file.filedata.size,
+            fileDownloadUrl: downUrl,
+          })
+        }
+
+        this.clearUploadFile()
+        this.fileList = []
+      }
+
       this.inputText = ''
     },
     clickUpload() {
+      if (this.fileList.length > 0) {
+        // @TODO: MESSAGE
+        this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
+        return
+      }
       this.$refs['inputFile'].click()
     },
     fileUpload(e) {
@@ -136,7 +130,8 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size / 1024 / 1024 > 20) {
-          alert('파일 사이즈가 너무 커요.')
+          // @TODO: MESSAGE
+          this.toastDefault('첨부 가능한 용량을 초과하였습니다.')
           this.clearUploadFile()
           return false
         }
@@ -174,7 +169,8 @@ export default {
           }
           oReader.readAsDataURL(file)
         } else {
-          alert('파일형식이 맞지않음')
+          // @TODO: MESSAGE
+          this.toastDefault('지원하지 않는 파일 형식입니다.')
           this.clearUploadFile()
           return false
         }
@@ -204,15 +200,6 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    //console.log(this.$dayjs)
-    // const message = `${this.opponent.name || '알수없는 사용자'}님과 통화를 시작합니다.`
-    // const message = this.$t('service.chat_call_start', { name: `${this.opponent.name || this.$t('service.chat_anonymous_user')}` })
-    // this.addChatItem('system', '알수없는 누군가와 통신하겠소')
-  },
-  beforeDestroy() {
-    //this.$remoteSDK.removeMessageListener(this.receiveMessage)
-    this.$eventBus.$off('addChatItem', this.addChatItem)
-  },
+  mounted() {},
 }
 </script>
