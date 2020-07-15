@@ -134,9 +134,12 @@ export default {
           this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
-            () => this.joinRoom(body.contents.roomId),
+            () => this.acceptInvite(body),
             () => this.inviteDenied(body.userId),
           )
+          break
+        case EVENT.INVITE_ACCEPTED:
+          this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
           this.alarmInviteDenied(body.contents.nickName)
@@ -162,6 +165,21 @@ export default {
       }
 
       await sendPush(params)
+    },
+    acceptInvite(body) {
+      const params = {
+        service: KEY.SERVICE_TYPE,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        targetUserIds: [body.userId],
+        event: EVENT.INVITE_ACCEPTED,
+        contents: {
+          nickName: this.account.nickname,
+        },
+      }
+
+      sendPush(params)
+      this.joinRoom(body.contents.roomId)
     },
   },
 

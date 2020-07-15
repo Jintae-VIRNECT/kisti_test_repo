@@ -100,7 +100,6 @@
     }
   }
   p {
-    margin-top: 0.214rem;
     font-weight: 500;
     font-size: 1.071rem;
     &.toasted__description {
@@ -108,7 +107,7 @@
     }
   }
   .toasted__info {
-    // margin-bottom: 0.357rem;
+    margin-bottom: 0.214rem;
     color: $color_text_red;
     font-weight: 400;
     font-size: 0.857rem;
