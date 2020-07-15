@@ -9,7 +9,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import SubVideo from './SubVideo'
 import Chat from './Chat'
 export default {
@@ -22,9 +22,9 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['view']),
+    ...mapGetters(['view', 'viewAction']),
     subView() {
-      if ([VIEW.DRAWING, VIEW.AR].includes(this.view)) {
+      if (VIEW.DRAWING === this.view || ACTION.AR_DRAWING === this.viewAction) {
         return true
       } else {
         return false

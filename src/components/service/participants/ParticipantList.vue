@@ -58,7 +58,9 @@ export default {
         if (newVal > oldVal) {
           this.$nextTick(() => {
             if (this.$refs['sessionListScrollbar']) {
-              this.$refs['sessionListScrollbar'].scrollToX(999999999)
+              this.$refs['sessionListScrollbar'].scrollToX(
+                Number.MAX_SAFE_INTEGER,
+              )
             }
           })
         } else if (newVal < oldVal) {
@@ -70,7 +72,9 @@ export default {
           // }
           this.$nextTick(() => {
             if (this.$refs['sessionListScrollbar']) {
-              this.$refs['sessionListScrollbar'].scrollToX(999999999)
+              this.$refs['sessionListScrollbar'].scrollToX(
+                Number.MAX_SAFE_INTEGER,
+              )
             }
           })
         }

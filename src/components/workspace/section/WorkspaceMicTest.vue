@@ -33,8 +33,6 @@
         :srcObject.prop="audioStream"
         autoplay
       ></audio>
-      <!-- for camera permission -->
-      <!-- <video autoplay style="width:0px; height:0px"></video> -->
     </div>
   </section>
 </template>
@@ -71,7 +69,7 @@ export default {
   },
   computed: {
     ...mapGetters(['mic']),
-    mic() {
+    micId() {
       return this.mic['deviceId']
     },
     soundWidth() {
@@ -83,7 +81,7 @@ export default {
     },
   },
   watch: {
-    mic: {
+    micId: {
       handler(newMic) {
         this.handleInputAudioStream(newMic)
       },

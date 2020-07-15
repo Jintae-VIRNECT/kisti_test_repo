@@ -16,10 +16,10 @@
           <div class="chat-item__file--wrapper">
             <div class="chat-item__file--icon" :class="getClass"></div>
             <div class="chat-item__file--name">
-              {{ chat.file[0].filename }}
+              {{ chat.file[0].fileName }}
             </div>
           </div>
-          <p class="chat-item__file--size">{{ chat.file[0].filesize }}</p>
+          <p class="chat-item__file--size">{{ fileSize }}</p>
         </div>
         <p
           v-if="chat.text !== undefined"
@@ -30,6 +30,7 @@
         <button
           v-if="chat.file && chat.file.length > 0"
           class="chat-item__file--button"
+          @click="download"
         >
           <span class="button-text">다운로드</span>
         </button>
@@ -37,13 +38,13 @@
       <span v-if="!hideTime" class="time">{{
         $dayjs(chat.date).format('A hh:mm')
       }}</span>
-      <!-- <span v-if="!hideTime" class="time">{{ chat.date }}</span> -->
     </div>
   </li>
 </template>
 
 <script>
 import Profile from 'Profile'
+import FileSaver from 'file-saver'
 export default {
   name: 'ChatItem',
   components: {
@@ -110,12 +111,14 @@ export default {
     extension() {
       let ext = ''
       if (this.chat.file && this.chat.file.length > 0) {
-        ext = this.chat.file[0].filename.split('.').pop()
+        ext = this.chat.file[0].fileName.split('.').pop()
       }
 
       if (ext === 'avi' || ext === 'mp4') {
         ext = 'video'
       }
+
+      ext = ext.toLowerCase()
 
       return ext
     },
@@ -137,9 +140,17 @@ export default {
     chatText() {
       return this.chat.text.replace(/\n/gi, '<br>')
     },
+    fileSize() {
+      const fileSizeMB = (this.chat.file[0].fileSize / 1024 / 1024).toFixed(1)
+      return `${fileSizeMB}MB`
+    },
   },
   watch: {},
-  methods: {},
+  methods: {
+    download() {
+      FileSaver.saveAs(this.chat.file[0].fileUrl, this.chat.file[0].fileName)
+    },
+  },
 
   /* Lifecycles */
   mounted() {},

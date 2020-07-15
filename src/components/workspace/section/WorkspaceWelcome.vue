@@ -11,26 +11,21 @@
       </button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import { getPermission } from 'utils/deviceCheck'
 export default {
   name: 'WorkspaceWelcome',
   components: {
     Role,
     CreateRoomModal,
-    DeviceDenied,
   },
   data() {
     return {
       visible: false,
-      showDenied: false,
     }
   },
   props: {
@@ -52,14 +47,7 @@ export default {
   watch: {},
   methods: {
     async createRoom() {
-      if (this.license) {
-        this.visible = !this.visible
-
-        const permission = await getPermission()
-        if (!permission && this.visible === true) {
-          this.showDenied = true
-        }
-      }
+      this.visible = !this.visible
     },
   },
 

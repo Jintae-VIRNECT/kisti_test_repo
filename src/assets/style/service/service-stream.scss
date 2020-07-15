@@ -59,18 +59,33 @@
 
 .main-video__recording {
   position: absolute;
-  top: 1.429rem;
-  left: 1.429rem;
+  top: 1rem;
+  left: 1rem;
+  width: 5.8571rem;
+  height: 2.4286rem;
+  border-radius: 4px;
+
+  &.first {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  &.second {
+    top: 1rem;
+    left: 7.4286rem;
+  }
+
+  &.show {
+    background: rgba($color_darkgray_1000, 0.6);
+  }
+
   > p {
-    margin-bottom: 0.571rem;
-    padding-left: 1.857rem;
-    color: $color_red;
-    font-weight: 500;
-    font-size: 0.857rem;
-    line-height: 1.429rem;
-    text-align: left;
-    text-shadow: 1px 1px 1px rgba($color_darkgray_500, 0.3);
-    background: 0 center/1.429rem no-repeat;
+    margin-left: 0.7143rem;
+    padding: 0.3571rem 0rem 0.5rem 0.7143rem;
+    color: $color_white;
+    font-size: 1rem;
+    text-align: center;
+    background: 0 center/1.2857rem no-repeat;
     &.server {
       background-image: url(~assets/image/ic_record_ing.svg);
     }

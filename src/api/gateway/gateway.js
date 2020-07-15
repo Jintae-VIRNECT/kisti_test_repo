@@ -4,11 +4,12 @@
  */
 
 // import axios from 'api/axios'
-import ErrorList from './gateway.error.json'
 import { merge } from 'lodash'
 import Axios from 'axios'
 import Cookies from 'js-cookie'
 import urls from '@/server/urls'
+import API from './api'
+import logger from 'utils/logger'
 
 const TOKEN = Cookies.get('accessToken')
 const axios = Axios.create({
@@ -25,55 +26,7 @@ const axios = Axios.create({
   baseURL: 'https://192.168.6.4:4443',
 })
 
-const URL = {
-  /* Account */
-  LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
-  TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
-  ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
-  // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
-
-  /* CONFIGURATION */
-  //!!!!!!Warning! API Request url is not fixed!!!!!!
-  GET_CONFIG: ['GET', '/media/properties/'],
-  UPDATE_CONFIG: ['POST', '/media/properties/'],
-  PUT_CONFIG: ['PUT', '/media/properties/'],
-
-  /* Workspace - History */
-  GET_HISTORY_LIST: ['GET', '/media/history'],
-  GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
-
-  /* Workspace - Member */
-  GET_MEMBER_LIST: [
-    'GET',
-    'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
-  ],
-  // GET_MEMBER_LIST: ['GET', '/media/member/'],
-
-  /* Workspace - Room */
-  ROOM_LIST: ['GET', '/media/room?paging={paging}'],
-  ROOM_INFO: ['GET', '/media/room/{roomId}'],
-  UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
-  LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
-  PARTICIPANTS_LIST: ['GET', '/media/room/{roomId}/participants'],
-  INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
-  CREATE_ROOM: [
-    'POST',
-    '/media/room?workspaceId={workspaceId}',
-    { type: 'form' },
-  ],
-  DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
-
-  /* CALL */
-  GET_TOKEN: ['POST', '/media/tokens'],
-
-  /* LICENSE */
-  GET_LICENSE: [
-    'GET',
-    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
-  ],
-}
+const URL = API
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
 
@@ -126,7 +79,7 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      console.log(option)
+      logger(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
 
@@ -149,7 +102,7 @@ const sender = async function(constant, params, headers = {}, custom) {
   })
 
   try {
-    console.log(method.toUpperCase(), url, parameter, headers)
+    logger(method.toUpperCase(), url, parameter, headers)
     const request = {
       method: method,
       data: parameter,
@@ -173,7 +126,7 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        console.log(res.data['data'])
+        logger(res.data['data'])
         return res.data['data']
       } else {
         return true
@@ -220,7 +173,7 @@ const errorHandler = function(err) {
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  console.log(axios.defaults.headers)
+  logger('TOKEN::'.axios.defaults.headers)
 }
 
 export default sender

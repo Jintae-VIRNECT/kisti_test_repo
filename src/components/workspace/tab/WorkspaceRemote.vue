@@ -99,13 +99,13 @@ export default {
           return false
         }
 
-        const roomInfo = await getRoomInfo({
-          roomId: room.roomId,
-        })
+        // const roomInfo = await getRoomInfo({
+        //   roomId: room.roomId,
+        // })
 
-        this.setRoomInfo(roomInfo)
+        this.setRoomInfo(room)
         let role = ''
-        if (roomInfo.leaderId === this.account.uuid) {
+        if (room.leaderId === this.account.uuid) {
           role = ROLE.EXPERT_LEADER
         } else {
           role = ROLE.EXPERT

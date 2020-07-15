@@ -119,6 +119,8 @@
     background-size: cover;
     mask: url("~assets/image/icon_bg.svg") no-repeat;
     mask-size: 100%;
+    -webkit-mask: url("~assets/image/icon_bg.svg") no-repeat;
+    -webkit-mask-size: 100%;
     // border-radius: 50%;
   }
 }

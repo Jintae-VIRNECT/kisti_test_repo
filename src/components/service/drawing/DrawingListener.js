@@ -56,7 +56,7 @@ export default {
       if (data.type === DRAWING.LINE_DOWN) {
         this.receivePath = []
       }
-      let receiveParams = getReceiveParams(data.type, params)
+      let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
 
       this.receivePath.push(receiveParams)
 
@@ -87,12 +87,16 @@ export default {
       }
     },
     drawingText(data) {
-      const params = getReceiveParams(DRAWING.TEXT_ADD, {
-        ...data,
-        scale: 1 / this.canvas.backgroundImage.scaleX,
-        imgWidth: this.canvas.getWidth(),
-        imgHeight: this.canvas.getHeight(),
-      })
+      const params = getReceiveParams(
+        DRAWING.TEXT_ADD,
+        {
+          ...data,
+          scale: 1 / this.canvas.backgroundImage.scaleX,
+          imgWidth: this.canvas.getWidth(),
+          imgHeight: this.canvas.getHeight(),
+        },
+        this.origin.scale,
+      )
       const object = new fabric.IText(data.text, {
         left: params.posX,
         top: params.posY,

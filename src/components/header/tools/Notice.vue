@@ -18,7 +18,7 @@
     <div>
       <div class="popover-notice__header">
         <span>알림</span>
-        <switcher text="Push" :value.sync="push">Push</switcher>
+        <switcher text="Push" :value.sync="onPush">Push</switcher>
       </div>
       <div class="popover-notice__body">
         <scroller height="28.571rem">
@@ -69,17 +69,29 @@
         <span>알림은 30일 동안 보관됩니다.</span>
       </div>
     </div>
+    <audio preload="auto" ref="noticeAudio">
+      <source src="~assets/media/end.mp3" />
+    </audio>
   </popover>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import { KEY, EVENT } from 'configs/push.config'
+import { sendPush } from 'api/common/message'
+
 import Switcher from 'Switcher'
 import Popover from 'Popover'
 import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
 import NoticeItem from './NoticeItem'
+
+import alarmMixin from 'mixins/alarm'
+import roomMixin from 'mixins/room'
+
 export default {
   name: 'Notice',
+  mixins: [roomMixin, alarmMixin],
   components: {
     Switcher,
     Popover,
@@ -89,21 +101,101 @@ export default {
   },
   data() {
     return {
-      push: false,
+      onPush: true,
+      key: this.$route.name,
     }
   },
-  watch: {},
+  watch: {
+    onPush(push) {
+      if (push) {
+        this.$localStorage.setItem('push', 'true')
+      } else {
+        this.$localStorage.setItem('push', 'false')
+      }
+    },
+  },
   methods: {
+    ...mapActions(['setRoomInfo', 'roomClear']),
     notice() {
-      // this.$nextTick(() => {
-      //   console.log(this.$refs['noticeScroller'])
-      //   this.$refs['noticeScroller'].scrollReset()
-      // })
+      if (this.onPush) return
+      console.log('notice list refresh logic')
+    },
+    async alarmListener(listen) {
+      if (!this.onPush) return
+      const body = JSON.parse(listen.body)
+
+      if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
+      if (body.userId === this.account.uuid) return
+
+      console.log('received message::', body)
+
+      switch (body.event) {
+        case EVENT.INVITE:
+          this.$refs['noticeAudio'].play()
+          this.alarmInvite(
+            body.contents,
+            () => this.acceptInvite(body),
+            () => this.inviteDenied(body.userId),
+          )
+          break
+        case EVENT.INVITE_ACCEPTED:
+          this.alarmInviteAccepted(body.contents.nickName)
+          break
+        case EVENT.INVITE_DENIED:
+          this.alarmInviteDenied(body.contents.nickName)
+          break
+        case EVENT.LICENSE_EXPIRATION:
+          this.alarmLicenseExpiration(body.contents.leftLicenseTime)
+          break
+        case EVENT.LICENSE_EXPIRED:
+          this.alarmLicense()
+          break
+      }
+    },
+    async inviteDenied(userId) {
+      const params = {
+        service: KEY.SERVICE_TYPE,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        targetUserIds: [userId],
+        event: EVENT.INVITE_DENIED,
+        contents: {
+          nickName: this.account.nickname,
+        },
+      }
+
+      await sendPush(params)
+    },
+    acceptInvite(body) {
+      const params = {
+        service: KEY.SERVICE_TYPE,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        targetUserIds: [body.userId],
+        event: EVENT.INVITE_ACCEPTED,
+        contents: {
+          nickName: this.account.nickname,
+        },
+      }
+
+      sendPush(params)
+      this.joinRoom(body.contents.roomId)
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    const push = this.$localStorage.getItem('push')
+    if (push === 'true') {
+      this.onPush = true
+    } else if (push === 'false') {
+      this.onPush = false
+    }
+    this.$push.addListener(this.key, this.alarmListener)
+  },
+  beforeDestroy() {
+    this.$push.removeListener(this.key)
+  },
 }
 </script>
 

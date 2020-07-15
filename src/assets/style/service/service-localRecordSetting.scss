@@ -14,10 +14,21 @@
   padding: 0;
 }
 
-.rec-setting__header {
-  margin-bottom: 1.4286rem;
+.rec-setting--header {
+  width: 12.8571rem;
+  margin-bottom: 1.2857rem;
   color: $color_white;
   font-size: 1.2857rem;
+
+  &.disable {
+    margin-bottom: 1rem;
+  }
+}
+
+.rec-setting--warning {
+  margin-bottom: 1rem;
+  color: #ff6363;
+  font-size: 1rem;
 }
 
 .rec-setting__row {
@@ -25,6 +36,7 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 1rem;
+
   &.underbar {
     position: relative;
     margin-bottom: 30px;
@@ -42,6 +54,10 @@
   &.checkbox {
     display: inline-flex;
     margin-top: 1rem;
+  }
+  &.disable {
+    opacity: 0.3;
+    pointer-events: none;
   }
 }
 
