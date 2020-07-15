@@ -38,15 +38,15 @@ public class RequestBodyDecodingWrapper extends HttpServletRequestWrapper {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             EncodingRequestResponse encodingRequestResponse = objectMapper.readValue(rawData, EncodingRequestResponse.class);
-            log.info("[ENCODING_REQUEST] - {}", encodingRequestResponse.toString());
+            log.debug("[ENCODING_REQUEST] - {}", encodingRequestResponse.toString());
             String url = request.getRequestURI();
-            log.info("[BILLING][ENCRYPT][REQUEST][{}] - [{}]", url, encodingRequestResponse.getData());
+            log.debug("[BILLING][ENCRYPT][REQUEST][{}] - [{}]", url, encodingRequestResponse.getData());
             String decode = AES256Utils.decrypt(decryptSecretKey, encodingRequestResponse.getData());
-            log.info("[BILLING][DECRYPT][REQUEST][{}] - [{}]", url, decode);
+            log.debug("[BILLING][DECRYPT][REQUEST][{}] - [{}]", url, decode);
             this.decodingBody = decode;
         } catch (Exception e) {
             log.error("[BILLING] - REQUEST CONVERT OBJECT FAIL.");
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
     }

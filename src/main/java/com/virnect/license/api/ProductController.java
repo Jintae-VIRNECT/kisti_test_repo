@@ -1,6 +1,5 @@
 package com.virnect.license.api;
 
-import com.virnect.license.application.BillingService;
 import com.virnect.license.application.ProductService;
 import com.virnect.license.dto.request.CreateNewProductRequest;
 import com.virnect.license.dto.request.CreateNewProductTypeRequest;
@@ -28,12 +27,13 @@ import javax.validation.Valid;
 @RequestMapping("/licenses")
 public class ProductController {
     private final ProductService productService;
+    private static String PARAMETER_LOG_MESSAGE = "[PRODUCT_CONTROLLER][PARAMETER ERROR]:: {}";
 
     @ApiOperation(value = "신규 상품 등록")
     @PostMapping("/products")
     public ApiResponse<ProductInfoListResponse> createNewProductRequest(@RequestBody CreateNewProductRequest createNewProductRequest, BindingResult result) {
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(System.out::println);
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return productService.createNewProductHandler(createNewProductRequest);
@@ -49,7 +49,7 @@ public class ProductController {
     @PutMapping("/products")
     public ApiResponse<ProductInfoResponse> changeProductInfoRequest(@RequestBody @Valid ProductInfoUpdateRequest productInfoUpdateRequest, BindingResult result) {
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(System.out::println);
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return productService.updateProductInfo(productInfoUpdateRequest);
@@ -68,7 +68,7 @@ public class ProductController {
     @PostMapping("/products/types")
     public ApiResponse<ProductTypeInfoListResponse> createNewProductTypeInfo(@RequestBody @Valid CreateNewProductTypeRequest createNewProductTypeRequest, BindingResult result) {
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(System.out::println);
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return productService.createNewProductTypeHandler(createNewProductTypeRequest);
@@ -84,7 +84,7 @@ public class ProductController {
     @PutMapping("/products/types")
     public ApiResponse<ProductTypeInfoListResponse> updateProductTypeInfoRequest(@RequestBody @Valid ProductTypeUpdateRequest productTypeUpdateRequest, BindingResult result) {
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(System.out::println);
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new BillingServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return productService.updateProductTypeInfo(productTypeUpdateRequest);

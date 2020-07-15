@@ -15,6 +15,8 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
         return new UserRestService() {
             @Override
             public ApiResponse<UserInfoRestResponse> getUserInfoByUserId(String userId) {
+                log.error("[USER_REST_SERVICE][FALL_BACK_FACTORY][ACTIVE]");
+                log.error(cause.getMessage(), cause);
                 ApiResponse apiResponse = new ApiResponse(null);
                 apiResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return apiResponse;
@@ -22,6 +24,8 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 
             @Override
             public ApiResponse<UserInfoRestResponse> getUserInfoByUserPrimaryId(long userId) {
+                log.error("[USER_REST_SERVICE][FALL_BACK_FACTORY][ACTIVE]");
+                log.error(cause.getMessage(), cause);
                 ApiResponse apiResponse = new ApiResponse(null);
                 apiResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return apiResponse;

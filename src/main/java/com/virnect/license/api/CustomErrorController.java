@@ -25,7 +25,7 @@ public class CustomErrorController implements ErrorController {
         Map<String, String> headers = Collections.list(request.getHeaderNames())
                 .stream()
                 .collect(Collectors.toMap(h -> h, request::getHeader));
-        headers.keySet().forEach(key -> log.info("[CUSTOM_ERROR_CONTROLLER][HEADER] - [{}] -> [{}]", key, headers.get(key)));
+        headers.keySet().forEach(key -> log.error("[CUSTOM_ERROR_CONTROLLER][HEADER] - [{}] -> [{}]", key, headers.get(key)));
         return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
     }
 

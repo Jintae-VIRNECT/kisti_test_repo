@@ -13,8 +13,8 @@ public class BillingRequestBodyDecryptFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         RequestBodyDecodingWrapper requestWrapper = new RequestBodyDecodingWrapper((HttpServletRequest) request, SECRET_KEY);
-        log.info("[BILLING][REQUEST][DECODING_FILTER] - BEGIN.");
+        log.debug("[BILLING][REQUEST][DECODING_FILTER] - BEGIN.");
         chain.doFilter(requestWrapper, response);
-        log.info("[BILLING][REQUEST][DECODING_FILTER] - END.");
+        log.debug("[BILLING][REQUEST][DECODING_FILTER] - END.");
     }
 }
