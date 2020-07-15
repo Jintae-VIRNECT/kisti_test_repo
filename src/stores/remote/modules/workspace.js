@@ -19,16 +19,8 @@ const mutations = {
     for (let space of infoList) {
       state.workspaceList.push(new Workspace(space))
     }
-    console.log(state.workspaceList)
     if (state.workspaceList.length > 0) {
-      let mySelection = state.workspaceList.findIndex(
-        workspace => workspace.uuid === '40f9bbee9d85dca7a34a0dd205aae718',
-      )
-      if (mySelection > -1) {
-        state.current = state.workspaceList[mySelection]
-      } else {
-        state.current = state.workspaceList[0]
-      }
+      state.current = state.workspaceList[0]
       console.log('Current Workspace > ', state.current)
     }
   },
