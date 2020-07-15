@@ -90,22 +90,21 @@ export default {
 
       if (this.fileList.length > 0) {
         for (const file of this.fileList) {
-          const response = await sendFile(
-            file.filedata,
-            this.roomInfo.roomId,
-            this.workspace.uuid,
-          )
+          const response = await sendFile({
+            file: file.filedata,
+            roomId: this.roomInfo.roomId,
+            workspaceId: this.workspace.uuid,
+          })
+
           console.log(response)
           const downUrl = response.downloadUrl
 
-          const params = {
+          this.$call.sendFile({
             fileName: file.filedata.name,
             mimeType: file.filedata.type,
             size: file.filedata.size,
             fileDownloadUrl: downUrl,
-          }
-
-          this.$call.sendFile(params)
+          })
         }
 
         this.clearUploadFile()
