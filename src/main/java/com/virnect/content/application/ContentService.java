@@ -309,8 +309,12 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        // [2020-7-15 오후 6:07] 강현석
+        // 메이크에서 이미 업로드 되어 있는 컨텐츠에 업로드할 때 업로드한 사용자가 다르면 다음과 같은 리턴과 함께 업로드가 되지 않습니다.
+        // "code":4015, "message":"An error occurred in the request. Because it is NOT ownership.
+        // 혹시 업로드할 때 사용자의 확인을 해제하여 주실 수 있으신지요? 해당 부분에 관련하여 수환님과는 논의가 되었습니다.
+        // if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
+        //     throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
@@ -321,7 +325,6 @@ public class ContentService {
         Target target = this.targetRepository.findById(oldTargetId).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
         // 변경
         target.setType(TargetType.valueOf(targetRequest.getTargetType()));
-//        target.setData(targetRequest.getTargetData());
         this.targetRepository.save(target);
 
         ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
@@ -349,8 +352,13 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        // [오후 6:07] 강현석
+        // 허지용님. 메이크에서 이미 업로드 되어 있는 컨텐츠에 업로드할 때 업로드한 사용자가 다르면 다음과 같은 리턴과 함께 업로드가 되지 않습니다.
+        // "code":4015, "message":"An error occurred in the request. Because it is NOT ownership.
+        // 혹시 업로드할 때 사용자의 확인을 해제하여 주실 수 있으신지요? 해당 부분에 관련하여 수환님과는 논의가 되었습니다.
+        // 이런 이유로 컨텐츠 소유자 확인하지 않음.
+        // if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
+        //     throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
         // 2020/06/08 공유 상태 조건은 제거 (공유 상태 제한을 건 이유 :
@@ -385,13 +393,15 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
 
-        // 5 수정 컨텐츠 파일 크기 반영
-        targetContent.setSize(updateRequest.getContent().getSize());
+        // 5. 컨텐츠 소유자 변경
+        targetContent.setUserUUID(updateRequest.getUserUUID());
 
-        // 6. 컨텐츠명 변경
+        // 6. 수정 컨텐츠 파일 크기 반영
+        targetContent.setSize(updateRequest.getContent().getSize());
+        // 7. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
-        // 7. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
+        // 8. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
         JsonObject metaObject = makeMetadata(updateRequest.getName(), updateRequest.getUserUUID(), updateRequest.getProperties());
 
         String metadata = metaObject.toString();
@@ -403,7 +413,7 @@ public class ContentService {
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
 
-        // 7-1. 컨텐츠 씬그룹 수정
+        // 8-1. 컨텐츠 씬그룹 수정
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, metadata);
 
