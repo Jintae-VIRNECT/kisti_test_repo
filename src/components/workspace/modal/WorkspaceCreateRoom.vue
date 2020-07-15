@@ -141,6 +141,7 @@ export default {
             targetUserIds: selectedUser,
             event: EVENT.INVITE,
             contents: {
+              roomSessionId: createdRoom.sessionId,
               roomId: createdRoom.roomId,
               nickName: this.account.nickname,
               profile: this.account.profile,

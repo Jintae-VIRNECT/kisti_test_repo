@@ -127,6 +127,8 @@ export default {
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
 
+      console.log('received message::', body)
+
       switch (body.event) {
         case EVENT.INVITE:
           this.$refs['noticeAudio'].play()
