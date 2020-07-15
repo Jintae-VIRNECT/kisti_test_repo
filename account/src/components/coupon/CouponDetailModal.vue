@@ -85,7 +85,7 @@ export default {
 <style lang="scss">
 #__nuxt .coupon-detail-modal {
   .el-col:nth-child(2) {
-    max-height: 500px;
+    max-height: 520px;
     padding-left: 20px;
     overflow-y: auto;
   }
