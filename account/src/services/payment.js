@@ -1,10 +1,18 @@
 import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
 import AutoPaymentInfo from '@/models/payment/AutoPaymentInfo'
+import Ticket from '@/models/payment/Ticket'
 import { api } from '@/plugins/axios'
 import profileServices from '@/services/profile'
 
 export default {
+  /**
+   * 전체 상품 리스트 조회
+   */
+  async getAllTicketList() {
+    const { products } = await api('GET_PAYMENT_ITEMS')
+    return products.map(product => new Ticket(product))
+  },
   /**
    * 결제정보 목록 검색
    * @param {Object} searchParams

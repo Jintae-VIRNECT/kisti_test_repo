@@ -38,4 +38,6 @@ module.exports = {
   GET_PAY_COUPONS: ['GET', '/billing/coupon/holdlist'],
   // 페이레터 쿠폰 등록
   ADD_PAY_COUPON: ['POST', '/billing/coupon/register'],
+  // 상품 조회
+  GET_PAYMENT_ITEMS: ['GET', '/billing/product/list'],
 }

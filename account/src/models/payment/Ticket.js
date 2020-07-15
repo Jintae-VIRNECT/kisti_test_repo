@@ -1,10 +1,10 @@
 import Model from '@/models/Model'
+import products from '@/models/products'
 
 export default class Ticket extends Model {
   constructor(json) {
     super()
     this.id = json.ItemID
-    this.product = null
     this.name = json.ItemName || json.ProductName
     this.desc = json.ItemDesc
     this.count = json.ItemCnt || json.ProductCnt
@@ -14,5 +14,8 @@ export default class Ticket extends Model {
     this.viewCount = json.productHit
     this.storage = json.productStorage
     this.productType = json.productType
+
+    const product = Object.values(products).find(({ id }) => id === json.ItemID)
+    this.product = product ? product.value : null
   }
 }

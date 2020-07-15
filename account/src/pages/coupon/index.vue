@@ -95,12 +95,14 @@
     <coupon-detail-modal
       :visible.sync="showCouponDetailModal"
       :coupon="activeCoupon"
+      :allTickets="allTickets"
     />
   </div>
 </template>
 
 <script>
 import couponService from '@/services/coupon'
+import paymentService from '@/services/payment'
 import CouponList from '@/components/coupon/CouponList'
 import CouponDetailModal from '@/components/coupon/CouponDetailModal'
 import searchMixin from '@/mixins/search'
@@ -113,6 +115,7 @@ export default {
   },
   data() {
     return {
+      allTickets: [],
       coupons: [],
       coponsPage: 1,
       couponsTotal: 0,
@@ -129,6 +132,12 @@ export default {
     },
     goGetCouponPage() {
       window.open(`${this.$url.www}/coupon`)
+    },
+    /**
+     * 상품 리스트
+     */
+    async getAllTicketList() {
+      this.allTickets = await paymentService.getAllTicketList()
     },
     /**
      * 쿠폰 리스트
@@ -169,7 +178,7 @@ export default {
       }
     },
     /**
-     * 쿠폰 사용
+     * 쿠폰 상세조회
      */
     couponSelect(row) {
       this.showCouponDetailModal = true
@@ -178,6 +187,7 @@ export default {
   },
   created() {
     this.searchCoupons()
+    this.getAllTicketList()
   },
 }
 </script>

@@ -12,12 +12,7 @@ export default class Coupon extends Model {
     this.usedDate = json.UseYMD
     this.applyItemId = json.ApplyItemID
     this.applyItemName = json.ApplyItemName
-    this.status =
-      {
-        사용완료: 'USE',
-        사용대기: 'UNUSE',
-        만료: 'EXPIRED',
-      }[json.StateM] || json.StateM
+    this.status = json.StateM
   }
 }
 

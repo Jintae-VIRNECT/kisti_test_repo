@@ -6,6 +6,11 @@
     @sort-change="sortChange"
   >
     <column-default :label="$t('coupon.column.couponName')" prop="name" />
+    <column-default
+      :label="$t('coupon.column.couponNo')"
+      prop="no"
+      :width="180"
+    />
     <column-date
       :label="$t('coupon.column.registerDate')"
       prop="registerDate"
@@ -19,7 +24,7 @@
     <column-date
       :label="$t('coupon.column.usedDate')"
       prop="usedDate"
-      :width="160"
+      :width="88"
     />
     <column-status
       :label="$t('coupon.column.status')"

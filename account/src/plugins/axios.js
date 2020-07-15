@@ -30,6 +30,7 @@ export async function api(name, option = {}) {
   }
 
   // GET, DELETE
+  params = params || {}
   if (method === 'get') params = { params }
   if (method === 'delete') params = { data: params }
 
