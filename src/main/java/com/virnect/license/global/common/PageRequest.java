@@ -23,9 +23,8 @@ public final class PageRequest {
     }
 
     public void setSize(int size) {
-        int DEFAULT_SIZE = 20;
         int MAX_SIZE = 50;
-        this.size = size > MAX_SIZE ? DEFAULT_SIZE : size;
+        this.size = Math.min(size, MAX_SIZE);
     }
 
     public String getSort() {
