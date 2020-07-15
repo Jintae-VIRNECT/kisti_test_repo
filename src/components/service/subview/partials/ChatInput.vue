@@ -51,9 +51,10 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { sendFile } from 'api/workspace/call'
-
+import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',
+  mixins: [toastMixin],
   components: {},
   data() {
     return {
@@ -118,7 +119,8 @@ export default {
     },
     clickUpload() {
       if (this.fileList.length > 0) {
-        console.log('현재 파일 업로드는 1개씩만 지원합니다.')
+        //문구 지정 필요
+        this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
         return
       }
       this.$refs['inputFile'].click()
@@ -132,7 +134,8 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size / 1024 / 1024 > 20) {
-          alert('파일 사이즈가 너무 커요.')
+          //문구 지정 필요
+          this.toastDefault('첨부 가능한 용량을 초과하였습니다.')
           this.clearUploadFile()
           return false
         }
@@ -170,7 +173,8 @@ export default {
           }
           oReader.readAsDataURL(file)
         } else {
-          alert('파일형식이 맞지않음')
+          //문구 지정 필요
+          this.toastDefault('지원하지 않는 파일 형식입니다.')
           this.clearUploadFile()
           return false
         }
