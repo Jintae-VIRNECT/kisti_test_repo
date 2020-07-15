@@ -504,12 +504,32 @@ public class TaskController {
      * @param targetData
      * @return
      */
-    @ApiOperation(value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회")
+    @ApiOperation( value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회"
+                 , notes = "이전 타겟 데이터 방식일 경우 pathVariable로 파라미터를 받음. 추후 삭제해도 무방")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "path", required = true, example = "1")
     })
     @GetMapping("/created/target/{targetData}")
-    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetValue(@PathVariable("targetData") String targetData) {
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetData(@PathVariable("targetData") String targetData) {
+        if (targetData.isEmpty()) {
+            throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
+        }
+        ApiResponse<ProcessInfoResponse> responseMessage = this.taskService.getProcessInfoByTarget(targetData);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
+     * 타겟 데이터로 활성화 된 작업 조회
+     * @param targetData
+     * @return
+     */
+    @ApiOperation( value = "타겟 데이터 값으로 활성화된(State.CREATED) 작업 조회"
+                 , notes = "타겟 데이터가 URLEncodeing된 형태로 바뀜에 따라 pathVariable -> requestParam으로 변경")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetData", value = "작업에 할당된 targetData 값", paramType = "query", required = true, example = "1")
+    })
+    @GetMapping("/created/target")
+    public ResponseEntity<ApiResponse<ProcessInfoResponse>> getProcessInfoByTargetDataByRequestParam(@RequestParam("targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
         }
@@ -758,7 +778,8 @@ public class TaskController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "타겟 데이터의 하위작업 목록 조회")
+    @ApiOperation( value = "타겟 데이터의 하위작업 목록 조회"
+                 , notes = "기존 방식. 사용하는 곳이 없다면 추후 삭제해도 무방.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터 식별자", dataType = "string", required = true, paramType = "path", defaultValue = ""),
@@ -775,6 +796,29 @@ public class TaskController {
             log.info("[targetData] => [{}]", targetData);
             throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+        ApiResponse<SubProcessesOfTargetResponse> subProcessesOfTargetResponseApiResponse = this.taskService.getSubProcessesOfTarget(workspaceUUID, targetData, pageable.of());
+        return ResponseEntity.ok(subProcessesOfTargetResponseApiResponse);
+    }
+
+    @ApiOperation( value = "타겟 데이터의 하위작업 목록 조회"
+                 , notes = "타겟 데이터가 URLEncodeing된 형태로 바뀜에 따라 pathVariable -> requestParam으로 변경")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "targetData", value = "타겟 데이터 식별자", dataType = "string", required = true, paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc")
+    })
+    @GetMapping("/target")
+    public ResponseEntity<ApiResponse<SubProcessesOfTargetResponse>> getSubProcessesOfTargetData(
+            @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
+            , @RequestParam("targetData") String targetData
+            , @ApiIgnore PageRequest pageable) {
+        if (targetData.isEmpty()) {
+            log.info("[targetData] => [{}]", targetData);
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        log.info(">>>>>>>>>> {}", targetData);
         ApiResponse<SubProcessesOfTargetResponse> subProcessesOfTargetResponseApiResponse = this.taskService.getSubProcessesOfTarget(workspaceUUID, targetData, pageable.of());
         return ResponseEntity.ok(subProcessesOfTargetResponseApiResponse);
     }
