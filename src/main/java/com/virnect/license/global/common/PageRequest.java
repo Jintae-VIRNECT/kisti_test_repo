@@ -17,13 +17,13 @@ public final class PageRequest {
     private int page = 1;
     private int size = 20;
     private String sort;
+    private static final int MAX_SIZE = 50;
 
     public void setPage(int page) {
         this.page = page <= 0 ? 1 : page;
     }
 
     public void setSize(int size) {
-        int MAX_SIZE = 50;
         this.size = Math.min(size, MAX_SIZE);
     }
 
