@@ -25,12 +25,11 @@ export const getToken = async function({
 
 /**
  * 파일서버에 파일 전송
- * @param {*} file file Object
- * @param {*} roomId roomId
- * @param {*} workspaceId workspaceId
+ * @param {File} file 전송할 파일 객체
+ * @param {String} roomId 파일이 전송된 협업 방 id
+ * @param {String} workspaceId 파일이 전송된 워크스테이션 id
  */
 export const sendFile = async (file, roomId, workspaceId) => {
   const returnVal = await http('SEND_FILE', { file, roomId, workspaceId })
-
   return returnVal
 }
