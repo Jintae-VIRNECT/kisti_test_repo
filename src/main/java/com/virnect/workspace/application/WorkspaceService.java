@@ -1130,6 +1130,29 @@ public class WorkspaceService {
         if (!workspace.getUserId().equals(workspaceUpdateRequest.getUserId())) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
+
+        if (!oldWorkspaceName.equals(workspaceUpdateRequest.getName())) {
+            List<String> receiverEmailList = new ArrayList<>();
+            Context context = new Context();
+            context.setVariable("beforeWorkspaceName", oldWorkspaceName);
+            context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
+            context.setVariable("supportUrl", supportUrl);
+
+            List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid());
+            workspaceUserList.stream().forEach(workspaceUser -> {
+                UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
+                receiverEmailList.add(userInfoRestResponse.getEmail());
+                if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
+                    context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+
+                }
+            });
+
+            String subject = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getSubject(), null, locale);
+            String template = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getTemplate(), null, locale);
+            String html = springTemplateEngine.process(template, context);
+            this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+        }
         workspace.setName(workspaceUpdateRequest.getName());
         workspace.setDescription(workspaceUpdateRequest.getDescription());
 
@@ -1152,28 +1175,6 @@ public class WorkspaceService {
 
         WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(workspace, WorkspaceInfoDTO.class);
         workspaceInfoDTO.setMasterUserId(workspace.getUserId());
-
-        //메일 발송
-        List<String> receiverEmailList = new ArrayList<>();
-        Context context = new Context();
-        context.setVariable("beforeWorkspaceName", oldWorkspaceName);
-        context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
-        context.setVariable("supportUrl", supportUrl);
-
-        List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid());
-        workspaceUserList.stream().forEach(workspaceUser -> {
-            UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspaceUser.getUserId()).getData();
-            receiverEmailList.add(userInfoRestResponse.getEmail());
-            if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
-                context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
-
-            }
-        });
-
-        String subject = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getSubject(), null, locale);
-        String template = this.messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-        this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
 
         return new ApiResponse<>(workspaceInfoDTO);
     }
