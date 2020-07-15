@@ -19,9 +19,9 @@
       "list": "전체 콘텐츠 목록"
     },
     "tasks": {
-      "list": "작업 목록",
+      "list": "워크스페이스 작업 목록",
       "results": "작업 보고 관리",
-      "troubles": "트러블 메모(TM)"
+      "troubles": "트러블 메모 (TM)"
     }
   }
 }
