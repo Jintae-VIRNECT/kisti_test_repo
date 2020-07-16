@@ -1,7 +1,10 @@
 import Store from 'stores/remote/store'
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import _, { addSubscriber, removeSubscriber } from './Remote'
+
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
+import { TYPE } from 'configs/chat.config'
+
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
 
 export const addSessionEventListener = session => {
@@ -141,11 +144,11 @@ export const addSessionEventListener = session => {
     const chatBuilder = new ChatMsgBuilder()
       .setName(participants[idx].nickname)
       .setText(data.replace(/\</g, '&lt;'))
-      .setType('opponent')
+      .setType(TYPE.OPPONENT)
 
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chatBuilder.setType('me')
+      chatBuilder.setType(TYPE.ME)
     }
 
     Store.commit('addChat', chatBuilder.build())
@@ -162,7 +165,7 @@ export const addSessionEventListener = session => {
     let data = JSON.parse(event.data)
 
     const chatBuilder = new ChatMsgBuilder()
-      .setType('opponent')
+      .setType(TYPE.OPPONENT)
       .setName(participants[idx].nickname)
       .setFile([
         {
@@ -174,7 +177,7 @@ export const addSessionEventListener = session => {
 
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chatBuilder.setType('me')
+      chatBuilder.setType(TYPE.ME)
     }
 
     Store.commit('addChat', chatBuilder.build())

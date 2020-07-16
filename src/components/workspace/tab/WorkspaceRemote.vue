@@ -29,7 +29,7 @@
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
 import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
-import { checkLicense } from 'utils/license'
+import { getLicense } from 'api/workspace/license'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 import { ROLE } from 'configs/remote.config'
@@ -78,7 +78,12 @@ export default {
     async joinRoom(room) {
       console.log('>>> JOIN ROOM')
       try {
-        const noLicenseCallback = () => {
+        const license = await getLicense(
+          this.workspace.uuid,
+          await this.account.uuid,
+        )
+
+        if (!license) {
           this.confirmDefault(
             '라이선스가 만료되어 서비스 사용이 불가 합니다.​',
             {
@@ -88,14 +93,6 @@ export default {
               },
             },
           )
-        }
-        const license = await checkLicense(
-          this.workspace.uuid,
-          await this.account.uuid,
-          noLicenseCallback,
-        )
-
-        if (!license) {
           return false
         }
 

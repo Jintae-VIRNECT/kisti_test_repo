@@ -90,7 +90,7 @@ export default {
   background: #ffffff;
   border: 1px solid #ccd1d7;
   border-radius: 2px;
-  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 1px 1px 0px rgba(#000000, 0.05);
   &:hover {
     background-color: #c3c6ca;
     border: none;

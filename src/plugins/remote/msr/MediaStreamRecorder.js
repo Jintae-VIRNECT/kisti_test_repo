@@ -2286,9 +2286,6 @@ function GifRecorder(mediaStream) {
 
       gifEncoder.addFrame(context)
 
-      // console.log('Recording...' + Math.round((Date.now() - startTime) / 1000) + 's');
-      // console.log("fps: ", 1000 / (time - lastFrameTime));
-
       lastFrameTime = time
     }
 

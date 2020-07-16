@@ -60,7 +60,7 @@ export default {
       this.$eventBus.$emit('lcRecSet:show')
     },
     serverRecording(isStart) {
-      console.log('server record status :: ', isStart)
+      this.logger('Server Record ::', isStart)
     },
     localRecording(isStart) {
       if (isStart) {
