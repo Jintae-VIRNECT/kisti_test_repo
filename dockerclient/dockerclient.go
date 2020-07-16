@@ -53,9 +53,6 @@ func garbageCollector() {
 			}
 			cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
 			for _, c := range cons {
-				if c.State == "running" {
-					continue
-				}
 				endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 				if now > endTime+60 {
 					logger.Infof("remove container which state is not running. id:%s state:%s recordId:%s createTime:%d endTime:%d",
