@@ -1,6 +1,5 @@
 import locale from 'element-ui/lib/locale/lang/en'
 
-console.log('영어')
 const files = require.context('.', false, /\.json$/)
 const modules = {}
 
