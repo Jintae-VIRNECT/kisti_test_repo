@@ -8,7 +8,7 @@ import SceneGroup from '@/models/content/SceneGroup'
 import Properties from '@/models/content/Properties'
 
 function activeWorkspaceGetter() {
-  return store.getters['workspace/activeWorkspace']
+  return store.getters['auth/activeWorkspace']
 }
 function myProfileGetter() {
   return store.getters['auth/myProfile']

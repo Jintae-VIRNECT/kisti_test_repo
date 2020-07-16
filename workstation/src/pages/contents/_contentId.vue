@@ -196,7 +196,7 @@ export default {
   beforeMount() {
     this.form.shared = this.content.shared
     this.$store.commit(
-      'workspace/SET_ACTIVE_WORKSPACE',
+      'auth/SET_ACTIVE_WORKSPACE',
       this.content.workspaceUUID,
     )
   },

@@ -47,7 +47,11 @@
           <member-profile-card :data="member" />
         </el-col>
       </el-row>
-      <searchbar-page :value.sync="membersPage" :total="membersTotal" />
+      <searchbar-page
+        ref="page"
+        :value.sync="membersPage"
+        :total="membersTotal"
+      />
     </div>
     <member-add-modal :visible.sync="showAddModal" />
   </div>
@@ -73,7 +77,7 @@ export default {
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
-      activeWorkspace: 'workspace/activeWorkspace',
+      activeWorkspace: 'auth/activeWorkspace',
     }),
     canAddMember() {
       return this.activeWorkspace.role !== 'MEMBER'

@@ -1,12 +1,14 @@
 import { api } from '@/plugins/axios'
 import Profile from '@/models/Profile'
 import Workspace from '@/models/workspace/Workspace'
+import Cookies from 'js-cookie'
 
 export default {
   state: () => ({
     isLogin: false,
     myProfile: {},
     myWorkspaces: [],
+    activeWorkspace: {},
   }),
   getters: {
     isLogin(state) {
@@ -18,6 +20,9 @@ export default {
     myWorkspaces(state) {
       return state.myWorkspaces
     },
+    activeWorkspace(state) {
+      return state.activeWorkspace
+    },
   },
   mutations: {
     SET_LOGIN(state, bool) {
@@ -28,6 +33,12 @@ export default {
     },
     SET_MY_WORKSPACES(state, arr) {
       state.myWorkspaces = arr
+    },
+    SET_ACTIVE_WORKSPACE(state, workspaceId) {
+      state.activeWorkspace = state.myWorkspaces.find(
+        workspace => workspace.uuid === workspaceId,
+      )
+      Cookies.set('activeWorkspace', workspaceId, { expires: 7 })
     },
   },
   actions: {

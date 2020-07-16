@@ -64,7 +64,7 @@ export default {
     },
     rowClick(row) {
       this.$router.push(
-        `/tasks/${row.taskId}/${row.subTaskId}/issues/${row.issueId}`,
+        `/tasks/${row.taskId}/${row.subTaskId}/issues/${row.stepId}`,
       )
     },
   },

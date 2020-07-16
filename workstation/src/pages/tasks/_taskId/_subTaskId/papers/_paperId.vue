@@ -83,7 +83,9 @@ export default {
     padding: 0;
     border-bottom: none;
   }
-
+  .el-col dl {
+    padding: 0;
+  }
   dt {
     margin-bottom: 10px;
   }

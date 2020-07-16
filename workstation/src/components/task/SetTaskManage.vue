@@ -325,7 +325,7 @@ export default {
       if (!(await this.validate())) return false
 
       const form = new RegisterNewTask({
-        workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
+        workspaceUUID: this.$store.getters['auth/activeWorkspace'].uuid,
         content: this.contentInfo,
         task: this.mainForm,
         subTasks: this.subForm,
@@ -337,7 +337,7 @@ export default {
       if (!(await this.validate())) return false
 
       const form = new DuplicateTask({
-        workspaceUUID: this.$store.getters['workspace/activeWorkspace'].uuid,
+        workspaceUUID: this.$store.getters['auth/activeWorkspace'].uuid,
         originTask: this.taskInfo,
         task: this.mainForm,
         subTasks: this.subForm,

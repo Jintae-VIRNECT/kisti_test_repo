@@ -80,6 +80,17 @@
         </label>
         <el-row>
           <el-col :span="12">
+            <el-form-item class="horizon" :label="plans.remote.label">
+              <el-select v-model="form.planRemote">
+                <el-option
+                  :value="false"
+                  :label="$t('members.setting.givePlansEmpty')"
+                />
+                <el-option :value="true" :label="plans.remote.label" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item class="horizon" :label="plans.make.label">
               <el-select v-model="form.planMake">
                 <el-option

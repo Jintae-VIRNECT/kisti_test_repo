@@ -147,8 +147,8 @@
             >
               <template slot-scope="scope">
                 <el-button
-                  v-if="scope.row.issue"
-                  @click="moveToIssue(scope.row.issue.id)"
+                  v-if="scope.row.hasIssue"
+                  @click="moveToIssue(scope.row.id)"
                 >
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
@@ -257,10 +257,8 @@ export default {
     },
     showAll() {},
     showMine() {},
-    moveToIssue(issueId) {
-      this.$router.replace(
-        `${this.$router.currentRoute.path}/issues/${issueId}`,
-      )
+    moveToIssue(stepId) {
+      this.$router.replace(`${this.$router.currentRoute.path}/issues/${stepId}`)
     },
     moveToPaper(paperId) {
       this.$router.replace(

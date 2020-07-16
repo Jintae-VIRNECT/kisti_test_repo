@@ -14,18 +14,13 @@
       <el-row class="btn-wrapper searchbar">
         <!-- <el-col class="left"> </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="activetySearch" />
+          <searchbar-keyword ref="keyword" :value.sync="activitySearch" />
         </el-col> -->
       </el-row>
 
       <el-row>
         <el-card class="el-card--table">
-          <el-table
-            ref="table"
-            :data="activityList"
-            v-loading="loading"
-            @row-click="rowClick"
-          >
+          <el-table ref="table" :data="activityList" v-loading="loading">
             <column-user
               :label="$t('members.activity.column.member')"
               prop="workerName"
@@ -84,7 +79,7 @@
       <searchbar-page
         ref="page"
         :value.sync="activityPage"
-        :total="activetyTotal"
+        :total="activityTotal"
       />
     </div>
   </div>
@@ -98,23 +93,35 @@ import workspaceService from '@/services/workspace'
 export default {
   mixins: [columnMixin, searchMixin],
   async asyncData() {
+    const { list, total } = await workspaceService.searchMembersActivity()
     return {
-      activityList: await workspaceService.searchMembersActivity(),
+      activityList: list,
+      activityTotal: total,
     }
   },
   data() {
     return {
       loading: false,
       activityPage: 1,
-      activetyTotal: 0,
-      activetySearch: '',
+      activitySearch: '',
     }
   },
   methods: {
-    rowClick() {},
-    async searchMembersActivity() {
-      this.activityList = await workspaceService.searchMembersActivity()
+    changedSearchParams(searchParams) {
+      this.searchMembersActivity(searchParams)
     },
+    async searchMembersActivity(searchParams) {
+      const { list, total } = await workspaceService.searchMembersActivity(
+        searchParams,
+      )
+      this.activityList = list
+      this.activityTotal = total
+    },
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, () =>
+      this.searchMembersActivity(this.searchParams),
+    )
   },
 }
 </script>

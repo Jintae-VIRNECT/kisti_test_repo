@@ -26,11 +26,8 @@ export default async function({ req, store, redirect, error, $config }) {
     // 토큰으로 내 정보 불러오기
     try {
       await store.dispatch('auth/getAuthInfo', { headers: req.headers })
-      const myProfile = store.getters['auth/myProfile']
       const myWorkspaces = store.getters['auth/myWorkspaces']
       if (myWorkspaces.length) {
-        await store.dispatch('workspace/getMyWorkspaces', myProfile.uuid)
-        const myWorkspaces = store.getters['workspace/myWorkspaces']
         // 마지막 워크스페이스 확인
         const lastWorkspace = req.headers.cookie.match(
           /activeWorkspace=([0-9a-f]+)/,
@@ -40,7 +37,7 @@ export default async function({ req, store, redirect, error, $config }) {
           myWorkspaces.find(workspace => workspace.uuid === lastWorkspace[1])
             ? lastWorkspace[1]
             : myWorkspaces[0].uuid
-        store.commit('workspace/SET_ACTIVE_WORKSPACE', activeWorkspace)
+        store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspace)
       } else {
         // 워크스페이스가 없는 경우
         return redirect('/start')
