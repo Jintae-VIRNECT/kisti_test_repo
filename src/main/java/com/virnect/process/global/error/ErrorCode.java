@@ -33,6 +33,7 @@ public enum ErrorCode {
     ERR_NOT_FOUND_ISSUE(5091, "Not found issue from this issue_id."),
 
     ERR_PROCESS_WORK_RESULT_SYNC(5100, "Process work result synchronization failed."),
+    ERR_WORKER_NOT_EQUAL_SYNC(5101, "Process work result synchronization failed. Doesn't Match syncUser."),
 
     ERR_UNSUPPORTED_FILE_EXTENSION(5801, "Content upload file. Unsupported extensions."),
     ERR_FILE_UPLOAD(5802, "File upload fail."),

@@ -22,10 +22,13 @@ public class SubProcessListResponse {
     @ApiModelProperty(value = "공정 생명주기 상태", notes = "공정 생명주기에서의 생성, 종료, 삭제 등의 상태", position = 2, example = "CREATED")
     private final State state;
 
-    @ApiModelProperty(value = "세부공정 목록", notes = "조회한 세부공정의 배열", position = 3)
+    @ApiModelProperty(value = "컨텐츠 식별자", notes="컨텐츠 식별자", position = 3)
+    private final String contentUUID;
+
+    @ApiModelProperty(value = "세부공정 목록", notes = "조회한 세부공정의 배열", position = 4)
     private final List<EditSubProcessResponse> subTasks;
 
-    @ApiModelProperty(value = "페이지 정보", notes = "pangenation 정보", position = 4)
+    @ApiModelProperty(value = "페이지 정보", notes = "pangenation 정보", position = 5)
     private final PageMetadataResponse pageMeta;
 
     // TODO 01 : 이슈 여부에 대한 파라미터 필요.
