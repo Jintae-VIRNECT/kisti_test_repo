@@ -1,5 +1,4 @@
 import Dexie from 'dexie'
-import logger from 'utils/logger'
 /**
  * @author ykmo-VIRNECT
  */
@@ -133,7 +132,7 @@ async function checkQuota() {
       return false
     }
   } else {
-    console.error('StorageManager not found')
+    console.error(`${logPrefix} StorageManager not found`)
   }
 }
 
