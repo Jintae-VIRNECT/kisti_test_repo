@@ -57,11 +57,11 @@ export default {
   computed: {
     type() {
       if (false === this.chat.type || this.chat.type === TYPE.OPPONENT) {
-        return 'opponent'
+        return TYPE.OPPONENT.toLowerCase()
       } else if (this.chat.type === TYPE.ME) {
-        return 'me'
+        return TYPE.ME.toLowerCase()
       } else {
-        return 'system'
+        return TYPE.SYSTEM.toLowerCase()
       }
     },
     hideTime() {
@@ -127,15 +127,21 @@ export default {
         mp3: this.extension === 'mp3',
         jpg: this.extension === 'jpg',
         video: this.extension === 'video',
-        ar: this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.AR,
+        ar:
+          this.type === TYPE.SYSTEM.toLowerCase() &&
+          this.chat.subType === SUB_TYPE.AR,
         alarm:
-          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.ALARM,
+          this.type === TYPE.SYSTEM.toLowerCase() &&
+          this.chat.subType === SUB_TYPE.ALARM,
         people:
-          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.PEOPLE,
+          this.type === TYPE.SYSTEM.toLowerCase() &&
+          this.chat.subType === SUB_TYPE.PEOPLE,
         cancel:
-          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.CANCEL,
+          this.type === TYPE.SYSTEM.toLowerCase() &&
+          this.chat.subType === SUB_TYPE.CANCEL,
         board:
-          this.type === TYPE.SYSTEM && this.chat.subType === SUB_TYPE.BOARD,
+          this.type === TYPE.SYSTEM.toLowerCase() &&
+          this.chat.subType === SUB_TYPE.BOARD,
       }
     },
     chatText() {
