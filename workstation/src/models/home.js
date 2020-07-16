@@ -1,16 +1,18 @@
-import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
-
-export function install(env) {
-  const urls = new Url(env)
+export function install(app) {
   return [
     {
-      label: 'VIRNECT Make 설치',
-      path: `${urls.download}/make`,
+      label: app.$t('home.install.remote'),
+      path: `${app.$url.download}/remote`,
+      image: require('assets/images/logo/logo-remote.svg'),
+    },
+    {
+      label: app.$t('home.install.make'),
+      path: `${app.$url.download}/make`,
       image: require('assets/images/logo/logo-make.svg'),
     },
     {
-      label: 'VIRNECT View 설치',
-      path: `${urls.download}/view`,
+      label: app.$t('home.install.view'),
+      path: `${app.$url.download}/view`,
       image: require('assets/images/logo/logo-view.svg'),
     },
   ]

@@ -54,7 +54,10 @@
     "usingPlans": "사용 중인 플랜"
   },
   "install": {
-    "title": "다운로드 센터"
+    "title": "다운로드 센터",
+    "remote": "VIRNECT Remote 설치",
+    "make": "VIRNECT Make 설치",
+    "view": "VIRNECT View 설치"
   },
   "guide": {
     "title": "사용자 가이드"
