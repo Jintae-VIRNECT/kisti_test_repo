@@ -1,6 +1,5 @@
 package com.virnect.message.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EmailSendRequest;
@@ -41,7 +40,6 @@ public class MessageController {
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
     private final RabbitmqConfiguration rabbitmqConfiguration;
-    private final ObjectMapper objectMapper;
 
     @ApiOperation(
             value = "메일 메세지 발행",
@@ -91,13 +89,6 @@ public class MessageController {
         }
         ApiResponse<Boolean> apiResponse = messageService.sendMail(mailSendRequest);
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @GetMapping("/test")
-    private void addMessage() {
-
-        System.out.println("test message receive");
-        rabbitTemplate.convertAndSend("amq.topic", "testqueue", "test message");
     }
 
 }
