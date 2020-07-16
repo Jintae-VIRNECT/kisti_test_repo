@@ -11,6 +11,6 @@ export default class InviteMember extends Model {
     this.role = 'MEMBER'
     this.planRemote = false
     this.planMake = false
-    this.planView = true
+    this.planView = false
   }
 }
