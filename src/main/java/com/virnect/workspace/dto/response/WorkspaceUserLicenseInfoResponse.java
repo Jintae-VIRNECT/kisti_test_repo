@@ -15,16 +15,14 @@ import lombok.Setter;
 @Setter
 public class WorkspaceUserLicenseInfoResponse {
     @ApiModelProperty(value = "유저 식별자", position = 0, example = "")
-    private String userId;
+    private String uuid = "";
     @ApiModelProperty(value = "유저 프로필 이미지", position = 1, example = "")
-    private String profile;
-    @ApiModelProperty(value = "유저 이름", position = 2, example = "홍길동")
-    private String name;
-    @ApiModelProperty(value = "유저 닉네임", position = 3, example = "식물관리인")
-    private String nickName;
-    @ApiModelProperty(value = "현재 할당 가능한 라이선스 수량", position = 4, example = "REMOTE")
-    private String productName;
-    @ApiModelProperty(value = "현재 할당 된 라이선스 수량", position = 5, example = "BASIC")
-    private String licenseType;
+    private String profile = "";
+    @ApiModelProperty(value = "유저 닉네임", position = 2, example = "식물관리인")
+    private String nickName = "";
+    @ApiModelProperty(value = "현재 할당 가능한 라이선스 수량", position = 3, example = "REMOTE")
+    private String productName = "";
+    @ApiModelProperty(value = "현재 할당 된 라이선스 수량", position = 4, example = "BASIC")
+    private String licenseType = "";
 
 }

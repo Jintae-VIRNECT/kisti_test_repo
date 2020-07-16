@@ -27,6 +27,8 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  zipkin:
+    base-url: http://stgzipkin.virnect.com
 
 logging:
   level:
@@ -68,6 +70,8 @@ cloud:
 serverUrl: "https://stgapi.virnect.com"
 redirectUrl: "https://stgworkstation.virnect.com"
 contactUrl: "https://stgwww.virnect.com/contact/inquiry"
+accountUrl: "https://stgaccount.virnect.com"
+supportUrl: "https://stgwww.virnect.com/contact/inquiry"
 
 ## Feign
 feign:

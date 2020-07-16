@@ -24,6 +24,8 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  zipkin:
+    base-url: http://zipkin.virnect.com
 
 logging:
   level:
@@ -64,6 +66,8 @@ cloud:
 serverUrl: "https://api.virnect.com"
 redirectUrl: "https://workstation.virnect.com"
 contactUrl: "https://virnect.com/contact/inquiry"
+accountUrl: "https://account.virnect.com"
+supportUrl: "https://virnect.com/contact/inquiry"
 
 ## Feign
 feign:

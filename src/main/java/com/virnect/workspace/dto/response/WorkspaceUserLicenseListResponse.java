@@ -19,5 +19,5 @@ import java.util.List;
 @AllArgsConstructor
 public class WorkspaceUserLicenseListResponse {
     public List<WorkspaceUserLicenseInfoResponse> workspaceUserLicenseInfoList;
-    public PageMetadataRestResponse pageMetadataResponse;
+    public PageMetadataRestResponse pageMeta;
 }
