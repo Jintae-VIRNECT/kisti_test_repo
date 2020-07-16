@@ -59,7 +59,7 @@ export default {
         await deleteAllHistory()
         this.historyList = []
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     },
     async getHistory() {

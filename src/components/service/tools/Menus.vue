@@ -3,7 +3,7 @@
     <div class="menus-box">
       <template v-if="isLeader">
         <capture :disabled="!isMainView"></capture>
-        <record :disabled="!isMainView"></record>
+        <server-record :disabled="!isMainView"></server-record>
       </template>
       <local-record :disabled="!isMainView"></local-record>
       <local-record-list></local-record-list>
@@ -15,7 +15,7 @@
 <script>
 import {
   Capture,
-  Record,
+  ServerRecord,
   LocalRecord,
   Setting,
   LocalRecordList,
@@ -27,7 +27,7 @@ export default {
   name: 'Menus',
   components: {
     Capture,
-    Record,
+    ServerRecord,
     LocalRecord,
     LocalRecordList,
     Setting,

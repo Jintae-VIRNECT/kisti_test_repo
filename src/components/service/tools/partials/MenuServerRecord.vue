@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="녹화"
+    text="서버 녹화"
     :active="isRecording"
     :disabled="disabled"
     :src="require('assets/image/ic_record_off.svg')"
@@ -12,9 +12,10 @@
 
 <script>
 import toolMixin from './toolMixin'
+import betaCheckMixin from 'mixins/betaCheck'
 export default {
-  name: 'RecordMenu',
-  mixins: [toolMixin],
+  name: 'ServerRecordMenu',
+  mixins: [toolMixin, betaCheckMixin],
   data() {
     return {
       isRecording: false,
@@ -24,8 +25,10 @@ export default {
   watch: {},
   methods: {
     recording() {
-      // this.active = 'recording'
       if (this.disabled) return
+      if (this.checkBeta()) {
+        return false
+      }
       if (!this.isRecording) {
         this.record()
         this.$eventBus.$emit('serverRecord', true)

@@ -149,6 +149,10 @@ export default {
           break
         case EVENT.LICENSE_EXPIRED:
           this.alarmLicense()
+          setTimeout(() => {
+            this.$call.leave()
+            this.$router.push({ name: 'workspace' })
+          }, 60000)
           break
       }
     },
