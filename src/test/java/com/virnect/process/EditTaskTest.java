@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * @since 2020.06.29
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:data.sql")
+})
 @AutoConfigureMockMvc
 public class EditTaskTest {
 
@@ -34,12 +40,12 @@ public class EditTaskTest {
     @Test
     @Transactional
     public void editTask_InvalidTaskId_ProcessServiceException() throws Exception {
-        RequestBuilder request = post("/tasks/taskId/{taskId}", "200")
+        RequestBuilder request = post("/tasks/{taskId}", "200")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content("{\n" +
-                        "  \"taskId\": 2,\n" +
-                        "  \"actorUUID\": \"4ea61b4ad1dab12fb2ce8a14b02b7460\",\n" +
+                        "  \"taskId\": 200,\n" +
+                        "  \"actorUUID\": \"4ffd52e92874da7392ffdf103c8d987e\",\n" +
                         "  \"startDate\": \"2020-01-16T11:20:33\",\n" +
                         "  \"endDate\": \"2020-01-16T12:20:33\",\n" +
                         "  \"position\": \"A 라인 2번 3번째 기계\",\n" +
@@ -62,19 +68,29 @@ public class EditTaskTest {
     @Test
     @Transactional
     public void editTask_InvalidSubTaskId_ProcessServiceException() throws Exception {
-        RequestBuilder request = post("/tasks/subTasks/{subTaskId}", "200")
+        RequestBuilder request = post("/tasks/{taskId}", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content("{\n" +
-                        "  \"subTaskId\": 7,\n" +
-                        "  \"startDate\": \"2020-01-16T13:14:02\",\n" +
-                        "  \"endDate\": \"2020-01-16T14:14:02\",\n" +
-                        "  \"workerUUID\": \"498b1839dc29ed7bb2ee90ad6985c608\"\n" +
+                        "  \"taskId\": 1,\n" +
+                        "  \"actorUUID\": \"4ffd52e92874da7392ffdf103c8d987e\",\n" +
+                        "  \"startDate\": \"2020-01-16T11:20:33\",\n" +
+                        "  \"endDate\": \"2020-01-16T12:20:33\",\n" +
+                        "  \"position\": \"A 라인 2번 3번째 기계\",\n" +
+                        "  \"subTaskList\": [\n" +
+                        "    {\n" +
+                        "          \"subTaskId\": 200,\n" +
+                        "          \"startDate\": \"2020-01-16T13:14:02\",\n" +
+                        "          \"endDate\": \"2020-01-16T14:14:02\",\n" +
+                        "          \"workerUUID\": \"498b1839dc29ed7bb2ee90ad6985c608\"\n" +
+                        "     }"+
+                        "  ]\n" +
                         "}");
+
 
         this.mockMvc.perform(request)
                 .andDo(print())
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("5011")))
+                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("5012")))
                 .andExpect(result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ProcessServiceException.class)));
     }
 }
