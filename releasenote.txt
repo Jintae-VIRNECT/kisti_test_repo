@@ -1,12 +1,13 @@
+
 RELEASE
 
 New Features
-없음
+- self-preservation 기능 비활성화
 
 Bug Fixes
-없음
+- 없음
 
 Limitation
-없음
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
