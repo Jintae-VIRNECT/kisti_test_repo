@@ -382,7 +382,7 @@ public class LicenseService {
         });
 
         ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(workspaceId);
-        log.debug("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
+        log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
         workspaceLicensePlanInfoResponse.setLicenseProductInfoList(licenseProductInfoResponses);
@@ -438,7 +438,7 @@ public class LicenseService {
             Product product = licenseProduct.getProduct();
             ProductType productType = product.getProductType();
             if (licenseProduct.getLicenseList() != null && !licenseProduct.getLicenseList().isEmpty()) {
-                log.debug(licenseProduct.getLicenseList().toString());
+                log.info(licenseProduct.getLicenseList().toString());
                 licenseProduct.getLicenseList().stream().filter(license -> license.getUserId() != null && license.getUserId().equals(userId)).forEach(license -> {
                     MyLicenseInfoResponse licenseInfo = new MyLicenseInfoResponse();
                     licenseInfo.setId(license.getId());
@@ -512,7 +512,7 @@ public class LicenseService {
 
     public ApiResponse<MyLicensePlanInfoListResponse> getMyLicensePlanInfoList(String userId, PageRequest pageRequest) {
         Pageable pageable = pageRequest.of();
-        log.debug("{}", pageRequest.toString());
+        log.info("{}", pageRequest.toString());
         Page<UserLicenseDetailsInfo> licenseDetailsInfoList = licenseRepository.findAllMyLicenseInfo(userId, pageable);
         List<MyLicensePlanInfoResponse> myLicensePlanInfoList = new ArrayList<>();
 
@@ -555,7 +555,7 @@ public class LicenseService {
         String sort = sortQuery[1].toUpperCase();
         Comparator comparator;
 
-        log.debug("[CUSTOM_SORTING] - [{} -> {}]", properties, sort);
+        log.info("[CUSTOM_SORTING] - [{} -> {}]", properties, sort);
         if (properties.equals("planProduct")) {
             comparator = Comparator.comparing(MyLicensePlanInfoResponse::getPlanProduct);
         } else if (properties.equals("workspaceName")) {

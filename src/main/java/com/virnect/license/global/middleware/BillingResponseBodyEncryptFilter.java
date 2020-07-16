@@ -21,10 +21,10 @@ public class BillingResponseBodyEncryptFilter implements Filter {
         ResponseBodyEncryptWrapper responseWrapper = new ResponseBodyEncryptWrapper((HttpServletResponse) response);
         chain.doFilter(request, responseWrapper);
         String responseMessage = new String(responseWrapper.getDataStream(), StandardCharsets.UTF_8);
-        log.debug("[BILLING_RESPONSE][ENCRYPT][BEFORE] - [{}]", responseMessage);
+        log.info("[BILLING_RESPONSE][ENCRYPT][BEFORE] - [{}]", responseMessage);
         String encodedResponse = AES256Utils.encrypt(SECRET_KEY, responseMessage);
         String encodingResponseMessage = encodingResponseMessageConverter(encodedResponse);
-        log.debug("[BILLING_RESPONSE][ENCRYPT][AFTER] - [{}]", encodingResponseMessage);
+        log.info("[BILLING_RESPONSE][ENCRYPT][AFTER] - [{}]", encodingResponseMessage);
         response.getOutputStream().write(encodingResponseMessage.getBytes());
     }
 
