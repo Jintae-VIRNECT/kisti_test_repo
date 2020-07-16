@@ -112,7 +112,7 @@ export default {
       this.users = inviteList.memberInfoList
       this.selection = []
     },
-    async startRemote(roomInfo) {
+    async startRemote(info) {
       try {
         const selectedUser = []
 
@@ -122,9 +122,9 @@ export default {
         selectedUser.push(this.account.uuid)
 
         const createdRoom = await createRoom({
-          file: roomInfo.imageFile,
-          title: roomInfo.title,
-          description: roomInfo.description,
+          file: info.imageFile,
+          title: info.title,
+          description: info.description,
           leaderId: this.account.uuid,
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
@@ -143,6 +143,7 @@ export default {
             contents: {
               roomSessionId: createdRoom.sessionId,
               roomId: createdRoom.roomId,
+              title: info.title,
               nickName: this.account.nickname,
               profile: this.account.profile,
             },
