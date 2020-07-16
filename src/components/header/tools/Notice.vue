@@ -149,6 +149,10 @@ export default {
           break
         case EVENT.LICENSE_EXPIRED:
           this.alarmLicense()
+          setTimeout(() => {
+            this.$call.leave()
+            this.$router.push({ name: 'workspace' })
+          }, 60000)
           break
       }
     },
@@ -178,6 +182,7 @@ export default {
       this.onPush = false
     }
     this.$push.addListener(this.key, this.alarmListener)
+    this.alarmListener()
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
