@@ -65,6 +65,10 @@ dependencies {
 
     // AMQP
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // Zipkin
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 }
 
 test {

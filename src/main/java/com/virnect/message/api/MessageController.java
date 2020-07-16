@@ -1,7 +1,5 @@
 package com.virnect.message.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EmailSendRequest;
@@ -9,6 +7,7 @@ import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.exception.MessageException;
 import com.virnect.message.global.common.ApiResponse;
+import com.virnect.message.global.config.RabbitmqConfiguration;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.function.Supplier;
+import java.io.IOException;
 
 /**
  * Project: base
@@ -38,36 +37,44 @@ import java.util.function.Supplier;
 @Api(produces = MediaType.APPLICATION_JSON_VALUE, value = "MESSAGE API", consumes = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class MessageController {
-
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper;
+    private final RabbitmqConfiguration rabbitmqConfiguration;
 
     @ApiOperation(
-            value = "메일 메세지 발행"
+            value = "메일 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : email \n routing key : email.서비스명 (예시 routing key : email.pf-workspace)"
     )
     @PostMapping("/email")
-    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String exchange = MessageType.EMAIL.getValue();
-        String routingKey = exchange + "." + emailSendRequest.getService();
+        if (rabbitmqConfiguration.active) {
+            String exchange = MessageType.EMAIL.getValue();
+            String routingKey = exchange + "." + emailSendRequest.getService();
+            rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
+            return;
+        }
+        this.messageService.sendEmailMessage(emailSendRequest);
 
-        rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
     }
 
     @ApiOperation(
-            value = "푸시 메세지 발행"
+            value = "푸시 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/push")
-    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) throws JsonProcessingException {
+    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String exchange = MessageType.PUSH.getValue();
-        String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId() + "." + pushSendRequest.getUserId();
+        //String exchange = MessageType.PUSH.getValue();
+        //String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
+        String exchange = "amq.topic";
+        String routingKey = "push" + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
+
     }
 
     @ApiOperation(
