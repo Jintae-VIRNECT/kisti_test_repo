@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="녹화"
+    text="서버 녹화"
     :active="isRecording"
     :disabled="disabled"
     :src="require('assets/image/ic_record_off.svg')"
