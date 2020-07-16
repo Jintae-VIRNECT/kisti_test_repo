@@ -127,21 +127,11 @@ export default {
         mp3: this.extension === 'mp3',
         jpg: this.extension === 'jpg',
         video: this.extension === 'video',
-        ar:
-          this.type === TYPE.SYSTEM.toLowerCase() &&
-          this.chat.subType === SUB_TYPE.AR,
-        alarm:
-          this.type === TYPE.SYSTEM.toLowerCase() &&
-          this.chat.subType === SUB_TYPE.ALARM,
-        people:
-          this.type === TYPE.SYSTEM.toLowerCase() &&
-          this.chat.subType === SUB_TYPE.PEOPLE,
-        cancel:
-          this.type === TYPE.SYSTEM.toLowerCase() &&
-          this.chat.subType === SUB_TYPE.CANCEL,
-        board:
-          this.type === TYPE.SYSTEM.toLowerCase() &&
-          this.chat.subType === SUB_TYPE.BOARD,
+        ar: this.type === 'system' && this.chat.subType === SUB_TYPE.AR,
+        alarm: this.type === 'system' && this.chat.subType === SUB_TYPE.ALARM,
+        people: this.type === 'system' && this.chat.subType === SUB_TYPE.PEOPLE,
+        cancel: this.type === 'system' && this.chat.subType === SUB_TYPE.CANCEL,
+        board: this.type === 'system' && this.chat.subType === SUB_TYPE.BOARD,
       }
     },
     chatText() {
