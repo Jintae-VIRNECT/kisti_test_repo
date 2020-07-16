@@ -182,7 +182,6 @@ export default {
       this.onPush = false
     }
     this.$push.addListener(this.key, this.alarmListener)
-    this.alarmListener()
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
