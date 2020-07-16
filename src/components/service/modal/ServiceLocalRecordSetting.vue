@@ -245,7 +245,7 @@ export default {
           this.showToast()
           break
         default:
-          this.logger('Unknown record target', target)
+          console.error('recordTarget :: Unknown local record target', target)
           break
       }
     },

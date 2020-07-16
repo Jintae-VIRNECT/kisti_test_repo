@@ -43,7 +43,7 @@ export default {
         this.loading = false
         this.memberList = datas.memberInfoList
       } catch (err) {
-        this.logger(err)
+        console.error(err)
       }
     },
   },

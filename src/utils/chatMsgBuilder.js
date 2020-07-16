@@ -62,7 +62,7 @@ class ChatMsgBuilder {
         chatText = ''
       }
     } catch (e) {
-      logger(e)
+      console.error(e)
     }
     return chatText
   }
@@ -80,7 +80,7 @@ class ChatMsgBuilder {
         replaced = chatText.replace('<span', '<p').replace('</span>', '</p>')
       }
     } catch (e) {
-      logger(e)
+      console.error(e)
     }
 
     return replaced
@@ -111,6 +111,7 @@ class ChatMsgBuilder {
 
     this.msg.date = new Date()
 
+    logger(this.msg)
     return this.msg
   }
 }

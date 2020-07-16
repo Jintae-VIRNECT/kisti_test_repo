@@ -1,4 +1,3 @@
-import logger from 'utils/logger'
 const RATIO_16_9 = 1.77
 const RATIO_4_3 = 1.33
 
@@ -119,7 +118,7 @@ export const getWH = (resolution, inputWidth, inputHeight) => {
       default:
         video.width = 640
         video.height = 480
-        logger('unknown resolution ::', resolution)
+        console.error('getWH :: Unknown resolution ::', resolution)
         break
     }
 
@@ -143,7 +142,7 @@ export const getWH = (resolution, inputWidth, inputHeight) => {
       default:
         video.width = 854
         video.height = 480
-        logger('unknown resolution ::', resolution)
+        console.error('getWH :: Unknown resolution ::', resolution)
         break
     }
   }

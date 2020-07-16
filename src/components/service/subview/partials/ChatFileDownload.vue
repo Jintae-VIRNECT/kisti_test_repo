@@ -26,7 +26,7 @@ export default {
   watch: {},
   methods: {
     download() {
-      this.logger('donwload')
+      this.logger('download :: selectedList', this.selectedList)
     },
     release() {
       this.selectedList = []

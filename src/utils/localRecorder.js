@@ -95,7 +95,7 @@ export default class LocalRecorder {
 
       this.timeMark = performance.now()
     } catch (e) {
-      logger(e)
+      console.error(e)
     }
   }
 
@@ -110,7 +110,7 @@ export default class LocalRecorder {
         }
       }
     } catch (e) {
-      logger(e)
+      console.error(e)
     } finally {
       this.recorder = null
     }
@@ -182,7 +182,7 @@ export default class LocalRecorder {
 
   async checkQuota() {
     if ((await IDBHelper.checkQuota()) === false) {
-      logger('LocalRecording :: quota overed cancel recording')
+      console.log('LocalRecording :: quota overed cancel recording')
       if (this.noQuotaCallback) {
         this.noQuotaCallback()
       }

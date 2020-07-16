@@ -15,7 +15,7 @@ async function initIDB() {
   if (initFlag) {
     db = new Dexie('RemoteMediaChunk')
 
-    logger(logPrefix + 'init idb')
+    console.log(`${logPrefix} 'init idb'`)
 
     /**
      * Warning!! if you change column then
@@ -123,9 +123,9 @@ async function checkQuota() {
       100
     ).toFixed(2)
 
-    logger(`Quota: ${estimation.quota}`)
-    logger(`Usage: ${estimation.usage}`)
-    logger(quotaUsagePersentage)
+    console.log(`${logPrefix} Quota: ${estimation.quota}`)
+    console.log(`${logPrefix} Usage: ${estimation.usage}`)
+    console.log(`${logPrefix} UsagePersentage: ${quotaUsagePersentage}%`)
 
     if (quotaUsagePersentage < USAGE_LIMIT_PERSENTAGE) {
       return true
@@ -133,7 +133,7 @@ async function checkQuota() {
       return false
     }
   } else {
-    logger('StorageManager not found')
+    console.error('StorageManager not found')
   }
 }
 
