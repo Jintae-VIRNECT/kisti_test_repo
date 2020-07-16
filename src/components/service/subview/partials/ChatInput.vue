@@ -131,18 +131,22 @@ export default {
     },
     loadFile(file) {
       if (file) {
-        if (file.size / 1024 / 1024 > 20) {
+        const sizeMB = file.size / 1024 / 1024
+        if (sizeMB > 20) {
           // @TODO: MESSAGE
           this.toastDefault('첨부 가능한 용량을 초과하였습니다.')
           this.clearUploadFile()
           return false
         }
 
-        if (
-          ['image/jpeg', 'image/png', 'image/bmp', 'application/pdf'].includes(
-            file.type,
-          )
-        ) {
+        const isValid = [
+          'image/jpeg',
+          'image/png',
+          'image/bmp',
+          'application/pdf',
+        ].includes(file.type)
+
+        if (isValid) {
           const docItem = {
             id: Date.now(),
             filedata: '',
@@ -165,7 +169,8 @@ export default {
             }
             oImg.onerror = () => {
               //이미지 아닐 시 처리.
-              alert('This image is unavailable.')
+              // @TODO: MESSAGE
+              this.toastDefault('해당 이미지는 지원하지 않습니다.')
             }
             oImg.src = docItem.imageUrl
           }
@@ -182,10 +187,8 @@ export default {
       this.$refs['inputFile'].value = ''
     },
     removeFile(idx) {
-      // console.log(file)
       this.fileList.splice(idx, 1)
     },
-
     dragenterHandler(event) {
       // console.log(event);
     },
@@ -196,8 +199,18 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
+      if (this.checkBeta()) {
+        return false
+      }
+
       const file = event.dataTransfer.files[0]
-      this.loadFile(file)
+      if (this.fileList.length > 0) {
+        // @TODO: MESSAGE
+        this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
+        return
+      } else {
+        this.loadFile(file)
+      }
     },
   },
 
