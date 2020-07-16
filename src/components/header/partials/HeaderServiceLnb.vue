@@ -248,7 +248,7 @@ export default {
         data.type === CAPTURE_PERMISSION.RESPONSE
       ) {
         this.updateParticipant({
-          connectionId: data.from.connectionId,
+          connectionId: receive.from.connectionId,
           permission: data.isAllowed,
         })
         this.permissionSetting(data.isAllowed)
@@ -263,8 +263,8 @@ export default {
         if (data.type === AR_FEATURE.FEATURE) {
           if ('hasArFeature' in data) {
             this.updateParticipant({
-              connectionId: data.from.connectionId,
-              arFeature: data.hasArFeature,
+              connectionId: receive.from.connectionId,
+              hasArFeature: data.hasArFeature,
             })
           }
         }

@@ -1,5 +1,5 @@
 import { OpenVidu } from './openvidu'
-import { addSessionEventListener, getUserObject } from './RemoteUtils'
+import { addSessionEventListener } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
@@ -84,12 +84,30 @@ const _ = {
         _.publisher = publisher
         _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
+          // TODO:: 테스트 계정용!!!!
           Store.commit('updateResolution', {
             connectionId: publisher.stream.connection.connectionId,
             width: 0,
             height: 0,
           })
-          Store.commit('addStream', getUserObject(publisher.stream))
+          // Store.commit('addStream', getUserObject(publisher.stream))
+          Store.commit('addStream', {
+            id: _.account.uuid,
+            stream: publisher.stream.mediaStream,
+            // connection: stream.connection,
+            connectionId: publisher.stream.connection.connectionId,
+            nickname: _.account.nickname,
+            path: _.account.path,
+            audio: publisher.stream.audioActive,
+            video: true,
+            speaker: true,
+            mute: false,
+            status: 'good',
+            roleType: ROLE.EXPERT_LEADER,
+            permission: 'default',
+            hasArFeature: false,
+            me: true,
+          })
         }
       })
 
