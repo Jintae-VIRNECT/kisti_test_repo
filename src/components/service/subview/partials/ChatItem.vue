@@ -57,11 +57,11 @@ export default {
   computed: {
     type() {
       if (false === this.chat.type || this.chat.type === TYPE.OPPONENT) {
-        return TYPE.OPPONENT.toLowerCase()
+        return 'opponent'
       } else if (this.chat.type === TYPE.ME) {
-        return TYPE.ME.toLowerCase()
+        return 'me'
       } else {
-        return TYPE.SYSTEM.toLowerCase()
+        return 'system'
       }
     },
     hideTime() {
