@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     buy() {
-      console.log('라이센스 구입')
+      this.logger('라이센스 구입')
     },
   },
 }

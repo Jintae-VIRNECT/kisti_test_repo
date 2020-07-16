@@ -234,23 +234,18 @@ export default {
     },
 
     recordTarget(target) {
-      console.log(target)
       switch (target) {
         case RECORD_TARGET.WORKER:
-          //set worker stream(main view + participants)
           this.setLocalRecordTarget(target)
-
-          //don't need screen stream when record worker.
           this.setScreenStream(null)
           this.showToast()
           break
         case RECORD_TARGET.SCREEN:
-          //set screen stream for local record
           this.setLocalRecordTarget(target)
           this.showToast()
           break
         default:
-          console.log('unknown recordTarget ::', target)
+          this.logger('Unknown record target', target)
           break
       }
     },

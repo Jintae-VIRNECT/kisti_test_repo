@@ -1,3 +1,5 @@
+import logger from 'utils/logger'
+
 export const getPermission = async () => {
   try {
     const result = await Promise.all([
@@ -19,6 +21,6 @@ export const getPermission = async () => {
     }
     return true
   } catch (err) {
-    console.error(err)
+    logger(err)
   }
 }

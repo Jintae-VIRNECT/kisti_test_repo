@@ -59,7 +59,7 @@ export default {
         await deleteAllHistory()
         this.historyList = []
       } catch (err) {
-        console.log(err)
+        this.logger(err)
       }
     },
     async getHistory() {
@@ -76,7 +76,7 @@ export default {
         this.historyList = datas.rooms
       } catch (err) {
         // 에러처리
-        console.error(err)
+        this.logger(err)
       }
     },
   },

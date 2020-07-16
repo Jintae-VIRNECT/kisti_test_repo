@@ -83,7 +83,6 @@ export default {
   },
   methods: {
     async doSend(e) {
-      console.log(e)
       if (e) {
         e.preventDefault()
       }

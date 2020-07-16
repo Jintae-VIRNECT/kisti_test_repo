@@ -1,6 +1,7 @@
 import toastMixin from 'mixins/toast'
 
 import LocalRecorder from 'utils/localRecorder'
+import logger from 'utils/logger'
 import { mapGetters, mapActions, mapState } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { getWH, RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
@@ -192,7 +193,7 @@ export default {
           }
         }
       } catch (e) {
-        console.error(e)
+        logger(e)
       } finally {
         this.isRecording = false
         this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)

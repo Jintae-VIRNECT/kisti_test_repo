@@ -195,7 +195,7 @@ export default {
           return cvtDate
         }
       } else {
-        console.log('convertDate :: Invalid data')
+        this.logger('WorkspaceHistoryList :: convertDate ::', date)
       }
     },
     convertTime(totalUseTime) {

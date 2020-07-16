@@ -125,7 +125,7 @@ export default {
           }
         })
       } catch (err) {
-        console.error(err)
+        this.logger(err)
       }
     },
   },
@@ -141,7 +141,7 @@ export default {
         this.showDenied = true
       }
     } catch (err) {
-      console.error(err)
+      this.logger(err)
     }
   },
   mounted() {},

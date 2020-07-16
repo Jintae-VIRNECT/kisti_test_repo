@@ -1,5 +1,6 @@
 import uuid from 'uuid'
 import IDBHelper from 'utils/idbHelper'
+import logger from 'utils/logger'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
 
 export default class LocalRecorder {
@@ -94,7 +95,7 @@ export default class LocalRecorder {
 
       this.timeMark = performance.now()
     } catch (e) {
-      console.error(e)
+      logger(e)
     }
   }
 
@@ -109,7 +110,7 @@ export default class LocalRecorder {
         }
       }
     } catch (e) {
-      console.error(e)
+      logger(e)
     } finally {
       this.recorder = null
     }
@@ -151,7 +152,7 @@ export default class LocalRecorder {
       }
 
       if (this.maxTime === null) {
-        console.log('this.maxTime is null')
+        logger('this.maxTime is null')
         this.maxTime = 60
       }
 
@@ -181,7 +182,7 @@ export default class LocalRecorder {
 
   async checkQuota() {
     if ((await IDBHelper.checkQuota()) === false) {
-      console.log('LocalRecording :: quota over!!! cancel recording!!!')
+      logger('LocalRecording :: quota overed cancel recording')
       if (this.noQuotaCallback) {
         this.noQuotaCallback()
       }

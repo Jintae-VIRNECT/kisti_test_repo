@@ -1,6 +1,6 @@
 import linkifyHtml from 'linkifyjs/html'
 import { TYPE, SUB_TYPE } from 'configs/chat.config'
-
+import logger from 'utils/logger'
 class ChatMsg {
   constructor() {}
 }
@@ -62,7 +62,7 @@ class ChatMsgBuilder {
         chatText = ''
       }
     } catch (e) {
-      console.log(e)
+      logger(e)
     }
     return chatText
   }
@@ -80,7 +80,7 @@ class ChatMsgBuilder {
         replaced = chatText.replace('<span', '<p').replace('</span>', '</p>')
       }
     } catch (e) {
-      console.log(e)
+      logger(e)
     }
 
     return replaced

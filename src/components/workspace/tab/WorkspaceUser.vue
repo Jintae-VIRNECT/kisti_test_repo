@@ -43,7 +43,7 @@ export default {
         this.loading = false
         this.memberList = datas.memberInfoList
       } catch (err) {
-        console.log(err)
+        this.logger(err)
       }
     },
   },
@@ -53,12 +53,6 @@ export default {
   /* Lifecycles */
   async created() {
     this.getList()
-    // try {
-    //   const datas = await getMemberList()
-    //   this.memberList = datas.data.participants
-    // } catch (err) {
-    //   console.log(err)
-    // }
   },
   beforeDestroy() {
     this.$eventBus.$off('refresh')

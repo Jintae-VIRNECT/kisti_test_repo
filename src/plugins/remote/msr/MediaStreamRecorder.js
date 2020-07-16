@@ -14,7 +14,7 @@
 
 // ______________________
 // MediaStreamRecorder.js
-
+import logger from 'utils/logger'
 let canvas = null
 let orientation = 'landscape'
 
@@ -88,11 +88,11 @@ function MediaStreamRecorder(mediaStream) {
 
   this.ondataavailable = function(blob) {
     if (this.disableLogs) return
-    console.log('ondataavailable..', blob)
+    logger('ondataavailable..', blob)
   }
 
   this.onstop = function(error) {
-    console.warn('stopped..', error)
+    logger('stopped..', error)
   }
 
   this.save = function(file, fileName) {
@@ -120,7 +120,7 @@ function MediaStreamRecorder(mediaStream) {
     mediaRecorder.pause()
 
     if (this.disableLogs) return
-    console.log('Paused recording.', this.mimeType || mediaRecorder.mimeType)
+    logger('Paused recording.', this.mimeType || mediaRecorder.mimeType)
   }
 
   this.resume = function() {
@@ -130,7 +130,7 @@ function MediaStreamRecorder(mediaStream) {
     mediaRecorder.resume()
 
     if (this.disableLogs) return
-    console.log('Resumed recording.', this.mimeType || mediaRecorder.mimeType)
+    logger('Resumed recording.', this.mimeType || mediaRecorder.mimeType)
   }
 
   // StereoAudioRecorder || WhammyRecorder || MediaRecorderWrapper || GifRecorder
@@ -310,7 +310,7 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
       return
     }
 
-    console.log('ondataavailable', blob)
+    logger('ondataavailable', blob)
   }
 
   this.onstop = function() {}
@@ -611,7 +611,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
     } else if ('mozCaptureStream' in canvas) {
       capturedStream = canvas.mozCaptureStream()
     } else if (!self.disableLogs) {
-      console.error(
+      logger(
         'Upgrade to latest Chrome or otherwise enable this flag: chrome://flags/#enable-experimental-web-platform-features',
       )
     }
@@ -963,7 +963,7 @@ if (typeof MediaStream !== 'undefined') {
 
 if (typeof location !== 'undefined') {
   if (location.href.indexOf('file:') === 0) {
-    console.error('Please load this HTML file on HTTP or HTTPS.')
+    logger('Please load this HTML file on HTTP or HTTPS.')
   }
 }
 
@@ -1175,10 +1175,7 @@ function MediaRecorderWrapper(mediaStream) {
     }
 
     if (!self.disableLogs && !__disableLogs) {
-      console.log(
-        'Passing following params over MediaRecorder API.',
-        recorderHints,
-      )
+      logger('Passing following params over MediaRecorder API.', recorderHints)
     }
 
     if (mediaRecorder) {
@@ -1210,7 +1207,7 @@ function MediaRecorderWrapper(mediaStream) {
       mediaRecorder.canRecordMimeType(self.mimeType) === false
     ) {
       if (!self.disableLogs) {
-        console.warn(
+        logger(
           'MediaRecorder API seems unable to record mimeType:',
           self.mimeType,
         )
@@ -1266,28 +1263,28 @@ function MediaRecorderWrapper(mediaStream) {
     mediaRecorder.onerror = function(error) {
       if (!self.disableLogs) {
         if (error.name === 'InvalidState') {
-          console.error(
+          logger(
             'The MediaRecorder is not in a state in which the proposed operation is allowed to be executed.',
           )
         } else if (error.name === 'OutOfMemory') {
-          console.error(
+          logger(
             'The UA has exhaused the available memory. User agents SHOULD provide as much additional information as possible in the message attribute.',
           )
         } else if (error.name === 'IllegalStreamModification') {
-          console.error(
+          logger(
             'A modification to the stream has occurred that makes it impossible to continue recording. An example would be the addition of a Track while recording is occurring. User agents SHOULD provide as much additional information as possible in the message attribute.',
           )
         } else if (error.name === 'OtherRecordingError') {
-          console.error(
+          logger(
             'Used for an fatal error other than those listed above. User agents SHOULD provide as much additional information as possible in the message attribute.',
           )
         } else if (error.name === 'GenericError') {
-          console.error(
+          logger(
             'The UA cannot provide the codec or recording option that has been requested.',
             error,
           )
         } else {
-          console.error('MediaRecorder Error', error)
+          logger('MediaRecorder Error', error)
         }
       }
 
@@ -1394,7 +1391,7 @@ function MediaRecorderWrapper(mediaStream) {
    * recorder.ondataavailable = function(data) {};
    */
   this.ondataavailable = function(blob) {
-    console.log('recorded-blob', blob)
+    logger('recorded-blob', blob)
   }
 
   /**
@@ -1615,7 +1612,7 @@ function StereoAudioRecorderHelper(mediaStream, root) {
         type: 'audio/pcm',
       })
 
-      console.debug('audio recorded blob size:', bytesToSize(blob.size))
+      logger('audio recorded blob size:', bytesToSize(blob.size))
       root.ondataavailable(blob)
       return
     }
@@ -1659,7 +1656,7 @@ function StereoAudioRecorderHelper(mediaStream, root) {
       type: 'audio/wav',
     })
 
-    console.debug('audio recorded blob size:', bytesToSize(blob.size))
+    logger('audio recorded blob size:', bytesToSize(blob.size))
 
     root.ondataavailable(blob)
   }
@@ -1761,7 +1758,7 @@ function StereoAudioRecorderHelper(mediaStream, root) {
 
   bufferSize = scriptprocessornode.bufferSize
 
-  console.debug('using audio buffer-size:', bufferSize)
+  logger('using audio buffer-size:', bufferSize)
 
   var requestDataInvoked = false
 
@@ -1772,7 +1769,7 @@ function StereoAudioRecorderHelper(mediaStream, root) {
   window.scriptprocessornode = scriptprocessornode
 
   if (numChannels === 1) {
-    console.debug('All right-channels are skipped.')
+    logger('All right-channels are skipped.')
   }
 
   var isPaused = false
@@ -1934,8 +1931,8 @@ function WhammyRecorderHelper(mediaStream, root) {
     lastTime = new Date().getTime()
     whammy = new Whammy.Video(root.speed, root.quality)
 
-    console.log('canvas resolutions', canvas.width, '*', canvas.height)
-    console.log(
+    logger('canvas resolutions', canvas.width, '*', canvas.height)
+    logger(
       'video width/height',
       video.width || canvas.width,
       '*',
@@ -1970,7 +1967,7 @@ function WhammyRecorderHelper(mediaStream, root) {
 
     whammy.compile(function(whammyBlob) {
       root.ondataavailable(whammyBlob)
-      console.debug('video recorded blob size:', bytesToSize(whammyBlob.size))
+      logger('video recorded blob size:', bytesToSize(whammyBlob.size))
     })
 
     whammy.frames = []
@@ -2175,9 +2172,9 @@ function WhammyRecorderHelper(mediaStream, root) {
         !doNotCheckNext &&
         maxPixCount - matchPixCount <= maxPixCount * frameTolerance
       ) {
-        // console.log('removed black frame : ' + f + ' ; frame duration ' + _frames[f].duration);
+        // logger('removed black frame : ' + f + ' ; frame duration ' + _frames[f].duration);
       } else {
-        // console.log('frame is passed : ' + f);
+        // logger('frame is passed : ' + f);
         if (checkUntilNotBlack) {
           doNotCheckNext = true
         }
@@ -2286,8 +2283,8 @@ function GifRecorder(mediaStream) {
 
       gifEncoder.addFrame(context)
 
-      // console.log('Recording...' + Math.round((Date.now() - startTime) / 1000) + 's');
-      // console.log("fps: ", 1000 / (time - lastFrameTime));
+      // logger('Recording...' + Math.round((Date.now() - startTime) / 1000) + 's');
+      // logger("fps: ", 1000 / (time - lastFrameTime));
 
       lastFrameTime = time
     }
@@ -2835,7 +2832,7 @@ var Whammy = (function() {
 
     webWorker.onmessage = function(event) {
       if (event.data.error) {
-        console.error(event.data.error)
+        logger(event.data.error)
         return
       }
       callback(event.data)

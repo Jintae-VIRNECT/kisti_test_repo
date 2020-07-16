@@ -26,10 +26,9 @@ export default {
   watch: {},
   methods: {
     download() {
-      console.log('download :: selectedList', this.selectedList)
+      this.logger('donwload')
     },
     release() {
-      console.log('셀렉트 해! 제!')
       this.selectedList = []
       this.$eventBus.$emit('chatfile::release')
     },

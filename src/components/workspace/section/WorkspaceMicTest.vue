@@ -118,7 +118,7 @@ export default {
             //for camera permission.
             this.videoStream = stream
           })
-          .catch(err => console.error(err))
+          .catch(err => this.logger(err))
       }
     },
     toggleMicTestMode() {

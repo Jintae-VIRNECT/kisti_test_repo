@@ -130,8 +130,6 @@ export default {
       })
     },
     deleteItems() {
-      console.log('deleteItems :: called')
-
       const uuids = []
 
       this.selectedArray.forEach((selected, index) => {

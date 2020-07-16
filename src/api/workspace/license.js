@@ -4,7 +4,6 @@ export const getLicense = async function(workspaceId, userId) {
   const result = await http('GET_LICENSE', { workspaceId, userId })
   if (result.licenseInfoList) {
     const licenseInfo = result.licenseInfoList
-    console.log('license information ::', licenseInfo)
   } else {
     return false
   }
