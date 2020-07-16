@@ -20,11 +20,11 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
-            - RewritePath=/users/users/(?<segment>.*), /users/$\{segment}
-            - name: Logging
-              args:
-                preLogger: true
-                postLogger: true
+#            - name: Logging
+#              args:
+#                messagePrefix: "USER_SERVER"
+#                preLogger: true
+#                postLogger: true
 
         - id: workspace-server
           uri: lb:http://workspace-server
@@ -33,29 +33,25 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
-            - RewritePath=/workspaces/workspace/(?<segment>.*), /workspaces/$\{segment}
+#            - name: Logging
+#              args:
+#                messagePrefix: "WORKSPACE_SERVER"
+#                preLogger: true
+#                postLogger: true
 
-        - id: license-server
-          uri: lb:http://license-server
+        - id: remote-record-server
+          uri: lb:http://remote-record-server
           predicates:
-            - Path=/licenses/**
+            - Path=/media/**
           filters:
             - StripPrefix=0
-            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
-            - RewritePath=/licenses/licenses/(?<segment>.*), /licenses/$\{segment}
+            - RewritePath=/media/v2/(?<segment>.+), /v2/$\{segment}/
+#            - name: Logging
+#              args:
+#                messagePrefix: "REMOTE_RECORD_SERVER_REST"
+#                preLogger: true
+#                postLogger: true
 
-        - id: auth-server
-          uri: lb:http://auth-server
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=0
-            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
-            - RewritePath=/auth/auth/(?<segment>.*), /auth/$\{segment}
-            - name: Logging
-              args:
-                preLogger: true
-                postLogger: true
 
       globalcors:
         corsConfigurations:
@@ -66,22 +62,25 @@ spring:
               - "*"
             allowedHeaders:
               - "*"
-            allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
         prefix-enabled: false
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true
   zipkin:
-    base-url: http://localhost:9411
+    enabled: false
 
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
-    enabled: false
-
+      defaultZone: http://192.168.13.14:8761/eureka
 
 jwt:
   secret: 2020-tcenriv-platform-392
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.WebsocketRoutingFilter: TRACE
