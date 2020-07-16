@@ -36,6 +36,9 @@
   padding-right: 30px;
   padding-left: 30px;
 
+  &:empty {
+    padding: 0;
+  }
   .el-divider {
     margin: 20px 0;
     background: #eaedf3;

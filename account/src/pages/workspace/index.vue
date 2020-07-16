@@ -10,9 +10,19 @@
         <p>{{ $t('workspace.desc') }}</p>
       </div>
       <!-- 워크스페이스 리스트 -->
-      <workspace-list />
+      <el-card class="el-card--table">
+        <div slot="header">
+          <h3>{{ $t('workspace.list.title') }}</h3>
+        </div>
+        <workspace-list />
+      </el-card>
       <!-- 플랜 리스트 -->
-      <using-plan-list />
+      <el-card class="el-card--table">
+        <div slot="header">
+          <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
+        </div>
+        <using-plan-list />
+      </el-card>
     </div>
   </div>
 </template>

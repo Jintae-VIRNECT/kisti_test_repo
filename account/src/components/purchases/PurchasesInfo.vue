@@ -3,88 +3,119 @@
     <h5>{{ $t('purchases.info.productPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.proudctPlan') }}</dt>
-      <dd class="plans">
-        <el-progress :percentage="100" :show-text="false" />
+      <dd
+        class="plans"
+        v-for="product in plansInfo.products"
+        :key="product.value"
+      >
+        <el-progress
+          :percentage="(product.usedAmount / product.amount) * 100"
+          :show-text="false"
+        />
         <div class="column-plan">
-          <img :src="products.remote.logo" />
-          <span>{{ products.remote.label }}</span>
-          <el-tag class="BASIC" effect="plain">BASIC</el-tag>
+          <img :src="product.logo" />
+          <span>{{ product.label }}</span>
+          <el-tag :class="product.licenseType" effect="plain">
+            {{ product.licenseType }}
+          </el-tag>
         </div>
         <div class="count">
-          <span>{{ 6 }}</span>
-          <span>/{{ 6 }}</span>
-        </div>
-      </dd>
-      <dd class="plans">
-        <el-progress :percentage="70" :show-text="false" />
-        <div class="column-plan">
-          <img :src="products.make.logo" />
-          <span>{{ products.make.label }}</span>
-          <el-tag class="BASIC" effect="plain">BASIC</el-tag>
-        </div>
-        <div class="count">
-          <span>{{ 4 }}</span>
-          <span>/{{ 6 }}</span>
-        </div>
-      </dd>
-      <dd class="plans">
-        <el-progress :percentage="40" :show-text="false" />
-        <div class="column-plan">
-          <img :src="products.view.logo" />
-          <span>{{ products.view.label }}</span>
-          <el-tag class="BASIC" effect="plain">BASIC</el-tag>
-        </div>
-        <div class="count">
-          <span>{{ 3 }}</span>
-          <span>/{{ 6 }}</span>
+          <span>{{ product.usedAmount }}</span>
+          <span>/{{ product.amount }}</span>
         </div>
       </dd>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ 10 }} GB</dd>
+      <dd>{{ paymentInfo.basisAvailable.storage.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ (100000).toLocaleString() }}
+        {{ paymentInfo.basisAvailable.viewCount.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
-      <dd>{{ 10 }} {{ $t('purchases.hoursUnit') }}</dd>
+      <dd>
+        {{ paymentInfo.basisAvailable.callTime.toLocaleString() }}
+        {{ $t('purchases.hoursUnit') }}
+      </dd>
     </dl>
     <el-divider />
     <h5>{{ $t('purchases.info.extendPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ 10 }} GB</dd>
+      <dd>{{ paymentInfo.extendAvailable.storage.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ (100000).toLocaleString() }}
+        {{ paymentInfo.extendAvailable.viewCount.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
-      <dd>{{ 10 }} {{ $t('purchases.hoursUnit') }}</dd>
+      <dd>
+        {{ paymentInfo.extendAvailable.callTime.toLocaleString() }}
+        {{ $t('purchases.hoursUnit') }}
+      </dd>
     </dl>
     <el-divider />
-    <h6>{{ $t('purchases.info.nextPaymentDate') }}</h6>
-    <span class="value">{{ new Date() | dateFormat }}</span>
+    <h6>
+      <span>{{ $t('purchases.info.licenseExpireDate') }}</span>
+      <el-tooltip
+        :content="$t('purchases.info.licenseExpireDateDesc')"
+        placement="right"
+      >
+        <img src="~assets/images/icon/ic-error.svg" />
+      </el-tooltip>
+    </h6>
+    <span class="value">{{ plansInfo.endDate | dateFormat }}</span>
+    <h6>
+      <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
+      <el-tooltip
+        :content="$t('purchases.info.nextPaymentDateDesc')"
+        placement="right"
+      >
+        <img src="~assets/images/icon/ic-error.svg" />
+      </el-tooltip>
+    </h6>
+    <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
     <el-divider />
     <h6>{{ $t('purchases.info.way') }}</h6>
-    <span class="value">{{ '신용카드' }}</span>
+    <span class="value">{{ way }}</span>
     <el-divider />
-    <el-button type="simple">
-      {{ $t('purchases.info.changePlans') }}
-    </el-button>
+    <a :href="$url.pay">
+      <el-button type="simple">
+        {{ $t('purchases.info.changePlans') }}
+      </el-button>
+    </a>
   </div>
 </template>
 
 <script>
 import filters from '@/mixins/filters'
-import products from '@/models/products'
 
 export default {
   mixins: [filters],
-  data() {
-    return {
-      products,
-    }
+  props: {
+    plansInfo: {
+      type: Object,
+      default: () => ({}),
+    },
+    paymentInfo: {
+      type: Object,
+      default: () => ({
+        basisAvailable: {},
+        extendAvailable: {},
+      }),
+    },
+  },
+  computed: {
+    way() {
+      const { payFlag, way } = this.paymentInfo
+      const { planStatus } = this.plansInfo
+      if (payFlag === 'Y') {
+        return way
+      } else if (payFlag === 'D' && planStatus === 'ACTIVE') {
+        return this.$t('purchases.info.freePlan')
+      } else {
+        return '-'
+      }
+    },
   },
 }
 </script>
@@ -97,6 +128,11 @@ export default {
   dt,
   h6 {
     float: left;
+    & > * {
+      display: inline-block;
+      margin-right: 2px;
+      vertical-align: middle;
+    }
   }
   dt {
     color: $font-color-desc;
@@ -109,6 +145,9 @@ export default {
     margin-bottom: 16px;
     line-height: 20px;
     text-align: right;
+  }
+  .value {
+    margin-bottom: 12px;
   }
   .el-button {
     width: 100%;
@@ -123,6 +162,9 @@ export default {
     }
     .el-progress {
       margin-bottom: 11px;
+      .el-progress-bar__inner {
+        background: #007cfe;
+      }
     }
     .column-plan {
       display: inline-block;

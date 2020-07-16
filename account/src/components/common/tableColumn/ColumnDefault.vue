@@ -8,7 +8,8 @@
   >
     <template slot-scope="scope">
       <div class="column-default">
-        <span>{{ scope.row[prop] }}</span>
+        <span v-if="dangerouslyUseHTMLString" v-html="scope.row[prop]" />
+        <span v-else>{{ scope.row[prop] }}</span>
       </div>
     </template>
   </el-table-column>
@@ -19,6 +20,7 @@ export default {
   props: {
     prop: String,
     label: String,
+    dangerouslyUseHTMLString: Boolean,
     width: Number,
     align: String,
     sortable: [Boolean, String],

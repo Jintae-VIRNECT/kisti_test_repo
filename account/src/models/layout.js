@@ -1,9 +1,9 @@
 export const sideMenus = [
-  // {
-  //   path: '/',
-  //   image: require('@/assets/images/icon/ic-home.svg'),
-  //   label: 'menu.home',
-  // },
+  {
+    path: '/',
+    image: require('@/assets/images/icon/ic-home.svg'),
+    label: 'menu.home',
+  },
   {
     path: '/profile',
     image: require('@/assets/images/icon/ic-account-info.svg'),
@@ -14,11 +14,11 @@ export const sideMenus = [
     image: require('@/assets/images/icon/ic-workspace-info.svg'),
     label: 'menu.workspace',
   },
-  // {
-  //   path: '/security',
-  //   image: require('@/assets/images/icon/ic-security.svg'),
-  //   label: 'menu.security',
-  // },
+  {
+    path: '/security',
+    image: require('@/assets/images/icon/ic-security.svg'),
+    label: 'menu.security',
+  },
   {
     path: '/purchases',
     image: require('@/assets/images/icon/ic-plan-management.svg'),

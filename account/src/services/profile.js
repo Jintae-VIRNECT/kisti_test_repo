@@ -1,4 +1,5 @@
 import Profile from '@/models/profile/Profile'
+import LoggedInDevice from '@/models/profile/LoggedInDevice'
 import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
@@ -44,6 +45,19 @@ export default {
         route: { userId: getMyProfile().uuid },
         params: { profile: null },
       })
+    }
+  },
+  async getLoggedInDeviceList(searchParams) {
+    const { accessInfoList, pageMeta } = await api('GET_ACCESS_LOGS', {
+      route: { userId: getMyProfile().uuid },
+      params: {
+        size: 10,
+        ...searchParams,
+      },
+    })
+    return {
+      list: accessInfoList.map(accessInfo => new LoggedInDevice(accessInfo)),
+      total: pageMeta.totalElements,
     }
   },
 }

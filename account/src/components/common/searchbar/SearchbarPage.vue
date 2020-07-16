@@ -4,6 +4,7 @@
       layout="prev, pager, next"
       :current-page.sync="myPage"
       :total="myTotal"
+      :page-size="pageSize"
       @current-change="change"
     />
   </el-row>
@@ -14,6 +15,7 @@ export default {
   props: {
     value: Number,
     total: Number,
+    pageSize: Number,
   },
   data() {
     return {

@@ -92,37 +92,52 @@
         </el-col>
       </el-row>
     </div>
+    <coupon-detail-modal
+      :visible.sync="showCouponDetailModal"
+      :coupon="activeCoupon"
+      :allTickets="allTickets"
+    />
   </div>
 </template>
 
 <script>
 import couponService from '@/services/coupon'
+import paymentService from '@/services/payment'
 import CouponList from '@/components/coupon/CouponList'
+import CouponDetailModal from '@/components/coupon/CouponDetailModal'
 import searchMixin from '@/mixins/search'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
   mixins: [searchMixin],
   components: {
     CouponList,
+    CouponDetailModal,
   },
   data() {
     return {
+      allTickets: [],
       coupons: [],
       coponsPage: 1,
       couponsTotal: 0,
       addCouponForm: {
         newCouponCode: '',
       },
+      activeCoupon: {},
+      showCouponDetailModal: false,
     }
   },
   methods: {
     changedSearchParams(searchParams) {
-      console.log(searchParams)
       this.searchCoupons(searchParams)
     },
     goGetCouponPage() {
-      window.open(`${urls.www[this.$config.TARGET_ENV]}/coupon`)
+      window.open(`${this.$url.www}/coupon`)
+    },
+    /**
+     * 상품 리스트
+     */
+    async getAllTicketList() {
+      this.allTickets = await paymentService.getAllTicketList()
     },
     /**
      * 쿠폰 리스트
@@ -152,58 +167,27 @@ export default {
           position: 'bottom-left',
           duration: 2000,
         })
+        this.searchCoupons()
+        this.addCouponForm.newCouponCode = ''
       } catch (e) {
-        const code = e.toString().match(/Error: ([0-9]*)/)[1]
-        const messages = {
-          '2000': this.$t('coupon.message.registerNotExist'),
-          '2001': this.$t('coupon.message.registerAlready'),
-          '2002': this.$t('coupon.message.registerExpired'),
-        }
         this.$notify.error({
-          message:
-            messages[code] ||
-            this.$t('coupon.message.registerFail') + `\n(${e})`,
+          message: e.message,
           position: 'bottom-left',
           duration: 2000,
         })
       }
     },
     /**
-     * 쿠폰 사용
+     * 쿠폰 상세조회
      */
-    async couponSelect(column) {
-      try {
-        await this.$confirm(
-          this.$t('coupon.useModal.desc'),
-          this.$t('coupon.useModal.title'),
-          {
-            confirmButtonText: this.$t('coupon.useModal.submit'),
-            showCancelButton: false,
-          },
-        )
-      } catch (e) {
-        return false
-      }
-
-      try {
-        await couponService.useCoupon(column.id)
-        this.$notify.success({
-          message: this.$t('coupon.message.useSuccess'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-        this.getCoupons()
-      } catch (e) {
-        this.$notify.error({
-          message: this.$t('coupon.message.useFail') + `\n(${e})`,
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      }
+    couponSelect(row) {
+      this.showCouponDetailModal = true
+      this.activeCoupon = row
     },
   },
   created() {
     this.searchCoupons()
+    this.getAllTicketList()
   },
 }
 </script>

@@ -1,4 +1,5 @@
 import Model from '@/models/Model'
+import products from '@/models/products'
 
 export default class Plan extends Model {
   /**
@@ -7,12 +8,14 @@ export default class Plan extends Model {
    */
   constructor(json = {}) {
     super()
-    this.planName = '플랜'
-    this.product = 'REMOTE'
+    this.product = json.planProduct
+    this.planName = products[json.planProduct.toLowerCase()].label
     this.grade = 'BASIC'
-    this.workspaceUUID = 123
-    this.workspaceName = '버넥트'
-    this.workspaceProfile = require('assets/images/icon/ic-user-profile.svg')
-    this.renewalDate = new Date()
+    this.workspaceUUID = json.workspaceId
+    this.workspaceName = json.workspaceName
+    this.workspaceProfile = json.workspaceProfile
+      ? json.workspaceProfile
+      : require('assets/images/icon/ic-user-profile.svg')
+    this.renewalDate = json.renewalDate
   }
 }

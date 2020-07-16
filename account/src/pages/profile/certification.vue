@@ -42,11 +42,10 @@
 
 <script>
 import profileService from '@/services/profile'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
   layout: 'noSidebar',
-  data({ $config }) {
+  data() {
     const profile = profileService.getMyProfile()
     return {
       me: profile,
@@ -55,7 +54,7 @@ export default {
         email: profile.email,
         password: '',
       },
-      findPasswordUrl: `${urls.console[$config.TARGET_ENV]}/find`,
+      findPasswordUrl: `${this.$config.console}/find`,
     }
   },
   methods: {

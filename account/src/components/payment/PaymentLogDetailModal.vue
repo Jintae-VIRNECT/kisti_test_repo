@@ -37,9 +37,11 @@
           <dd>{{ paymentLogDetail.no }}</dd>
         </dl>
         <el-divider />
-        <el-button type="simple" class="wide" @click="showCardSlip = true">
-          {{ $t('payment.logDetail.creditCardSlip') }}
-        </el-button>
+        <a :href="paymentLogDetail.slipLink" target="_blank">
+          <el-button type="simple" class="wide">
+            {{ $t('payment.logDetail.creditCardSlip') }}
+          </el-button>
+        </a>
       </el-col>
       <!-- 카드 전표 -->
       <el-col class="card-slip" :span="8" v-if="showCardSlip">
@@ -155,6 +157,9 @@ import paymentService from '@/services/payment'
 
 export default {
   mixins: [dialogMixin, columnMixin, filterMixin],
+  props: {
+    logInfo: Object,
+  },
   data() {
     return {
       paymentLogDetail: {},
@@ -162,8 +167,11 @@ export default {
     }
   },
   methods: {
-    opened() {
+    async opened() {
       this.showCardSlip = false
+      this.paymentLogDetail = await paymentService.getPaymentLogDetail(
+        this.logInfo.no,
+      )
     },
     download(url) {
       window.open(url)
@@ -174,9 +182,6 @@ export default {
       popup.document.close()
       setTimeout(() => popup.print(), 1)
     },
-  },
-  async beforeMount() {
-    this.paymentLogDetail = await paymentService.getPaymentLogDetail()
   },
 }
 </script>

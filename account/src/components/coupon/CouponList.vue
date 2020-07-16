@@ -5,36 +5,32 @@
     @row-click="select"
     @sort-change="sortChange"
   >
+    <column-default :label="$t('coupon.column.couponName')" prop="name" />
     <column-default
-      :label="$t('coupon.column.couponName')"
-      prop="name"
-      sortable="custom"
+      :label="$t('coupon.column.couponNo')"
+      prop="no"
+      :width="180"
     />
     <column-date
       :label="$t('coupon.column.registerDate')"
       prop="registerDate"
       :width="88"
-      sortable="custom"
     />
     <column-date
       :label="$t('coupon.column.expireDate')"
       prop="expiredDate"
       :width="88"
-      sortable="custom"
     />
     <column-date
       :label="$t('coupon.column.usedDate')"
-      prop="startDate"
-      prop2="endDate"
-      :width="160"
-      sortable="custom"
+      prop="usedDate"
+      :width="88"
     />
     <column-status
       :label="$t('coupon.column.status')"
       prop="status"
       :statusList="couponStatus"
       :width="120"
-      sortable="custom"
     />
     <template #empty>
       <img src="~assets/images/empty/img-coupon.png" />
@@ -58,22 +54,8 @@ export default {
     }
   },
   methods: {
-    async select(row) {
-      if (row.status === 'UNUSE') {
-        this.$emit('select', row)
-      } else if (row.status === 'USE') {
-        this.$notify.error({
-          message: this.$t('coupon.message.useAlready'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      } else if (row.status === 'EXPIRED') {
-        this.$notify.error({
-          message: this.$t('coupon.message.useExpired'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-      }
+    select(row) {
+      this.$emit('select', row)
     },
     sortChange(params) {
       this.$emit('sort-change', params)

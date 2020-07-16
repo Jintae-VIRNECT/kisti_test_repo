@@ -3,13 +3,16 @@ import Model from '@/models/Model'
 export default class Coupon extends Model {
   constructor(json) {
     super()
-    this.id = json.id
-    this.name = json.name
-    this.registerDate = json.registerDate
-    this.expiredDate = json.expiredDate
-    this.startDate = json.startDate
-    this.endDate = json.endDate
-    this.status = json.status
+    this.no = json.CouponNo
+    this.name = json.CouponName
+    this.typeCode = json.CouponTypeCode
+    this.typeName = json.CouponTypeCodeM
+    this.registerDate = json.RegYMD
+    this.expiredDate = json.ExpYMD
+    this.usedDate = json.UseYMD
+    this.applyItemId = json.ApplyItemID
+    this.applyItemName = json.ApplyItemName
+    this.status = json.StateM
   }
 }
 
