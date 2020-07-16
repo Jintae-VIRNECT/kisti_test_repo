@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * @since 2020.06.29
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:data.sql")
+})
 @AutoConfigureMockMvc
 public class ContentTargetUpdateTest {
 
@@ -49,9 +55,9 @@ public class ContentTargetUpdateTest {
     @Test
     @Transactional
     public void contentTargetUpdate_ContentState_ContentServiceException() throws Exception {
-        RequestBuilder request = put("/contents/target/{contentUUID}", "0d668d4f-7a78-43c0-999d-f0e304acbd14")
+        RequestBuilder request = put("/contents/target/{contentUUID}", "4e2cfebd-5b16-4dd6-96a4-f2c93e5e241e")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .param("oldTargetId", "183")
+                .param("oldTargetId", "136")
                 .param("targetData", "Shzf1q3pEsr4yt7Uc20e5GIueuEAkgel82sg6biCRtrkQBY%2bzTqplH4ZMHp4yxJw")
                 .param("targetType", "QR")
                 .param("userUUID", "498b1839dc29ed7bb2ee90ad6985c608");
@@ -65,9 +71,9 @@ public class ContentTargetUpdateTest {
     @Test
     @Transactional
     public void contentTargetUpdate_InvalidUserUUID_ContentServiceException() throws Exception {
-        RequestBuilder request = put("/contents/target/{contentUUID}", "2573882c-9ad6-4a5f-94bd-b7133afb04d2")
+        RequestBuilder request = put("/contents/target/{contentUUID}", "6993fa89-7bff-4414-b186-d8719730f25f")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .param("oldTargetId", "180")
+                .param("oldTargetId", "135")
                 .param("targetData", "Shzf1q3pEsr4yt7Uc20e5GIueuEAkgel82sg6biCRtrkQBY%2bzTqplH4ZMHp4yxJw")
                 .param("targetType", "QR")
                 .param("userUUID", "498b1839dc29ed7bb2ee90ad69");

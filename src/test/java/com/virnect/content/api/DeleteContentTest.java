@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * @since 2020.06.29
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:data.sql")
+})
 @AutoConfigureMockMvc
 @Slf4j
 public class DeleteContentTest {
@@ -38,7 +44,7 @@ public class DeleteContentTest {
         RequestBuilder request = delete("/contents")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content("{\"contentUUIDs\": [\"72e10229-0be8-4c64-a319-7c7a9612fe23\", \"0d668d4f-7a78-43c0-999d-f0e304acbd14\"], \"workspaceUUID\":\"4d6eab0860969a50acbfa4599fbb5ae8\"}");
+                .content("{\"contentUUIDs\": [\"4e2cfebd-5b16-4dd6-96a4-f2c93e5e241e\"], \"workspaceUUID\":\"4d6eab0860969a50acbfa4599fbb5ae8\"}");
                 //.content("contentDeleteRequest", "{\"contentUUIDs\": [\"72e10229-0be8-4c64-a319-7c7a9612fe23\", \"0d668d4f-7a78-43c0-999d-f0e304acbd14\"], \"workspaceUUID\":\"4d6eab0860969a50acbfa4599fbb5ae8\"}");
 
         this.mockMvc.perform(request)
@@ -66,7 +72,7 @@ public class DeleteContentTest {
         RequestBuilder request = delete("/contents")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content("{\"contentUUIDs\": [\"72e10229-0be8-4c64-a319-7c7a9612fe23\", \"0d668d4f-7a78-43c0-999d-f0e304acbd14\"], \"workspaceUUID\":\"433\"}");
+                .content("{\"contentUUIDs\": [\"6993fa89-7bff-4414-b186-d8719730f25f\"], \"workspaceUUID\":\"433\"}");
 
         this.mockMvc.perform(request)
                 .andDo(print())

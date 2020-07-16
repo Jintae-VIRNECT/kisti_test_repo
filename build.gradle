@@ -80,10 +80,14 @@ dependencies {
     // Zipkin
     implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
     implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
+
+    runtimeOnly 'com.h2database:h2:1.4.199'
+
 }
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles","test")
 }
 
 
