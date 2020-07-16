@@ -1,5 +1,10 @@
 pipeline {
   agent any
+  environment {
+  GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+  REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+  }
+  
   stages {
     stage('Pre-Build') {
       steps {
@@ -7,6 +12,7 @@ pipeline {
         catchError() {
           sh 'chmod +x ./gradlew'
           sh './gradlew clean'
+          sh './gradlew cleanQuerydslSourcesDir'
           sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
@@ -26,7 +32,9 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t pf-eureka .'
+            catchError() {
+              sh 'docker build -t pf-eureka .'
+            }
           }
         }
 
@@ -35,7 +43,10 @@ pipeline {
             branch 'staging'
           }
           steps {
-            sh 'docker build -t pf-eureka .'
+            catchError() {
+              sh 'git checkout ${GIT_TAG}'
+              sh 'docker build -t pf-eureka:${GIT_TAG} .'
+            }
           }
         }
 
@@ -44,10 +55,12 @@ pipeline {
             branch 'master'
           }
           steps {
-            sh 'docker build -t pf-eureka .'
+            catchError() {
+              sh 'git checkout ${GIT_TAG}'
+              sh 'docker build -t pf-eureka:${GIT_TAG} .'
+            }
           }
         }
-
       }
     }
 
@@ -80,9 +93,11 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8761:8761 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-eureka pf-eureka'
-            sh 'docker image prune -f'
+            catchError() {
+              sh 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+              sh 'docker run -p 8761:8761 -e "SPRING_PROFILES_ACTIVE=develop" -d --restart=always --name=pf-eureka pf-eureka'
+              sh 'docker image prune -a -f'
+            }
           }
         }
 
@@ -94,89 +109,99 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-eureka").push("$GIT_COMMIT")
+                  docker.image("pf-eureka:${GIT_TAG}").push("${GIT_TAG}")
                 }
               }
 
               script {
                 sshPublisher(
-                        continueOnError: false, failOnError: true,
-                        publishers: [
-                                sshPublisherDesc(
-                                        configName: 'aws-bastion-deploy-qa',
-                                        verbose: true,
-                                        transfers: [
-                                                sshTransfer(
-                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging'  -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: 'docker image prune -f'
-                                                )
-                                        ]
-                                )
-                        ]
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-qa',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -a -f'
+                        )
+                      ]
+                    )
+                  ]
                 )
               }
             }
           }
         }
 
+
         stage('Master Branch') {
           when {
             branch 'master'
+
           }
           steps {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-eureka").push("$GIT_COMMIT")
+                  docker.image("pf-eureka:${GIT_TAG}").push("${GIT_TAG}")
                 }
               }
 
               script {
                 sshPublisher(
-                        continueOnError: false, failOnError: true,
-                        publishers: [
-                                sshPublisherDesc(
-                                        configName: 'aws-bastion-deploy-prod',
-                                        verbose: true,
-                                        transfers: [
-                                                sshTransfer(
-                                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: 'count=`docker ps -a | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_COMMIT}"
-                                                ),
-                                                sshTransfer(
-                                                        execCommand: 'docker image prune -f'
-                                                )
-                                        ]
-                                )
-                        ]
+                  continueOnError: false, failOnError: true,
+                  publishers: [
+                    sshPublisherDesc(
+                      configName: 'aws-bastion-deploy-prod',
+                      verbose: true,
+                      transfers: [
+                        sshTransfer(
+                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+                        ),
+                        sshTransfer(
+                          execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                        ),
+                        sshTransfer(
+                          execCommand: 'docker image prune -a -f'
+                        )
+                      ]
+                    )
+                  ]
                 )
+              }
+              script {
+                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                def payload = """
+                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                """                             
+
+                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
               }
             }
           }
         }
       }
     }
-  }
 
+  }
   post {
     always {
       emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
