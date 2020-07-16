@@ -4,15 +4,14 @@ pipeline {
   GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
   REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
   }
-  
+
   stages {
     stage('Pre-Build') {
       steps {
         echo 'Pre-Build Stage'
         catchError() {
           sh 'chmod +x ./gradlew'
-          sh './gradlew clean'
-          sh './gradlew cleanQuerydslSourcesDir'
+          sh './gradlew clean'          
           sh './gradlew build -x test'
           sh 'cp docker/Dockerfile ./'
         }
