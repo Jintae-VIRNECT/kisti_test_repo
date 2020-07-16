@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
+const reader = require('./server/reader')
+const urls = reader.getURLs()
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers['user-agent']
@@ -67,6 +69,11 @@ router.get('/OSS/*', function(req, res) {
 
 router.get('/OSS', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+})
+
+router.get('/urls', function(req, res) {
+  res.header('Content-Type', 'application/json')
+  res.send(urls)
 })
 
 router.get('/*', function(req, res) {

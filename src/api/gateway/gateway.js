@@ -5,30 +5,17 @@
 
 // import axios from 'api/axios'
 import { merge } from 'lodash'
-import Axios from 'axios'
 import Cookies from 'js-cookie'
-import urls from '@/server/urls'
 import API from './api'
 import logger from 'utils/logger'
-
-const TOKEN = Cookies.get('accessToken')
-const axios = Axios.create({
-  timeout: 10000,
-  withCredentials: false,
-  headers: {
-    'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
-    'Content-Type': 'application/json',
-    common: {
-      Authorization: `Bearer ${TOKEN}`,
-    },
-  },
-  // baseURL: urls.api[process.env.TARGET_ENV],
-  baseURL: 'https://192.168.6.4:4443',
-})
+import axios from '../axios'
 
 const URL = API
+const TOKEN = Cookies.get('accessToken')
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
+
+axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 
 /**
  * Common request handler
@@ -174,6 +161,11 @@ const errorHandler = function(err) {
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
   logger('TOKEN::', axios.defaults.headers)
+}
+
+export const setBaseURL = baseURL => {
+  axios.defaults.baseURL = baseURL
+  logger('BASE_URL::', baseURL)
 }
 
 export default sender

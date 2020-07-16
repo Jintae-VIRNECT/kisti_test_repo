@@ -41,12 +41,12 @@ import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
-    const account = await auth.init()
+    const authInfo = await auth.init()
     if (!auth.isLogin) {
       auth.login()
     } else {
       next(vm => {
-        vm.init(account)
+        vm.init(authInfo)
       })
     }
   },
@@ -76,7 +76,10 @@ export default {
       'setRecord',
       'setAllow',
     ]),
-    init(account) {
+    init(authInfo) {
+      const account = authInfo.account
+      const urls = authInfo.urls
+      window.urls = urls
       this.updateAccount(account.myInfo)
       this.initWorkspace(account.myWorkspaces)
       this.$nextTick(() => {
