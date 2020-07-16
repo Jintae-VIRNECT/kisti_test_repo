@@ -4,6 +4,8 @@ spring:
   thymeleaf:
     cache: false
     mode: HTML
+  zipkin:
+    base-url: http://stgzipkin.virnect.com
 
 eureka:
   instance:
@@ -11,7 +13,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://stgeureka.virnect.com/eureka
-
 
 logging:
   level:

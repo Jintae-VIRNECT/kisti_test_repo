@@ -1,7 +1,5 @@
 import locale from 'element-ui/lib/locale/lang/ko'
 
-console.log('한궈')
-
 const files = require.context('.', false, /\.json$/)
 const modules = {}
 
