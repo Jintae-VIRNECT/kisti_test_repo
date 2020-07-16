@@ -96,6 +96,7 @@ export default {
   methods: {
     buy() {
       window.location = urls.pay[process.env.TARGET_ENV]
+      this.logger('라이센스 구입')
     },
   },
 }

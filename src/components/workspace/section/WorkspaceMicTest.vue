@@ -102,7 +102,7 @@ export default {
         const soundMeter = new SoundMeter(this.audioContext)
         soundMeter.connectToSource(stream, e => {
           if (e) {
-            alert(e)
+            console.error(e)
             return
           }
           setInterval(() => {

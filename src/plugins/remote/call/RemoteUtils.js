@@ -1,14 +1,21 @@
 import Store from 'stores/remote/store'
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import _, { addSubscriber, removeSubscriber } from './Remote'
+
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
+import { TYPE } from 'configs/chat.config'
+
+import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
+    const streamObj = getUserObject(event.stream)
+    Store.commit('addStream', streamObj)
     const subscriber = session.subscribe(event.stream, '', () => {
-      const streamObj = getUserObject(subscriber.stream)
-      Store.commit('addStream', streamObj)
+      Store.commit('updateParticipant', {
+        connectionId: streamObj.connectionId,
+        stream: event.stream.mediaStream,
+      })
       _.sendResolution()
       _.control(CONTROL.POINTING, Store.getters['allow'].pointing)
       _.control(CONTROL.LOCAL_RECORD, Store.getters['allow'].localRecord)
@@ -58,10 +65,10 @@ export const addSessionEventListener = session => {
   // session.on(SIGNAL.AR_FEATURE, event => {
   //   if (session.connection.connectionId === event.from.connectionId) return
   //   const data = JSON.parse(event.data)
-  //   if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+  //   if (data.type === AR_FEATURE.FEATURE) {
   //     Store.commit('updateParticipant', {
   //       connectionId: event.from.connectionId,
-  //       arFeature: data.hasArFeature,
+  //       hasArFeature: data.hasArFeature,
   //     })
   //   }
   // })
@@ -118,7 +125,7 @@ export const addSessionEventListener = session => {
   //   const data = JSON.parse(event.data)
   //   if (data.type === CAPTURE_PERMISSION.RESPONSE) {
   //     Store.commit('updateParticipant', {
-  //       connectionId: data.from.connectionId,
+  //       connectionId: event.from.connectionId,
   //       permission: data.isAllowed,
   //     })
   //   }
@@ -137,11 +144,11 @@ export const addSessionEventListener = session => {
     const chatBuilder = new ChatMsgBuilder()
       .setName(participants[idx].nickname)
       .setText(data.replace(/\</g, '&lt;'))
-      .setType('opponent')
+      .setType(TYPE.OPPONENT)
 
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chatBuilder.setType('me')
+      chatBuilder.setType(TYPE.ME)
     }
 
     Store.commit('addChat', chatBuilder.build())
@@ -158,7 +165,7 @@ export const addSessionEventListener = session => {
     let data = JSON.parse(event.data)
 
     const chatBuilder = new ChatMsgBuilder()
-      .setType('opponent')
+      .setType(TYPE.OPPONENT)
       .setName(participants[idx].nickname)
       .setFile([
         {
@@ -170,7 +177,7 @@ export const addSessionEventListener = session => {
 
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
-      chatBuilder.setType('me')
+      chatBuilder.setType(TYPE.ME)
     }
 
     Store.commit('addChat', chatBuilder.build())
@@ -182,7 +189,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-export const getUserObject = stream => {
+const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
@@ -206,7 +213,8 @@ export const getUserObject = stream => {
 
   streamObj = {
     id: uuid,
-    stream: stream.mediaStream,
+    // stream: stream.mediaStream,
+    stream: null,
     // connection: stream.connection,
     connectionId: stream.connection.connectionId,
     nickname: participant.nickname,

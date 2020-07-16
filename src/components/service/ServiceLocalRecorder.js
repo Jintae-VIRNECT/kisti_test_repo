@@ -239,6 +239,10 @@ export default {
           }
           break
         default:
+          console.error(
+            'Unknown local record target ::',
+            this.localRecordTarget,
+          )
           break
       }
       return streams

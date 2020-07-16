@@ -37,9 +37,6 @@ export default {
       licenseData: licenseData.licenseInfo,
     }
   },
-  mounted() {
-    console.log(licenseData)
-  },
 }
 </script>
 

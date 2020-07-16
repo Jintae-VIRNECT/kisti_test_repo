@@ -173,7 +173,7 @@ const errorHandler = function(err) {
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  logger('TOKEN::'.axios.defaults.headers)
+  logger('TOKEN::', axios.defaults.headers)
 }
 
 export default sender

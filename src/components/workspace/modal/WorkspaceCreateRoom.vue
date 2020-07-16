@@ -112,7 +112,7 @@ export default {
       this.users = inviteList.memberInfoList
       this.selection = []
     },
-    async startRemote(roomInfo) {
+    async startRemote(info) {
       try {
         const selectedUser = []
 
@@ -122,9 +122,9 @@ export default {
         selectedUser.push(this.account.uuid)
 
         const createdRoom = await createRoom({
-          file: roomInfo.imageFile,
-          title: roomInfo.title,
-          description: roomInfo.description,
+          file: info.imageFile,
+          title: info.title,
+          description: info.description,
           leaderId: this.account.uuid,
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
@@ -134,21 +134,15 @@ export default {
         if (joinRtn) {
           this.$eventBus.$emit('popover:close')
 
-          const params = {
-            service: KEY.SERVICE_TYPE,
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            targetUserIds: selectedUser,
-            event: EVENT.INVITE,
-            contents: {
-              roomSessionId: createdRoom.sessionId,
-              roomId: createdRoom.roomId,
-              nickName: this.account.nickname,
-              profile: this.account.profile,
-            },
+          const contents = {
+            roomSessionId: createdRoom.sessionId,
+            roomId: createdRoom.roomId,
+            title: info.title,
+            nickName: this.account.nickname,
+            profile: this.account.profile,
           }
 
-          const rtn = await sendPush(params)
+          const rtn = await sendPush(EVENT.INVITE, selectedUser, contents)
           console.log(rtn)
 
           const roomInfo = await getRoomInfo({

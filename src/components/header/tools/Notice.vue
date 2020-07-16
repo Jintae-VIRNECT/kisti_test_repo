@@ -153,32 +153,18 @@ export default {
       }
     },
     async inviteDenied(userId) {
-      const params = {
-        service: KEY.SERVICE_TYPE,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-        targetUserIds: [userId],
-        event: EVENT.INVITE_DENIED,
-        contents: {
-          nickName: this.account.nickname,
-        },
+      const contents = {
+        nickName: this.account.nickname,
       }
 
-      await sendPush(params)
+      await sendPush(EVENT.INVITE_DENIED, [userId], contents)
     },
     acceptInvite(body) {
-      const params = {
-        service: KEY.SERVICE_TYPE,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-        targetUserIds: [body.userId],
-        event: EVENT.INVITE_ACCEPTED,
-        contents: {
-          nickName: this.account.nickname,
-        },
+      const contents = {
+        nickName: this.account.nickname,
       }
 
-      sendPush(params)
+      sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
       this.joinRoom(body.contents.roomId)
     },
   },
