@@ -9,9 +9,13 @@ import { allowCamera } from 'utils/testing'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
+    const streamObj = getUserObject(event.stream)
+    Store.commit('addStream', streamObj)
     const subscriber = session.subscribe(event.stream, '', () => {
-      const streamObj = getUserObject(subscriber.stream)
-      Store.commit('addStream', streamObj)
+      Store.commit('updateParticipant', {
+        connectionId: streamObj.connectionId,
+        stream: event.stream.mediaStream,
+      })
       _.sendResolution()
       _.control(CONTROL.POINTING, Store.getters['allow'].pointing)
       _.control(CONTROL.LOCAL_RECORD, Store.getters['allow'].localRecord)
@@ -64,7 +68,7 @@ export const addSessionEventListener = session => {
   //   if (data.type === AR_FEATURE.FEATURE) {
   //     Store.commit('updateParticipant', {
   //       connectionId: event.from.connectionId,
-  //       arFeature: data.hasArFeature,
+  //       hasArFeature: data.hasArFeature,
   //     })
   //   }
   // })
@@ -121,7 +125,7 @@ export const addSessionEventListener = session => {
   //   const data = JSON.parse(event.data)
   //   if (data.type === CAPTURE_PERMISSION.RESPONSE) {
   //     Store.commit('updateParticipant', {
-  //       connectionId: data.from.connectionId,
+  //       connectionId: event.from.connectionId,
   //       permission: data.isAllowed,
   //     })
   //   }
@@ -185,7 +189,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-export const getUserObject = stream => {
+const getUserObject = stream => {
   const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
@@ -209,7 +213,8 @@ export const getUserObject = stream => {
 
   streamObj = {
     id: uuid,
-    stream: stream.mediaStream,
+    // stream: stream.mediaStream,
+    stream: null,
     // connection: stream.connection,
     connectionId: stream.connection.connectionId,
     nickname: participant.nickname,
