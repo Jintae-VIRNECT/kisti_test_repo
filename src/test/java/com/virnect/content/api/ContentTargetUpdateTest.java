@@ -67,20 +67,4 @@ public class ContentTargetUpdateTest {
                 .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4009")))
                 .andExpect(result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
     }
-
-    @Test
-    @Transactional
-    public void contentTargetUpdate_InvalidUserUUID_ContentServiceException() throws Exception {
-        RequestBuilder request = put("/contents/target/{contentUUID}", "6993fa89-7bff-4414-b186-d8719730f25f")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .param("oldTargetId", "135")
-                .param("targetData", "Shzf1q3pEsr4yt7Uc20e5GIueuEAkgel82sg6biCRtrkQBY%2bzTqplH4ZMHp4yxJw")
-                .param("targetType", "QR")
-                .param("userUUID", "498b1839dc29ed7bb2ee90ad69");
-
-        this.mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4015")))
-                .andExpect(result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
-    }
 }
