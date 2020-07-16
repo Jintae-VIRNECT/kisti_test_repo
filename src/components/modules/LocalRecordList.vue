@@ -239,7 +239,7 @@ export default {
   border-radius: 0.4286rem;
 }
 .modal.record-list-modal .modal--header {
-  border-bottom: 1px solid rgba(128, 128, 128, 0.27);
+  border-bottom: 1px solid rgba(#808080, 0.27);
   border-radius: 0.4286rem 0.4286rem 0px 0px;
 }
 
