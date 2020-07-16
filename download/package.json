@@ -20,6 +20,7 @@
     "element-ui": "^2.13.0",
     "js-file-download": "^0.4.12",
     "nuxt": "^2.0.0",
+    "nuxt-composition-api": "^0.10.2",
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {
