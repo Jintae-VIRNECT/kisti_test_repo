@@ -61,7 +61,7 @@ export const addSessionEventListener = session => {
   // session.on(SIGNAL.AR_FEATURE, event => {
   //   if (session.connection.connectionId === event.from.connectionId) return
   //   const data = JSON.parse(event.data)
-  //   if (data.type === AR_FEATURE.HAS_AR_FEATURE) {
+  //   if (data.type === AR_FEATURE.FEATURE) {
   //     Store.commit('updateParticipant', {
   //       connectionId: event.from.connectionId,
   //       arFeature: data.hasArFeature,
