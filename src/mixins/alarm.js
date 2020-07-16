@@ -2,7 +2,6 @@ const ALARM_DURATION = 3000
 const ALARM_DURATION_BUTTON = 30000
 
 const buildTemplate = payload => {
-  console.log(payload)
   let icon = payload.icon
   if (payload.type === 'info' || payload.type === 'license') {
     icon = require('assets/image/ic_system.svg')
