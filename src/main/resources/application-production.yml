@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: eureka-server
+  zipkin:
+    base-url: http://zipkin.virnect.com
 
 eureka:
   instance:
@@ -13,4 +15,3 @@ eureka:
     fetch-registry: false
   server:
     enable-self-preservation: false
-
