@@ -57,6 +57,10 @@ dependencies {
 
     // Spring Data Envers - Data History Management
     implementation 'org.springframework.data:spring-data-envers'
+
+    // Zipkin
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 }
 
 test {
