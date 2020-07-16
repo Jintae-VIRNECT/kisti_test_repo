@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
  * @description
  * @since 2020.05.10
  */
-@Profile({"local", "develop", "staging", "production"})
+@Profile({"local", "develop", "staging", "production", "test"})
 @Configuration
 public class AWSConfiguration {
 

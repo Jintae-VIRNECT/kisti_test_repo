@@ -1,24 +1,21 @@
 package com.virnect.content.dao;
 
-import com.querydsl.core.QueryFactory;
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.QTuple;
 import com.querydsl.jpa.JPQLQuery;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
 import com.virnect.content.domain.QTarget;
 import com.virnect.content.domain.YesOrNo;
-import com.virnect.content.dto.response.ContentCountResponse;
+import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,9 +40,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         // apply search keyword
         if (search != null) {
-            query = query.where( qContent.name.contains(search)
-                                 .or(qContent.userUUID.in(userUUIDList))
-                                 .or(qContent.userUUID.eq(search)));
+            query = query.where(qContent.name.contains(search)
+                    .or(qContent.userUUID.in(userUUIDList))
+                    .or(qContent.userUUID.eq(search)));
         }
 
         if (userUUID != null) {
@@ -104,9 +101,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         QContent qContent = QContent.content;
 
         Long sumSize = from(qContent)
-            .select(qContent.size.sum())
-            .where(qContent.workspaceUUID.eq(workspaceUUID))
-            .fetchOne();
+                .select(qContent.size.sum())
+                .where(qContent.workspaceUUID.eq(workspaceUUID))
+                .fetchOne();
 
         return sumSize;
     }
@@ -129,14 +126,41 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         List<Map<String, Object>> mapList = new ArrayList<>();
 
-        List<Tuple> tupleList =  from(qContent)
-                .select( qContent.userUUID.as("userUUID")
-                       , qContent.id.count().as("contentCount"))
+        List<Tuple> tupleList = from(qContent)
+                .select(qContent.userUUID.as("userUUID")
+                        , qContent.id.count().as("contentCount"))
                 .where(qContent.workspaceUUID.eq(workspaceUUID))
                 .where(qContent.userUUID.in(userUUIDList))
                 .groupBy(qContent.userUUID)
                 .fetch();
 
         return tupleList;
+    }
+
+    @Override
+    public ContentResourceUsageInfoResponse calculateResourceUsageAmountByWorkspaceId(String workspaceId) {
+        QContent qContent = QContent.content;
+        Tuple result = from(qContent)
+                .select(qContent.workspaceUUID,
+                        qContent.size.sum().as("storageUsage"),
+                        qContent.downloadHits.sum().as("totalHit")
+                )
+                .where(qContent.workspaceUUID.eq(workspaceId)).fetchOne();
+
+        Long totalStorageUsage = result.get(qContent.size.sum().as("storageUsage"));
+        Long totalHits = result.get(qContent.downloadHits.sum().as("totalHit"));
+
+        if (totalStorageUsage == null) {
+            totalStorageUsage = 0L;
+        }
+
+        if (totalHits == null) {
+            totalHits = 0L;
+        }
+
+        totalStorageUsage /= 1024 * 1024;
+
+
+        return new ContentResourceUsageInfoResponse(workspaceId, totalStorageUsage, totalHits, LocalDateTime.now());
     }
 }

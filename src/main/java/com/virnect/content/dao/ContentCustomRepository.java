@@ -2,6 +2,7 @@ package com.virnect.content.dao;
 
 import com.querydsl.core.Tuple;
 import com.virnect.content.domain.Content;
+import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,4 +27,5 @@ public interface ContentCustomRepository {
 
     List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
+    ContentResourceUsageInfoResponse calculateResourceUsageAmountByWorkspaceId(String workspaceId);
 }

@@ -31,7 +31,7 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "staging", "production"})
+@Profile({"local", "develop", "staging", "production", "test"})
 @Component
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {

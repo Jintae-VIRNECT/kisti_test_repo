@@ -27,14 +27,11 @@ import com.virnect.content.global.util.AES256EncryptUtils;
 import com.virnect.content.global.util.QRcodeGenerator;
 import com.virnect.content.infra.file.download.FileDownloadService;
 import com.virnect.content.infra.file.upload.FileUploadService;
-import com.virnect.content.infra.file.upload.S3UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.hibernate.service.spi.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -49,7 +46,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
@@ -98,6 +94,7 @@ public class ContentService {
     private static final YesOrNo INIT_IS_CONVERTED = YesOrNo.NO;
     private static final YesOrNo INIT_IS_DELETED = YesOrNo.NO;
     private static final Long MEGA_BYTE = 1024L * 1024L;
+
     /**
      * 콘텐츠 업로드
      * 컨텐츠UUID는 컨텐츠를 관리하기 위한 서버에서의 식별자이면서 동시에 파일명
@@ -108,6 +105,17 @@ public class ContentService {
      */
     @Transactional
     public ApiResponse<ContentUploadResponse> contentUpload(final ContentUploadRequest uploadRequest) {
+        /**
+         * 1.   콘텐츠 업로드 파일 저장
+         * 2-1. 프로퍼티 메타데이터 생성
+         * 2-2. 업로드 컨텐츠 정보 수집
+         * 3.   컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
+         * 3-1. 메타데이터 파싱
+         * 3-2. 씬그룹 데이터 파싱
+         * 3-3. 씬그룹 데이터 컨텐츠에 추가
+         * 4.   업로드 요청 컨텐츠 정보 저장
+         */
+
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
@@ -147,13 +155,17 @@ public class ContentService {
             addSceneGroupToContent(content, content.getMetadata());
 
             // 타겟 저장 후 타겟데이터 반환
-            String targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
-            // 추후 반영 예정
-//            if (isExistTargetData(uploadRequest.getTargetData())){
-//                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-//            } else {
-//                targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
-//            }
+            String targetData = null;
+
+            // contentDuplicate의 경우 targetData가 없을 수 있으므로 체크한다.
+            if (Objects.nonNull(uploadRequest.getTargetData())) {
+                // 이미 있는 타겟 데이터인지 체크
+                if (isExistTargetData(uploadRequest.getTargetData())) {
+                    throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+                } else {
+                    targetData = addTargetToContent(content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+                }
+            }
 
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
@@ -177,6 +189,11 @@ public class ContentService {
         }
     }
 
+    /**
+     * 컨텐츠 객체에 씬그룹 추가
+     * @param content
+     * @param metadata
+     */
     private void addSceneGroupToContent(Content content, String metadata) {
         try {
             // 3-1. 메타데이터 파싱
@@ -202,7 +219,7 @@ public class ContentService {
         String imgPath = null;
 
         if (Objects.nonNull(targetData)) {
-          imgPath = decodeData(targetData);
+            imgPath = decodeData(targetData);
         }
 
         Target target = Target.builder()
@@ -220,14 +237,14 @@ public class ContentService {
     }
 
     private Boolean isExistTargetData(String targetData) {
-       Boolean flag = false;
+        Boolean flag = false;
 
-       int targetCnt = this.targetRepository.countByData(targetData);
+        int targetCnt = this.targetRepository.countByData(targetData);
 
-       if (targetCnt > 0) {
-           flag = true;
-       }
-       return flag;
+        if (targetCnt > 0) {
+            flag = true;
+        }
+        return flag;
     }
 
     private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
@@ -261,14 +278,14 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
-        String targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+        String targetData = null;
 
-        // 이미 있는 타겟 데이터인지 체크 - 추후 반영 예정
-//        if (isExistTargetData(targetRequest.getTargetData())) {
-//            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-//        } else {
-//            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
-//        }
+        // 이미 있는 타겟 데이터인지 체크
+        if (isExistTargetData(targetRequest.getTargetData())) {
+            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+        } else {
+            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
+        }
 
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
@@ -292,8 +309,12 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        // [2020-7-15 오후 6:07] 강현석
+        // 메이크에서 이미 업로드 되어 있는 컨텐츠에 업로드할 때 업로드한 사용자가 다르면 다음과 같은 리턴과 함께 업로드가 되지 않습니다.
+        // "code":4015, "message":"An error occurred in the request. Because it is NOT ownership.
+        // 혹시 업로드할 때 사용자의 확인을 해제하여 주실 수 있으신지요? 해당 부분에 관련하여 수환님과는 논의가 되었습니다.
+        // if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
+        //     throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태에 관한 내용 없앨지 논의 필요)
         if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
@@ -304,7 +325,6 @@ public class ContentService {
         Target target = this.targetRepository.findById(oldTargetId).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
         // 변경
         target.setType(TargetType.valueOf(targetRequest.getTargetType()));
-//        target.setData(targetRequest.getTargetData());
         this.targetRepository.save(target);
 
         ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
@@ -332,15 +352,20 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
 
         // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        // [오후 6:07] 강현석
+        // 허지용님. 메이크에서 이미 업로드 되어 있는 컨텐츠에 업로드할 때 업로드한 사용자가 다르면 다음과 같은 리턴과 함께 업로드가 되지 않습니다.
+        // "code":4015, "message":"An error occurred in the request. Because it is NOT ownership.
+        // 혹시 업로드할 때 사용자의 확인을 해제하여 주실 수 있으신지요? 해당 부분에 관련하여 수환님과는 논의가 되었습니다.
+        // 이런 이유로 컨텐츠 소유자 확인하지 않음.
+        // if (!targetContent.getUserUUID().equals(updateRequest.getUserUUID()))
+        //     throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // 수정할 수 없는 조건(공유 상태 관련 논의 필요)
         // 2020/06/08 공유 상태 조건은 제거 (공유 상태 제한을 건 이유 :
         // [오전 10:23] 김수환
         // 네 ~ 승호님이 말씀하신 상태는 SMIC 사업때 작업 관리 중인 상태에서 콘텐츠 업데이트 시 문제 발생하여 막아두자고 해서 임의로 막아둔 것
         // 이여서 승호님 말씀대로 변경하는 것이 제품 적용에 맞는 방향입니다 (smile))
-        if (targetContent.getConverted() != YesOrNo.NO  || targetContent.getDeleted() != YesOrNo.NO) {
+        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
         }
 
@@ -368,13 +393,15 @@ public class ContentService {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
 
-        // 5 수정 컨텐츠 파일 크기 반영
-        targetContent.setSize(updateRequest.getContent().getSize());
+        // 5. 컨텐츠 소유자 변경
+        targetContent.setUserUUID(updateRequest.getUserUUID());
 
-        // 6. 컨텐츠명 변경
+        // 6. 수정 컨텐츠 파일 크기 반영
+        targetContent.setSize(updateRequest.getContent().getSize());
+        // 7. 컨텐츠명 변경
         targetContent.setName(updateRequest.getName());
 
-        // 7. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
+        // 8. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
         JsonObject metaObject = makeMetadata(updateRequest.getName(), updateRequest.getUserUUID(), updateRequest.getProperties());
 
         String metadata = metaObject.toString();
@@ -386,7 +413,7 @@ public class ContentService {
         // 속성 메타데이터 변경
         targetContent.setProperties(updateRequest.getProperties());
 
-        // 7-1. 컨텐츠 씬그룹 수정
+        // 8-1. 컨텐츠 씬그룹 수정
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, metadata);
 
@@ -407,7 +434,7 @@ public class ContentService {
 
         // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
         if (!originTargetData.equals(targetData)) {
-             // 기존 타겟 데이터 삭제
+            // 기존 타겟 데이터 삭제
             this.targetRepository.deleteByContentId(targetContent.getId());
 
             // 새로운 타겟 데이터 입력
@@ -505,9 +532,9 @@ public class ContentService {
      * @return - 파일 삭제 결과
      */
     @Transactional
-    public ApiResponse<ContentDeleteListResponse> contentDelete(ContentDeleteRequest contentDeleteRequest)  {
+    public ApiResponse<ContentDeleteListResponse> contentDelete(ContentDeleteRequest contentDeleteRequest) {
         final String[] contentUUIDs = contentDeleteRequest.getContentUUIDs();
-        final String workspaceUUID  = contentDeleteRequest.getWorkspaceUUID();
+        final String workspaceUUID = contentDeleteRequest.getWorkspaceUUID();
 
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
@@ -595,8 +622,7 @@ public class ContentService {
                 log.info("content.getPath() = {}", content.getPath());
 
                 // NULL 체크
-                if (this.fileUploadService.getFile(content.getPath()) != null)
-                {
+                if (this.fileUploadService.getFile(content.getPath()) != null) {
                     if (this.fileUploadService.getFile(content.getPath()).exists()) {
                         // 파일이 없다면 파일삭제는 무시함.
                         boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
@@ -622,7 +648,7 @@ public class ContentService {
      * @param workspaceUUID - 워크스페이스 식별자
      * @param userUUID      - 사용자 식별자
      * @param search        - 검색어(컨텐츠명 / 사용자명)
-     * @param shared       - 공유여부
+     * @param shared        - 공유여부
      * @param pageable      - 페이징
      * @return - 컨텐츠 목록
      */
@@ -653,13 +679,13 @@ public class ContentService {
 
         contentInfoList = contentPage.stream().map(content -> {
             List<ContentTargetResponse> targets = content.getTargetList().stream().map(target -> {
-                        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-                                .id(target.getId())
-                                .data(target.getData())
-                                .type(target.getType())
-                                .imgPath(target.getImgPath())
-                                .build();
-                        return contentTargetResponse;
+                ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                        .id(target.getId())
+                        .data(target.getData())
+                        .type(target.getType())
+                        .imgPath(target.getImgPath())
+                        .build();
+                return contentTargetResponse;
             }).collect(Collectors.toList());
 
             ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
@@ -804,9 +830,9 @@ public class ContentService {
     @Transactional
     public ApiResponse<ContentInfoResponse> modifyContentInfo(final String contentUUID, ContentInfoRequest contentInfoRequest) {
 
-        final YesOrNo shared    = contentInfoRequest.getShared();
+        final YesOrNo shared = contentInfoRequest.getShared();
         final Types contentType = contentInfoRequest.getContentType();
-        final String userUUID   = contentInfoRequest.getUserUUID();
+        final String userUUID = contentInfoRequest.getUserUUID();
 
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
@@ -993,7 +1019,7 @@ public class ContentService {
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        if (!metadataRequest.getUserUUID().equals(content.getUserUUID())){
+        if (!metadataRequest.getUserUUID().equals(content.getUserUUID())) {
             throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
         }
 
@@ -1067,7 +1093,7 @@ public class ContentService {
 
         log.debug(">>>>> : {}", tupleList);
 
-        List<ContentCountResponse> countList  = tupleList.stream().map(tuple -> {
+        List<ContentCountResponse> countList = tupleList.stream().map(tuple -> {
             ContentCountResponse response = new ContentCountResponse();
 
             response.setUserUUID(tuple.get(0, String.class));
@@ -1080,14 +1106,14 @@ public class ContentService {
     }
 
     // property 정보 -> metadata로 변환
-    public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID){
+    public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID) {
 
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
         String contentName = content.getName();
-        String userUuid    = content.getUserUUID();
-        String properties  = content.getProperties();
+        String userUuid = content.getUserUUID();
+        String properties = content.getProperties();
 
         JsonObject metaObject = makeMetadata(contentName, userUuid, properties);
 
@@ -1111,15 +1137,16 @@ public class ContentService {
 
     /**
      * 컨텐츠의 프로퍼티를 파싱하여 메타데이터 클래스에 맞게 저장
+     *
      * @param contentName
      * @param userUuid
      * @param properties
      * @return
      */
-    public JsonObject makeMetadata(String contentName, String userUuid, String properties){
+    public JsonObject makeMetadata(String contentName, String userUuid, String properties) {
         JsonObject meta = new JsonObject();
 
-        try{
+        try {
             /*
              * TargetID
              * PropertyInfo - 1
@@ -1144,22 +1171,22 @@ public class ContentService {
             Iterator<String> sceneGroupsIter = propertyInfo1.keySet().iterator();
 
             JsonObject taskObj = new JsonObject();        // task 정보를 담을 JsonObject
-            String taskId      = propertyObj.get("TargetID").getAsString();                      // taskId
-            String taskName    = contentName;       // DB에 저장된 ContentsName 사용
+            String taskId = propertyObj.get("TargetID").getAsString();                      // taskId
+            String taskName = contentName;       // DB에 저장된 ContentsName 사용
             String managerUUID = userUuid;   // DB에 저장 된 uploaderUUID 사용
-            int subTaskTotal   = propertyInfo1.keySet().size();         // SceneGroups 하위에 있는 SceneGroup의 갯수
+            int subTaskTotal = propertyInfo1.keySet().size();         // SceneGroups 하위에 있는 SceneGroup의 갯수
 
             // task 정보 채우기
-            taskObj.addProperty("id"             , taskId);          // id
-            taskObj.addProperty("name"           , taskName);        // name
-            taskObj.addProperty("managerUUID"    , managerUUID);     // managerUUID
+            taskObj.addProperty("id", taskId);          // id
+            taskObj.addProperty("name", taskName);        // name
+            taskObj.addProperty("managerUUID", managerUUID);     // managerUUID
             taskObj.addProperty("subProcessTotal", subTaskTotal);    // subProcessTotal
 
             int i = 1;
 
             JsonArray metaSceneGroupArr = new JsonArray();
 
-            while(sceneGroupsIter.hasNext()) {    // 2
+            while (sceneGroupsIter.hasNext()) {    // 2
                 String sceneGroupKey = sceneGroupsIter.next();
 
                 JsonObject sceneGroup = propertyInfo1.getAsJsonObject(sceneGroupKey);
@@ -1171,10 +1198,10 @@ public class ContentService {
 
                 JsonObject metaSceneGroupsObj = new JsonObject();
 
-                String sceneGroupId   = "";
+                String sceneGroupId = "";
                 String sceneGroupName = sceneGroupInfo.get("sceneGroupTitle").getAsString();
 
-                if (!sceneGroupInfo.get("identifier").isJsonNull()){
+                if (!sceneGroupInfo.get("identifier").isJsonNull()) {
                     sceneGroupId = sceneGroupInfo.get("identifier").getAsString();
                 }
 
@@ -1182,9 +1209,9 @@ public class ContentService {
                     sceneGroupName = "기본 하위 작업명";
                 }
 
-                metaSceneGroupsObj.addProperty("id"      , sceneGroupId);
+                metaSceneGroupsObj.addProperty("id", sceneGroupId);
                 metaSceneGroupsObj.addProperty("priority", i);
-                metaSceneGroupsObj.addProperty("name"    , sceneGroupName);
+                metaSceneGroupsObj.addProperty("name", sceneGroupName);
 
                 // scenegroup이 있고 그 안에 scene이 없는 경우가 있다. scene이 없는 경우.
                 // scenegroup - 하위작업 / scene - 단계
@@ -1298,11 +1325,11 @@ public class ContentService {
             }
             taskObj.add("sceneGroups", metaSceneGroupArr);
 
-            log.debug(">>>>> taskObj {}",taskObj);
+            log.debug(">>>>> taskObj {}", taskObj);
 
             meta.add("contents", taskObj);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1311,11 +1338,12 @@ public class ContentService {
 
     /**
      * 라이선스 허용 최대 용량과 워크스페이스 기준 현재 총 용량 + 업로드 하는 콘텐츠의 용량을 비교
+     *
      * @param workspaceUUID
      * @param uploadContentSize
      * @return
      */
-    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize){
+    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize) {
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
@@ -1358,6 +1386,7 @@ public class ContentService {
 
     /**
      * 라이선스 총 다운로드 수와 워크스페이스 기준 총 다운로드 수를 비교
+     *
      * @param workspaceUUID
      * @return
      */
@@ -1382,7 +1411,7 @@ public class ContentService {
 
         if (maxDownload < sumDownload + 1) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
-        }else {
+        } else {
             licenseInfoResponse.setMaxDownloadHit(maxDownload);
             licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
             licenseInfoResponse.setUsableDownloadHit(maxDownload - sumDownload);
@@ -1391,7 +1420,7 @@ public class ContentService {
         return licenseInfoResponse;
     }
 
-    public String decodeData(String encodeURL){
+    public String decodeData(String encodeURL) {
         String imgPath = "";
 
         try {
@@ -1404,7 +1433,7 @@ public class ContentService {
             log.debug("{}", targetData);
 
             imgPath = getImgPath(targetData);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1415,7 +1444,7 @@ public class ContentService {
 
         String qrString = "";
 
-        try{
+        try {
             BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -1425,7 +1454,7 @@ public class ContentService {
 
             qrString = Base64.getEncoder().encodeToString(os.toByteArray());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1436,6 +1465,7 @@ public class ContentService {
 
     /**
      * get방식에서 URLEncode된 값을 pathVariable로 받을 때 URLEncoding이 풀려서 오는 케이스를 체크.
+     *
      * @param targetData
      * @return
      */
@@ -1463,5 +1493,11 @@ public class ContentService {
         }
 
         return encodedData;
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<ContentResourceUsageInfoResponse> getContentResourceUsageInfo(String workspaceId) {
+        ContentResourceUsageInfoResponse contentResourceUsageInfoResponse = contentRepository.calculateResourceUsageAmountByWorkspaceId(workspaceId);
+        return new ApiResponse<>(contentResourceUsageInfoResponse);
     }
 }
