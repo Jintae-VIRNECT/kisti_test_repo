@@ -136,7 +136,18 @@ spring:
                 messagePrefix: "PAYLETTER_BILLING_SERVER"
                 preLogger: true
                 postLogger: true
-      #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
+        - id: rabbitmq-websocket
+          uri: ws://10.0.10.143:15674
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
+                preLogger: true
+                postLogger: true
 
       globalcors:
         cors-configurations:

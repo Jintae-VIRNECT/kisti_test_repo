@@ -2,8 +2,9 @@
 RELEASE
 
 New Features
-- jwt authentication filter 동작 환경 변경 (staging, production만 동작)
-- zipkin 서버 설정 정보 추가
+- 지프킨 연동 기능 추가
+- rabbitmq 서버 라우팅 기능 추가 (메시지 서버)
+- Netty Access Log 기능 추가
 
 Bug Fixes
 - 없음
