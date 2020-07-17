@@ -51,8 +51,7 @@ export default async function({ req, store, redirect, error, $config }) {
           )}`,
         )
       } else {
-        if ($config.TARGET_ENV === 'local') throw e
-        else error(e)
+        error(e)
       }
     }
   }
