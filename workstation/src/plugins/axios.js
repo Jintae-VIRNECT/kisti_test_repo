@@ -59,7 +59,8 @@ export async function api(name, option = {}) {
       throw error
     }
   } catch (e) {
-    if (process.server) context.error(e)
+    if (process.client) $nuxt.$loading.fail()
+    else context.error(e)
     console.error(`URL: ${uri}`)
     throw e
   }
