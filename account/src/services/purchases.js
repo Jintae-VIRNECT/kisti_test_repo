@@ -25,19 +25,13 @@ export default {
       total: pageMeta.totalElements,
     }
   },
+  /**
+   * 워크스페이스 플랜 정보 조회
+   */
   async getWorkspacePlansInfo() {
     const data = await api('GET_WORKSPACE_PLAN_INFO', {
       route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
     })
     return new PlansInfo(data)
-  },
-  getStorageCapacity() {
-    return {
-      used: 68.44,
-      max: 100,
-      remain: 31.55,
-      default: 75,
-      extend: 25,
-    }
   },
 }

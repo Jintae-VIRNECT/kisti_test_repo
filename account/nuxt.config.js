@@ -49,6 +49,7 @@ module.exports = {
   /**
    * env
    */
+  debug: JSON.parse(env.NUXT_DEBUG),
   env: { NODE_ENV: process.env.NODE_ENV },
   publicRuntimeConfig: {
     TARGET_ENV: env.TARGET_ENV,
