@@ -5,6 +5,7 @@ import { store } from '@/plugins/context'
 import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
+import PlansInfo from '@/models/workspace/PlansInfo'
 
 function activeWorkspaceGetter() {
   return store.getters['auth/activeWorkspace']
@@ -199,5 +200,14 @@ export default {
       list: data.infos.map(activity => new MemberActivity(activity)),
       total: data.pageMeta.totalElements,
     }
+  },
+  /**
+   * 워크스페이스 플랜 정보 조회
+   */
+  async getWorkspacePlansInfo() {
+    const data = await api('GET_WORKSPACE_PLAN_INFO', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+    })
+    return new PlansInfo(data)
   },
 }

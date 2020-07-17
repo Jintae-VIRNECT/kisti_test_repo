@@ -16,8 +16,18 @@
             </el-card>
           </el-row>
           <el-row>
-            <!-- <workspace-storage-info />
-            <workspace-download-info /> -->
+            <plans-used
+              i18nGroup="home.plansInfo.arStorage"
+              :info="plansInfo.storage"
+            />
+            <plans-used
+              i18nGroup="home.plansInfo.arContent"
+              :info="plansInfo.viewCount"
+            />
+            <plans-used
+              i18nGroup="home.plansInfo.call"
+              :info="plansInfo.callTime"
+            />
           </el-row>
         </el-col>
         <!-- 가운데 -->
@@ -55,8 +65,7 @@
 
 <script>
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import WorkspaceStorageInfo from '@/components/home/WorkspaceStorageInfo'
-import WorkspaceDownloadInfo from '@/components/home/WorkspaceDownloadInfo'
+import PlansUsed from '@/components/home/PlansUsed'
 import CurrentMemberList from '@/components/home/CurrentMemberList'
 import CurrentContentsList from '@/components/home/CurrentContentsList'
 import CurrentResultList from '@/components/home/CurrentResultList'
@@ -64,12 +73,12 @@ import UserProfileCard from '@/components/home/UserProfileCard'
 import LinkListCard from '@/components/home/LinkListCard'
 
 import { install, guide } from '@/models/home'
+import workspaceService from '@/services/workspace'
 
 export default {
   components: {
     WorkspaceInfo,
-    WorkspaceStorageInfo,
-    WorkspaceDownloadInfo,
+    PlansUsed,
     CurrentMemberList,
     CurrentContentsList,
     CurrentResultList,
@@ -78,9 +87,17 @@ export default {
   },
   data() {
     return {
-      install: install(this.$config.TARGET_ENV),
+      install: install(this),
       guide,
+      plansInfo: {
+        storage: {},
+        viewCount: {},
+        callTime: {},
+      },
     }
+  },
+  async beforeMount() {
+    this.plansInfo = await workspaceService.getWorkspacePlansInfo()
   },
 }
 </script>
