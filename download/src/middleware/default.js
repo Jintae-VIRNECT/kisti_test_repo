@@ -1,6 +1,6 @@
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
-export default async function({ req, store, redirect, $config }) {
+export default async function({ req, store, redirect, error, $config }) {
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
     // 사용자가 로그인을 하지 않은 경우.
@@ -24,7 +24,7 @@ export default async function({ req, store, redirect, $config }) {
           )}`,
         )
       } else {
-        throw e
+        error(e)
       }
     }
   }

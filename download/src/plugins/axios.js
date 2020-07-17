@@ -1,6 +1,7 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
+import { context } from '@/plugins/context'
 
 export default function({ $axios, $config }, inject) {
   // Create a custom axios instance
@@ -53,11 +54,9 @@ export default function({ $axios, $config }, inject) {
       }
     }
 
-    if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
     try {
       const response = await axios[method](uri, params, { headers })
       const { code, data, message } = response.data
-      if (process.client) $nuxt.$loading.finish()
 
       if (code === 200) {
         return data
@@ -65,10 +64,8 @@ export default function({ $axios, $config }, inject) {
         throw new Error(`${code}: ${message}`)
       }
     } catch (e) {
-      if (process.client) {
-        $nuxt.$loading.fail()
-        $nuxt.$loading.finish()
-      }
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(e)
       console.error(`URL: ${uri}`)
       throw e
     }
