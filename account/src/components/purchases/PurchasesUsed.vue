@@ -164,10 +164,9 @@ export default {
       return this.tabs[this.activeTab].i18nGroup
     },
     basisRate() {
-      return rate(
-        this.paymentInfo.basisAvailable[this.activeTab],
-        this.paymentInfo.extendAvailable[this.activeTab],
-      )
+      const basis = this.paymentInfo.basisAvailable[this.activeTab]
+      const extend = this.paymentInfo.extendAvailable[this.activeTab]
+      return rate(basis, basis + extend)
     },
   },
 }
