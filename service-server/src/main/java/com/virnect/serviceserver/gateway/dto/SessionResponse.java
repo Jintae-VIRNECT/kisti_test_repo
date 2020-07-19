@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.gateway.dto.response;
+package com.virnect.serviceserver.gateway.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

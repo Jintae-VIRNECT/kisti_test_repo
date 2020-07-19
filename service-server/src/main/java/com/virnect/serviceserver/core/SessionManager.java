@@ -301,8 +301,8 @@ public abstract class SessionManager {
 			log.error("Data invalid format");
 			throw new RemoteServiceException(Code.GENERIC_ERROR_CODE, "Data invalid format");
 		}
-		Token tokenObj = tokenGenerator.generateToken(session.getSessionId(), role, serverMetadata,
-				kurentoTokenOptions);
+		Token tokenObj = tokenGenerator.generateToken(session.getSessionId(), role, serverMetadata, kurentoTokenOptions);
+		//Token tokenObj = tokenGenerator.generateSessionToken(session.getSessionId(), role, serverMetadata, kurentoTokenOptions);
 		session.storeToken(tokenObj);
 		session.showTokens("Token created");
 		return tokenObj.getToken();

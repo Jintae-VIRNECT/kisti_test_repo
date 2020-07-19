@@ -64,7 +64,7 @@ public class Room extends BaseTimeEntity {
     private String workspaceId;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Member> Members = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
     //private Collection<Member> Member;
 
     @Builder
@@ -95,7 +95,7 @@ public class Room extends BaseTimeEntity {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Room{" +
                 "id=" + id +
                 ", sessionId='" + sessionId + '\'' +
                 ", mediaMode='" + mediaMode + '\'' +

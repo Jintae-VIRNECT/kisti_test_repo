@@ -15,6 +15,15 @@ public enum  ErrorCode {
     ERR_ROOM_PROFILE_IMAGE_SIZE_LIMIT(4006, "Room profile image size is exceeded"),
     ERR_ROOM_MEMBER_INFO_EMPTY(4007, "Room Member information is empty"),
     ERR_ROOM_MEMBER_NOT_FOUND(4008, "Specific room member can not found"),
+    ERR_ROOM_MEMBER_IS_OVER(4009, "Room cannot join"),
+    ERR_ROOM_LICENSE_TYPE(4010, "Room license type is not allowed"),
+    ERR_ROOM_INVALID_PERMISSION(4011, "Invalid permission to the Room"),
+
+    //원격협업 유효성 정보 관련 에러
+    ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
+    ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
+    ERR_LICENSE_PRODUCT_VALIDITY(5003, "License has no product"),
+    ERR_LICENSE_UNEXPECTED_TYPE(5004, "This license is not unexpected type"),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),

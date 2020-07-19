@@ -43,6 +43,14 @@ public class Token {
 		this.kurentoTokenOptions = kurentoTokenOptions;
 	}
 
+	public Token(String token, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) {
+		this.token = token;
+		this.role = role;
+		this.serverMetadata = serverMetadata;
+		this.turnCredentials = turnCredentials;
+		this.kurentoTokenOptions = kurentoTokenOptions;
+	}
+
 	public String getToken() {
 		return token;
 	}

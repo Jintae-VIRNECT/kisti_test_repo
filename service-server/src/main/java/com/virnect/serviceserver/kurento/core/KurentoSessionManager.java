@@ -80,6 +80,7 @@ public class KurentoSessionManager extends SessionManager {
 
 	@Override
 	/* Protected by Session.closingLock.readLock */
+	//noti: joinRoom
 	public void joinRoom(Participant participant, String sessionId, Integer transactionId) {
 		Set<Participant> existingParticipants = null;
 		try {
@@ -156,10 +157,10 @@ public class KurentoSessionManager extends SessionManager {
 			try {
 				if (kSession.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
 					try {
+						//flags : session join and sessionEventHandler is here
 						existingParticipants = getParticipants(sessionId);
 						kSession.join(participant);
-						sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants,
-								transactionId, null);
+						sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
 					} finally {
 						kSession.joinLeaveLock.unlock();
 					}

@@ -76,8 +76,7 @@ public class KurentoSession extends Session {
 		checkClosed();
 		createPipeline();
 
-		KurentoParticipant kurentoParticipant = new KurentoParticipant(participant, this, this.kurentoEndpointConfig,
-				this.remoteServiceConfig, this.recordingManager);
+		KurentoParticipant kurentoParticipant = new KurentoParticipant(participant, this, this.kurentoEndpointConfig, this.remoteServiceConfig, this.recordingManager);
 		participants.put(participant.getParticipantPrivateId(), kurentoParticipant);
 
 		log.info("SESSION {}: Added participant {}", sessionId, participant);

@@ -123,13 +123,11 @@ public class CallDetailRecord {
 	public void recordSessionDestroyed(String sessionId, EndReason reason) {
 		CDREventSession e = this.sessions.remove(sessionId);
 		if (e != null) {
-			CDREventSession eventSessionEnd = new CDREventSession(e, RecordingManager.finalReason(reason),
-					System.currentTimeMillis());
+			CDREventSession eventSessionEnd = new CDREventSession(e, RecordingManager.finalReason(reason), System.currentTimeMillis());
 			this.log(eventSessionEnd);
 
 			// Summary: log closed session
-			this.log(new SessionSummary(eventSessionEnd, sessionManager.removeFinalUsers(sessionId),
-					sessionManager.removeAccumulatedRecordings(sessionId)));
+			this.log(new SessionSummary(eventSessionEnd, sessionManager.removeFinalUsers(sessionId), sessionManager.removeAccumulatedRecordings(sessionId)));
 		}
 	}
 

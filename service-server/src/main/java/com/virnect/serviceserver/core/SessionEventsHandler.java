@@ -74,8 +74,7 @@ public class SessionEventsHandler {
 		CDR.recordSessionDestroyed(sessionId, reason);
 	}
 
-	public void onParticipantJoined(Participant participant, String sessionId, Set<Participant> existingParticipants,
-			Integer transactionId, RemoteServiceException error) {
+	public void onParticipantJoined(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId, RemoteServiceException error) {
 		if (error != null) {
 			rpcNotificationService.sendErrorResponse(participant.getParticipantPrivateId(), transactionId, null, error);
 			return;
@@ -143,14 +142,11 @@ public class SessionEventsHandler {
 				JsonObject notifParams = new JsonObject();
 
 				// Metadata associated to new participant
-				notifParams.addProperty(ProtocolElements.PARTICIPANTJOINED_USER_PARAM,
-						participant.getParticipantPublicId());
+				notifParams.addProperty(ProtocolElements.PARTICIPANTJOINED_USER_PARAM, participant.getParticipantPublicId());
 				notifParams.addProperty(ProtocolElements.PARTICIPANTJOINED_CREATEDAT_PARAM, participant.getCreatedAt());
-				notifParams.addProperty(ProtocolElements.PARTICIPANTJOINED_METADATA_PARAM,
-						participant.getFullMetadata());
+				notifParams.addProperty(ProtocolElements.PARTICIPANTJOINED_METADATA_PARAM, participant.getFullMetadata());
 
-				rpcNotificationService.sendNotification(existingParticipant.getParticipantPrivateId(),
-						ProtocolElements.PARTICIPANTJOINED_METHOD, notifParams);
+				rpcNotificationService.sendNotification(existingParticipant.getParticipantPrivateId(), ProtocolElements.PARTICIPANTJOINED_METHOD, notifParams);
 			}
 		}
 		result.addProperty(ProtocolElements.PARTICIPANTJOINED_USER_PARAM, participant.getParticipantPublicId());
@@ -161,8 +157,7 @@ public class SessionEventsHandler {
 		rpcNotificationService.sendResponse(participant.getParticipantPrivateId(), transactionId, result);
 	}
 
-	public void onParticipantLeft(Participant participant, String sessionId, Set<Participant> remainingParticipants,
-			Integer transactionId, RemoteServiceException error, EndReason reason) {
+	public void onParticipantLeft(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, RemoteServiceException error, EndReason reason) {
 		if (error != null) {
 			rpcNotificationService.sendErrorResponse(participant.getParticipantPrivateId(), transactionId, null, error);
 			return;
@@ -194,7 +189,7 @@ public class SessionEventsHandler {
 	}
 
 	public void onPublishMedia(Participant participant, String streamId, Long createdAt, String sessionId,
-			MediaOptions mediaOptions, String sdpAnswer, Set<Participant> participants, Integer transactionId,
+							   MediaOptions mediaOptions, String sdpAnswer, Set<Participant> participants, Integer transactionId,
 							   RemoteServiceException error) {
 		if (error != null) {
 			rpcNotificationService.sendErrorResponse(participant.getParticipantPrivateId(), transactionId, null, error);

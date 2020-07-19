@@ -40,8 +40,7 @@ public class TokenGeneratorDefault implements TokenGenerator {
 	protected RemoteServiceBuildInfo remoteServiceBuildInfo;
 
 	@Override
-	public Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata,
-			KurentoTokenOptions kurentoTokenOptions) throws Exception {
+	public Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception {
 		String token = ServiceServerApplication.wsUrl;
 		token += "?sessionId=" + sessionId;
 		token += "&token=" + IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
@@ -58,5 +57,23 @@ public class TokenGeneratorDefault implements TokenGenerator {
 			}
 		}
 		return new Token(token, role, serverMetadata, turnCredentials, kurentoTokenOptions);
+	}
+
+	/**
+	 * todo: generateSessionToken do not use yet
+	 * @param sessionId
+	 * @param role
+	 * @param serverMetadata
+	 * @param kurentoTokenOptions
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public Token generateSessionToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception {
+		String token= "sessionId=" + sessionId;
+		token += "&token=" + IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
+				+ RandomStringUtils.randomAlphanumeric(15);
+
+		return new Token(token, role, serverMetadata, kurentoTokenOptions);
 	}
 }

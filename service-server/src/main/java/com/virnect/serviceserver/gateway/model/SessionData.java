@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.gateway.dto.request;
+package com.virnect.serviceserver.gateway.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class SessionRequest {
+public class SessionData {
     @ApiModelProperty(
             value = " Media streams will be routed through Remote Server. This Media Mode is mandatory for session recording",
             example = "ROUTED")
