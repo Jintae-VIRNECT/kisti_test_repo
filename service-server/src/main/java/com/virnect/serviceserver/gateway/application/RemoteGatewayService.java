@@ -230,57 +230,102 @@ public class RemoteGatewayService {
                 .collect(Collectors.toList());*/
     }
 
-    public ApiResponse<RoomHistoryInfoListResponse> getRoomHistoryInfoList(String userId, String search, boolean paging, Pageable pageable) {
+    public ApiResponse<RoomHistoryInfoListResponse> getRoomHistoryInfoList(String userId, final String search, boolean paging, Pageable pageable) {
         log.debug("getRoomHistoryInfoList");
-        if(!paging) {
+        if (!paging) {
             // get all member history by uuid
             List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findAllByUuid(userId);
             List<RoomHistory> roomHistoryList = new ArrayList<>();
             if (search == null) {
                 memberHistoryList.forEach(memberHistory -> {
-                    roomHistoryList.add(memberHistory.getRoomHistory());
-                });
-            } else {
-                memberHistoryList.forEach(memberHistory -> {
-                    RoomHistory roomHistory = this.roomHistoryRepository.findBySessionId(memberHistory.getSessionId());
-                    if(roomHistory != null) {
-                        roomHistoryList.add(roomHistoryRepository.findByTitleIsContaining(search));
+                    if (memberHistory.getRoomHistory() != null) {
+                        roomHistoryList.add(memberHistory.getRoomHistory());
                     }
                 });
-            }
 
-            List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
-                    .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                    .collect(Collectors.toList());
-
-            // Get Member List by Room Session Ids
-            for (RoomHistoryInfoResponse response: roomHistoryInfoList) {
-                List<MemberHistory> memberList = this.memberHistoryRepository.findAllBySessionId(response.getSessionId());
-
-                // Mapping Member List Data to Member Information List
-                List<MemberInfoResponse> memberInfoList = memberList.stream()
-                        .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
+                List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
+                        .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
                         .collect(Collectors.toList());
 
-                // find and get extra information from use-server using uuid
-                if(!memberInfoList.isEmpty()) {
-                    for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                        ApiResponse<UserInfoResponse> userInfo = this.userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                        log.debug("getUsers: " + userInfo.getData().toString());
+                // Get Member List by Room Session Ids
+                for (RoomHistoryInfoResponse response : roomHistoryInfoList) {
+                    List<MemberHistory> memberList = this.memberHistoryRepository.findAllBySessionId(response.getSessionId());
 
-                        memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                        memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                        memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                        memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                        memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                    // Mapping Member List Data to Member Information List
+                    List<MemberInfoResponse> memberInfoList = memberList.stream()
+                            .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
+                            .collect(Collectors.toList());
+
+                    // find and get extra information from use-server using uuid
+                    if (!memberInfoList.isEmpty()) {
+                        for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                            ApiResponse<UserInfoResponse> userInfo = this.userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
+                            log.debug("getUsers: " + userInfo.getData().toString());
+
+                            memberInfoResponse.setEmail(userInfo.getData().getEmail());
+                            memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
+                            memberInfoResponse.setLastName(userInfo.getData().getLastName());
+                            memberInfoResponse.setNickname(userInfo.getData().getNickname());
+                            memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                        }
+                    }
+                    // Set Member List to Room Information Response
+                    response.setMemberList(memberInfoList);
+                }
+                return new ApiResponse<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, null));
+
+            } else {
+                //first search title
+                List<RoomHistory> roomSearch = this.roomHistoryRepository.findByTitleIsContaining(search);
+                roomSearch.forEach(roomHistory -> {
+                    memberHistoryList.forEach(memberHistory -> {
+                        if (memberHistory.getRoomHistory() != null) {
+                            if (memberHistory.getSessionId().equals(roomHistory.getSessionId())) {
+                                roomHistoryList.add(memberHistory.getRoomHistory());
+                            }
+                        }
+                    });
+                });
+                List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
+                        .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
+                        .collect(Collectors.toList());
+
+                // Get Member List by Room Session Ids
+                for (RoomHistoryInfoResponse response : roomHistoryInfoList) {
+                    List<MemberHistory> memberList = this.memberHistoryRepository.findAllBySessionId(response.getSessionId());
+
+                    // Mapping Member List Data to Member Information List
+                    List<MemberInfoResponse> memberInfoList = memberList.stream()
+                            .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
+                            .collect(Collectors.toList());
+
+                    // find and get extra information from use-server using uuid
+                    if (!memberInfoList.isEmpty()) {
+                        for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                            //secondly find search
+                            ApiResponse<UserInfoResponse> userInfo = this.userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
+                            if (userInfo.getData().getNickname().contains(search)) {
+                                log.debug("getUsers: " + userInfo.getData().toString());
+                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
+                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
+                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
+                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
+                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                            } else {
+                                memberInfoList.remove(memberInfoResponse);
+                            }
+                        }
+                        // Set Member List to Room History Information Response
+                        response.setMemberList(memberInfoList);
                     }
                 }
-                // Set Member List to Room Information Response
-                response.setMemberList(memberInfoList);
+                return new ApiResponse<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, null));
             }
-            return new ApiResponse<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, null));
         } else {
             Page<RoomHistory> roomPage;
+            // get all member history by uuid
+            //List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findAllByUuid(userId);
+            //List<RoomHistory> roomHistoryList = new ArrayList<>();
 
             if(search == null) {
                 roomPage = this.roomHistoryRepository.findAll(pageable);
@@ -559,11 +604,12 @@ public class RemoteGatewayService {
         log.info("ROOM HISTORY INFO DELETE BY USER ID => [{}]", userId);
         //todo: do no delete all...
         //this.memberHistoryRepository.deleteAllByUuid(userId);
-        //this.memberHistoryRepository.
+        List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findAllByUuid(userId);
+        memberHistoryList.forEach(memberHistory -> {
+            memberHistory.setRoomHistory(null);
+            this.memberHistoryRepository.save(memberHistory);
+        });
         return new ApiResponse<>(true);
-        //List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findAllByUuid(userId);
-        // Get all room list which has userId
-        //memberHistoryList = this.memberHistoryRepository.findAllById()
     }
 
     @Transactional

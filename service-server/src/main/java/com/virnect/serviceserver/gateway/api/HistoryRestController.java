@@ -54,7 +54,7 @@ public class HistoryRestController {
             @RequestParam(name = "paging") boolean paging,
             @ApiIgnore PageRequest pageable
     ) {
-        log.info("REST API: GET /retmoe/history/");
+        log.info("REST API: GET /remote/history/");
         ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.remoteGatewayService.getRoomHistoryInfoList(userId, search, paging, pageable.of());
         return ResponseEntity.ok(apiResponse);
     }
@@ -67,8 +67,7 @@ public class HistoryRestController {
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{userId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteHistory(@PathVariable("userId") String userId) {
-        log.info("REST API: DELETE /retmoe/history/{}", userId != null ? userId : "{}");
-
+        log.info("REST API: DELETE /remote/history/{}", userId != null ? userId : "{}");
         if(userId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
