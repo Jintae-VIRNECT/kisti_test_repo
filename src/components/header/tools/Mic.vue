@@ -2,6 +2,7 @@
   <tooltip content="마이크 on/off">
     <toggle-button
       slot="body"
+      customClass="toggle-header"
       description="마이크 on/off"
       size="2.429rem"
       :active="mic.isOn"

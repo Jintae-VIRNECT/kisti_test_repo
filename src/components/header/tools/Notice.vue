@@ -6,7 +6,7 @@
     width="29.571rem"
   >
     <toggle-button
-      customClass="header-tools__notice"
+      customClass="header-tools__notice toggle-header"
       slot="reference"
       description="알림"
       size="2.429rem"

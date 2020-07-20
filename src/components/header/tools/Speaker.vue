@@ -2,6 +2,7 @@
   <tooltip content="스피커 on/off">
     <toggle-button
       slot="body"
+      customClass="toggle-header"
       description="스피커 on/off"
       size="2.429rem"
       :active="speaker.isOn"

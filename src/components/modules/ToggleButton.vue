@@ -3,7 +3,7 @@
     class="toggle-button"
     :class="[{ active: active }, customClass]"
     :style="{
-      background: 'url(' + src + ') center no-repeat',
+      backgroundImage: 'url(' + src + ')',
       width: size,
       height: size,
     }"
@@ -63,6 +63,10 @@ export default {
 <style scoped lang="scss">
 @import '~assets/style/mixin';
 .toggle-button {
+  background: center/100% no-repeat;
   @include ir();
+  &.toggle-header {
+    background-size: 120%;
+  }
 }
 </style>
