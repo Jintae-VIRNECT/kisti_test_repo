@@ -6,6 +6,8 @@
       height="6.143rem"
       :menu="true"
       :history="history"
+      @openRoomInfo="openRoomInfo(history.roomId)"
+      @showDeleteDialog="showDeleteDialog(history.roomId)"
     ></history>
     <roominfo-modal
       :visible.sync="showRoomInfo"

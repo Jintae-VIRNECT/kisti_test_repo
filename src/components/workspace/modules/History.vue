@@ -40,17 +40,14 @@
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">
           <li>
-            <button
-              class="group-pop__button"
-              @click="openRoomInfo(history.roomId)"
-            >
+            <button class="group-pop__button" @click="$emit('openRoomInfo')">
               상세 보기
             </button>
           </li>
           <li>
             <button
               class="group-pop__button"
-              @click="showDeleteDialog(history.roomId)"
+              @click="$emit('showDeleteDialog')"
             >
               목록삭제
             </button>
