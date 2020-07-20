@@ -171,7 +171,7 @@ export default {
         this.addCouponForm.newCouponCode = ''
       } catch (e) {
         this.$notify.error({
-          message: e.message,
+          message: e.message.replace(/^[0-9]*: /, ''),
           position: 'bottom-left',
           duration: 2000,
         })
