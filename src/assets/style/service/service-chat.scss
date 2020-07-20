@@ -512,15 +512,13 @@
 }
 
 .chat-input__form-write {
-  width: 67%;
-  height: 1.143rem;
-  margin: 0.2857rem 0.714rem 0 0;
   overflow: hidden;
   color: $color_text_main;
+  font-size: 1rem;
+  line-height: 1.786rem;
   white-space: nowrap;
   background-color: transparent;
   border: none;
-  border-radius: 4px;
   outline: none;
   resize: none;
 
@@ -532,10 +530,9 @@
 .chat-input__form-button {
   position: absolute;
   right: 1.286rem;
-  padding: 0.357rem 0.857rem;
+  padding: 0.214rem 0.857rem;
   color: $color_text_sub;
   font-size: 1.071rem;
-  line-height: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
