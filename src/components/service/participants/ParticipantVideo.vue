@@ -39,6 +39,8 @@
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
+        <!--
+          TODO: beta check
         <div class="participant-video__network" :class="participant.status">
           <div
             class="participant-video__network-hover"
@@ -50,6 +52,7 @@
             >
           </div>
         </div>
+        -->
         <span class="participant-video__leader" v-if="isLeader">
           Leader
         </span>
