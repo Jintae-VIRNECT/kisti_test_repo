@@ -45,7 +45,7 @@ export default {
     return {
       testdata: [
         {
-          profileImg: require('assets/image/img_default_group.svg'),
+          // profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 01',
           subText: '참석자 0명',
           entireTime: '총 이용 시간: 08분 21초',
@@ -54,7 +54,7 @@ export default {
           leaderIcon: '',
         },
         {
-          profileImg: require('assets/image/img_default_group.svg'),
+          // profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 02',
           subText: '참석자 2명',
           entireTime: '총 이용 시간: 10분 21초',
@@ -63,7 +63,7 @@ export default {
           leaderIcon: '',
         },
         {
-          profileImg: require('assets/image/img_default_group.svg'),
+          // profileImg: require('assets/image/img_default_group.svg'),
           mainText: '버넥트 리모트 03',
           subText: '참석자 4명',
           entireTime: '총 이용 시간: 33분 21초',
