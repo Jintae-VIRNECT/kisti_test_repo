@@ -514,16 +514,15 @@ public class RemoteGatewayService {
         log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
-
         // Room and Member History 저장
         // Remote Room History Entity Create
-        RoomHistory roomHistory = RoomHistory.builder()
-                .sessionId(room.getSessionId())
-                .mediaMode(room.getMediaMode())
+        /*.mediaMode(room.getMediaMode())
                 .recordingMode(room.getRecordingMode())
                 .defaultOutputMode(room.getDefaultOutputMode())
                 .defaultRecordingLayout(room.getDefaultRecordingLayout())
-                .recording(room.isRecording())
+                .recording(room.isRecording())*/
+        RoomHistory roomHistory = RoomHistory.builder()
+                .sessionId(room.getSessionId())
                 .title(room.getTitle())
                 .description(room.getDescription())
                 .profile(room.getProfile())
@@ -595,16 +594,23 @@ public class RemoteGatewayService {
         // Remote Room Entity Create
         Room room = Room.builder()
                 .sessionId(sessionResponse.getId())
-                .mediaMode("ROUTED")
-                .recordingMode("MANUAL")
-                .defaultOutputMode("COMPOSED")
-                .defaultRecordingLayout("BEST_FIT")
-                .recording(false)
                 .title(roomRequest.getTitle())
                 .description(roomRequest.getDescription())
                 .leaderId(roomRequest.getLeaderId())
                 .workspaceId(roomRequest.getWorkspaceId())
                 .build();
+
+        // Remote Session Property Entity Create
+        SessionProperty sessionProperty = SessionProperty.builder()
+                .mediaMode("ROUTED")
+                .recordingMode("MANUAL")
+                .defaultOutputMode("COMPOSED")
+                .defaultRecordingLayout("BEST_FIT")
+                .recording(false)
+                .room(room)
+                .build();
+
+        room.setSessionProperty(sessionProperty);
 
         // profile image request
         // not ready to upload

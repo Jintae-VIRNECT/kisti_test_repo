@@ -30,24 +30,6 @@ public class Room extends BaseTimeEntity {
     @Column(name = "session_id", unique = true)
     private String sessionId;
 
-    @Column(name = "media_mode", nullable = false)
-    private String mediaMode;
-
-    @Column(name = "recording_mode", nullable = false)
-    private String recordingMode;
-
-    @Column(name = "default_output_mode", nullable = false)
-    private String defaultOutputMode;
-
-    @Column(name = "default_recording_layout", nullable = false)
-    private String defaultRecordingLayout;
-
-    /*@Column(name = "custom_session_id", unique = true)
-    private String customSessionId;*/
-
-    @Column(name = "recording", nullable = false)
-    private boolean recording;
-
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -67,30 +49,25 @@ public class Room extends BaseTimeEntity {
     private List<Member> members = new ArrayList<>();
     //private Collection<Member> Member;
 
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SessionProperty sessionProperty;
+
     @Builder
     public Room(String sessionId,
-                String mediaMode,
-                String recordingMode,
-                String defaultOutputMode,
-                String defaultRecordingLayout,
-                boolean recording,
                 String title,
                 String description,
                 String profile,
                 String leaderId,
-                String workspaceId
+                String workspaceId,
+                SessionProperty sessionProperty
                       ) {
         this.sessionId = sessionId;
-        this.mediaMode = mediaMode;
-        this.recordingMode = recordingMode;
-        this.defaultOutputMode = defaultOutputMode;
-        this.defaultRecordingLayout = defaultRecordingLayout;
-        this.recording = recording;
         this.title = title;
         this.description = description;
         this.profile = profile;
         this.leaderId = leaderId;
         this.workspaceId = workspaceId;
+        this.sessionProperty = sessionProperty;
     }
 
     @Override
@@ -98,11 +75,6 @@ public class Room extends BaseTimeEntity {
         return "Room{" +
                 "id=" + id +
                 ", sessionId='" + sessionId + '\'' +
-                ", mediaMode='" + mediaMode + '\'' +
-                ", recordingMode='" + recordingMode + '\'' +
-                ", defaultOutputMode='" + defaultOutputMode + '\'' +
-                ", defaultRecordingLayout='" + defaultRecordingLayout + '\'' +
-                ", recording='" + recording + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", leaderId='" + leaderId + '\'' +

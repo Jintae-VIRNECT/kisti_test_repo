@@ -46,7 +46,7 @@ public class FixedOneKmsManager extends KmsManager {
 			kms.setTimeOfKurentoClientConnection(System.currentTimeMillis());
 
 		} catch (KurentoException e) {
-			log.error("KMS in {} is not reachable by OpenVidu Server", firstProps.getUri());
+			log.error("KMS in {} is not reachable by Remote Service Server", firstProps.getUri());
 			if (kClient != null) {
 				kClient.destroy();
 			}
