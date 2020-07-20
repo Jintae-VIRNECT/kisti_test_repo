@@ -22,21 +22,6 @@ public class RoomHistory extends BaseTimeEntity  {
         @Column(name = "session_id", unique = true)
         private String sessionId;
 
-        @Column(name = "media_mode", nullable = false)
-        private String mediaMode;
-
-        @Column(name = "recording_mode", nullable = false)
-        private String recordingMode;
-
-        @Column(name = "default_output_mode", nullable = false)
-        private String defaultOutputMode;
-
-        @Column(name = "default_recording_layout", nullable = false)
-        private String defaultRecordingLayout;
-
-        @Column(name = "recording", nullable = false)
-        private boolean recording;
-
         @Column(name = "title", nullable = false)
         private String title;
 
@@ -58,30 +43,25 @@ public class RoomHistory extends BaseTimeEntity  {
         @OneToMany(mappedBy = "roomHistory", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<MemberHistory> memberHistories = new ArrayList<>();
 
+        @OneToOne(mappedBy = "roomHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+        private SessionPropertyHistory sessionPropertyHistory;
+
         @Builder
         public RoomHistory(String sessionId,
-                           String mediaMode,
-                           String recordingMode,
-                           String defaultOutputMode,
-                           String defaultRecordingLayout,
-                           boolean recording,
                            String title,
                            String description,
                            String profile,
                            String leaderId,
-                           String workspaceId
+                           String workspaceId,
+                           SessionPropertyHistory sessionPropertyHistory
         ) {
                 this.sessionId = sessionId;
-                this.mediaMode = mediaMode;
-                this.recordingMode = recordingMode;
-                this.defaultOutputMode = defaultOutputMode;
-                this.defaultRecordingLayout = defaultRecordingLayout;
-                this.recording = recording;
                 this.title = title;
                 this.description = description;
                 this.profile = profile;
                 this.leaderId = leaderId;
                 this.workspaceId = workspaceId;
+                this.sessionPropertyHistory = sessionPropertyHistory;
         }
 
         @Override
@@ -89,11 +69,6 @@ public class RoomHistory extends BaseTimeEntity  {
                 return "RoomHistory{" +
                         "id=" + id +
                         ", sessionId='" + sessionId + '\'' +
-                        ", mediaMode='" + mediaMode + '\'' +
-                        ", recordingMode='" + recordingMode + '\'' +
-                        ", defaultOutputMode='" + defaultOutputMode + '\'' +
-                        ", defaultRecordingLayout='" + defaultRecordingLayout + '\'' +
-                        ", recording='" + recording + '\'' +
                         ", title='" + title + '\'' +
                         ", description='" + description + '\'' +
                         ", leaderId='" + leaderId + '\'' +

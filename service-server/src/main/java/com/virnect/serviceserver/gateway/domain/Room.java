@@ -49,6 +49,8 @@ public class Room extends BaseTimeEntity {
     private List<Member> members = new ArrayList<>();
     //private Collection<Member> Member;
 
+    //add active or un-active type later
+
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private SessionProperty sessionProperty;
 

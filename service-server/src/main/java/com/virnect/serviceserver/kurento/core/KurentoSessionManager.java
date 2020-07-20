@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.virnect.java.client.*;
+import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.kurento.client.GenericMediaElement;
 import org.kurento.client.IceCandidate;
@@ -78,6 +79,9 @@ public class KurentoSessionManager extends SessionManager {
 	@Autowired
 	private KurentoParticipantEndpointConfig kurentoEndpointConfig;
 
+	//
+	@Autowired
+	private RemoteGatewayService remoteGatewayService;
 	@Override
 	/* Protected by Session.closingLock.readLock */
 	//noti: joinRoom
@@ -157,10 +161,13 @@ public class KurentoSessionManager extends SessionManager {
 			try {
 				if (kSession.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
 					try {
-						//flags : session join and sessionEventHandler is here
+						//flags-join : session join and sessionEventHandler is here
 						existingParticipants = getParticipants(sessionId);
 						kSession.join(participant);
 						sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
+						//flags-join
+						remoteGatewayService.joinRoom(participant, sessionId, existingParticipants, transactionId);
+
 					} finally {
 						kSession.joinLeaveLock.unlock();
 					}

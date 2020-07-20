@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
+import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.gateway.dao.MemberHistoryRepository;
 import com.virnect.serviceserver.gateway.dao.MemberRepository;
 import com.virnect.serviceserver.gateway.dao.RoomHistoryRepository;
@@ -41,6 +42,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -609,6 +611,88 @@ public class RemoteGatewayService {
             this.memberHistoryRepository.save(memberHistory);
         });
         return new ApiResponse<>(true);
+    }
+    //========================
+
+    //user joined room
+    @Transactional
+    public void joinRoom(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId) {
+        log.info("session join and sessionEventHandler is here:[participant] {}", participant);
+        log.info("session join and sessionEventHandler is here:[sessionId] {}", sessionId);
+        log.info("session join and sessionEventHandler is here:[transactionId] {}", transactionId);
+        log.info("session join and sessionEventHandler is here:[existingParticipants] {}", existingParticipants);
+        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+
+        if(existingParticipants.isEmpty()) {
+            // set room members
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.LEADER)
+                    .deviceType(DeviceType.UNKNOWN)
+                    .memberStatus(MemberStatus.LOAD)
+                    .uuid(participant.getParticipantPublicId())
+                    .email("")
+                    .sessionId(room.getSessionId())
+                    .build();
+
+            room.getMembers().add(member);
+        } else {
+            // set room members
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.WORKER)
+                    .deviceType(DeviceType.UNKNOWN)
+                    .memberStatus(MemberStatus.LOAD)
+                    .uuid(participant.getParticipantPublicId())
+                    .email("")
+                    .sessionId(room.getSessionId())
+                    .build();
+
+            room.getMembers().add(member);
+        }
+
+        roomRepository.save(room);
+    }
+
+    @Transactional
+    public void tempCreateRoom(String sessionId, Long startTime) {
+        log.debug("tempCreateRoom");
+        // Remote Room Entity Create
+        Room room = Room.builder()
+                .sessionId(sessionId)
+                .title(sessionId)
+                .description("Test Session des")
+                .leaderId("410df50ca6e32db0b6acba09bcb457ff")
+                .workspaceId("40f9bbee9d85dca7a34a0dd205aae718")
+                .build();
+
+        // Remote Session Property Entity Create
+        SessionProperty sessionProperty = SessionProperty.builder()
+                .mediaMode("ROUTED")
+                .recordingMode("MANUAL")
+                .defaultOutputMode("COMPOSED")
+                .defaultRecordingLayout("BEST_FIT")
+                .recording(false)
+                .room(room)
+                .build();
+
+        room.setSessionProperty(sessionProperty);
+        room.setProfile(Default.ROOM_PROFILE.getValue());
+
+        //
+        Member member = Member.builder()
+                .room(room)
+                .memberType(MemberType.LEADER)
+                .deviceType(DeviceType.UNKNOWN)
+                .memberStatus(MemberStatus.UNLOAD)
+                .uuid("410df50ca6e32db0b6acba09bcb457ff")
+                .email("test18@test.com")
+                .sessionId(room.getSessionId())
+                .build();
+
+        room.getMembers().add(member);
+
+        roomRepository.save(room);
     }
 
     @Transactional
