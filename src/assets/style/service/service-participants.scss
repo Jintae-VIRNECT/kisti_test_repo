@@ -120,10 +120,9 @@
 }
 .participant-video__network {
   position: relative;
-  top: 0.571rem;
-  left: 0.571rem;
   width: 0.857rem;
   height: 0.857rem;
+  margin: 0.571rem 0 0 0.571rem;
   // padding: 2px 9px 3px 9px;
   font-weight: 500;
   border-radius: 50%;
@@ -167,8 +166,7 @@
   }
 }
 .participant-video__leader {
-  margin-top: 0.286rem;
-  margin-left: 0.857rem;
+  margin: 0.286rem 0 0 0.286rem;
   padding: 4px 7px 3px;
   font-size: 0.857rem;
   font-family: roboto;
@@ -194,11 +192,11 @@
     padding-right: 1.429rem;
     > .participant-video__name-text {
       &:after {
-        margin: auto 0 auto 6px;
-        padding: 2px 5px;
-        font-size: 12px;
+        margin: auto 0 auto 0.429rem;
+        padding: 0.143rem 0.357rem;
+        font-size: 0.857rem;
         font-family: roboto;
-        line-height: 14px;
+        line-height: 1rem;
         background: #606060;
         border: solid 1px #8f8f8f;
         border-radius: 3px;

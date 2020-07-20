@@ -505,7 +505,8 @@
 .chat-input__form-upload {
   width: 2.143rem;
   height: 100%;
-  background: url(~assets/image/call/chat_ic_attachfile.svg) center no-repeat;
+  background: url(~assets/image/call/chat_ic_attachfile.svg) center/100%
+    no-repeat;
 
   @include ir();
 }
@@ -534,6 +535,7 @@
   padding: 0.357rem 0.857rem;
   color: $color_text_sub;
   font-size: 1.071rem;
+  line-height: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
