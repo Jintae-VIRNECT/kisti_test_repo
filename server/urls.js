@@ -17,6 +17,12 @@ export default {
     staging: 'https://stgconsole.virnect.com',
     production: 'https://console.virnect.com',
   },
+  pay: {
+    local: 'http://localhost:7070',
+    develop: 'http://192.168.6.3:7070',
+    staging: 'https://stgpay.virnect.com',
+    production: 'https://pay.virnect.com',
+  },
   account: {
     local: 'https://localhost:8822',
     develop: 'https://192.168.6.3:8073',

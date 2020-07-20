@@ -7,6 +7,7 @@ const fs = require('fs')
 const host = '0.0.0.0'
 const port = '8886'
 const logger = require('../server/logger')
+const configService = require('../server/config')
 const Dotenv = require('dotenv-webpack')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -64,7 +65,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     },
     proxy: {
       '/api': {
-        target: 'https://develop.virnect.com:8073',
+        target: 'https://192.168.6.3:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
@@ -85,6 +86,11 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       app.post('/logs', bodyParser.json(), function(req, res) {
         logger.log(req.body.data, 'CONSOLE')
         res.send(true)
+      })
+
+      app.get('/urls', bodyParser.json(), function(req, res) {
+        const a = configService.getUrls()
+        res.json(a)
       })
     },
   },
