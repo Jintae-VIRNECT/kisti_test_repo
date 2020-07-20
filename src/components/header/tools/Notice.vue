@@ -17,7 +17,7 @@
       @click.native.stop="clickNotice"
     ></toggle-button>
 
-    <div style="display: none;">
+    <div>
       <div class="popover-notice__header">
         <span>알림</span>
         <switcher text="Push" :value.sync="onPush">Push</switcher>
@@ -77,7 +77,7 @@
         </scroller>
         <div class="popover-notice__empty" v-else>
           <div class="popover-notice__empty-box">
-            <img src="" />
+            <img src="~assets/image/img_noalarm.svg" />
             <span>수신받은 알람이 없습니다.</span>
           </div>
         </div>
@@ -254,8 +254,14 @@ export default {
   height: 100%;
 }
 .popover-notice__empty-box {
+  display: flex;
+  flex-direction: column;
   width: fit-content;
   margin: auto;
+  > img {
+    width: fit-content;
+    margin: auto;
+  }
   > span {
     color: #d2d2d2;
     font-weight: 500;
