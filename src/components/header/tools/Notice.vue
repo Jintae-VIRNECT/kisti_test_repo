@@ -11,6 +11,7 @@
       description="알림"
       size="2.429rem"
       :toggle="false"
+      :active="false"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
       @click.native.stop="clickNotice"

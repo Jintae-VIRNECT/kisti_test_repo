@@ -1,7 +1,7 @@
 <template>
   <button
     class="toggle-button"
-    :class="[{ active: !active }, customClass]"
+    :class="[{ active: active }, customClass]"
     :style="{
       background: 'url(' + src + ') center no-repeat',
       width: size,
