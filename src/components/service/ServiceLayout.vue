@@ -50,7 +50,7 @@ import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
-import ServiceLocalRecorder from './ServiceLocalRecorder'
+import localRecorderMixin from 'mixins/localRecorder'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -68,7 +68,7 @@ export default {
       vm.$store.commit('clear')
     })
   },
-  mixins: [alarmMixin, ServiceLocalRecorder],
+  mixins: [alarmMixin, localRecorderMixin],
   components: {
     HeaderSection,
     SubView,
