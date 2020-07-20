@@ -1,6 +1,6 @@
 import { url } from '@/plugins/context'
 
-export default async function({ req, store, redirect }) {
+export default async function({ req, store, redirect, error }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')
@@ -27,13 +27,8 @@ export default async function({ req, store, redirect }) {
           )}`,
         )
       } else {
-        throw e
+        error(e)
       }
     }
-
-    // 홈이 없어서 개인정보로 임시 리다이렉트
-    // if (req.url === '/') {
-    //   return redirect('/profile')
-    // }
   }
 }
