@@ -25,6 +25,10 @@ function IsMobileBrowser(req) {
   return isChromeMobile
 }
 
+router.get('/healthcheck', function(req, res) {
+  res.send('healthcheck')
+})
+
 router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
