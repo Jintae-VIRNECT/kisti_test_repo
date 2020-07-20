@@ -51,10 +51,8 @@ import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
 
-import betaCheckMixin from 'mixins/betaCheck'
 export default {
   name: 'Chat',
-  mixins: [betaCheckMixin],
   components: {
     ChatMsgList,
     ChatFileList,
