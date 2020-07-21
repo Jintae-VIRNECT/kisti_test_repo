@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Member Domain Model Class
@@ -47,6 +48,15 @@ public class Member extends BaseTimeEntity {
     @Column(name = "session_id", nullable = false)
     private String sessionId;
 
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endDate;
+
+    @Column(name = "duration_sec", nullable = false)
+    private Long durationSec;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
@@ -55,19 +65,24 @@ public class Member extends BaseTimeEntity {
     public Member(
             Room room,
             MemberType memberType,
-            DeviceType deviceType,
-            MemberStatus memberStatus,
             String uuid,
             String email,
             String sessionId
     ) {
         this.room = room;
         this.memberType = memberType;
-        this.deviceType = deviceType;
-        this.memberStatus = memberStatus;
         this.uuid = uuid;
         this.email = email;
         this.sessionId = sessionId;
+
+        //
+        this.deviceType = DeviceType.UNKNOWN;
+        this.memberStatus = MemberStatus.UNLOAD;
+
+        LocalDateTime now = LocalDateTime.now();
+        this.startDate = now;
+        this.endDate = now;
+        this.durationSec = 0L;
     }
 
     @Override

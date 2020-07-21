@@ -1,10 +1,9 @@
 package com.virnect.serviceserver.gateway.api;
 
-import com.google.gson.JsonObject;
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.dto.request.PageRequest;
+import com.virnect.serviceserver.gateway.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.gateway.dto.response.RoomInfoListResponse;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
@@ -13,11 +12,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -28,15 +22,11 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/remote")
 public class HistoryRestController {
     private static final String TAG = "HistoryRestControllers";
+    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+    private static final String REST_PATH = "/remote/history";
 
     private final RemoteGatewayService remoteGatewayService;
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
-    private HttpHeaders getResponseHeaders() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return responseHeaders;
-    }
 
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
@@ -54,20 +44,26 @@ public class HistoryRestController {
             @RequestParam(name = "paging") boolean paging,
             @ApiIgnore PageRequest pageable
     ) {
-        log.info("REST API: GET /remote/history/");
+        log.info("REST API: GET {}", REST_PATH);
         ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.remoteGatewayService.getRoomHistoryInfoList(userId, search, paging, pageable.of());
         return ResponseEntity.ok(apiResponse);
     }
 
-    /*@ApiOperation(value = "Load Room History Detail Information", notes = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
+    @ApiOperation(value = "Load Room History Detail Information", notes = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
     @GetMapping(value = "history/{sessionId}")
-    public ResponseEntity<?> getHistoryById(@PathVariable("sessionId") String sessionId) {
-    }*/
+    public ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getHistoryById(@PathVariable("sessionId") String sessionId) {
+        log.info("REST API: DELETE {}/{}", REST_PATH, sessionId != null ? sessionId : "{}");
+        if (sessionId.isEmpty()) {
+            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RoomHistoryDetailInfoResponse> apiResponse = this.remoteGatewayService.getRoomHistoryDetailInfo(sessionId);
+        return ResponseEntity.ok(apiResponse);
+    }
 
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{userId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteHistory(@PathVariable("userId") String userId) {
-        log.info("REST API: DELETE /remote/history/{}", userId != null ? userId : "{}");
+        log.info("REST API: DELETE {}/{}", REST_PATH, userId != null ? userId : "{}");
         if(userId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -76,18 +72,19 @@ public class HistoryRestController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /*@ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
+    @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{sessionId}/{userId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteHistoryById(
             @PathVariable("sessionId") String sessionId,
-            @PathVariable("userId") int userId) {
-        log.info(TAG, "getHistoryByRoomId");
+            @PathVariable("userId") String userId) {
+        log.info("REST API: DELETE {}/{}/{}", REST_PATH, sessionId != null ? sessionId : "{}", userId != null ? userId : "{}");
 
-        JsonObject responseJson = new JsonObject();
-        responseJson.addProperty("name", "test");
-        responseJson.addProperty("page", 10);
+        if(sessionId.isEmpty() || userId.isEmpty()) {
+            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
 
-        return new ResponseEntity<>(responseJson.toString(), getResponseHeaders(), HttpStatus.OK);
-    }*/
+        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.removeRoomHistory(sessionId, userId);
+        return ResponseEntity.ok(apiResponse);
+    }
 
 }

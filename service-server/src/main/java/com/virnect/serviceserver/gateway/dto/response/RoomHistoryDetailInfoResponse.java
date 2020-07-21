@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ApiModel
-public class RoomDetailInfoResponse {
+public class RoomHistoryDetailInfoResponse {
     @ApiModelProperty(value = "원격협업 방 식별자", example = "ses_NxKh1OiT2S")
     private String sessionId;
 
@@ -24,27 +24,27 @@ public class RoomDetailInfoResponse {
     @ApiModelProperty(value = "협업 방 프로필 주소", position = 3, example = "default")
     private String profile;
 
-    /*@ApiModelProperty(value = "협업방 총 인원 수", position = 4, example = "3")
+    @ApiModelProperty(value = "협업방 총 인원 수", position = 4, example = "3")
     private String totalCount;
 
     @ApiModelProperty(value = "협업방 접속 인원 수", position = 5, example = "2")
-    private String currentCount;*/
+    private String currentCount;
 
-    @ApiModelProperty(value = "협업방 생성 일자", position = 4, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "협업방 생성 일자", position = 6, example = "2020-01-20T14:05:30")
     private LocalDateTime createdDate;
 
-    @ApiModelProperty(value = "최종 협업방 정보 수정 일자", position = 5, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "최종 협업방 정보 수정 일자", position = 7, example = "2020-01-20T14:05:30")
     private LocalDateTime updatedDate;
 
-    @ApiModelProperty(value = "협업방 시작 일자", position = 6, example = "2020-01-20T14:05:30")
-    private LocalDateTime startDate;
+    @ApiModelProperty(value = "협업방 시작 일자", position = 8, example = "2020-01-20T14:05:30")
+    private LocalDateTime activeDate;
 
-    /*@ApiModelProperty(value = "협업방 종료 일자", position = 7, example = "2020-01-20T14:05:30")
-    private LocalDateTime endDate;*/
+    @ApiModelProperty(value = "협업방 종료 일자", position = 9, example = "2020-01-20T14:05:30")
+    private LocalDateTime unactiveDate;
 
-    @ApiModelProperty(value = "협업 진행 시간", position = 7, example = "3600")
-    private String durationTime;
+    @ApiModelProperty(value = "협업 진행 시간", position = 10, example = "3600")
+    private String durationSec;
 
-    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 8)
+    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 11)
     private List<MemberInfoResponse> memberList;
 }

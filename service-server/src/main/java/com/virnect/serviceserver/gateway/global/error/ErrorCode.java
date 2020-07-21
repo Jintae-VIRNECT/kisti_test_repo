@@ -18,12 +18,21 @@ public enum  ErrorCode {
     ERR_ROOM_MEMBER_IS_OVER(4009, "Room cannot join"),
     ERR_ROOM_LICENSE_TYPE(4010, "Room license type is not allowed"),
     ERR_ROOM_INVALID_PERMISSION(4011, "Invalid permission to the Room"),
+    ERR_ROOM_STATUS_NOT_ACTIVE(4012, "Room is not active"),
 
     //원격협업 유효성 정보 관련 에러
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
     ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
     ERR_LICENSE_PRODUCT_VALIDITY(5003, "License has no product"),
     ERR_LICENSE_UNEXPECTED_TYPE(5004, "This license is not unexpected type"),
+
+    //원격협업 최근기록 관련 에러
+    //ERR_HISTORY_NOT_VALIDITY(6001, "License has no validity"),
+    ERR_HISTORY_ROOM_NOT_FOUND(6001, "Room History can not found"),
+    ERR_HISTORY_ROOM_MEMBER_NOT_FOUND(6002, "Room History member not found"),
+    ERR_HISTORY_TYPE_VALIDITY(6003, "License is not the license type"),
+    ERR_HISTORY_PRODUCT_VALIDITY(6004, "License has no product"),
+    ERR_HISTORY_UNEXPECTED_TYPE(6005, "This license is not unexpected type"),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),

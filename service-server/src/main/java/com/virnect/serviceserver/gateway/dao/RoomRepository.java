@@ -11,9 +11,17 @@ import java.util.Optional;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     Optional<Room> findBySessionId(final String sessionId);
 
-    Page<Room> findByTitleIsContaining(final String title, Pageable pageable);
+    Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
-    List<Room> findByTitleIsContaining(final String title);
+    List<Room> findByWorkspaceId(final String workspaceId);
+
+    List<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title);
+
+    //Page<Room> findByTitleIsContaining(final String title, Pageable pageable);
+
+    Page<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title, Pageable pageable);
+
+    //List<Room> findByTitleIsContaining(final String title);
 
     //List<Room> findByNameIsContainingOrRoomTitleIsContaining(final String title);
 

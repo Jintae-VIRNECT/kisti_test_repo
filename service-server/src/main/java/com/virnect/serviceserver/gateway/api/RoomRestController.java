@@ -4,10 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.virnect.java.client.*;
-import com.virnect.serviceserver.core.EndReason;
-import com.virnect.serviceserver.core.IdentifierPrefixes;
+import com.virnect.serviceserver.core.*;
 import com.virnect.serviceserver.core.Session;
-import com.virnect.serviceserver.core.SessionManager;
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.domain.MemberType;
 import com.virnect.serviceserver.gateway.dto.request.*;
@@ -44,9 +42,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/remote")
 public class RoomRestController {
     private static final String TAG = "RoomRestController";
+    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+    private static final String REST_PATH = "/remote/room";
 
     private final RemoteGatewayService remoteGatewayService;
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     //
     private final SessionManager sessionManager;
@@ -71,6 +70,7 @@ public class RoomRestController {
         return responseJson.toString();
     }
 
+    @Deprecated
     private HttpHeaders getResponseHeaders() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -207,7 +207,7 @@ public class RoomRestController {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room ", notes = "원격협업 방을 생성합니다.")
+    @ApiOperation(value = "Initialize a Remote Room ", notes = "원격협업 방을 생성 합니다.")
     @ApiImplicitParams({
     })
     @PostMapping(value = "room")
@@ -215,8 +215,7 @@ public class RoomRestController {
             @RequestBody @Valid RoomRequest roomRequest,
             @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
             BindingResult result) {
-        log.info("REST API: POST /retmoe/room {}", roomRequest != null ? roomRequest.toString() : "{}");
-
+        log.info("REST API: POST {}/{}", REST_PATH, roomRequest != null ? roomRequest.toString() : "{}");
 
         // 1. check room request handler
         if(result.hasErrors()) {
@@ -345,8 +344,6 @@ public class RoomRestController {
         return ResponseEntity.ok(roomResponse);
     }
 
-
-
     @ApiOperation(value = "Load Room Information List", notes = "원격협헙 방 리스트 조회하는 API 입니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "검색어(협업, 멤버 이름 검색)", dataType = "string", allowEmptyValue = true, defaultValue = "remote"),
@@ -357,33 +354,40 @@ public class RoomRestController {
     })
     @GetMapping(value = "room")
     public ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(
+            @RequestParam(name = "workspaceId") String workspaceId,
             @RequestParam(name = "search", required = false) String search,
             @RequestParam("paging") boolean paging,
-            @RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
             @ApiIgnore PageRequest pageable
     ) {
-        log.debug("getRoomList");
-        ApiResponse<RoomInfoListResponse> apiResponse = this.remoteGatewayService.getRoomInfoList(search, paging, pageable.of());
+        //@RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
+        log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
+        ApiResponse<RoomInfoListResponse> apiResponse = this.remoteGatewayService.getRoomInfoList(workspaceId, search, paging, pageable.of());
         return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(value = "Load Room Detail Information", notes = "특정 원격협업 방 상세 정보를 조회하는 API 입니다.")
-    @GetMapping(value = "room/{sessionId}")
-    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomById(@PathVariable("sessionId") String sessionId) {
-        log.info(TAG, "getRoomById");
-        if (sessionId.isEmpty()) {
+    @GetMapping(value = "room/{workspaceId}/{sessionId}")
+    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomById(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId) {
+        log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}", sessionId != null ? sessionId.toString() : "{}");
+        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RoomDetailInfoResponse> apiResponse = this.remoteGatewayService.getRoomInfoBySessionId(sessionId);
+        ApiResponse<RoomDetailInfoResponse> apiResponse = this.remoteGatewayService.getRoomInfoBySessionId(workspaceId, sessionId);
         return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
-    @DeleteMapping(value = "room/{sessionId}/{userId}")
+    @DeleteMapping(value = "room/{workspaceId}/{sessionId}/{userId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteRoomById(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId) {
-        log.info("REST API: DELETE /retmoe/room/{}", sessionId != null ? sessionId : "{}");
+        log.info("REST API: DELETE {}/{}/{}", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                sessionId != null ? sessionId : "{}",
+                userId != null ? userId : "{}");
         if(sessionId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -397,7 +401,7 @@ public class RoomRestController {
         if (session != null) {
             log.info("REST API: DELETE closeSession");
             this.sessionManager.closeSession(sessionId, EndReason.sessionClosedByServer);
-            apiResponse = this.remoteGatewayService.removeRoom(sessionId);
+            //apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
             //return ResponseEntity.ok(apiResponse);
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -419,7 +423,7 @@ public class RoomRestController {
                                 EndReason.sessionClosedByServer,
                                 true);
 
-                        apiResponse = this.remoteGatewayService.removeRoom(sessionId);
+                        apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
                         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
                         //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } finally {
@@ -447,56 +451,67 @@ public class RoomRestController {
     }
 
     @ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")
-    @PostMapping(value = "room/{sessionId}/info")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/info")
     public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
             @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
             BindingResult result
     ) {
-        log.info(TAG, "updateRoomById");
+        log.info("REST API: POST {}/{}/info", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                sessionId != null ? sessionId : "{}");
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<RoomDetailInfoResponse> apiResponse = this.remoteGatewayService.modifyRoomInfo(sessionId, modifyRoomInfoRequest, roomProfileUpdateRequest);
+        ApiResponse<RoomDetailInfoResponse> apiResponse = this.remoteGatewayService.modifyRoomInfo(workspaceId, sessionId, modifyRoomInfoRequest, roomProfileUpdateRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(value = "Join a Specific Room", notes = "특정 원격협업 방에 접속하는 API 입니다.")
-    @PostMapping(value = "room/{sessionId}/join")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/join")
     public ResponseEntity<ApiResponse<Boolean>> joinRoomById(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid JoinRoomRequest joinRoomRequest,
             BindingResult result
     ) {
-        log.info("REST API: POST /retmoe/room/{}/join {}", sessionId != null ? sessionId : "{}",  joinRoomRequest != null ? joinRoomRequest.toString() : "{}");
+        log.info("REST API: POST {}/{}/{}/join {}", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                sessionId != null ? sessionId : "{}",
+                joinRoomRequest != null ? joinRoomRequest.toString() : "{}");
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.joinRoom(sessionId, joinRoomRequest);
+        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.joinRoom(workspaceId, sessionId, joinRoomRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
-    @ApiOperation(value = "Leave Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
+    @ApiOperation(value = "Exit Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "sessionId", value = "원격협업 방 Session ID", dataType = "string", defaultValue = "", paramType = "path", required = true),
-            @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", defaultValue = "473b12854daa6afeb9e505551d1b2743", paramType = "query", required = true),
+            @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", defaultValue = "", paramType = "query", required = true),
     })
-    @DeleteMapping(value = "room/{sessionId}/leave")
-    public ResponseEntity<ApiResponse<Boolean>> leaveRoomById(
+    @DeleteMapping(value = "room/{workspaceId}/{sessionId}/exit")
+    public ResponseEntity<ApiResponse<Boolean>> exitRoomById(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestParam("userId") String userId
     ) {
-        log.info(TAG, "leaveRoomById");
+        log.info("REST API: POST {}/{}/{}/exit {}", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                sessionId != null ? sessionId : "{}",
+                userId != null ? userId.toString() : "{}");
         if(sessionId.isEmpty() || userId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.leaveRoom(sessionId, userId);
+        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.exitRoom(workspaceId, sessionId, userId);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -520,22 +535,38 @@ public class RoomRestController {
     }
 
     @ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
-    @DeleteMapping(value = "room/{sessionId}/member")
+    @DeleteMapping(value = "room/{workspaceId}/{sessionId}/member")
     public ResponseEntity<ApiResponse<Boolean>> kickOutMember(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid KickRoomRequest kickRoomRequest,
             BindingResult result
     ) {
-        log.info(TAG, "kickOutMember");
+        log.info("REST API: DELETE {}/{}/{}/member {}", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                sessionId != null ? sessionId : "{}",
+                kickRoomRequest != null ? kickRoomRequest.toString() : "{}");
 
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.kickFromRoom(sessionId, kickRoomRequest);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>(true);
+        Session session = this.sessionManager.getSessionWithNotActive(sessionId);
+        if (session == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+        }
 
-        return ResponseEntity.ok(apiResponse);
+        Participant participant = session.getParticipantByPublicId(kickRoomRequest.getParticipantId());
+        if (participant != null) {
+            this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByServer);
+            apiResponse = this.remoteGatewayService.kickFromRoom(workspaceId, sessionId, kickRoomRequest);
+            return ResponseEntity.ok(apiResponse);
+            //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+        }
     }
 
     /**

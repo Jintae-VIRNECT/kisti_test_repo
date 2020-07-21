@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +38,16 @@ public class RoomHistory extends BaseTimeEntity  {
         @Column(name = "workspace_id", nullable = false)
         private String workspaceId;
 
-        @Column(name = "duration_time", nullable = false)
-        private String durationTime;
+        @Column(name = "active_at", nullable = false)
+        private LocalDateTime activeDate;
 
-        @OneToMany(mappedBy = "roomHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+        @Column(name = "unactive_at", nullable = false)
+        private LocalDateTime unactiveDate;
+
+        @Column(name = "duration_sec", nullable = false)
+        private Long durationSec;
+
+        @OneToMany(mappedBy = "roomHistory", orphanRemoval = false)
         private List<MemberHistory> memberHistories = new ArrayList<>();
 
         @OneToOne(mappedBy = "roomHistory", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -74,7 +81,7 @@ public class RoomHistory extends BaseTimeEntity  {
                         ", leaderId='" + leaderId + '\'' +
                         ", workspaceId='" + workspaceId + '\'' +
                         ", profile='" + profile + '\'' +
-                        ", durationTime='" + durationTime + '\'' +
+                        ", durationTime='" + durationSec + '\'' +
                         '}';
         }
 }

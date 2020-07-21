@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.gateway.dto.response;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ApiModel
 public class RoomInfoResponse {
     @ApiModelProperty(value = "원격협업 방 식별자", example = "ses_NxKh1OiT2S")
     private String sessionId;
@@ -27,11 +29,11 @@ public class RoomInfoResponse {
     @ApiModelProperty(value = "리더 유저 이 메일", position = 5, example = "test18@test.com")
     private String leaderEmail;*/
 
-    @ApiModelProperty(value = "협업방 총 인원 수", position = 4, example = "3")
-    private String totalCount;
+   /* @ApiModelProperty(value = "협업방 총 인원 수", position = 4, example = "3")
+    private int totalCount;
 
     @ApiModelProperty(value = "협업방 접속 인원 수", position = 5, example = "2")
-    private String currentCount;
+    private int currentCount;*/
 
     @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 6)
     private List<MemberInfoResponse> memberList;

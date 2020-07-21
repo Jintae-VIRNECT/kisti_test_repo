@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.gateway.dto.response;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ApiModel
 public class RoomHistoryInfoResponse {
     @ApiModelProperty(value = "원격협업 방 식별자", example = "ses_NxKh1OiT2S")
     private String sessionId;
@@ -22,12 +24,6 @@ public class RoomHistoryInfoResponse {
 
     @ApiModelProperty(value = "협업 방 프로필 주소", position = 3, example = "default")
     private String profile;
-
-    /*@ApiModelProperty(value = "협업방 생성 일자", position = 4, example = "2020-01-20T14:05:30")
-    private LocalDateTime createdDate;
-
-    @ApiModelProperty(value = "최종 협업방 정보 수정 일자", position = 5, example = "2020-01-20T14:05:30")
-    private LocalDateTime updatedDate;*/
 
     @ApiModelProperty(value = "협업방 시작 일자", position = 4, example = "2020-01-20T14:05:30")
     private LocalDateTime startDate;

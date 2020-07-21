@@ -103,6 +103,7 @@ public class KurentoSessionManager extends SessionManager {
 							remoteServiceConfig, recordingManager);
 				}
 
+				//flags-create : session create and sessionEventHandler is here
 				try {
 					if (KmsManager.selectAndRemoveKmsLock.tryLock(KmsManager.MAX_SECONDS_LOCK_WAIT, TimeUnit.SECONDS)) {
 						try {
@@ -124,6 +125,9 @@ public class KurentoSessionManager extends SessionManager {
 								log.info("KMS less loaded is {} with a load of {}", lessLoadedKms.getUri(),
 										lessLoadedKms.getLoad());
 								kSession = createSession(sessionNotActive, lessLoadedKms);
+								//flags-create
+								remoteGatewayService.createSession(sessionNotActive);
+
 							}
 						} finally {
 							KmsManager.selectAndRemoveKmsLock.unlock();
@@ -166,7 +170,7 @@ public class KurentoSessionManager extends SessionManager {
 						kSession.join(participant);
 						sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
 						//flags-join
-						remoteGatewayService.joinRoom(participant, sessionId, existingParticipants, transactionId);
+						remoteGatewayService.joinSession(participant, sessionId, existingParticipants, transactionId);
 
 					} finally {
 						kSession.joinLeaveLock.unlock();
@@ -193,6 +197,7 @@ public class KurentoSessionManager extends SessionManager {
 		}
 	}
 
+	//noti: leaveRoom
 	@Override
 	public boolean leaveRoom(Participant participant, Integer transactionId, EndReason reason, boolean closeWebSocket) {
 		log.info("Request [LEAVE_ROOM] for participant {} of session {} with reason {}",
@@ -216,6 +221,7 @@ public class KurentoSessionManager extends SessionManager {
 			if (session.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
 				try {
 
+					//flags-leave : session leave and sessionEventHandler is here
 					session.leave(participant.getParticipantPrivateId(), reason);
 
 					// Update control data structures
@@ -253,9 +259,11 @@ public class KurentoSessionManager extends SessionManager {
 						log.info("Possible collision when closing the session '{}' (not found)", sessionId);
 						remainingParticipants = Collections.emptySet();
 					}
-					sessionEventsHandler.onParticipantLeft(participant, sessionId, remainingParticipants, transactionId,
-							null, reason);
+					sessionEventsHandler.onParticipantLeft(participant, sessionId, remainingParticipants, transactionId, null, reason);
+					//flags-leave
+					remoteGatewayService.leaveSession(participant, sessionId, remainingParticipants, transactionId, reason);
 
+					//flags-close : session close and sessionEventHandler is here
 					if (!EndReason.sessionClosedByServer.equals(reason)) {
 						// If session is closed by a call to "DELETE /api/sessions" do NOT stop the
 						// recording. Will be stopped after in method
@@ -266,8 +274,7 @@ public class KurentoSessionManager extends SessionManager {
 									&& (this.recordingManager.sessionIsBeingRecorded(sessionId))) {
 								// Start countdown to stop recording. Will be aborted if a Publisher starts
 								// before timeout
-								log.info(
-										"Last participant left. Starting {} seconds countdown for stopping recording of session {}",
+								log.info("Last participant left. Starting {} seconds countdown for stopping recording of session {}",
 										this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout(), sessionId);
 								recordingManager.initAutomaticRecordingStopThread(session);
 							} else {
@@ -277,10 +284,11 @@ public class KurentoSessionManager extends SessionManager {
 											if (session.isClosed()) {
 												return false;
 											}
-											log.info("No more participants in session '{}', removing it and closing it",
-													sessionId);
+											log.info("No more participants in session '{}', removing it and closing it", sessionId);
+											//flags-close : session close and sessionEventHandler is here
 											this.closeSessionAndEmptyCollections(session, reason, true);
 											sessionClosedByLastParticipant = true;
+											this.remoteGatewayService.destroySession(session, reason);
 										} finally {
 											session.closingLock.writeLock().unlock();
 										}

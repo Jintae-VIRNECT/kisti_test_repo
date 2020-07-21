@@ -185,7 +185,7 @@ public class SessionRestController {
 		responseJson.addProperty("id", sessionNotActive.getSessionId());
 		responseJson.addProperty("createdAt", sessionNotActive.getStartTime());
 
-		remoteGatewayService.tempCreateRoom(sessionNotActive.getSessionId(), sessionNotActive.getStartTime());
+		//remoteGatewayService.createSession(sessionNotActive.getSessionId(), sessionNotActive.getStartTime());
 
 		return new ResponseEntity<>(responseJson.toString(), getResponseHeaders(), HttpStatus.OK);
 	}

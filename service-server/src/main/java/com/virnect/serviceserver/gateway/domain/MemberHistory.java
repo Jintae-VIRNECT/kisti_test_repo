@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,14 +32,19 @@ public class MemberHistory extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
 
-    /*@Column(name = "member_status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;*/
-
     @Column(name = "session_id", nullable = false)
     private String sessionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endDate;
+
+    @Column(name = "duration_sec", nullable = false)
+    private Long durationSec;
+
+    @ManyToOne(targetEntity = RoomHistory.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "room_history_id")
     private RoomHistory roomHistory;
 
@@ -49,15 +55,20 @@ public class MemberHistory extends BaseTimeEntity {
             DeviceType deviceType,
             String uuid,
             String email,
-            String sessionId
+            String sessionId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Long durationSec
     ) {
         this.roomHistory = roomHistory;
         this.memberType = memberType;
         this.deviceType = deviceType;
-        //this.memberStatus = memberStatus;
         this.uuid = uuid;
         this.email = email;
         this.sessionId = sessionId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.durationSec = durationSec;
     }
 
     @Override
@@ -66,7 +77,6 @@ public class MemberHistory extends BaseTimeEntity {
                 "id=" + id +
                 ", memberType='" + memberType + '\'' +
                 ", deviceType='" + deviceType + '\'' +
-                //", memberStatus='" + memberStatus + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", email='" + email + '\'' +
                 ", sessionId='" + sessionId + '\'' +

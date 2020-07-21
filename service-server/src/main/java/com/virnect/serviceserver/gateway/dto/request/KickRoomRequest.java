@@ -17,4 +17,12 @@ public class KickRoomRequest {
     @NotNull
     private String participantId;
 
+    @Override
+    public String toString() {
+        return "KickRoomRequest{" +
+                "leaderId='" + leaderId + '\'' +
+                ", participantId='" + participantId + '\'' +
+                '}';
+    }
+
 }
