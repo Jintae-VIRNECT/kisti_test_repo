@@ -12,10 +12,9 @@
 
 <script>
 import toolMixin from './toolMixin'
-import betaCheckMixin from 'mixins/betaCheck'
 export default {
   name: 'ServerRecordMenu',
-  mixins: [toolMixin, betaCheckMixin],
+  mixins: [toolMixin],
   data() {
     return {
       isRecording: false,

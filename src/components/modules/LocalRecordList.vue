@@ -11,14 +11,14 @@
     <div class="record-list">
       <div class="record-list__paragraph">
         <p class="paragraph--text">
-          ᛫ 완료된 로컬 녹화 파일은 사용하시는 PC의 시스템에 귀속되어 있습니다.
+          완료된 로컬 녹화 파일은 사용하시는 PC의 시스템에 귀속되어 있습니다.
         </p>
         <p class="paragraph--text">
-          ᛫ <strong>[다운로드]</strong> 시, 다운로드 경로는 브라우저의 설정을
+          <strong>[다운로드]</strong> 시, 다운로드 경로는 브라우저의 설정을
           따릅니다.
         </p>
         <p class="paragraph--text">
-          ᛫ 브라우저의 Private 모드로 로컬 녹화를 진행할 경우, 브라우저를 닫으면
+          브라우저의 Private 모드로 로컬 녹화를 진행할 경우, 브라우저를 닫으면
           녹화 파일은 자동 삭제됩니다.
         </p>
       </div>
@@ -60,7 +60,6 @@ import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
-import RecordRTC from 'recordrtc'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 
@@ -112,7 +111,7 @@ export default {
       const chunks = await IDBHelper.getMediaChunkArrays(uuids)
       if (chunks && chunks.length > 0) {
         if (chunks.length === 1) {
-          RecordRTC.invokeSaveAsDialog(chunks[0].blob, chunks[0].fileName)
+          FileSaver.saveAs(chunks[0].blob, chunks[0].fileName)
         } else {
           this.downloadZip(chunks)
         }
@@ -259,6 +258,9 @@ export default {
   & > strong {
     color: #b7b7b7;
     font-weight: 500;
+  }
+  &:before {
+    content: '᛫\00a0';
   }
 }
 .table__header {

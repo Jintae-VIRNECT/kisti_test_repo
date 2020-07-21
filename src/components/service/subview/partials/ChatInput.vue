@@ -52,10 +52,9 @@
 import { mapGetters } from 'vuex'
 import { sendFile } from 'api/workspace/call'
 import toastMixin from 'mixins/toast'
-import betaCheckMixin from 'mixins/betaCheck'
 export default {
   name: 'ChatInput',
-  mixins: [toastMixin, betaCheckMixin],
+  mixins: [toastMixin],
   components: {},
   data() {
     return {

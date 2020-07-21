@@ -76,15 +76,16 @@ export default {
 @import '~assets/style/mixin';
 
 .profile {
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   justify-content: left;
-  width: fit-content;
+  // width: fit-content;
   width: 100%;
   height: 100%;
 }
 .profile--thumb {
   position: relative;
+  flex: 0 0 auto;
   width: 100%;
   height: 100%;
 }
@@ -108,6 +109,9 @@ export default {
 }
 
 .profile--text {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   margin: 0 0.714em 0 1.286em;
 }
 .profile--maintext {
@@ -115,9 +119,11 @@ export default {
   font-weight: 500;
   font-size: 1.071em;
   line-height: 1.429em;
+  @include ellipsis;
 }
 .profile--subtext {
   color: #b7b7b7;
+  @include ellipsis;
 }
 
 .profile--badge {

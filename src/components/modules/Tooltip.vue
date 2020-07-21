@@ -6,15 +6,15 @@
     :class="customClass"
   >
     <slot name="body"></slot>
-    <transition name="fade-in-linear">
+    <transition name="opacity">
       <div
         class="tooltiptext"
-        :class="placement + ' ' + effect"
+        :class="[placement, effect]"
         v-show="show"
         :style="`width: ${width}`"
       >
-        {{ content }}
-        <div class="arrow" style="display: none;"></div>
+        <p v-html="content"></p>
+        <div class="arrow"></div>
       </div>
     </transition>
   </div>
@@ -160,109 +160,80 @@ export default {
 
 .tooltip {
   position: relative;
+  display: flex;
 }
 
 .tooltip .tooltiptext {
+  &.black {
+    --tooltip-bg-color: #121517;
+    --tooltip-text-color: $color_text_sub;
+  }
+  &.blue {
+    --tooltip-bg-color: #0f75f5;
+    --tooltip-text-color: #fff;
+  }
+
   position: absolute;
   z-index: 3;
   // display: none;
   width: max-content;
   padding: 0.714em 1.429em;
+  color: var(--tooltip-text-color);
   font-size: 0.929em;
+  background-color: var(--tooltip-bg-color);
   border-radius: 4px;
   .arrow {
     position: absolute;
-    display: none;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 6px;
+    // display: none;
+    border: solid 6px transparent;
     content: ' ';
     &:after {
       position: absolute;
       left: 0;
       width: 0;
       height: 0;
-      margin-left: -5px;
-      border-color: transparent;
-      border-style: solid;
-      border-width: 5px;
+      border: solid 5px transparent;
       content: '';
     }
   }
-  &.black {
-    color: $color_text_sub;
-    background-color: #121517;
-    // border: solid 1px rgba(#d2d2d2, 0.3);
-    &.top .arrow,
-    &.top-start .arrow,
-    &.top-end .arrow {
-      border-top-color: rgba(#d2d2d2, 0.3);
-      &:after {
-        top: 1px;
-        margin-top: -7px;
-        border-top-color: #333;
-      }
-    }
-    &.bottom .arrow,
-    &.bottom-start .arrow,
-    &.bottom-end .arrow {
-      border-bottom-color: rgba(#d2d2d2, 0.3);
-      &:after {
-        bottom: 1px;
-        margin-bottom: -7px;
-        border-bottom-color: #333;
-      }
-    }
-    &.left .arrow,
-    &.left-start .arrow,
-    &.left-end .arrow {
-      border-left-color: rgba(#d2d2d2, 0.3);
-      &:after {
-        left: 1px;
-        margin-left: -7px;
-        border-left-color: #333;
-      }
-    }
-    &.right .arrow,
-    &.right-start .arrow,
-    &.right-end .arrow {
-      border-right-color: rgba(#d2d2d2, 0.3);
-      &:after {
-        right: 1px;
-        margin-right: -7px;
-        border-right-color: #333;
-      }
+  // border: solid 1px rgba(#d2d2d2, 0.3);
+  &.top .arrow,
+  &.top-start .arrow,
+  &.top-end .arrow {
+    &:after {
+      top: 1px;
+      margin-top: -7px;
+      margin-left: -5px;
+      border-top-color: var(--tooltip-bg-color);
     }
   }
-  &.white {
-    color: #333;
-    background-color: #fff;
-    border: 1px solid #333;
-    &.top .arrow,
-    &.top-start .arrow,
-    &.top-end .arrow {
-      border-color: #fff transparent transparent transparent;
-    }
-    &.bottom .arrow,
-    &.bottom-start .arrow,
-    &.bottom-end .arrow {
-      border-color: transparent transparent #fff transparent;
-    }
-    &.left .arrow,
-    &.left-start .arrow,
-    &.left-end .arrow {
-      border-color: transparent transparent transparent #fff;
-    }
-    &.right .arrow,
-    &.right-start .arrow,
-    &.right-end .arrow {
-      border-color: transparent #fff transparent transparent;
+  &.bottom .arrow,
+  &.bottom-start .arrow,
+  &.bottom-end .arrow {
+    &:after {
+      bottom: 1px;
+      margin-bottom: -7px;
+      margin-left: -5px;
+      border-bottom-color: var(--tooltip-bg-color);
     }
   }
-}
-
-.tooltip:hover .tooltiptext {
-  // display: block;
+  &.left .arrow,
+  &.left-start .arrow,
+  &.left-end .arrow {
+    &:after {
+      left: 1px;
+      margin-left: -7px;
+      border-left-color: var(--tooltip-bg-color);
+    }
+  }
+  &.right .arrow,
+  &.right-start .arrow,
+  &.right-end .arrow {
+    &:after {
+      top: -5px;
+      border-right-color: var(--tooltip-bg-color);
+    }
+  }
 }
 
 .tooltip {
@@ -274,7 +245,7 @@ export default {
       margin-bottom: 10px;
       &::before {
         margin-top: 1px;
-        border-top: 1px solid #333;
+        border-top: 1px solid vars(--tooltip-bg-color);
       }
       .arrow {
         top: 100%;
@@ -293,13 +264,12 @@ export default {
         left: 50%;
         margin-bottom: 2px;
         margin-left: -5px;
-        border-bottom: 2px solid #333;
+        border-bottom: 2px solid vars(--tooltip-bg-color);
       }
       .arrow {
         bottom: 100%;
         left: 50%;
         margin-left: -5px;
-        // border-color: transparent transparent $arrowColor transparent;
       }
     }
   }
@@ -314,13 +284,12 @@ export default {
         right: 100%;
         margin-top: -5px;
         margin-top: 2px;
-        border-top: 2px solid #333;
+        border-top: 2px solid vars(--tooltip-bg-color);
       }
       .arrow {
         top: 50%;
         right: 100%;
         margin-top: -5px;
-        // border-color: transparent black transparent transparent;
       }
     }
   }
@@ -332,14 +301,26 @@ export default {
       margin-right: 10px;
       &::before {
         margin-top: 1px;
-        border-top: 1px solid #333;
+        border-top: 1px solid vars(--tooltip-bg-color);
       }
       .arrow {
         top: 50%;
         left: 100%;
         margin-top: -5px;
-        // border-color: transparent transparent transparent black;
       }
+    }
+  }
+}
+
+.tooltip.tooltip-guide .tooltiptext {
+  margin-left: 1.143rem;
+  padding: 1.143rem 1.714rem;
+  & > .arrow {
+    margin-top: -1rem;
+    border-width: 0.714rem;
+    &:after {
+      left: -0.571rem;
+      border-width: 0.643rem;
     }
   }
 }

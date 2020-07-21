@@ -91,6 +91,20 @@ export default {
     },
   },
   methods: {
+    // TODO: beta check
+    checkBeta() {
+      this.$toasted.clear()
+      this.$toasted.show('베타 버전에서는 지원하지 않는 기능입니다.', {
+        position: 'top-center',
+        type: 'info',
+        duration: 2000,
+        action: null,
+        containerClass: 'toast-default',
+      })
+
+      //may add beta check condition
+      return true
+    },
     setTimeZone(time) {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },

@@ -100,6 +100,10 @@ export default {
     tabChange(view, headerText) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset')
+      if (view === 'language') {
+        this.checkBeta()
+        return
+      }
       this.$nextTick(() => {
         this.tabview = view
         this.headerText = headerText

@@ -1,65 +1,14 @@
 <template>
   <div class="list-wrapper">
-    <wide-card-extend
-      :menu="true"
+    <history
       v-for="(history, index) in list"
-      v-bind:key="index"
+      :key="index"
       height="6.143rem"
-    >
-      <profile
-        :image="history.path"
-        :imageAlt="'profileImg'"
-        :mainText="history.title"
-        :subText="`참석자 ${history.participantsCount}명`"
-        :thumbStyle="{ width: '3em', height: '3em' }"
-        :group="true"
-      ></profile>
-
-      <div slot="column1" class="label label--noraml">
-        {{ `총 이용시간: ${convertTime(history.totalUseTime)}` }}
-      </div>
-      <div slot="column2" class="label label--date">
-        {{ convertDate(history.startDate) }}
-      </div>
-      <div slot="column3" class="label label__icon">
-        <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${history.leaderNickName}` }}</span>
-      </div>
-      <button slot="menuPopover"></button>
-      <button
-        class="btn small"
-        @click="createRoom(history.roomId)"
-        slot="column4"
-      >
-        재시작
-      </button>
-      <popover
-        slot="column5"
-        trigger="click"
-        placement="bottom-start"
-        popperClass="custom-popover"
-      >
-        <button slot="reference" class="widecard-tools__menu-button"></button>
-        <ul class="groupcard-popover">
-          <li>
-            <button
-              class="group-pop__button"
-              @click="openRoomInfo(history.roomId)"
-            >
-              상세 보기
-            </button>
-          </li>
-          <li>
-            <button
-              class="group-pop__button"
-              @click="showDeleteDialog(history.roomId)"
-            >
-              목록삭제
-            </button>
-          </li>
-        </ul>
-      </popover>
-    </wide-card-extend>
+      :menu="true"
+      :history="history"
+      @openRoomInfo="openRoomInfo(history.roomId)"
+      @showDeleteDialog="showDeleteDialog(history.roomId)"
+    ></history>
     <roominfo-modal
       :visible.sync="showRoomInfo"
       :roomId="roomId"
@@ -73,12 +22,10 @@
 </template>
 
 <script>
-import Profile from 'Profile'
-import WideCardExtend from 'WideCardExtend'
+import History from 'History'
 
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import Popover from 'Popover'
 import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
@@ -91,10 +38,8 @@ export default {
   name: 'WorkspaceHistoryList',
   mixins: [searchMixin, confirmMixin],
   components: {
-    Profile,
-    WideCardExtend,
     CreateRoomModal,
-    Popover,
+    History,
     RoominfoModal,
     DeviceDenied,
   },

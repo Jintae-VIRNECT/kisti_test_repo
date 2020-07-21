@@ -9,7 +9,7 @@
       >
         <toggle-button
           slot="body"
-          :size="'2.4286rem'"
+          size="1.714em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
           :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -35,7 +35,7 @@
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
-              :size="'2.4286rem'"
+              size="1.714em"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_uncheck.svg')"
@@ -192,7 +192,8 @@ export default {
   border-top-width: 1px;
 }
 .table__column--toggle {
-  margin: 1.5714rem 1.3571rem 1.3571rem 1.5714rem;
+  display: flex;
+  margin: 0 1.3571rem 0 1.5714rem;
 }
 .table__column--cell {
   flex-basis: 0;
@@ -246,7 +247,8 @@ export default {
   text-overflow: ellipsis;
 }
 .table__cell--toggle {
-  margin: 1.6429rem 1.3571rem 1.3571rem 1.5714rem;
+  display: flex;
+  margin: 0 1.3571rem 0 1.5714rem;
 }
 
 .table__body--empty {

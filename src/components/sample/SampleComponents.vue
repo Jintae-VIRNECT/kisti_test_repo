@@ -137,7 +137,7 @@
           <br />
           <wide-card>
             <profile
-              :image="require('assets/image/img_user_profile.svg')"
+              :image="'default'"
               imageAlt="버넥트 리모트01"
               mainText="버넥트 리모트01"
               subText="example@example.com"
@@ -226,7 +226,7 @@
         <div class="component">
           <div>
             <profile
-              :image="require('assets/image/img_user_profile.svg')"
+              :image="'default'"
               imageAlt="버넥트 리모트01"
               mainText="버넥트 리모트01"
               subText="example@example.com"
@@ -592,19 +592,19 @@ export default {
       },
       listviewSample: [
         {
-          profile: require('assets/image/img_user_profile.svg'),
+          // profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',
         },
         {
-          profile: require('assets/image/img_user_profile.svg'),
+          // profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',
         },
         {
-          profile: require('assets/image/img_user_profile.svg'),
+          // profile: require('assets/image/img_user_profile.svg'),
           name: '버넥트 리모트 01',
           id: 'example@example.com',
           role: 'Master',

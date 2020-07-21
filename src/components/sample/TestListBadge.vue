@@ -42,7 +42,7 @@ export default {
     return {
       listviewSample: [
         {
-          image: require('assets/image/img_user_profile.svg'),
+          // image: require('assets/image/img_user_profile.svg'),
           imageAlt: '버넥트 리모트01',
           mainText: '버넥트 리모트01',
           subText: 'example@example.com',
@@ -50,7 +50,7 @@ export default {
           role: 'Master',
         },
         {
-          image: require('assets/image/img_user_profile.svg'),
+          // image: require('assets/image/img_user_profile.svg'),
           imageAlt: '버넥트 리모트02',
           mainText: '버넥트 리모트02',
           subText: 'example@example.com',
@@ -58,7 +58,7 @@ export default {
           role: 'Master',
         },
         {
-          image: require('assets/image/img_user_profile.svg'),
+          // image: require('assets/image/img_user_profile.svg'),
           imageAlt: '버넥트 리모트03',
           mainText: '버넥트 리모트03',
           subText: 'example@example.com',
@@ -101,7 +101,7 @@ export default {
       let max = Math.floor(this.testText.length) - 1
       let randNum = Math.floor(Math.random() * (max - min)) + min //최댓값은 제외, 최솟값은 포함
       this.listviewSample.push({
-        image: require('assets/image/img_user_profile.svg'),
+        // image: require('assets/image/img_user_profile.svg'),
         imageAlt: this.testText[randNum] + randNum,
         mainText: this.testText[randNum] + randNum,
         subText: 'example@example.com',

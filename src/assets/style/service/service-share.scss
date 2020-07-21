@@ -1,5 +1,5 @@
 $share_title: 2.714rem;
-$share_image_height: 110px;
+$share_image_height: 7.857rem;
 $share_savebtn_height: 2.929rem;
 
 .share {
@@ -101,10 +101,10 @@ $share_savebtn_height: 2.929rem;
     line-height: 1.429rem;
     &:before {
       display: inline-block;
-      width: 1.429rem;
-      height: 1.429rem;
-      margin-right: 0.429rem;
-      background: url(~assets/image/ic_save_down.svg) no-repeat;
+      width: 1.429em;
+      height: 1.429em;
+      margin-right: 0.429em;
+      background: url(~assets/image/ic_save_down.svg) center/100% no-repeat;
       content: "";
     }
   }

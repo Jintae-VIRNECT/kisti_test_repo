@@ -122,7 +122,7 @@
   </div>
 </template>
 <script>
-import RecordRTC from 'recordrtc'
+// import RecordRTC from 'recordrtc'
 import MultiStreamsMixer from 'multistreamsmixer'
 
 export default {

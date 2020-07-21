@@ -6,13 +6,15 @@
     width="29.571rem"
   >
     <toggle-button
-      customClass="header-tools__notice"
+      customClass="header-tools__notice toggle-header"
       slot="reference"
       description="알림"
       size="2.429rem"
       :toggle="false"
+      :active="false"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
+      @click.native.stop="clickNotice"
     ></toggle-button>
 
     <div>
@@ -21,7 +23,7 @@
         <switcher text="Push" :value.sync="onPush">Push</switcher>
       </div>
       <div class="popover-notice__body">
-        <scroller height="28.571rem">
+        <scroller height="28.571rem" v-if="alarmList.length > 0">
           <notice-item
             type="file"
             :info="'Harry Ha 님'"
@@ -29,21 +31,30 @@
             :date="'2020.01.20 오전 11:00'"
             :filename="'VIRNECT Remote WEB 2.0'"
             :filelink="'https://virnect.com'"
-            :image="require('assets/image/img_user_profile.svg')"
+            :image="'default'"
+          ></notice-item>
+          <!-- <notice-item
+            type="file"
+            :info="'Harry Ha 님'"
+            :description="'파일 링크 전달드립니다.'"
+            :date="'2020.01.20 오전 11:00'"
+            :filename="'VIRNECT Remote WEB 2.0'"
+            :filelink="'https://virnect.com'"
+            :image="'default'"
           ></notice-item>
           <notice-item
             type="message"
             :info="'Harry Ha 님'"
             :description="'통화요청 부탁드립니다.'"
             :date="'2020.01.20 오전 11:00'"
-            :image="require('assets/image/img_user_profile.svg')"
+            :image="'default'"
           ></notice-item>
           <notice-item
             type="invite"
             :info="'Harry Ha 님'"
             :description="'참가자로 협업을 요청하였습니다.'"
             :date="'2020.01.20 오전 11:00'"
-            :image="require('assets/image/img_user_profile.svg')"
+            :image="'default'"
           ></notice-item>
           <notice-item
             type="fail"
@@ -62,8 +73,14 @@
             :info="'[만료 안내]'"
             :description="'라이선스 만료 <em>[60분]</em> 남았습니다.'"
             :date="'2020.01.20 오전 11:00'"
-          ></notice-item>
+          ></notice-item> -->
         </scroller>
+        <div class="popover-notice__empty" v-else>
+          <div class="popover-notice__empty-box">
+            <img src="~assets/image/img_noalarm.svg" />
+            <span>수신받은 알람이 없습니다.</span>
+          </div>
+        </div>
       </div>
       <div class="popover-notice__footer">
         <span>알림은 30일 동안 보관됩니다.</span>
@@ -77,7 +94,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { KEY, EVENT } from 'configs/push.config'
+import { EVENT } from 'configs/push.config'
 import { sendPush } from 'api/common/message'
 
 import Switcher from 'Switcher'
@@ -103,6 +120,7 @@ export default {
     return {
       onPush: true,
       key: this.$route.name,
+      alarmList: [],
     }
   },
   watch: {
@@ -116,6 +134,9 @@ export default {
   },
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear']),
+    clickNotice() {
+      this.checkBeta()
+    },
     notice() {
       if (this.onPush) return
       console.log('notice list refresh logic')
@@ -127,7 +148,7 @@ export default {
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
 
-      console.log('received message::', body)
+      this.logger('received message::', body)
 
       switch (body.event) {
         case EVENT.INVITE:
@@ -225,6 +246,26 @@ export default {
   border-bottom: solid 1px rgba($color_white, 0.09);
   > .vue-scrollbar__wrapper.popover-notice__scroller {
     height: 28.571rem;
+  }
+}
+.popover-notice__empty {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.popover-notice__empty-box {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  margin: auto;
+  > img {
+    width: fit-content;
+    margin: auto;
+  }
+  > span {
+    color: #d2d2d2;
+    font-weight: 500;
+    font-size: 16px;
   }
 }
 .popover-notice__footer {
