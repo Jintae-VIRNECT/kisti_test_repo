@@ -220,6 +220,7 @@ export default {
   height: 4.4286rem;
   margin: 0px 0px 0.5714rem 0px;
   background: $color_darkgray_600;
+  transition: background-color 0.3s;
 
   &.active {
     background: $color_darkgray_500;
