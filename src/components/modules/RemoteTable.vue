@@ -218,7 +218,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 4.4286rem;
-  margin: 0px 0px 0.5714rem 0px;
+  margin-bottom: 0.5714rem;
   background: $color_darkgray_600;
   transition: background-color 0.3s;
 
