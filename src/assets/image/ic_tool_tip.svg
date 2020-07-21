@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>C4715D4F-F3EF-4841-A000-9C53D947E20A@1.00x</title>
+    <defs>
+        <path d="M11.1,14.7 L12.9,14.7 L12.9,16.5 L11.1,16.5 L11.1,14.7 Z M11.1,7.5 L12.9,7.5 L12.9,12.9 L11.1,12.9 L11.1,7.5 Z M11.991,3 C7.023,3 3,7.032 3,12 C3,16.968 7.023,21 11.991,21 C16.968,21 21,16.968 21,12 C21,7.032 16.968,3 11.991,3 Z M12,19.2 C8.022,19.2 4.8,15.978 4.8,12 C4.8,8.022 8.022,4.8 12,4.8 C15.978,4.8 19.2,8.022 19.2,12 C19.2,15.978 15.978,19.2 12,19.2 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.600000024">
+        <g id="RWS_0102_접속-화면-협업-공통-메뉴_설정(리더)" transform="translate(-771.000000, -626.000000)">
+            <g id="popup_01" transform="translate(676.000000, 285.000000)">
+                <g id="Local_rec" transform="translate(40.000000, 190.000000)">
+                    <g id="03" transform="translate(0.000000, 144.000000)">
+                        <g id="Group-6">
+                            <g id="ic_tooltip" transform="translate(55.000000, 7.000000)">
+                                <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="icon/alert/error_outline_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>60FD2F21-3F5B-4215-9579-FCBC313950E2@1.00x</title>
+    <defs>
+        <path d="M21,3 L3,3 C1.9,3 1,3.9 1,5 L1,19 C1,20.1 1.9,21 3,21 L21,21 C22.1,21 23,20.1 23,19 L23,5 C23,3.9 22.1,3 21,3 Z M21,19 L3,19 L3,5 L21,5 L21,19 Z M8,15 C8,13.34 9.34,12 11,12 C11.35,12 11.69,12.07 12,12.18 L12,6 L17,6 L17,8 L14,8 L14,15.03 C13.98,16.67 12.65,18 11,18 C9.34,18 8,16.66 8,15 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_02" transform="translate(-185.000000, -156.000000)">
+            <g id="Group" transform="translate(30.000000, 111.000000)">
+                <g id="Group-7" transform="translate(19.000000, 45.000000)">
+                    <g id="icon_mp3" transform="translate(136.000000, 0.000000)">
+                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,190 +1,254 @@
 <template>
-<div v-if="visible"
-  class="modal"
-  :class="customClass">
-  <div class="modal--dimmed" @click.stop="doClose($event)"></div>
   <transition name="modal">
-    <div v-show="_isMounted"
-      class="modal--inner"
-      :style="innerWidth"
-      @click="clickHander">
-      <div class="modal--header">
-        <p class="modal--title" v-html="title">Modal Header</p>
-        <button v-if="true === showClose" class="modal--close" @click="doClose($event)">close</button>
-        <slot name="header"></slot>
-      </div>
-      
-      <div class="modal--body">
-        <slot></slot>
-      </div>
+    <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
+      <div class="modal--dimmed" @click.stop="doClose($event)"></div>
+      <div
+        class="modal--inner"
+        :style="[innerWidth, innerHeight]"
+        @click="clickHander"
+      >
+        <div class="modal--header">
+          <p class="modal--title" v-html="title">Modal Header</p>
+          <button
+            v-if="true === showClose"
+            class="modal--close"
+            @click="doClose($event)"
+          >
+            close
+          </button>
+          <slot name="header"></slot>
+        </div>
 
-      <div class="modal--footer" v-if="$slots['footer']">
-        <slot name="footer"></slot>
-      </div>
+        <div class="modal--body">
+          <slot></slot>
+        </div>
 
-      <div class="hidden" v-if="$slots['hidden-header']" :class="{'hidden__active' : hidden}">
-        <div class="hidden--inner">
-          <div class="modal--header">
-            <button v-if="true === showClose" class="modal--close" @click="doClose($event)">close</button>
-            <slot name="hidden-header"></slot>
-          </div>
-          
-          <div class="modal--body">
-            <slot name="hidden-body"></slot>
-          </div>
+        <div class="modal--footer" v-if="$slots['footer']">
+          <slot name="footer"></slot>
+        </div>
 
-          <div class="modal--footer" v-if="$slots['footer']">
-            <slot name="hidden-footer"></slot>
+        <div
+          class="hidden"
+          v-if="$slots['hidden-header']"
+          :class="{ hidden__active: hidden }"
+        >
+          <div class="hidden--inner">
+            <div class="modal--header">
+              <button
+                v-if="true === showClose"
+                class="modal--close"
+                @click="doClose($event)"
+              >
+                close
+              </button>
+              <slot name="hidden-header"></slot>
+            </div>
+
+            <div class="modal--body">
+              <slot name="hidden-body"></slot>
+            </div>
+
+            <div class="modal--footer" v-if="$slots['footer']">
+              <slot name="hidden-footer"></slot>
+            </div>
+            <slot name="hidden"></slot>
           </div>
-          <slot name="hidden"></slot>
         </div>
       </div>
     </div>
   </transition>
-</div>
 </template>
 
 <script>
 export default {
-  name: "Modal",
+  name: 'Modal',
   props: {
     visible: {
       type: Boolean,
-      require: true
+      require: true,
     },
     title: String,
     showClose: {
       type: Boolean,
-      default: true
+      default: true,
     },
     beforeClose: Function,
     width: {
-      type: Number,
-      default: 360
+      type: [Number, String],
+      default: 360,
+    },
+    height: {
+      type: [Number, String],
+      default: 'auto',
     },
     eventPropagation: {
       type: Boolean,
-      default: true
+      default: true,
     },
     customClass: {
-      type: String
+      type: String,
     },
     hidden: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {}
   },
   computed: {
     innerWidth() {
-      return {
-          width: this.width+'px'
+      if (typeof this.width === 'string') {
+        return {
+          width: this.width,
+        }
+      } else {
+        return {
+          width: this.width + 'px',
+        }
       }
-    }
+    },
+    innerHeight() {
+      if (typeof this.height === 'string') {
+        return {
+          height: this.height,
+        }
+      } else {
+        return {
+          height: this.height + 'px',
+        }
+      }
+    },
+  },
+  watch: {
+    visible(value) {
+      if (value) {
+        document.querySelector('body').classList.add('modal-open')
+      } else {
+        document.querySelector('body').classList.remove('modal-open')
+      }
+    },
   },
   methods: {
+    scroll(e) {
+      e.preventDefault()
+      e.stopPropagation()
+    },
     clickHander(event) {
-      if(this.eventPropagation) {
+      this.$eventBus.$emit('popover:close')
+
+      if (this.eventPropagation) {
         event.stopPropagation()
       }
 
-      if( this.$listeners['click'] ) {
+      if (this.$listeners['click']) {
         this.$listeners['click'](event)
       }
     },
     doClose() {
-      if(this.beforeClose) {
+      if (this.beforeClose) {
         this.beforeClose()
       }
-      
-      this.$emit('update:visible',false)
-    }
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        this.$emit('update:visible', false)
+      })
+    },
   },
 
   /* Lifecycles */
-  mounted() {
-  }
+  mounted() {},
 }
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .modal {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  z-index: 100;
-  background-color: rgba(18, 21, 23, .5);
+  background-color: rgba(#121517, 0.5);
 
-  &--dimmed {
+  .modal--dimmed {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
-    left: 0;    
+    left: 0;
   }
 
-  &--inner {
+  .modal--inner {
     position: relative;
-    min-width: 360px;
-    border-radius: 10px;
-    background-color: #fff;
+    min-width: 25.714em;
+    background-color: #1e1e20;
+    border: 1px solid rgba(#a9a9a9, 0.08);
+    border-radius: 0.714em;
+    box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
+      0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
   }
 
-  &--header {
+  .modal--header {
     position: relative;
-    padding: 24px 28px;
-    border-bottom: 1px solid #ddd;
+    height: 5em;
+    padding: 1.571em 2.143em;
+    background-color: $color_darkgray_500;
+    border-bottom: 1px solid rgba(#7f7f7f, 0.2);
+    border-radius: 0.714em 0.714em 0 0;
   }
 
-  &--title {
-    color: #333333;
-    font-size: 16px;
-    font-weight: 500;
+  .modal--title {
+    color: #dedede;
+    // font-weight: 500;
+    font-size: 1.143em;
   }
 
-  &--close {
-    overflow: hidden;
+  .modal--close {
     position: absolute;
-    top: 24px;
-    right: 26px;
-    width: 24px;
-    height: 24px;
-    opacity: .5;
-    background: url(~assets/image/call/ic-close-w.svg) 50%/28px no-repeat;
-    text-indent: -99px;
-
-    &:hover { opacity: 1; }
-  }
-
-  &--body {
+    top: 1.714em;
+    right: 1.857em;
+    z-index: 1;
+    width: 1.714em;
+    height: 1.714em;
     overflow: hidden;
-    position: relative;
-    max-height: 80vh;
-    padding: 24px 28px;
+    text-indent: -99px;
+    background: url(~assets/image/call/ic-close-w.svg) 50%/2em no-repeat;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
-  &--footer {
-    border-top: 1px solid #dddddd;
-    padding: 24px 28px 34px;
+  .modal--body {
+    position: relative;
+    height: calc(100% - 5em);
+    // max-height: 80vh;
+    padding: 1.714em 2em;
+    overflow: hidden;
+  }
+
+  .modal--footer {
+    padding: 1.714em 2em 2.429em;
+    // border-top: 1px solid #7f7f7f;
   }
 }
 
 .modal-enter-active {
-  transition-property: transform ,opacity;
-  transition-duration: .3s;
+  transition-duration: 0.3s;
+  transition-property: transform, opacity;
 }
 .modal-enter {
   transform: translateY(5%);
   opacity: 0;
 }
-  .modal-enter-to {
+.modal-enter-to {
   transform: translateX(0);
   opacity: 1;
 }

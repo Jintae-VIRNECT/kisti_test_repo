@@ -1,0 +1,285 @@
+<template>
+  <modal
+    :visible.sync="visibleFlag"
+    :showClose="true"
+    :width="'40.5714rem'"
+    :beforeClose="beforeClose"
+    :class="'local-recsetting-modal'"
+  >
+    <div class="rec-setting">
+      <template v-if="isLeader">
+        <p class="rec-setting--header">포인팅 설정</p>
+        <div class="rec-setting__row underbar">
+          <p class="rec-setting__text">참가자 포인팅</p>
+
+          <r-check
+            :text="'참가자 포인팅 허용'"
+            :value.sync="pointing"
+          ></r-check>
+        </div>
+      </template>
+
+      <div class="rec-setting__row">
+        <p class="rec-setting--header" :class="{ disable: recording }">
+          로컬 녹화 설정
+        </p>
+        <p v-if="recording" class="rec-setting--warning">
+          *로컬 녹화 중에서는 설정을 변경 할 수 없습니다.
+        </p>
+      </div>
+
+      <div class="rec-setting__row" :class="{ disable: recording }">
+        <p class="rec-setting__text">녹화대상</p>
+        <div class="rec-setting__selector">
+          <r-radio
+            :options="localRecordTarget"
+            :value="'value'"
+            :text="'text'"
+            :selectedOption.sync="recordTarget"
+          ></r-radio>
+        </div>
+      </div>
+      <div class="rec-setting__row" :class="{ disable: recording }">
+        <p class="rec-setting__text">최대 녹화 시간</p>
+        <r-select
+          class="rec-setting__selector"
+          @changeValue="changeSetting('time', $event)"
+          :options="localRecTimeOpt"
+          :value="'value'"
+          :text="'text'"
+          :defaultValue="localRecord.time"
+        >
+        </r-select>
+      </div>
+      <div class="rec-setting__row" :class="{ disable: recording }">
+        <div class="rec-setting__text custom">
+          <p>
+            녹화 간격
+          </p>
+          <tooltip
+            customClass="tooltip-guide"
+            content="장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에<br>녹화 파일을 시간 간격으로 나눠서 생성합니다."
+            placement="right"
+            effect="blue"
+          >
+            <img
+              slot="body"
+              class="setting__tooltip--icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
+          </tooltip>
+        </div>
+        <r-select
+          class="rec-setting__selector"
+          @changeValue="changeSetting('interval', $event)"
+          :options="localRecIntervalOpt"
+          :value="'value'"
+          :text="'text'"
+          :defaultValue="localRecord.interval"
+        >
+        </r-select>
+      </div>
+
+      <div class="rec-setting__row" :class="{ disable: recording }">
+        <div class="rec-setting__text custom">
+          <p>
+            녹화 영상 해상도
+          </p>
+          <tooltip
+            customClass="tooltip-guide"
+            content="720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다."
+            placement="right"
+            effect="blue"
+          >
+            <img
+              slot="body"
+              class="setting__tooltip--icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
+          </tooltip>
+        </div>
+
+        <r-select
+          class="rec-setting__selector"
+          @changeValue="changeSetting('resolution', $event)"
+          :options="localRecResOpt"
+          :value="'value'"
+          :text="'text'"
+          :defaultValue="localRecord.resolution"
+        >
+        </r-select>
+      </div>
+      <div
+        class="rec-setting__row checkbox"
+        v-if="isLeader"
+        :class="{ disable: recording }"
+      >
+        <p class="rec-setting__text">참가자 로컬 녹화</p>
+        <r-check
+          :text="'참가자 로컬 녹화 허용'"
+          :value.sync="localRecording"
+        ></r-check>
+      </div>
+    </div>
+  </modal>
+</template>
+
+<script>
+import Modal from 'Modal'
+import RSelect from 'RemoteSelect'
+import RCheck from 'RemoteCheckBox'
+import RRadio from 'RemoteRadio'
+import Tooltip from 'Tooltip'
+
+import toastMixin from 'mixins/toast'
+
+import { mapGetters, mapActions } from 'vuex'
+import { ROLE, CONTROL } from 'configs/remote.config'
+import {
+  localRecTimeOpt,
+  localRecResOpt,
+  localRecIntervalOpt,
+  localRecordTarget,
+  RECORD_TARGET,
+  LCOAL_RECORD_STAUTS,
+} from 'utils/recordOptions'
+
+export default {
+  name: 'ServiceLocalRecordSetting',
+  mixins: [toastMixin],
+  components: {
+    Modal,
+    RSelect,
+    RCheck,
+    RRadio,
+    Tooltip,
+  },
+  data() {
+    return {
+      localRecording: false,
+      pointing: false,
+
+      visibleFlag: false,
+      toastFlag: false,
+
+      recordTarget: RECORD_TARGET.WORKER,
+
+      localRecTimeOpt: localRecTimeOpt,
+      localRecResOpt: localRecResOpt,
+      localRecIntervalOpt: localRecIntervalOpt,
+      localRecordTarget: localRecordTarget,
+    }
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+    recording: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  computed: {
+    ...mapGetters([
+      'localRecord',
+      'allow',
+      'screenStream',
+      'localRecordStatus',
+    ]),
+    lrStatus() {
+      return this.localRecordStatus
+    },
+    isLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
+
+  watch: {
+    visible(flag) {
+      this.visibleFlag = flag
+    },
+    localRecording(flag) {
+      this.setAllow({
+        localRecording: !!flag,
+      })
+      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
+      this.$localStorage.setAllow('localRecording', !!flag)
+      this.showToast()
+    },
+    pointing(flag) {
+      this.setAllow({
+        pointing: !!flag,
+      })
+      this.$call.control(CONTROL.POINTING, !!flag)
+      this.$localStorage.setAllow('pointing', !!flag)
+      this.showToast()
+    },
+
+    recordTarget(target) {
+      switch (target) {
+        case RECORD_TARGET.WORKER:
+          this.setLocalRecordTarget(target)
+          this.setScreenStream(null)
+          this.showToast()
+          break
+        case RECORD_TARGET.SCREEN:
+          this.setLocalRecordTarget(target)
+          this.showToast()
+          break
+        default:
+          console.error('recordTarget :: Unknown local record target', target)
+          break
+      }
+    },
+
+    lrStatus(status) {
+      if (status === LCOAL_RECORD_STAUTS.START) {
+        this.isRecording = true
+      } else {
+        this.isRecording = false
+      }
+    },
+  },
+  methods: {
+    ...mapActions([
+      'setRecord',
+      'setAllow',
+      'setScreenStream',
+      'setLocalRecordTarget',
+    ]),
+    changeSetting(item, setting) {
+      const param = {}
+      param[item] = setting.value
+      this.setRecord(param)
+      this.$localStorage.setRecord(item, setting.value)
+      this.showToast()
+    },
+
+    beforeClose() {
+      this.$emit('update:visible', false)
+    },
+
+    showToast() {
+      if (this.toastFlag) {
+        this.toastNotify('변경사항을 저장했습니다.')
+      }
+    },
+  },
+
+  created() {
+    this.localRecording = this.allow.localRecording
+    this.pointing = this.allow.pointing
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.toastFlag = true
+    })
+  },
+}
+</script>

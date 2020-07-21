@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
-    <defs>
-        <path id="a" d="M5 5.5L.833.5h8.334z"/>
-    </defs>
-    <g fill="none" fill-rule="evenodd">
-        <use fill="#9096A2" transform="translate(5 7)" xlink:href="#a"/>
-        <path d="M0 0h20v20H0z"/>
-    </g>
-</svg>

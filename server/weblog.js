@@ -1,7 +1,7 @@
-const logger = require('./logger');
+const logger = require('./logger')
 
 module.exports = {
-  putLogs: function (logs) {
+  putLogs: function(logs) {
     // const GATEWAY_SERVICE_URL = configService.getAsString('GATEWAY_SERVICE_URL');
     // const GATEWAY_ADMIN_URL = configService.getAsString('GATEWAY_ADMIN_URL');
     // const REMOTE_SDK_URL = configService.getAsString('REMOTE_SDK_URL');
@@ -12,9 +12,9 @@ module.exports = {
     //   REMOTE_SDK_URL,
     // })
 
-    logger.log(logs, 'CONSOLE');
+    logger.log(logs, 'CONSOLE')
 
-    return logs;
+    return logs
 
     // fs.writeFile('url.json', writes, function (err) {
     //   if (err) {
@@ -25,5 +25,5 @@ module.exports = {
     //     logger.log(writes, 'READER')
     //   }
     // })
-  }
+  },
 }

@@ -4,12 +4,12 @@
  * 테마 적용
  */
 @mixin theme-dark() {
-  @at-root [theme=dark] & {
+  @at-root [theme="dark"] & {
     @content;
   }
 }
 @mixin theme-bright() {
-  @at-root [theme=bright] & {
+  @at-root [theme="bright"] & {
     @content;
   }
 }
@@ -21,23 +21,23 @@
 @mixin background-border($direction) {
   &::after {
     position: absolute;
-    background-color: rgba($color_bg_border, .79);
+    background-color: rgba($color_text, 0.04);
     @include theme-bright() {
-      background-color: #fff;
+      background-color: $color_text;
     }
-    content: '';
+    content: "";
     @if $direction == "right" {
       // border-right: $color_bg_shadow_border;
-      bottom: 0;
       right: 0;
-      height: 100%;
+      bottom: 0;
       width: 1px;
+      height: 100%;
     } @else if $direction == "left" {
       // border-left: $color_bg_shadow_border;
       bottom: 0;
       left: 0;
-      height: 100%;
       width: 1px;
+      height: 100%;
     } @else if $direction == "top" {
       // border-top: $color_bg_shadow_border;
       top: 0;
@@ -55,73 +55,15 @@
 }
 
 // 연결 상태값 색상 설정
-@mixin status-color($dot: false) {
+@mixin status-color($attr: "background-color") {
   &.good {
-    color: $color_state_good;
-    border-color: $color_state_good;
-    background-color: $color_state_good_bg;
-    @if $dot {
-      &::after {
-        content: '';
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
-        background-color: $color_state_good;
-      }
-    }
+    #{$attr}: $color_state_good;
   }
   &.normal {
-    color: $color_state_normal;
-    border-color: $color_state_normal;
-    background-color: $color_state_normal_bg;
-    @if $dot {
-      &::after {
-        content: '';
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
-        background-color: $color_state_normal;
-      }
-    }
+    #{$attr}: $color_state_normal;
   }
   &.bad {
-    color: $color_state_bad;
-    border-color: $color_state_bad;
-    background-color: $color_state_bad_bg;
-    @if $dot {
-      &::after {
-        content: '';
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
-        background-color: $color_state_bad;
-      }
-    }
-  }
-}
-
-@function gradient($start_color, $end_color) {
-  @return linear-gradient(to right, $start_color, $end_color);
-}
-
-@mixin background-gradient($start_color: $color_remote, $end_color: $color_virnect) {
-  color: #FFF;
-  background-image: gradient($start_color: $color_remote, $end_color: $color_virnect);
-
-  &:hover {
-    background-image: gradient(darken($start_color,5%), darken($end_color,5%));
+    #{$attr}: $color_state_bad;
   }
 }
 
@@ -129,37 +71,85 @@
   border-image: gradient($start_color, $end_color);
 }
 
-@mixin button($type: default) {
-
-  &:hover {
-  }
-
-  &:active {
-  }
-}
-
 @mixin ir {
   overflow: hidden;
   text-indent: -999px;
 }
-
-@mixin clearfix {
-  &::after {
-      clear: both;
-      display: block;
-      content: '';
+@mixin noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+@mixin ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@mixin image {
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
+  background: url("~assets/image/icon_bg.svg") no-repeat;
+  background-size: 100%;
+  &:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 80%;
+    background: url("~assets/image/icon_user_profile.svg") no-repeat;
+    background-size: 100%;
+    transform: translate(-50%, -50%);
+    content: "";
+  }
+  &.group {
+    &:before {
+      background-image: url("~assets/image/icon_user_remote.svg");
+    }
+  }
+  > img {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #fff;
+    background-position: center;
+    background-size: cover;
+    mask: url("~assets/image/icon_bg.svg") no-repeat;
+    mask-size: 100%;
+    -webkit-mask: url("~assets/image/icon_bg.svg") no-repeat;
+    -webkit-mask-size: 100%;
+    // border-radius: 50%;
+  }
+}
+@mixin profileMask($innerColor, $borderWidth, $borderColor) {
+  position: relative;
+  mask: url("~assets/image/icon_bg.svg") no-repeat;
+  mask-size: 100%;
+  overflow: hidden;
+  background-color: $borderColor;
+  &:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    width: calc(100% - #{$borderWidth + $borderWidth});
+    height: calc(100% - #{$borderWidth + $borderWidth});
+    background-color: $innerColor;
+    transform: translate(-50%, -50%);
+    content: "";
+    mask: url("~assets/image/icon_bg.svg") no-repeat;
+    mask-size: 100%;
   }
 }
 
-$colors: (
-  remote: $color_remote,
-  virnect: $color_virnect,
-  warning: $color_warning,
-  gray: $color_text_gray
-);
-@each $key, $value in $colors {
-  .c-#{$key} {
-      color: $value;
+@mixin clearfix {
+  &::after {
+    display: block;
+    clear: both;
+    content: "";
   }
 }
 
@@ -172,53 +162,59 @@ $colors: (
 
 /* Motion */
 .shake {
-  animation: shake .6s linear alternate;
+  animation: shake 0.6s linear alternate;
+}
+.rotate360 {
+  animation: rotate360 0.4s linear alternate;
 }
 @keyframes shake {
   0%,
   100% {
-      transform: translateX(0);
+    transform: translateX(0);
   }
 
   10%,
   30%,
   50%,
   70%,
-  90% { transform: translateX(1%); }
+  90% {
+    transform: translateX(1%);
+  }
 
   20%,
   40%,
   60%,
-  80% { transform: translateX(-1%); }
+  80% {
+    transform: translateX(-1%);
+  }
 }
 
 /* MediaQuery */
 // PC
 @mixin desktop {
-	@media screen and (min-width: $size_tab_max + 1) {
-		@content;
-	}
+  @media screen and (min-width: $size_tab_max + 1) {
+    @content;
+  }
 }
 
 // 태블릿
 @mixin tablet {
-	@media screen and (max-width: $size_tab_max) {
-		@content;
-	}
+  @media screen and (max-width: $size_tab_max) {
+    @content;
+  }
 }
 
 // 모바일
 @mixin mobile {
-	@media screen and (max-width: $size_m_max) {
-		@content;
-	}
+  @media screen and (max-width: $size_m_max) {
+    @content;
+  }
 }
 
 // 프린트
 @mixin print {
-    @media print {
-
-    }
+  @media print {
+  }
 }
 
 /*

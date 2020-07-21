@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="342px" height="68px" viewBox="0 0 342 68" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>FDB51B6B-65AD-42F8-BF7B-4691EC50A159@1.00x</title>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0102_접속-화면-협업-공통-메뉴_툴팁-마우스-오버(리더)" transform="translate(-807.000000, -604.000000)">
+            <g id="popup_01" transform="translate(676.000000, 285.000000)">
+                <g id="tooltip" transform="translate(131.000000, 319.000000)">
+                    <g id="tooltip_bg">
+                        <polygon id="tr" points="0 0 342 0 342 68 0 68"></polygon>
+                        <path d="M338,0 C340.209139,-4.05812251e-16 342,1.790861 342,4 L342,64 C342,66.209139 340.209139,68 338,68 L12.4732582,68 C10.2641192,68 8.47325823,66.209139 8.47325823,64 L8.47325823,42.4852814 L-9.03273983e-13,34 L8.47325823,25.5147186 L8.47325823,4 C8.47325823,1.790861 10.2641192,4.05812251e-16 12.4732582,0 L338,0 Z" fill="#0F75F5"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

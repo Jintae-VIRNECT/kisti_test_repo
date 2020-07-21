@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E7D565E8-AD06-4717-8C34-ED5575FB0D70@1.00x</title>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.200000003">
+        <g id="2.0.원격협업-화면_GNB소스-정리_03" transform="translate(-336.000000, -198.000000)">
+            <g id="image_stop" transform="translate(336.000000, 198.000000)">
+                <g>
+                    <g id="Group-9" transform="translate(12.000000, 14.864600)" stroke="#FEFEFE" stroke-width="3">
+                        <polygon id="Stroke-1" points="0.5 73.74 73.604 73.74 73.604 0.636 0.5 0.636"></polygon>
+                        <polygon id="Stroke-3" points="0.5 15.256 17.405 15.256 17.405 0.635 0.5 0.635"></polygon>
+                        <polygon id="Stroke-4" points="0.5 44.498 17.405 44.498 17.405 29.877 0.5 29.877"></polygon>
+                        <polygon id="Stroke-5" points="0.5 59.119 17.405 59.119 17.405 44.498 0.5 44.498"></polygon>
+                        <polygon id="Stroke-6" points="0.5 73.74 17.405 73.74 17.405 59.119 0.5 59.119"></polygon>
+                        <polygon id="Stroke-7" points="0.5 29.877 17.405 29.877 17.405 15.256 0.5 15.256"></polygon>
+                        <polygon id="Stroke-8" points="56.699 15.256 73.604 15.256 73.604 0.635 56.699 0.635"></polygon>
+                    </g>
+                    <polygon id="Stroke-10" stroke="#FEFEFE" stroke-width="3" points="68.699 59.3626 85.604 59.3626 85.604 44.7416 68.699 44.7416"></polygon>
+                    <polygon id="Stroke-11" stroke="#FEFEFE" stroke-width="3" points="68.699 73.9836 85.604 73.9836 85.604 59.3626 68.699 59.3626"></polygon>
+                    <polygon id="Stroke-12" stroke="#FEFEFE" stroke-width="3" points="68.699 88.6046 85.604 88.6046 85.604 73.9836 68.699 73.9836"></polygon>
+                    <polygon id="Stroke-13" stroke="#FEFEFE" stroke-width="3" points="68.699 44.7416 85.604 44.7416 85.604 30.1206 68.699 30.1206"></polygon>
+                    <g id="Group-32" transform="translate(12.000000, 14.864600)">
+                        <polygon id="Fill-14" fill="#FEFEFE" opacity="0.200000003" points="0.5 15.256 17.405 15.256 17.405 0.635 0.5 0.635"></polygon>
+                        <polygon id="Fill-16" fill="#FEFEFE" opacity="0.200000003" points="0.5 59.119 17.405 59.119 17.405 44.498 0.5 44.498"></polygon>
+                        <polygon id="Fill-18" fill="#FEFEFE" points="56.699 73.74 73.604 73.74 73.604 59.119 56.699 59.119"></polygon>
+                        <polygon id="Fill-20" fill="#FEFEFE" opacity="0.200000003" points="56.699 29.877 73.604 29.877 73.604 15.256 56.699 15.256"></polygon>
+                        <path d="M98.1365,66.0939 C98.1365,79.5729 87.2095,90.4999 73.7305,90.4999 C60.2505,90.4999 49.3235,79.5729 49.3235,66.0939 C49.3235,52.6149 60.2505,41.6879 73.7305,41.6879 C87.2095,41.6879 98.1365,52.6149 98.1365,66.0939" id="Fill-22" fill="#111012"></path>
+                        <path d="M97.813,66.406 C97.813,79.885 86.886,90.812 73.407,90.812 C59.927,90.812 49,79.885 49,66.406 C49,52.927 59.927,42 73.407,42 C86.886,42 97.813,52.927 97.813,66.406 Z" id="Stroke-24" stroke="#FEFEFE" stroke-width="3"></path>
+                        <g id="Group-10" transform="translate(63.000000, 55.000000)" fill="#FFFFFF">
+                            <rect id="Rectangle" x="0" y="0" width="7" height="22"></rect>
+                            <rect id="Rectangle-Copy-3" x="13" y="0" width="7" height="22"></rect>
+                        </g>
+                        <g id="Group-29" transform="translate(14.000000, 29.000000)">
+                            <line x1="52.2889" y1="0.8688" x2="0.5789" y2="0.8688" id="Fill-26" fill="#1E1E20"></line>
+                            <line x1="52.2889" y1="0.8688" x2="0.5789" y2="0.8688" id="Stroke-28" stroke="#FEFEFE" stroke-width="3"></line>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
