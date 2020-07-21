@@ -3,7 +3,11 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <profile class="profile" v-if="!hideProfile"></profile>
+    <profile
+      class="profile"
+      v-if="!hideProfile"
+      :image="chat.profileImgPath"
+    ></profile>
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>
@@ -92,6 +96,7 @@ export default {
     },
     hideProfile() {
       if (this.beforeChat === null) {
+        this.logger('this.beforeChat :: ', this.beforeChat)
         return false
       }
 
@@ -99,6 +104,8 @@ export default {
         this.beforeChat.type === this.chat.type &&
         this.beforeChat.uuid === this.chat.uuid
       ) {
+        this.logger('this.beforeChat.type ::', this.beforeChat.type)
+        this.logger('this.beforeChat.uuid :: ', this.beforeChat.uuid)
         return true
       }
 
