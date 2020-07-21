@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import urls from '@/server/urls'
 export default {
   data() {
     return {
@@ -94,7 +95,7 @@ export default {
   },
   methods: {
     buy() {
-      console.log('라이센스 구입')
+      window.location = urls.pay[process.env.TARGET_ENV]
     },
   },
 }

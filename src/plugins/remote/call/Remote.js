@@ -1,5 +1,5 @@
 import { OpenVidu } from './openvidu'
-import { addSessionEventListener, getUserObject } from './RemoteUtils'
+import { addSessionEventListener } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
@@ -84,12 +84,30 @@ const _ = {
         _.publisher = publisher
         _.mic(Store.getters['mic'].isOn)
         if (publishVideo) {
+          // TODO:: 테스트 계정용!!!!
           Store.commit('updateResolution', {
             connectionId: publisher.stream.connection.connectionId,
             width: 0,
             height: 0,
           })
-          Store.commit('addStream', getUserObject(publisher.stream))
+          // Store.commit('addStream', getUserObject(publisher.stream))
+          Store.commit('addStream', {
+            id: _.account.uuid,
+            stream: publisher.stream.mediaStream,
+            // connection: stream.connection,
+            connectionId: publisher.stream.connection.connectionId,
+            nickname: _.account.nickname,
+            path: _.account.path,
+            audio: publisher.stream.audioActive,
+            video: true,
+            speaker: true,
+            mute: false,
+            status: 'good',
+            roleType: ROLE.EXPERT_LEADER,
+            permission: 'default',
+            hasArFeature: false,
+            me: true,
+          })
         }
       })
 
@@ -146,6 +164,21 @@ const _ = {
       type: SIGNAL.CHAT,
     })
   },
+
+  /**
+   * chatting-file
+   */
+  sendFile: params => {
+    if (!_.session) return
+
+    //파일 관련 정보 전송하기
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.FILE,
+    })
+  },
+
   /**
    * resolution
    * @param {Object} resolution = {width, height, orientation}

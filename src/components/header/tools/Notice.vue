@@ -127,14 +127,19 @@ export default {
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
 
+      console.log('received message::', body)
+
       switch (body.event) {
         case EVENT.INVITE:
           this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
-            () => this.joinRoom(body.contents.roomId),
+            () => this.acceptInvite(body),
             () => this.inviteDenied(body.userId),
           )
+          break
+        case EVENT.INVITE_ACCEPTED:
+          this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
           this.alarmInviteDenied(body.contents.nickName)
@@ -144,22 +149,27 @@ export default {
           break
         case EVENT.LICENSE_EXPIRED:
           this.alarmLicense()
+          setTimeout(() => {
+            this.$call.leave()
+            this.$router.push({ name: 'workspace' })
+          }, 60000)
           break
       }
     },
     async inviteDenied(userId) {
-      const params = {
-        service: KEY.SERVICE_TYPE,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-        targetUserIds: [userId],
-        event: EVENT.INVITE_DENIED,
-        contents: {
-          nickName: this.account.nickname,
-        },
+      const contents = {
+        nickName: this.account.nickname,
       }
 
-      await sendPush(params)
+      await sendPush(EVENT.INVITE_DENIED, [userId], contents)
+    },
+    acceptInvite(body) {
+      const contents = {
+        nickName: this.account.nickname,
+      }
+
+      sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
+      this.joinRoom(body.contents.roomId)
     },
   },
 

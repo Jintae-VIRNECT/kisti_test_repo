@@ -14,9 +14,14 @@ export default {
   console: {
     local: '/account',
     develop: 'https://192.168.6.3:8883',
-    // develop: '/account',
     staging: 'https://stgconsole.virnect.com',
     production: 'https://console.virnect.com',
+  },
+  pay: {
+    local: 'http://localhost:7070',
+    develop: 'http://192.168.6.3:7070',
+    staging: 'https://stgpay.virnect.com',
+    production: 'https://pay.virnect.com',
   },
   account: {
     local: 'https://localhost:8822',
@@ -35,5 +40,11 @@ export default {
     develop: 'https://192.168.6.3:4443/',
     staging: 'https://stgapi.virnect.com',
     production: 'https://api.virnect.com',
+  },
+  message: {
+    local: 'wss://192.168.6.3:8073/message',
+    develop: 'wss://192.168.6.3:8073/message',
+    staging: 'wss://stgapi.virnect.com/message',
+    production: 'wss://api.virnect.com/message',
   },
 }

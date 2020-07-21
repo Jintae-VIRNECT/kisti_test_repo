@@ -3,7 +3,9 @@ import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import urls from '@/server/urls'
 import jwtDecode from 'jwt-decode'
-import { setAuthorization } from 'api/gateway/gateway'
+import { setAuthorization, setBaseURL } from 'api/gateway/gateway'
+import Axios from 'axios'
+import logger from 'utils/logger'
 
 /**
  * 상태
@@ -75,6 +77,25 @@ async function getMyInfo() {
   }
 }
 
+async function getUrls() {
+  const axios = Axios.create({
+    timeout: process.env.NODE_ENV === 'production' ? 2000 : 10000,
+    withCredentials: false,
+    headers: {
+      'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
+      'Content-Type': 'application/json',
+    },
+  })
+  const res = await axios.get('/urls')
+
+  logger('URLS::', res.data)
+
+  // TODO: 서버 개발 완료 후 변경 필요
+  // setBaseURL(res.data.api)
+  setBaseURL(res.data.media)
+  return res.data
+}
+
 /**
  * export
  */
@@ -99,13 +120,14 @@ class Auth {
 
   async init() {
     env = process.env.TARGET_ENV
-    console.log(env)
     if (env === undefined) {
       env = 'local'
     }
+    let urls = {}
 
     if (getTokensFromCookies()) {
       try {
+        urls = await getUrls()
         await getMyInfo(api)
         isLogin = true
         tokenRenewal()
@@ -115,7 +137,10 @@ class Auth {
         isLogin = false
       }
     }
-    return this
+    return {
+      urls: urls,
+      account: this,
+    }
   }
   login(options = {}) {
     const url = options.LOGIN_SITE_URL

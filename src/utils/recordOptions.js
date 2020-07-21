@@ -118,7 +118,7 @@ export const getWH = (resolution, inputWidth, inputHeight) => {
       default:
         video.width = 640
         video.height = 480
-        console.log('unknown resolution ::', resolution)
+        console.error('getWH :: Unknown resolution ::', resolution)
         break
     }
 
@@ -142,7 +142,7 @@ export const getWH = (resolution, inputWidth, inputHeight) => {
       default:
         video.width = 854
         video.height = 480
-        console.log('unknown resolution ::', resolution)
+        console.error('getWH :: Unknown resolution ::', resolution)
         break
     }
   }

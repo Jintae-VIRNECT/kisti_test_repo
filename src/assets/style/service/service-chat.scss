@@ -200,6 +200,7 @@
             color: $color_primary_700;
             font-size: 0.9375rem;
             text-decoration: underline;
+            word-break: break-word;
           }
         }
       }
@@ -246,6 +247,7 @@
             color: $color_primary_700;
             font-size: 0.9375rem;
             text-decoration: underline;
+            word-break: break-word;
           }
         }
       }
@@ -373,7 +375,8 @@
 
 .chat-item__file--wrapper {
   display: flex;
-  margin-top: 0.7857rem;
+  align-items: center;
+  margin-top: 0.0714rem;
 }
 
 .chat-item__file--icon {
@@ -405,33 +408,33 @@
   overflow: hidden;
   color: rgba($color_darkgray_1000, 0.78);
   font-weight: 500;
-  font-size: 1.2143rem;
+  font-size: 1.0714rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   background: url() no-repeat;
 }
 
 .chat-item__file--size {
-  margin: 0.3571rem 0;
-  color: rgb(122, 122, 122);
+  margin: 0.5rem 0 0.3571rem 0;
+  color: #7a7a7a;
   font-size: 0.8571rem;
 }
 
 .chat-item__file--button {
   width: 100%;
   height: 2.4286rem;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(#000000, 0.1);
   border-radius: 3px;
   &:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(#000000, 0.2);
   }
 
   &:active {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(#000000, 0.3);
   }
 
   .button-text {
-    color: rgba(0, 0, 0, 0.78);
+    color: rgba(#000000, 0.78);
     font-weight: 500;
     font-size: 1rem;
     text-align: center;
@@ -582,14 +585,14 @@
   width: 16.4286rem;
   height: 1.5rem;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(#ffffff, 0.78);
   font-weight: 500;
   font-size: 1.1429rem;
   white-space: nowrap;
   text-align: left;
   text-overflow: ellipsis;
   &.invalid {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(#ffffff, 0.3);
   }
 }
 .chat-file-item__sub {
@@ -607,7 +610,7 @@
   }
 
   & > span {
-    color: rgba(255, 255, 255, 0.78);
+    color: rgba(#ffffff, 0.78);
     font-size: 0.9286rem;
     opacity: 0.6;
   }
@@ -656,7 +659,7 @@
 
 .chat-down__bar--count {
   margin: 0.2143rem 0px 0px 0px;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(#ffffff, 0.78);
   font-weight: 500;
   font-size: 1rem;
 }

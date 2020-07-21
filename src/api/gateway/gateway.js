@@ -5,29 +5,17 @@
 
 // import axios from 'api/axios'
 import { merge } from 'lodash'
-import Axios from 'axios'
 import Cookies from 'js-cookie'
-import urls from '@/server/urls'
 import API from './api'
-
-const TOKEN = Cookies.get('accessToken')
-const axios = Axios.create({
-  timeout: 10000,
-  withCredentials: false,
-  headers: {
-    'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
-    'Content-Type': 'application/json',
-    common: {
-      Authorization: `Bearer ${TOKEN}`,
-    },
-  },
-  // baseURL: urls.api[process.env.TARGET_ENV],
-  baseURL: 'https://192.168.6.4:4443',
-})
+import logger from 'utils/logger'
+import axios from '../axios'
 
 const URL = API
+const TOKEN = Cookies.get('accessToken')
 
 console.log(`ENV: ${process.env.TARGET_ENV}`)
+
+axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 
 /**
  * Common request handler
@@ -78,7 +66,7 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      console.log(option)
+      logger(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
 
@@ -101,7 +89,7 @@ const sender = async function(constant, params, headers = {}, custom) {
   })
 
   try {
-    console.log(method.toUpperCase(), url, parameter, headers)
+    logger(method.toUpperCase(), url, parameter, headers)
     const request = {
       method: method,
       data: parameter,
@@ -125,7 +113,7 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        console.log(res.data['data'])
+        logger(res.data['data'])
         return res.data['data']
       } else {
         return true
@@ -172,7 +160,12 @@ const errorHandler = function(err) {
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  console.log(axios.defaults.headers)
+  logger('TOKEN::', axios.defaults.headers)
+}
+
+export const setBaseURL = baseURL => {
+  axios.defaults.baseURL = baseURL
+  logger('BASE_URL::', baseURL)
 }
 
 export default sender

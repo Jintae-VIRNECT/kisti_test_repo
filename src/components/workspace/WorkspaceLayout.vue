@@ -33,7 +33,7 @@ import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import auth from 'utils/auth'
-import { checkLicense } from 'utils/license'
+import { getLicense } from 'api/workspace/license'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 
@@ -41,12 +41,12 @@ import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
-    const account = await auth.init()
+    const authInfo = await auth.init()
     if (!auth.isLogin) {
       auth.login()
     } else {
       next(vm => {
-        vm.init(account)
+        vm.init(authInfo)
       })
     }
   },
@@ -76,7 +76,10 @@ export default {
       'setRecord',
       'setAllow',
     ]),
-    init(account) {
+    init(authInfo) {
+      const account = authInfo.account
+      const urls = authInfo.urls
+      window.urls = urls
       this.updateAccount(account.myInfo)
       this.initWorkspace(account.myWorkspaces)
       this.$nextTick(() => {
@@ -120,20 +123,21 @@ export default {
   },
   mounted() {
     this.$nextTick(async () => {
-      const noLicenseCallback = () => {
+      const license = await getLicense(
+        this.workspace.uuid,
+        await this.account.uuid,
+      )
+      this.license = license
+
+      if (!license) {
         this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
           text: '확인',
           action: () => {
             this.$eventBus.$emit('showLicensePage')
           },
         })
+        return false
       }
-      const license = await checkLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-        noLicenseCallback,
-      )
-      this.license = license
     })
 
     this.tabTop = this.$refs['tabSection'].$el.offsetTop

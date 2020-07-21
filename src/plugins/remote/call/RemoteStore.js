@@ -14,7 +14,7 @@ const getDefaultState = () => {
       // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
       // permission: 'default' / 'noAR' / false / true
-      // arFeature
+      // hasArFeature
     ],
     chatList: [
       // {

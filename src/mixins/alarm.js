@@ -1,3 +1,53 @@
+const ALARM_DURATION = 3000
+const ALARM_DURATION_BUTTON = 30000
+
+const buildTemplate = payload => {
+  let icon = payload.icon
+  if (payload.type === 'info' || payload.type === 'license') {
+    icon = require('assets/image/ic_system.svg')
+  } else if (payload.type === 'fail') {
+    icon = require('assets/image/ic_notice.svg')
+  } else if (!icon || icon.length === 0 || icon === 'default') {
+    icon = false
+  }
+  let fullTemplate = `
+  <figure>
+    <div class="toasted--thumb">
+      <div class="toasted--image">`
+  if (icon) {
+    fullTemplate += `
+        <img
+        src="${icon}"
+        class="${payload.type}"
+        />`
+  }
+  fullTemplate += `
+      </div>
+    </div>
+    <figcaption>`
+  if (payload.info && payload.info.length > 0) {
+    fullTemplate += `
+      <p class="toasted__info ${payload.type}">${payload.info}</p>`
+  }
+  fullTemplate += `
+      <p class="toasted__description">${payload.description}</p>`
+  if (payload.options && 'action' in payload.options) {
+    fullTemplate += `
+      <div class="toasted__buttons"></div>`
+  }
+  if (payload.options && 'changed' in payload.options) {
+    fullTemplate += `
+      <div class="toasted__buttons">
+        <button class="${payload.options.changed.class}">${payload.options.changed.text}</button>
+      </div>`
+  }
+  fullTemplate += `
+    </figcaption>
+  </figure>`
+
+  return fullTemplate
+}
+
 export default {
   methods: {
     /**
@@ -18,7 +68,7 @@ export default {
     alarmInvite({ nickName, profile }, accept, deny) {
       const refuse = () => {
         inviteNotify.text(
-          this.buildTemplate({
+          buildTemplate({
             type: 'invite',
             info: `${nickName} 님`,
             description: '참가자로 협업을 요청하였습니다.',
@@ -38,6 +88,7 @@ export default {
         info: `${nickName} 님`,
         description: '참가자로 협업을 요청하였습니다.',
         icon: profile,
+        duration: ALARM_DURATION_BUTTON,
         options: {
           action: [
             {
@@ -66,21 +117,19 @@ export default {
      */
     alarmInviteDenied(nickName) {
       this.alarmInfo(
-        '[협업 거절]',
-        `${nickName}님이<br> 협업 요청을 거절하였습니다.`,
+        '',
+        `<em>[${nickName}] </em>님이<br> 협업 요청을 거절하였습니다.`,
       )
     },
     /**
-     * 시스템 알림 메시지
-     * @param {String} title
-     * @param {String} description
+     * 참가자 협업 초대 수락
+     * @param {String} nickName
      */
-    alarmInfo(title, description) {
-      this.callNotify({
-        type: 'info',
-        info: title,
-        description: description,
-      })
+    alarmInviteAccepted(nickName) {
+      this.alarmInfo(
+        '',
+        `<em>[${nickName}] </em>님이<br> 협업 요청을 수락하였습니다.`,
+      )
     },
     /**
      * 라이선스 만료 메시지
@@ -90,17 +139,11 @@ export default {
         type: 'license',
         info: '[만료안내]',
         description: '라이선스가 만료되었습니다.<br> 1분 뒤에 자동 종료됩니다.',
-        // options: {
-        //   action: {
-        //     text: '라이선스 구매하기',
-        //     class: 'btn small',
-        //     onClick: (e, toastObject) => {
-        //       toastObject.goAway(0)
-        //     },
-        //   },
-        // },
       })
     },
+    /**
+     * TODO
+     */
     alarmMessage() {
       this.callNotify({
         type: 'message',
@@ -110,6 +153,9 @@ export default {
         icon: require('assets/image/profile.png'),
       })
     },
+    /**
+     * TODO
+     */
     alarmFail() {
       this.callNotify({
         type: 'fail',
@@ -117,6 +163,9 @@ export default {
         description: '최대 참가인원이 초과하였습니다.',
       })
     },
+    /**
+     * TODO
+     */
     alarmFile() {
       this.callNotify({
         type: 'file',
@@ -136,65 +185,27 @@ export default {
         },
       })
     },
-    buildTemplate(payload) {
-      let icon = payload.icon
-      if (payload.type === 'info' || payload.type === 'license') {
-        icon = require('assets/image/ic_system.svg')
-      } else if (payload.type === 'fail') {
-        icon = require('assets/image/ic_notice.svg')
-      } else if (!icon || icon.length === 0 || icon === 'default') {
-        icon = false
+    /**
+     * 시스템 알림 메시지
+     * @param {String} title
+     * @param {String} description
+     */
+    alarmInfo(title, description) {
+      const params = {
+        type: 'info',
+        info: title,
+        description: description,
       }
-      let iconTemplate = `
-      <div class="toasted--thumb">
-        <div class="toasted--image">
-      `
-      if (icon) {
-        iconTemplate += `
-        <img
-        src="${icon}"
-        class="${payload.type}"
-        />
-        `
-      }
-      iconTemplate += `
-        </div>
-      </div>
-      `
-      let btnTemplate = ``
-      if (payload.options && 'action' in payload.options) {
-        btnTemplate = `<div class="toasted__buttons"></div>`
-      }
-      if (payload.options && 'changed' in payload.options) {
-        btnTemplate = `
-        <div class="toasted__buttons">
-          <button class="${payload.options.changed.class}">${payload.options.changed.text}</button>
-        </div>`
-      }
-
-      const fullTemplate =
-        `
-      <figure>
-      ${iconTemplate}
-        <figcaption>
-          <p class="toasted__info ${payload.type}">${payload.info}</p>
-          <p class="toasted__description">${payload.description}</p>
-      ` +
-        btnTemplate +
-        `
-        </figcaption>
-      </figure>`
-
-      return fullTemplate
+      this.callNotify(params)
     },
     /**
      * 알림 토스트
      * @param type ['message', 'invite', 'info', 'fail', 'license', 'file']
      */
     callNotify(payload) {
-      return this.$alarm.show(this.buildTemplate(payload), {
+      return this.$alarm.show(buildTemplate(payload), {
         position: 'top-right',
-        duration: 50000000,
+        duration: payload.duration | ALARM_DURATION,
         fitToScreen: true,
         keepOnHover: true,
         type: 'notify',
