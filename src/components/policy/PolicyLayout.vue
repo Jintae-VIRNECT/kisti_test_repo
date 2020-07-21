@@ -12,7 +12,12 @@
               :key="index"
               :class="{ on: value[0] === tab }"
             >
-              <a :href="`/policy/${value[0]}`" class="link_option">
+              <a
+                :href="`/policy/${value[0]}`"
+                class="link_option"
+                data-wml-style=".overlay"
+                :data-wml-speech-command="value[1]"
+              >
                 <span class="txt_line">{{ value[1] }}</span>
               </a>
             </li>
@@ -52,6 +57,7 @@
 
 <script>
 // import PolicyHeader from './header/PolicyHeader'
+import WearML from 'plugins/wearML/index'
 import Anchor from 'UIAnchor'
 
 const RouteMap = new Map([
@@ -78,6 +84,7 @@ export default {
     if ('name' in this.$route) {
       this.tab = this.$route.name
     }
+    WearML.getCommands()
   },
 }
 </script>

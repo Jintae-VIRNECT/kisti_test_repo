@@ -3,6 +3,15 @@
 @import "mixin";
 @import "reset";
 
+/* realwear */
+.overlay {
+  --overlay_show_text: false;
+  --overlay_show_number: true;
+  --overlay_show_dot: false;
+  --overlay_persists: false;
+  --overlay_anchor_hv: "100,50";
+}
+
 /* global */
 .screen_out {
   position: absolute;
@@ -51,12 +60,16 @@
       display: table;
       flex: 1;
       float: left;
+      width: 50%;
       // width: 165px;
       height: 42px;
       line-height: 42px;
       text-align: center;
       background-color: #1e1f22;
       border: solid 1px #27292c;
+      -webkit-box-flex-foo: bar;
+      -webkit-box-orient: vertical;
+      -webkit-box-flex: 1;
     }
     li .link_option {
       display: block;
@@ -1091,6 +1104,12 @@
 }
 .info_copyright {
   color: #fff;
+}
+@media only screen and (min-width: $size_m_max+1) {
+  #serviceTerms *,
+  #privacyPolicy * {
+    font-size: 16px;
+  }
 }
 
 @media only screen and (min-width: $size_pc_min+1) {
