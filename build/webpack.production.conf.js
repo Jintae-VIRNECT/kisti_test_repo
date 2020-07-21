@@ -6,8 +6,7 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const Dotenv = require('dotenv-webpack')
 
-const mode =
-  process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
+const mode = process.env.NODE_ENV === 'develop' ? 'development' : 'production'
 
 const productionWebpackConfig = merge(baseWebpackConfig(mode), {
   devtool: false,
