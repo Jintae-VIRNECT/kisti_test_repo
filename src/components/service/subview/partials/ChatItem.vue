@@ -96,7 +96,6 @@ export default {
     },
     hideProfile() {
       if (this.beforeChat === null) {
-        this.logger('this.beforeChat :: ', this.beforeChat)
         return false
       }
 
@@ -104,8 +103,6 @@ export default {
         this.beforeChat.type === this.chat.type &&
         this.beforeChat.uuid === this.chat.uuid
       ) {
-        this.logger('this.beforeChat.type ::', this.beforeChat.type)
-        this.logger('this.beforeChat.uuid :: ', this.beforeChat.uuid)
         return true
       }
 
