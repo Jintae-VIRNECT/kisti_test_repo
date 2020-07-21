@@ -273,7 +273,7 @@ export default {
         }, 1000)
       } else {
         clearInterval(this.localTimer)
-        this.localTimer = 0
+        this.localTime = 0
         this.localTimer = null
       }
     },
