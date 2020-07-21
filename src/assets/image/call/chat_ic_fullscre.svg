@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>78F3B9BA-1983-4397-8FD0-F60121237A9E@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.800000012">
+        <g id="2.0.원격협업-화면_전체" transform="translate(-1878.000000, -76.000000)">
+            <g id="message" transform="translate(1560.000000, 56.000000)">
+                <g id="texting-area">
+                    <g id="top">
+                        <g id="chat_ic_fullscreen02" transform="translate(318.000000, 20.000000)">
+                            <rect id="chat_ic_fullscre" opacity="0.355352493" x="0" y="0" width="20" height="20"></rect>
+                            <rect id="Rectangle" stroke="#FFFFFF" stroke-width="1.5" x="3" y="3" width="15" height="15" rx="1"></rect>
+                            <polyline id="Path-36" stroke="#FFFFFF" points="11.59375 6.32714844 14.65625 6.32714844 14.65625 9.32666016"></polyline>
+                            <line x1="10.890625" y1="10.1536865" x2="14.65625" y2="6.32714844" id="Path-37" stroke="#FFFFFF"></line>
+                            <polyline id="Path-38" stroke="#FFFFFF" points="6.546875 11.678833 6.546875 14.7254639 9.50622559 14.7254639"></polyline>
+                            <line x1="9.50622559" y1="11.678833" x2="6.546875" y2="14.7254639" id="Path-39" stroke="#FFFFFF"></line>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

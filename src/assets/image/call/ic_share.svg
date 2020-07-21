@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>5E631EB6-6FDE-49A9-925B-3FB59ED16F2D@1.00x</title>
+    <defs>
+        <path d="M6.982,4.655 L6.982,6.206 L1.55172414,6.20689655 L1.55172414,15.5172414 L13.9655172,15.5172414 L13.965,9.31 L15.517,9.31 L15.5172414,15.5172414 C15.5172414,16.3232759 14.8943966,16.9909004 14.1062287,17.0625931 L13.9655172,17.0689655 L1.55172414,17.0689655 C0.698275862,17.0689655 0,16.3706897 0,15.5172414 L0,15.5172414 L0,6.20689655 C0,5.35344828 0.698275862,4.65517241 1.55172414,4.65517241 L1.55172414,4.65517241 L6.982,4.655 Z M9.69827586,9.31034483 L13.1896552,13.9655172 L2.32758621,13.9655172 L5.04310345,10.4741379 L6.98275862,12.8094828 L9.69827586,9.31034483 Z M14.0172414,0 L18,3.98275862 L14.0172414,7.96551724 L14.0172414,5.63275862 C11.1724138,5.63275862 9.18103448,6.54310345 7.75862069,8.53448276 C8.32758621,5.68965517 10.0344828,2.84482759 14.0172414,2.27586207 L14.0172414,0 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0102-_접속-화면_협업-공통-메뉴-_캡쳐(리더)" transform="translate(-1176.000000, -812.000000)">
+            <g id="capture" transform="translate(1058.000000, 489.000000)">
+                <g id="Group-5" transform="translate(12.000000, 261.000000)">
+                    <g id="03" transform="translate(0.000000, 56.000000)">
+                        <g id="Group-6" transform="translate(106.000000, 6.000000)">
+                            <g id="icn_call_share">
+                                <rect id="tr" fill="#D8D8D8" opacity="0.01" x="0" y="0" width="28" height="28"></rect>
+                                <g id="icon/image/panorama_24px-2" transform="translate(5.000000, 5.000000)">
+                                    <mask id="mask-2" fill="white">
+                                        <use xlink:href="#path-1"></use>
+                                    </mask>
+                                    <use id="icon/image/panorama_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

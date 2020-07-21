@@ -1,5 +1,5 @@
-const log4js = require('log4js');
-const chalk = require('chalk');
+const log4js = require('log4js')
+const chalk = require('chalk')
 
 log4js.configure({
   appenders: {
@@ -7,12 +7,13 @@ log4js.configure({
       type: 'console',
       layout: {
         type: 'pattern',
-        pattern: `${chalk.default.green('[WEBCLIENT]')} - ` +
+        pattern:
+          `${chalk.default.green('[WEBCLIENT]')} - ` +
           `${chalk.default.white('[%d{yyyy-MM-dd hh:mm:ss}]')} - ` +
           `[%p] - ` +
           `${chalk.default.cyan(`[%c]`)} - ` +
           `%m%`,
-      }
+      },
     },
     file: {
       type: 'dateFile',
@@ -28,20 +29,18 @@ log4js.configure({
   categories: {
     default: {
       appenders: ['default', 'file'],
-      level: 'all'
-    }
-  }
+      level: 'all',
+    },
+  },
 })
 
-
-
 module.exports = {
-  log: function (message, context) {
-    const logger = log4js.getLogger(context);
-    logger.info(message);
+  log: function(message, context) {
+    const logger = log4js.getLogger(context)
+    logger.info(message)
   },
-  error: function (message, context) {
-    const logger = log4js.getLogger(context);
-    logger.error(message);
-  }
+  error: function(message, context) {
+    const logger = log4js.getLogger(context)
+    logger.error(message)
+  },
 }

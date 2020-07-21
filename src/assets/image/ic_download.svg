@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>6E34E287-0285-4891-AAD1-F730B09BB15F@1.00x</title>
+    <defs>
+        <path d="M17.2222222,11 L17.2222222,17.2222222 L4.77777778,17.2222222 L4.77777778,11 L3,11 L3,17.2222222 C3,18.2 3.8,19 4.77777778,19 L17.2222222,19 C18.2,19 19,18.2 19,17.2222222 L19,11 L17.2222222,11 Z M11.8888889,11.5955556 L14.1911111,9.30222222 L15.4444444,10.5555556 L11,15 L6.55555556,10.5555556 L7.80888889,9.30222222 L10.1111111,11.5955556 L10.1111111,3 L11.8888889,3 L11.8888889,11.5955556 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0102_2_접속-화면_협업-공통-메뉴_화면-녹화-완료-(리더)" transform="translate(-1132.000000, -404.000000)">
+            <g id="popup" transform="translate(491.000000, 185.000000)">
+                <g id="makegroup" transform="translate(0.000000, 2.000000)">
+                    <g id="Group" transform="translate(50.000000, 210.000000)">
+                        <g id="Group-2">
+                            <g id="btn_all_down" transform="translate(573.000000, 0.000000)">
+                                <g id="x">
+                                    <g id="Group-3" transform="translate(18.000000, 7.000000)">
+                                        <g id="ic_download">
+                                            <rect id="tr" x="0" y="0" width="22" height="22"></rect>
+                                            <mask id="mask-2" fill="white">
+                                                <use xlink:href="#path-1"></use>
+                                            </mask>
+                                            <use id="icon/content/save_alt_24px" fill="#D7D7D7" fill-rule="nonzero" xlink:href="#path-1"></use>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

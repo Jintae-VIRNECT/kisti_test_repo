@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>76D1DFD3-8DBB-4654-862A-A9FACAC99A25@1.00x</title>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리_01" transform="translate(-291.000000, -947.000000)">
+            <g id="frame_list-copy" transform="translate(32.000000, 925.000000)">
+                <g id="02.frame-" transform="translate(190.000000, 0.000000)">
+                    <g id="img_thumbnail">
+                        <g id="Mute">
+                            <g id="icon_speaker_mute" transform="translate(69.000000, 22.000000)">
+                                <rect id="tr" x="0" y="0" width="40" height="40"></rect>
+                                <g transform="translate(5.000000, 8.000000)" fill="#FEFEFE">
+                                    <polygon id="Fill-1" points="0 18.249 6.094 18.249 6.094 6.999 0 6.999"></polygon>
+                                    <polygon id="Fill-2" points="17.8128 -0.0003 15.7928 0.0307 7.9688 5.8977 7.9688 10.8497 7.9688 12.0967 7.9688 18.8227 15.7928 24.6897 17.8128 24.7197 17.8128 11.8887 17.8128 10.8497"></polygon>
+                                    <polygon id="Fill-3" points="25.2819 10.8672 21.5869 7.1712 19.9609 8.7962 23.6569 12.4912 19.9609 16.1882 21.5869 17.8122 25.2819 14.1172 28.9769 17.8122 30.6029 16.1882 26.9069 12.4912 30.6029 8.7962 28.9769 7.1712"></polygon>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,37 @@
+.remote-layout {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background-color: $color_bg_default;
+}
+.remote-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100vw;
+  height: calc(100vh - #{$header_height});
+  margin-top: $header_height;
+  // padding: $header_height 10px 20px 0;
+  margin-right: 0;
+  padding-bottom: 0;
+  > .vue-scrollbar-transition {
+    height: 100%;
+    transition: none;
+  }
+}
+
+.workspace-wrapper {
+  display: flex;
+  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
+  min-height: 100%;
+  padding-top: 2.143rem;
+  // max-width: 1440px;
+  // height: calc(100vh - 56px);
+  // margin: 0 auto;
+  // margin-top: 56px;
+  // text-align: center;
+  background-color: $color_bg;
+}

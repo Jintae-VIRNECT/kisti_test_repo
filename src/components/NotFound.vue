@@ -2,7 +2,8 @@
   <div id="PageNotFound">
     <h1>404</h1>
     <p>
-      <span style="font-size:28px;font-weight:bold;">앗!</span> 요청하신 페이지를 찾을 수 없습니다.
+      <span style="font-weight:bold;font-size:28px;">앗!</span> 요청하신
+      페이지를 찾을 수 없습니다.
     </p>
     <p>요청하신 주소를 다시한번 확인 부탁드립니다.</p>
     <p>
@@ -18,7 +19,7 @@
   </div>
 </template>
 <script>
-export default { name: "NotFound" };
+export default { name: 'NotFound' }
 </script>
 <style scoped>
 #PageNotFound {
@@ -45,10 +46,10 @@ a {
   display: inline-block;
   margin-top: 45px;
   padding: 5px 16px 7px;
-  border-radius: 4px;
-  background: linear-gradient(to right, #0064ff 0%, #6700ff 100%);
   color: #fff;
-  text-decoration: none;
   font-size: 16px;
+  text-decoration: none;
+  background: linear-gradient(to right, #0064ff 0%, #6700ff 100%);
+  border-radius: 4px;
 }
 </style>

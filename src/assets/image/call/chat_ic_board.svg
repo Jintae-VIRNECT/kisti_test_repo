@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>28B6377E-3D06-4223-A13F-CC921B1D68E0@1.00x</title>
+    <defs>
+        <path d="M1,10.5003472 L1,13 L3.49965283,13 L10.8719622,5.6276906 L8.3723094,3.12803777 L1,10.5003472 Z M12.8050271,3.69462575 C13.064991,3.43466185 13.064991,3.01472018 12.8050271,2.75475628 L11.2452437,1.19497292 C10.9852798,0.935009027 10.5653381,0.935009027 10.3053743,1.19497292 L9.08554367,2.4148035 L11.5851965,4.91445633 L12.8050271,3.69462575 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.900000036">
+        <g id="2.0.원격협업-화면_GNB소스-정리_02" transform="translate(-874.000000, -489.000000)">
+            <g id="message" transform="translate(773.000000, 28.000000)">
+                <g id="texting-area">
+                    <g id="notifi05" transform="translate(101.000000, 457.000000)">
+                        <g id="Group-10">
+                            <g id="chat_ic_ppl" transform="translate(0.000000, 4.000000)">
+                                <rect id="tr14" opacity="0.4" x="0" y="0" width="14" height="14"></rect>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="icon_board" fill="#E4E4E5" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

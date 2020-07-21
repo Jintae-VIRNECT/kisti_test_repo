@@ -1,0 +1,24 @@
+{
+  "2000": "로그인 정보 오류 에러",
+
+
+
+    "8000": "Unknown API 요청",
+    "8001": "API 파라미터 오류",
+    "8002": "메일 전송 실패 오류",
+    "8003": "API 요청 권한 오류 (Authorization)",
+    "8004": "인증 세션 만료 (변경예정)",
+    "8005": "API 미인증 오류 (Authentication)",
+    
+	"timeout of 10000ms exceeded": "서버에서 응답이 없습니다. 잠시 후 이용바랍니다.",
+	"Network Error": "서버와의 연결이 끊겼습니다. 재접속 하시기 바랍니다.",
+	"Request failed with status code 400": "Client Error:: Bad Request (400)",
+	"Request failed with status code 401": "Client Error:: Unauthorized (401)",
+	"Request failed with status code 403": "Client Error:: Forbidden (403)",
+	"Request failed with status code 404": "Client Error:: Not Found (404)",
+	"Request failed with status code 405": "Client Error:: Mothod Not Allowed (405)",
+	"Request failed with status code 500": "Server Error:: Internal Server Error (500)",
+	"Request failed with status code 503": "Server Error:: Service Unavailable (503)",
+	"Request failed with status code 504": "Server Error:: Gateway Timeout (504)",
+	"Request failed with status code 505": "Server Error:: HTTP Version Not Supported (505)"
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>773F24AB-2499-4287-9830-A0F9A5BC9ED9@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리" transform="translate(-256.000000, -522.000000)">
+            <g id="import_btns_2" transform="translate(41.000000, 521.000000)">
+                <g id="btn_recording" transform="translate(215.000000, 1.000000)">
+                    <g id="ic_record_off">
+                        <g id="rec" fill-rule="nonzero">
+                            <path d="M10,0.75 C4.89139243,0.75 0.75,4.89139243 0.75,10 C0.75,15.1086076 4.89139243,19.25 10,19.25 C15.1086076,19.25 19.25,15.1086076 19.25,10 C19.25,4.8913757 15.1086377,0.75 10,0.75 Z" id="Path" stroke="#FFFFFF" stroke-width="1.5"></path>
+                            <circle id="Oval" fill="#FFFFFF" cx="10" cy="10" r="4"></circle>
+                        </g>
+                        <rect opacity="0.5" x="0" y="0" width="20" height="20"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

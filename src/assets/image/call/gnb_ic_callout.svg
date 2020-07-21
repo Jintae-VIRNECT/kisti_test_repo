@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="22px" viewBox="0 0 32 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>A8525CD5-47A5-4C41-B440-37E2C1934985@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리" transform="translate(-1886.000000, -161.000000)">
+            <g id="gnb*1" transform="translate(30.000000, 144.000000)">
+                <g id="gnb_btn_callend" transform="translate(1841.000000, 11.000000)">
+                    <g id="icn01" transform="translate(15.000000, 6.000000)">
+                        <line x1="19.5022503" y1="10.7920134" x2="29.1999512" y2="10.7920134" id="Path-24" stroke="#FFFFFF" stroke-width="1.6"></line>
+                        <polyline id="Path-24-Copy" stroke="#FFFFFF" stroke-width="1.6" points="25.7210003 7.09738026 29.1999512 10.7920134 25.7210003 14.6015307"></polyline>
+                        <path d="M21.3043478,15.0476074 L21.3043478,17.2867166 C21.3043478,17.814989 20.8760985,18.2432384 20.3478261,18.2432384 L6.95652174,18.2432384 C6.42824937,18.2432384 6,17.814989 6,17.2867166 L6,3.89541228 C6,3.36713991 6.42824937,2.93889054 6.95652174,2.93889054 L20.3478261,2.93889054 C20.8760985,2.93889054 21.3043478,3.36713991 21.3043478,3.89541228 L21.3043478,6.63583772" id="Path" stroke="#FFFFFF" stroke-width="1.5"></path>
+                        <polygon id="Path-11" stroke="#FFFFFF" stroke-width="0.956521739" fill="#FFFFFF" points="13.9420962 18.2432384 13.9420962 8.02263077 6.48117994 3.51184613 6 4.29509171 6 17.7201405 6.95652174 18.2432384"></polygon>
+                        <rect id="gnb_ic_callout" opacity="0.434500558" x="0" y="0" width="32" height="22"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

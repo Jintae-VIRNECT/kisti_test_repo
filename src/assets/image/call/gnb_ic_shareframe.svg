@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 61.2 (101010) - https://sketch.com -->
+    <title>127C00B1-BAA2-4482-861E-F1E7F7107CF7@3.00x</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="web-v2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.0.원격협업-화면_GNB소스-정리" transform="translate(-207.000000, -278.000000)">
+            <g id="gnb*2" transform="translate(30.000000, 268.000000)">
+                <g id="btn_1sharemoni" transform="translate(172.000000, 10.000000)">
+                    <g id="gnb_ic_shareframe" transform="translate(5.000000, 0.000000)">
+                        <rect opacity="0.140347842" x="0" y="0" width="36" height="36"></rect>
+                        <g id="icn" transform="translate(7.000000, 10.000000)">
+                            <path d="M1,0.75 C0.861928813,0.75 0.75,0.861928813 0.75,1 L0.75,14 C0.75,14.1380712 0.861928813,14.25 1,14.25 L21,14.25 C21.1380712,14.25 21.25,14.1380712 21.25,14 L21.25,1 C21.25,0.861928813 21.1380712,0.75 21,0.75 L1,0.75 Z" id="Rectangle" stroke="#FFFFFF" stroke-width="1.5" fill-rule="nonzero"></path>
+                            <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="5" y="17" width="12" height="1.5"></rect>
+                            <g id="ic_share" transform="translate(6.416667, 2.666667)">
+                                <line x1="1.76912435" y1="4.82515462" x2="7.11912435" y2="2.07515462" id="Path-7" stroke="#FFFFFF" stroke-width="0.8"></line>
+                                <line x1="1.76912435" y1="4.82515462" x2="7.20253499" y2="7.42515462" id="Path-8" stroke="#FFFFFF" stroke-width="0.8"></line>
+                                <path d="M7.11912435,3.45015462 C7.87851588,3.45015462 8.49412435,2.83454615 8.49412435,2.07515462 C8.49412435,1.31576309 7.87851588,0.700154622 7.11912435,0.700154622 C6.35973282,0.700154622 5.74412435,1.31576309 5.74412435,2.07515462 C5.74412435,2.83454615 6.35973282,3.45015462 7.11912435,3.45015462 Z" id="Oval" fill="#FFFFFF"></path>
+                                <path d="M7.11912435,8.80015462 C7.87851588,8.80015462 8.49412435,8.18454615 8.49412435,7.42515462 C8.49412435,6.66576309 7.87851588,6.05015462 7.11912435,6.05015462 C6.35973282,6.05015462 5.74412435,6.66576309 5.74412435,7.42515462 C5.74412435,8.18454615 6.35973282,8.80015462 7.11912435,8.80015462 Z" id="Oval-Copy" fill="#FFFFFF"></path>
+                                <path d="M1.76912435,6.20015462 C2.52851588,6.20015462 3.14412435,5.58454615 3.14412435,4.82515462 C3.14412435,4.06576309 2.52851588,3.45015462 1.76912435,3.45015462 C1.00973282,3.45015462 0.394124349,4.06576309 0.394124349,4.82515462 C0.394124349,5.58454615 1.00973282,6.20015462 1.76912435,6.20015462 Z" id="Oval-Copy-2" fill="#FFFFFF"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

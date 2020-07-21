@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>3398ED61-ACCC-4999-97E6-066E3E5CD2FE@1.00x</title>
+    <defs>
+        <path d="M20.2222222,14 L20.2222222,20.2222222 L7.77777778,20.2222222 L7.77777778,14 L6,14 L6,20.2222222 C6,21.2 6.8,22 7.77777778,22 L20.2222222,22 C21.2,22 22,21.2 22,20.2222222 L22,14 L20.2222222,14 Z M14.8888889,14.5955556 L17.1911111,12.3022222 L18.4444444,13.5555556 L14,18 L9.55555556,13.5555556 L10.8088889,12.3022222 L13.1111111,14.5955556 L13.1111111,6 L14.8888889,6 L14.8888889,14.5955556 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_part02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.699999988">
+        <g id="RWS_0102-_접속-화면_협업-공통-메뉴-_캡쳐(리더)" transform="translate(-1274.000000, -759.000000)">
+            <g id="capture" transform="translate(1058.000000, 489.000000)">
+                <g id="Group-5" transform="translate(12.000000, 261.000000)">
+                    <g id="02" transform="translate(170.000000, 0.000000)">
+                        <g id="Group-10" transform="translate(34.000000, 9.000000)">
+                            <g id="icon_download"></g>
+                            <rect id="tr" x="0" y="0" width="28" height="28"></rect>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/content/save_alt_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

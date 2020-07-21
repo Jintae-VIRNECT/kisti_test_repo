@@ -1,167 +1,218 @@
-/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-  border: 0;
-	font-size: 100%;
-	font: inherit;
-  vertical-align: baseline;
-	outline: none;
-}
-html, body { height: 100%; font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif; font-size: 14px; }
-article,aside,details,figcaption,figure,footer,
-header,hgroup,main,menu,nav,section,summary {
-  display: block;
-  box-sizing: border-box;
-}
-audio,canvas,progress,video {
+@charset "utf-8";
+@import "vars";
+.inline {
   display: inline-block;
-  vertical-align: baseline;
+  *display: inline;
+  *zoom: 1;
 }
-audio:not([controls]) {
-  display: none;
-  height: 0;
-}
-[hidden],template {
-  display: none;
-}
-a {
-  display: inline-block;
-  text-decoration: none;
-  background-color: transparent;
+
+/*reset css*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+em,
+img,
+small,
+strong,
+sub,
+b,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video,
+a,
+button {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   color: inherit;
-}
-a:active,a:hover {
-  outline: 0;
-}
-abbr[title] {
-  border-bottom: 1px dotted;
-}
-b,strong {
-  font-weight: 600;
-}
-dfn {
-  font-style: italic;
-}
-h1 {
-  margin: 0;
-  font-size: 2em;
-}
-ul,ol { list-style: none; }
-mark {
-  color: #000;
-  background: #ff0;
-}
-small {
-  font-size: 80%;
-}
-sub,sup {
-  position: relative;
-  font-size: 75%;
-  line-height: 0;
-  vertical-align: baseline;
-}
-sup { top: -.5em; }
-sub { bottom: -.25em; }
-img { border: 0; pointer-events: none; }
-svg:not(:root) { overflow: hidden; }
-hr {
-  height: 0;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-}
-pre { overflow: auto; }
-code,kbd,pre,samp {
-  font-family: monospace, monospace;
-  font-size: 1em;
-}
-button,input,optgroup,select,textarea {
-  margin: 0;
   font: inherit;
-  color: inherit;
-}
-button { overflow: visible; padding: 0; border: none; outline: none; }
-button,select {
-  text-transform: none;
-}
-button,
-input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-  -webkit-appearance: button;
-  cursor: pointer;
-}
-button[disabled],html input[disabled] {
-  cursor: default;
-}
-button::-moz-focus-inner, input::-moz-focus-inner {
-  padding: 0;
+  word-break: keep-all;
   border: 0;
 }
-input { line-height: normal; }
-input[type="checkbox"],
-input[type="radio"] {
-  padding: 0;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+
+html,
+body {
+  height: 100%;
+  font-size: 14px;
+  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
 }
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  height: auto;
+
+button {
+  -webkit-tap-highlight-color: transparent;
+  &:active,
+  &:hover,
+  &:focus {
+    // background-color: transparent;
+    outline: none;
+  }
 }
-input[type="search"] {
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  -webkit-appearance: textfield;
-}
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
+
+textarea,
+input.text,
+input[type="text"],
+input[type="password"],
+input[type="button"],
+input[type="submit"],
+input[type="email"],
+.input-checkbox {
+  outline: none;
   -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  // border-radius: 0;
 }
-select[disabled] {
-  border-color: #eee;
-  background-color: #f1f1f1;
-  color: #a1a1a1;
-}
-legend { padding: 0; border: 0; }
-textarea { overflow: auto; }
-optgroup { font-weight: bold; }
-table {
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-td,th { padding: 0; }
 
-::selection,
-::-moz-selection,
-::-webkit-selection {
-  background: $color_remote;
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  height: 100%;
   color: #fff;
-  text-shadow: none;
+  font-weight: 300;
+  font-size: 14px;
+  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  line-height: 1.6;
+  &:lang(en) {
+    // font-family: $roboto, $noto, sans-serif;
+  }
 }
 
-::placeholder {
-  color: $color_dark_blur;
+.dark {
+  color: #fff;
+  a,
+  button {
+    color: #fff;
+  }
 }
-:-ms-input-placeholder{
-  color: $color_dark_blur;
+
+.light {
+  // color: $baseColor;
+  a,
+  button {
+    // color: $baseColor;
+  }
 }
-::-ms-input-placeholder {
-  color: $color_dark_blur;
+
+a {
+  // color: $baseColor;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+label,
+select,
+input,
+textarea {
+  // @include inline;
+  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+button,
+input[type="submit"] {
+  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  background: transparent;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+caption {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+i,
+em {
+  font-style: normal;
+}
+
+img {
+  max-width: 100%;
 }

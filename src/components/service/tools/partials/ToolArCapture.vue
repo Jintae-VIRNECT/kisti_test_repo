@@ -1,0 +1,36 @@
+<template>
+  <tool-button
+    text="AR 캡쳐"
+    :disabled="disabled"
+    :active="active"
+    :src="require('assets/image/ic_ar_capture.svg')"
+    @click.native="clickHandler"
+  ></tool-button>
+</template>
+
+<script>
+import toolMixin from './toolMixin'
+import { VIEW, ACTION } from 'configs/view.config'
+
+export default {
+  name: 'ToolLineMode',
+  mixins: [toolMixin],
+  computed: {
+    active() {
+      if (this.viewAction === ACTION.AR_AREA) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
+  methods: {
+    clickHandler() {
+      if (this.disabled) return
+      if (this.view !== VIEW.AR) return
+
+      this.setAction(ACTION.AR_AREA)
+    },
+  },
+}
+</script>
