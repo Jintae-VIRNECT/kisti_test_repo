@@ -60,7 +60,6 @@ import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
-import RecordRTC from 'recordrtc'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 
@@ -112,7 +111,7 @@ export default {
       const chunks = await IDBHelper.getMediaChunkArrays(uuids)
       if (chunks && chunks.length > 0) {
         if (chunks.length === 1) {
-          RecordRTC.invokeSaveAsDialog(chunks[0].blob, chunks[0].fileName)
+          FileSaver.saveAs(chunks[0].blob, chunks[0].fileName)
         } else {
           this.downloadZip(chunks)
         }
