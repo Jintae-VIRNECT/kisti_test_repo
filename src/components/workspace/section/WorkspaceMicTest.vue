@@ -68,9 +68,12 @@ export default {
     ProgressBar,
   },
   computed: {
-    ...mapGetters(['mic']),
+    ...mapGetters(['mic', 'speaker']),
     micId() {
       return this.mic['deviceId']
+    },
+    speakerId() {
+      return this.speaker['deviceId']
     },
     soundWidth() {
       if (this.micTestMode) {
@@ -86,6 +89,11 @@ export default {
         this.handleInputAudioStream(newMic)
       },
       immediate: true,
+    },
+    speakerId: {
+      handler(newSpeaker) {
+        this.setOutputDevice(newSpeaker)
+      },
     },
   },
   methods: {
@@ -124,6 +132,9 @@ export default {
     toggleMicTestMode() {
       this.micTestMode = !this.micTestMode
       this.$refs['audioComponent'].muted = !this.micTestMode
+    },
+    setOutputDevice(newSpeaker) {
+      this.$refs['audioComponent'].setSinkId(newSpeaker)
     },
   },
 }
