@@ -26,7 +26,7 @@ function IsMobileBrowser(req) {
 }
 
 router.get('/healthcheck', function(req, res) {
-  res.send('healthcheck')
+  res.send('200')
 })
 
 router.get('/home', function(req, res) {

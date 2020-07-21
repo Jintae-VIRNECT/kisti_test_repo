@@ -174,6 +174,7 @@ export default {
     ...mapMutations(['setMainView']),
     hoverContents() {
       const status = this.$el.querySelector('.participant-video__network')
+      if (!status) return
       const statusTooltip = this.$el.querySelector(
         '.participant-video__network-hover',
       )
