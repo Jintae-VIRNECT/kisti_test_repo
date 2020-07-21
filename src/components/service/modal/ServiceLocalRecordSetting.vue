@@ -56,24 +56,18 @@
           <p>
             녹화 간격
           </p>
-          <popover
+          <tooltip
+            customClass="tooltip-guide"
+            content="장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에<br>녹화 파일을 시간 간격으로 나눠서 생성합니다."
             placement="right"
-            trigger="hover"
-            popperClass="rec-setting__custom-popover"
-            width="25.4286rem"
+            effect="blue"
           >
             <img
-              slot="reference"
-              class="rec-setting--tooltip-icon"
+              slot="body"
+              class="setting__tooltip--icon"
               src="~assets/image/ic_tool_tip.svg"
             />
-            <div class="rec-setting__tooltip--body">
-              <p class="rec-setting__tooltip--text">
-                장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에
-                녹화 파일을 시간 간격으로 나눠서 생성합니다.
-              </p>
-            </div>
-          </popover>
+          </tooltip>
         </div>
         <r-select
           class="rec-setting__selector"
@@ -91,24 +85,18 @@
           <p>
             녹화 영상 해상도
           </p>
-          <popover
+          <tooltip
+            customClass="tooltip-guide"
+            content="720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다."
             placement="right"
-            trigger="hover"
-            popperClass="rec-setting__custom-popover"
-            width="25.4286rem"
+            effect="blue"
           >
             <img
-              slot="reference"
-              class="rec-setting--tooltip-icon"
+              slot="body"
+              class="setting__tooltip--icon"
               src="~assets/image/ic_tool_tip.svg"
             />
-            <div class="rec-setting__tooltip--body">
-              <p class="rec-setting__tooltip--text">
-                720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가
-                원활하지 않을 수 있습니다.
-              </p>
-            </div>
-          </popover>
+          </tooltip>
         </div>
 
         <r-select
@@ -141,7 +129,7 @@ import Modal from 'Modal'
 import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
-import Popover from 'Popover'
+import Tooltip from 'Tooltip'
 
 import toastMixin from 'mixins/toast'
 
@@ -164,7 +152,7 @@ export default {
     RSelect,
     RCheck,
     RRadio,
-    Popover,
+    Tooltip,
   },
   data() {
     return {
