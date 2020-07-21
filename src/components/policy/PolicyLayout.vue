@@ -13,10 +13,11 @@
               :class="{ on: value[0] === tab }"
             >
               <a
-                :href="`/policy/${value[0]}`"
+                href="#"
                 class="link_option"
                 data-wml-style=".overlay"
                 :data-wml-speech-command="value[1]"
+                @click="route(`/policy/${value[0]}`)"
               >
                 <span class="txt_line">{{ value[1] }}</span>
               </a>
@@ -77,7 +78,11 @@ export default {
       routeMap: RouteMap,
     }
   },
-  methods: {},
+  methods: {
+    route(url) {
+      location.href = url
+    },
+  },
 
   /* Lifecycles */
   mounted() {
