@@ -94,15 +94,30 @@ export default {
         userId: this.myProfile.uuid,
       }
 
+      //  API 요청
       try {
         await workspaceSerivce.startWorkspace(form)
-        location.href = '/'
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.message.updateFail') + `\n(${e})`,
           duration: 2000,
           showClose: true,
         })
+        return false
+      }
+      // 시작 완료창
+      try {
+        await this.$confirm(
+          this.$t('workspace.started.desc'),
+          this.$t('workspace.started.title'),
+          {
+            confirmButtonText: this.$t('workspace.info.addMember'),
+            cancelButtonText: this.$t('common.confirm'),
+          },
+        )
+        location.href = '/members?modal=memberAdd'
+      } catch (e) {
+        location.href = '/'
       }
     },
   },
