@@ -75,7 +75,7 @@ export default {
     },
     roomId: {
       type: Number,
-      required: true,
+      //required: true,
     },
   },
   data() {

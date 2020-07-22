@@ -90,6 +90,10 @@ export default {
     },
     roomId: {
       type: Number,
+      // required: true,
+    },
+    sessionId: {
+      type: String,
       required: true,
     },
     leader: {
@@ -128,7 +132,10 @@ export default {
     },
     async initHistory() {
       try {
-        this.room = await getHistorySingleItem({ roomId: this.roomId })
+        this.room = await getHistorySingleItem({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
+        })
         this.image = this.room.path
         this.tabview = 'group'
       } catch (err) {

@@ -56,7 +56,10 @@ export default {
     },
     async deleteList() {
       try {
-        await deleteAllHistory()
+        await deleteAllHistory({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
         this.historyList = []
       } catch (err) {
         console.error(err)
@@ -64,16 +67,17 @@ export default {
     },
     async getHistory() {
       try {
-        const param = {
-          page: 0,
-          paging: false,
-          size: 100,
-        }
+        console.log('this.account.uuid ::', this.account.uuid)
+        console.log('this.workspace.uuid ::', this.workspace.uuid)
+
         this.loading = true
 
-        const datas = await getHistoryList(param)
+        const datas = await getHistoryList({
+          userId: await this.account.uuid,
+          workspaceId: await this.workspace.uuid,
+        })
         this.loading = false
-        this.historyList = datas.rooms
+        this.historyList = datas.roomHistoryInfoList
       } catch (err) {
         // 에러처리
         console.error(err)

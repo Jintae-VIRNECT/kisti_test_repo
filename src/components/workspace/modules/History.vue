@@ -2,10 +2,10 @@
   <div class="widecard" :style="{ height: height }" :class="customClass">
     <div class="card-item">
       <profile
-        :image="history.path"
+        :image="history.profile"
         :imageAlt="'profileImg'"
         :mainText="history.title"
-        :subText="`참석자 ${history.participantsCount}명`"
+        :subText="`참석자 ${history.memberList.length}명`"
         :thumbStyle="{ width: '3em', height: '3em' }"
         :group="true"
       ></profile>
@@ -24,7 +24,7 @@
     <div class="card-item">
       <div class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${history.leaderNickName}` }}</span>
+        <span class="text">{{ `리더 : ${leader.nickname}` }}</span>
       </div>
     </div>
 
@@ -105,7 +105,12 @@ export default {
       })
     },
     time() {
-      return this.$dayjs(this.history.totalUseTime * 1000).format('m분 s초')
+      return this.$dayjs(this.history.durationSec * 1000).format('m분 s초')
+    },
+    leader() {
+      return this.history.memberList.find(member => {
+        return member.memberType === 'LEADER'
+      })
     },
   },
   methods: {},

@@ -6,10 +6,19 @@ export default {
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
-  GET_HISTORY_LIST: ['GET', '/media/history'],
-  GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
+  HISTORY_LIST: ['GET', 'https://192.168.13.36:5000/remote/history'],
+  HISTORY_ITEM: [
+    'GET',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{sessionId}',
+  ],
+  DELETE_HISTORY_ITEM: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{sessionId}/{userId}',
+  ],
+  DELETE_HISTORY_ALL: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{userId}',
+  ],
 
   /* Workspace - Member */
   GET_MEMBER_LIST: [

@@ -6,12 +6,13 @@
       height="6.143rem"
       :menu="true"
       :history="history"
-      @openRoomInfo="openRoomInfo(history.roomId)"
-      @showDeleteDialog="showDeleteDialog(history.roomId)"
+      @openRoomInfo="openRoomInfo(history.sessionId)"
+      @showDeleteDialog="showDeleteDialog(history.sessionId)"
     ></history>
     <roominfo-modal
       :visible.sync="showRoomInfo"
-      :roomId="roomId"
+      :sessionId="sessionId"
+      :history="true"
     ></roominfo-modal>
     <create-room-modal
       :visible.sync="showRestart"
@@ -48,6 +49,7 @@ export default {
       showRestart: false,
       showRoomInfo: false,
       roomId: 0,
+      sessionId: '',
       showDenied: false,
     }
   },
@@ -74,11 +76,11 @@ export default {
   },
   methods: {
     //상세보기
-    openRoomInfo(roomId) {
-      this.roomId = roomId
+    openRoomInfo(sessionId) {
+      this.sessionId = sessionId
       this.showRoomInfo = true
     },
-    showDeleteDialog(roomId) {
+    showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
@@ -86,21 +88,26 @@ export default {
         {
           text: '삭제하기',
           action: () => {
-            this.delete(roomId)
+            this.delete(sessionId)
             this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
           },
         },
         { text: '취소' },
       )
     },
-    async delete(roomId) {
+    async delete(sessionId) {
       this.$nextTick(() => {
         const pos = this.historyList.findIndex(room => {
-          return room.roomId === roomId
+          return room.sessionId === sessionId
         })
         this.historyList.splice(pos, 1)
       })
-      await deleteHistorySingleItem({ roomId })
+
+      await deleteHistorySingleItem({
+        workspaceId: this.workspace.uuid,
+        sessionId: sessionId,
+        userId: this.account.uuid,
+      })
     },
 
     //재시작
