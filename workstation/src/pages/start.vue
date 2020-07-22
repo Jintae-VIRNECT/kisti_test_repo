@@ -15,6 +15,7 @@
               nickname: myProfile.nickname,
             })
           "
+          :maxlength="30"
         />
         <span>{{ $t('workspace.setting.nameComment') }}</span>
       </el-form-item>
@@ -22,6 +23,7 @@
         <el-input
           v-model="form.description"
           :placeholder="$t('workspace.setting.descPlaceholder')"
+          :maxlength="40"
         />
         <span>{{ $t('workspace.setting.descComment') }}</span>
       </el-form-item>

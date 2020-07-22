@@ -46,17 +46,15 @@
           <user-profile-card />
           <link-list-card
             class="install-list"
-            type="link"
             :icon="require('assets/images/icon/ic-phonelink.svg')"
             :title="$t('home.install.title')"
             :links="install"
           />
-          <!-- <link-list-card
-            type="download"
-            icon=""
+          <link-list-card
+            :icon="require('assets/images/icon/ic-local-library.svg')"
             :title="$t('home.guide.title')"
             :links="guide"
-          /> -->
+          />
         </el-col>
       </el-row>
     </div>

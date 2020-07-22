@@ -7,23 +7,21 @@
       </h3>
     </div>
     <!-- 링크 타입 -->
-    <div v-if="type === 'link'">
+    <div>
       <a
         v-for="link in links"
         :href="link.path"
         :key="link.path"
         target="_blank"
+        :download="link.isDownload"
       >
         <img v-if="link.image" :src="link.image" />
         <span>{{ link.label }}</span>
-        <img src="~assets/images/icon/ic-arrow-forward.svg" />
-      </a>
-    </div>
-    <!-- 다운로드 타입 -->
-    <div v-if="type === 'download'">
-      <a v-for="link in links" :href="link.path" :key="link.path" download>
-        <img v-if="link.image" :src="link.image" />
-        <span>{{ link.label }}</span>
+        <img
+          v-if="link.isDownload"
+          src="~assets/images/icon/ic-file-download.svg"
+        />
+        <img v-else src="~assets/images/icon/ic-arrow-forward.svg" />
       </a>
     </div>
   </el-card>
