@@ -61,5 +61,5 @@ cloud:
         resource: "workspace/"
 
 file:
-  upload-path: "upload/"
-  url: "http://192.168.6.3:${server.port}/contents/"
+  upload-path: "workspace/report/"
+  url: "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/"
