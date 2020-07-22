@@ -18,6 +18,9 @@ public class MemberHistory extends BaseTimeEntity {
     @Column(name = "member_history_id", nullable = false)
     private Long id;
 
+    @Column(name = "workspace_id", nullable = false)
+    private String workspaceId;
+
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
@@ -53,6 +56,7 @@ public class MemberHistory extends BaseTimeEntity {
             RoomHistory roomHistory,
             MemberType memberType,
             DeviceType deviceType,
+            String workspaceId,
             String uuid,
             String email,
             String sessionId,
@@ -63,6 +67,7 @@ public class MemberHistory extends BaseTimeEntity {
         this.roomHistory = roomHistory;
         this.memberType = memberType;
         this.deviceType = deviceType;
+        this.workspaceId = workspaceId;
         this.uuid = uuid;
         this.email = email;
         this.sessionId = sessionId;

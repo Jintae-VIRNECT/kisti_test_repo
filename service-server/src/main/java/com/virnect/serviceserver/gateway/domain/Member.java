@@ -27,6 +27,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
+    @Column(name = "workspace_id", nullable = false)
+    private String workspaceId;
+
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
@@ -65,12 +68,14 @@ public class Member extends BaseTimeEntity {
     public Member(
             Room room,
             MemberType memberType,
+            String workspaceId,
             String uuid,
             String email,
             String sessionId
     ) {
         this.room = room;
         this.memberType = memberType;
+        this.workspaceId = workspaceId;
         this.uuid = uuid;
         this.email = email;
         this.sessionId = sessionId;

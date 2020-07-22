@@ -24,7 +24,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class ValidationController {
-    private static final String TAG = "ValidationController";
+    private static final String TAG = ValidationController.class.getSimpleName();
 
     private final RemoteGatewayService remoteGatewayService;
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";

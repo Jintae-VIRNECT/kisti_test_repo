@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long> {
     Optional<RoomHistory> findBySessionId(final String sessionId);
 
+    Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
     //RoomHistory findByTitleIsContaining(final String title);
 
     Page<RoomHistory> findByTitleIsContaining(final String title, Pageable pageable);

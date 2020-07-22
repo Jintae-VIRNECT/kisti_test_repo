@@ -26,13 +26,13 @@ public class RoomHistoryInfoResponse {
     private String profile;
 
     @ApiModelProperty(value = "협업방 시작 일자", position = 4, example = "2020-01-20T14:05:30")
-    private LocalDateTime startDate;
+    private LocalDateTime activeDate;
 
     @ApiModelProperty(value = "협업방 종료 일자", position = 5, example = "2020-01-20T14:05:30")
-    private LocalDateTime endDate;
+    private LocalDateTime unactiveDate;
 
     @ApiModelProperty(value = "협업 진행 시간", position = 6, example = "3600")
-    private String durationTime;
+    private Long durationSec;
 
     @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 7)
     private List<MemberInfoResponse> memberList;

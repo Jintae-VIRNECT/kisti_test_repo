@@ -397,6 +397,8 @@ public class RoomRestController {
         }
 
         ApiResponse<Boolean> apiResponse = new ApiResponse<>(true);
+        //apiResponse = this.remoteGatewayService.removeAllRoom(workspaceId);
+
         Session session = this.sessionManager.getSession(sessionId);
         if (session != null) {
             log.info("REST API: DELETE closeSession");
@@ -406,6 +408,7 @@ public class RoomRestController {
             //return ResponseEntity.ok(apiResponse);
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
 
         Session sessionNotActive = this.sessionManager.getSessionNotActive(sessionId);
         if (sessionNotActive != null) {
@@ -516,12 +519,13 @@ public class RoomRestController {
     }
 
     @ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
-    @PostMapping(value = "room/{sessionId}/member")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/member")
     public ResponseEntity<ApiResponse<Boolean>> inviteMember(
+            @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid InviteRoomRequest inviteRoomRequest,
             BindingResult result
-    ) {
+            ) {
         log.info(TAG, "inviteMember");
 
         if (result.hasErrors()) {
@@ -529,7 +533,7 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.inviteRoom(sessionId, inviteRoomRequest);
+        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.inviteRoom(workspaceId, sessionId, inviteRoomRequest);
 
         return ResponseEntity.ok(apiResponse);
     }
