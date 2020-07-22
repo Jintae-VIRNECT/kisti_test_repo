@@ -66,8 +66,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     //ng serve --host 0.0.0.0 --ssl true
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
-    public static final String WS_PATH = "/openvidu";
-    //public static final String WS_PATH = "/remoteservice";
+    //public static final String WS_PATH = "/openvidu";
+    public static final String WS_PATH = "/remoteservice";
     public static String wsUrl;
     public static String httpUrl;
 
