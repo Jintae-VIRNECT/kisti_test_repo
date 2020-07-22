@@ -51,6 +51,24 @@ class ChatMsgBuilder {
     return this
   }
 
+  setId(uuid) {
+    if (uuid) {
+      this.msg.uuid = uuid
+    } else {
+      this.msg.uuid = ''
+    }
+    return this
+  }
+
+  setProfileImg(path) {
+    if (path) {
+      this.msg.profileImgPath = path
+    } else {
+      this.msg.profileImgPath = 'default'
+    }
+    return this
+  }
+
   urlHyliter(chatText) {
     try {
       if (chatText) {
