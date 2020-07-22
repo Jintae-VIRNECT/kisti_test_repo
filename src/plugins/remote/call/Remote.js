@@ -23,7 +23,7 @@ const _ = {
    */
   join: async (roomInfo, role) => {
     // role = ROLE.EXPERT
-    Store.commit('clear')
+    Store.commit('callClear')
     Store.dispatch('updateAccount', {
       roleType: role,
     })
@@ -78,6 +78,7 @@ const _ = {
       publisher.on('streamCreated', () => {
         _.publisher = publisher
         _.mic(Store.getters['mic'].isOn)
+        _.speaker(Store.getters['speaker'].isOn)
         if (publishVideo) {
           // TODO:: 테스트 계정용!!!!
           Store.commit('updateResolution', {
