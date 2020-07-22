@@ -143,7 +143,7 @@ export const addSessionEventListener = session => {
 
     const chatBuilder = new ChatMsgBuilder()
       .setName(participants[idx].nickname)
-      .setText(data.replace(/\</g, '&lt;'))
+      .setText(data)
       .setType(TYPE.OPPONENT)
       .setId(event.from.connectionId)
       .setProfileImg(participants[idx].path ? participants[idx].path : null)
