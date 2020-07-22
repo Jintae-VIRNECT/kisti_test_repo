@@ -4,6 +4,7 @@ const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const envConfig = dotenv.parse(fs.readFileSync(filePath))
 const urlsConfig = require('./urls.json')
+const coturnConfig = require('./coturn.json')
 
 module.exports = {
   getAsNumber(key) {
@@ -29,6 +30,7 @@ module.exports = {
     Object.keys(urlsConfig).forEach(key => {
       urls[key] = urlsConfig[key][process.env.NODE_ENV]
     })
+    urls['coturn'] = coturnConfig
     return urls
   },
 }

@@ -64,7 +64,20 @@ const mutations = {
     state.localRecordStatus = localRecordStatus
   },
 }
+const getters = {
+  mic: state => state.mic,
+  speaker: state => state.speaker,
+  localRecord: state => state.localRecordInfo,
+  allow: state => state.allow,
+  language: state => state.language,
+  settingInfo: state => {
+    return {
+      mic: state.mic.deviceId,
+    }
+  },
+}
 export default {
   state,
   mutations,
+  getters,
 }

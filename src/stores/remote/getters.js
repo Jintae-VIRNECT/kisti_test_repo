@@ -33,12 +33,12 @@ export default {
   // setting
   // mic: state => state.oncall.mic,
   // speaker: state => state.oncall.speaker,
-  mic: state => state.settings.mic,
-  speaker: state => state.settings.speaker,
-  localRecord: state => state.settings.localRecordInfo,
-  allow: state => state.settings.allow,
+  // mic: state => state.settings.mic,
+  // speaker: state => state.settings.speaker,
+  // localRecord: state => state.settings.localRecordInfo,
+  // allow: state => state.settings.allow,
 
-  language: state => state.settings.language,
+  // language: state => state.settings.language,
 
   //screen stream for local recording
   screenStream: state => state.settings.screenStream,

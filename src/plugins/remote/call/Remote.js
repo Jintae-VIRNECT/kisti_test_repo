@@ -4,6 +4,7 @@ import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
+import logger from 'utils/logger'
 
 let OV
 
@@ -27,6 +28,7 @@ const _ = {
       roleType: role,
     })
     _.account = Store.getters['account']
+    const settingInfo = Store.getters['settingInfo']
     // TODO: 영상 출력 허용 테스트 계정 이메일
     let allowUser = false
     if (allowCamera.includes(_.account.email)) {
@@ -50,18 +52,11 @@ const _ = {
         roleType: role,
       }
 
-      const iceServers = [
-        {
-          url: 'turn:turn.virnectremote.com:3478?transport=udp',
-          username: 'virnect',
-          credential: 'virnect',
-        },
-        {
-          url: 'turn:turn.virnectremote.com:3478?transport=tcp',
-          username: 'virnect',
-          credential: 'virnect',
-        },
-      ]
+      const iceServers = window.urls.coturn
+      if (!iceServers) {
+        throw 'ice server를 찾을 수 없습니다.'
+      }
+      logger('coturn::', iceServers)
 
       await _.session.connect(
         rtnValue.token,
@@ -71,7 +66,7 @@ const _ = {
       const publishVideo = role === ROLE.WORKER || allowUser
 
       const publisher = OV.initPublisher('', {
-        audioSource: undefined, // TODO: setting value
+        audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
         videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
         publishVideo: publishVideo,
