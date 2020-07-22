@@ -21,7 +21,7 @@ public class WorkspaceCreateRequest {
     private String userId;
 
     @NotBlank
-    @Length(min = 0, max=9, message = "워크스페이스 이름은 최대 9자까지 가능합니다.")
+    @Length(min = 0, max=29, message = "워크스페이스 이름은 최대 29자까지 가능합니다.")
     private String name;
 
     private MultipartFile profile;
