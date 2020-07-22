@@ -88,6 +88,7 @@ export default {
   }
   dt {
     margin-bottom: 10px;
+    font-size: 14px;
   }
   p {
     color: $font-color-desc;

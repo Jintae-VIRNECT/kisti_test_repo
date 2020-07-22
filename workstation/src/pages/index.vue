@@ -55,6 +55,15 @@
             :title="$t('home.guide.title')"
             :links="guide"
           />
+          <a href="" target="_blank">
+            <el-card class="faq-banner">
+              <h6>
+                <span>{{ $t('home.faq.title') }}</span>
+                <i class="el-icon-right" />
+              </h6>
+              <p v-html="$t('home.faq.desc')" />
+            </el-card>
+          </a>
         </el-col>
       </el-row>
     </div>
@@ -104,7 +113,7 @@ export default {
 #home .container {
   .main-banner {
     height: 190px;
-    padding: 10px;
+    padding: 20px;
     color: #fff;
     background: url('~assets/images/img-home-banner.jpg');
     background-size: cover;
@@ -115,22 +124,54 @@ export default {
       font-size: 20px;
       font-family: $poppins;
     }
-    & h5 {
-      font-size: 28px;
-      font-family: $poppins;
-    }
     & p {
       margin-top: 20px;
       font-size: 20px;
       opacity: 0.9;
     }
   }
+  .faq-banner {
+    position: relative;
+    height: 116px;
+    color: #fff;
+    background: url('~assets/images/img-faq.jpg');
+    background-size: cover;
+    border: none;
+
+    .el-card__body {
+      padding: 20px;
+      &:after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(200deg, #fff, transparent);
+        opacity: 0;
+        transition: 0.3s;
+        content: '';
+      }
+      &:hover:after {
+        opacity: 0.3;
+      }
+    }
+    & h6 {
+      font-size: 16px;
+    }
+    & p {
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    .el-icon-right {
+      float: right;
+      font-size: 20px;
+      line-height: 26px;
+    }
+  }
   .el-card--table .el-table__body-wrapper,
   .el-card--table .el-table__empty-block {
     min-height: 256px;
-  }
-  .install-list .el-card__body {
-    padding-left: 16px;
   }
 }
 </style>

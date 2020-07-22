@@ -41,23 +41,29 @@ export default {
 <style lang="scss">
 #__nuxt .link-list-card {
   .el-card__body {
-    padding: 8px 24px;
+    padding: 8px 0;
   }
   a {
     position: relative;
     display: flex;
     align-items: center;
     height: 44px;
+    padding: 0 24px;
+    transition: background-color 0.25s ease;
+    &:hover {
+      background-color: #f5f7fa;
+    }
 
     & > img:first-child {
       margin-right: 4px;
+      margin-left: -8px;
     }
     & > span {
       color: $font-color-content;
     }
     & > img:last-child {
       position: absolute;
-      right: 0;
+      right: 24px;
     }
   }
 }
