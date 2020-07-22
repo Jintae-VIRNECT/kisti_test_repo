@@ -33,7 +33,6 @@ sync(store, router)
 Vue.config.productionTip = false
 
 Vue.use(VeeValidate)
-// Vue.use(ElementUI, { locale })
 Vue.use(ElementUI, {
 	messages: (key, value) => i18n.t(key, value),
 })
@@ -42,7 +41,7 @@ Vue.use(VueQrcodeReader)
 Vue.use(VueI18n)
 const i18n = new VueI18n({
 	locale: 'ko',
-	fallbackLocale: 'ko',
+	fallbackLocale: process.env.TARGET_ENV === 'production' ? 'ko' : null,
 	messages: messages,
 })
 
