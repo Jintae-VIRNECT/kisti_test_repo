@@ -27,6 +27,9 @@ spring:
         enabled: false
   zipkin:
     base-url: http://stgzipkin.virnect.com
+    discovery-client-enabled: false
+    service:
+      name: license-server
 
 eureka:
   instance:
