@@ -1,6 +1,6 @@
 .setting-wrapper {
   display: flex;
-  flex: 1;
+  // flex: 1;
   padding-top: 3.786rem;
 }
 
@@ -36,7 +36,7 @@
 .setting-view {
   display: flex;
   flex-direction: column;
-  flex-grow: 2;
+  // flex-grow: 2;
 }
 
 .setting-view__header {
@@ -47,13 +47,13 @@
 }
 
 .setting-view__body {
-  flex: 1;
+  // flex: 1;
   background-color: $color_darkgray_600;
 }
 
 .setting-section {
   margin: 2.857rem 3.429rem 0;
-  padding-bottom: 2.5rem;
+  padding-bottom: 2.857rem;
   border-bottom: 1px solid rgba(#969696, 0.2);
   &:last-child {
     border-bottom: none;
@@ -86,7 +86,7 @@
 }
 
 .setting__label {
-  margin: 0.357rem 0.357rem 0.857rem 0px;
+  margin: 0.357rem 0 0.857rem 0px;
   color: rgba($color_text_main, 0.62);
   font-size: 1rem;
 }
@@ -98,6 +98,7 @@
 .setting__tooltip--icon {
   width: 1.2857rem;
   height: 1.3214rem;
+  margin: 0.357rem 0.357rem 0.857rem;
 }
 
 .setting__tooltip--body {

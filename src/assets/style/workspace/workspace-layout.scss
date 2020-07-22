@@ -1,6 +1,7 @@
 .remote-layout {
   position: relative;
-  height: 100vh;
+  min-width: $size_tab_min;
+  height: 100%;
   overflow: hidden;
   background-color: $color_bg_default;
 }
@@ -9,13 +10,13 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  width: 100vw;
+  width: 100%;
   height: calc(100vh - #{$header_height});
   margin-top: $header_height;
   // padding: $header_height 10px 20px 0;
   margin-right: 0;
   padding-bottom: 0;
-  > .vue-scrollbar-transition {
+  > .vue-scrollbar__area {
     height: 100%;
     transition: none;
   }
