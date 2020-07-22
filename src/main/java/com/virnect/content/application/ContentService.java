@@ -95,6 +95,13 @@ public class ContentService {
     private static final YesOrNo INIT_IS_DELETED = YesOrNo.NO;
     private static final Long MEGA_BYTE = 1024L * 1024L;
 
+    @Value("${file.upload-path}")
+    private String fileUploadPath;
+
+    @Value("${file.url}")
+    private String fileUploadUrl;
+    private String defaultVTarget = "virnect_target.jpg";
+
     /**
      * 콘텐츠 업로드
      * 컨텐츠UUID는 컨텐츠를 관리하기 위한 서버에서의 식별자이면서 동시에 파일명
@@ -191,6 +198,7 @@ public class ContentService {
 
     /**
      * 컨텐츠 객체에 씬그룹 추가
+     *
      * @param content
      * @param metadata
      */
@@ -219,7 +227,12 @@ public class ContentService {
         String imgPath = null;
 
         if (Objects.nonNull(targetData)) {
-            imgPath = decodeData(targetData);
+            if (targetType.equals(TargetType.QR)) {
+                imgPath = decodeData(targetData);
+            }
+            if (targetType.equals(TargetType.VTarget)) {
+                imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;
+            }
         }
 
         Target target = Target.builder()

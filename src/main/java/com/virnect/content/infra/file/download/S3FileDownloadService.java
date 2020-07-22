@@ -1,8 +1,6 @@
 package com.virnect.content.infra.file.download;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -55,7 +53,7 @@ public class S3FileDownloadService implements FileDownloadService {
             GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
             S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
             S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
-            byte[] bytes = IOUtils.toByteArray(objectInputStream);
+            byte[] bytes = IOUtils.toByteArray(objectInputStream, s3Object.getObjectMetadata().getContentLength());
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             httpHeaders.setContentLength(bytes.length);
@@ -88,7 +86,7 @@ public class S3FileDownloadService implements FileDownloadService {
             }
             s3is.close();
             fos.close();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
