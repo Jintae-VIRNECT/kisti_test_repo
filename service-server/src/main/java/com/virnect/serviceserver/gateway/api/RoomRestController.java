@@ -1,6 +1,7 @@
 package com.virnect.serviceserver.gateway.api;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.virnect.java.client.*;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -60,14 +62,14 @@ public class RoomRestController {
         return new ResponseEntity<>(responseJson.toString(), getResponseHeaders(), status);
     }*/
 
-    private String generateErrorMessage(String errorMessage, String path, HttpStatus status) {
+    private JsonObject generateErrorMessage(String errorMessage, String path, HttpStatus status) {
         JsonObject responseJson = new JsonObject();
         responseJson.addProperty("timestamp", System.currentTimeMillis());
         responseJson.addProperty("status", status.value());
         responseJson.addProperty("error", status.getReasonPhrase());
         responseJson.addProperty("message", errorMessage);
         responseJson.addProperty("path", path);
-        return responseJson.toString();
+        return responseJson;
     }
 
     @Deprecated
@@ -77,7 +79,7 @@ public class RoomRestController {
         return responseHeaders;
     }
 
-    private String generateSessionToken(SessionTokenData tokenData) {
+    private JsonObject generateSessionToken(SessionTokenData tokenData) {
         if (tokenData == null) {
             return generateErrorMessage("Error in body parameters. Cannot be empty", "",
                     HttpStatus.BAD_REQUEST);
@@ -153,6 +155,7 @@ public class RoomRestController {
                 responseJson.addProperty("role", role.toString());
                 responseJson.addProperty("data", metadata);
                 responseJson.addProperty("token", token);
+                responseJson.addProperty("error", HttpStatus.OK.getReasonPhrase());
 
                 if (kurentoOptions != null) {
                     JsonObject kurentoOptsResponse = new JsonObject();
@@ -182,7 +185,8 @@ public class RoomRestController {
                     responseJson.add("kurentoOptions", kurentoOptsResponse);
                 }
                 //return new ResponseEntity<>(responseJson.toString(), getResponseHeaders(), HttpStatus.OK);
-                return responseJson.toString();
+                //flags: return token string
+                return responseJson;
             } catch (Exception e) {
                 return generateErrorMessage(
                         "Error generating token for session " + sessionId + ": " + e.getMessage(), "/api/tokens",
@@ -195,6 +199,85 @@ public class RoomRestController {
             return generateErrorMessage("Session " + sessionId + " not found", "/api/tokens",
                     HttpStatus.NOT_FOUND);
         }
+    }
+
+    private JsonObject generateSession(String customSessionId) {
+        SessionData sessionData = new SessionData();
+        SessionProperties.Builder builder = new SessionProperties.Builder();
+        //String customSessionId = sessionData.getCustomSessionId();
+        try {
+            // Safe parameter retrieval. Default values if not defined
+            if (sessionData.getRecordingMode() != null) {
+                RecordingMode recordingMode = RecordingMode.valueOf(sessionData.getRecordingMode());
+                builder = builder.recordingMode(recordingMode);
+            } else {
+                builder = builder.recordingMode(RecordingMode.MANUAL);
+            }
+            if (sessionData.getDefaultOutputMode() != null) {
+                Recording.OutputMode defaultOutputMode = Recording.OutputMode.valueOf(sessionData.getDefaultOutputMode());
+                builder = builder.defaultOutputMode(defaultOutputMode);
+            } else {
+                builder.defaultOutputMode(Recording.OutputMode.COMPOSED);
+            }
+            if (sessionData.getDefaultRecordingLayout() != null) {
+                RecordingLayout defaultRecordingLayout = RecordingLayout.valueOf(sessionData.getDefaultRecordingLayout());
+                builder = builder.defaultRecordingLayout(defaultRecordingLayout);
+            } else {
+                builder.defaultRecordingLayout(RecordingLayout.BEST_FIT);
+            }
+            if (sessionData.getMediaMode() != null) {
+                MediaMode mediaMode = MediaMode.valueOf(sessionData.getMediaMode());
+                builder = builder.mediaMode(mediaMode);
+            } else {
+                builder = builder.mediaMode(MediaMode.ROUTED);
+            }
+            if (customSessionId != null && !customSessionId.isEmpty()) {
+                if (!sessionManager.formatChecker.isValidCustomSessionId(customSessionId)) {
+                    return generateErrorMessage(
+                            "Parameter \"customSessionId\" is wrong. Must be an alphanumeric string",
+                            "/api/sessions",
+                            HttpStatus.BAD_REQUEST);
+                }
+                builder = builder.customSessionId(customSessionId);
+            }
+            builder = builder.defaultCustomLayout((sessionData.getDefaultCustomLayout() != null) ? sessionData.getDefaultCustomLayout() : "");
+
+        } catch (IllegalArgumentException e) {
+            return generateErrorMessage(
+                    "RecordingMode " + sessionData.getRecordingMode() + " | "
+                            + "Default OutputMode " + sessionData.getDefaultOutputMode() + " | "
+                            + "Default RecordingLayout " + sessionData.getDefaultRecordingLayout() + " | "
+                            + "MediaMode " + sessionData.getMediaMode()
+                            + ". Some parameter is not defined",
+                    "/api/sessions",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        SessionProperties sessionProperties = builder.build();
+        String sessionId;
+        if (customSessionId != null && !customSessionId.isEmpty()) {
+            if (sessionManager.getSessionWithNotActive(customSessionId) != null) {
+                return generateErrorMessage(
+                        "\"customSessionId\" is not activated. the session must be activated.",
+                        "/api/sessions",
+                        HttpStatus.CONFLICT
+                );
+            }
+            sessionId = customSessionId;
+        } else {
+            sessionId = IdentifierPrefixes.SESSION_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
+                    + RandomStringUtils.randomAlphanumeric(9);
+        }
+
+        Session sessionNotActive = sessionManager.storeSessionNotActive(sessionId, sessionProperties);
+        log.info("New session {} initialized {}", sessionId, this.sessionManager.getSessionsWithNotActive().stream()
+                .map(Session::getSessionId).collect(Collectors.toList()).toString());
+        JsonObject sessionJson = new JsonObject();
+        sessionJson.addProperty("id", sessionNotActive.getSessionId());
+        sessionJson.addProperty("createdAt", sessionNotActive.getStartTime());
+        sessionJson.addProperty("error", HttpStatus.OK.getReasonPhrase());
+
+        return sessionJson;
     }
 
 
@@ -287,7 +370,7 @@ public class RoomRestController {
                     response.setMessage(generateErrorMessage(
                             "Parameter \"customSessionId\" is wrong. Must be an alphanumeric string",
                             "/api/sessions",
-                            HttpStatus.BAD_REQUEST));
+                            HttpStatus.BAD_REQUEST).toString());
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 }
                 builder = builder.customSessionId(customSessionId);
@@ -303,7 +386,7 @@ public class RoomRestController {
                             + "MediaMode " + sessionData.getMediaMode()
                             + ". Some parameter is not defined",
                     "/api/sessions",
-                    HttpStatus.BAD_REQUEST));
+                    HttpStatus.BAD_REQUEST).toString());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -332,21 +415,42 @@ public class RoomRestController {
         tokenData.setRole("PUBLISHER");
         tokenData.setData("");
 
-
-        String token = generateSessionToken(tokenData);
-        log.info("New session token generated {}", token);
-
+        JsonObject tokenResult = generateSessionToken(tokenData);
 
         // 4. create room
-        ApiResponse<RoomResponse> roomResponse = this.remoteGatewayService.createRoom(roomRequest, roomProfileUpdateRequest, sessionJson.toString(), token);
-
-
+        ApiResponse<RoomResponse> roomResponse = this.remoteGatewayService.createRoom(roomRequest, roomProfileUpdateRequest, sessionJson.toString(), tokenResult.toString());
         return ResponseEntity.ok(roomResponse);
+
+        //JsonObject sessionJson = generateSession(null);
+        /*if(sessionJson.get("error").toString().equals(HttpStatus.OK.getReasonPhrase())) {
+            log.info("New session {} initialized", sessionJson.get("id").toString());
+            //Auto generate Token
+            SessionTokenData tokenData = new SessionTokenData();
+            //tokenData.setSession(sessionNotActive.getSessionId());
+            tokenData.setSession(sessionJson.get("id").toString());
+            tokenData.setRole("PUBLISHER");
+            tokenData.setData("");
+
+            JsonObject tokenResult = generateSessionToken(tokenData);
+            if(tokenResult.get("error").toString().equals(HttpStatus.OK.getReasonPhrase())) {
+                log.info("New session token generated {}", tokenResult);
+                // 4. create room
+                ApiResponse<RoomResponse> roomResponse = this.remoteGatewayService.createRoom(roomRequest, roomProfileUpdateRequest, sessionJson.toString(), tokenResult.toString());
+                return ResponseEntity.ok(roomResponse);
+            } else {
+                ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+                response.setMessage(tokenResult.toString());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } else {
+            ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+            response.setMessage(sessionJson.toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }*/
     }
 
     @ApiOperation(value = "Load Room Information List", notes = "원격협헙 방 리스트 조회하는 API 입니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "search", value = "검색어(협업, 멤버 이름 검색)", dataType = "string", allowEmptyValue = true, defaultValue = "remote"),
             @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "0"),
@@ -355,13 +459,13 @@ public class RoomRestController {
     @GetMapping(value = "room")
     public ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(
             @RequestParam(name = "workspaceId") String workspaceId,
-            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "userId") String userId,
             @RequestParam("paging") boolean paging,
             @ApiIgnore PageRequest pageable
     ) {
         //@RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
-        log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
-        ApiResponse<RoomInfoListResponse> apiResponse = this.remoteGatewayService.getRoomInfoList(workspaceId, search, paging, pageable.of());
+        log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
+        ApiResponse<RoomInfoListResponse> apiResponse = this.remoteGatewayService.getRoomInfoList(workspaceId, userId, paging, pageable.of());
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -437,7 +541,7 @@ public class RoomRestController {
                             + " closing lock to be available for closing from DELETE /api/sessions";
                     log.error(errorMsg);
                     apiResponse.setData(false);
-                    apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST));
+                    apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
                 }
             } catch (InterruptedException e) {
@@ -445,7 +549,7 @@ public class RoomRestController {
                         + " closing lock to be available for closing from DELETE /api/sessions";
                 log.error(errorMsg);
                 apiResponse.setData(false);
-                apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST));
+                apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
             }
         } else {
@@ -476,7 +580,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "Join a Specific Room", notes = "특정 원격협업 방에 접속하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/join")
-    public ResponseEntity<ApiResponse<Boolean>> joinRoomById(
+    public ResponseEntity<ApiResponse<RoomResponse>> joinRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid JoinRoomRequest joinRoomRequest,
@@ -487,12 +591,126 @@ public class RoomRestController {
                 sessionId != null ? sessionId : "{}",
                 joinRoomRequest != null ? joinRoomRequest.toString() : "{}");
         if (result.hasErrors()) {
+            log.info("has errors");
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+        else {
+            log.info("has no errors");
+        }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.joinRoom(workspaceId, sessionId, joinRoomRequest);
+        // 3. generate session id and token
+        SessionData sessionData = new SessionData();
+        SessionProperties.Builder builder = new SessionProperties.Builder();
+        //String customSessionId = sessionData.getCustomSessionId();
+        String customSessionId = sessionId;
+        try {
+            // Safe parameter retrieval. Default values if not defined
+            if (sessionData.getRecordingMode() != null) {
+                RecordingMode recordingMode = RecordingMode.valueOf(sessionData.getRecordingMode());
+                builder = builder.recordingMode(recordingMode);
+            } else {
+                builder = builder.recordingMode(RecordingMode.MANUAL);
+            }
+            if (sessionData.getDefaultOutputMode() != null) {
+                Recording.OutputMode defaultOutputMode = Recording.OutputMode.valueOf(sessionData.getDefaultOutputMode());
+                builder = builder.defaultOutputMode(defaultOutputMode);
+            } else {
+                builder.defaultOutputMode(Recording.OutputMode.COMPOSED);
+            }
+            if (sessionData.getDefaultRecordingLayout() != null) {
+                RecordingLayout defaultRecordingLayout = RecordingLayout.valueOf(sessionData.getDefaultRecordingLayout());
+                builder = builder.defaultRecordingLayout(defaultRecordingLayout);
+            } else {
+                builder.defaultRecordingLayout(RecordingLayout.BEST_FIT);
+            }
+            if (sessionData.getMediaMode() != null) {
+                MediaMode mediaMode = MediaMode.valueOf(sessionData.getMediaMode());
+                builder = builder.mediaMode(mediaMode);
+            } else {
+                builder = builder.mediaMode(MediaMode.ROUTED);
+            }
+            if (customSessionId != null && !customSessionId.isEmpty()) {
+                if (!sessionManager.formatChecker.isValidCustomSessionId(customSessionId)) {
+                    ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+                    response.setMessage(generateErrorMessage(
+                            "Parameter \"customSessionId\" is wrong. Must be an alphanumeric string",
+                            "/api/sessions",
+                            HttpStatus.BAD_REQUEST).toString());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+                builder = builder.customSessionId(customSessionId);
+            }
+            builder = builder.defaultCustomLayout((sessionData.getDefaultCustomLayout() != null) ? sessionData.getDefaultCustomLayout() : "");
+
+        } catch (IllegalArgumentException e) {
+            ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+            response.setMessage(generateErrorMessage(
+                    "RecordingMode " + sessionData.getRecordingMode() + " | "
+                            + "Default OutputMode " + sessionData.getDefaultOutputMode() + " | "
+                            + "Default RecordingLayout " + sessionData.getDefaultRecordingLayout() + " | "
+                            + "MediaMode " + sessionData.getMediaMode()
+                            + ". Some parameter is not defined",
+                    "/api/sessions",
+                    HttpStatus.BAD_REQUEST).toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        SessionProperties sessionProperties = builder.build();
+        //String sessionId;
+        /*if (customSessionId != null && !customSessionId.isEmpty()) {
+            if (sessionManager.getSessionWithNotActive(customSessionId) != null) {
+                log.info("has CONFLICT: " + sessionManager.getSessionWithNotActive(customSessionId));
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+            //sessionId = customSessionId;
+        } else {
+            customSessionId = IdentifierPrefixes.SESSION_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
+                    + RandomStringUtils.randomAlphanumeric(9);
+        }*/
+
+        Session sessionNotActive = sessionManager.storeSessionNotActive(customSessionId, sessionProperties);
+        log.info("New session {} initialized {}", customSessionId, this.sessionManager.getSessionsWithNotActive().stream()
+                .map(Session::getSessionId).collect(Collectors.toList()).toString());
+        JsonObject sessionJson = new JsonObject();
+        sessionJson.addProperty("id", sessionNotActive.getSessionId());
+        sessionJson.addProperty("createdAt", sessionNotActive.getStartTime());
+
+        //Auto generate Token
+        SessionTokenData tokenData = new SessionTokenData();
+        tokenData.setSession(sessionNotActive.getSessionId());
+        tokenData.setRole("PUBLISHER");
+        tokenData.setData("");
+
+        JsonObject tokenResult = generateSessionToken(tokenData);
+
+        ApiResponse<RoomResponse> apiResponse = this.remoteGatewayService.joinRoom(workspaceId, customSessionId, tokenResult.toString(), joinRoomRequest);
         return ResponseEntity.ok(apiResponse);
+        //generate session and token
+        /*JsonObject sessionJson = generateSession(sessionId);
+        if(sessionJson.get("error").equals(HttpStatus.OK.getReasonPhrase())) {
+            //Auto generate Token
+            SessionTokenData tokenData = new SessionTokenData();
+            tokenData.setSession(sessionJson.get("id").toString());
+            tokenData.setRole("PUBLISHER");
+            tokenData.setData("");
+
+            JsonObject tokenResult = generateSessionToken(tokenData);
+            if(tokenResult.get("error").toString().equals(HttpStatus.OK.getReasonPhrase())) {
+                log.info("New session token generated {}", tokenResult);
+                // join room
+                ApiResponse<RoomResponse> apiResponse = this.remoteGatewayService.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
+                return ResponseEntity.ok(apiResponse);
+            } else {
+                ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+                response.setMessage(tokenResult.toString());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } else {
+            ApiResponse<RoomResponse> response = new ApiResponse<>(new RoomResponse());
+            response.setMessage(sessionJson.toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }*/
     }
 
     @ApiOperation(value = "Exit Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
@@ -537,6 +755,26 @@ public class RoomRestController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    /*@ApiOperation(value = "Accept Invitation from a Specific Room", notes = "초대받은 사용자가 초대를 수락 및 거절 하는 API 입니다.")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/member/accept")
+    public ResponseEntity<ApiResponse<Boolean>> inviteMemberAccept(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            @RequestParam("userId") String userId,
+            @RequestParam("accept") Boolean accept,
+            @ApiIgnore Locale locale
+    ) {
+        log.info(TAG, "inviteMember");
+
+        if(sessionId.isEmpty() || userId.isEmpty()) {
+            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.inviteRoomAccept(workspaceId, sessionId, userId, accept, locale);
+
+        return ResponseEntity.ok(apiResponse);
+    }*/
 
     @ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/member")

@@ -19,7 +19,7 @@ package com.virnect.serviceserver.config;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
+/*import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,12 +29,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.filter.CorsFilter;*/
 
-@Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+//@Configuration
+//extends WebSecurityConfigurerAdapter
+public class SecurityConfig {
 
-	@Autowired
+	/*@Autowired
 	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
@@ -81,10 +82,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		/*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
-				.roles("ADMIN");*/
+		*//*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
+				.roles("ADMIN");*//*
 		auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
 				.roles("ADMIN");
-	}
+	}*/
 
 }

@@ -15,4 +15,6 @@ public class SessionResponse implements Serializable {
     private String id;
     @JsonProperty("createdAt")
     private String createdAt;
+    @JsonProperty("error")
+    private String error;
 }

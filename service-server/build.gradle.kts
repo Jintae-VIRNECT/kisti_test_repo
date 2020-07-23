@@ -40,7 +40,7 @@ dependencyManagement {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    //implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
@@ -80,6 +80,8 @@ dependencies {
     // Apache Common Lang and Http Component
     implementation(group = "org.apache.commons", name= "commons-lang3", version = "3.10")
     implementation(group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.9")
+    // aws s3
+    implementation(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.415") // AWS Storage Service
     //============================ MEDIA SERVER DEPENDENCIES ===========================================//
     implementation("org.kurento:kurento-jsonrpc-server:6.14.0")
     implementation("org.kurento:kurento-client:6.14.0")

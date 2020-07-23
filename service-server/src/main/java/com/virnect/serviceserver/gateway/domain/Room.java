@@ -43,6 +43,9 @@ public class Room extends BaseTimeEntity {
     @Column(name = "leader_id", nullable = false)
     private String leaderId;
 
+    @Column(name = "maxUserCount", nullable = false)
+    private int maxUserCount;
+
     @Column(name = "workspace_id", nullable = false)
     private String workspaceId;
 
@@ -79,6 +82,7 @@ public class Room extends BaseTimeEntity {
         this.sessionProperty = sessionProperty;
 
         //
+        this.maxUserCount = 3;
         this.roomStatus = RoomStatus.UNACTIVE;
         this.activeDate = LocalDateTime.now();
     }

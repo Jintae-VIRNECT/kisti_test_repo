@@ -27,7 +27,7 @@ public class LicenseInfoResponse {
 
     @Override
     public String toString() {
-        return "UserInfoResponse{" +
+        return "LicenseInfoResponse{" +
                 "id='" + id + '\'' +
                 ", licenseType='" + licenseType + '\'' +
                 ", productName='" + productName + '\'' +

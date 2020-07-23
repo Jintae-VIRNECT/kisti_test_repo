@@ -4,6 +4,7 @@ import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.dto.request.RoomProfileUpdateRequest;
 import com.virnect.serviceserver.gateway.dto.request.RoomRequest;
 import com.virnect.serviceserver.gateway.dto.response.RoomResponse;
+import com.virnect.serviceserver.gateway.dto.rest.LicenseInfoListResponse;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
@@ -25,9 +26,11 @@ import javax.validation.Valid;
 @RequestMapping("/remote")
 public class ValidationController {
     private static final String TAG = ValidationController.class.getSimpleName();
+    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+    private static final String REST_PATH = "/remote/licenses";
 
     private final RemoteGatewayService remoteGatewayService;
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+
 
     private HttpHeaders getResponseHeaders() {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -35,21 +38,20 @@ public class ValidationController {
         return responseHeaders;
     }
 
-    /*@ApiOperation(value = "Service Access Validity ", notes = "서비스 접근 유효성을 확인합니다.")
-    @GetMapping(value = "valid")
-    public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
-            @RequestBody @Valid RoomRequest roomRequest,
-            @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
-            BindingResult result) {
+    @ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
+    @GetMapping(value = "licenses/{workspaceId}/{userId}")
+    public ResponseEntity<ApiResponse<LicenseInfoListResponse>> getLicenseInfo(
+            @PathVariable String workspaceId,
+            @PathVariable String userId) {
 
-        log.info(TAG, "createRoomRequestHandler");
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        log.info("REST API: POST {}/{}/{}/join {}", REST_PATH,
+                workspaceId != null ? workspaceId.toString() : "{}",
+                userId != null ? userId : "{}");
+        if(workspaceId.isEmpty() || userId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
-        ApiResponse<RoomResponse> roomResponse = this.remoteGatewayService.createRoom(roomRequest, roomProfileUpdateRequest);
+        ApiResponse<LicenseInfoListResponse> roomResponse = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
         return ResponseEntity.ok(roomResponse);
-    }*/
+    }
 
 }

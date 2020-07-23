@@ -46,15 +46,15 @@ public class MemberInfoResponse {
 
     @ApiModelProperty(
             value = "멤버 상태 타입 " +
-                    "( LOAD(참여 중), UNLOAD(미 참여 중) )",
+                    "( ONLINE(로그인), OFFLINE(로그아웃), LOAD(참여 중), UNLOAD(미 참여 중), LOADING(접속 중) )",
             position = 10)
     private MemberStatus memberStatus;
 
-    @ApiModelProperty(value = "계정 생성 일자", position = 11, example = "2020-01-20T14:05:30")
+    /*@ApiModelProperty(value = "계정 생성 일자", position = 11, example = "2020-01-20T14:05:30")
     private LocalDateTime createdDate;
 
     @ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 12, example = "2020-01-20T14:05:30")
-    private LocalDateTime updatedDate;
+    private LocalDateTime updatedDate;*/
 
     @Override
     public String toString() {
@@ -66,8 +66,6 @@ public class MemberInfoResponse {
                 ", nickname='" + nickname + '\'' +
                 ", profile='" + profile + '\'' +
                 ", memberType=" + memberType +
-                ", createdDate=" + createdDate +
-                ", updatedDate=" + updatedDate +
                 '}';
     }
 

@@ -26,6 +26,11 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
+            public ApiResponse<UserInfoListResponse> getUserInfoList(boolean paging) {
+                return null;
+            }
+
+            @Override
             public ApiResponse<UserInfoResponse> getUserInfoByUuid(String userId) {
                 return null;
             }

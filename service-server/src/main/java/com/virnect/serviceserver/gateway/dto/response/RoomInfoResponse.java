@@ -23,6 +23,9 @@ public class RoomInfoResponse {
     @ApiModelProperty(value = "협업 방 프로필 주소", position = 3, example = "default")
     private String profile;
 
+    @ApiModelProperty(value = "협업방 최대 참여인원 수", position = 4, example = "3")
+    private int maxUserCount;
+
     /*@ApiModelProperty(value = "리더 유저 uuid", position = 4, example = "4b260e69bd6fa9a583c9bbe40f5aceb3")
     private String leaderId;
 
@@ -35,6 +38,6 @@ public class RoomInfoResponse {
     @ApiModelProperty(value = "협업방 접속 인원 수", position = 5, example = "2")
     private int currentCount;*/
 
-    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 6)
+    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 5)
     private List<MemberInfoResponse> memberList;
 }

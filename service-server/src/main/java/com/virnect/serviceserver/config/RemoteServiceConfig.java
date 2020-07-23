@@ -628,6 +628,7 @@ public class RemoteServiceConfig {
 			ServiceServerApplication.wsUrl = ServiceServerApplication.wsUrl.substring(0, ServiceServerApplication.wsUrl.length() - 1);
 		}
 		String finalUrl = ServiceServerApplication.wsUrl.replaceFirst("wss://", "https://").replaceFirst("ws://", "http://");
+		log.info("calculatePublicUrl : {}", finalUrl);
 		this.setFinalUrl(finalUrl);
 		ServiceServerApplication.httpUrl = this.getFinalUrl();
 	}

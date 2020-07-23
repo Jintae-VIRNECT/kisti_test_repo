@@ -2,6 +2,7 @@ package com.virnect.serviceserver.gateway.dto.request;
 
 import com.virnect.serviceserver.gateway.domain.DeviceType;
 import com.virnect.serviceserver.gateway.domain.MemberType;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
+@ApiModel
 public class JoinRoomRequest {
     @NotBlank
     @ApiModelProperty(value = "사용자 식별자")
@@ -31,7 +33,9 @@ public class JoinRoomRequest {
     public String toString() {
         return "JoinRoomRequest{" +
                 "uuid='" + uuid + '\'' +
+                "email='" + email + '\'' +
                 "memberType='" + memberType + '\'' +
+                "deviceType='" + deviceType + '\'' +
                 '}';
     }
 

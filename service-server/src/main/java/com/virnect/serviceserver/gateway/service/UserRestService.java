@@ -23,6 +23,9 @@ public interface UserRestService {
             @RequestParam(name = "search", required = false) String search,
             @RequestParam("paging") boolean paging);
 
+    @GetMapping("/users")
+    ApiResponse<UserInfoListResponse> getUserInfoList(@RequestParam("paging") boolean paging);
+
     @GetMapping("/users/{userId}")
     ApiResponse<UserInfoResponse> getUserInfoByUuid(@PathVariable("userId") String userId);
 }

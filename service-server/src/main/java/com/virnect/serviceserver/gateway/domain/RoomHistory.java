@@ -38,6 +38,9 @@ public class RoomHistory extends BaseTimeEntity  {
         @Column(name = "workspace_id", nullable = false)
         private String workspaceId;
 
+        @Column(name = "maxUserCount", nullable = false)
+        private int maxUserCount;
+
         @Column(name = "active_at", nullable = false)
         private LocalDateTime activeDate;
 

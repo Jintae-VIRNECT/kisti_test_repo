@@ -25,6 +25,8 @@ public class SessionTokenResponse implements Serializable {
     private String token;
     @JsonProperty("kurentoOptions")
     private KurentoOptions kurentoOptions;
+    @JsonProperty("error")
+    private String error;
 
     @Getter
     @Setter

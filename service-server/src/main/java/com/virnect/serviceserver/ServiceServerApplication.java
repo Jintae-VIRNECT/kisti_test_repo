@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -58,7 +58,7 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 @Import({ JsonRpcConfiguration.class })
-@EnableWebSecurity
+//@EnableWebSecurity
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
@@ -67,7 +67,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
     //public static final String WS_PATH = "/openvidu";
-    public static final String WS_PATH = "/remoteservice";
+    //public static final String WS_PATH = "/remoteservice";
+    public static final String WS_PATH = "/remote/websocket";
     public static String wsUrl;
     public static String httpUrl;
 
@@ -237,9 +238,11 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
         //SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+
+
         SpringApplication.run(ServiceServerApplication.class, args);
 
-        //disableSslVerification();
+        disableSslVerification();
     }
 
     public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
@@ -336,11 +339,15 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public void whenReady() {
 
         String dashboardUrl = httpUrl + "dashboard/";
+        String websocket = wsUrl + WS_PATH + "/";
 
         // @formatter:off
-        String msg = "\n\n----------------------------------------------------\n" + "\n" + "   RemoteService is ready!\n"
-                + "   ---------------------------\n" + "\n" + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
+        String msg = "\n\n----------------------------------------------------\n" + "\n"
+                + "   RemoteService is ready!\n"
+                + "   ---------------------------\n" + "\n"
+                + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
                 + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
+                + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on
 
