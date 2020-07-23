@@ -21,11 +21,10 @@ export default {
   ],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: [
+  MEMBER_LIST: [
     'GET',
-    'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
+    'https://192.168.13.36:5000/remote/members/{workspaceId}',
   ],
-  // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/media/room?paging={paging}'],
