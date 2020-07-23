@@ -46,7 +46,7 @@ export default {
   /* LICENSE */
   GET_LICENSE: [
     'GET',
-    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
+    'https://192.168.13.36:5000/remote/licenses/{workspaceId}/{userId}',
   ],
   /* MESSAGE */
   SEND_PUSH: ['POST', 'https://192.168.6.3:8073/messages/push'],

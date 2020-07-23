@@ -78,10 +78,10 @@ export default {
     async joinRoom(room) {
       console.log('>>> JOIN ROOM')
       try {
-        const license = await getLicense(
-          this.workspace.uuid,
-          await this.account.uuid,
-        )
+        const license = await getLicense({
+          workspaceId: this.workspace.uuid,
+          userId: await this.account.uuid,
+        })
 
         if (!license) {
           this.confirmDefault(

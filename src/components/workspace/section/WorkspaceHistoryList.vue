@@ -112,10 +112,10 @@ export default {
 
     //재시작
     async createRoom(roomId) {
-      const license = await getLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-      )
+      const license = await getLicense({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
 
       if (!license) {
         this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
