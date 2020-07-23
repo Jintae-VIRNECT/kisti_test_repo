@@ -12,9 +12,10 @@
 						>]
 					</p>
 					<div class="qr-image-box" :class="{ 'code-expire': isExpire }">
-						<img
+						<el-image
 							v-if="qrImage"
 							:src="qrImage"
+							:preview-src-list="[qrImage]"
 							alt="qrcode image"
 							class="qrcode--image__inner"
 						/>
@@ -134,6 +135,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~element/image.css';
+
 p {
 	font-weight: 500;
 	font-family: 'NotoSansKR', 'Noto Sans';
