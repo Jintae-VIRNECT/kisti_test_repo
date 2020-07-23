@@ -19,8 +19,9 @@ func Init() {
 			filename := filepath.Base(f.File)
 			return "", fmt.Sprint(filename, ":", f.Line)
 		},
-		FullTimestamp: true,
-		ForceColors:   true,
+		TimestampFormat: "20060102-150405.000000",
+		FullTimestamp:   true,
+		ForceColors:     true,
 	}
 	logrus.SetFormatter(formatter)
 	logrus.SetReportCaller(true)
