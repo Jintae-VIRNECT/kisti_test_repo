@@ -7,6 +7,10 @@
   <div v-else-if="error.statusCode === 404" class="error-container">
     <common-error />
   </div>
+  <!-- 504 -->
+  <div v-else-if="error.statusCode === 504" class="error-container">
+    <network-error :code="error.statusCode" :message="error.message" />
+  </div>
   <!-- 500 -->
   <div v-else class="error-container">
     <common-error :code="error.statusCode" :message="error.message" />
@@ -15,7 +19,7 @@
 
 <script>
 import CommonError from 'WC-Modules/vue/components/errors/CommonError'
-// import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
+import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
 import BrowserNotSupport from 'WC-Modules/vue/components/errors/BrowserNotSupport'
 
 export default {
@@ -23,6 +27,7 @@ export default {
   components: {
     CommonError,
     BrowserNotSupport,
+    NetworkError,
   },
   props: ['error'],
 }
