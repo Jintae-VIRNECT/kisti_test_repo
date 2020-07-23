@@ -110,10 +110,17 @@ func main() {
 func readConfig() {
 	var configPath string
 	var logStdout bool
+	var version bool
+	pflag.BoolVarP(&version, "version", "v", false, "show version")
 	pflag.StringVarP(&configPath, "config", "c", "config.ini", "path to config file")
 	pflag.BoolVarP(&logStdout, "stdout", "s", false, "only output to stdout")
 
 	pflag.Parse()
+
+	if version {
+		fmt.Printf("version: %s-%s\n", Version, Build)
+		os.Exit(0)
+	}
 
 	viper.SetConfigType("toml")
 	viper.SetConfigName(configPath)

@@ -1,8 +1,8 @@
 TARGET=recordserver
-VERSION=2.0.0
 BUILD=`git rev-parse HEAD`
-LDFLAGS=-ldflags "-X=main.Version=${VERSION} -X=main.Build=${BUILD}"
+LDFLAGS=-ldflags "-X=main.Build=${BUILD}"
 DOCKER_TAG=virnect/remote-recordserver
+SRCS=main.go version.go
 BUILD_OPT=-race
 ifndef $(GOPATH)
     GOPATH=$(shell go env GOPATH)
@@ -13,11 +13,11 @@ endif
 
 build: check
 	@mkdir -p build
-	go build ${BUILD_OPT} ${LDFLAGS} -o build/${TARGET} main.go
+	go build ${BUILD_OPT} ${LDFLAGS} -o build/${TARGET} ${SRCS}
 
 build-linux: check
 	@mkdir -p build
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o build/${TARGET}-linux-amd64 main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o build/${TARGET}-linux-amd64 ${SRCS}
 
 swag:
 	@${GOPATH}/bin/swag init
