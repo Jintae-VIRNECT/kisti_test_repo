@@ -24,10 +24,8 @@ export default {
       'resolutions',
       'control',
       'localRecordStatus',
+      'roomInfo',
     ]),
-    ...mapState({
-      room: state => state.room,
-    }),
     /**
      * get resolution of main view
      */
@@ -126,7 +124,7 @@ export default {
       config.streams = await this.getStreams()
       config.maxTime = this.localRecord.time
       config.interval = this.localRecord.interval
-      config.roomTitle = this.room.title
+      config.roomTitle = this.roomInfo.title
 
       //get nickname
       if (this.account && this.account.nickname) {
