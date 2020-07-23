@@ -28,7 +28,7 @@
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            <b>{{ `접속 멤버 &nbsp;&nbsp;${room.memberList.length}` }}</b>
+            <b>{{ `접속 멤버 &nbsp;&nbsp;${activeMemberList.length}` }}</b>
             {{ `/ ${room.memberList.length}` }}
           </p>
         </div>
@@ -44,7 +44,7 @@
             }"
             size="2rem"
             :max="5"
-            :users="room.memberList"
+            :users="activeMemberList"
           ></profile-list>
         </div>
       </div>
@@ -82,6 +82,8 @@ import Card from 'Card'
 import Profile from 'Profile'
 import ProfileList from 'ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
+import { STATUS } from 'configs/status.config'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'RemoteCard',
@@ -113,7 +115,7 @@ export default {
       )
         return {}
       const idx = this.room.memberList.findIndex(
-        member => member.memberType === 'LEADER',
+        member => member.memberType === ROLE.EXPERT_LEADER,
       )
       if (idx < 0) return {}
       return this.room.memberList[idx]
@@ -123,6 +125,15 @@ export default {
         return true
       }
       return false
+    },
+    activeMemberList() {
+      let activeMembers = []
+      for (let member of this.room.memberList) {
+        if (member.memberStatus === STATUS.ONLINE) {
+          activeMembers.push(member)
+        }
+      }
+      return activeMembers
     },
   },
   methods: {
