@@ -158,7 +158,8 @@ p {
 	margin: 10px 0 26px;
 	// padding: 16px;
 	border: 1px solid #e2e7ed;
-	&.code-expire {
+	&.code-expire /deep/ {
+		pointer-events: none;
 		p {
 			position: absolute;
 			top: 50%;
