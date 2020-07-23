@@ -107,7 +107,7 @@ pipeline {
                   continueOnError: false, failOnError: true,
                   publishers: [
                     sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-remote-qa',
+                      configName: 'aws-bastion-deploy-remote-media-qa',
                       verbose: true,
                       transfers: [
                         sshTransfer(
@@ -154,7 +154,7 @@ pipeline {
                   continueOnError: false, failOnError: true,
                   publishers: [
                     sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-remote-prod',
+                      configName: 'aws-bastion-deploy-remote-media-prod',
                       verbose: true,
                       transfers: [
                         sshTransfer(
