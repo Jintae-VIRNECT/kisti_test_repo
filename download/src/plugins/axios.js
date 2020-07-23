@@ -1,9 +1,8 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
-import { context } from '@/plugins/context'
 
-export default function({ $axios, $config }, inject) {
+export default function({ $axios, $config, error }, inject) {
   // Create a custom axios instance
   const axios = $axios.create({
     baseURL: $config.API_GATEWAY_URL,
@@ -64,9 +63,14 @@ export default function({ $axios, $config }, inject) {
         throw new Error(`${code}: ${message}`)
       }
     } catch (e) {
-      if (process.client) $nuxt.$loading.fail()
-      else context.error(e)
       console.error(`URL: ${uri}`)
+      // timeout
+      if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
+        error(e)
+      }
+      if (process.client) $nuxt.$loading.fail()
+      else error(e)
       throw e
     }
   })
