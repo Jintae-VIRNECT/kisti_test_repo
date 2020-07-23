@@ -79,9 +79,14 @@ export async function api(name, option = {}) {
         throw error
       }
     } catch (e) {
+      console.error(`URL: ${uri}`)
+      // timeout
+      if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
+        context.error(e)
+      }
       if (process.client) $nuxt.$loading.fail()
       else context.error(e)
-      console.error(`URL: ${uri}`)
       throw e
     }
   }

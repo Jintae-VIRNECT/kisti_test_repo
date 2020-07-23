@@ -26,9 +26,10 @@ export default async function({ req, store, redirect, error }) {
             req.headers.referer || req.headers.host,
           )}`,
         )
-      } else {
-        error(e)
+      } else if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
       }
+      error({ statusCode: e.statusCode, message: e.message })
     }
   }
 }
