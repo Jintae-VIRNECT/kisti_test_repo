@@ -1,5 +1,5 @@
 TARGET=recordserver
-VERSION=1.0.0
+VERSION=2.0.0
 BUILD=`git rev-parse HEAD`
 LDFLAGS=-ldflags "-X=main.Version=${VERSION} -X=main.Build=${BUILD}"
 DOCKER_TAG=virnect/remote-recordserver
