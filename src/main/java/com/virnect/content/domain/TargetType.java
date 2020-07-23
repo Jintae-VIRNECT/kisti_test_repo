@@ -9,7 +9,6 @@ import lombok.ToString;
  * @description
  * @since 2020.04.08
  */
-@ToString
 public enum TargetType {
     QR("QR"),
     VTarget("VTarget");
@@ -24,3 +23,4 @@ public enum TargetType {
         return message;
     }
 }
+
