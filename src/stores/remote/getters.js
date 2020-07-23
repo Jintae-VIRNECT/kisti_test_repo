@@ -30,19 +30,6 @@ export default {
   shareArImage: state => state.files.shareArImage,
   captureFile: state => state.files.captureFile,
 
-  // setting
-  // mic: state => state.oncall.mic,
-  // speaker: state => state.oncall.speaker,
-  mic: state => state.settings.mic,
-  speaker: state => state.settings.speaker,
-  localRecord: state => state.settings.localRecordInfo,
-  allow: state => state.settings.allow,
-
-  language: state => state.settings.language,
-
-  //screen stream for local recording
-  screenStream: state => state.settings.screenStream,
-
   //local record
   localRecordTarget: state => state.settings.localRecordTarget,
   localRecordStatus: state => state.settings.localRecordStatus,
