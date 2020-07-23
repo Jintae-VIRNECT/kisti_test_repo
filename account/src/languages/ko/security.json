@@ -1,8 +1,18 @@
 {
+  "desc": "사용자 계정의 보안을 설정합니다.",
+  "loggedInDevice": "로그인된 기기 정보",
+  "loggedInDeviceDesc": "내 계정으로 로그인된 디바이스 정보입니다.",
+  "notMyDevice": "내 기기가 아닌 경우",
+  "now": "현재기기",
   "column": {
     "deviceName": "기기 이름",
     "loginLocation": "최종 접속 위치",
     "loginDate": "최종 접속일"
   },
-  "now": "현재기기"
+  "enhanceModal": {
+    "title": "기기 보완 강화",
+    "desc": "알지 못하는 기기가 있다면 다른 사람이 나의 계정을 도용하여 사용하였을 수도 있습니다. 비밀번호를 변경하여 계정을 보호하세요.",
+    "caution": "현재 사용 중인 기기를 제외한 모든 기기에서 로그아웃 됩니다.",
+    "changePassword": "비밀번호 변경"
+  }
 }
