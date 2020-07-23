@@ -9,6 +9,7 @@ import Cookies from 'js-cookie'
 import API from './api'
 import logger from 'utils/logger'
 import axios from '../axios'
+import errorList from './gateway.error.json'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -69,15 +70,6 @@ const sender = async function(constant, params, headers = {}, custom) {
       logger(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
-
-      //Extract params
-      if ('get' !== method) {
-        // parameter = JSON.stringify(parameter)
-      } else {
-        parameter = {
-          params: parameter,
-        }
-      }
     }
   }
 
@@ -96,14 +88,14 @@ const sender = async function(constant, params, headers = {}, custom) {
       ...option,
     }
     if (method === 'get') {
-      request['params'] = parameter.params
+      request['params'] = parameter
     } else {
       request['data'] = parameter
     }
     const response = await axios(request)
     return receiver(response)
   } catch (error) {
-    throw error
+    throw error.code
   }
 }
 
@@ -134,31 +126,33 @@ const receiver = function(res) {
  */
 const errorHandler = function(err) {
   console.error(err)
-  const errorList = ErrorList
+  const errorList = errorList
   const error = {}
   error.code = isNaN(parseInt(err)) ? err : parseInt(err)
-  error.message = errorList[error.code] || 'Undefined Error.'
+  error.message = error.message || 'Undefined Error.'
 
   if (error.code in errorList) {
     // alert(error.message);
     switch (error.code) {
       case 9999:
+        // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      // case 8005:
       case 8003:
-        // 토근만료, 갱신
+      case 8005:
+        // console.error(error.message)
+        Cookies.remove('accessToken')
+        Cookies.remove('refreshToken')
+        window.location.reload()
         break
       // case 'Network Error':
       //   sessionStorage.clear()
       //   window.location.reload()
       //   break
     }
-    // throw new Error(error.message)
+    throw new Error(error.message)
   } else {
     throw err
-    // window.sessionStorage.clear()
-    // window.location.href = "/"
   }
 }
 
