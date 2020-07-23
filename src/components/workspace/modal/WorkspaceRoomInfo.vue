@@ -36,15 +36,15 @@
         v-if="tabview === 'group'"
         :room="room"
         :image.sync="image"
-        :leader="leader"
+        :isLeader="isLeader"
         @update="update"
       ></room-info>
 
       <participants-info
         v-else
-        :participants="participants"
-        :leader="leader"
-        :roomId="roomId"
+        :participants="memberList"
+        :isLeader="isLeader"
+        :sessionId="sessionId"
       ></participants-info>
     </div>
   </modal>
@@ -75,9 +75,9 @@ export default {
     }
   },
   computed: {
-    participants() {
+    memberList() {
       if (this.room) {
-        return this.room.participants
+        return this.room.memberList
       } else {
         return []
       }
@@ -88,11 +88,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
+    sessionId: {
+      type: String,
       required: true,
     },
-    leader: {
+    isLeader: {
       type: Boolean,
       default: false,
     },
@@ -119,7 +119,10 @@ export default {
   methods: {
     async initRemote() {
       try {
-        this.room = await getRoomInfo({ roomId: this.roomId })
+        this.room = await getRoomInfo({
+          sessionId: this.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
         this.image = this.room.path
         this.tabview = 'group'
       } catch (err) {
@@ -128,7 +131,7 @@ export default {
     },
     async initHistory() {
       try {
-        this.room = await getHistorySingleItem({ roomId: this.roomId })
+        this.room = await getHistorySingleItem({ sessionId: this.sessionId })
         this.image = this.room.path
         this.tabview = 'group'
       } catch (err) {

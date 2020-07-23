@@ -5,62 +5,27 @@
     </p>
     <div class="roominfo-view__body">
       <scroller>
-        <wide-card
-          v-for="user of users"
-          :key="user.userId"
-          :customClass="[
-            'remoteinfo-usercard',
-            { offline: user.status === 'offline' },
-          ]"
-        >
-          <div class="roominfo-userinfo">
-            <profile
-              :image="user.path"
-              :mainText="user.userName"
-              :subText="user.userEmail"
-              :role="user.userRole"
-            ></profile>
-
-            <img
-              v-if="user.deviceType === 'web'"
-              class="userinfo__image"
-              :src="require('assets/image/ic_monitor.svg')"
-            />
-            <img
-              v-else-if="user.deviceType === 'smartphone'"
-              class="userinfo__image"
-              :src="require('assets/image/ic_mobile.svg')"
-            />
-            <img
-              v-else
-              class="userinfo__image"
-              :src="require('assets/image/ic_hololens.svg')"
-            />
-            <button
-              class="btn line userinfo__button"
-              @click="removeUser(user.userId)"
-              v-if="leader"
-            >
-              내보내기
-            </button>
-          </div>
-        </wide-card>
+        <user-info
+          v-for="user of participants"
+          :key="user.uuid"
+          :user="user"
+          :isLeader="isLeader"
+          @removeUser="removeUser(user.uuid)"
+        ></user-info>
       </scroller>
     </div>
   </section>
 </template>
 
 <script>
-import { leaveRoom, participantsList } from 'api/workspace/room'
-import WideCard from 'WideCard'
+import { leaveRoom } from 'api/workspace/room'
 import Scroller from 'Scroller'
-import Profile from 'Profile'
+import UserInfo from 'UserInfo'
 export default {
   name: 'ModalParticipantsInfo',
   components: {
-    WideCard,
-    Profile,
     Scroller,
+    UserInfo,
   },
   props: {
     participants: {
@@ -69,12 +34,12 @@ export default {
         return []
       },
     },
-    leader: {
+    isLeader: {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
+    sessionId: {
+      type: String,
       required: true,
     },
   },
@@ -82,42 +47,22 @@ export default {
     return {
       name: '',
       description: '',
-      users: [],
     }
-  },
-  watch: {
-    participants: {
-      deep: true,
-      handler() {
-        this.user = this.participants
-      },
-    },
   },
   methods: {
     async removeUser(id) {
       try {
         const removeRtn = await leaveRoom({
-          roomId: this.roomId,
+          sessionId: this.sessionId,
           participantsId: id,
         })
         if (removeRtn) {
-          // TODO: API 생성 필요
-          // const participants = await participantsList({
-          //   roomId: this.roomId,
-          // })
-          // this.users = participants.participants
+          // participants 제거
         }
       } catch (err) {
         console.error(err)
       }
     },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    if (this.participants.length > 0) {
-      this.users = this.participants
-    }
   },
 }
 </script>

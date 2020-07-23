@@ -7,12 +7,12 @@
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
-      <span class="groupcard__leader" v-if="leader">Leader</span>
+      <span class="groupcard__leader" v-if="isLeader">Leader</span>
       <div class="groupcard-profile">
         <div class="profile__image">
           <profile
             :group="true"
-            :image="room.path"
+            :image="room.profile"
             :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
           ></profile>
         </div>
@@ -22,14 +22,14 @@
           @error="onImageErrorGroup"
         /> -->
         <p class="profile__name">{{ room.title }}</p>
-        <p class="profile__leader">리더 : {{ room.leaderNickName }}</p>
+        <p class="profile__leader">리더 : {{ leader.nickname }}</p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">그룹 정보</p>
           <p class="info__description">
-            <b>{{ `접속 멤버  ${room.participantsCount}` }}</b>
-            {{ `/ ${room.participantsCount}` }}
+            <b>{{ `접속 멤버 &nbsp;&nbsp;${room.memberList.length}` }}</b>
+            {{ `/ ${room.memberList.length}` }}
           </p>
         </div>
         <div class="info__section">
@@ -44,11 +44,11 @@
             }"
             size="2rem"
             :max="5"
-            :users="room.participants"
+            :users="room.memberList"
           ></profile-list>
         </div>
       </div>
-      <button class="groupcard-button btn small" @click="$emit('join', room)">
+      <button class="groupcard-button btn small" @click="$emit('join')">
         참가하기
       </button>
     </div>
@@ -58,21 +58,21 @@
           상세 보기
         </button>
       </li>
-      <li v-if="leader">
-        <button class="group-pop__button" @click="$emit('remove', room.roomId)">
+      <li v-if="isLeader">
+        <button class="group-pop__button" @click="$emit('remove')">
           협업 삭제
         </button>
       </li>
       <li v-else>
-        <button class="group-pop__button" @click="$emit('leave', room.roomId)">
+        <button class="group-pop__button" @click="$emit('leave')">
           협업 나가기
         </button>
       </li>
     </ul>
     <roominfo-modal
       :visible.sync="showRoomInfo"
-      :roomId="room.roomId"
-      :leader="leader"
+      :sessionId="room.sessionId"
+      :isLeader="isLeader"
     ></roominfo-modal>
   </card>
 </template>
@@ -106,11 +106,23 @@ export default {
   },
   computed: {
     leader() {
-      if (this.account.uuid === this.room.leaderId) {
+      if (
+        !this.room ||
+        !this.room.memberList ||
+        this.room.memberList.length === 0
+      )
+        return {}
+      const idx = this.room.memberList.findIndex(
+        member => member.memberType === 'LEADER',
+      )
+      if (idx < 0) return {}
+      return this.room.memberList[idx]
+    },
+    isLeader() {
+      if (this.leader.uuid === this.account.uuid) {
         return true
-      } else {
-        return false
       }
+      return false
     },
   },
   methods: {

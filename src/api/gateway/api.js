@@ -6,6 +6,10 @@ export default {
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
+  HISTORY_LIST: [
+    'GET',
+    'https://192.168.13.36:5000/remote/history?userId={userId}',
+  ],
   GET_HISTORY_LIST: ['GET', '/media/history'],
   GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
   DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
@@ -19,18 +23,32 @@ export default {
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/media/room?paging={paging}'],
-  ROOM_INFO: ['GET', '/media/room/{roomId}'],
+  // ROOM_LIST: ['GET', '/media/room?paging={paging}'],
+  // ROOM_INFO: ['GET', '/media/room/{roomId}'],
   UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
   LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
   PARTICIPANTS_LIST: ['GET', '/media/room/{roomId}/participants'],
   INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
-  CREATE_ROOM: [
-    'POST',
-    '/media/room?workspaceId={workspaceId}',
-    { type: 'form' },
-  ],
+  // CREATE_ROOM: [
+  //   'POST',
+  //   '/media/room?workspaceId={workspaceId}',
+  //   { type: 'form' },
+  // ],
   DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
+
+  ROOM_LIST: [
+    'GET',
+    'https://192.168.13.36:5000/remote/room?workspaceId={workspaceId}',
+  ],
+  CREATE_ROOM: ['POST', 'https://192.168.13.36:5000/remote/room'],
+  JOIN_ROOM: [
+    'POST',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/join',
+  ],
+  ROOM_INFO: [
+    'GET',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}',
+  ],
 
   /* CALL */
   GET_TOKEN: ['POST', '/media/tokens'],

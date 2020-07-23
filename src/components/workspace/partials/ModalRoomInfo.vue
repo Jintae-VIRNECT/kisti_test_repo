@@ -5,7 +5,7 @@
         협업 정보
       </p>
       <div class="roominfo-view__body">
-        <template v-if="leader">
+        <template v-if="isLeader">
           <input-row
             type="text"
             title="협업 이름"
@@ -54,13 +54,13 @@
       <div class="roominfo-view__footer">
         <div class="roominfo-view__data">
           <span class="data-title">협업 진행일</span>
-          <span class="data-value">2020.03.05</span>
+          <span class="data-value">{{ createdDate }}</span>
         </div>
         <div class="roominfo-view__data">
           <span class="data-title">시작 시간</span>
-          <span class="data-value">15:20:25</span>
+          <span class="data-value">{{ createdTime }}</span>
         </div>
-        <div class="roominfo-view__button" v-if="leader">
+        <div class="roominfo-view__button" v-if="isLeader">
           <button class="btn" :disabled="!canSave" @click="saveInfo">
             저장하기
           </button>
@@ -88,7 +88,7 @@ export default {
       type: String,
       default: '',
     },
-    leader: {
+    isLeader: {
       type: Boolean,
       default: false,
     },
@@ -97,6 +97,8 @@ export default {
     return {
       name: '',
       description: '',
+      createdDate: '',
+      createdTime: '',
     }
   },
   computed: {
@@ -120,6 +122,8 @@ export default {
         this.name = room.title
         this.description = room.description
         // this.imageUrl = room.path
+        this.createdDate = this.$dayjs(room.createdDate).format('YYYY.MM.DD')
+        this.createdTime = this.$dayjs(room.createdDate).format('hh:mm:ss')
       },
       deep: true,
     },
