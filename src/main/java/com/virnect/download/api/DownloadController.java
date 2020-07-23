@@ -2,22 +2,21 @@ package com.virnect.download.api;
 
 import com.virnect.download.application.DownloadService;
 import com.virnect.download.dto.response.AppInfoListResponse;
-import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
@@ -43,7 +42,7 @@ public class DownloadController {
             notes = "어플리케이션 파일을 다운로드 또는 리다이렉트 합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "1", required = true)
+            @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "05d1-8795535abb40", required = true)
     })
     @GetMapping("/app/{uuid}")
     public ResponseEntity<Object> downloadApp(@PathVariable("uuid") String uuid) throws IOException, URISyntaxException {
@@ -58,7 +57,7 @@ public class DownloadController {
             notes = "가이드 파일을 다운로드 합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "1", required = true)
+            @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "05d1-8795535abb40", required = true)
     })
     @GetMapping("/guide/{uuid}")
     public ResponseEntity<byte[]> downloadGuide(@PathVariable("uuid") String uuid) throws IOException {

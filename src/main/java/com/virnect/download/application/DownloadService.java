@@ -35,13 +35,15 @@ public class DownloadService {
     private final ModelMapper modelMapper;
     private final MessageSource messageSource;
 
+    private String googlePlay = "GOOGLE_PLAY";
+
     public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
         App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
         this.appRepository.save(app);
 
-        if (app.getDevice().getType().equals("Google Play")) {
+        if (app.getDevice().getType().getName().equals(googlePlay)) {
             //링크 리턴
             URI redirectUri = new URI(app.getAppUrl());
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -87,7 +89,11 @@ public class DownloadService {
         List<AppInfoListResponse.AppInfo> appInfoList = new ArrayList<>();
         result.forEach((objects, appList) -> {
             AppInfoListResponse.AppInfo appInfo = modelMapper.map(appList.get(0), AppInfoListResponse.AppInfo.class);
-            appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getType().replaceAll(" ",""), null, locale));
+            try {
+                appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getId().toString(), null, locale));
+            } catch (Exception e) {
+                appInfo.setDevice(appList.get(0).getDevice().getName());
+            }
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
             appInfo.setOs(appList.get(0).getOs().getName());
             appInfo.setVersion("v." + appList.get(0).getVersion());
