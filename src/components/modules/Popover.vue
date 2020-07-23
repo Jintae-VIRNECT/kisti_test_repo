@@ -253,6 +253,10 @@ export default {
     window.removeEventListener('click', this.windowClickHandler)
     this.$eventBus.$off('popover:scrollClose')
     this.$eventBus.$off('popover:close')
+
+    if (this.$refs['popover']) {
+      this.$refs['popover'].remove()
+    }
   },
 }
 </script>
