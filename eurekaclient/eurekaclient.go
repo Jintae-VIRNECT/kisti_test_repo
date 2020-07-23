@@ -13,7 +13,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hudl/fargo"
 	"github.com/spf13/viper"
 )
 
@@ -129,7 +128,7 @@ func NewClient() *EurekaClient {
 		SecurePortEnabled: false,
 		CountryId:         1,
 		DataCenterInfo: DataCenterInfo{
-			Name: fargo.MyOwn,
+			Name: MyOwn,
 		},
 		LeaseInfo: LeaseInfo{
 			RenewalIntervalInSecs: 30,
