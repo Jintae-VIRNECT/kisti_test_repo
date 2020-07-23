@@ -70,7 +70,7 @@
               :placeholder="$t('task.manage.taskPositionPlaceholder')"
               :maxlength="100"
             />
-            <span>{{ $t('task.manage.taskPositionDesc') }}</span>
+            <!-- <span>{{ $t('task.manage.taskPositionDesc') }}</span> -->
           </el-form-item>
         </el-form>
       </el-col>

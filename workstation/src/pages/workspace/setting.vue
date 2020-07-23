@@ -62,6 +62,7 @@
                         :auto-upload="false"
                         :on-change="imageSelected"
                         :show-file-list="false"
+                        :disabled="activeWorkspace.role !== 'MASTER'"
                         drag
                       >
                         <div class="avatar">

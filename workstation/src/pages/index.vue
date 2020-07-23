@@ -15,7 +15,7 @@
               <workspace-info />
             </el-card>
           </el-row>
-          <el-row>
+          <el-row v-if="activeWorkspace.role === 'MASTER'">
             <plans-used
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
@@ -71,6 +71,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import PlansUsed from '@/components/home/PlansUsed'
 import CurrentMemberList from '@/components/home/CurrentMemberList'
@@ -103,8 +105,20 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
+  },
+  methods: {
+    async getWorkspacePlansInfo() {
+      if (this.activeWorkspace.role !== 'MASTER') return false
+      this.plansInfo = await workspaceService.getWorkspacePlansInfo()
+    },
+  },
   async beforeMount() {
-    this.plansInfo = await workspaceService.getWorkspacePlansInfo()
+    this.getWorkspacePlansInfo()
+    workspaceService.watchActiveWorkspace(this, this.getWorkspacePlansInfo)
   },
 }
 </script>
