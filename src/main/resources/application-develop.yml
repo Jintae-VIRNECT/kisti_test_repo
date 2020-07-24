@@ -20,6 +20,14 @@ spring:
     port: 587
     username: AKIARQGLJD3UHE5MGO5U
     password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  rabbitmq:
+    port: 5672
+    host: 192.168.6.3
+    username: guest
+    password: guest
+  zipkin:
+    base-url: http://192.168.6.3:9411
+
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -41,5 +49,5 @@ eureka:
 cloud:
   aws:
     credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
