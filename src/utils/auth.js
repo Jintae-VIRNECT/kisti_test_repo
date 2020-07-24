@@ -115,10 +115,10 @@ class Auth {
     if (env === undefined) {
       env = 'local'
     }
+    await getUrls()
 
     if (getTokensFromCookies()) {
       try {
-        await getUrls()
         await getMyInfo(api)
         isLogin = true
         tokenRenewal()
