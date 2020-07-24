@@ -133,22 +133,6 @@ export default {
   },
 
   /**
-   * set room info
-   * @param {Object} payload // room info
-   */
-  setRoomInfo({ commit }, payload) {
-    commit(types.ROOM_SET, payload)
-  },
-
-  /**
-   * clear room info
-   * @param {*} payload
-   */
-  roomClear({ commit }) {
-    commit(types.ROOM_CLEAR)
-  },
-
-  /**
    * show image
    * @param {Object} fileInfo
    */

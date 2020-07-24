@@ -17,7 +17,7 @@ export const FLASH = {
 }
 
 export const DEVICE = {
-  WEB: 'WEB',
+  WEB: 'DESKTOP',
   MOBILE: 'MOBILE',
   GLASSES: 'GLASSES',
   HOLOLENS1: 'HOLOLENS1',

@@ -155,10 +155,10 @@ var Session = /** @class */ (function(_super) {
    * @returns A Promise to which you must subscribe that is resolved if the the connection to the Session was successful and rejected with an Error object if not
    *
    */
-  Session.prototype.connect = function(token, metadata, iceServers) {
+  Session.prototype.connect = function(token, metadata, options) {
     var _this = this
     return new Promise(function(resolve, reject) {
-      _this.processToken(token, iceServers)
+      _this.processToken(token, options)
       if (_this.openvidu.checkSystemRequirements()) {
         // Early configuration to deactivate automatic subscription to streams
         _this.options = {
@@ -1417,20 +1417,20 @@ var Session = /** @class */ (function(_super) {
       }
     })
   }
-  Session.prototype.processToken = function(token, iceServers) {
+  Session.prototype.processToken = function(token, options) {
     var match = token.match(
       /^(wss?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/,
     )
     if (match) {
-      var url = {
-        protocol: match[1],
-        host: match[2],
-        hostname: match[3],
-        port: match[4],
-        pathname: match[5],
-        search: match[6],
-        hash: match[7],
-      }
+      // var url = {
+      //   protocol: match[1],
+      //   host: match[2],
+      //   hostname: match[3],
+      //   port: match[4],
+      //   pathname: match[5],
+      //   search: match[6],
+      //   hash: match[7],
+      // }
       var params = token.split('?')
       var queryParams = decodeURI(params[1])
         .split('&')
@@ -1444,60 +1444,27 @@ var Session = /** @class */ (function(_super) {
           return values
         }, {})
       this.sessionId = queryParams['sessionId']
-      var secret = queryParams['secret']
-      var recorder = queryParams['recorder']
-      var coturnIp = queryParams['coturnIp']
-      var turnUsername = queryParams['turnUsername']
-      var turnCredential = queryParams['turnCredential']
-      var role = queryParams['role']
-      var webrtcStatsInterval = queryParams['webrtcStatsInterval']
-      var openviduServerVersion = queryParams['version']
-      if (secret) {
-        this.openvidu.secret = secret
+      // var secret = queryParams['secret']
+      // var recorder = queryParams['recorder']
+      // var webrtcStatsInterval = queryParams['webrtcStatsInterval']
+      // if (secret) {
+      //   this.openvidu.secret = secret
+      // }
+      // if (recorder) {
+      //   this.openvidu.recorder = true
+      // }
+      if (options.iceServers) {
+        this.openvidu.iceServers = options.iceServers
       }
-      if (recorder) {
-        this.openvidu.recorder = true
+      if (options.role) {
+        this.openvidu.role = options.role
       }
-      if (!!turnUsername && !!turnCredential) {
-        var stunUrl = 'stun:' + coturnIp + ':3478'
-        var turnUrl1 = 'turn:' + coturnIp + ':3478'
-        var turnUrl2 = turnUrl1 + '?transport=tcp'
-        this.openvidu.iceServers = [
-          { urls: [stunUrl] },
-          {
-            urls: [turnUrl1, turnUrl2],
-            username: turnUsername,
-            credential: turnCredential,
-          },
-        ]
-        logger.log('STUN/TURN server IP: ' + coturnIp)
-        logger.log(
-          'TURN temp credentials [' + turnUsername + ':' + turnCredential + ']',
-        )
-      }
-      if (iceServers) {
-        this.openvidu.iceServers = iceServers
-      }
-      if (role) {
-        this.openvidu.role = role
-      }
-      if (webrtcStatsInterval) {
-        this.openvidu.webrtcStatsInterval = +webrtcStatsInterval
-      }
-      if (openviduServerVersion) {
-        logger.info('openvidu-server version: ' + openviduServerVersion)
-        if (openviduServerVersion !== this.openvidu.libraryVersion) {
-          logger.error(
-            'OpenVidu Server (' +
-              openviduServerVersion +
-              ') and OpenVidu Browser (' +
-              this.openvidu.libraryVersion +
-              ') versions do NOT match. There may be incompatibilities',
-          )
-        }
-      }
-      this.openvidu.wsUri = 'wss://' + url.host + '/media/websocket'
-      this.openvidu.httpUri = 'https://' + url.host
+      // if (webrtcStatsInterval) {
+      //   this.openvidu.webrtcStatsInterval = +webrtcStatsInterval
+      // }
+      // this.openvidu.wsUri = 'wss://' + url.host + '/remote/websocket'
+      // this.openvidu.httpUri = 'https://' + url.host
+      this.openvidu.wsUri = options.wsUri
     } else {
       logger.error('Token "' + token + '" is not valid')
     }

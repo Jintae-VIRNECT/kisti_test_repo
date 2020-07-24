@@ -15,11 +15,11 @@
     <div class="groupcard-list">
       <remote-card
         v-for="room of roomList"
-        :key="room.roomId"
+        :key="room.sessionId"
         :room="room"
-        @join="joinRoom"
-        @leave="leaveRoom"
-        @remove="removeRoom"
+        @join="join(room)"
+        @leave="leave(room.sessionId)"
+        @remove="remove(room.sessionId)"
       ></remote-card>
     </div>
   </tab-view>
@@ -28,10 +28,10 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList, getRoomInfo, deleteRoom } from 'api/workspace/room'
-import { getLicense } from 'api/workspace/license'
+import { getRoomList, deleteRoom, leaveRoom, joinRoom } from 'api/workspace'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
+import { DEVICE } from 'configs/device.config'
 import { ROLE } from 'configs/remote.config'
 
 import { mapActions } from 'vuex'
@@ -41,7 +41,6 @@ export default {
   components: { TabView, RemoteCard },
   data() {
     return {
-      remoteInfo: null,
       rooms: [],
       loading: false,
     }
@@ -60,55 +59,31 @@ export default {
     ...mapActions(['setRoomInfo', 'roomClear']),
     async refresh() {
       this.loading = true
-      this.remoteInfo = await getRoomList()
+      await this.init()
       this.loading = false
-      this.rooms = this.remoteInfo.rooms
     },
-    async remove(roomId) {
-      const rtn = await deleteRoom({ roomId: roomId })
-
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        if (rtn) {
-          this.refresh()
-          this.$eventBus.$emit('popover:close')
-        }
-      })
-    },
-    async joinRoom(room) {
-      console.log('>>> JOIN ROOM')
+    async join(room) {
+      this.logger('>>> JOIN ROOM')
       try {
-        const license = await getLicense(
-          this.workspace.uuid,
-          await this.account.uuid,
-        )
-
-        if (!license) {
-          this.confirmDefault(
-            '라이선스가 만료되어 서비스 사용이 불가 합니다.​',
-            {
-              text: '확인',
-              action: () => {
-                this.$eventBus.$emit('showLicensePage')
-              },
-            },
-          )
-          return false
-        }
-
-        // const roomInfo = await getRoomInfo({
-        //   roomId: room.roomId,
-        // })
-
         this.setRoomInfo(room)
-        let role = ''
-        if (room.leaderId === this.account.uuid) {
-          role = ROLE.EXPERT_LEADER
-        } else {
-          role = ROLE.EXPERT
-        }
+        let myInfo = room.memberList.find(
+          member => member.uuid === this.account.uuid,
+        )
+        let role =
+          myInfo.memberType === ROLE.EXPERT_LEADER
+            ? ROLE.EXPERT_LEADER
+            : ROLE.EXPERT
 
-        const joinRtn = await this.$call.join(room, role)
+        const res = await joinRoom({
+          uuid: this.account.uuid,
+          email: this.account.email,
+          memberType: role,
+          deviceType: DEVICE.WEB,
+          sessionId: room.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+
+        const joinRtn = await this.$call.connect(res.token, role)
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
@@ -124,36 +99,64 @@ export default {
       // this.confirmDefault('이미 삭제된 협업입니다.')
       // this.confirmDefault('협업에 참가가 불가능합니다.')
     },
-    leaveRoom(roomId) {
+    leave(sessionId) {
       this.confirmCancel(
         '협업에서 나가시겠습니까?',
         {
           text: '나가기',
           action: () => {
-            this.remove(roomId, this.account.nickname)
+            this.leaveoutRoom(sessionId)
           },
         },
         { text: '취소' },
       )
     },
-    removeRoom(roomId) {
+    remove(sessionId) {
       this.confirmCancel(
         '협업을 삭제 하시겠습니까?',
         {
           text: '확인',
           action: () => {
-            this.remove(roomId)
+            this.removeRoom(sessionId)
           },
         },
         { text: '취소' },
       )
     },
     async init() {
-      this.remoteInfo = await getRoomList({
-        title: '이건 무슨 데이터일까',
-        participantName: this.account.userId,
+      const roomList = await getRoomList({
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
       })
-      this.rooms = this.remoteInfo.rooms
+      this.rooms = roomList.roomInfoList
+    },
+    async removeRoom(sessionId) {
+      const rtn = await deleteRoom({
+        sessionId,
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        if (rtn) {
+          this.refresh()
+        }
+      })
+    },
+    async leaveoutRoom(sessionId) {
+      const rtn = await leaveRoom({
+        sessionId,
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        if (rtn) {
+          this.refresh()
+        }
+      })
     },
   },
 

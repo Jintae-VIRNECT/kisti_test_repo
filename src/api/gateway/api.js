@@ -3,6 +3,7 @@ export default {
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
   TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
   ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
+  USER_INFO: ['GET', 'https://192.168.6.3:8073/users/{userId}'],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
@@ -23,19 +24,6 @@ export default {
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
 
   /* Workspace - Room */
-  // ROOM_LIST: ['GET', '/media/room?paging={paging}'],
-  // ROOM_INFO: ['GET', '/media/room/{roomId}'],
-  UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
-  LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
-  PARTICIPANTS_LIST: ['GET', '/media/room/{roomId}/participants'],
-  INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
-  // CREATE_ROOM: [
-  //   'POST',
-  //   '/media/room?workspaceId={workspaceId}',
-  //   { type: 'form' },
-  // ],
-  DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
-
   ROOM_LIST: [
     'GET',
     'https://192.168.13.36:5000/remote/room?workspaceId={workspaceId}',
@@ -49,9 +37,29 @@ export default {
     'GET',
     'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}',
   ],
+  DELETE_ROOM: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/{userId}',
+  ],
+  LEAVE_ROOM: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/exit',
+  ],
+  UPDATE_ROOM_INFO: [
+    'POST',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/info',
+  ],
 
   /* CALL */
   GET_TOKEN: ['POST', '/media/tokens'],
+  INVITE_ROOM: [
+    'POST',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/member',
+  ],
+  KICKOUT_USER: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/member',
+  ],
 
   /* LICENSE */
   GET_LICENSE: [

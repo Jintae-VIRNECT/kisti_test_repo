@@ -79,7 +79,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'roomClear']),
+    ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
     async getInfo() {
       try {
         this.roomInfo = await getHistorySingleItem({ roomId: this.roomId })
@@ -115,47 +115,60 @@ export default {
     async startRemote(info) {
       try {
         const selectedUser = []
+        const selectedUserIds = []
 
         for (let select of this.selection) {
-          selectedUser.push(select.uuid)
+          selectedUser.push({
+            id: select.uuid,
+            email: select.email,
+          })
+          selectedUserIds.push(select.uuid)
         }
-        selectedUser.push(this.account.uuid)
 
-        const createdRoom = await createRoom({
+        const createdRes = await createRoom({
           file: info.imageFile,
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
+          leaderEmail: this.account.email,
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
         })
-
-        const joinRtn = await this.$call.join(createdRoom, ROLE.EXPERT_LEADER)
-        if (joinRtn) {
+        const connRes = await this.$call.connect(
+          createdRes.token,
+          ROLE.EXPERT_LEADER,
+        )
+        if (connRes) {
           this.$eventBus.$emit('popover:close')
 
+          const roomInfo = {
+            roomId: createdRes.sessionId,
+            sessionId: createdRes.sessionId,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantsCount: selectedUser.length + 1,
+            maxParticipantCount: 3,
+          }
+
+          this.setRoomInfo(roomInfo)
+
           const contents = {
-            roomSessionId: createdRoom.sessionId,
-            roomId: createdRoom.roomId,
+            roomSessionId: createdRes.sessionId,
+            roomId: createdRes.sessionId,
             title: info.title,
             nickName: this.account.nickname,
             profile: this.account.profile,
           }
 
-          const rtn = await sendPush(EVENT.INVITE, selectedUser, contents)
+          const rtn = await sendPush(EVENT.INVITE, selectedUserIds, contents)
           console.log(rtn)
-
-          const roomInfo = await getRoomInfo({
-            roomId: createdRoom.roomId,
-          })
-
-          this.setRoomInfo(roomInfo)
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })
         } else {
           this.roomClear()
-          console.error('>>>join room 실패')
+          console.error('join room 실패')
         }
       } catch (err) {
         this.roomClear()

@@ -17,16 +17,10 @@ const _ = {
   resolution: null,
   /**
    * join session
-   * @param {Object}
-   * @param {Object}
-   * @param {String}
+   * @param {String} token
+   * @param {String} role remote.config.ROLE
    */
-  join: async (roomInfo, role) => {
-    // role = ROLE.EXPERT
-    Store.commit('callClear')
-    Store.dispatch('updateAccount', {
-      roleType: role,
-    })
+  connect: async (token, role) => {
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
     // TODO: 영상 출력 허용 테스트 계정 이메일
@@ -35,14 +29,6 @@ const _ = {
       allowUser = true
     }
     try {
-      const params = {
-        sessionId: roomInfo.sessionId,
-        role: 'PUBLISHER',
-        data: {},
-        kurentoOptions: {},
-      }
-      const rtnValue = await getToken(params)
-
       OV = new OpenVidu()
       _.session = OV.initSession()
 
@@ -53,16 +39,23 @@ const _ = {
       }
 
       const iceServers = window.urls.coturn
+      const wsUri = window.urls.remoteWs
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
       }
       logger('coturn::', iceServers)
 
-      await _.session.connect(
-        rtnValue.token,
-        JSON.stringify(metaData),
+      const options = {
         iceServers,
-      )
+        wsUri,
+        role: 'PUSLISHER',
+      }
+
+      await _.session.connect(token, JSON.stringify(metaData), options)
+      Store.commit('callClear')
+      Store.dispatch('updateAccount', {
+        roleType: role,
+      })
       const publishVideo = role === ROLE.WORKER || allowUser
 
       const publisher = OV.initPublisher('', {
