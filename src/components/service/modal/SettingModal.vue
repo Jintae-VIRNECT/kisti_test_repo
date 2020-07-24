@@ -182,7 +182,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['view', 'localRecord', 'allow', 'screenStream']),
+    ...mapGetters([
+      'view',
+      'localRecord',
+      'allowLocalRecord',
+      'allowPointing',
+      'screenStream',
+    ]),
     isLeader() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -210,7 +216,6 @@ export default {
       })
       this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecording', !!flag)
-      this.showToast()
     },
     pointing(flag) {
       if (!this.isCurrentView) return
@@ -219,7 +224,18 @@ export default {
       })
       this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
-      this.showToast()
+    },
+    allowLocalRecord(val, bVal) {
+      if (!this.isCurrentView) return
+      if (val !== bVal) {
+        this.showToast()
+      }
+    },
+    allowPointing(val, bVal) {
+      if (!this.isCurrentView) return
+      if (val !== bVal) {
+        this.showToast()
+      }
     },
 
     recordTarget(target) {
@@ -265,8 +281,8 @@ export default {
   },
 
   created() {
-    this.localRecording = this.allow.localRecording
-    this.pointing = this.allow.pointing
+    this.localRecording = this.allowLocalRecord
+    this.pointing = this.allowPointing
   },
 }
 </script>
