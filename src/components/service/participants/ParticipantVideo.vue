@@ -101,7 +101,7 @@
                 음소거
               </button>
             </li>
-            <li v-if="isLeader">
+            <li v-if="iamLeader">
               <button
                 class="video-pop__button"
                 @click="disconnectUser(account.nickname)"
@@ -122,6 +122,7 @@ import { ROLE } from 'configs/remote.config'
 import Profile from 'Profile'
 import Popover from 'Popover'
 import confirmMixin from 'mixins/confirm'
+import { kickMember } from 'api/service'
 
 export default {
   name: 'ParticipantVideo',
@@ -141,7 +142,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker']),
+    ...mapGetters(['mainView', 'speaker', 'roomInfo']),
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -154,6 +155,13 @@ export default {
     },
     isLeader() {
       if (this.participant.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
+    iamLeader() {
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
       } else {
         return false
@@ -221,8 +229,15 @@ export default {
         },
       )
     },
-    kick() {
-      this.$call.disconnect(this.participant.connectionId)
+    async kick() {
+      const params = {
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        leaderId: this.account.uuid,
+        participantId: this.participant.id,
+      }
+      await kickMember(params)
+      // this.$call.disconnect(this.participant.connectionId)
     },
   },
 }
