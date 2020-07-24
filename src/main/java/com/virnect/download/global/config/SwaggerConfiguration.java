@@ -1,5 +1,10 @@
 package com.virnect.download.global.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.download.global.error.ErrorCode;
+import com.virnect.download.global.error.ErrorResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +21,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Project: PF-Admin
@@ -24,12 +30,15 @@ import java.util.ArrayList;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"!production","!staging"})
+@Profile({"local", "develop"})
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfiguration {
+    private final ObjectMapper objectMapper;
+
     @Bean
-    public Docket docket() {
+    public Docket docket() throws JsonProcessingException {
         Contact contact = new Contact("이주경", "https://virnect.com", "ljk@virnect.com");
 
         ApiInfo apiInfo = new ApiInfoBuilder()
@@ -37,14 +46,18 @@ public class SwaggerConfiguration {
                 .title("VIRNECT Platform Download Service API Document.")
                 .build();
 
-        ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
+        List<ResponseMessage> responseMessages = new ArrayList<>();
+        for (ErrorCode errorCode : ErrorCode.values()) {
+            responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode()).message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode))).build());
+        }
+        responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, responseMessages)
-                .select()
+                .globalResponseMessage(RequestMethod.POST, responseMessages)
+                .globalResponseMessage(RequestMethod.PUT, responseMessages)
+                .globalResponseMessage(RequestMethod.DELETE, responseMessages).select()
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.download.api"))
                 .paths(PathSelectors.any())
                 .build()
