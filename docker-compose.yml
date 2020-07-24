@@ -1,0 +1,63 @@
+version: "3"
+services:
+
+# MySQL mariadb
+  mysql:
+    build:
+      context: ./mysql
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/data:/var/lib/mysql/
+    env_file: 
+      - mysql/mysql.env
+    networks:
+      - backend
+    hostname: mysql
+
+# Coturn
+  coturn:
+    build:
+      context: ./coturn
+    restart: always
+    volumes:
+      - ${PWD}/coturn/turnserver.conf:/etc/turnserver.conf
+      - ${PWD}/coturn/private.pem:/etc/ssl/private.pem
+      - ${PWD}/coturn/cert.pem:/etc/ssl/cert.pem
+    ports:
+## WEB ADMIN
+      - "4443:4443"
+## STUN/TURN
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "3479:3479"
+      - "3479:3479/udp"
+      - "80:80"
+      - "80:80/udp"
+## STUN/TURN SSL
+      - "5349:5349"
+      - "5349:5349/udp"
+      - "5350:5350"
+      - "5350:5350/udp"
+      - "443:443"
+      - "443:443/udp"
+#Relay Ports
+      - "50000-50100:50000-50100"
+      - "50000-50100:50000-50100/udp"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - mysql
+    env_file:
+      - coturn/coturn.env
+      - mysql/mysql.env
+
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+  backend:
+    internal: true
