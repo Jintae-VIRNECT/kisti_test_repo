@@ -2,12 +2,10 @@
 RELEASE
 
 New Features
-- 지프킨 연동 기능 추가
-- rabbitmq 서버 라우팅 기능 추가 (메시지 서버)
-- Netty Access Log 기능 추가
+- 운영 토큰 인증키 변경
 
 Bug Fixes
-- 없음
+- zipkin discovery client false 활성화
 
 Limitation
 - 없음

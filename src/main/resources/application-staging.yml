@@ -169,7 +169,7 @@ spring:
         prefix-enabled: false
   zipkin:
     base-url: http://stgzipkin.virnect.com
-
+    discovery-client-enabled: false
 eureka:
   instance:
     prefer-ip-address: true

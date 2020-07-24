@@ -141,7 +141,8 @@ spring:
               - "https://admin.virnect.com"
               - "https://download.virnect.com"
               - "https://pay.virnect.com"
-              - "https://Platform-Prod-Home-1237392900.ap-northeast-2.elb.amazonaws.com"
+              - "https://payadmin.virnect.com"
+              - "https://remote.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
@@ -151,7 +152,7 @@ spring:
         prefix-enabled: false
   zipkin:
     base-url: http://zipkin.virnect.com
-
+    discovery-client-enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -160,5 +161,5 @@ eureka:
       defaultZone: http://eureka.virnect.com/eureka
 
 jwt:
-  secret: 2020-tcenriv-platform-392
+  secret: 2020-1356-virnect-platform-392
 
