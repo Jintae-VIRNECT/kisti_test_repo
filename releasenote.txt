@@ -2,11 +2,10 @@
 RELEASE
 
 New Features
-- 다운로드 센터 url 운영 환경 추가
-- 결제 센터 url 운영 환경 추가
+- 운영 토큰 인증키 변경
 
 Bug Fixes
-- 없음
+- zipkin discovery client false 활성화
 
 Limitation
 - 없음

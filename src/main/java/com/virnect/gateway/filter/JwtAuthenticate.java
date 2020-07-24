@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 
 @Slf4j
-@Profile(value = {"local", "staging", "production"})
+@Profile(value = {"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticate implements GlobalFilter {
@@ -47,6 +47,9 @@ public class JwtAuthenticate implements GlobalFilter {
         boolean isAuthenticateSkipUrl = requestUriPath.startsWith("/auth") ||
                 requestUriPath.startsWith("/admin") ||
                 requestUriPath.startsWith("/users/find") ||
+                requestUriPath.startsWith("/licenses/allocate/check") ||
+                requestUriPath.startsWith("/licenses/allocate") ||
+                requestUriPath.startsWith("/licenses/deallocate") ||
                 requestUriPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
         if (isAuthenticateSkipUrl) {

@@ -108,13 +108,13 @@ spring:
         - id: message-server
           uri: lb:http://message-server
           predicates:
-            - Path=/message/**
+            - Path=/messages/**
           filters:
             - StripPrefix=0
-            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/messages/v2/(?<segment>.*), /v2/$\{segment}
             - name: Logging
               args:
-                messagePrefix: "MESSAGE_SERVER"
+                messagePrefix: "MESSAGES_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -131,16 +131,16 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: remote-service-server
-          uri: lb:https://remote-service-server
+        - id: remote-record-server
+          uri: lb:http://remote-record-server
           predicates:
-            - Path=/media/**
+            - Path=/remote/recorder/**
           filters:
             - StripPrefix=0
-            - RewritePath=/media/v2/(?<segment>.*), /v2/$\{segment}
+            - RewritePath=/remote/recorder/v2/(?<segment>.*), /v2/$\{segment}/
             - name: Logging
               args:
-                messagePrefix: "REMOTE_SERVICE_SERVER_REST"
+                messagePrefix: "REMOTE_RECORD_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -148,7 +148,7 @@ spring:
           uri: lb:wss://remote-service-server
           predicates:
             - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, \s+
+            - Header=Sec-WebSocket-Key, \w+\W+
             - Header=Upgrade, websocket
             - Path=/media/websocket/**
           filters:
@@ -156,6 +156,21 @@ spring:
             - name: Logging
               args:
                 messagePrefix: "REMOTE_SERVICE_SERVER_WEBSOCKET"
+                preLogger: true
+                postLogger: true
+
+        - id: rabbitmq-websocket
+          uri: ws://192.168.6.3:15674
+          predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
+            - Header=Upgrade, websocket
+#            - Path=/message/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
                 preLogger: true
                 postLogger: true
 
@@ -171,6 +186,20 @@ spring:
                 messagePrefix: "LINK_SERVER"
                 preLogger: true
                 postLogger: true
+
+        - id: payletter-api-server
+          uri: https://devpayapi.virnect.com
+          predicates:
+            - Path=/billing/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "PAYLETTER_BILLING_SERVER"
+                preLogger: true
+                postLogger: true
+                #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
       globalcors:
         corsConfigurations:
           '[/**]':

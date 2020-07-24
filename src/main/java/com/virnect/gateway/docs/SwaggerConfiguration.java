@@ -51,16 +51,13 @@ public class SwaggerConfiguration {
     public SwaggerResourcesProvider swaggerResourcesProvider() {
         return () -> gatewayProperties.getRoutes().stream()
                 .filter(route -> !route.getId().contains("websocket"))
+                .filter(route -> !route.getId().contains("payletter"))
                 .map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     private String getRouteLocation(RouteDefinition route) {
-        log.info("ROUTE LOCATION:: [{}]",Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
-                .map(String::valueOf)
-                .map(s -> s.replace("*", ""))
-                .orElse(null));
         return Optional.ofNullable(route.getPredicates().get(0).getArgs().values().toArray()[0])
                 .map(String::valueOf)
                 .map(s -> s.replace("*", ""))
