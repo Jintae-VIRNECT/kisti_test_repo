@@ -198,9 +198,9 @@
                     </table>
 
                     <p style="text-align: center;">
-                        <a th:href="@{${rejectUrl}}" style="margin: 0 4px;"><img
+                        <a th:href="@{${rejectUrl}}" th:style="'margin: 0 4px;'"><img
                                 src="http://image.virnect.com/images/mailling_service/invite_reject_btn.png"></a>
-                        <a th:href="@{${acceptUrl}}" style="margin: 0 4px;"><img
+                        <a th:href="@{${acceptUrl}}" th:style="'margin: 0 4px;'"><img
                                 src="http://image.virnect.com/images/mailling_service/invite_accept_btn.png"></a>
                     </p>
 
@@ -230,10 +230,10 @@
                 >
                     본 메일은 발신 전용으로 회신되지 않습니다. 궁금한 사항은
                     <a
-                            href="#"
+                            th:href="@{${supportUrl}}"
                             target="_blank"
                             title="VIRNECT 고객 센터 바로가기, 새창열림"
-                            style="color:#0054f7;font-weight:bold;text-decoration:underline;"
+                            th:style="'color:#0054f7;font-weight:bold;text-decoration:underline;'"
                             rel="noreferrer noopener"
                     >고객 센터</a
                     >로 문의해 주세요.

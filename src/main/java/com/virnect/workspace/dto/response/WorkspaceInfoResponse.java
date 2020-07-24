@@ -22,7 +22,7 @@ public class WorkspaceInfoResponse {
     private final long masterUserCount;
     private final long manageUserCount;
     private final long memberUserCount;
-    private final long remotePlanCount;
-    private final long makePlanCount;
-    private final long viewPlanCount;
+    private final int remotePlanCount;
+    private final int makePlanCount;
+    private final int viewPlanCount;
 }

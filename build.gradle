@@ -77,6 +77,10 @@ dependencies {
     //Spring data Envers
     implementation 'org.springframework.data:spring-data-envers'
 
+    // Zipkin
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
+
 }
 
 test {

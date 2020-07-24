@@ -13,10 +13,10 @@ public enum MailSender {
     MASTER("no-reply@virnect.com");
 
     @Getter
-    private String sender;
+    private String value;
 
-    MailSender(String sender) {
-        this.sender = sender;
+    MailSender(String value) {
+        this.value = value;
     }
 
 }

@@ -27,6 +27,8 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 40MB
+  zipkin:
+    base-url: http://stgzipkin.virnect.com
 
 logging:
   level:
@@ -55,8 +57,8 @@ eureka:
 cloud:
   aws:
     credentials:
-      access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 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
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
     region:
       auto: true
     s3:
@@ -68,6 +70,8 @@ cloud:
 serverUrl: "https://stgapi.virnect.com"
 redirectUrl: "https://stgworkstation.virnect.com"
 contactUrl: "https://stgwww.virnect.com/contact/inquiry"
+accountUrl: "https://stgaccount.virnect.com"
+supportUrl: "https://stgwww.virnect.com/contact/inquiry"
 
 ## Feign
 feign:
