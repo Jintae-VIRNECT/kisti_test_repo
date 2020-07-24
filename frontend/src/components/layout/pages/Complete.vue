@@ -11,7 +11,8 @@
 					type="primary"
 					>{{ $t('complete.trial') }}</el-button
 				>
-				<el-button class="next-btn block-btn" type="info">{{
+				<el-button class="next-btn block-btn"
+					@click="payment" type="info">{{
 					$t('complete.payment')
 				}}</el-button>
 
@@ -29,18 +30,19 @@ export default {
 	data() {
 		return {
 			couponUrl: urls.www[process.env.TARGET_ENV],
+			paymentUrl: urls.pay[process.env.TARGET_ENV],
 			workstationUrl: urls.workstation[process.env.TARGET_ENV],
 		}
 	},
 	methods: {
 		goWorkstation() {
 			location.replace(this.workstationUrl)
-			// window.open(this.workstationUrl)
-			// console.log(this.workstationUrl)
 		},
 		trialCoupon() {
 			location.replace(`${this.couponUrl}/coupon`)
-			// console.log(this.couponUrl)
+		},
+		payment() {
+			location.replace(`${this.paymentUrl}`)
 		},
 	},
 }

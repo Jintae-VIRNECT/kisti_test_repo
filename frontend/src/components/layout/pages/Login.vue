@@ -132,17 +132,26 @@ export default {
 			}
 		},
 		emailRemember(email, check) {
+			const cookieOption = {
+				domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,
+			}
 			if (check == true) {
 				this.rememberEmail = true
-				Cookies.set('email', email)
+				Cookies.set('email', email, cookieOption)
 			} else {
-				Cookies.remove('email')
+				Cookies.remove('email', cookieOption)
 			}
 		},
 		autoLogin(check) {
 			if (check == true) {
 				this.rememberLogin = true
-				Cookies.set('auto', check)
+				Cookies.set('auto', check, {domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,})
 			} else {
 				Cookies.remove('auto')
 			}
