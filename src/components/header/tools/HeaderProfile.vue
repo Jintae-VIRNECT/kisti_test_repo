@@ -1,7 +1,7 @@
 <template>
   <popover
     placement="bottom-end"
-    :width="300"
+    width="21.429rem"
     trigger="click"
     popperClass="popover-profile"
   >
