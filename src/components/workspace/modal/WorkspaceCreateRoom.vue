@@ -20,6 +20,7 @@
         :selection="selection"
         @userSelect="selectUser"
         @inviteRefresh="inviteRefresh"
+        :loading="loading"
       ></create-room-invite>
     </div>
   </modal>
@@ -31,14 +32,14 @@ import { mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { getMemberList } from 'api/workspace/member'
-import { createRoom, getRoomInfo } from 'api/workspace/room'
+import { createRoom } from 'api/workspace/room'
 import { sendPush } from 'api/common/message'
 import { ROLE } from 'configs/remote.config'
 import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { KEY, EVENT } from 'configs/push.config'
+import { EVENT } from 'configs/push.config'
+import { getMember } from 'api/service'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -55,6 +56,7 @@ export default {
       users: [],
       maxSelect: 2,
       roomInfo: {},
+      loading: false,
     }
   },
   props: {
@@ -106,10 +108,15 @@ export default {
       }
     },
     async inviteRefresh() {
-      const inviteList = await getMemberList({
+      this.loading = true
+      const inviteList = await getMember({
+        size: 100,
         workspaceId: this.workspace.uuid,
       })
-      this.users = inviteList.memberInfoList
+      this.users = inviteList.memberInfoList.filter(
+        member => member.uuid !== this.account.uuid,
+      )
+      this.loading = false
       this.selection = []
     },
     async startRemote(info) {
@@ -120,6 +127,7 @@ export default {
         for (let select of this.selection) {
           selectedUser.push({
             id: select.uuid,
+            uuid: select.uuid,
             email: select.email,
           })
           selectedUserIds.push(select.uuid)
@@ -138,20 +146,21 @@ export default {
           createdRes.token,
           ROLE.EXPERT_LEADER,
         )
+
+        const roomInfo = {
+          roomId: createdRes.sessionId,
+          sessionId: createdRes.sessionId,
+          title: info.title,
+          description: info.description,
+          leaderId: this.account.uuid,
+          participantsCount: selectedUser.length + 1,
+          maxParticipantCount: 3,
+          memberList: [...selectedUser, this.account],
+        }
+
+        this.setRoomInfo(roomInfo)
         if (connRes) {
           this.$eventBus.$emit('popover:close')
-
-          const roomInfo = {
-            roomId: createdRes.sessionId,
-            sessionId: createdRes.sessionId,
-            title: info.title,
-            description: info.description,
-            leaderId: this.account.uuid,
-            participantsCount: selectedUser.length + 1,
-            maxParticipantCount: 3,
-          }
-
-          this.setRoomInfo(roomInfo)
 
           const contents = {
             roomSessionId: createdRes.sessionId,

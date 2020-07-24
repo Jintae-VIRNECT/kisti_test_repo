@@ -145,6 +145,10 @@
 .userinfo__button {
   flex: 0;
   margin-left: 4.429em;
+  &.me {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .roominfo-figure {

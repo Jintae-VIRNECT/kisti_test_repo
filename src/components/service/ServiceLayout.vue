@@ -65,7 +65,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     next(vm => {
-      vm.$store.commit('clear')
+      vm.$Store.commit('callClear')
     })
   },
   mixins: [alarmMixin, localRecorderMixin],

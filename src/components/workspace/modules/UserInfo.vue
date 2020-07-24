@@ -15,6 +15,7 @@
       <img class="userinfo__image" :src="deviceImg" />
       <button
         class="btn line userinfo__button"
+        :class="{ me: account.uuid === user.uuid }"
         @click="$emit('kickout')"
         v-if="isLeader"
       >
@@ -65,10 +66,17 @@ export default {
       return ''
     },
     isOffline() {
-      if (this.user.memberStatus === STATUS.ONLINE) {
+      if (this.user.memberStatus === STATUS.LOAD) {
         return false
       } else {
         return true
+      }
+    },
+    canKick() {
+      if (this.isLeader && this.account.uuid === this.user.uuid) {
+        return true
+      } else {
+        return false
       }
     },
   },

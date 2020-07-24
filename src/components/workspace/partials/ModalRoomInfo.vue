@@ -122,8 +122,8 @@ export default {
         this.name = room.title
         this.description = room.description
         // this.imageUrl = room.path
-        this.createdDate = this.$dayjs(room.createdDate).format('YYYY.MM.DD')
-        this.createdTime = this.$dayjs(room.createdDate).format('hh:mm:ss')
+        this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
+        this.createdTime = this.$dayjs(room.activeDate).format('hh:mm:ss')
       },
       deep: true,
     },
@@ -155,6 +155,8 @@ export default {
       this.name = this.room.title
       this.description = this.room.description
       this.imageUrl = this.room.path
+      this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')
+      this.createdTime = this.$dayjs(this.room.activeDate).format('hh:mm:ss')
     }
   },
 }

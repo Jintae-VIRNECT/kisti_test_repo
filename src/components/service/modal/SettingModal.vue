@@ -214,7 +214,6 @@ export default {
       this.setAllow({
         localRecording: !!flag,
       })
-      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecording', !!flag)
     },
     pointing(flag) {
@@ -222,18 +221,19 @@ export default {
       this.setAllow({
         pointing: !!flag,
       })
-      this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
     allowLocalRecord(val, bVal) {
       if (!this.isCurrentView) return
       if (val !== bVal) {
+        this.$call.control(CONTROL.LOCAL_RECORD, !!val)
         this.showToast()
       }
     },
     allowPointing(val, bVal) {
       if (!this.isCurrentView) return
       if (val !== bVal) {
+        this.$call.control(CONTROL.POINTING, !!val)
         this.showToast()
       }
     },
