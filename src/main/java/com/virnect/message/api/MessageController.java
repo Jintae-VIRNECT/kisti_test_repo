@@ -5,6 +5,7 @@ import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
+import com.virnect.message.dto.response.PushResponse;
 import com.virnect.message.exception.MessageException;
 import com.virnect.message.global.common.ApiResponse;
 import com.virnect.message.global.config.RabbitmqConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 /**
  * Project: base
@@ -65,7 +67,7 @@ public class MessageController {
             notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/push")
-    public void sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<PushResponse>> sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -74,7 +76,8 @@ public class MessageController {
         String exchange = "amq.topic";
         String routingKey = "push" + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
         rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
-
+        PushResponse pushResponse = new PushResponse(pushSendRequest.getService(), pushSendRequest.getEvent(), pushSendRequest.getWorkspaceId(), true, LocalDateTime.now());
+        return ResponseEntity.ok(new ApiResponse<>(pushResponse));
     }
 
     @ApiOperation(
