@@ -145,6 +145,8 @@ export const addSessionEventListener = session => {
       .setName(participants[idx].nickname)
       .setText(data.replace(/\</g, '&lt;'))
       .setType(TYPE.OPPONENT)
+      .setId(event.from.connectionId)
+      .setProfileImg(participants[idx].path ? participants[idx].path : null)
 
     if (session.connection.connectionId === event.from.connectionId) {
       // 본인
@@ -167,6 +169,8 @@ export const addSessionEventListener = session => {
     const chatBuilder = new ChatMsgBuilder()
       .setType(TYPE.OPPONENT)
       .setName(participants[idx].nickname)
+      .setId(event.from.connectionId)
+      .setProfileImg(participants[idx].path)
       .setFile([
         {
           fileName: data.fileName,

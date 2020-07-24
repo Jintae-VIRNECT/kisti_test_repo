@@ -3,7 +3,11 @@
     class="chat-item"
     :class="[type, { 'file-share': chat.file && chat.file.length > 0 }]"
   >
-    <profile class="profile" v-if="!hideProfile"></profile>
+    <profile
+      class="profile"
+      v-if="!hideProfile"
+      :image="chat.profileImgPath"
+    ></profile>
     <div class="chat-item__body" :class="{ hidden: hideProfile }">
       <div class="chatbox">
         <span class="name">{{ chat.name }}</span>

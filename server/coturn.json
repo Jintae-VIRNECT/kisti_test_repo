@@ -1,0 +1,12 @@
+[
+  {
+    "url": "turn:turn.virnectremote.com:3478?transport=udp",
+    "username": "virnect",
+    "credential": "virnect"
+  },
+  {
+    "url": "turn:turn.virnectremote.com:3478?transport=tcp",
+    "username": "virnect",
+    "credential": "virnect"
+  }
+]
