@@ -7,7 +7,7 @@ services:
       context: ./mysql
     restart: unless-stopped
     volumes:
-      - ${PWD}/data:/var/lib/mysql/
+      - ./data:/var/lib/mysql/
     env_file: 
       - mysql/mysql.env
     networks:
@@ -20,9 +20,9 @@ services:
       context: ./coturn
     restart: always
     volumes:
-      - ${PWD}/coturn/turnserver.conf:/etc/turnserver.conf
-      - ${PWD}/coturn/private.pem:/etc/ssl/private.pem
-      - ${PWD}/coturn/cert.pem:/etc/ssl/cert.pem
+      - ./coturn/turnserver.conf:/etc/turnserver.conf
+      - ./coturn/private.pem:/etc/ssl/private.pem
+      - ./coturn/cert.pem:/etc/ssl/cert.pem
     ports:
 ## WEB ADMIN
       - "4443:4443"
