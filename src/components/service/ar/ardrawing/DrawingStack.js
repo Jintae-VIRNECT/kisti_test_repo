@@ -32,9 +32,7 @@ export default {
       this.undoList.push(stack)
       if (this.undoList.length > arCount) {
         // TODO: MESSAGE
-        this.toastDefault(
-          '최대 30개의 객체를 생성할 수 있습니다. << 문구정의필요',
-        )
+        this.toastDefault('최대 30개의 객체를 생성할 수 있습니다.')
         this.undoList.splice(0, 1)
         this.canvas.remove(this.canvas.getObjects()[0])
       }

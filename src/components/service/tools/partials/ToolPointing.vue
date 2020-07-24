@@ -42,7 +42,7 @@ export default {
     pointing() {
       if (!this.canPointing) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 포인팅을 막았습니다. << 문구정의 필요')
+        this.toastDefault('리더가 포인팅을 막았습니다.')
         return
       }
       if (this.viewAction !== ACTION.STREAM_POINTING) {

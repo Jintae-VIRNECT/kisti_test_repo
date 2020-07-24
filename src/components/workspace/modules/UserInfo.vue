@@ -15,7 +15,7 @@
       <img class="userinfo__image" :src="deviceImg" />
       <button
         class="btn line userinfo__button"
-        @click="removeUser(user.uuid)"
+        @click="$emit('kickout')"
         v-if="isLeader"
       >
         내보내기

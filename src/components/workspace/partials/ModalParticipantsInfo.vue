@@ -10,7 +10,7 @@
           :key="user.uuid"
           :user="user"
           :isLeader="isLeader"
-          @removeUser="removeUser(user.uuid)"
+          @kickout="kickout(user.uuid)"
         ></user-info>
       </scroller>
     </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { leaveRoom } from 'api/workspace/room'
+import { kickoutMember } from 'api/workspace'
 import Scroller from 'Scroller'
 import UserInfo from 'UserInfo'
 export default {
@@ -50,11 +50,13 @@ export default {
     }
   },
   methods: {
-    async removeUser(id) {
+    async kickout(id) {
       try {
-        const removeRtn = await leaveRoom({
+        const removeRtn = await kickoutMember({
           sessionId: this.sessionId,
-          participantsId: id,
+          workspaceId: this.workspace.uuid,
+          leaderId: this.account.uuid,
+          participantId: id,
         })
         if (removeRtn) {
           // participants 제거

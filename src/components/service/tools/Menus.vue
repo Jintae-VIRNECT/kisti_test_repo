@@ -7,7 +7,7 @@
       </template>
       <local-record :disabled="!isMainView"></local-record>
       <local-record-list></local-record-list>
-      <setting></setting>
+      <setting :viewType="viewType"></setting>
     </div>
   </div>
 </template>
@@ -55,8 +55,9 @@ export default {
       }
     },
   },
-  watch: {},
-  methods: {},
+  props: {
+    viewType: String,
+  },
 
   /* Lifecycles */
   beforeDestroy() {},
