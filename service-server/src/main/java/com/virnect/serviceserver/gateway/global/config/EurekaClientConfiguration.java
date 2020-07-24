@@ -1,9 +1,9 @@
 package com.virnect.serviceserver.gateway.global.config;
 
-//import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-//import org.springframework.context.annotation.Configuration;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.context.annotation.Configuration;
 
-/*@Configuration
-@EnableEurekaClient*/
+@Configuration
+@EnableEurekaClient
 public class EurekaClientConfiguration {
 }

@@ -22,6 +22,13 @@ ext {
     set("springCloudVersion", "Hoxton.SR1")
 }
 
+/*sourceSets {
+    main {
+        resources("src/main/resoures"),
+
+    }
+}*/
+
 springBoot {
     buildInfo()
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
@@ -38,9 +45,9 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    //implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
@@ -63,7 +70,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     //============================ SERVICE DEPENDENCIES ===========================================//
     // Eureka
-    //implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     // Netflex Feign Client
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     // Swagger

@@ -13,6 +13,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
+    //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+
     List<Room> findByWorkspaceId(final String workspaceId);
 
     List<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title);

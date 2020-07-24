@@ -34,7 +34,7 @@ public class MemberRestController {
         return responseHeaders;
     }
 
-    @ApiOperation(value = "Lookup Member Information List", notes = "API for Member Information List")
+    @ApiOperation(value = "Lookup Member Information List", notes = "워크스페이스 멤버 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "Page Index Number", dataType = "Integer", paramType = "query", defaultValue = "0"),

@@ -10,11 +10,13 @@ import com.virnect.serviceserver.core.Session;
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.domain.MemberType;
 import com.virnect.serviceserver.gateway.dto.request.*;
+import com.virnect.serviceserver.gateway.dto.response.ResultResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomDetailInfoResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomInfoListResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomResponse;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
+import com.virnect.serviceserver.gateway.global.constants.ServiceConstants;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
 import com.virnect.serviceserver.gateway.model.SessionData;
 import com.virnect.serviceserver.gateway.model.SessionTokenData;
@@ -306,7 +308,12 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        // 2. check user license type using user uuid
+        // 2. check room request member count is over
+        if(roomRequest.getLeaderId() != null && roomRequest.getParticipants().size() > (ServiceConstants.PRODUCT_BASIC_MAX_USER - 1)) {
+            throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+        }
+
+        // 3. check user license type using user uuid
         //TODO : License check after test account has remote product
         /*ApiResponse<LicenseInfoListResponse> licenseInfoList = remoteGatewayService.getLicenseValidity(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
         LicenseInfoResponse licenseInfo = null;
@@ -334,7 +341,7 @@ public class RoomRestController {
         }*/
 
 
-        // 3. generate session id and token
+        // 4. generate session id and token
         SessionData sessionData = new SessionData();
         SessionProperties.Builder builder = new SessionProperties.Builder();
         String customSessionId = sessionData.getCustomSessionId();
@@ -417,7 +424,7 @@ public class RoomRestController {
 
         JsonObject tokenResult = generateSessionToken(tokenData);
 
-        // 4. create room
+        // 5. create room
         ApiResponse<RoomResponse> roomResponse = this.remoteGatewayService.createRoom(roomRequest, roomProfileUpdateRequest, sessionJson.toString(), tokenResult.toString());
         return ResponseEntity.ok(roomResponse);
 
@@ -658,6 +665,7 @@ public class RoomRestController {
 
         SessionProperties sessionProperties = builder.build();
         //String sessionId;
+        //todo: conflict when session is not created.
         /*if (customSessionId != null && !customSessionId.isEmpty()) {
             if (sessionManager.getSessionWithNotActive(customSessionId) != null) {
                 log.info("has CONFLICT: " + sessionManager.getSessionWithNotActive(customSessionId));
@@ -719,7 +727,7 @@ public class RoomRestController {
             @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", defaultValue = "", paramType = "query", required = true),
     })
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/exit")
-    public ResponseEntity<ApiResponse<Boolean>> exitRoomById(
+    public ResponseEntity<ApiResponse<ResultResponse>> exitRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestParam("userId") String userId
@@ -732,7 +740,7 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.exitRoom(workspaceId, sessionId, userId);
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.exitRoom(workspaceId, sessionId, userId);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -776,6 +784,13 @@ public class RoomRestController {
         return ResponseEntity.ok(apiResponse);
     }*/
 
+
+    /*public ResponseEntity<ApiResponse<Boolean>> kickOutMember(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            @RequestBody @Valid KickRoomRequest kickRoomRequest,
+            BindingResult result
+    )*/
     @ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/member")
     public ResponseEntity<ApiResponse<Boolean>> kickOutMember(

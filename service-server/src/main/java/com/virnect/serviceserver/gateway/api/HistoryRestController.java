@@ -2,6 +2,8 @@ package com.virnect.serviceserver.gateway.api;
 
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.dto.request.PageRequest;
+import com.virnect.serviceserver.gateway.dto.request.RoomHistoryDeleteRequest;
+import com.virnect.serviceserver.gateway.dto.response.ResultResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.gateway.dto.response.RoomHistoryInfoListResponse;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
@@ -13,8 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -64,7 +69,7 @@ public class HistoryRestController {
 
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}/{userId}")
-    public ResponseEntity<ApiResponse<Boolean>> deleteHistory(
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("userId") String userId) {
         log.info("REST API: DELETE {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
@@ -72,11 +77,28 @@ public class HistoryRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.removeAllRoomHistory(workspaceId, userId);
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeAllRoomHistory(workspaceId, userId);
         return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
+    @DeleteMapping(value = "history/{workspaceId}")
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestBody @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest,
+            BindingResult result) {
+        log.info("REST API: DELETE {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", roomHistoryDeleteRequest.toString());
+
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeRoomHistory(workspaceId, roomHistoryDeleteRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /*@ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}/{sessionId}/{userId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteHistoryById(
             @PathVariable("workspaceId") String workspaceId,
@@ -90,6 +112,6 @@ public class HistoryRestController {
 
         ApiResponse<Boolean> apiResponse = this.remoteGatewayService.removeRoomHistory(workspaceId, sessionId, userId);
         return ResponseEntity.ok(apiResponse);
-    }
+    }*/
 
 }

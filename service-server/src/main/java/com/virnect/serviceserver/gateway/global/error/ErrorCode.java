@@ -8,7 +8,7 @@ public enum  ErrorCode {
     //원격협업 정보 관련 에러
     ERR_ROOM_INFO(4000, "Room Info Error"),
     ERR_ROOM_INFO_ACCESS(4001, "Room info access fail"),
-    ERR_ROOM_NOT_FOUND(4002, "Room Not found"),
+    ERR_ROOM_NOT_FOUND(4002, "Room Not found maybe session is not active"),
     ERR_ROOM_INFO_UPDATE(4003, "Room info update fail"),
     ERR_ROOM_PROFILE_IMAGE_UPLOAD(4004, "Room profile upload fail"),
     ERR_ROOM_PROFILE_IMAGE_EXTENSION(4005, "Room profile image extension error, not support"),
@@ -19,6 +19,9 @@ public enum  ErrorCode {
     ERR_ROOM_LICENSE_TYPE(4010, "Room license type is not allowed"),
     ERR_ROOM_INVALID_PERMISSION(4011, "Invalid permission to the Room"),
     ERR_ROOM_STATUS_NOT_ACTIVE(4012, "Room is not active"),
+    ERR_ROOM_MEMBER_NOT_ALLOWED(4013, "Not allowed member cannot join the room"),
+    ERR_ROOM_MEMBER_NOT_ASSIGNED(4014, "any member not assigned, cannot join the room"),
+    ERR_ROOM_LEADER_INVALID_EXIT(4015, "Room leader can not exit the room, must delete."),
 
     //원격협업 유효성 정보 관련 에러
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

@@ -30,21 +30,21 @@ public class RoomDetailInfoResponse {
     @ApiModelProperty(value = "협업방 접속 인원 수", position = 5, example = "2")
     private String currentCount;*/
 
-    @ApiModelProperty(value = "협업방 생성 일자", position = 4, example = "2020-01-20T14:05:30")
+    /*@ApiModelProperty(value = "협업방 생성 일자", position = 4, example = "2020-01-20T14:05:30")
     private LocalDateTime createdDate;
 
     @ApiModelProperty(value = "최종 협업방 정보 수정 일자", position = 5, example = "2020-01-20T14:05:30")
-    private LocalDateTime updatedDate;
+    private LocalDateTime updatedDate;*/
 
-    @ApiModelProperty(value = "협업방 시작 일자", position = 6, example = "2020-01-20T14:05:30")
-    private LocalDateTime startDate;
+    @ApiModelProperty(value = "협업방 시작 일자", position = 4, example = "2020-01-20T14:05:30")
+    private LocalDateTime activeDate;
 
     /*@ApiModelProperty(value = "협업방 종료 일자", position = 7, example = "2020-01-20T14:05:30")
     private LocalDateTime endDate;*/
 
-    @ApiModelProperty(value = "협업 진행 시간", position = 7, example = "3600")
-    private String durationTime;
+    /*@ApiModelProperty(value = "협업 진행 시간", position = 5, example = "3600")
+    private String durationTime;*/
 
-    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 8)
+    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 5)
     private List<MemberInfoResponse> memberList;
 }

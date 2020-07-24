@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +60,7 @@ import com.virnect.serviceserver.config.Dotenv.DotenvFormatException;
 import com.virnect.serviceserver.recording.RecordingNotification;
 
 @Component
+//@ConfigurationProperties(prefix = "service")
 public class RemoteServiceConfig {
 
 	public static class Error {
@@ -111,72 +113,48 @@ public class RemoteServiceConfig {
 	protected String springProfile;
 
 	// Config properties
-
-	private boolean remoteServiceCdr;
-
-	private String remoteServiceCdrPath;
-
-	private boolean remoteServiceRecording;
-
-	private boolean remoteServiceRecordingDebug;
-
-	private boolean remoteServiceRecordingPublicAccess;
-
-	private Integer remoteServiceRecordingAutostopTimeout;
-
-	private String remoteServiceRecordingPath;
-
-	private RecordingNotification remoteServiceRecordingNotification;
-
-	private String remoteServiceRecordingCustomLayout;
-
-	private String remoteServiceRecordingVersion;
-
-	private Integer remoteServiceStreamsVideoMaxRecvBandwidth;
-
-	private Integer remoteServiceStreamsVideoMinRecvBandwidth;
-
-	private Integer remoteServiceStreamsVideoMaxSendBandwidth;
-
-	private Integer remoteServiceStreamsVideoMinSendBandwidth;
-
-	private String coturnIp;
-
-	private String coturnRedisIp;
-
-	private boolean remoteServiceWebhookEnabled;
-
-	private String remoteServiceWebhookEndpoint;
-
-	private List<Header> webhookHeadersList;
-
-	private List<CDREventName> webhookEventsList;
-
-	private List<String> kmsUrisList;
-
+	private String dotenvPath;
 	private String domainOrPublicIp;
-
 	private String remoteServicePublicUrl;
-
 	private Integer httpsPort;
-
 	private String remoteServiceSecret;
-
+	private String certificateType;
+	//
+	private boolean remoteServiceCdr;
+	private String remoteServiceCdrPath;
+	//
+	private boolean remoteServiceWebhookEnabled;
+	private String remoteServiceWebhookEndpoint;
+	private List<Header> webhookHeadersList;
+	private List<CDREventName> webhookEventsList;
+	//
+	private boolean remoteServiceRecording;
+	private boolean remoteServiceRecordingDebug;
+	private boolean remoteServiceRecordingPublicAccess;
+	private Integer remoteServiceRecordingAutostopTimeout;
+	private String remoteServiceRecordingPath;
+	private RecordingNotification remoteServiceRecordingNotification;
+	private String remoteServiceRecordingCustomLayout;
+	private String remoteServiceRecordingVersion;
 	private String remoteServiceRecordingComposedUrl;
-
+	//
+	private Integer remoteServiceStreamsVideoMaxRecvBandwidth;
+	private Integer remoteServiceStreamsVideoMinRecvBandwidth;
+	private Integer remoteServiceStreamsVideoMaxSendBandwidth;
+	private Integer remoteServiceStreamsVideoMinSendBandwidth;
+	//
+	private List<String> kmsUrisList;
+	//
+	private String coturnIp;
+	private String coturnRedisIp;
 	private String coturnRedisDbname;
-
 	private String coturnRedisPassword;
-
 	private String coturnRedisConnectTimeout;
 
-	private String certificateType;
 
 	protected int remoteServiceSessionsGarbageInterval;
-
 	protected int remoteServiceSessionsGarbageThreshold;
 
-	private String dotenvPath;
 
 	// Derived properties
 
