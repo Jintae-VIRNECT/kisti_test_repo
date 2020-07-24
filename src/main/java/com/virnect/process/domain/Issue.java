@@ -2,11 +2,12 @@ package com.virnect.process.domain;
 
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-04
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "issue")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Issue extends BaseTimeEntity {

@@ -3,12 +3,14 @@ package com.virnect.process.domain;
 import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-04
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -18,6 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Audited
 @Table(name = "job")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Job extends BaseTimeEntity {
@@ -54,25 +57,16 @@ public class Job extends BaseTimeEntity {
     private SubProcess subProcess;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<Report> reportList;
+    private List<Report> reportList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<SmartTool> smartToolList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
-    private List<Issue> issueList;
+    private List<Issue> issueList = new ArrayList<>();
 
 
     public void addReport(Report report) {
         report.setJob(this);
         log.info("CREATE REPORT ---> {}", report.toString());
         this.reportList.add(report);
-    }
-
-    public void addSmartTool(SmartTool smartTool) {
-        smartTool.setJob(this);
-        log.info("CREATE SMARTTOOL ---> {}", smartTool.toString());
-        this.smartToolList.add(smartTool);
     }
 
     public void addIssue(Issue issue) {
@@ -92,7 +86,7 @@ public class Job extends BaseTimeEntity {
     }
 
     @Builder
-    public Job(Integer priority, String name, Integer progressRate, Conditions conditions, YesOrNo isReported, Result result, SubProcess subProcess, List<Report> reportList, List<SmartTool> smartToolList, List<Issue> issueList) {
+    public Job(Integer priority, String name, Integer progressRate, Conditions conditions, YesOrNo isReported, Result result, SubProcess subProcess, List<Report> reportList, List<Issue> issueList) {
         this.priority = priority;
         this.name = name;
         this.progressRate = progressRate;
@@ -100,9 +94,8 @@ public class Job extends BaseTimeEntity {
         this.isReported = isReported;
         this.result = result;
         this.subProcess = subProcess;
-        this.reportList = reportList;
-        this.smartToolList = smartToolList;
-        this.issueList = issueList;
+        this.reportList = new ArrayList<>();
+        this.issueList = new ArrayList<>();
     }
 
     @Override
@@ -117,7 +110,6 @@ public class Job extends BaseTimeEntity {
                 ", result=" + result +
 //                ", subProcess=" + subProcess +      // 무한 toString 방지
                 ", reportList=" + reportList +
-                ", smartToolList=" + smartToolList +
                 ", issueList=" + issueList +
                 '}';
     }

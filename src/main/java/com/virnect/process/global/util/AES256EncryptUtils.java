@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-09
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -24,6 +24,25 @@ public class AES256EncryptUtils {
             SecretKey secretKey = new SecretKeySpec(keyData, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(ivData));
+
+            byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            return new String(Base64.getEncoder().encode(encrypted));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
+                | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String encryptByBytes(final String key, final String data) {
+        try {
+            byte[] keyData = key.getBytes(StandardCharsets.UTF_8);
+            byte[] keyBytes = new byte[16];
+            System.arraycopy(keyData, 0, keyBytes, 0, keyData.length);
+//            byte[] ivData = key.substring(0, 16).getBytes(StandardCharsets.UTF_8);
+            SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(keyBytes));
 
             byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return new String(Base64.getEncoder().encode(encrypted));

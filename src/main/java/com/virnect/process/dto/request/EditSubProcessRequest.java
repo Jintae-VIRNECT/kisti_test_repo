@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 @Setter
 public class EditSubProcessRequest {
     @NotNull
-    @ApiModelProperty(value = "세부공정식별자", notes = "세부공정식별자", required = true, example = "7")
-    private Long subProcessId;
+    @ApiModelProperty(value = "세부 작업 식별자", notes = "세부 작업 식별자", required = true, example = "7")
+    private Long subTaskId;
 
     @NotNull
-    @ApiModelProperty(value = "세부 공정 시작 기간", notes = "세부 공정 시작 기간", required = true, position = 1, example = "2020-01-16T13:14:02")
+    @ApiModelProperty(value = "세부 작업 시작 기간", notes = "세부 작업 시작 기간", required = true, position = 1, example = "2020-01-16T13:14:02")
     private LocalDateTime startDate;
 
     @NotNull
-    @ApiModelProperty(value = "세부 공정 종료 기간", notes = "세부 공정 종료 기간", required = true, position = 2, example = "2020-01-16T14:14:02")
+    @ApiModelProperty(value = "세부 작업 종료 기간", notes = "세부 작업 종료 기간", required = true, position = 2, example = "2020-01-16T14:14:02")
     private LocalDateTime endDate;
 
     @NotNull

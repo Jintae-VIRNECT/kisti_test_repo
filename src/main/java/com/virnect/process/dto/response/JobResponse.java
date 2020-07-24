@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,37 +32,33 @@ public class JobResponse {
     @ApiModelProperty(value = "진행상태", notes = "작업의 진행상태", position = 5, example = "progress")
     private Conditions conditions;
 
-    @ApiModelProperty(value = "리포트", notes = "현재 작업의 리포트", position = 6, example = "2")
-    private Report report;
+    @ApiModelProperty(value = "페이퍼", notes = "현재 작업의 페이퍼", position = 6, example = "2")
+    private Paper paper;
 
     @ApiModelProperty(value = "이슈", notes = "현재 작업의 이슈", position = 7, example = "1")
-    private Issue issue;
-
-    @ApiModelProperty(value = "스마트 툴", notes = "현재 작업의 스마트 툴", position = 8)
-    private SmartTool smartTool;
+    private List<Issue> issueList;
 
     @Builder
-    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Report report, Issue issue, SmartTool smartTool) {
+    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Paper paper, List<Issue> issueList) {
         this.id = id;
         this.name = name;
         this.priority = priority;
         this.reportedDate = reportedDate;
         this.progressRate = progressRate;
         this.conditions = conditions;
-        this.report = report;
-        this.issue = issue;
-        this.smartTool = smartTool;
+        this.paper = paper;
+        this.issueList = issueList;
     }
 
     @Getter
     @Setter
     @ToString
-    public static class Report {
-        @ApiModelProperty(value = "리포트 식별자", notes = "현재 작업의 리포트 식별자", example = "2")
+    public static class Paper {
+        @ApiModelProperty(value = "페이퍼 식별자", notes = "현재 작업의 페이퍼 식별자", example = "2")
         private long id;
 
         @Builder
-        public Report(long id) {
+        public Paper(long id) {
             this.id = id;
         }
     }
@@ -71,36 +68,23 @@ public class JobResponse {
     @ToString
     public static class Issue {
         @ApiModelProperty(value = "이슈 식별자", notes = "현재 작업의 이슈 식별자", example = "1")
-        private long id;
+        private long issueId;
 
+        @ApiModelProperty(value = "이슈 내용", notes = "현재 작업의 이슈 내용", example = "issue content")
+        private String caption;
+
+        @ApiModelProperty(value = "이슈 파일 경로", notes = "현재 작업의 이슈 파일 경로", example = "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/profile/2020-06-25_3b8baadef4be4bbd8d97a9f3815ab6bfjpg")
+        private String photoFilePath;
+
+        @ApiModelProperty(value = "작업자 식별자", notes = "현재 작업의 작업자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
+        private String workerUUID;
+        
         @Builder
-        public Issue(long id) {
-            this.id = id;
-        }
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SmartTool {
-        @ApiModelProperty(value = "스마트 툴", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", example = "1")
-        private long id;
-
-        @ApiModelProperty(value = "스마트툴 JobId", notes = "스마트툴의 JobId", position = 1, example = "2")
-        private String smartToolJobId;
-
-        @ApiModelProperty(value = "체결수", notes = "현재 작업의 체결 완료한 개수", position = 2, example = "3")
-        private long smartToolWorkedCount;
-
-        @ApiModelProperty(value = "체결 총수", notes = "체결해야할 총 개수", position = 3, example = "12")
-        private int smartToolBatchTotal;
-
-        @Builder
-        public SmartTool(long id, String smartToolJobId, long smartToolWorkedCount, int smartToolBatchTotal) {
-            this.id = id;
-            this.smartToolJobId = smartToolJobId;
-            this.smartToolWorkedCount = smartToolWorkedCount;
-            this.smartToolBatchTotal = smartToolBatchTotal;
+        public Issue(long issueId, String caption, String photoFilePath, String workerUUID) {
+            this.issueId = issueId;
+            this.caption = caption;
+            this.photoFilePath = photoFilePath;
+            this.workerUUID = workerUUID;
         }
     }
 }

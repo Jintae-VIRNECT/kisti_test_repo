@@ -11,23 +11,23 @@ import java.time.LocalDateTime;
 @Setter
 public class NewSubProcessRequest {
     @NotBlank
-    @ApiModelProperty(value = "씬그룹 식별자", notes = "씬그룹 식별자", required = true, example = "dc634ea5-b67f-4588-891e-286171271126")
+    @ApiModelProperty(value = "씬그룹 식별자", notes = "씬그룹 식별자", required = true, example = "5f43e519-0f18-46c1-947e-198f801bf3cc")
     private String id;
 
     @NotBlank
-    @ApiModelProperty(value = "세부공정명(씬그룹명)", notes = "세부공정명(씬그룹명)", required = true, position = 1, example = "자제 절단")
+    @ApiModelProperty(value = "세부작업명(씬그룹명)", notes = "세부작업명(씬그룹명)", required = true, position = 1, example = "자제 절단")
     private String name;
 
     @NotBlank
-    @ApiModelProperty(value = "세부 공정 순서(씬그룹 우선순위)", notes = "세부 공정의 순서 번호", required = true, position = 2, example = "1")
+    @ApiModelProperty(value = "세부 작업 순서(씬그룹 우선순위)", notes = "세부 작업의 순서 번호", required = true, position = 2, example = "1")
     private int priority;
 
     @NotBlank
-    @ApiModelProperty(value = "세부 공정 시작 기간", notes = "세부 공정 시작 기간", required = true, position = 3, example = "2020-01-16T13:14:02")
+    @ApiModelProperty(value = "세부 작업 시작 기간", notes = "세부 작업 시작 기간", required = true, position = 3, example = "2020-01-16T13:14:02")
     private LocalDateTime startDate;
 
     @NotBlank
-    @ApiModelProperty(value = "세부 공정 종료 기간", notes = "세부 공정 종료 기간", required = true, position = 4, example = "2020-01-16T14:14:02")
+    @ApiModelProperty(value = "세부 작업 종료 기간", notes = "세부 작업 종료 기간", required = true, position = 4, example = "2020-01-16T14:14:02")
     private LocalDateTime endDate;
 
     @NotBlank
@@ -36,7 +36,7 @@ public class NewSubProcessRequest {
 
     @Override
     public String toString() {
-        return "NewSubProcessRequest{" +
+        return "NewSubTaskRequest{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", priority=" + priority +

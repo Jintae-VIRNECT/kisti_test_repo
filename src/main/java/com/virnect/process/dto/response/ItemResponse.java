@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 public class ItemResponse {
 
-    @ApiModelProperty(value = "리포트아이템 식별자", notes = "리포트아이템의 식별자", example = "1")
+    @ApiModelProperty(value = "리포트 액션 식별자", notes = "리포트 액션의 식별자", example = "1")
     private final long id;
 
     @ApiModelProperty(value = "질문", notes = "항목 질문", position = 1, example = "질문 내용입니까?")
@@ -17,7 +17,7 @@ public class ItemResponse {
     @ApiModelProperty(value = "답변 또는 설명", notes = "질문에 대한 답변 또는 설명", position = 2, example = "답변 설명입니다.")
     private final String answer;
 
-    @ApiModelProperty(value = "리포트아이템 종류", notes = "리포트를 구성하는 아이템의 종류 - input_field, toggle, photo", position = 3, example = "INPUT_FIELD")
+    @ApiModelProperty(value = "리포트 액션 종류", notes = "리포트를 구성하는 액션의 종류 - input_field, toggle, photo", position = 3, example = "INPUT_FIELD")
     private final ItemType type;
 
     @ApiModelProperty(value = "순번", notes = "항목의 순번", position = 4, example = "1")

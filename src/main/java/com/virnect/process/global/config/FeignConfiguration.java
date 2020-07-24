@@ -1,6 +1,7 @@
 package com.virnect.process.global.config;
 
 import feign.Logger;
+import feign.Retryer;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +16,15 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
  * DESCRIPTION:
  */
 @Configuration
-@EnableFeignClients(basePackages = {"com.virnect.process.domain.content.application", "com.virnect.process.domain.process.application"})
+@EnableFeignClients(basePackages = {"com.virnect.process.application.content", "com.virnect.process.application.user", "com.virnect.process.application.workspace"})
 public class FeignConfiguration {
+
+    // Feign retry set
+    @Bean
+    public Retryer retryer() {
+        return new Retryer.Default(1000, 2000, 3);
+    }
+
     @Bean
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;

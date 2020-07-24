@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-28
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -22,24 +22,22 @@ public class JobDto {
         private long id;
         private int priority;
         private String name;
-        private int subJobTotal;
+        private int actionTotal;
         private Conditions conditions;
         private long progressRate;
         private List<ReportDto.ReportInfo> reports;
-        private List<SmartToolDto.SmartToolInfo> smartTools;
         private List<IssueDto.IssueInfo> issues;
 
         @Override
         public String toString() {
-            return "SubProcessInfo{" +
+            return "StepInfo{" +
                     "id=" + id +
                     "priority=" + priority +
                     "name='" + name + '\'' +
-                    "subJobTotal=" + subJobTotal +
+                    "actionTotal=" + actionTotal +
                     "conditions=" + conditions +
                     "progressRate=" + progressRate +
                     "reports=" + reports +
-                    "smartTools=" + smartTools +
                     "issues=" + issues +
                     '}';
         }

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MonthlyStatisticsResponse {
 
-    @ApiModelProperty(value = "일별 총계", notes = "일별 공정률 및 공정수의 총계")
+    @ApiModelProperty(value = "일별 총계", notes = "일별 작업률 및 작업 수의 총계")
     private List<DailyTotalResponse> dailyTotal;
 
     @Builder
@@ -27,18 +27,18 @@ public class MonthlyStatisticsResponse {
     public static class DailyTotalResponse {
         @ApiModelProperty(value = "식별자", notes = "DB row 식별자. 차후 확장성을 위해....", example = "0")
         private long id;
-        @ApiModelProperty(value = "공정률", notes = "그 달의 해당일에 총 공정률", position = 1, example = "23")
+        @ApiModelProperty(value = "작업률", notes = "그 달의 해당일에 총 작업률", position = 1, example = "23")
         private int totalRate;
-        @ApiModelProperty(value = "공정수", notes = "그 달의 해당일에 총 공정수", position = 2, example = "10")
-        private int totalProcesses;
+        @ApiModelProperty(value = "작업수", notes = "그 달의 해당일에 총 작업수", position = 2, example = "10")
+        private int totalTasks;
         @ApiModelProperty(value = "날짜", notes = "그 달의 해당일 - timezone : UTC", position = 3, example = "2020-03-10")
         private LocalDate onDay;
 
         @Builder
-        public DailyTotalResponse(long id, int totalRate, int totalProcesses, LocalDate onDay) {
+        public DailyTotalResponse(long id, int totalRate, int totalTasks, LocalDate onDay) {
             this.id = id;
             this.totalRate = totalRate;
-            this.totalProcesses = totalProcesses;
+            this.totalTasks = totalTasks;
             this.onDay = onDay;
         }
     }

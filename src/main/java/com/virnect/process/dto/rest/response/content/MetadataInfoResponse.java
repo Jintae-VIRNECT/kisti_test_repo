@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-17
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -25,8 +25,6 @@ public class MetadataInfoResponse {
     public static class Content {
         @ApiModelProperty(value = "공정(컨텐츠) 식별자", notes = "컨텐츠를 식별하기 위해 사용되는 식별자", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
         private String id;
-        @ApiModelProperty(value = "arcuo 값", position = 1, example = "1")
-        private int aruco;
         @ApiModelProperty(value = "공정(컨텐츠) 이름", position = 2, example = "고길동")
         private String name;
         @ApiModelProperty(value = "공정(컨텐츠) 담당자", position = 3, example = "498b1839dc29ed7bb2ee90ad6985c608")
@@ -87,8 +85,6 @@ public class MetadataInfoResponse {
         private int subJobTotal;
         @ApiModelProperty(value = "레포트 정보 리스트", position = 4)
         private List<ReportObject> reportObjects;
-        @ApiModelProperty(value = "스마트 툴 정보 리스트", position = 5)
-        private List<SmartToolObject> smartToolObjects;
 
         @Override
         public String toString() {
@@ -98,7 +94,6 @@ public class MetadataInfoResponse {
                     ", name='" + name + '\'' +
                     ", subJobTotal=" + subJobTotal +
                     ", reportObjects=" + reportObjects +
-                    ", smartToolObjects=" + smartToolObjects +
                     '}';
         }
     }
@@ -127,7 +122,7 @@ public class MetadataInfoResponse {
         private String id;
         @ApiModelProperty(value = "레포트 아이템 우선순위", notes = "레포트 아이템의 우선 순위", position = 1, example = "1")
         private int priority;
-        @ApiModelProperty(value = "레포트 아이템 타임", notes = "레포트 아이템의 종류 입니다", position = 2, example = "PROCESS_DETAIL_REPORT")
+        @ApiModelProperty(value = "레포트 아이템 타임", notes = "레포트 아이템의 종류 입니다", position = 2, example = "REPORT")
         private ItemType type;
         @ApiModelProperty(value = "레포트 아이텝 이름", notes = "레포트 아이템의 명칭입니다.", position = 3, example = "자른 자재의 무게 기입")
         private String title;
@@ -139,46 +134,6 @@ public class MetadataInfoResponse {
                     ", priority=" + priority +
                     ", type=" + type +
                     ", title='" + title + '\'' +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolObject {
-        @ApiModelProperty(value = "스마트 툴 오브젝트 식별자", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String id;
-        @ApiModelProperty(value = "스마트 툴", notes = "스마트 툴 오브젝트를 식별하기 위해 사용되는 식별자", position = 1, example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String jobId;
-        @ApiModelProperty(value = "스마트 툴 정상 토크 값", position = 2, example = "123")
-        private String normalTorque;
-        @ApiModelProperty(value = "스마트 툴 오브젝트 아이템 정보 리스트", notes = "스마트 툴 오브젝트 아이템에 대한 정보 배열", position = 3)
-        private List<SmartToolObjectItem> items;
-
-        @Override
-        public String toString() {
-            return "SmartToolObject{" +
-                    "id=" + id +
-                    ", jobId=" + jobId +
-                    ", normalTorque=" + normalTorque +
-                    ", items=" + items +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolObjectItem {
-        @ApiModelProperty(value = "스마트툴 오브젝트 아이템 식별자", notes = "스마트 툴 오브젝트 아이템을 구별하기 위한 식별자", example = "b5db6bb8-9976-4865-859c-1b98e57a3dc5")
-        private String id;
-        @ApiModelProperty(value = "스마트 툴 배치 카운트 값", position = 1, example = "123")
-        private int batchCount;
-
-        @Override
-        public String toString() {
-            return "SmartToolObjectItem{" +
-                    "id=" + id +
-                    ", batchCount=" + batchCount +
                     '}';
         }
     }

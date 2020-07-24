@@ -17,7 +17,7 @@ version = '1.0.0'
 sourceCompatibility = '1.8'
 
 ext {
-    springCloudVersion = 'Greenwich.SR2'
+    springCloudVersion = 'Hoxton.SR3'
 }
 
 configurations {
@@ -41,6 +41,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-envers'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -68,10 +69,24 @@ dependencies {
     //Swagger Libraries
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    // QR
+    implementation 'com.google.zxing:core:3.4.0'
+    implementation 'com.google.zxing:javase:3.4.0'
+
+    // aws s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
+
+    runtimeOnly 'com.h2database:h2:1.4.199'
+
+    // Zipkin
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 }
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
 }
 
 

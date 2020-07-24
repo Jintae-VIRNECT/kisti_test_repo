@@ -6,7 +6,6 @@ import com.virnect.process.global.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -24,7 +23,6 @@ import java.util.Objects;
  * DESCRIPTION: Local Directory File Upload Service
  */
 @Slf4j
-@Service
 public class LocalUploadService implements FileUploadService {
     @Value("${upload.dir}")
     private String path;

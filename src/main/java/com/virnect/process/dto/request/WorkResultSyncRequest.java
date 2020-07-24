@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-02-25
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -19,24 +19,24 @@ import java.util.List;
 @Getter
 @Setter
 public class WorkResultSyncRequest {
-    @ApiModelProperty(value = "공정 작업 내용")
-    private List<ProcessResult> processes = new ArrayList<>();
-    @ApiModelProperty(value = "공정 작업 외 이슈 리스트", position = 1)
+    @ApiModelProperty(value = "작업 내용")
+    private List<ProcessResult> tasks = new ArrayList<>();
+    @ApiModelProperty(value = "작업 외 이슈 리스트", position = 1)
     private List<IssueResult> issues = new ArrayList<>();
 
     @Getter
     @Setter
     public static class ProcessResult {
-        @ApiModelProperty(value = "공정 식별자")
+        @ApiModelProperty(value = "작업 식별자")
         private long id;
-        @ApiModelProperty(value = "세부 공정 작업 내용", position = 1)
-        private List<SubProcessWorkResult> subProcesses;
+        @ApiModelProperty(value = "세부 작업 내용", position = 1)
+        private List<SubProcessWorkResult> subTasks;
 
         @Override
         public String toString() {
-            return "ProcessResult{" +
+            return "TaskResult{" +
                     "id=" + id +
-                    ", subProcesses=" + subProcesses +
+                    ", subTasks=" + subTasks +
                     '}';
         }
     }
@@ -44,19 +44,19 @@ public class WorkResultSyncRequest {
     @Getter
     @Setter
     public static class SubProcessWorkResult {
-        @ApiModelProperty(value = "세부 공정 식별자")
+        @ApiModelProperty(value = "세부 작업 식별자")
         private long id;
-        @ApiModelProperty(value = "세부 공정 담당자 식별자", position = 1)
+        @ApiModelProperty(value = "세부 작업 담당자 식별자", position = 1)
         private String syncUserUUID;
-        @ApiModelProperty(value = "세부 공정 작업 진행 정보", position = 2)
-        private List<JobWorkResult> jobs;
+        @ApiModelProperty(value = "세부 작업 작업 진행 정보", position = 2)
+        private List<JobWorkResult> steps;
 
         @Override
         public String toString() {
-            return "SubProcessWorkResult{" +
+            return "SubTaskWorkResult{" +
                     "id=" + id +
                     ", syncUserUUID='" + syncUserUUID + '\'' +
-                    ", jobs=" + jobs +
+                    ", steps=" + steps +
                     '}';
         }
     }
@@ -69,22 +69,19 @@ public class WorkResultSyncRequest {
         @ApiModelProperty(value = "보고 여부", notes = "값은 \"YES\" or \"NO\" 둘 중 하나임", position = 1, example = "YES")
         private YesOrNo isReported;
         @ApiModelProperty(value = "정상작업 여부", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 2, example = "OK")
-        private String result;
+        private Result result;
         @ApiModelProperty(value = "작업의 레포트 내용", position = 3)
         private List<ReportWorkResult> reports;
-        @ApiModelProperty(value = "작업의 스마트 툴 내용", position = 4)
-        private List<SmartToolWorkResult> smartTools;
-        @ApiModelProperty(value = "공정 작업 이슈 리스트", position = 5)
+        @ApiModelProperty(value = "작업 이슈 리스트", position = 4)
         private List<WorkIssueResult> issues;
 
         @Override
         public String toString() {
-            return "JobWorkResult{" +
+            return "StepWorkResult{" +
                     "id=" + id +
                     ", isReported=" + isReported +
                     ", result=" + result +
                     ", reports=" + reports +
-                    ", smartTools=" + smartTools +
                     ", issues=" + issues +
                     '}';
         }
@@ -95,14 +92,14 @@ public class WorkResultSyncRequest {
     public static class ReportWorkResult {
         @ApiModelProperty(value = "작업 레포트 식별자")
         private long id;
-        @ApiModelProperty(value = "작업 레포트 아이템 정보", position = 1)
-        private List<ReportItemWorkResult> items;
+        @ApiModelProperty(value = "작업 레포트 액션 정보", position = 1)
+        private List<ReportItemWorkResult> actions;
 
         @Override
         public String toString() {
             return "ReportWorkResult{" +
                     "id=" + id +
-                    ", items=" + items +
+                    ", actions=" + actions +
                     '}';
         }
     }
@@ -110,65 +107,22 @@ public class WorkResultSyncRequest {
     @Getter
     @Setter
     public static class ReportItemWorkResult {
-        @ApiModelProperty(value = "작업 레포트 아이템 식별자")
+        @ApiModelProperty(value = "작업 레포트 액션 식별자")
         private long id;
-        @ApiModelProperty(value = "작업 레포트 아이템 내용", position = 1)
+        @ApiModelProperty(value = "작업 레포트 액션 내용", position = 1)
         private String answer;
-        @ApiModelProperty(value = "작업 레포트 아이템 사진", position = 2)
+        @ApiModelProperty(value = "작업 레포트 액션 사진", position = 2)
         private String photoFile;
         @ApiModelProperty(value = "정상작업 여부", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 3, example = "OK")
         private Result result;
 
         @Override
         public String toString() {
-            return "ReportItemWorkResult{" +
+            return "ReportActionWorkResult{" +
                     "id=" + id +
                     ", answer='" + answer + '\'' +
                     ", photoFile=" + photoFile +
                     ", result=" + result +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolWorkResult {
-        @ApiModelProperty(value = "스마트 툴 식별자")
-        private long id;
-        @ApiModelProperty(value = "스마트 툴 작업 식별자", position = 1)
-        private long jobId;
-        @ApiModelProperty(value = "스마트 툴 아이템 정보", position = 2)
-        private List<SmartToolItemWorkResult> items;
-
-        @Override
-        public String toString() {
-            return "SmartToolWorkResult{" +
-                    "id=" + id +
-                    ", jobId=" + jobId +
-                    ", items=" + items +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class SmartToolItemWorkResult {
-        @ApiModelProperty(value = "스마트 툴 아이템 식별자")
-        private long id;
-        @ApiModelProperty(value = "스마트 툴 아이템 배치 카운트 값", position = 1)
-        private int batchCount;
-        @ApiModelProperty(value = "스마트 툴 아이템 작업 토크 값", position = 2)
-        private String workingTorque;
-        @ApiModelProperty(value = "스마트 툴 아이템 작업 결과", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 3, example = "OK")
-        private String result;
-
-        @Override
-        public String toString() {
-            return "SmartToolItemWorkResult{" +
-                    "id=" + id +
-                    ", batchCount=" + batchCount +
-                    ", workingTorque='" + workingTorque + '\'' +
-                    ", result='" + result + '\'' +
                     '}';
         }
     }
@@ -184,7 +138,7 @@ public class WorkResultSyncRequest {
         @Override
         public String toString() {
             return "WorkIssueResult{" +
-                    "photoFile=" + photoFile +
+                    ", photoFile=" + photoFile +
                     ", caption='" + caption + '\'' +
                     '}';
         }
@@ -213,7 +167,7 @@ public class WorkResultSyncRequest {
     @Override
     public String toString() {
         return "WorkResultSyncRequest{" +
-                "processes=" + processes +
+                "tasks=" + tasks +
                 ", issues=" + issues +
                 '}';
     }

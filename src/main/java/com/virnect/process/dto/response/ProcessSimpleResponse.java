@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class ProcessSimpleResponse {
-    @ApiModelProperty(value = "삭제 처리 결과", notes = "공정의 삭제 처리 정상여부 true, false", example = "true")
+    @ApiModelProperty(value = "삭제 처리 결과", notes = "작업의 삭제 처리 정상여부 true, false", example = "true")
     private final boolean result;
 }

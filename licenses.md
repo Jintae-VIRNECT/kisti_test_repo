@@ -100,4 +100,8 @@ _2020-03-19 15:00:19 KST_
 > - **Embedded license files**: [mysql-connector-java-8.0.18.jar/META-INF/LICENSE](build/reports/dependency-license/mysql-connector-java-8.0.18.jar/META-INF/LICENSE) 
     - [mysql-connector-java-8.0.18.jar/META-INF/README](build/reports/dependency-license/mysql-connector-java-8.0.18.jar/META-INF/README)
 
+**19** **Group:** `org.springframework.cloud` **Name:** `spring-cloud-starter-netflix-eureka-client` **Version:** `2.2.1.RELEASE` 
+> - **POM Project URL**: [https://projects.spring.io/spring-cloud](https://projects.spring.io/spring-cloud)
+> - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
 

@@ -16,26 +16,26 @@ public class SubProcessInfoResponse {
 
     @NotBlank
     @ApiModelProperty(value = "공정 식별자", notes = "공정 식별자", example = "uuid")
-    private final long processId;
+    private final long taskId;
 
     @NotBlank
     @ApiModelProperty(value = "공정명", notes = "공정명", position = 1, example = "A공정")
-    private final String processName;
+    private final String taskName;
 
     @NotBlank
     @ApiModelProperty(value = "세부공정식별자", notes = "세부공정식별자", position = 2, example = "1")
-    private final long subProcessId;
+    private final long subTaskId;
 
     @NotBlank
     @ApiModelProperty(value = "세부공정명", notes = "세부공정명(씬그룹명)", position = 3, example = "자제 절단")
-    private final String name;
+    private final String subTaskName;
 
     @NotBlank
     @ApiModelProperty(value = "세부 공정 순서", notes = "세부 공정의 순서 번호", position = 4, example = "1")
     private final int priority;
 
     @ApiModelProperty(value = "하위 작업 개수", notes = "세부 공정 하위에 작업의 개수", position = 5, example = "3")
-    private final int jobTotal;
+    private final int stepTotal;
 
     @ApiModelProperty(value = "세부 공정 상태", notes = "세부 공정의 작업진행 상태", position = 6, example = "progress")
     private final Conditions conditions;
@@ -58,20 +58,26 @@ public class SubProcessInfoResponse {
     @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자", position = 12, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private final String workerUUID;
 
-    @ApiModelProperty(value = "하위 이슈의 개수", notes = "세부 공정 하위에 이슈의 개수", position = 13, example = "3")
+    @ApiModelProperty(value = "사용자 이름", position = 13, example = "VIRNECT Master")
+    private String workerName;
+
+    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 14, example = "VIRNECT 워크스페이스 유저")
+    private String workerProfile;
+
+    @ApiModelProperty(value = "하위 이슈의 개수", notes = "세부 공정 하위에 이슈의 개수", position = 15, example = "3")
     private final Long issuesTotal;
 
-    @ApiModelProperty(value = "완료된 작업의 수", notes = "완료된 작업의 개수", position = 14, example = "1")
+    @ApiModelProperty(value = "완료된 작업의 수", notes = "완료된 작업의 개수", position = 16, example = "1")
     private int doneCount;
 
     @Builder
-    public SubProcessInfoResponse(@NotBlank long processId, @NotBlank String processName, @NotBlank long subProcessId, @NotBlank String name, @NotBlank int priority, int jobTotal, Conditions conditions, LocalDateTime startDate, LocalDateTime endDate, int progressRate, LocalDateTime reportedDate, YesOrNo isRecent, String workerUUID, Long issuesTotal, int doneCount) {
-        this.processId = processId;
-        this.processName = processName;
-        this.subProcessId = subProcessId;
-        this.name = name;
+    public SubProcessInfoResponse(@NotBlank long taskId, @NotBlank String taskName, @NotBlank long subTaskId, @NotBlank String subTaskName, @NotBlank int priority, int stepTotal, Conditions conditions, LocalDateTime startDate, LocalDateTime endDate, int progressRate, LocalDateTime reportedDate, YesOrNo isRecent, String workerUUID, String workerName, String workerProfile, Long issuesTotal, int doneCount) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.subTaskId = subTaskId;
+        this.subTaskName = subTaskName;
         this.priority = priority;
-        this.jobTotal = jobTotal;
+        this.stepTotal = stepTotal;
         this.conditions = conditions;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -79,6 +85,8 @@ public class SubProcessInfoResponse {
         this.reportedDate = reportedDate;
         this.isRecent = isRecent;
         this.workerUUID = workerUUID;
+        this.workerName = workerName;
+        this.workerProfile = workerProfile;
         this.issuesTotal = issuesTotal;
         this.doneCount = doneCount;
     }

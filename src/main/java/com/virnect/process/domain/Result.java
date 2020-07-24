@@ -1,7 +1,7 @@
 package com.virnect.process.domain;
 
 /**
- * Project: PF-SMIC_CUSTOM
+ * Project: PF-ProcessManagement
  * DATE: 2020-01-28
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com
@@ -28,7 +28,7 @@ public enum Result {
 
     @Override
     public String toString() {
-        return "SmartToolResult{" +
+        return "Result{" +
                 "message='" + message + '\'' +
                 '}';
     }
