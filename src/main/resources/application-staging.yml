@@ -28,7 +28,8 @@ spring:
       max-file-size: 30MB
       max-request-size: 40MB
   zipkin:
-    base-url: http://stgzipkin.virnect.com
+    base-url: http://stgzipkin.virnect.comw
+    discovery-client-enabled: false
 
 logging:
   level:

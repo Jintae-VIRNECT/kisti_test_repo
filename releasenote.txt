@@ -6,6 +6,7 @@ New Features
 
 Bug Fixes
 워크스페이스 플랜 사용자 정보 조회 기능 응답데이터 수정
+지프킨 discovery client disable
 
 Limitation
 워크스페이스 정보변경 이메일 전송 케이스 변경(to be:이름 변경시에만 전송)
