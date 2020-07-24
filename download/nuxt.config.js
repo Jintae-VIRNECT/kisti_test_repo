@@ -24,13 +24,14 @@ module.exports = {
         content: 'Virnect Download Center',
       },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '~assets/favicon.ico' }],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
   /**
    * Plugins
    */
-  plugins: ['@/plugins/element-ui'],
-  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources'],
+  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
+  buildModules: ['nuxt-composition-api'],
+  plugins: ['@/plugins/element-ui', '@/plugins/axios'],
   /*
    ** Customize style
    */
@@ -53,11 +54,9 @@ module.exports = {
   /**
    * env
    */
-  env: {
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-    SSL_ENV: JSON.stringify(process.env.SSL_ENV),
+  env: { NODE_ENV: process.env.NODE_ENV },
+  publicRuntimeConfig: {
     TARGET_ENV: env.TARGET_ENV,
-    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
@@ -75,9 +74,32 @@ module.exports = {
   server: {
     port: env.NUXT_PORT, // default: 3000
     host: env.NUXT_HOST, // default: localhost
-    https: {
+    https: /(local|develop)/.test(env.TARGET_ENV) && {
       key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
+    },
+  },
+  /**
+   * custom router
+   */
+  router: {
+    mode: `history`,
+    extendRoutes(routes, resolve) {
+      routes.push({
+        path: '/remote',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'Remote',
+      })
+      routes.push({
+        path: '/make',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'Make',
+      })
+      routes.push({
+        path: '/view',
+        component: resolve(__dirname, 'src/pages/index.vue'),
+        name: 'View',
+      })
     },
   },
 }

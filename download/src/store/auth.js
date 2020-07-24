@@ -1,5 +1,3 @@
-import api from '@/api/gateway'
-
 export default {
   state: () => ({
     isLogin: false,
@@ -23,7 +21,7 @@ export default {
   },
   actions: {
     async getAuthInfo({ commit }, params) {
-      const data = await api('GET_AUTH_INFO', params)
+      const data = await this.$api('GET_AUTH_INFO', params)
       commit('SET_MY_PROFILE', data.userInfo)
       commit('SET_LOGIN', true)
       return data

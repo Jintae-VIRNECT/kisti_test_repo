@@ -7,148 +7,132 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <el-tabs>
-      <el-tab-pane :label="$t('home.make')">
-        <el-card>
-          <h6 v-html="$t('home.pc')" />
-          <h5 v-html="$t('home.windowsInstall')" />
-          <img src="~assets/images/img-make-pc.svg" />
+    <el-tabs v-model="state.activeTab">
+      <el-tab-pane
+        v-for="(product, name) in state.products"
+        :label="$t(`home.${name}`)"
+        :name="name"
+        :key="name"
+      >
+        <el-card v-for="app in product" :key="app.id">
+          <h6 v-html="app.os" />
+          <h5 v-html="app.device" />
+          <img :src="app.imageUrl" />
           <span class="release">
-            {{ `${$t('home.release')}: ${make.release}` }}
+            Release: {{ app.releaseTime | dateFormat }}
           </span>
-          <span class="version">{{ make.version }}</span>
-          <el-button type="primary">
+          <span class="version">{{ app.version }}</span>
+          <el-button type="primary" @click="download(app.appUrl)">
             {{ $t('home.installFileDownload') }}
           </el-button>
-          <el-button type="text">{{ $t('home.guideDownload') }}</el-button>
+          <el-button
+            type="text"
+            @click="download(app.guideUrl)"
+            :disabled="!app.guideUrl"
+          >
+            {{ $t('home.guideDownload') }}
+          </el-button>
         </el-card>
       </el-tab-pane>
-      <el-tab-pane :label="$t('home.view')" disabled> </el-tab-pane>
-      <el-tab-pane :label="$t('home.remote')" disabled> </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      make: {
-        release: '2020.02.02',
-        version: 'v.1.0.1',
-        installUrl: '',
-        guideUrl: '',
-      },
+import fileDownload from 'js-file-download'
+import { filters } from '@/plugins/dayjs'
+import {
+  defineComponent,
+  reactive,
+  watchEffect,
+  onMounted,
+  onUnmounted,
+} from 'nuxt-composition-api'
+
+export default defineComponent({
+  filters,
+  setup(props, context) {
+    const state = useTabs(context.root)
+    useStickyNav()
+
+    /**
+     * 다운로드
+     */
+    function download(url) {
+      window.open(url)
     }
+    function link(url) {
+      window.open(url)
+    }
+
+    return { state, download, link }
   },
+})
+
+/**
+ * 탭 변경
+ */
+function useTabs({ $route, $api }) {
+  const state = reactive({
+    activeTab: null,
+    products: {
+      remote: [],
+      make: [],
+      view: [],
+    },
+  })
+
+  watchEffect(async () => {
+    const { products, activeTab } = state
+    if (activeTab && !products[activeTab].length) {
+      const data = await $api('APP_LIST', {
+        route: { productName: activeTab },
+      })
+      products[activeTab] = data.appInfoList
+    }
+  })
+
+  onMounted(() => {
+    state.activeTab =
+      {
+        '/remote': 'remote',
+        '/make': 'make',
+        '/view': 'view',
+      }[$route.path] || 'remote'
+  })
+
+  return state
+}
+
+/**
+ * stick nav
+ */
+function useStickyNav() {
+  let snbTop = 0
+
+  function snbNav() {
+    const isDesktop = window.innerWidth > 1200
+    const scrollY = window.pageYOffset
+    const header = document.querySelector('#headerSection')
+    const tab = document.querySelector('.el-tabs')
+    snbTop = isDesktop ? tab.offsetTop : tab.offsetTop - header.offsetHeight
+    if (scrollY > snbTop) {
+      tab.classList.add('sticky')
+    } else {
+      tab.classList.remove('sticky')
+    }
+  }
+
+  // vue hooks
+  onMounted(() => {
+    window.addEventListener('scroll', snbNav)
+  })
+  onUnmounted(() => {
+    window.removeEventListener('scroll', snbNav)
+  })
 }
 </script>
 
 <style lang="scss">
-#home {
-  color: $font-color-content;
-  font-weight: 500;
-  text-align: center;
-
-  .ribbon {
-    position: fixed;
-    top: 64px;
-    z-index: 5;
-    width: 100vw;
-    height: 50px;
-    line-height: 50px;
-    background: #e6f0ff;
-  }
-  .visual {
-    height: 340px;
-    margin-top: 114px;
-    padding: 93px;
-    color: #fff;
-    background: url('~assets/images/img-top.jpg') center;
-    background-size: cover;
-
-    h3 {
-      font-size: 30px;
-    }
-    p {
-      margin-top: 10px;
-      font-size: 15px;
-    }
-  }
-  .el-tabs {
-    width: 640px;
-    margin: 0 auto;
-
-    [role='tab'] {
-      height: 64px;
-      padding: 0 60px;
-      font-size: 18px;
-      line-height: 64px;
-
-      &:nth-child(2) {
-        padding-left: 0;
-      }
-      &:last-child {
-        padding-right: 0;
-      }
-    }
-  }
-  .el-tabs__nav-wrap::after {
-    display: none;
-  }
-
-  .el-tabs__content {
-    margin: 94px auto 120px;
-  }
-  .el-tabs__content .el-card {
-    width: 372px;
-    margin: 0 auto;
-    box-shadow: none;
-  }
-  .el-card .el-card__body {
-    padding: 36px 44px 20px;
-    h6 {
-      font-size: 18px;
-    }
-    h5 {
-      font-size: 26px;
-      span {
-        color: $color-primary;
-      }
-    }
-    img {
-      margin: 10px auto 16px;
-    }
-    & > span {
-      display: block;
-    }
-    .release {
-      color: #8e95a1;
-      font-weight: normal;
-    }
-    .version {
-      margin-bottom: 23px;
-      color: #3f465a;
-      font-size: 18px;
-    }
-    .el-button {
-      display: block;
-      margin: 6px auto;
-    }
-  }
-
-  // transition
-  .rise-enter {
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  .rise-enter-to {
-    transform: translateY(0);
-    opacity: 1;
-    transition: 0.5s 0.3s;
-    &-2 {
-      transition: 0.5s 0.5s;
-    }
-  }
-}
+@import '@/assets/css/home.scss';
 </style>
