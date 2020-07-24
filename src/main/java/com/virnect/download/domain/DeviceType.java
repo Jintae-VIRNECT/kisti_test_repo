@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 /**
  * Project: PF-Download
- * DATE: 2020-05-04
+ * DATE: 2020-07-23
  * AUTHOR: jkleee (Jukyoung Lee)
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
@@ -17,20 +17,14 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "device")
+@Table(name = "device_type")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Device extends TimeEntity {
+public class DeviceType extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "device_id")
+    @Column(name = "device_type_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_type_id", nullable = false)
-    private DeviceType type;
 
     @Column(name = "name", nullable = false)
     private String name;
-
-
 }
