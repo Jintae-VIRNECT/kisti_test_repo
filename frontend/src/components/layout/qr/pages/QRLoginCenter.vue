@@ -175,6 +175,11 @@ p {
 		}
 	}
 }
+.qr-image-box /deep/ {
+	.el-image-viewer__close {
+		color: #fff;
+	}
+}
 .qr-expire-count {
 	color: #1655bf;
 	font-weight: 500;
