@@ -3,7 +3,7 @@ package com.virnect.content.global.common;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Project: SMIC_CUSTOM
+ * Project: PF-ContentManagement
  * DATE: 2020-01-07
  * AUTHOR: JohnMark (Chang Jeong Hyeon)
  * EMAIL: practice1356@gmail.com

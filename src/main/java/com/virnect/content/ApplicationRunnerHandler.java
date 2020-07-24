@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,7 +17,7 @@ import java.io.File;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Application Runner Event Handler Class
  */
-
+@Profile("develop")
 @Slf4j
 @Service
 public class ApplicationRunnerHandler implements ApplicationRunner {

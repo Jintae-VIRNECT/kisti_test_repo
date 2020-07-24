@@ -1,7 +1,9 @@
 package com.virnect.content.dto.request;
 
+import com.virnect.content.domain.TargetType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
@@ -17,15 +19,23 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@ToString
 public class ContentUpdateRequest {
+
+    private String targetData;
+
+    private TargetType targetType;
+
     @NotNull
     private MultipartFile content;
 
     @NotBlank
     private String name;
 
-    @NotBlank
     private String metadata;
+
+    @NotBlank
+    private String properties;
 
     @NotBlank
     private String userUUID;

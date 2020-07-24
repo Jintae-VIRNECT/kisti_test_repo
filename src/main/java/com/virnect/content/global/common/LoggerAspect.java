@@ -36,6 +36,7 @@ public class LoggerAspect {
         Map<String, Object> params = new HashMap<>();
 
         try {
+            params.put("ContentType", request.getContentType());
             params.put("IP", ClientRequestUserAgentParser.getClientIP(request));
             params.put("OS", ClientRequestUserAgentParser.getClientOS(request));
             params.put("Browser", ClientRequestUserAgentParser.getClientBrowser(request));

@@ -1,12 +1,15 @@
 package com.virnect.content.dto.request;
 
+import com.virnect.content.domain.TargetType;
+import com.virnect.content.domain.Types;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Project: PF-ContentManagement
@@ -19,35 +22,42 @@ import javax.validation.constraints.PositiveOrZero;
 
 @Getter
 @Setter
+@ToString
 public class ContentUploadRequest {
+
+    private String targetData;
+
+    private TargetType targetType;
+
+    @NotBlank
+    private String workspaceUUID;
+
     @NotNull
     private MultipartFile content;
 
-    @NotBlank
-    private String contentUUID;
+    private Types contentType;
 
     @NotBlank
     private String name;
 
-    @NotBlank
     private String metadata;
+
+    @NotBlank
+    private String properties;
 
     @NotBlank
     private String userUUID;
 
-    @NotNull
-    @PositiveOrZero
-    private int aruco;
-
-    @Override
-    public String toString() {
-        return "ContentUploadRequest{" +
-                "content=" + content.getOriginalFilename() +
-                ", contentUUID='" + contentUUID + '\'' +
-                ", name='" + name + '\'' +
-                ", metadata='" + metadata + '\'' +
-                ", userUUID='" + userUUID + '\'' +
-                ", aruco=" + aruco +
-                '}';
+    @Builder
+    public ContentUploadRequest(String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content, Types contentType, @NotBlank String name, String metadata, @NotBlank String properties, @NotBlank String userUUID) {
+        this.targetData = targetData;
+        this.targetType = targetType;
+        this.workspaceUUID = workspaceUUID;
+        this.content = content;
+        this.contentType = contentType;
+        this.name = name;
+        this.metadata = metadata;
+        this.properties = properties;
+        this.userUUID = userUUID;
     }
 }

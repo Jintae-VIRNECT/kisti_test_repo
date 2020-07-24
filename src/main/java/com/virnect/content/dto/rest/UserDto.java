@@ -1,4 +1,4 @@
-package com.virnect.content.dto;
+package com.virnect.content.dto.rest;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -14,31 +14,52 @@ spring:
     multipart:
       max-file-size: 300MB
       max-request-size: 400MB
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  zipkin:
+    base-url: http://192.168.6.3:9411
 
 #logging:
 #  level:
 #    org.hibernate.type.descriptor.sql: trace
 
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://192.168.6.3:8761/eureka
+
 ## Server Configuration
 server:
-  port: 8083
+  port: 8078
 
 # File Upload Configuration
 upload:
   dir: "upload/"
-  serverUrl: "http://121.162.252.234:18083/contents/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
-
-process:
-  serverUrl: "http://121.162.252.234:1${server.port}/process"
-
-content:
-  serverUrl: "http://121.162.252.234:1${server.port}/contents"
-
-user:
-  serverUrl: "http://121.162.252.234:18081/users"
+  serverUrl: "http://192.168.6.3:${server.port}/contents/"
+  allowed-extension: ".ares,.mars,.Ares,.Mars"
 
 ## FEIGN Configuration
 feign:
   okhttp:
     enabled: true
+
+## AWS Configuration
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAIYFYOR4X6LM3YKSQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-platform-qa"
+        resource: "workspace/"
+
+file:
+  upload-path: "workspace/report/"
+  url: "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/"

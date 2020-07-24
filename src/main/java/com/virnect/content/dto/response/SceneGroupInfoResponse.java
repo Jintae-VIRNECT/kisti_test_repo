@@ -1,7 +1,9 @@
 package com.virnect.content.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -13,6 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class SceneGroupInfoResponse {
     @ApiModelProperty(value = "씬그룹(세부공정) 정보 식별자", notes = "컨텐츠에서 씬그룹 정보를 구별하는데 사용됩니다.", example = "061cc38d-1c45-435b-bf56-4d164fcb5d29")
     private String id;
@@ -22,4 +25,12 @@ public class SceneGroupInfoResponse {
     private String name;
     @ApiModelProperty(value = "씬(작업)들의 갯수", notes = "씬그룹에 들어있는 씬들의 갯수입니다.", position = 3, example = "5")
     private int jobTotal;
+
+    @Builder
+    public SceneGroupInfoResponse(String id, int priority, String name, int jobTotal) {
+        this.id = id;
+        this.priority = priority;
+        this.name = name;
+        this.jobTotal = jobTotal;
+    }
 }
