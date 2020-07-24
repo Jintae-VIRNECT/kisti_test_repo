@@ -7,9 +7,11 @@ import { TYPE } from 'configs/chat.config'
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
+import vue from 'apps/remote/app'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', async event => {
+    console.log('[session] stream created')
     const streamObj = await getUserObject(event.stream)
     Store.commit('addStream', streamObj)
     const subscriber = session.subscribe(event.stream, '', () => {
@@ -18,10 +20,12 @@ export const addSessionEventListener = session => {
         stream: event.stream.mediaStream,
       })
       _.sendResolution()
-      _.control(CONTROL.POINTING, Store.getters['allowPointing'])
-      _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
+      if (_.account.roleType === ROLE.EXPERT_LEADER) {
+        _.control(CONTROL.POINTING, Store.getters['allowPointing'])
+        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
+      }
     })
     addSubscriber(subscriber)
   })
@@ -38,6 +42,25 @@ export const addSessionEventListener = session => {
         video: event.newValue,
       })
     }
+  })
+  /** session closed */
+  session.on('sessionDisconnected', event => {
+    console.log('[session] disconnected :: ', event.reason)
+    _.clear()
+    if (event.reason === 'sessionClosedByServer') {
+      // TODO: MESSAGE
+      vue.$toasted.error('리더가 협업을 삭제했습니다.', {
+        position: 'bottom-center',
+        duration: 5000,
+        action: {
+          icon: 'close',
+          onClick: (e, toastObject) => {
+            toastObject.goAway(0)
+          },
+        },
+      })
+    }
+    vue.$router.push({ name: 'workspace' })
   })
   // user leave
   session.on('streamDestroyed', event => {

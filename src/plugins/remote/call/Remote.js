@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
+import { SIGNAL, ROLE, CAMERA, FLASH, CONTROL } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
 import logger from 'utils/logger'
 
@@ -70,8 +70,6 @@ const _ = {
       })
       publisher.on('streamCreated', () => {
         _.publisher = publisher
-        _.mic(Store.getters['mic'].isOn)
-        _.speaker(Store.getters['speaker'].isOn)
         if (publishVideo) {
           // TODO:: 테스트 계정용!!!!
           Store.commit('updateResolution', {
@@ -139,6 +137,16 @@ const _ = {
     } catch (err) {
       throw err
     }
+  },
+  /**
+   * leave session
+   */
+  clear: () => {
+    _.account = null
+    _.session = null
+    _.publisher = null
+    _.subscribers = []
+    _.resolution = null
   },
   /**
    * chatting
@@ -295,8 +303,9 @@ const _ = {
    * @param {Boolean} active
    */
   mic: active => {
-    if (!_.publisher) return
-    _.publisher.publishAudio(active)
+    if (_.publisher) {
+      _.publisher.publishAudio(active)
+    }
     const params = {
       isOn: active,
     }

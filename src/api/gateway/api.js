@@ -22,6 +22,10 @@ export default {
     'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
   ],
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
+  MEMBER_LIST: [
+    'GET',
+    'https://192.168.13.36:5000/remote/members/{workspaceId}',
+  ],
 
   /* Workspace - Room */
   ROOM_LIST: [
@@ -43,7 +47,7 @@ export default {
   ],
   LEAVE_ROOM: [
     'DELETE',
-    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/exit',
+    'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
   ],
   UPDATE_ROOM_INFO: [
     'POST',
@@ -56,7 +60,7 @@ export default {
     'POST',
     'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/member',
   ],
-  KICKOUT_USER: [
+  KICKOUT_MEMBER: [
     'DELETE',
     'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/member',
   ],
