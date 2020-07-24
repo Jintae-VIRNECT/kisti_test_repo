@@ -77,7 +77,7 @@ async function getMyInfo() {
 }
 
 async function getUrls() {
-  const res = await axios.get('/urls')
+  const res = await axios.get(`${location.origin}/urls`)
 
   logger('URLS::', res.data)
 
