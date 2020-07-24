@@ -17,7 +17,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: user-server
           uri: lb://user-server
@@ -29,7 +28,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: workspace-server
           uri: lb://workspace-server
@@ -41,7 +39,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: amdin-server
           uri: lb://admin-server
@@ -53,7 +50,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/admin/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: content-server
           uri: lb://content-server
@@ -66,7 +62,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/contents/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: process-server
           uri: lb://process-server
@@ -78,7 +73,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/processes/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: license-server
           uri: lb://license-server
@@ -90,7 +84,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/licenses/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: message-server
           uri: lb://message-server
@@ -102,7 +95,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-        #            - RewritePath=/message/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: download-server
           uri: lb://download-server
@@ -114,7 +106,6 @@ spring:
               args:
                 preLogger: true
                 postLogger: true
-      #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
 
         - id: payletter-api-server
           uri: https://payapi.virnect.com
@@ -127,7 +118,32 @@ spring:
                 messagePrefix: "PAYLETTER_BILLING_SERVER"
                 preLogger: true
                 postLogger: true
-      #            - RewritePath=/download/v2/(?<segment>.*), /v2/$\{segment}
+
+        - id: rabbitmq-websocket
+          uri: ws://10.0.20.170:15674
+          predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
+            - Header=Upgrade, websocket
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
+                preLogger: true
+                postLogger: true
+
+        - id: remote-service-server
+          uri: lb:http://remote-service-server
+          predicates:
+            - Path=/remote/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "REMOTE_SERVICE_SERVER"
+                preLogger: true
+                postLogger: true
 
       globalcors:
         cors-configurations:
@@ -141,7 +157,8 @@ spring:
               - "https://admin.virnect.com"
               - "https://download.virnect.com"
               - "https://pay.virnect.com"
-              - "https://Platform-Prod-Home-1237392900.ap-northeast-2.elb.amazonaws.com"
+              - "https://payadmin.virnect.com"
+              - "https://remote.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
@@ -151,7 +168,7 @@ spring:
         prefix-enabled: false
   zipkin:
     base-url: http://zipkin.virnect.com
-
+    discovery-client-enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -160,5 +177,5 @@ eureka:
       defaultZone: http://eureka.virnect.com/eureka
 
 jwt:
-  secret: 2020-tcenriv-platform-392
+  secret: 2020-1356-virnect-platform-392
 

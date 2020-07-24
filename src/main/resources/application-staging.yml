@@ -140,12 +140,38 @@ spring:
         - id: rabbitmq-websocket
           uri: ws://10.0.10.143:15674
           predicates:
-            - Path=/message/**
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
+            - Header=Upgrade, websocket
           filters:
             - StripPrefix=0
             - name: Logging
               args:
                 messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
+                preLogger: true
+                postLogger: true
+
+        - id: remote-record-server
+          uri: lb:http://remote-record-server
+          predicates:
+            - Path=/remote/recorder/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "REMOTE_RECORD_SERVER"
+                preLogger: true
+                postLogger: true
+
+        - id: remote-service-server
+          uri: lb:http://remote-service-server
+          predicates:
+            - Path=/remote/**
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "REMOTE_SERVICE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -159,6 +185,7 @@ spring:
               - "https://stgaccount.virnect.com"
               - "https://stgadmin.virnect.com"
               - "https://stgdownload.virnect.com"
+              - "https://stgremote.virnect.com"
               - "https://stgpay.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
@@ -169,7 +196,7 @@ spring:
         prefix-enabled: false
   zipkin:
     base-url: http://stgzipkin.virnect.com
-
+    discovery-client-enabled: false
 eureka:
   instance:
     prefer-ip-address: true
