@@ -96,6 +96,7 @@
 import { mapActions } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { sendPush } from 'api/common/message'
+import { getRoomInfo } from 'api/workspace'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -142,7 +143,7 @@ export default {
       console.log('notice list refresh logic')
     },
     async alarmListener(listen) {
-      if (!this.onPush) return
+      // if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -184,13 +185,23 @@ export default {
 
       await sendPush(EVENT.INVITE_DENIED, [userId], contents)
     },
-    acceptInvite(body) {
+    async acceptInvite(body) {
+      if (this.$call.session !== null) {
+        // TODO: MESSAGE
+        alert('통화를 종료하고 참여해주세요')
+        return
+      }
       const contents = {
         nickName: this.account.nickname,
       }
 
       sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
-      this.joinRoom(body.contents.roomId)
+      const params = {
+        workspaceId: this.workspace.uuid,
+        sessionId: body.contents.roomSessionId,
+      }
+      const room = await getRoomInfo(params)
+      this.join(room)
     },
   },
 

@@ -28,16 +28,15 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList, deleteRoom, leaveRoom, joinRoom } from 'api/workspace'
+import { getRoomList, deleteRoom, leaveRoom } from 'api/workspace'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
-import { DEVICE } from 'configs/device.config'
-import { ROLE } from 'configs/remote.config'
+import roomMixin from 'mixins/room'
 
 import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceRemote',
-  mixins: [searchMixin, confirmMixin],
+  mixins: [searchMixin, confirmMixin, roomMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
@@ -61,43 +60,6 @@ export default {
       this.loading = true
       await this.init()
       this.loading = false
-    },
-    async join(room) {
-      this.logger('>>> JOIN ROOM')
-      try {
-        this.setRoomInfo(room)
-        let myInfo = room.memberList.find(
-          member => member.uuid === this.account.uuid,
-        )
-        let role =
-          myInfo.memberType === ROLE.EXPERT_LEADER
-            ? ROLE.EXPERT_LEADER
-            : ROLE.EXPERT
-
-        const res = await joinRoom({
-          uuid: this.account.uuid,
-          email: this.account.email,
-          memberType: role,
-          deviceType: DEVICE.WEB,
-          sessionId: room.sessionId,
-          workspaceId: this.workspace.uuid,
-        })
-
-        const joinRtn = await this.$call.connect(res.token, role)
-        if (joinRtn) {
-          this.$nextTick(() => {
-            this.$router.push({ name: 'service' })
-          })
-        } else {
-          this.roomClear()
-          console.error('>>>join room 실패')
-        }
-      } catch (err) {
-        this.roomClear()
-        console.log(err)
-      }
-      // this.confirmDefault('이미 삭제된 협업입니다.')
-      // this.confirmDefault('협업에 참가가 불가능합니다.')
     },
     leave(sessionId) {
       this.confirmCancel(
