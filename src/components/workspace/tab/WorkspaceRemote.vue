@@ -51,7 +51,7 @@ export default {
       return this.getFilter(this.rooms, [
         'title',
         'description',
-        'participants[].nickname',
+        'memberList[].nickname',
       ])
     },
   },

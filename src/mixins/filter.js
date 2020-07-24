@@ -23,7 +23,7 @@ export default {
      *
      * @example this.getFilter(this.historyList, [
         'title',
-        'participants[].nickname',
+        'memberList[].nickname',
       ])
      *
      */

@@ -9,11 +9,11 @@
       @openRoomInfo="openRoomInfo(history.sessionId)"
       @showDeleteDialog="showDeleteDialog(history.sessionId)"
     ></history>
-    <roominfo-modal
-      :visible.sync="showRoomInfo"
+    <history-info-modal
+      :visible.sync="showHistoryInfo"
       :sessionId="sessionId"
       :history="true"
-    ></roominfo-modal>
+    ></history-info-modal>
     <create-room-modal
       :visible.sync="showRestart"
       :roomId="roomId"
@@ -27,7 +27,7 @@ import History from 'History'
 
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
+import HistoryInfoModal from '../../workspace/modal/WorkspaceHistoryInfo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
 
@@ -41,13 +41,13 @@ export default {
   components: {
     CreateRoomModal,
     History,
-    RoominfoModal,
+    HistoryInfoModal,
     DeviceDenied,
   },
   data() {
     return {
       showRestart: false,
-      showRoomInfo: false,
+      showHistoryInfo: false,
       roomId: 0,
       sessionId: '',
       showDenied: false,
@@ -57,7 +57,7 @@ export default {
     list() {
       return this.getFilter(this.historyList, [
         'title',
-        'participants[].nickname',
+        'memberList[].nickname',
       ])
     },
   },
@@ -78,7 +78,7 @@ export default {
     //상세보기
     openRoomInfo(sessionId) {
       this.sessionId = sessionId
-      this.showRoomInfo = true
+      this.showHistoryInfo = true
     },
     showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
@@ -105,8 +105,8 @@ export default {
 
       await deleteHistorySingleItem({
         workspaceId: this.workspace.uuid,
-        sessionId: sessionId,
-        userId: this.account.uuid,
+        sessionIdList: [sessionId],
+        uuid: this.account.uuid,
       })
     },
 

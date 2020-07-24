@@ -2,10 +2,10 @@ import http from 'api/gateway'
 
 /**
  * 최근 협업 목록 요청
- * @param {Number} page size 대로 나눠진 페이지를 조회할 번호(1부터 시작) default 1
- * @param {Boolean} paging 검색 결과 페이지네이션 여부 default false
- * @param {Number} size 페이징 사이즈 default 10
- * @param {String} sort 정렬 옵션 데이터 default 'createdDate,desc'
+ * @param {Number} page size 대로 나눠진 페이지를 조회할 번호(1부터 시작)
+ * @param {Boolean} paging 검색 결과 페이지네이션 여부
+ * @param {Number} size 페이징 사이즈
+ * @param {String} sort 정렬 옵션 데이터
  * @param {String} userId 필수값
  * @param {String} workspaceId 필수값
  *
@@ -44,18 +44,18 @@ export const getHistorySingleItem = async function({ workspaceId, sessionId }) {
 /**
  * 최근 협업 목록중 단일 항목 제거
  * @param {String} workspaceId 워크스페이스 id
- * @param {String} sessionId 세션 id
- * @param {String} userId 유저 id
+ * @param {Array[String]} sessionIdList 삭제할 히스토리 세션 Id
+ * @param {String} uuid 유저 id
  */
 export const deleteHistorySingleItem = async function({
   workspaceId,
-  sessionId,
-  userId,
+  sessionIdList = [],
+  uuid,
 }) {
   const returnVal = await http('DELETE_HISTORY_ITEM', {
     workspaceId,
-    sessionId,
-    userId,
+    sessionIdList,
+    uuid,
   })
 
   return returnVal
