@@ -151,12 +151,12 @@ export default {
         workspaceId: this.workspace.uuid,
       })
 
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        if (rtn) {
-          this.refresh()
-        }
-      })
+      if (rtn) {
+        this.refresh()
+        this.$nextTick(() => {
+          this.$eventBus.$emit('popover:close')
+        })
+      }
     },
   },
 

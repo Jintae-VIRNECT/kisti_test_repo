@@ -110,7 +110,7 @@ export default {
       if (this.description !== this.room.description) {
         return true
       }
-      if (this.image !== this.room.path) {
+      if (this.image !== this.room.profile) {
         return true
       }
       return false
@@ -121,7 +121,7 @@ export default {
       handler(room) {
         this.name = room.title
         this.description = room.description
-        // this.imageUrl = room.path
+        // this.imageUrl = room.profile
         this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
         this.createdTime = this.$dayjs(room.activeDate).format('hh:mm:ss')
       },
@@ -141,8 +141,13 @@ export default {
       this.imageRemove()
     },
     saveInfo() {
-      const params = { name: this.name, description: this.description }
-      if (this.room.path !== this.imageUrl) {
+      const params = {
+        title: this.name,
+        description: this.description,
+        sessionId: this.room.sessionId,
+        workspaceId: this.workspace.uuid,
+      }
+      if (this.room.profile !== this.imageUrl) {
         params.image = this.imageFile
       }
       this.$emit('update', params)
@@ -154,7 +159,7 @@ export default {
     if (this.room) {
       this.name = this.room.title
       this.description = this.room.description
-      this.imageUrl = this.room.path
+      this.imageUrl = this.room.profile
       this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')
       this.createdTime = this.$dayjs(this.room.activeDate).format('hh:mm:ss')
     }

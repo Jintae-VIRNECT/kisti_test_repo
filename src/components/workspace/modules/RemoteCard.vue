@@ -21,7 +21,7 @@
           :src="room.path"
           @error="onImageErrorGroup"
         /> -->
-        <p class="profile__name">{{ room.title }}</p>
+        <p class="profile__name">{{ title ? title : room.title }}</p>
         <p class="profile__leader">리더 : {{ leader.nickname }}</p>
       </div>
       <div class="groupcard-info">
@@ -73,6 +73,7 @@
       :visible.sync="showRoomInfo"
       :sessionId="room.sessionId"
       :isLeader="isLeader"
+      @updatedInfo="updateInfo"
     ></roominfo-modal>
   </card>
 </template>
@@ -96,6 +97,7 @@ export default {
   data() {
     return {
       showRoomInfo: false,
+      title: '',
     }
   },
   props: {
@@ -142,6 +144,9 @@ export default {
       this.$nextTick(() => {
         this.showRoomInfo = !this.showRoomInfo
       })
+    },
+    updateInfo(info) {
+      this.title = info.title
     },
   },
 

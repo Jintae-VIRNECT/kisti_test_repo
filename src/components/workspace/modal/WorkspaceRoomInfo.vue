@@ -53,7 +53,6 @@
 <script>
 import Modal from 'Modal'
 import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
-import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
@@ -96,24 +95,13 @@ export default {
       type: Boolean,
       default: false,
     },
-    history: {
-      type: Boolean,
-      default: false,
-    },
   },
   watch: {
     visible(flag) {
       if (flag === true) {
-        if (this.history) {
-          this.initHistory()
-        } else {
-          this.initRemote()
-        }
+        this.initRemote()
       }
       this.visibleFlag = flag
-    },
-    image(image) {
-      console.log(image)
     },
   },
   methods: {
@@ -123,16 +111,7 @@ export default {
           sessionId: this.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        this.image = this.room.path
-        this.tabview = 'group'
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    async initHistory() {
-      try {
-        this.room = await getHistorySingleItem({ sessionId: this.sessionId })
-        this.image = this.room.path
+        this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
         console.error(err)
@@ -148,7 +127,9 @@ export default {
       try {
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
-          this.$emit('update:visible', false)
+          this.$emit('updatedInfo', params)
+          this.initRemote()
+          // this.$emit('update:visible', false)
         }
       } catch (err) {
         // 에러처리
