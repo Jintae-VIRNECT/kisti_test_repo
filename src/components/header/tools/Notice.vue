@@ -202,7 +202,10 @@ export default {
     } else if (push === 'false') {
       this.onPush = false
     }
-    this.$push.addListener(this.key, this.alarmListener)
+    this.$nextTick(async () => {
+      await this.$push.init(this.workspace.uuid)
+      this.$push.addListener(this.key, this.alarmListener)
+    })
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)

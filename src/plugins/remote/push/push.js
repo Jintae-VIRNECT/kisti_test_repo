@@ -1,45 +1,76 @@
 import { Client } from '@stomp/stompjs'
-import pushListener from './pushListener'
-import urls from '@/server/urls'
+import { DESTINATION, KEY } from 'configs/push.config'
+import logger from 'utils/logger'
 
-const config = {
-  brokerURL: urls.message[process.env.TARGET_ENV],
-  connectHeaders: {
-    login: 'guest',
-    passcode: 'guest',
+const push = {
+  _inited: false,
+  _listeners: [],
+  subscriber: event => {
+    for (let listener of push._listeners) {
+      listener['cb'](event)
+    }
   },
-  debug: function(str) {
-    console.log(str)
+  init: workspaceId => {
+    return new Promise((resolve, reject) => {
+      if (push._inited === true) return
+      push._inited = true
+
+      const config = {
+        brokerURL: window.urls.messageWs,
+        connectHeaders: {
+          login: 'guest',
+          passcode: 'guest',
+        },
+        debug: str => {
+          logger(str)
+        },
+        reconnectDelay: 3000,
+        heartbeatIncoming: 0,
+        heartbeatOutgoing: 0,
+      }
+
+      const client = new Client(config)
+
+      Object.assign(push, client)
+
+      client.onConnect = frame => {
+        logger('::message::', frame)
+        logger('::message::', client)
+        client.subscribe(
+          `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
+          push.subscriber,
+        )
+        resolve()
+      }
+
+      client.onStompError = frame => {
+        console.error('Broker reported error: ' + frame.headers['message'])
+        logger('Additional details: ' + frame.body)
+        reject()
+      }
+
+      // pushListener(client)
+
+      client.activate()
+    })
   },
-  reconnectDelay: 3000,
-  heartbeatIncoming: 0,
-  heartbeatOutgoing: 0,
+  addListener: (key, cb) => {
+    if (typeof cb !== 'function') return
+    push._listeners.push({
+      key,
+      cb,
+    })
+  },
+  removeListener: key => {
+    const idx = push._listeners.findIndex(listen => listen.key === key)
+    if (idx < 0) return
+
+    push._listeners.splice(idx, 1)
+  },
 }
-
-export const client = new Client(config)
-
-client.onConnect = frame => {
-  // Do something, all subscribes must be done is this callback
-  // This is needed because this will be executed after a (re)connect
-  console.log(frame)
-  console.log(client)
-}
-
-client.onStompError = frame => {
-  // Will be invoked in case of error encountered at Broker
-  // Bad login/passcode typically will cause an error
-  // Complaint brokers will set `message` header with a brief message. Body may contain details.
-  // Compliant brokers will terminate the connection after any error
-  console.log('Broker reported error: ' + frame.headers['message'])
-  console.log('Additional details: ' + frame.body)
-}
-
-pushListener(client)
-
-client.activate()
 
 export default {
   install(Vue) {
-    Vue.prototype.$push = client
+    Vue.prototype.$push = push
   },
 }
