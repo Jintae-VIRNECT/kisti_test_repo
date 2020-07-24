@@ -1,6 +1,6 @@
 import Axios from 'axios'
 
-export default Axios.create({
+const axios = Axios.create({
   timeout: process.env.NODE_ENV === 'production' ? 2000 : 10000,
   withCredentials: false,
   headers: {
@@ -8,3 +8,5 @@ export default Axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+export default axios

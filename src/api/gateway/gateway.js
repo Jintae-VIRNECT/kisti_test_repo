@@ -163,6 +163,8 @@ export const setAuthorization = accessToken => {
 
 export const setBaseURL = baseURL => {
   axios.defaults.baseURL = baseURL
+  axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+
   logger('BASE_URL::', baseURL)
 }
 
