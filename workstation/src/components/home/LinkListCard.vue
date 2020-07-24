@@ -13,15 +13,14 @@
         :href="link.path"
         :key="link.path"
         target="_blank"
-        :download="link.isDownload"
       >
         <img v-if="link.image" :src="link.image" />
         <span>{{ link.label }}</span>
         <img
-          v-if="link.isDownload"
-          src="~assets/images/icon/ic-file-download.svg"
+          v-if="link.isLink"
+          src="~assets/images/icon/ic-arrow-forward.svg"
         />
-        <img v-else src="~assets/images/icon/ic-arrow-forward.svg" />
+        <img v-else src="~assets/images/icon/ic-file-download.svg" />
       </a>
     </div>
   </el-card>

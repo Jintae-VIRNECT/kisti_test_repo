@@ -41,9 +41,6 @@
     "make": "VIRNECT Make 설치",
     "view": "VIRNECT View 설치"
   },
-  "guide": {
-    "title": "사용자 가이드"
-  },
   "faq": {
     "title": "제품 및 서비스 FAQ",
     "desc": "제품 및 서비스 이용에 어려움이 있으신가요?<br>자주 묻는 질문을 확인해 보세요"

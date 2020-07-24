@@ -52,10 +52,10 @@
           />
           <link-list-card
             :icon="require('assets/images/icon/ic-local-library.svg')"
-            :title="$t('home.guide.title')"
+            :title="$t('guide.title')"
             :links="guide"
           />
-          <a href="" target="_blank">
+          <a :href="`${$url.www}/support/faq`" target="_blank">
             <el-card class="faq-banner">
               <h6>
                 <span>{{ $t('home.faq.title') }}</span>
@@ -97,7 +97,7 @@ export default {
   data() {
     return {
       install: install(this),
-      guide,
+      guide: guide(this),
       plansInfo: {
         storage: {},
         viewCount: {},

@@ -18,29 +18,35 @@ export function install(app) {
   ]
 }
 
-export const guide = [
-  {
-    label: '워크스페이스 관리자용 가이드',
-    path: '',
-    isDownload: true,
-  },
-  {
-    label: '워크스페이스 사용자용 가이드',
-    path: '',
-    isDownload: true,
-  },
-  {
-    label: 'Make 사용자 가이드',
-    path: '',
-    isDownload: true,
-  },
-  {
-    label: 'View 사용자 가이드',
-    path: '',
-    isDownload: true,
-  },
-  {
-    label: 'VIRNECT 플랜 구매 가이드',
-    path: '',
-  },
-]
+export function guide(app) {
+  return [
+    {
+      label: app.$t('guide.makeGuide.label'),
+      path: app.$t('guide.makeGuide.url'),
+    },
+    {
+      label: app.$t('guide.makeDemoContetns.label'),
+      path: app.$t('guide.makeDemoContetns.url'),
+    },
+    {
+      label: app.$t('guide.viewGuide.label'),
+      path: app.$t('guide.viewGuide.url'),
+    },
+    {
+      label: app.$t('guide.viewRealwearGuide.label'),
+      path: app.$t('guide.viewRealwearGuide.url'),
+    },
+    {
+      label: app.$t('guide.remoteGuide.label'),
+      path: app.$t('guide.remoteGuide.url'),
+    },
+    {
+      label: app.$t('guide.workstationGuide.label'),
+      path: app.$t('guide.workstationGuide.url'),
+    },
+    {
+      label: app.$t('guide.purchaseGuide.label'),
+      path: app.$t('guide.purchaseGuide.url'),
+    },
+  ]
+}
