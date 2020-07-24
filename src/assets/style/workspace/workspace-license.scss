@@ -7,13 +7,22 @@ $color_negative: #ff7070;
 $color_positivie: #66aaff;
 
 .workspace-license {
-  height: 99.0714rem;
+  display: contents;
+  // height: 99.0714rem;
   background-color: $color_bg_display;
 }
 
 .workspace-license__description {
-  margin-top: 3.7857rem;
-  margin-bottom: 2.7143rem;
+  // margin-top: 3.7857rem;
+  // margin-bottom: 2.7143rem;
+  margin: auto;
+  text-align: center;
+}
+
+.workspace-license__description--purchase.btn {
+  margin: 2.143rem 0 10.714rem;
+  padding: 1rem 4.643rem;
+  font-size: 1.429rem;
 }
 
 .workspace-license__cards {
@@ -29,6 +38,7 @@ $color_positivie: #66aaff;
 }
 
 .workspace-license__description--sub-title {
+  margin-top: 0.714rem;
   color: rgba($color_license_white, 0.6);
   font-weight: 500;
   font-size: 1.2857rem;
