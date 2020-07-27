@@ -11,14 +11,17 @@ export default {
     'GET',
     'https://192.168.13.36:5000/remote/history?userId={userId}',
   ],
-  GET_HISTORY_LIST: ['GET', '/media/history'],
-  GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
+  GET_HISTORY_LIST: ['GET', 'https://192.168.6.4:4443/media/history'],
+  GET_HISTORY_ITEM: ['GET', 'https://192.168.6.4:4443/media/history/{roomId}'],
+  DELETE_HISTORY_ITEM: [
+    'PUT',
+    'https://192.168.6.4:4443/media/history/{roomId}',
+  ],
+  DELETE_HISTORY_ALL: ['DELETE', 'https://192.168.6.4:4443/media/history'],
 
   /* Workspace - Member */
   GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
-  // GET_MEMBER_LIST: ['GET', '/media/member/'],
+  // GET_MEMBER_LIST: ['GET', 'https://192.168.6.4:4443/media/member/'],
   MEMBER_LIST: [
     'GET',
     'https://192.168.13.36:5000/remote/members/{workspaceId}',
@@ -52,7 +55,7 @@ export default {
   ],
 
   /* CALL */
-  GET_TOKEN: ['POST', '/media/tokens'],
+  GET_TOKEN: ['POST', 'https://192.168.6.4:4443/media/tokens'],
   INVITE_ROOM: [
     'POST',
     'https://192.168.13.36:5000/remote/room/{workspaceId}/{sessionId}/member',
