@@ -1,6 +1,6 @@
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
-export default async function({ req, store, redirect, $config }) {
+export default async function({ req, store, redirect, error, $config }) {
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
     // 사용자가 로그인을 하지 않은 경우.
@@ -23,9 +23,10 @@ export default async function({ req, store, redirect, $config }) {
             req.headers.referer || req.headers.host,
           )}`,
         )
-      } else {
-        throw e
+      } else if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
       }
+      error({ statusCode: e.statusCode, message: e.message })
     }
   }
 }
