@@ -36,6 +36,11 @@ export default {
     TheSidebar,
     TheHeader,
   },
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('common.workstation')}`,
+    }
+  },
   data() {
     return {
       showSection: {

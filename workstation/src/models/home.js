@@ -1,40 +1,52 @@
-import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
-
-export function install(env) {
-  const urls = new Url(env)
+export function install(app) {
   return [
     {
-      label: 'VIRNECT Make 설치',
-      path: `${urls.download}/make`,
+      label: app.$t('home.install.remote'),
+      path: `${app.$url.download}/remote`,
+      image: require('assets/images/logo/logo-remote.svg'),
+    },
+    {
+      label: app.$t('home.install.make'),
+      path: `${app.$url.download}/make`,
       image: require('assets/images/logo/logo-make.svg'),
     },
     {
-      label: 'VIRNECT View 설치',
-      path: `${urls.download}/view`,
+      label: app.$t('home.install.view'),
+      path: `${app.$url.download}/view`,
       image: require('assets/images/logo/logo-view.svg'),
     },
   ]
 }
 
-export const guide = [
-  {
-    label: '워크스페이스 관리자용 가이드',
-    path: '',
-  },
-  {
-    label: '워크스페이스 사용자용 가이드',
-    path: '',
-  },
-  {
-    label: 'Make 사용자 가이드',
-    path: '',
-  },
-  {
-    label: 'View 사용자 가이드',
-    path: '',
-  },
-  {
-    label: 'VIRNECT 플랜 구매 가이드',
-    path: '',
-  },
-]
+export function guide(app) {
+  return [
+    {
+      label: app.$t('guide.makeGuide.label'),
+      path: app.$t('guide.makeGuide.url'),
+    },
+    {
+      label: app.$t('guide.makeDemoContetns.label'),
+      path: app.$t('guide.makeDemoContetns.url'),
+    },
+    {
+      label: app.$t('guide.viewGuide.label'),
+      path: app.$t('guide.viewGuide.url'),
+    },
+    {
+      label: app.$t('guide.viewRealwearGuide.label'),
+      path: app.$t('guide.viewRealwearGuide.url'),
+    },
+    {
+      label: app.$t('guide.remoteGuide.label'),
+      path: app.$t('guide.remoteGuide.url'),
+    },
+    {
+      label: app.$t('guide.workstationGuide.label'),
+      path: app.$t('guide.workstationGuide.url'),
+    },
+    {
+      label: app.$t('guide.purchaseGuide.label'),
+      path: app.$t('guide.purchaseGuide.url'),
+    },
+  ]
+}

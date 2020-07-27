@@ -19,6 +19,11 @@ export default {
   components: {
     TheHeader,
   },
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('common.workstation')}`,
+    }
+  },
   data() {
     return {
       showSection: {

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   /**
    * User
    */
@@ -35,6 +35,8 @@ module.exports = {
   MEMBERS_INVITE: ['POST', '/workspaces/{workspaceId}/invite'],
   // 워크스페이스 사용자 활동 조회
   MEMBERS_ACTIVITY: ['GET', '/tasks/{workspaceUUID}/info'],
+  // 워크스페이스 라이선스 플랜 정보 조회
+  GET_WORKSPACE_PLAN_INFO: ['GET', '/licenses/{workspaceId}/plan'],
   /**
    * Contents
    */

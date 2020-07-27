@@ -31,7 +31,7 @@
         <dl class="row">
           <div>
             <dt>{{ $t('contents.info.volume') }}</dt>
-            <dd>{{ content.contentSize | toMegaBytes }}</dd>
+            <dd>{{ content.contentSize | byte2mb }}</dd>
             <dt>{{ $t('contents.info.type') }}</dt>
             <dd></dd>
           </div>

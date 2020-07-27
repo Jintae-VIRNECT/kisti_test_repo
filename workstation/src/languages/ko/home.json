@@ -1,22 +1,4 @@
 {
-  "storage": {
-    "title": "스토리지 정보",
-    "link": "구매하기",
-    "unit": "GB",
-    "allStorageVolume": "전체 스토리지 용량",
-    "storageVolume": "스토리지 용량",
-    "used": "사용됨",
-    "available": "사용 가능"
-  },
-  "download": {
-    "title": "콘텐츠 다운로드 정보",
-    "link": "구매하기",
-    "unit": "회",
-    "allDownloadedVolume": "전체 다운로드 수",
-    "downloadedVolume": "다운로드 수",
-    "downloaded": "다운됨",
-    "available": "다운 가능"
-  },
   "banner": {
     "sub": "Connect Work, Space and People",
     "main": "VIRNECT Workstation",
@@ -27,7 +9,7 @@
     "column": {
       "nickname": "사용자 닉네임",
       "email": "사용자 계정",
-      "role": "워스크페이스 권한",
+      "role": "워크스페이스 권한",
       "joinDate": "참여일"
     },
     "empty": "워크스페이스 멤버를 추가해 주세요"
@@ -54,13 +36,39 @@
     "usingPlans": "사용 중인 플랜"
   },
   "install": {
-    "title": "다운로드 센터"
-  },
-  "guide": {
-    "title": "사용자 가이드"
+    "title": "다운로드 센터",
+    "remote": "VIRNECT Remote 설치",
+    "make": "VIRNECT Make 설치",
+    "view": "VIRNECT View 설치"
   },
   "faq": {
     "title": "제품 및 서비스 FAQ",
     "desc": "제품 및 서비스 이용에 어려움이 있으신가요?<br>자주 묻는 질문을 확인해 보세요"
+  },
+  "plansInfo": {
+    "used": "사용됨",
+    "remain": "사용 가능",
+    "buy": "구매하기",
+    "arStorage": {
+      "title": "AR 스토리지 용량",
+      "desc": "실제 잔여 용량과 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+      "max": "전체 AR 스토리지 용량",
+      "used": "AR 스토리지 사용량",
+      "unit": "GB"
+    },
+    "arContent": {
+      "title": "온라인 AR 콘텐츠 조회 수",
+      "desc": "실제 잔여 조회 수와 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+      "max": "전체 AR 콘텐츠 조회 수",
+      "used": "AR 콘텐츠 조회 수 사용량",
+      "unit": "회"
+    },
+    "call": {
+      "title": "통화 시간",
+      "desc": "실제 잔여 통화 시간과 차이가 있을 수 있으니 참고용으로 활용하시기 바랍니다.",
+      "max": "전체 통화 시간",
+      "used": "통화 시간 사용량",
+      "unit": "시간"
+    }
   }
 }

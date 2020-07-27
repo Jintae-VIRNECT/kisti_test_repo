@@ -7,7 +7,7 @@
       </h3>
     </div>
     <!-- 링크 타입 -->
-    <div v-if="type === 'link'">
+    <div>
       <a
         v-for="link in links"
         :href="link.path"
@@ -16,14 +16,11 @@
       >
         <img v-if="link.image" :src="link.image" />
         <span>{{ link.label }}</span>
-        <img src="~assets/images/icon/ic-arrow-forward.svg" />
-      </a>
-    </div>
-    <!-- 다운로드 타입 -->
-    <div v-if="type === 'download'">
-      <a v-for="link in links" :href="link.path" :key="link.path" download>
-        <img v-if="link.image" :src="link.image" />
-        <span>{{ link.label }}</span>
+        <img
+          v-if="link.isLink"
+          src="~assets/images/icon/ic-arrow-forward.svg"
+        />
+        <img v-else src="~assets/images/icon/ic-file-download.svg" />
       </a>
     </div>
   </el-card>
@@ -43,23 +40,29 @@ export default {
 <style lang="scss">
 #__nuxt .link-list-card {
   .el-card__body {
-    padding: 8px 24px;
+    padding: 8px 0;
   }
   a {
     position: relative;
     display: flex;
     align-items: center;
     height: 44px;
+    padding: 0 24px;
+    transition: background-color 0.25s ease;
+    &:hover {
+      background-color: #f5f7fa;
+    }
 
     & > img:first-child {
       margin-right: 4px;
+      margin-left: -8px;
     }
     & > span {
       color: $font-color-content;
     }
     & > img:last-child {
       position: absolute;
-      right: 0;
+      right: 24px;
     }
   }
 }

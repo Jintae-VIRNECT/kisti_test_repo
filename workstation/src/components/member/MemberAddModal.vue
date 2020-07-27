@@ -103,7 +103,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.planView" disabled>
+              <el-select v-model="form.planView">
+                <el-option
+                  :value="false"
+                  :label="$t('members.setting.givePlansEmpty')"
+                />
                 <el-option :value="true" :label="plans.view.label" />
               </el-select>
             </el-form-item>

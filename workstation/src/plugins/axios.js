@@ -2,6 +2,7 @@ import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { context } from '@/plugins/context'
 
 let axios = null
 /**
@@ -43,11 +44,9 @@ export async function api(name, option = {}) {
     }
   }
 
-  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
   try {
     const response = await axios[method](uri, params, { headers })
     const { code, data, message, service } = response.data
-    if (process.client) $nuxt.$loading.finish()
 
     if (code === 200) {
       return data
@@ -60,11 +59,14 @@ export async function api(name, option = {}) {
       throw error
     }
   } catch (e) {
-    if (process.client) {
-      $nuxt.$loading.fail()
-      $nuxt.$loading.finish()
-    }
     console.error(`URL: ${uri}`)
+    // timeout
+    if (e.code === 'ECONNABORTED') {
+      e.statusCode = 504
+      context.error(e)
+    }
+    if (process.client) $nuxt.$loading.fail()
+    else context.error(e)
     throw e
   }
 }

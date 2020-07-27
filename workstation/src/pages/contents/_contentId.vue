@@ -1,7 +1,6 @@
 <template>
   <el-dialog
-    id="contents-info-modal"
-    class="info-modal"
+    class="contents-info-modal info-modal"
     :visible.sync="showMe"
     :title="$t('contents.info.title')"
     width="860px"
@@ -32,7 +31,7 @@
         <dl class="row">
           <div>
             <dt>{{ $t('contents.info.volume') }}</dt>
-            <dd>{{ content.contentSize | toMegaBytes }}</dd>
+            <dd>{{ content.contentSize | byte2mb }}</dd>
             <dt>{{ $t('contents.info.type') }}</dt>
             <dd></dd>
           </div>
@@ -82,7 +81,12 @@
       </el-col>
       <!-- 콘텐츠 구성 정보 -->
       <el-col :span="15">
-        <h4>{{ $t('contents.info.properties') }}</h4>
+        <h4>
+          <span>{{ $t('contents.info.properties') }}</span>
+          <el-button class="register" @click="registerTask">
+            {{ $t('contents.info.register') }}
+          </el-button>
+        </h4>
         <div class="properties">
           <el-tree
             :data="properties"
@@ -148,6 +152,9 @@ export default {
       popup.document.close()
       setTimeout(() => popup.print(), 1)
     },
+    registerTask() {
+      this.$router.replace(`/tasks/new?contentId=${this.content.contentUUID}`)
+    },
     async remove() {
       try {
         await this.$confirm(
@@ -195,16 +202,17 @@ export default {
   },
   beforeMount() {
     this.form.shared = this.content.shared
-    this.$store.commit(
-      'auth/SET_ACTIVE_WORKSPACE',
-      this.content.workspaceUUID,
-    )
+    this.$store.commit('auth/SET_ACTIVE_WORKSPACE', this.content.workspaceUUID)
   },
 }
 </script>
 
 <style lang="scss">
-#__nuxt #contents-info-modal .el-dialog__body {
+#__nuxt .contents-info-modal .el-dialog__body {
   height: 700px;
+  .register {
+    float: right;
+    padding: 8px 13px;
+  }
 }
 </style>

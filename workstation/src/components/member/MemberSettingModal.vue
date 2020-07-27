@@ -89,7 +89,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.licenseView" disabled>
+              <el-select v-model="form.licenseView">
                 <el-option
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"

@@ -189,6 +189,15 @@ export default {
       this.searchContents(this.searchParams),
     )
   },
+  mounted() {
+    // modal query
+    const { query } = this.$router.currentRoute
+    if (query.contentId) {
+      this.selectedContentId = query.contentId
+      this.showNewTaskInfo = true
+      this.$router.replace(this.$route.path)
+    }
+  },
 }
 </script>
 
