@@ -6,6 +6,7 @@ New Features
 
 Bug Fixes
 - zipkin discovery client false 활성화
+- production yml
 
 Limitation
 - 없음
