@@ -30,6 +30,11 @@ export default {
     NetworkError,
   },
   props: ['error'],
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('menu.account')}`,
+    }
+  },
 }
 </script>
 

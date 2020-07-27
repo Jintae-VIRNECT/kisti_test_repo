@@ -14,7 +14,7 @@ module.exports = {
     htmlAttrs: {
       lang: 'ko',
     },
-    title: 'account',
+    title: 'VIRNECT | Account',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
