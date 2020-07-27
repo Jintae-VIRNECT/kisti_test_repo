@@ -127,6 +127,7 @@ const _ = {
    */
   leave: () => {
     try {
+      if (!_.session) return
       _.session.disconnect()
       _.account = null
       _.session = null

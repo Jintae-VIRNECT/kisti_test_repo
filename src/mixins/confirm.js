@@ -8,10 +8,11 @@ export default {
      * @param {String} text
      * @param {Object} confirm { text, action }
      */
-    confirmDefault(text, confirm = { text: '확인' }) {
+    confirmDefault(text, confirm = { text: '확인' }, options = {}) {
       Alert.fire({
         text: text,
         confirmButtonText: confirm.text,
+        ...options,
       }).then(result => {
         if (result.value) {
           if (typeof confirm.action === 'function') {

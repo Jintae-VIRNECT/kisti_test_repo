@@ -120,23 +120,8 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    // this.$nextTick(async () => {
-    //   const license = await getLicense(
-    //     this.workspace.uuid,
-    //     await this.account.uuid,
-    //   )
-    //   this.hasLicense = license
-
-    //   if (!license) {
-    //     this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
-    //       text: '확인',
-    //       action: () => {
-    //         this.$eventBus.$emit('showLicensePage')
-    //       },
-    //     })
-    //     return false
-    //   }
-    // })
+    // BETA: 1hour logout setting
+    this.$parent.init()
 
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('filelist:open', this.toggleList)
