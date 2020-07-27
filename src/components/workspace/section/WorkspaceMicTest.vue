@@ -3,7 +3,7 @@
     <p class="setting__title">
       마이크 테스트
     </p>
-    <p class="setting__label label-margin-bottom">
+    <p class="setting__label label-margin">
       마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
       들려드리겠습니다.
     </p>
@@ -138,9 +138,9 @@ export default {
   },
 }
 </script>
-<style lang="scss" scoped>
-.label-margin-bottom {
-  margin-bottom: 2.857rem;
+<style lang="scss">
+.label-margin {
+  margin: -0.7143rem 0 2.857rem 0;
 }
 .mic-radius {
   border-radius: 50%;
