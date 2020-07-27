@@ -27,3 +27,5 @@ yarn.lock
 logs
 
 .parcel-cache
+
+releasenote.txt

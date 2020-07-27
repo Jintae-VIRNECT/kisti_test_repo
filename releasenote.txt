@@ -1,0 +1,19 @@
+HOTFIX
+
+New Features
+
+메인화면 다운로드, 가이드, FAQ
+플랜 사용 정보
+Bug Fixes
+
+SSR 에러페이지
+유저 플랜설정에 뷰 수정 불가능한 부분 수정
+[DPLA-6, 145] 오타 수정
+[DPLA-15] 네트워크 에러페이지
+[DPLA-25] 컨텐츠 상세정보에서 작업생성 버튼 추가
+[DPLA-132] 워크스페이스 시작하기 글자 수 제한
+[DPLA-133] 워크스페이스 시작하기 알림창 노출
+
+Limitation
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
