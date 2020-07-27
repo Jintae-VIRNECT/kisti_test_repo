@@ -122,7 +122,7 @@ pipeline {
                                                                         execCommand: 'count=`docker ps -a | grep rm-service | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service && docker rm rm-service; else echo "Not Running STOP&DELETE"; fi;'
                                                                 ),
                                                                 sshTransfer(
-                                                                        execCommand: "docker run -p 8081:8081 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
+                                                                        execCommand: "docker run -p 8000:8000 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
                                                                 ),
                                                                 sshTransfer(
                                                                         execCommand: 'docker image prune -a -f'
@@ -168,7 +168,7 @@ pipeline {
                                                                         execCommand: 'count=`docker ps -a | grep rm-service | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service && docker rm rm-service; else echo "Not Running STOP&DELETE"; fi;'
                                                                 ),
                                                                 sshTransfer(
-                                                                        execCommand: "docker run -p 8081:8081 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
+                                                                        execCommand: "docker run -p 8000:8000 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
                                                                 ),
                                                                 sshTransfer(
                                                                         execCommand: 'docker image prune -a -f'
