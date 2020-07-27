@@ -3,6 +3,9 @@ pipeline {
       environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        SPRING_PROFILES_DEV = "-Dspring.profiles=develop"
+        SPRING_PROFILES_STAGE = "-Dspring.profiles=staging"
+        SPRING_PROFILES_PROD = "-Dspring.profiles=production"
       }
     stages {
         stage('Pre-Build') {
@@ -11,7 +14,7 @@ pipeline {
                 catchError() {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew :service-server:clean'
-                    sh './gradlew :service-server:build -x test'
+                    //sh './gradlew :service-server:build -x test $SPRING_'
                     sh 'cp docker/Dockerfile ./'
                 }
 
@@ -31,6 +34,9 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
+                        catchError() {
+                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_DEV'
+                        }
                         sh 'docker build -t rm-service .'
                     }
                 }
@@ -41,6 +47,9 @@ pipeline {
                     }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
+                        catchError() {
+                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_STAGE'
+                        }
                         sh 'docker build -t rm-service:${GIT_TAG} .'
                     }
                 }
@@ -51,6 +60,9 @@ pipeline {
                     }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
+                        catchError() {
+                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_PROD'
+                        }
                         sh 'docker build -t rm-service:${GIT_TAG} .'
                     }
                 }

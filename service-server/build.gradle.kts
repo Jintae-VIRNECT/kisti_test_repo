@@ -2,18 +2,11 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot")
-    //id("io.spring.dependency-management")
+    id("java")
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
-    /*id("org.springframework.boot") version "2.2.5.RELEASE" //change version to 2.2.5.RELEASE //2.3.1.RELEASE
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    kotlin("jvm") version "1.3.72"
-    kotlin("plugin.spring") version "1.3.72"
-    kotlin("plugin.jpa") version "1.3.72"
-    id("java")*/
 }
-
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 configurations {
@@ -24,11 +17,18 @@ configurations {
 
 ext {
     set("springCloudVersion", "Hoxton.SR1")
+    /*val profiles = if(System.getProperty("spring.profiles") != null) System.getProperty("spring.profiles").toString() else "default"
+    set("profiles", profiles)*/
 }
+
 
 sourceSets {
     main {
         java.srcDir("src/main/java")
+        resources.srcDirs(listOf(
+            "src/main/resources",
+            "src/main/resources-${System.getProperty("spring.profiles")}"
+        ))
     }
 }
 
@@ -113,24 +113,16 @@ tasks.withType<Test> {
 }
 
 tasks.getByName<BootJar>("bootJar") {
+    println("boot Jar task invoked....")
+    println("Note: sourceSet has changed with current spring profiles")
+    println("spring.profiles: " + System.getProperty("spring.profiles"))
+
     enabled= true
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
     /*manifest {
         attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
     }*/
 }
-
-/*tasks.getByName<Jar>("jar") {
-    enabled= true
-    //mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
-    //println(destinationDirectory.get().toString())
-    //destinationDirectory.set(project.file(rootProject.buildDir))
-
-    //destinationDirectory file(rootProject.buildDir)
-    manifest {
-        attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
-    }
-}
-}*/
