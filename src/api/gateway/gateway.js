@@ -7,7 +7,7 @@
 import { merge } from 'lodash'
 import Cookies from 'js-cookie'
 import API from './api'
-import logger from 'utils/logger'
+import { debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
 
@@ -67,7 +67,7 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      logger(option)
+      debug(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
     }
@@ -81,7 +81,7 @@ const sender = async function(constant, params, headers = {}, custom) {
   })
 
   try {
-    logger(method.toUpperCase(), url, parameter, headers)
+    debug(method.toUpperCase(), url, parameter, headers)
     const request = {
       method: method,
       url: url,
@@ -109,13 +109,13 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        logger(res.data['data'])
+        debug(res.data['data'])
         return res.data['data']
       } else {
         return true
       }
     } else {
-      errorHandler(res.data)
+      throw errorHandler(res.data)
     }
   }
 }
@@ -125,10 +125,10 @@ const receiver = function(res) {
  * @param {Object} errCode
  */
 const errorHandler = function(err) {
-  console.error(err)
-  const errorList = errorList
+  console.error(err.message)
+  // const errorList = errorList
   const error = {}
-  error.code = isNaN(parseInt(err)) ? err : parseInt(err)
+  error.code = isNaN(parseInt(err.code)) ? err : parseInt(err.code)
   error.message = error.message || 'Undefined Error.'
 
   if (error.code in errorList) {
@@ -150,22 +150,22 @@ const errorHandler = function(err) {
       //   window.location.reload()
       //   break
     }
-    throw new Error(error.message)
+    return new Error(error.message)
   } else {
-    throw err
+    return err
   }
 }
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  logger('TOKEN::', axios.defaults.headers)
+  debug('TOKEN::', axios.defaults.headers)
 }
 
 export const setBaseURL = baseURL => {
   axios.defaults.baseURL = baseURL
   axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
 
-  logger('BASE_URL::', baseURL)
+  debug('BASE_URL::', baseURL)
 }
 
 export default sender

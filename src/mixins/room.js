@@ -35,8 +35,10 @@ export default {
           console.error('>>>join room 실패')
         }
       } catch (err) {
+        if (err.code === 4002) {
+          this.toastError('이미 삭제된 협업입니다.')
+        }
         this.roomClear()
-        console.log(err)
       }
       // this.confirmDefault('이미 삭제된 협업입니다.')
       // this.confirmDefault('협업에 참가가 불가능합니다.')

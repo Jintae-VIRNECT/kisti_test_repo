@@ -106,10 +106,11 @@ import NoticeItem from './NoticeItem'
 
 import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin],
   components: {
     Switcher,
     Popover,
@@ -120,7 +121,7 @@ export default {
   data() {
     return {
       onPush: true,
-      key: this.$route.name,
+      key: '',
       alarmList: [],
     }
   },
@@ -191,23 +192,30 @@ export default {
         alert('통화를 종료하고 참여해주세요')
         return
       }
-      const contents = {
-        nickName: this.account.nickname,
-      }
-
-      sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
       const params = {
         workspaceId: this.workspace.uuid,
         sessionId: body.contents.roomSessionId,
       }
-      const room = await getRoomInfo(params)
-      this.join(room)
+      try {
+        const room = await getRoomInfo(params)
+        this.join(room)
+        const contents = {
+          nickName: this.account.nickname,
+        }
+        sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
+      } catch (err) {
+        if (err.code === 4002) {
+          this.toastError('이미 삭제된 협업입니다.')
+          // this.toastError('협업에 참가가 불가능합니다.')
+        }
+      }
     },
   },
 
   /* Lifecycles */
   mounted() {
     const push = this.$localStorage.getItem('push')
+    this.key = this.$route.name
     if (push === 'true') {
       this.onPush = true
     } else if (push === 'false') {
