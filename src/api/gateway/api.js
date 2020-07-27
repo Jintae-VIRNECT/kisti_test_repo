@@ -2,49 +2,51 @@ export default {
   /* Account */
   LOGIN: ['POST', '/auth/signin'],
   TOKEN: ['POST', '/auth/oauth/token'],
-  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
-  USER_INFO: ['GET', '/users/{userId}'],
+  ACCOUNT: ['GET', '3/users/info', { type: 'form' }],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
-  HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
-  GET_HISTORY_LIST: ['GET', '/media/history'],
-  GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
+  GET_HISTORY_LIST: ['GET', window.urls.media + '/media/history'],
+  GET_HISTORY_ITEM: ['GET', window.urls.media + '/media/history/{roomId}'],
+  DELETE_HISTORY_ITEM: ['PUT', window.urls.media + '/media/history/{roomId}'],
+  DELETE_HISTORY_ALL: ['DELETE', window.urls.media + '/media/history'],
 
   /* Workspace - Member */
   GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
-  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}'],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
-  CREATE_ROOM: ['POST', '/remote/room'],
-  JOIN_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/join'],
-  ROOM_INFO: ['GET', '/remote/room/{workspaceId}/{sessionId}'],
-  DELETE_ROOM: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/{userId}'],
+  ROOM_LIST: ['GET', window.urls.media + '/media/room?paging={paging}'],
+  ROOM_INFO: ['GET', window.urls.media + '/media/room/{roomId}'],
+  UPDATE_ROOM_INFO: [
+    'PUT',
+    window.urls.media + '/media/room/{roomId}',
+    { type: 'form' },
+  ],
   LEAVE_ROOM: [
     'DELETE',
-    '/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
+    window.urls.media + '/media/room/{roomId}/participants/{participantsId}',
   ],
-  UPDATE_ROOM_INFO: ['POST', '/remote/room/{workspaceId}/{sessionId}/info'],
+  PARTICIPANTS_LIST: [
+    'GET',
+    window.urls.media + '/media/room/{roomId}/participants',
+  ],
+  INVITE_PARTICIPANTS_LIST: [
+    'GET',
+    window.urls.media + '/media/room/participants',
+  ],
+  CREATE_ROOM: [
+    'POST',
+    window.urls.media + '/media/room?workspaceId={workspaceId}',
+    { type: 'form' },
+  ],
+  DELETE_ROOM: ['DELETE', window.urls.media + '/media/room/{roomId}'],
 
   /* CALL */
-  GET_TOKEN: ['POST', '/media/tokens'],
-  INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],
-  KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
+  GET_TOKEN: ['POST', window.urls.media + '/media/tokens'],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/{workspaceId}/{userId}'],
   /* MESSAGE */
   SEND_PUSH: ['POST', '/messages/push'],
-
-  /* CHAT FILE */
-  SEND_FILE: ['POST', '/file/upload', { type: 'form' }],
-}
-
-export const wsUri = {
-  REMOTE: '/remote/websocket',
-  MESSAGE: '/message',
 }
