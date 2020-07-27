@@ -1,9 +1,9 @@
 export default {
   /* Account */
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
-  TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
-  ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
-  USER_INFO: ['GET', 'https://192.168.6.3:8073/users/{userId}'],
+  TOKEN: ['POST', '/auth/oauth/token'],
+  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
+  USER_INFO: ['GET', '/users/{userId}'],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
@@ -17,10 +17,7 @@ export default {
   DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: [
-    'GET',
-    'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
-  ],
+  GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
   MEMBER_LIST: [
     'GET',
@@ -66,12 +63,9 @@ export default {
   ],
 
   /* LICENSE */
-  GET_LICENSE: [
-    'GET',
-    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
-  ],
+  GET_LICENSE: ['GET', '/licenses/{workspaceId}/{userId}'],
   /* MESSAGE */
-  SEND_PUSH: ['POST', 'https://192.168.6.3:8073/messages/push'],
+  SEND_PUSH: ['POST', '/messages/push'],
 
   /* CHAT FILE */
   SEND_FILE: [

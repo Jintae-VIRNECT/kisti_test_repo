@@ -81,9 +81,7 @@ async function getUrls() {
 
   logger('URLS::', res.data)
 
-  // TODO: 서버 개발 완료 후 변경 필요
-  // setBaseURL(res.data.api)
-  setBaseURL(res.data.media)
+  setBaseURL(res.data.api)
   window.urls = res.data
   return res.data
 }
