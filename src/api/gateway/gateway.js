@@ -7,7 +7,7 @@
 import { merge } from 'lodash'
 import Cookies from 'js-cookie'
 import API from './api'
-import logger from 'utils/logger'
+import { logger } from 'utils/logger'
 import axios from '../axios'
 
 const URL = API

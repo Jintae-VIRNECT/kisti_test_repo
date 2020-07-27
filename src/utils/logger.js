@@ -28,7 +28,11 @@ const getTrace = () => {
   // console.log(obj.stack.replace(/Error/, 'Trace'))
 }
 
-const logger = (...value) => {
+export const logger = (type = 'dev', ...value) => {
+  console.log(`${type}::`, ...value)
+}
+
+export const debug = (...value) => {
   if (process.env.NODE_ENV === 'production') {
     if (window.env && window.env === 'develop') {
       console.log(...value)
@@ -37,5 +41,3 @@ const logger = (...value) => {
     console.logger(...value)
   }
 }
-
-export default logger

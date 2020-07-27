@@ -4,6 +4,7 @@ import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { getWH, RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
+import { logger } from 'utils/logger'
 
 export default {
   name: 'LocalRecordMenu',
@@ -163,8 +164,10 @@ export default {
         } else {
           this.recorder.changeCanvasOrientation('landscape')
         }
+
         return true
       } else {
+        logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
     },

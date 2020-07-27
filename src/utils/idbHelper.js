@@ -1,44 +1,52 @@
 import Dexie from 'dexie'
+import { logger, debug } from 'utils/logger'
+
 /**
  * @author ykmo-VIRNECT
  */
 
 let db = null
 let initFlag = true
-const logPrefix = 'IDB :: '
+const logType = 'IDB'
 const USAGE_LIMIT_PERSENTAGE = 80
 
 async function initIDB() {
   //define db structure
+  try {
+    if (initFlag) {
+      db = new Dexie('RemoteMediaChunk')
 
-  if (initFlag) {
-    db = new Dexie('RemoteMediaChunk')
+      /**
+       * Warning!! if you change column then
+       * increase version number
+       */
+      db.version(2).stores({
+        RemoteMediaChunk:
+          '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
+      })
+      initFlag = false
 
-    console.log(`${logPrefix} 'init idb'`)
-
-    /**
-     * Warning!! if you change column then
-     * increase version number
-     */
-    db.version(2).stores({
-      RemoteMediaChunk:
-        '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
-    })
-    initFlag = false
+      logger(logType, 'IDB init Success')
+      return true
+    }
+  } catch (e) {
+    console.error(logType, 'IDB init Failed')
+    console.error(e)
+    return false
   }
 }
 
 /**
  * Add Record to Idb
- * @param {*} groupId media chunk group id
- * @param {*} uuid media chunk private id
- * @param {*} fileName media chunk file name
- * @param {*} playTime media chunk play time(s)
- * @param {*} fileSize media chunk size (byte)
- * @param {*} blob media chunk blob
- * @param {*} userId account id
- * @param {*} accountName account nickname
- * @param {*} roomName room name
+ * @param {String} groupId media chunk group id
+ * @param {String} uuid media chunk private id
+ * @param {String} fileName media chunk file name
+ * @param {Number} playTime media chunk play time(s)
+ * @param {String} fileSize media chunk size (byte)
+ * @param {Blob} blob media chunk blob
+ * @param {String} userId account id
+ * @param {String} accountName account nickname
+ * @param {String} roomName room name
  */
 async function addMediaChunk(
   groupId,
@@ -51,6 +59,18 @@ async function addMediaChunk(
   accountName,
   roomName,
 ) {
+  debug(
+    `groupId : ${groupId} 
+    uuid : ${uuid}
+    fileName: ${fileName} 
+    playTime :  ${playTime}
+    fileSize :  ${fileSize}
+    blob :  ${blob} 
+    userId : ${userId} 
+    accountName :  ${accountName}
+    roomName :  ${roomName}`,
+  )
+
   await db.RemoteMediaChunk.add({
     groupId: groupId,
     uuid: uuid,
@@ -86,19 +106,17 @@ async function getDataWithUserId(userId, dataHandler) {
     result = result.map(dataHandler)
   }
 
+  debug(result)
   return result
 }
 
-async function getMediaChunkArray(fileName) {
-  return await db.RemoteMediaChunk.where('fileName')
-    .equals(fileName)
-    .toArray()
-}
-
 async function getMediaChunkArrays(uuids) {
-  return await db.RemoteMediaChunk.where('uuid')
+  let result = await db.RemoteMediaChunk.where('uuid')
     .anyOf(uuids)
     .toArray()
+
+  debug(result)
+  return result
 }
 
 async function deleteMediaChunk(uuids) {
@@ -122,9 +140,9 @@ async function checkQuota() {
       100
     ).toFixed(2)
 
-    console.log(`${logPrefix} Quota: ${estimation.quota}`)
-    console.log(`${logPrefix} Usage: ${estimation.usage}`)
-    console.log(`${logPrefix} UsagePersentage: ${quotaUsagePersentage}%`)
+    logger(logType, `Quota: ${estimation.quota}`)
+    logger(logType, `Usage: ${estimation.usage}`)
+    logger(logType, `UsagePersentage: ${quotaUsagePersentage}%`)
 
     if (quotaUsagePersentage < USAGE_LIMIT_PERSENTAGE) {
       return true
@@ -132,14 +150,13 @@ async function checkQuota() {
       return false
     }
   } else {
-    console.error(`${logPrefix} StorageManager not found`)
+    console.error(logType, `StorageManager not found`)
   }
 }
 
 const IDBHelper = {
   initIDB: initIDB,
   addMediaChunk: addMediaChunk,
-  getMediaChunkArray: getMediaChunkArray,
   getMediaChunkArrays: getMediaChunkArrays,
   deleteMediaChunk: deleteMediaChunk,
   getAllDataArray: getAllDataArray,

@@ -1,3 +1,5 @@
+import { debug } from 'utils/logger'
+
 const RATIO_16_9 = 1.77
 const RATIO_4_3 = 1.33
 
@@ -77,6 +79,8 @@ export const localRecordTarget = [
  * @param {Number} inputHeight stream height
  */
 export const getWH = (resolution, inputWidth, inputHeight) => {
+  debug('recordOption', resolution, inputWidth, inputHeight)
+
   //default 16:9 480p
   const video = {
     width: 854,

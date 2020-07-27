@@ -1,7 +1,9 @@
 import uuid from 'uuid'
 import IDBHelper from 'utils/idbHelper'
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
+
+const logType = 'LocalRecorder(util)'
 
 export default class LocalRecorder {
   constructor() {
@@ -26,7 +28,7 @@ export default class LocalRecorder {
   }
 
   setConfig(config) {
-    logger(config)
+    debug(logType, config)
     this.today = config.today
     this.options = config.options
     this.roomTitle = config.roomTitle
@@ -62,7 +64,9 @@ export default class LocalRecorder {
     //for group id
     this.groupId = uuid()
 
-    await IDBHelper.initIDB()
+    if (!(await IDBHelper.initIDB())) {
+      return false
+    }
 
     //reset fileCount
     this.fileCount = 0
@@ -95,6 +99,8 @@ export default class LocalRecorder {
       }
 
       this.timeMark = performance.now()
+
+      logger(logType, 'start local record')
     } catch (e) {
       console.error(e)
     }
@@ -109,6 +115,8 @@ export default class LocalRecorder {
         if (this.stopCallback) {
           this.stopCallback()
         }
+
+        logger(logType, 'stop local record')
       }
     } catch (e) {
       console.error(e)
@@ -153,7 +161,7 @@ export default class LocalRecorder {
       }
 
       if (this.maxTime === null) {
-        logger('this.maxTime is null')
+        debug('this.maxTime is null')
         this.maxTime = 60
       }
 
@@ -183,7 +191,7 @@ export default class LocalRecorder {
 
   async checkQuota() {
     if ((await IDBHelper.checkQuota()) === false) {
-      console.log('LocalRecording :: quota overed cancel recording')
+      logger(logType, 'quota overed cancel recording')
       if (this.noQuotaCallback) {
         this.noQuotaCallback()
       }
