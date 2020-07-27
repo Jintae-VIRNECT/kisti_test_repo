@@ -258,6 +258,16 @@ export default {
       })
       this.setScreenStream(displayStream)
     },
+
+    stopLocalRecordByKeyPress(e) {
+      if (
+        e.key === 'Escape' &&
+        this.localRecordStatus === LCOAL_RECORD_STAUTS.START
+      ) {
+        const showMsg = true
+        this.stopRecord(showMsg)
+      }
+    },
   },
 
   mounted() {

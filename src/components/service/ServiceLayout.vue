@@ -110,9 +110,11 @@ export default {
     window.onbeforeunload = () => {
       return true
     }
+    window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
+    window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
 
     this.stopRecord()
     this.$eventBus.$off('startLocalRecord')
