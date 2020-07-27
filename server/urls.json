@@ -5,6 +5,12 @@
     "staging": "https://stgapi.virnect.com",
     "production": "https://api.virnect.com"
   },
+  "wsapi": {
+    "local": "wss://192.168.6.3:8073",
+    "develop": "wss://192.168.6.3:8073",
+    "staging": "wss://stgapi.virnect.com",
+    "production": "wss://api.virnect.com"
+  },
   "console": {
     "local": "/account",
     "develop": "https://192.168.6.3:8883",
@@ -34,11 +40,5 @@
     "develop": "wss://192.168.13.36:5000/remote/websocket",
     "staging": "wss://stgapi.virnect.com/remote/websocket",
     "production": "wss://api.virnect.com/remote/websocket"
-  },
-  "messageWs": {
-    "local": "wss://192.168.6.3:8073/message",
-    "develop": "wss://192.168.6.3:8073/message",
-    "staging": "wss://stgapi.virnect.com/message",
-    "production": "wss://api.virnect.com/message"
   }
 }
