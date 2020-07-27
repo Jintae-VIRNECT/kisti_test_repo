@@ -29,7 +29,7 @@ pipeline {
               steps {
                 sh 'docker build -t rm-mediaserver .'
               }
-            }
+            } 
     
             stage('Staging Branch') {
               when {
