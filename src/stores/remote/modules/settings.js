@@ -74,7 +74,7 @@ const getters = {
   language: state => state.language,
 
   //screen stream for local recording
-  screenStream: state => state.settings.screenStream,
+  screenStream: state => state.screenStream,
 
   // used Remote.js
   settingInfo: state => {
