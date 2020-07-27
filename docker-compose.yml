@@ -21,8 +21,8 @@ services:
     restart: always
     volumes:
       - ./coturn/turnserver.conf:/etc/turnserver.conf
-      - ./coturn/private.pem:/etc/ssl/private.pem
-      - ./coturn/cert.pem:/etc/ssl/cert.pem
+      - ./cert/private.pem:/etc/ssl/private.pem
+      - ./cert/cert.pem:/etc/ssl/cert.pem
     ports:
 ## WEB ADMIN
       - "4443:4443"
