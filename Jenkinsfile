@@ -120,7 +120,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=13.209.253.107 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=52.78.126.114 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
