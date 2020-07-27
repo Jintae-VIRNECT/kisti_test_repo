@@ -15,6 +15,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "AUTH_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -26,6 +27,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "USER_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -37,6 +39,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "WORKSPACE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -48,6 +51,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "ADMIN_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -60,17 +64,19 @@ spring:
             - RemoveRequestHeader=Expect
             - name: Logging
               args:
+                messagePrefix: "CONTENT_SERVER"
                 preLogger: true
                 postLogger: true
 
         - id: process-server
           uri: lb://process-server
           predicates:
-            - Path=/processes/**
+            - Path=/tasks/**
           filters:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "TASKS_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -82,6 +88,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "LICENSE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -93,6 +100,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "MESSAGE_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -104,6 +112,7 @@ spring:
             - StripPrefix=0
             - name: Logging
               args:
+                messagePrefix: "DOWNLOAD_SERVER"
                 preLogger: true
                 postLogger: true
 
@@ -147,7 +156,7 @@ spring:
 
       globalcors:
         cors-configurations:
-          '[/**]':
+          "[/**]":
             allowedOrigins:
               - "https://workstation.virnect.com"
               - "https://virnect.com"
@@ -178,4 +187,3 @@ eureka:
 
 jwt:
   secret: 2020-1356-virnect-platform-392
-
