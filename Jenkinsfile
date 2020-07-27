@@ -64,7 +64,7 @@ pipeline {
       steps {
         echo 'SSH Check'
          catchError() {
-          sh 'port=`netstat -lnp | grep 127.0.0.1:5122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Media Tunneling OK";else echo "SSH QA Media Tunneling Not OK";ssh -M -S Remote-Media-QA -fnNT -L 5122:10.0.10.58:22 jenkins@13.125.24.98;fi'
+          sh 'port=`netstat -lnp | grep 127.0.0.1:5122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Media Tunneling OK";else echo "SSH QA Media Tunneling Not OK";ssh -M -S Remote-Media-QA -fnNT -L 5122:10.0.10.26:22 jenkins@13.125.24.98;fi'
           sh 'port=`netstat -lnp | grep 127.0.0.1:7122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Media Tunneling OK";else echo "SSH Prod Media Tunneling Not OK";ssh -M -S Remote-Media-Prod -fnNT -L 7122:10.0.20.35:22 jenkins@13.125.24.98;fi'
         }
       }
@@ -120,7 +120,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8888:8888 -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=13.209.253.107 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8888:8888 -p 50000-50100:5000-50100/udp -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=13.209.253.107 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -167,7 +167,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                           execCommand: "docker run -p 8888:8888 -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=3.34.209.208 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                           execCommand: "docker run -p 8888:8888 -p 50000-50100:5000-50100/udp -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=3.34.209.208 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
