@@ -80,3 +80,8 @@ export default {
     { type: 'form' },
   ],
 }
+
+export const wsUri = {
+  REMOTE: '/remote/websocket',
+  MESSAGE: '/message',
+}

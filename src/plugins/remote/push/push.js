@@ -1,6 +1,7 @@
 import { Client } from '@stomp/stompjs'
 import { DESTINATION, KEY } from 'configs/push.config'
 import logger from 'utils/logger'
+import { wsUri } from 'api/gateway/api'
 
 const push = {
   _inited: false,
@@ -16,7 +17,7 @@ const push = {
       push._inited = true
 
       const config = {
-        brokerURL: window.urls.messageWs,
+        brokerURL: `${window.urls.wsapi}${wsUri['MESSAGE']}`,
         connectHeaders: {
           login: 'guest',
           passcode: 'guest',

@@ -37,7 +37,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import urls from '@/server/urls'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
@@ -50,7 +49,7 @@ export default {
   computed: {
     ...mapGetters(['account']),
     urlLink() {
-      return urls.workstation[process.env.TARGET_ENV]
+      return window.urls.workstation
     },
   },
   methods: {
