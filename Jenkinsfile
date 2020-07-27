@@ -64,7 +64,7 @@ pipeline {
       steps {
         echo 'SSH Check'
          catchError() {
-          sh 'port=`netstat -lnp | grep 127.0.0.1:5122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Media Tunneling OK";else echo "SSH QA Media Tunneling Not OK";ssh -M -S Remote-Media-QA -fnNT -L 5122:10.0.10.26:22 jenkins@13.125.24.98;fi'
+          sh 'port=`netstat -lnp | grep 127.0.0.1:5122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Media Tunneling OK";else echo "SSH QA Media Tunneling Not OK";ssh -M -S Remote-Media-QA -fnNT -L 5122:10.0.10.58:22 jenkins@13.125.24.98;fi'
           sh 'port=`netstat -lnp | grep 127.0.0.1:7122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Media Tunneling OK";else echo "SSH Prod Media Tunneling Not OK";ssh -M -S Remote-Media-Prod -fnNT -L 7122:10.0.20.35:22 jenkins@13.125.24.98;fi'
         }
       }
