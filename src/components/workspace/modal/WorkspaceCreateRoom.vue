@@ -170,8 +170,8 @@ export default {
             profile: this.account.profile,
           }
 
-          const rtn = await sendPush(EVENT.INVITE, selectedUserIds, contents)
-          console.log(rtn)
+          await sendPush(EVENT.INVITE, selectedUserIds, contents)
+
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })
@@ -181,7 +181,7 @@ export default {
         }
       } catch (err) {
         this.roomClear()
-        console.log(err)
+        console.error(err)
       }
     },
   },
