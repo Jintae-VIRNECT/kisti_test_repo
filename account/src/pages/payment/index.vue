@@ -34,13 +34,21 @@
                 </span>
               </dd>
             </dl>
+            <!-- 결제정보 상세보기 -->
             <el-button
+              v-if="autoPayments.items.length"
               type="simple"
               class="wide"
               @click="showAutoPaymentInfoModal = true"
             >
               {{ $t('common.more') }}
             </el-button>
+            <!-- 결제정보가 없을 경우 -->
+            <a v-else :href="$url.pay">
+              <el-button type="simple" class="wide">
+                {{ $t('common.payCenter') }}
+              </el-button>
+            </a>
           </el-card>
           <!-- 결제 수단 등록 & 변경 -->
           <el-card class="way">
@@ -235,6 +243,10 @@ export default {
     }
     & + .el-button {
       margin: 30px 0 10px;
+    }
+    & + a {
+      display: block;
+      margin: 60px 0 10px;
     }
   }
   .way {

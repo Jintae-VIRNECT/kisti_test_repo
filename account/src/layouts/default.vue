@@ -23,6 +23,11 @@ export default {
     TheHeader,
     TheSidebar,
   },
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('menu.account')}`,
+    }
+  },
   data() {
     return {
       sideMenus,

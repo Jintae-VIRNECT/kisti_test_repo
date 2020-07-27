@@ -1,7 +1,7 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
-import { url } from '@/plugins/context'
+import { context, url } from '@/plugins/context'
 
 let axios = null
 /**
@@ -44,8 +44,6 @@ export async function api(name, option = {}) {
     }
   }
 
-  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
-
   // payletter api
   if (/^\/billing/.test(uri)) {
     try {
@@ -55,13 +53,10 @@ export async function api(name, option = {}) {
 
       const response = await axios[method](uri, params, { headers })
       const { data } = response.data
-      if (process.client) $nuxt.$loading.finish()
       return data
     } catch (e) {
-      if (process.client) {
-        $nuxt.$loading.fail()
-        $nuxt.$loading.finish()
-      }
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(e)
       console.error(`URL: ${uri}`)
       const { code, message } = e.response.data.result
       throw new Error(`${code}: ${message}`)
@@ -72,7 +67,6 @@ export async function api(name, option = {}) {
     try {
       const response = await axios[method](uri, params, { headers })
       const { code, data, message, service } = response.data
-      if (process.client) $nuxt.$loading.finish()
 
       if (code === 200) {
         return data
@@ -85,11 +79,14 @@ export async function api(name, option = {}) {
         throw error
       }
     } catch (e) {
-      if (process.client) {
-        $nuxt.$loading.fail()
-        $nuxt.$loading.finish()
-      }
       console.error(`URL: ${uri}`)
+      // timeout
+      if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
+        context.error(e)
+      }
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(e)
       throw e
     }
   }
