@@ -120,7 +120,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8888:8888 -p 50000-50100:5000-50100/udp -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=13.209.253.107 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=13.209.253.107 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -167,7 +167,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                           execCommand: "docker run -p 8888:8888 -p 50000-50100:5000-50100/udp -v ${PWD}/cert/cert_key.pem:/etc/kurento/cert/cert+key.pem  -e KMS_EXTERNAL_ADDRESS=3.34.209.208 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                           execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=3.34.209.208 -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -197,7 +197,7 @@ pipeline {
       }
     post {
         always {
-          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
+          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$remote')
           office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
         }
       }
