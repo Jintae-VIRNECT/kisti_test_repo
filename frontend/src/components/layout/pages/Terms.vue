@@ -2,16 +2,16 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
-				<h2>약관 동의</h2>
-				<p>VIRNECT 이용약관에 동의하시면 가입이 진행됩니다.</p>
+				<h2>{{ $t('terms.page.title') }}</h2>
+				<p>{{ $t('terms.page.pageInfo') }}</p>
 
 				<div class="terms-body">
-					<el-checkbox v-model="allTerms" class="all-terms"
-						>전체 약관 동의</el-checkbox
-					>
-					<el-checkbox v-model="serviceAgree" class="must-check"
-						>[서비스 이용약관 동의 내용]</el-checkbox
-					>
+					<el-checkbox v-model="allTerms" class="all-terms">{{
+						$t('terms.page.entire')
+					}}</el-checkbox>
+					<el-checkbox v-model="serviceAgree" class="must-check">{{
+						$t('terms.page.termsContents')
+					}}</el-checkbox>
 					<div class="terms-contents terms-wraper">
 						<h3>{{ $t('terms.h2') }}</h3>
 
@@ -48,9 +48,9 @@
 						</div>
 					</div>
 
-					<el-checkbox v-model="privacyAgree" class="must-check"
-						>[개인정보처리방침 동의 내용]</el-checkbox
-					>
+					<el-checkbox v-model="privacyAgree" class="must-check">{{
+						$t('terms.page.privacyPolicyContents')
+					}}</el-checkbox>
 					<div class="policy-contents terms-wraper">
 						<h3>{{ $t('policy.h2') }}</h3>
 						<p>{{ $t('policy.h2Contents') }}</p>
@@ -98,9 +98,9 @@
 							</ul>
 						</div>
 					</div>
-					<el-checkbox v-model="marketingAgree"
-						>[이벤트 마케팅 수신 동의 내용(선택)]</el-checkbox
-					>
+					<el-checkbox v-model="marketingAgree">{{
+						$t('terms.page.marketingReceive')
+					}}</el-checkbox>
 				</div>
 
 				<el-button

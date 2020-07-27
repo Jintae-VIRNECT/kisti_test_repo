@@ -12,9 +12,10 @@
 						>]
 					</p>
 					<div class="qr-image-box" :class="{ 'code-expire': isExpire }">
-						<img
+						<el-image
 							v-if="qrImage"
 							:src="qrImage"
+							:preview-src-list="[qrImage]"
 							alt="qrcode image"
 							class="qrcode--image__inner"
 						/>
@@ -33,9 +34,12 @@
 					<p class="title">{{ $t('qrLoginCenter.howToLogin') }}</p>
 					<div>
 						<ol>
-							<li v-for="(list, idx) of $t('qrLogin.centerHowTo')" :key="idx">
+							<li
+								v-for="(list, idx) of $t('qrLoginCenter.centerHowTo')"
+								:key="idx"
+							>
 								<p>
-									<span>{{ idx + 1 }}.</span>{{ list }}
+									<span>{{ idx + 1 }}. </span>{{ list }}
 								</p>
 							</li>
 						</ol>
@@ -131,6 +135,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~element/image.css';
+
 p {
 	font-weight: 500;
 	font-family: 'NotoSansKR', 'Noto Sans';
@@ -152,7 +158,8 @@ p {
 	margin: 10px 0 26px;
 	// padding: 16px;
 	border: 1px solid #e2e7ed;
-	&.code-expire {
+	&.code-expire /deep/ {
+		pointer-events: none;
 		p {
 			position: absolute;
 			top: 50%;
@@ -166,6 +173,11 @@ p {
 		img {
 			opacity: 0.1;
 		}
+	}
+}
+.qr-image-box /deep/ {
+	.el-image-viewer__close {
+		color: #fff;
 	}
 }
 .qr-expire-count {

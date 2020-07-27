@@ -1,581 +1,710 @@
 {
   "terms": {
-    "h2": "서비스 이용약관",
+    "page": {
+      "title": "Agree to the Terms & Conditions",
+      "pageInfo": "Sign up begins if you agree to the Terms & Conditions",
+      "entire": "Agree to all the terms",
+      "termsContents": "[Contents of agreement to the Terms of Service]",
+      "privacyPolicyContents": "[Contents of consent of the personal information processing policy]",
+      "marketingReceive": "[Content of consent to receiving promotional marketing material (optional)]"
+    },
+    "h2": "Terms of Service",
     "lists": [
       {
-        "title": "제 1장 총칙",
-        "contents": "제 1조 (목적)",
+        "title": "Chapter 1: General Provisions",
+        "contents": "Article 1 (Purpose)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "본 약관은 주식회사 버넥트(이하 '회사'라 한다.)가 제공하는 VIRNECT 제품과 관련하여, 회사와 회원간에 제품의 이용조건 및 절차, 회사와 회원간의 권리와 의무사항 및 기타 필요한 제반사항의 규정을 목적으로 합니다."
+            "wordContents": "These terms and conditions are related to VIRNECT products provided by Vernect Co., Ltd. (hereinafter referred to as the'Company'), and the terms and conditions of use of the products between the company and members, rights and obligations between the company and members, and other necessary matters"
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 2조 (약관의 효력 및 변경)",
+        "contents": "Article 2 (Effectiveness and Change of Terms and Conditions)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "본 약관은 회사 홈페이지(https://virnect.com)에 공시함으로써 효력이 발생합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "이 약관에 동의하고 회원가입을 한 회원은 약관에 동의한 시점부터 동의한 약관의 적용을 받고 약관의 변경이 있을 경우에는 변경의 효력이 발생한 시점부터 변경된 약관의 적용을 받습니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사는 필요하다고 인정되는 경우 이 약관을 변경할 수 있습니다. 회사는 약관이 변경되는 경우에 변경된 약관의 내용과 적용일을 정하여, 그 적용일로부터 7일전까지 홈페이지에 온라인으로 공시하거나 회원의 이메일로 전송하는 방법으로 회원에게 고지합니다. 변경된 약관은 공시하거나 고지한 적용일로부터 효력을 발생합니다."
-          }, {
-            "word": "4.",
-            "wordContents": "본 약관의 변경에 대해 이의가 있는 회원은 제품 이용을 중단하고 이용계약을 해지(회원탈퇴) 할 수 있습니다. 회사가 전항에 따라 개정 약관에 대한 변경 동의 의사가 표명된 것으로 본다는 뜻을 명확하게 고지하였음에도 회원이 명시적으로 거부의 의사표시를 하지 아니한 경우 회원이 변경 약관에 동의한 것으로 봅니다."
-          }, {
-            "word": "5.",
-            "wordContents": "제품을 이용하는 회원이 본 약관에 동의하지 아니하고 이용계약을 해지하는 경우에는 별도의 환불정책을 따릅니다."
+            "word": "1",
+            "wordContents": "These terms and conditions are effective by posting them on the company website (https://virnect.com)."
+          },
+          {
+            "word": "2",
+            "wordContents": "A member who agrees to these terms and is registered as a member is subject to the terms and conditions agreed upon from the time of agreement, and if there is a change in terms of terms, the terms and conditions of the change are applied from the time the change takes effect.\""
+          },
+          {
+            "word": "3",
+            "wordContents": "The company may change these terms if deemed necessary. In the event that the Terms and Conditions are changed, the Company shall set the contents and the application date of the changed Terms and Conditions, and notify the Members by posting them on the website or sending them by e-mail to the Members 7 days before the date of application. The revised terms and conditions become effective from the date of disclosure or notice.\""
+          },
+          {
+            "word": "4",
+            "wordContents": "Members who have objections to changes to these terms and conditions may stop using the product and terminate the use contract (withdrawal from membership). Even if the company has clearly announced that it intends to agree to change the terms and conditions of the revised terms in accordance with the preceding paragraph, it is deemed that the members have agreed to the terms and conditions of change if the member has not expressly expressed their intention to refuse.\""
+          },
+          {
+            "word": "5",
+            "wordContents": "If the member who uses the product does not agree to these terms and conditions and terminates the use contract, a separate refund policy will be followed.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 3조 (약관의 적용 및 이외 준칙)",
+        "contents": "Article 3 (Application of Terms and Conditions and Other Rules)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회사는 제품 특성에 따라 개별 제품별로 별도의 이용계약서를 체결할 수 있으며, 해당 내용이 본 약관과 상충할 경우에는 별도의 이용계약서가 우선하여 적용됩니다."
-          }, {
-            "word": "2.",
-            "wordContents": "본 약관에 명시되지 아니한 사항과 본 약관의 해석에 관하여는 \"약관의 규제에 관한 법률(이하 '약관규제법')\", \"정보통신망이용촉진및정보보호에관한법률(이하 '정보통신망법')\"등 관계법령에 의합니다."
+            "word": "1",
+            "wordContents": "The company can sign a separate contract for each product depending on the product characteristics, and if the content conflicts with these terms, a separate contract takes precedence.\""
+          },
+          {
+            "word": "2",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 4조 (용어의 정의)",
+        "contents": "Article 4 (Definition of terms)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "본 약관에서 사용하는 용어는 다음과 같습니다."
-          }, {
-            "word": "1.",
-            "wordContents": "회원 : 회사가 운영하는 사이트에 접속하여 이 약관에 동의하고, 회사와 이용계약을 체결하여 아이디와 비밀번호를 발급받아 회사가 제공하는 제품을 이용하는 자를 말하며, 정회원과 일반회원으로 구분됩니다."
-          }, {
-            "word": "2.",
-            "wordContents": "이용자: 회원이 제품을 사용할 수 있도록 등록한 단체 또는 개인을 의미합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "아이디: 회원 식별과 제품 이용을 위하여 회원이 선정한 이메일 형태를 의미합니다."
-          }, {
-            "word": "4.",
-            "wordContents": "비밀번호(패스워드): 회원이 부여 받은 아이디에 대하여 회원이 통신상에서 자신의 비밀 보호를 위하여 선정한 문자와 숫자의 조합을 의미합니다."
-          }, {
-            "word": "5.",
-            "wordContents": "제품 이용계약: 회사가 회원에게 제공하는 제품 및 그에 부수하는 일체의 부가기능을 제공하는 계약을 말합니다."
-          }, {
-            "word": "6.",
-            "wordContents": "이용료: 회원이 제품을 이용하기 위해 회사에 지불하는 사용료를 말합니다."
-          }, {
-            "word": "7.",
-            "wordContents": "구독 제품: 회사가 제공하는 제품을 회원이 정기적인 결제하에 정해진 기간 범위내에서 이용할 수 있는 제품을 지칭합니다."
+            "wordContents": "The terms used in these terms and conditions are as follows."
+          },
+          {
+            "word": "1",
+            "wordContents": "Member: A person who accesses the site operated by the company and agrees to these terms and conditions, enters into an agreement with the company, obtains an ID and password, and uses the product provided by the company. Member is distinguished between associate member and full members.\""
+          },
+          {
+            "word": "2",
+            "wordContents": "User: Refers to a group or individual registered to use the product."
+          },
+          {
+            "word": "3",
+            "wordContents": "ID: It means the email selected by the member for member identification and product use."
+          },
+          {
+            "word": "4",
+            "wordContents": "Password : It means the combination of letters and numbers selected to provide confidentiality for the ID given by the member."
+          },
+          {
+            "word": "5",
+            "wordContents": "Product Use Agreement : A contract that provides products that the company provides to members and any additional functions that accompany with it."
+          },
+          {
+            "word": "6",
+            "wordContents": ""
+          },
+          {
+            "word": "7",
+            "wordContents": "Subscription Products: Refers to products provided by the company within a fixed period of time under regular payment by members."
           }
         ]
-      }, {
-        "title": "제 2장 제품 이용계약",
-        "contents": "제 5조 (이용계약의 체결)",
+      },
+      {
+        "title": "Chapter 2 Product Use Agreement",
+        "contents": "Article 5 (Use Agreement)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "이용계약은 회원이 되고자 하는 자가 약관의 내용에 대하여 동의를 한 다음 회원가입신청을 하고 회사가 이러한 신청에 대하여 승낙함으로써 체결됩니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 가입신청자의 신청에 대하여 제품 이용을 승낙함을 원칙으로 하고 회원 아이디를 부여합니다. 회원 아이디는 원칙적으로 변경이 불가능하며, 불가피한 사유로 인하여 변경하고자 하는 경우에는 해당 아이디를 해지하고 새로운 아이디를 부여받아야 합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "제2항의 회원 아이디를 부여하는 과정에서 회사는 회원의 정보를 확인하는 차원에서 해당 회원이 기입하는 이메일 주소에 대한 인증절차를 진행할 수 있습니다."
+            "word": "1",
+            "wordContents": "The Use Agreement is concluded by the person who wishes to become a member, agrees to the terms and conditions, then applies for membership and the company approves the application.\""
+          },
+          {
+            "word": "2",
+            "wordContents": "In principle, the company approves the use of the product for the application of the subscription applicant and grants a member ID. In principle, member ID cannot be changed. If you want to change due to unavoidable reasons, you must cancel the ID and get a new ID.\""
+          },
+          {
+            "word": "3",
+            "wordContents": "In the process of granting the member ID in paragraph 2, the company can proceed with the authentication process via email address entered by the member in order to verify the member's information.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 6조 (이용계약 사항의 변경)",
+        "contents": "Article 6 (Changes to the Use Agreement)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원은 다음 각호 해당하는 사유가 발생한 경우에는 사유 발생 즉시 이메일 또는 회사의 안내에 따라 변경사항을 회사에 알리고 계약의 변경을 요청하여야 합니다.",
+            "word": "1",
+            "wordContents": "In the event of any of the following reasons, the member shall immediately notify the company of the change in accordance with the email or the company's instructions and request a change in the contract immediately after the occurrence of the reason.\"",
             "wordList": {
               "array": [
                 {
-                  "text": "고객 및 요금납입책임자의 상호, 성명, 주소 또는 연락처의 변경"
-                }, {
-                  "text": "제품의 내용(종류, 계약기간 등)의 변경"
-                }, {
-                  "text": "제품 이용료 납부방식의 변경"
+                  "text": "Changes in contact details of customers and person responsible for payments"
+                },
+                {
+                  "text": "Change of product contents (type, contract period, etc.)\""
+                },
+                {
+                  "text": "Changes to payment methods for product service fees"
                 }
               ]
             }
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 회원이 제 1항의 변경사항을 회사에 알리지 않아 발생한 불이익에 대하여 책임지지 않습니다."
+          },
+          {
+            "word": "2",
+            "wordContents": "The company is not responsible for any disadvantages caused by the member not notifying the company of the changes in paragraph 1."
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 7조 (계약의 해지)",
+        "contents": "Article 7 (Cancellation of contract)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "이용계약은 제2항 내지 제3항에 의한 회원 또는 회사의 해지에 의해 종료됩니다. "
-          }, {
-            "word": "2.",
-            "wordContents": "회원의 해지요청에 따라 계약이 해지된 후 발생된 고객정보 소실 및 이용계약 종료로 인하여 발생한 손해에 대한 책임은 회원에게 있으며, 회사에 이로 인한 손해배상을 청구할 수 없습니다."
-          }, {
-            "word": "4.",
-            "wordContents": "회사는 회원이 다음 각 호의 하나에 해당하는 행위를 하였을 경우 제품 이용을 제한하거나 이용계약을 해지할 수 있습니다.",
+            "word": "1",
+            "wordContents": "The Use Agreement is terminated by the termination of the member or the company under paragraphs 2 to 3."
+          },
+          {
+            "word": "2",
+            "wordContents": "When the members request for the termination of contract and the contract is ended, they cannot claim compensation for damages due to loss of their data.\""
+          },
+          {
+            "word": "4",
+            "wordContents": "The company may limit the use of the product or terminate the use contract when the member performs any of the following actions.",
             "wordList": {
               "array": [
                 {
-                  "text": "타인의 개인정보, 이용자ID 및 비밀번호를 부정하게 사용하는 경우"
-                }, {
-                  "text": "같은 이용자가 다른 ID로 이중등록을 한 경우"
-                }, {
-                  "text": "가입한 이름이 실명이 아닌 경우"
-                }, {
-                  "text": "국익 또는 사회적 공익, 공공질서, 미풍양속에 저해되는 행위를 하는 경우"
-                }, {
-                  "text": "타인의 명예를 손상시키거나 불이익을 주는 행위를 한 경우"
-                }, {
-                  "text": "다량의 정보 혹은 광고성 정보 전송, 불법프로그램의 제공, 악성프로그램의 배포 등 서비스 운영을 고의로 방해한 경우"
-                }, {
-                  "text": "회사의 서비스 정보를 이용하여 얻은 정보를 회사의 사전 승낙 없이 복제 또는 유통시키거나 상업적으로 이용하는 경우"
-                }, {
-                  "text": "회사, 다른 회원 또는 제3자의 지적재산권을 침해하는 경우"
-                }, {
-                  "text": "본 약관을 포함하여 회사가 정한 이용 조건 또는 기타 관계 법령을 위반한 경우"
+                  "text": "In case of illegal use of other person's personal information, user ID and password\""
+                },
+                {
+                  "text": "When the same user double-registers with a different ID"
+                },
+                {
+                  "text": "If the registered name is not a real name"
+                },
+                {
+                  "text": "In the case of acts that are detrimental to national interests, social public interests, public order or morals\""
+                },
+                {
+                  "text": "In the case of acts that damage or defamation of others"
+                },
+                {
+                  "text": "If you intentionally interfere with the operation of the service, such as transmitting a large amount of information or advertisement information, providing illegal programs, or distributing malicious programs\""
+                },
+                {
+                  "text": "When the information obtained by using the company's service information is reproduced, distributed, or used commercially without prior consent of the company\""
+                },
+                {
+                  "text": "Infringe on intellectual property rights of the company, other members or third parties\""
+                },
+                {
+                  "text": "In case of violating the terms of use or other related laws and regulations set by the company including these terms and conditions"
                 }
               ]
             }
           }
         ]
-      }, {
-        "title": "제 3장 제품의 구독 및 이용",
-        "contents": "제 8조 (제품의 개시)",
+      },
+      {
+        "title": "Chapter 3 Subscription and Use of Products",
+        "contents": "Article 8 (Product launch)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "제품 이용계약이 성립된 후 회원이 회사에서 제시한 절차에 따라 첫 제품 이용료를  납입하는 경우, 회사는 원칙적으로 제품을 개시합니다. 다만 회사와 회원 상호간에 계약상 별도의 협의가 있는 경우 별도 협의에 따릅니다."
+            "wordContents": "In principle, when the member pays the initial product service fee according to the procedure provided by the company after the product Use Agreement is established, the company will start servicing the product . However, if there is a separate agreement in the contract between the company and the member, it will be subject to a separate agreement.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 9조 (제품 이용계약 체결의 방식)",
+        "contents": "Article 9 (Method of Signing Product Use Agreement)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "제5조의 제품 이용계약은 회원이 매월 일정한 금액을 정기적으로 지급하는 조건으로 일정한 기한 범위내에서 제품을 제공하는 방식으로 체결됩니다."
-          }, {
-            "word": "2.",
-            "wordContents": "제1항의 구독형 제품 이용계약은 다음 각호의 유형으로 체결될 수 있으며, 각 유형별 제공되는 세부 제품 내용은 아래 각 유형 별 항목기준에 의합니다.",
+            "word": "1",
+            "wordContents": "The Product Use Agrement of Article 5 is concluded by providing the product within a certain period of time as a condition that the member regularly pays a certain amount each month."
+          },
+          {
+            "word": "2",
+            "wordContents": "The Subscription Product Use Agreement of paragraph 1 can be concluded in the following types, and detailed product contents provided for each type are based on the item criteria for each type below.\"",
             "wordList": {
               "array": [
                 {
-                  "text": "저가형"
-                }, {
-                  "text": "고가형"
+                  "text": "Basic Plan"
+                },
+                {
+                  "text": "Premium Plan"
                 }
               ]
             }
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 10조 (제품의 이용시간)",
+        "contents": "Article 10 (Product usage)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원은 회사와 체결한 제품 이용계약에 따라 회사가 제공하는 제품을 이용할 수 있습니다."
-          }, {
-            "word": "2.",
-            "wordContents": "제품의 이용은 회사의 업무상 또는 기술상 특별한 지장이 없는 한 연중 무휴 1일 24시간을 원칙으로 합니다. 다만, 시스템 점검이나 기타 회사가 필요한 경우, 제품의 일부 또는 전부의 사용을 제한할 수 있습니다."
+            "word": "1",
+            "wordContents": "Members can use the products provided by the company in accordance with the product use agreenment signed with the company."
+          },
+          {
+            "word": "2",
+            "wordContents": "In principle, the use of the product is 24 hours a day, 7 days a week, unless there is a specific hindrance to the company's business or technology. However, if a system inspection or other company is needed, the use of some or all of the products may be restricted.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 11조 (제품 내용의 추가 또는 변경)",
+        "contents": "Article 11 (addition or change of product contents)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "회사는 필요할 경우 사전고지 후 제품 내용을 추가 또는 변경할 수 있으며, 변경 후 제품의 추가 또는 변경된 사항을 제품 제공 사이트에 게시하거나 이메일 등으로 회원들에게 별도 안내절차를 이행합니다."
+            "wordContents": "If necessary, the company can add or change product contents after prior notice, and post what is changed or added on the webpage where the product is serviced, or use the email service to notify.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 12조 (회원정보 사용에 대한 동의)",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회사는 회원의 동의하에 개인정보를 수집하여 활용하며, 이에 관한 구체적인 처리절차 및 내용은 회사의 \"개인정보처리방침\"에 의합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 제1항의 개인정보를 본 이용계약의 이행과 본 이용계약상의 제품제공을 위한 목적으로 이용합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사는 업무와 관련하여 회원 전체 또는 일부의 개인정보에 관한 통계를 작성하여 이를 사용할 수 있고, 제품을 통하여 회원의 컴퓨터에 쿠키를 전송할 수 있습니다. 이 경우 회원은. 쿠키의 수신을 거부하거나 쿠키의 수신에 대하여 경고하도록 사용하는 컴퓨터 브라우저의 설정을 변경할 수 있습니다. 다만 이렇게 수집된 개인정보는 전체적인 통계자료로만 활용합니다."
-          }
-        ]
-      }, {
-        "title": "",
-        "contents": "제 13조 (정보의 제공 및 광고의 게재)",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회사는 회원이 제품 이용 중 필요하다고 인정되는 다양한 정보를 공지사항이나 이메일 등의 방법으로 회원에게 제공할 수 있습니다. 다만, 회원은 언제든지 이메일 등을 통하여 수신거부를 할 수 있습니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 제품의 운영과 관련하여 제품 화면, 홈페이지, 이메일 등에 광고를 게재할 수 있습니다. 광고가 게재된 이메일 등을 수신한 회원은 수신거부를 회사에게 할 수 있습니다."
-          }
-        ]
-      }, {
-        "title": "",
-        "contents": "제 14조 (제품의 정지)",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회사는 다음 각 호에 해당하는 경우 제품의 전부 또는 일부를 제한하거나 중지할 수 있습니다.",
-            "wordList": {
-              "array": [
-                {
-                  "text": "전기통신사업법에 규정된 기간통신사업자가 전기통신제품을 중지하였을 경우"
-                }, {
-                  "text": "제품용 설비의 보수, 정기점검 등 공사로 인한 부득이한 경우"
-                }, {
-                  "text": "정전, 제반 설비의 장애 또는 이용량의 폭주 등으로 정상적인 제품 이용에 지장이 있는 경우"
-                }, {
-                  "text": "천재지변, 국가비상사태 등 불가항력적인 사유가 있는 경우"
-                }, {
-                  "text": "기타 회사의 업무상이나 계약상, 기술상의 이유로 제품 중지가 필요하다고 판단되는 경우"
-                }
-              ]
-            }
-          }, {
-            "word": "2.",
-            "wordContents": "제품 중단이 있는 경우에는 회사가 제23조(회원에 대한 통지)에 정한 방법으로 회원에게 사전 통지합니다. 단, 회사가 통제할 수 없는 사유로 인한 제품 중단으로 인한 사전 통지가 불가능한 경우에는 사후에 이를 회사 홈페이지에 공지할 수 있습니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사는 본 조 제1항의 사유로 제품의 제공이 일시적으로 중단됨으로 인하여 회원의 손해에 대하여 책임지지 않습니다."
-          }
-        ]
-      }, {
-        "title": "제 4장 제품 내용 및 이용요금",
-        "contents": "제 15조 (제품의 내용)",
+        "contents": "Article 12 (Agree to use members' personal information)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "VIRNECT 제품",
-            "wordList": {
-              "array": [
-                {
-                  "text": "VIRNECT 제품은 AR 실시간 원격협업 제품, AR 콘텐츠 제작 및 배포, 정보 및 데이터 AR 시각화, 데이터 연동 가상 모니터링 및 시뮬레이션 시스템 등과 그에 부수하는 일체의 증강현실 기반의 제품을 제공합니다."
-                }
-              ]
-            }
+            "wordContents": "The company collects and uses personal information with the consent of members. The specific processing procedure and contents related to this are in accordance with the company's personal information processing policy.\"\"\""
+          },
+          {
+            "word": "",
+            "wordContents": "The company uses the personal information of paragraph 1 for the purpose of fulfilling the Use Agreement and providing products under this Use Agreement."
+          },
+          {
+            "word": "",
+            "wordContents": "The company may use personal information of some or all of members' to generate statistical data in connection with work, and may send cookies to the member's computer through the product. In this case, the member change the settings of your computer's browser to refuse to receive cookies or to warn you about the receipt of cookies. However, the personal information collected in this way is used only for overall statistical data.\""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 16조 (요금의 종류)",
+        "contents": "Article 13 (Provision of information and advertisement)",
         "wordArray": [
           {
             "word": "",
-            "wordContents": "제품의 이용요금 종류는 다음 각 호에 의하며, 회사의 정책 및 회원과 체결되는 개별 이용계약에 따라 요금 종류가 추가될 수 있습니다.",
+            "wordContents": "The company can provide a variety of information that the member deems necessary while using the product to members by means of online announcement or email. However, members can opt out at any time via email.\""
+          },
+          {
+            "word": "",
+            "wordContents": "The company may post advertisements on the product screen, homepage, email, etc. in relation to the operation of the product. Members who receive e-mails with advertisements can opt-out.\""
+          }
+        ]
+      },
+      {
+        "title": "",
+        "contents": "Article 14 (Suspension of the product)",
+        "wordArray": [
+          {
+            "word": "1",
+            "wordContents": "The company may limit or suspend all or part of the product in the following cases:",
             "wordList": {
               "array": [
                 {
-                  "text": "저가형 서비스"
-                }, {
-                  "text": "고가형 서비스"
+                  "text": "When a telecommunications business operator prescribed in the Telecommunications Business Act suspends telecommunication products"
+                },
+                {
+                  "text": "Due to construction, such as maintenance and regular maintenance of product facilities\""
+                },
+                {
+                  "text": "If there is a problem with the use of the product due to power outages, equipment failure, or congestion\""
+                },
+                {
+                  "text": "When there is a force majeure reason, such as a natural disaster or a national emergency\""
+                },
+                {
+                  "text": "When it is deemed necessary to discontinue the product for business, contract, or technical reasons.\""
+                }
+              ]
+            }
+          },
+          {
+            "word": "2",
+            "wordContents": "In case of discontinuation of the product, the company notifies the member in advance by the method specified in Article 23 (Notification to Members). However, if it is impossible to notify in advance due to reasons beyond the company's control, it may be announced on the company's website afterwards.\""
+          },
+          {
+            "word": "3",
+            "wordContents": "The company is not responsible for the damages of members due to the temporary suspension of the provision of the product for the reason of paragraph 1."
+          }
+        ]
+      },
+      {
+        "title": "Chapter 4 product contents and cost",
+        "contents": "Article 15 (contents of the product)",
+        "wordArray": [
+          {
+            "word": "",
+            "wordContents": "VIRNECT Products",
+            "wordList": {
+              "array": [
+                {
+                  "text": "VIRNECT products provide - AR real-time remote collaboration products, AR content production and distribution, AR information and data visualization, data-linked virtual monitoring and simulation systems, and all other augmented reality-based products.\""
                 }
               ]
             }
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 17조 (요금의 계산)",
+        "contents": "Article 16 (Types of Plans)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "이용요금은 실제 제품 이용 여부와 관계없이 계약에 따른 제품 구독일로부터 계산하여 부과됩니다."
-          }, {
-            "word": "2.",
-            "wordContents": "일할 이용요금의 계산은 00:00부터 23:59까지를 1일로 하며, 제품 제공의 개시 시간 또는 종료시간이 1일의 중도인 경우에는 이를 1일로 간주합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "월 이용요금의 계산은 제품 구독일로부터 익월 구독일 1일 이전까지를 1개월의 이용요금으로 합니다."
-          }, {
-            "word": "4.",
-            "wordContents": "연 이용료의 계산은 제품 구독일로부터 익년 구독일 1일 이전까지를 1년의 이용요금으로 하며, 기타 조건은 월 이용요금의 계산과 동일합니다."
-          }
-        ]
-      }, {
-        "title": "",
-        "contents": "제 18조 (요금 납부(결제))",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회사는 제품 이용신청 접수 및 제품 구독 전 이용요금 영수 또는 청구서를 이용신청서상의 회원에게 우편 또는 이메일, 기타 결제대행 사업자가 제시하는 방법으로 발송합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원은 제품 구독 전에 첫 달의 이용요금을 선 납부(결제)할 의무를 부담하며, 요금 납부(결제)는 무통장입금, 신용카드결제 등 회사에서 제공하는 결제방식을 통해서 가능합니다. 단, 회사의 사정상 결제수단이 일부 제한될 수 있습니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회원의 결제수단은 다음 각 호 중 하나의 방식으로 이루어질 수 있습니다.",
+            "word": "",
+            "wordContents": "The product plan is as follows. These plans can be added according to the company policy and the Usage Agreement concluded with each individual member.",
             "wordList": {
               "array": [
                 {
-                  "text": "폰 뱅킹, 인터넷 뱅킹, 메일 뱅킹 등 각종 계좌이체"
-                }, {
-                  "text": "선불카드, 직불카드, 신용카드 등의 각종 카드결제"
-                }, {
-                  "text": "온라인 무통장 입금"
-                }, {
-                  "text": "회사가 계약을 맺었거나 회사가 인정한 상품권에 의한 결제"
-                }, {
-                  "text": "기타 전자적 지급방법에 의한 대금지급"
+                  "text": "Basic Plan"
+                },
+                {
+                  "text": "Premium Plan"
                 }
               ]
             }
-          }, {
-            "word": "4.",
-            "wordContents": "상기 각 결제수단을 운영하는 결제대행 사업자가 별도로 있는 경우, 이용자는 해당 결제수단을 이용하기 전에 해당 결제대행 사업자가 제시하는 절차를 이행하여야 합니다. 회사의 제품 이용요금을 결제할 때, 해당 결제대행 사업자가 제시하는 절차 이행 및 이용약관에 동의한 것으로 간주합니다."
-          }, {
-            "word": "5.",
-            "wordContents": "무통장입금 방식으로 납부할 경우 제품 이용 신청 완료 후 1주일 이내에 해당 금액을 입금하여야 하며, 무통장 입금일 경우에는 이용자와 입금인이 다를 경우 이용자는 회사에 전화나 이메일, 팩스로 그 내용을 통지해야 합니다. 통지 누락으로 인한 모든 책임은 사용자에게 있습니다."
-          }, {
-            "word": "6.",
-            "wordContents": "입금 확인은 특별한 사정이 없는 한, 회사의 영업 시간(평일 근무일, 월∼금, 오전9시 30분∼오후6시 30분)내에 이루어지며, 영업종료후의 입금은 익일 영업 시간 내 처리 완료됩니다."
-          }, {
-            "word": "7.",
-            "wordContents": "이용신청 후 1주일 이내 결제가 확인되지 않을 경우, 회사는 제품 개시를 거부할 수 있습니다."
           }
         ]
-      }, {
-        "title": "제 5장 제품 이용제한 등",
-        "contents": "제 19조 (양도금지)",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회원은 회사에서 제공받은 제품을 제3자에게 재판매할 수 없습니다. 다만, 재판매 목적으로 별도 계약이 체결된 경우는 제외합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원은 제품의 이용권한, 기타 이용 계약상의 지위를 타인에게 양도, 증여할 수 없습니다."
-          }
-        ]
-      }, {
-        "title": "제 6 장 의무와 책임",
-        "contents": "제 20조 (회사의 의무)",
-        "wordArray": [
-          {
-            "word": "1.",
-            "wordContents": "회사는 특별한 사정이 없는 한 회원이 신청한 제품 구독 희망일에 제품을 이용할 수 있도록 합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 업무상, 기술상 지장이 없는 한 연중무휴(24시간/365일) 제품을 제공합니다. 다만, 제품 안정화를 위해 실시하는 정기 또는 비 정기 점검시간은 제외합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사는 회원으로부터 제기되는 의견이나 불만이 정당하다고 인정될 경우에는 즉시 처리하여야 합니다. 다만, 즉시 처리가 곤란한 경우에는 회원에게 그 사유와 처리일정을 이메일 또는 유선 등으로 통보하여야 합니다."
-          }, {
-            "word": "4.",
-            "wordContents": "회사는 제품 제공과 관련하여 취득한 회원의 정보를 본인의 사전 승낙 없이 타인에게 배포할 수 없습니다. 단, 개인정보처리방침에서 정하고 있는 사유(관계법령에 의한 수사상의 목적으로 관계기관으로부터 요구받은 경우, 정보통신윤리위원회의 요청이 있는 경우 또는 회사가 정한 기간 동안의 이용요금을 체납하여 회원에게 통보 후 신용정보사업자 또는 신용정보집중기관에 제공하는 경우)가 확인되는 경우에는 예외적으로 제3자에게 제공할 수 있습니다."
-          }, {
-            "word": "5.",
-            "wordContents": "회사는 회원의 개인정보 보호를 위하여 회원의 비밀번호를 반기별 1회 이상 변경할 것을 권고하고, 비밀번호 변경 시 이전에 사용한 비밀번호 재사용 제한에 대한 안내를 하는 등 회원의 개인정보 관리를 위한 노력을 하여야 합니다."
-          }
-        ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 21조 (회원의 의무)",
+        "contents": "Article 17 (Fee Calculation)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원은 회원가입 신청 시 모든 사항을 사실에 근거하여 기재하여야 하며, 허위 또는 타인의 정보를 등록할 경우 일체의 권리를 주장할 수 없습니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원은 회사가 제공하는 제품을 이용함에 있어 다음 각 호의 행위를 하여서는 안됩니다.",
+            "word": "1",
+            "wordContents": "The service fee is calculated and charged from the product subscription date according to the contract, regardless of whether or not the product is actually used.\""
+          },
+          {
+            "word": "2",
+            "wordContents": "Calculation of daily service fee is from 00:00 to 23:59 per day, and if the start time or end time of product delivery is in the middle of day 1, it is regarded as 1 day.\""
+          },
+          {
+            "word": "3",
+            "wordContents": "The monthly fee is charged starting from the subscription date, to one day before the next month of subscription date. (eg. 5th of June to 4th of July)\""
+          },
+          {
+            "word": "4",
+            "wordContents": "The annual fee is calculated from the product subscription date to one day before the next year's subscription date, and the other conditions are the same as the monthly fee.\""
+          }
+        ]
+      },
+      {
+        "title": "",
+        "contents": "Article 18 (Payment)",
+        "wordArray": [
+          {
+            "word": "",
+            "wordContents": "The company sends the receipt of the service fee or invoice to the member based on the application list. It is sent via mail, email, or other method operated by the payment agency when the company recieves the application from a user or before the product subscription begins.\""
+          },
+          {
+            "word": "",
+            "wordContents": "Members are obliged to pay the first month's service fee prior to product subscription. The payment is possible through payment methods provided by the company such as wire transfer and credit card payments. However, some payment methods may be limited due to company circumstances.\""
+          },
+          {
+            "word": "",
+            "wordContents": "The member's payment method can be done in one of the following ways.",
             "wordList": {
               "array": [
                 {
-                  "text": "가입신청이나 회원 정보 변경 시 허위사실을 기재하거나, 타인의 개인정보, 이용자ID 및 비밀번호를 부정하게 사용하는 행위"
-                }, {
-                  "text": "같은 이용자가 다른 ID로 이중등록 하거나 ID를 타인과 거래하는 행위"
-                }, {
-                  "text": "회사의 직원이나 운영자를 가장하거나 사칭하여 또는 타인의 명의를 도용하는 행위"
-                }, {
-                  "text": "국익 또는 사회적 공익, 공공질서, 미풍양속에 저해되는 행위"
-                }, {
-                  "text": "타인의 명예를 손상시키거나 불이익을 주는 행위를 한 경우"
-                }, {
-                  "text": "다량의 정보 혹은 광고성 정보 전송, 불법프로그램의 제공, 악성프로그램의 배포 등 서비스 운영을 고의로 방해한 경우"
-                }, {
-                  "text": "회사의 서비스 정보를 이용하여 얻은 정보를 회사의 사전 승낙 없이 복제 또는 유통시키거나 상업적으로 이용하는 경우"
-                }, {
-                  "text": "회사, 다른 회원 또는 제3자의 지적재산권을 침해하는 경우"
-                }, {
-                  "text": "본 약관을 포함하여 회사가 정한 이용 조건 또는 기타 관계 법령을 위반한 경우"
+                  "text": "Various bank transfers such as phone banking, internet banking, and mail banking\""
+                },
+                {
+                  "text": "Prepaid card, debit card, credit card, etc.\""
+                },
+                {
+                  "text": "Wire Transfer"
+                },
+                {
+                  "text": "Payment by a voucher signed by the company or recognized by the company"
+                },
+                {
+                  "text": "Payment by other electronic payment methods"
                 }
               ]
             }
-          }, {
-            "word": "3.",
-            "wordContents": "회원은 회사와 체결한 제품 이용계약, 관계법령, 본 약관의 규정, 이용안내 및 주의사항 등 회사가 통지하는 사항을 등을 준수하여야 하며, 기타 회사의 업무에 방해되는 행위를 하여서는 안됩니다."
-          }, {
-            "word": "4.",
-            "wordContents": "회원은 제품 이용에 대한 대가로서 본 약관에서 정한 이용요금을 납부할 의무가 있으며 제품 이용요금 미납으로 인해 발생되는 모든 문제에 대한 책임은 회원에게 있습니다. 단, 회사의 과실이나 회사가 인정한 사유에 의한 경우에는 그러하지 않습니다."
-          }, {
-            "word": "5.",
-            "wordContents": "회원은 제품 신청 당시의 고객정보에 변경이 발생하면 즉시 그 내용을 회사에 통보하여야 하며, 통보 지연으로 발생한 문제에 대해서는 회사에서 책임을 지지 않습니다."
-          }, {
-            "word": "6.",
-            "wordContents": "회원이 회사의 제품 장애를 초래하게 하였을 경우에는 그 보충, 수선 또는 기타 공사에 소요되는 비용과 이로 인해 발생되는 회사의 손해를 전액 부담하여야 합니다."
-          }, {
-            "word": "7.",
-            "wordContents": "회원이 제공하는 모든 정보의 저작권과 관련하여 발생하는 문제는 회원의 책임입니다."
-          }, {
-            "word": "8.",
-            "wordContents": "정기로 구독한 결제금액은 타인에게 양도 또는 재판매 할 수 없으며 회사는 회원에게 제공된 아이디와 패스워드를 현금 또는 기타 유가증권으로 교환해줄 것을 요청하여서는 아니됩니다."
-          }, {
-            "word": "9.",
-            "wordContents": "회원은 제품의 이용권한, 기타 이용계약상의 지위를 타인에게 양도 및 증여하여서는 아니됩니다."
+          },
+          {
+            "word": "",
+            "wordContents": "If there is a separate payment agency operating each payment method, the user must perform the procedures presented by the payment agency before using the payment method. When paying the company's product service fee, it is deemed to have agreed to the procedures and terms of use provided by the payment agency.\""
+          },
+          {
+            "word": "5",
+            "wordContents": "In the case of wire transfer payment method, the relevant amount must be deposited within one week of application. if the names of the user and the payer are different, the user must notify the company by phone, email or fax. The user bears all responsibility for not notifying to company.\""
+          },
+          {
+            "word": "6",
+            "wordContents": "Payment is confirmed within the business hours of the company (weekdays, Monday through Friday, 9:30 am to 6:30 pm), unless otherwise specified, and payment after the end of business is processed within the next business hours.\""
+          },
+          {
+            "word": "7",
+            "wordContents": "If payment is not confirmed within one week after application for use, the company may refuse to use of the product.\""
           }
         ]
-      }, {
+      },
+      {
+        "title": "Chapter 5 Product Use Restrictions, etc.\"",
+        "contents": "Article 19 (Resale Restriction)",
+        "wordArray": [
+          {
+            "word": "1",
+            "wordContents": "Members cannot resell products provided by the company to third parties unless when a separate contract is signed for resale purposes."
+          },
+          {
+            "word": "2",
+            "wordContents": "Members cannot transfer or give the right to use the product to others."
+          }
+        ]
+      },
+      {
+        "title": "Chapter 6 Duties and Responsibilities",
+        "contents": "Article 20 (Company obligations)",
+        "wordArray": [
+          {
+            "word": "1",
+            "wordContents": "The company allows the member to use the product on the desired subscription date of the product, unless under special circumstances.\""
+          },
+          {
+            "word": "",
+            "wordContents": "The company provides products 24 hours a day, 7 days a week, 365 days a year, unless there is a business or technical problem. However, regular or irregular inspection times conducted to stabilize the product are excluded.\""
+          },
+          {
+            "word": "",
+            "wordContents": "The company should immediately handle any opinions or complaints from members that are considered legitimate. However, if it is difficult to process immediately, the member must be notified of the reason and schedule by email or wire.\""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": "The company cannot distribute any members' information acquired through product servicing process to others without getting prior consent from the members. However, as long as it is in accordance with personal information processing policy (when requested by the relevant organizations for investigation purposes pursuant to related laws, upon request of the Information and Communication Ethics Committee, or to Credit information providers or credit information collection agencies regardless of payment default notice), it can be provided to a third party.\""
+          }
+        ]
+      },
+      {
         "title": "",
-        "contents": "제 22조 (회원의 아이디와 비밀번호 관리에 대한 의무와 책임)",
+        "contents": "Article 21 (Obligations of members)",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원은 회원 아이디 및 비밀번호 관리를 철저히 하여야 합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원 아이디와 비밀번호의 관리 소홀, 부정 사용에 의하여 발생하는 모든 결과에 대한 책임은 회원 본인에게 있습니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회원은 본인이 아이디와 비밀번호를 제3자에게 이용하게 해서는 안되며, 회원 본인의 아이디와 비밀번호를 도난당하거나 제3자가 사용하고 있음을 인지하는 경우에는 즉시 회사에 통보하고 회사의 안내가 있는 경우 그에 따라야 합니다."
-          }, {
-            "word": "4.",
-            "wordContents": "회원은 제품 이용권한 및 제품 이용계약상의 지위는 제3자에게 양도하거나 대여할 수 없으며 또한 담보로 제공할 수 없습니다. 회사는 회원이 이러한 행위를 하였을 경우 회원의 제품 이용을 제한할 수 있으며, 회원의 상기 행위로 야기된 결과에 대한 책임은 회원에게 있습니다."
-          }, {
-            "word": "5.",
-            "wordContents": "회원의 아이디는 회사의 사전 동의 없이 변경할 수 없습니다."
+            "word": "1",
+            "wordContents": "When applying for membership, the member must list all matters based on the facts, and cannot claim any rights when registering false or other information.\""
+          },
+          {
+            "word": "2",
+            "wordContents": "Members should not do any of the following when using the products provided by the company.",
+            "wordList": {
+              "array": [
+                {
+                  "text": "When apply for a subscription, changing member information, list false information, use other people's personal informationor user ID and password illegally\""
+                },
+                {
+                  "text": "The same user double-registers with a different ID or trading ID with others"
+                },
+                {
+                  "text": "Impersonate as another company's employee, operator or stealing someone else's name\""
+                },
+                {
+                  "text": "Acts that are impeded by national or social public interests, public order, and morals\""
+                },
+                {
+                  "text": "In the case of acts that damage or defamation of others"
+                },
+                {
+                  "text": "If you intentionally interfere with the operation of the service, such as transmitting a large amount of information or advertisement information, providing illegal programs, or distributing malicious programs\""
+                },
+                {
+                  "text": "When the information obtained by using the company's service information is replicated, distributed, or used commercially without prior consent of the company\""
+                },
+                {
+                  "text": "Infringe on intellectual property rights of the company, other members or third parties\""
+                },
+                {
+                  "text": "In case of violating the terms of use or other related laws and regulations set by the company including these terms and conditions"
+                }
+              ]
+            }
+          },
+          {
+            "word": "3",
+            "wordContents": "Members must comply with the company's notices, such as Product Use Agreement, related laws, provisions of these terms and conditions, usage guidelines and precautions, and should not engage in any other act that interferes with the company's business.\""
+          },
+          {
+            "word": "4",
+            "wordContents": "The member is obliged to pay the fee set in this agreement in exchange for the use of the product, and the member is responsible for any problems arising from the failure to pay for the service fee. However, this is not the case in case of the company's negligence or the reason the company recognized.\""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 23조 (장기 미접속 회원에 대한 휴면계정 전환)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원이 마지막 접속일자로부터 1년 이상 접속 및 제품 이용을 하지 않은 것으로 확인되는 경우 회사는 해당 회원을 휴면계정으로 분류하여 계약을 해지하고 별도로 개인정보 등을 관리할 수 있습니다. 다만 회원의 요청이 있는 경우 마지막 접속일자로부터 1년 미만의 기간 동안 접속 및 제품 이용을 하지 않은 경우에도 휴면계정으로 분류할 수 있습니다"
-          }, {
-            "word": "2.",
-            "wordContents": "제1항의 경우 회사는 제품미이용기간 만료 30일 전까지 전자우편, 서면, 전화등의 방법으로 개인정보 별도 관리 사실을 안내한 뒤 별도 분리하여 관리를 실시할 수 있습니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 24조 (회원에 대한 통지)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회사는 회원이 회사에 제출한 이메일 주소 또는 연락처(전화번호, 휴대폰번호) 등을 이용해 회원에 대한 통지를 할 수 있습니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사는 불특정다수 회원에 대한 통지의 경우 홈페이지 등에 게시함으로써 개별 통지를 갈음할 수 있습니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 25조 (회원정보 변경)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원은 개인정보관리화면을 통하여 언제든지 본인의 개인정보를 열람하고 수정할 수 있습니다. 다만, 제품 관리를 위해 필요한 아이디 등은 수정이 불가능합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원은 회원가입 신청 시 기재한 사항이 변경되었을 경우 온라인으로 수정을 하거나 이메일 등을 이용해 회사에 그 변경사항을 알려야 합니다. 전항의 변경사항을 회사에 알리지 않아 발생한 불이익에 대하여 회사는 책임지지 않습니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 26조 (개인정보의 보호)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회사는 관련법령이 정하는 바에 따라서 회원 등록정보를 포함한 회원의 개인정보를 보호하기 위하여 노력합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원의 개인정보보호에 관해서는 관련 법령 및 회사의 개인정보처리방침이 적용됩니다. 단, 회사의 공식 사이트 이외의 웹에서 링크된 사이트에서는 회사의 개인정보처리방침이 적용되지 않습니다. 또한 회사는 회원의 귀책사유로 인해 노출된 정보에 대해서 일체의 책임을 지지 않습니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 27조 (거래기록의 보존 등)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회사는 정보통신망법 등 관계 법령에 의하여 거래기록을 최대 5년간 보존합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회사 내의 데이터베이스에 보존된 자료와 청구기관 측의 데이터베이스에 보존된 자료의 기재내용이 상이하여 회사가 회원에게 자료 기재 내용의 확인을 요구할 경우에는 회원은 이에 응해야 합니다."
-          }
-        ]
-      }, {
-        "title": "제 7장 손해배상",
-        "contents": "제 28조 (손해배상 범위)",
-        "wordArray": [
+            "word": "",
+            "wordContents": ""
+          },
           {
-            "word": "1.",
-            "wordContents": "회원이 본 약관의 규정을 위반함으로 인하여 회사에 손해가 발생하게 되는 경우, 이 약관을 위반한 회원은 회사에 발생하는 모든 손해를 배상하여야 합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원이 제품을 이용함에 있어 행한 불법행위나 회사와 체결한 이용계약 위반행위로 인하여 회사가 당해 회원 이외의 제3자로부터 손해배상 청구 또는 소송을 비롯한 각종 이의제기를 받은 경우 당해 회원은 자신의 책임과 비용으로 회사를 면책시켜야 하며, 회사가 면책되지 못한 경우 당해 회원은 그로 인하여 회사에 발생한 모든 손해를 배상하여야 합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사는 무료로 제품(테스트 목적 제품 포함) 제공된 기간 중에 발생한 손해 또는 제품 요금이 무료인 제품 이용과 관련하여 회원에게 발생한 손해에 대하여 어떠한 책임도 지지 않습니다."
-          }, {
-            "word": "4.",
-            "wordContents": "회사의 귀책사유로 회원이 제품을 이용하지 못하는 경우 등과 관련하여는 회원들과 체결되는 이용계약서에 정해진 바에 따라 처리합니다."
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 29조 (면책)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회사는 국가의 비상사태, 천재지변 또는 이에 준하는 국가비상사태 등 불가항력으로 제품을 제공할 수 없는 경우 제품 제공에 대한 책임을 지지 않습니다."
-          }, {
-            "word": "2.",
-            "wordContents": "회원의 고의 또는 과실 등 회원의 귀책사유로 인한 제품의 이용장애에 대해 책임을 지지 않습니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회원의 고의 또는 과실 등 회원의 귀책사유로 인하여 제품 서비스를 이용하는 과정에서 손해를 입은 경우 회사는 그에 대한 책임을 부담하지 않습니다."
-          }, {
-            "word": "4.",
-            "wordContents": "기타 회사와 회원의 면책 사항 등은 회사와 회원이 체결한 제품 이용계약에 따릅니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
+      },
+      {
         "title": "",
-        "contents": "제 30조 (분쟁해결)",
+        "contents": "",
         "wordArray": [
           {
-            "word": "1.",
-            "wordContents": "회원과 회사는 제품 이용과 관련해 발생한 문제를 원만하게 해결하기 위해 상호 성실히 협의합니다."
-          }, {
-            "word": "2.",
-            "wordContents": "본 조 제1항의 협의에도 불구하고, 분쟁으로 인해 소송이 제기될 경우 민사소송법에 따른 관할법원을 통하여 분쟁을 해결합니다."
-          }, {
-            "word": "3.",
-            "wordContents": "회사와 회원 간에 제기된 소송에는 대한민국 법을 적용합니다."
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
           }
         ]
-      }, {
-        "title": "부칙",
-        "contents": "제 1조 (시행일) 이 약관은 2020년 2월 28일부터 시행합니다."
+      },
+      {
+        "title": "",
+        "contents": "",
+        "wordArray": [
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          }
+        ]
+      },
+      {
+        "title": "",
+        "contents": "",
+        "wordArray": [
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          },
+          {
+            "word": "",
+            "wordContents": ""
+          }
+        ]
+      },
+      {
+        "title": "",
+        "contents": ""
       }
     ]
   }

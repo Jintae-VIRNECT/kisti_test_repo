@@ -1,3 +1,5 @@
+import locale from 'element-ui/lib/locale/lang/en'
+
 const files = require.context('.', false, /\.json$/)
 const modules = {}
 
@@ -8,5 +10,6 @@ files.keys().forEach(key => {
 
 module.exports = {
 	languageAbbr: 'ENG',
+	...locale,
 	...modules,
 }

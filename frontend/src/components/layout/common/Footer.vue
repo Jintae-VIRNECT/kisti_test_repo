@@ -3,10 +3,12 @@
 		<el-col>
 			<h2>footer</h2>
 			<div class="privacy-wrap">
-				<a href="https://virnect.com/terms" target="_blank">이용약관</a>
-				<a href="https://virnect.com/policy" target="_blank"
-					>개인정보처리방침</a
-				>
+				<a href="https://virnect.com/terms" target="_blank">{{
+					$t('terms.h2')
+				}}</a>
+				<a href="https://virnect.com/policy" target="_blank">{{
+					$t('policy.privacyPolicy')
+				}}</a>
 				<!-- <router-link to="/register">도움말</router-link> -->
 			</div>
 			<p><strong>©VIRNECT CO.</strong>, LTD. All rights reserved.</p>

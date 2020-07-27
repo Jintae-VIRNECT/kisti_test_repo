@@ -14,7 +14,7 @@ export default {
 		return {
 			showSection: {
 				login: false,
-				language: false,
+				language: true,
 			},
 			logoUrl: '/',
 		}
