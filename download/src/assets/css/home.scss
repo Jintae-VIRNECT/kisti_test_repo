@@ -46,11 +46,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10;
     width: 100%;
     background: transparent;
     border-bottom: solid 1px #f3f6f9;
     .el-tabs__nav-wrap {
+      z-index: 10;
       max-width: 630px;
       margin: 0 auto;
     }
@@ -60,6 +60,11 @@
   }
   .el-tabs.sticky .el-tabs__header {
     position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    .el-tabs__nav-wrap {
+      pointer-events: initial;
+    }
   }
 
   .el-tabs__content {
