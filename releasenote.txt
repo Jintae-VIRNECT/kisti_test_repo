@@ -7,6 +7,7 @@ New Features
 Bug Fixes
 - zipkin discovery client false 활성화
 - production yml
+- message route url
 
 Limitation
 - 없음
