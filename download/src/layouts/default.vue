@@ -22,6 +22,11 @@ export default {
     TheHeader,
     TheFooter,
   },
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('home.title')}`,
+    }
+  },
   data() {
     return {
       showSection: {
