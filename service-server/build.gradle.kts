@@ -1,13 +1,17 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    id("org.springframework.boot") version "2.2.5.RELEASE" //change version to 2.2.5.RELEASE //2.3.1.RELEASE
+    id("org.springframework.boot")
+    //id("io.spring.dependency-management")
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+    /*id("org.springframework.boot") version "2.2.5.RELEASE" //change version to 2.2.5.RELEASE //2.3.1.RELEASE
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
     kotlin("plugin.jpa") version "1.3.72"
-    id("java")
+    id("java")*/
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
@@ -22,20 +26,22 @@ ext {
     set("springCloudVersion", "Hoxton.SR1")
 }
 
-/*sourceSets {
+sourceSets {
     main {
-        resources("src/main/resoures"),
-
+        java.srcDir("src/main/java")
     }
-}*/
-
-springBoot {
-    buildInfo()
-    mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
 }
 
-repositories {
-    mavenCentral()
+springBoot {
+    /*buildInfo {
+        properties {
+            group = rootProject.group.toString()
+            version = rootProject.version.toString()
+
+        }
+    }*/
+    buildInfo()
+    mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
 }
 
 dependencyManagement {
@@ -96,8 +102,7 @@ dependencies {
     implementation("org.codehaus.janino:janino:3.1.0")
     //implementation("org.apache.commons:commons-lang3:3.10")
     implementation("com.google.code.gson:gson:2.8.6")
-    implementation(project(":service-client"))
-    implementation(project(":service-java-client"))
+
     testImplementation("org.powermock:powermock-module-junit4:2.0.7")
     testImplementation("org.hamcrest:hamcrest-core:2.2")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
@@ -107,26 +112,25 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-/*tasks.getByName<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
-    main = "com.virnect.serviceserver.ServiceServerApplication" // MainClass 경로
-}*/
-
 tasks.getByName<BootJar>("bootJar") {
     enabled= true
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
+    archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+    //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
+    /*manifest {
+        attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
+    }*/
 }
 
-/*
-tasks.getByName<BootJar>("bootJar") {
+/*tasks.getByName<Jar>("jar") {
+    enabled= true
+    //mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
+    //println(destinationDirectory.get().toString())
+    //destinationDirectory.set(project.file(rootProject.buildDir))
+
+    //destinationDirectory file(rootProject.buildDir)
     manifest {
         attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
     }
 }
-*/
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
-    }
-}
+}*/
