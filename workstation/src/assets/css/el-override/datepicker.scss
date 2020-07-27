@@ -1,0 +1,15 @@
+body .el-date-picker {
+  .el-date-picker__header-label.active,
+  .el-date-picker__header-label:hover,
+  .el-picker-panel__icon-btn:hover,
+  .el-month-table td .cell:hover,
+  .el-month-table td.current:not(.disabled) .cell,
+  .el-year-table td .cell:hover,
+  .el-year-table td.current:not(.disabled) .cell,
+  .el-date-table td.available:hover {
+    color: $color-primary;
+  }
+  .el-date-table td.current:not(.disabled) span {
+    background-color: $color-primary;
+  }
+}

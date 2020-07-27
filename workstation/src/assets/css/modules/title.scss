@@ -1,0 +1,28 @@
+.title {
+  margin-bottom: 24px;
+  color: $font-color-content;
+
+  .el-breadcrumb {
+    margin-bottom: 4px;
+    font-size: 12px;
+
+    &__inner {
+      color: $font-color-desc;
+      font-weight: 500;
+    }
+    &__separator {
+      margin: 0 4px;
+    }
+    .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+      color: $font-color-content;
+    }
+  }
+  h2 {
+    margin-bottom: 2px;
+    margin-left: -2px;
+    font-size: 24px;
+  }
+  p {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,23 @@
+.el-pagination {
+  $pager-color: #495d76;
+  padding: 27px;
+  color: $pager-color;
+
+  button,
+  .el-pager li {
+    $pager-width: 34px;
+    width: $pager-width;
+    height: $pager-width;
+    margin: 0 4px;
+    line-height: $pager-width;
+    border-radius: 3px;
+  }
+  button:hover,
+  .el-pager li:hover:not(.active) {
+    color: $color-primary;
+  }
+  .el-pager li.active {
+    color: #fff;
+    background: $pager-color;
+  }
+}

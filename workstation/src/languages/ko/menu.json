@@ -1,0 +1,27 @@
+{
+  "home": "워크스테이션 홈",
+  "members": "워크스페이스 사용자",
+  "contents": "콘텐츠 관리",
+  "tasks": "작업 관리",
+  "workspaceSetting": "워크스페이스 설정",
+  "collapse": {
+    "workspace": {
+      "title": "워크스페이스 목록",
+      "master": "워크스페이스 마스터",
+      "manager": "워크스페이스 매니저",
+      "member": "워크스페이스 멤버"
+    },
+    "members": {
+      "list": "전체 워크스페이스 멤버",
+      "activity": "워크스페이스 멤버 활동"
+    },
+    "contents": {
+      "list": "전체 콘텐츠 목록"
+    },
+    "tasks": {
+      "list": "워크스페이스 작업 목록",
+      "results": "작업 보고 관리",
+      "troubles": "트러블 메모 (TM)"
+    }
+  }
+}

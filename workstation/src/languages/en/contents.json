@@ -1,0 +1,45 @@
+{
+  "allContents": {
+    "title": "Overall content list",
+    "myContents": "My contents",
+    "delete": "Delete",
+    "workspaceContentsList": "Workspace content list",
+    "column": {
+      "id": "Content ID",
+      "name": "Content name",
+      "targetType": "Target type",
+      "uploader": "Upload member",
+      "createdDate": "Content update date",
+      "sharedStatus": "Sharing status"
+    }
+  },
+  "sharedStatus": {
+    "shared": "Activate",
+    "noShared": "Deactivate"
+  },
+  "info": {
+    "title": "Content details",
+    "id": "Content ID",
+    "name": "Content name",
+    "uploader": "Upload member",
+    "volume": "Content capacity",
+    "createdDate": "Date of content update",
+    "type": "Content type",
+    "device": "Supported devices",
+    "sharedStatus": "Current share status",
+    "target": "Target type",
+    "properties": "Content configuration details",
+    "delete": "Delete",
+    "update": "Edit",
+    "message": {
+      "delete": "Delete selected content",
+      "deleteSure": "Are you sure you want to delete the selected content?",
+      "deleteSuccess": "Selected content is deleted",
+      "deleteFail": "Failed to delete selected content",
+      "deleteNotExist": "The selected content does not exist in the workspace. Please check again.",
+      "updateSuccess": "The selected content sharing settings have been updated.",
+      "updateFail": "Failed to update content sharing settings",
+      "updateNotExist": "The selected content does not exist in the workspace. Please check again."
+    }
+  }
+}

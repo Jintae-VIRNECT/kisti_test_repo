@@ -1,0 +1,53 @@
+.color-bg {
+  &-gray {
+    background-color: $color-gray;
+  }
+  &-silver {
+    background-color: $color-silver;
+  }
+  &-blue {
+    background-color: $color-blue;
+  }
+  &-orange {
+    background-color: $color-orange;
+  }
+  &-green {
+    background-color: $color-green;
+  }
+  &-dark-gray {
+    background-color: $color-dark-gray;
+  }
+  &-dark-blue {
+    background-color: $color-dark-blue;
+  }
+  &-dark-red {
+    background-color: $color-dark-red;
+  }
+}
+
+.color-text {
+  &-gray {
+    color: $color-gray;
+  }
+  &-silver {
+    color: $color-silver;
+  }
+  &-blue {
+    color: $color-blue;
+  }
+  &-orange {
+    color: $color-orange;
+  }
+  &-green {
+    color: $color-green;
+  }
+  &-dark-gray {
+    color: $color-dark-gray;
+  }
+  &-dark-blue {
+    color: $color-dark-blue;
+  }
+  &-dark-red {
+    color: $color-dark-red;
+  }
+}
