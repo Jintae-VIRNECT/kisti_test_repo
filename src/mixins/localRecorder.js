@@ -167,6 +167,8 @@ export default {
 
         return true
       } else {
+        this.isRecording = false
+        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
