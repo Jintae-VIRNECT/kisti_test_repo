@@ -97,7 +97,6 @@ export default {
 				autoLogin: null,
 			},
 			loading: false,
-			isLogin: null,
 			message: '',
 			token: Cookies.get('accessToken'),
 			rememberEmail: Cookies.get('email'),
@@ -120,31 +119,39 @@ export default {
 	},
 	methods: {
 		async checkToken() {
-			let res = await auth.init()
-			this.isLogin = res.isLogin
-			if (this.isLogin === true && this.login.autoLogin === true) {
-				let redirectTarget = this.$route.query.continue
-				if (redirectTarget) {
-					location.href = /^https?:/.test(redirectTarget)
-						? redirectTarget
-						: `//${redirectTarget}`
-				} else {
-					location.href = urls.workstation[process.env.TARGET_ENV]
-				}
+			const res = await auth.init()
+			const redirectTarget = this.$route.query.continue
+			if (!res.isLogin) return false
+
+			if (redirectTarget) {
+				location.href = /^https?:/.test(redirectTarget)
+					? redirectTarget
+					: `//${redirectTarget}`
+			} else if (this.login.autoLogin) {
+				location.href = urls.workstation[process.env.TARGET_ENV]
 			}
 		},
 		emailRemember(email, check) {
+			const cookieOption = {
+				domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,
+			}
 			if (check == true) {
 				this.rememberEmail = true
-				Cookies.set('email', email)
+				Cookies.set('email', email, cookieOption)
 			} else {
-				Cookies.remove('email')
+				Cookies.remove('email', cookieOption)
 			}
 		},
 		autoLogin(check) {
 			if (check == true) {
 				this.rememberLogin = true
-				Cookies.set('auto', check)
+				Cookies.set('auto', check, {domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,})
 			} else {
 				Cookies.remove('auto')
 			}

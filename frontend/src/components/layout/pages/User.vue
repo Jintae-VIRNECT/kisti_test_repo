@@ -2,13 +2,10 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
-				<h2>추가 정보 입력</h2>
-				<p>
-					추가 정보를 입력하시면 VIRNECT 제품을 <br />더 유용하게 사용하실 수
-					있습니다.
-				</p>
+				<h2>{{ $t('user.title') }}</h2>
+				<p v-html="$t('user.pageInfo')"></p>
 
-				<p class="input-title">프로필 이미지</p>
+				<p class="input-title">{{ $t('user.profileImage.title') }}</p>
 				<article class="profile-image">
 					<div class="image-holder" @click="profilePopup = true">
 						<div
@@ -21,19 +18,19 @@
 						/></i>
 					</div>
 					<div class="text-wrap">
-						<p>프로필 이미지를 등록해 주세요.</p>
-						<p>등록하신 프로필 이미지는 다른 사용자들에게 보여집니다.</p>
+						<p>{{ $t('user.profileImage.subTitle') }}</p>
+						<p>{{ $t('user.profileImage.contents') }}</p>
 					</div>
 				</article>
 				<el-dialog
-					title="프로필 이미지 설정"
+					:title="$t('user.profileImage.imageSet')"
 					:visible.sync="profilePopup"
 					width="30%"
 					:before-close="handleClose"
 				>
 					<div>
 						<p class="contents">
-							프로필 이미지가 전체 VIRNECT 사용자에게 보여집니다.
+							{{ $t('user.profileImage.visible') }}
 						</p>
 						<div class="image-holder pop-profile" @click="profilePopup = true">
 							<input
@@ -51,24 +48,30 @@
 							</label>
 						</div>
 						<div class="el-upload__tip">
-							최대 5Mb의 Jpg, Png 파일 업로드 가능
+							{{ $t('user.profileImage.limit') }}
 						</div>
 					</div>
 					<span slot="footer" class="dialog-footer">
-						<el-button type="info" @click.native="uploadBtn" class="left-btn"
-							>이미지 업로드</el-button
-						>
-						<el-button @click="deleteImage">삭제</el-button>
-						<el-button type="primary" @click="profileDone" :disabled="disabled"
-							>이미지 등록</el-button
+						<el-button type="info" @click.native="uploadBtn" class="left-btn">{{
+							$t('user.profileImage.upload')
+						}}</el-button>
+						<el-button @click="deleteImage">{{
+							$t('user.profileImage.delete')
+						}}</el-button>
+						<el-button
+							type="primary"
+							@click="profileDone"
+							:disabled="disabled"
+							>{{ $t('user.profileImage.submit') }}</el-button
 						>
 					</span>
 				</el-dialog>
 
-				<p class="input-title">닉네임</p>
+				<p class="input-title">{{ $t('user.nickName.title') }}</p>
+
 				<el-input
-					:placeholder="nicknameSet"
 					v-model="user.nickname"
+					:placeholder="nicknameSet"
 					type="text"
 					name="nickname"
 					v-validate="'min:2|max:20'"
@@ -76,17 +79,14 @@
 					clearable
 				>
 				</el-input>
-				<p class="restriction-text">
-					국문, 영문, 특수문자(&lt;),(&gt;) 제외, 띄어쓰기 포함 20자 이하로
-					입력해 주세요.
-				</p>
+				<p class="restriction-text" v-html="$t('user.nickName.contents')"></p>
 
 				<dl class="recover-info">
-					<dt>계정 복구 정보 입력</dt>
-					<dd>계정 분실 시 본인 확인을 위한 정보를 입력해 주세요.</dd>
+					<dt>{{ $t('user.recoveryInfo.title') }}</dt>
+					<dd>{{ $t('user.recoveryInfo.placeHolder') }}</dd>
 				</dl>
 
-				<p class="input-title">연락처</p>
+				<p class="input-title">{{ $t('user.phoneNumber.title') }}</p>
 				<el-select
 					v-model="user.countryCode"
 					placeholder="+82"
@@ -105,16 +105,16 @@
 
 				<el-input
 					class="phonenumber-input"
-					placeholder="전화번호를 입력해 주세요"
+					:placeholder="$t('user.phoneNumber.contents')"
 					v-model="user.mobile"
 					clearable
 					type="text"
 					name="mobile"
 				></el-input>
 
-				<p class="input-title">복구 이메일 주소</p>
+				<p class="input-title">{{ $t('user.recoveryEmail.title') }}</p>
 				<el-input
-					placeholder="복구 이메일 주소를 입력해 주세요"
+					:placeholder="$t('user.recoveryEmail.placeHolder')"
 					v-model="user.recoveryEmail"
 					type="email"
 					name="recoveryEmail"
@@ -133,9 +133,9 @@
 							user.mobile == null &&
 							user.recoveryEmail == null
 					"
-					>확인</el-button
+					>{{$t('user.confirm')}}</el-button
 				>
-				<el-button class="block-btn" @click="later">나중에 하기</el-button>
+				<el-button class="block-btn" @click="later">{{$t('user.later')}}</el-button>
 			</el-col>
 		</el-row>
 	</div>
@@ -175,11 +175,11 @@ export default {
 			thumbnail: null,
 		}
 	},
-	watch: {
-		signup() {
-			console.log(this.signup)
-		},
-	},
+	// watch: {
+	// 	signup() {
+	// 		console.log(this.signup)
+	// 	},
+	// },
 	computed: {
 		disabled() {
 			return this.file === this.user.profile
@@ -297,9 +297,9 @@ export default {
 			done()
 		},
 		uploadImage(event) {
-			// console.log(event)
+			console.log(event)
 			const files = event.target.files
-			// console.log(files[files.length - 1])
+			console.log(files[files.length - 1])
 			this.formData.delete('profile') // profile는 컨텐츠 내의 이미지 리소스
 			this.validImage(event)
 				.then(imageData => {
@@ -319,13 +319,14 @@ export default {
 			this.user.profile = this.file
 		},
 		deleteImage() {
-			// this.$refs.upload.clearFiles()
+			this.$refs.imgUpload.value = ''
+			this.formData.delete('profile')
 			this.user.profile = null
 			this.file = null
 			this.thumbnail = null
 		},
 		validImage(event) {
-			const files = event.target.files
+			let files = event.target.files
 			return new Promise((resolve, reject) => {
 				if (files.length > 0) {
 					if (

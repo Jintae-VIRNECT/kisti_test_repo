@@ -1,20 +1,11 @@
 import Cookies from 'js-cookie'
-import Axios from 'axios'
-import API from './url'
-
-const GATEWAY_API_URL = process.env.API_GATEWAY_URL
-
-const axios = Axios.create({
-	timeout: 10000,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-})
+import axios from '../api/axios'
+import API from '../api/url'
 
 class AuthService {
 	login(user) {
 		return axios
-			.post(GATEWAY_API_URL + API.auth.login, {
+			.post(API.auth.login, {
 				email: user.email,
 				password: user.password,
 				rememberMe: user.rememberMe,
@@ -40,7 +31,7 @@ class AuthService {
 
 	logout(logout) {
 		return axios
-			.post(GATEWAY_API_URL + API.auth.logout, {
+			.post(API.auth.logout, {
 				uuid: logout.uuid,
 				accessToken: logout.accessToken,
 			})
@@ -60,15 +51,11 @@ class AuthService {
 	//가입정보
 	async signUp(user = {}) {
 		try {
-			const response = await axios.post(
-				GATEWAY_API_URL + API.auth.signup,
-				user,
-				{
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
+			const response = await axios.post(API.auth.signup, user, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
 				},
-			)
+			})
 			return response.data
 		} catch (e) {
 			console.error(e)
@@ -77,7 +64,7 @@ class AuthService {
 
 	async emailAuth(email = {}) {
 		try {
-			const response = await axios.post(GATEWAY_API_URL + API.auth.emailAuth, {
+			const response = await axios.post(API.auth.emailAuth, {
 				email,
 			})
 			return response.data
@@ -88,15 +75,12 @@ class AuthService {
 
 	async verification(code = {}) {
 		try {
-			const response = await axios.get(
-				GATEWAY_API_URL + API.auth.verification,
-				{
-					params: {
-						code: code.code,
-						email: code.email,
-					},
+			const response = await axios.get(API.auth.verification, {
+				params: {
+					code: code.code,
+					email: code.email,
 				},
-			)
+			})
 			return response.data
 		} catch (e) {
 			console.error(e)
@@ -105,7 +89,7 @@ class AuthService {
 
 	async qrOtp(code = {}) {
 		try {
-			const response = await axios.post(GATEWAY_API_URL + API.auth.qrOtp, {
+			const response = await axios.post(API.auth.qrOtp, {
 				email: code.email,
 				userId: code.userId,
 			})

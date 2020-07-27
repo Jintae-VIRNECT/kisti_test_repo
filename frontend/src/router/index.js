@@ -6,7 +6,7 @@ Vue.use(Router)
 import HomeRouter from './partials/home'
 import QRRouter from './partials/qr'
 import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
-import InternetNotFound from 'WC-Modules/vue/components/errors/NetworkError'
+import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
 import HealthCheck from 'components/layout/common/HealthCheck'
 
 export default new Router({
@@ -28,8 +28,8 @@ export default new Router({
 		},
 		{
 			path: '/504',
-			name: 'InternetNotFound',
-			component: InternetNotFound,
+			name: 'NetworkError',
+			component: NetworkError,
 		},
 		{
 			path: '/healthcheck',
