@@ -69,8 +69,8 @@ docker run --name remote-mediaserver -d -p 8888:8888 \
     -e KMS_MIN_PORT=40000 \
     -e KMS_MAX_PORT=50000 \
     -e KMS_MTU=1200 \
-    -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+pem.pem \
-    -v ${PWD}/cert/cert.pem:/etc/kurento/cert/cert+pem.pem \
+    -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+key.pem \
+    -v ${PWD}/cert/cert+key.pem:/etc/kurento/cert/cert+key.pem \
     virnect/remote-mediaserver
 ```
 
