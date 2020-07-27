@@ -52,7 +52,7 @@ export const localRecResOpt = [
 
 export const localRecIntervalOpt = [
   {
-    value: '60',
+    value: '1',
     text: '1분',
   },
 ]

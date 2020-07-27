@@ -12,8 +12,8 @@ const state = {
     isOn: true,
   },
   localRecordInfo: {
-    time: null,
-    interval: '60',
+    time: '60',
+    interval: '1',
     resolution: '480p',
   },
   allow: {

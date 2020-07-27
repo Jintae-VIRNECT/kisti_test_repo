@@ -20,12 +20,13 @@ export default class LocalRecorder {
     this.roomTitle = ''
     this.maxTime = 60
     this.streams = []
-    this.interval = 60
+    this.interval = 1
     this.nickName = 'NONE'
     this.userId = 'NONE'
   }
 
   setConfig(config) {
+    logger(config)
     this.today = config.today
     this.options = config.options
     this.roomTitle = config.roomTitle
@@ -86,7 +87,7 @@ export default class LocalRecorder {
     try {
       this.isRecording = true
 
-      const timeSlice = Number.parseInt(this.interval * 1000, 10)
+      const timeSlice = Number.parseInt(this.interval * 60 * 1000, 10)
       this.recorder.start(timeSlice)
 
       if (this.startCallback) {
