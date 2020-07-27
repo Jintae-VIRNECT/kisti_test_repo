@@ -4,86 +4,92 @@
     <div class="container">
       <el-row>
         <section class="page-description">
-          <div class="avatar"></div>
-          <h2>{{ $t('home.title.welcome', { username: me.name }) }}</h2>
+          <div class="avatar">
+            <div class="image" :style="`background-image: url(${me.image})`" />
+          </div>
+          <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
         </section>
       </el-row>
       <el-row>
         <el-col class="container__left">
-          <el-card class="home__workspace-info">
+          <el-card>
             <div slot="header">
               <h3>{{ $t('home.workspace.title') }}</h3>
               <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
-            <dl>
-              <dt>{{ $t('home.workspace.name') }}</dt>
-              <dd>{{ workspace.name }}</dd>
-            </dl>
-            <dl>
-              <dt>{{ $t('home.workspace.desc') }}</dt>
-              <dd class="desc">
-                {{ workspace.desc || $t('home.workspace.descEmpty') }}
-              </dd>
-            </dl>
+            <workspace-info />
           </el-card>
-          <el-card class="el-card--table">
+          <el-card>
             <div slot="header">
               <h3>{{ $t('home.payment.title') }}</h3>
-              <router-link to="/payment">{{ $t('common.link') }}</router-link>
+              <router-link to="/purchases">{{ $t('common.link') }}</router-link>
             </div>
-            <purchases-info />
+            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
           </el-card>
         </el-col>
         <el-col class="container__right">
+          <!-- 워크스페이스 리스트 -->
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>{{ $t('home.usingPlan.title') }}</h3>
-              <span>{{ $t('home.usingPlan.desc') }}</span>
-              <router-link to="/plan">{{ $t('common.link') }}</router-link>
+              <h3>{{ $t('workspace.list.title') }}</h3>
+              <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
+            <workspace-list :isHome="true" />
           </el-card>
+          <!-- 플랜 리스트 -->
           <el-card class="el-card--table">
             <div slot="header">
-              <h3>{{ $t('home.workspacePlan.title') }}</h3>
-              <span>{{ $t('home.workspacePlan.desc') }}</span>
-              <router-link to="/plan">{{ $t('common.link') }}</router-link>
+              <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
+              <router-link to="/workspace">{{ $t('common.link') }}</router-link>
             </div>
+            <using-plan-list :isHome="true" />
+          </el-card>
+          <!-- 로그인된 기기 -->
+          <el-card class="el-card--table">
+            <div slot="header">
+              <h3>{{ $t('home.LoggedInDevice.title') }}</h3>
+              <router-link to="/security">{{ $t('common.link') }}</router-link>
+            </div>
+            <logged-in-device-list :isHome="true" />
           </el-card>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-card class="el-card--table">
-          <div slot="header">
-            <h3>{{ $t('home.LoggedInDevice.title') }}</h3>
-            <span>{{ $t('home.LoggedInDevice.desc') }}</span>
-            <router-link to="/security">{{ $t('common.link') }}</router-link>
-          </div>
-          <logged-in-device-list />
-        </el-card>
       </el-row>
     </div>
   </div>
 </template>
 
 <script>
+import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import PurchasesInfo from '@/components/purchases/PurchasesInfo'
+import WorkspaceList from '@/components/workspace/WorkspaceList'
+import UsingPlanList from '@/components/workspace/UsingPlanList'
 import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
+import purchaseService from '@/services/purchases'
+import paymentService from '@/services/payment'
+import profileService from '@/services/profile'
 
 export default {
   components: {
+    WorkspaceInfo,
+    WorkspaceList,
+    UsingPlanList,
     LoggedInDeviceList,
     PurchasesInfo,
   },
+  async asyncData() {
+    const promises = {
+      plansInfo: purchaseService.getWorkspacePlansInfo(),
+      paymentInfo: paymentService.getAutoPayments(),
+    }
+    return {
+      plansInfo: await promises.plansInfo,
+      paymentInfo: await promises.paymentInfo,
+    }
+  },
   data() {
     return {
-      me: {
-        name: '사용자 닉네임',
-      },
-      workspace: {
-        name: 'VIRNECT’s workspace',
-        desc: '',
-      },
+      me: profileService.getMyProfile(),
     }
   },
 }
@@ -91,9 +97,10 @@ export default {
 
 <style lang="scss">
 #home .container {
-  padding-top: 80px;
-  .el-table__empty-block {
-    min-height: 300px;
+  padding-top: 73px;
+  .el-table__empty-block,
+  .el-card--table .el-card__body .el-table__body-wrapper {
+    min-height: 320px;
   }
 }
 .home__bg {
@@ -101,7 +108,7 @@ export default {
   width: 100%;
   height: 420px;
   background: url('~assets/images/bg_profile.jpg') center no-repeat;
-  background-size: 100%;
+  background-size: cover;
 }
 .page-description {
   margin-bottom: 60px;
@@ -116,24 +123,6 @@ export default {
     font-size: 15px;
     line-height: 1.6;
     opacity: 0.9;
-  }
-}
-.home__workspace-info {
-  .el-card__body > dl {
-    padding: 12px 0;
-
-    dt {
-      color: $font-color-desc;
-      font-size: 12px;
-    }
-    dd {
-      margin-top: 4px;
-      font-size: 20px;
-    }
-    dd.desc {
-      margin-top: 8px;
-      font-size: inherit;
-    }
   }
 }
 </style>

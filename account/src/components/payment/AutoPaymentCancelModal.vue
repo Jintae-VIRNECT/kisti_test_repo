@@ -7,7 +7,7 @@
     :before-close="handleClose"
   >
     <p>{{ $t('payment.autoPaymentCancelModal.desc') }}</p>
-    <el-table :data="autoPayments">
+    <el-table :data="autoPaymentItems">
       <column-plan
         :label="$t('payment.autoPaymentCancelModal.column.product')"
         prop="name"
@@ -23,8 +23,14 @@
     </el-table>
     <p class="caution" v-html="$t('payment.autoPaymentCancelModal.caution')" />
     <template slot="footer">
-      <el-button>{{ $t('common.delete') }}</el-button>
-      <el-button type="primary">
+      <el-button @click="visible = false">
+        {{ $t('common.cancel') }}
+      </el-button>
+      <el-button
+        type="primary"
+        @click="autoPaymentCacnel"
+        :disabled="!autoPaymentItems.length"
+      >
         {{ $t('payment.autoPaymentCancelModal.submit') }}
       </el-button>
     </template>
@@ -38,13 +44,28 @@ import paymentService from '@/services/payment'
 
 export default {
   mixins: [dialogMixin, columnMixin],
-  data() {
-    return {
-      autoPayments: [],
-    }
+  props: {
+    autoPaymentId: Number,
+    autoPaymentItems: Array,
   },
-  async beforeMount() {
-    this.autoPayments = await paymentService.getAutoPayments()
+  methods: {
+    async autoPaymentCacnel() {
+      try {
+        await paymentService.cancelAutoPayments(this.autoPaymentId)
+        this.$emit('updated')
+        await this.$alert(
+          this.$t('payment.autoPaymentCancelModal.submitDoneDesc'),
+          this.$t('payment.autoPaymentCancelModal.submitDone'),
+        )
+        this.visible = false
+      } catch (e) {
+        this.$notify.error({
+          message: e,
+          position: 'bottom-left',
+          duration: 2000,
+        })
+      }
+    },
   },
 }
 </script>
@@ -54,7 +75,7 @@ export default {
   .caution {
     margin-bottom: 46px;
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>

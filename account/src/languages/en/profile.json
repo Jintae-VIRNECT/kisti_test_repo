@@ -1,0 +1,156 @@
+{
+  "desc": "Manage general information used in VERNECT's product and services.",
+  "info": {
+    "title": "Profile",
+    "desc": "Manage your profile details",
+    "image": "Profile picture",
+    "imageDesc": "Updating your profile picture makes it easier for other members to find you",
+    "name": "Name",
+    "nameDesc": "Your name is used for - payment",
+    "nameChange": "Edit Name",
+    "nickname": "Nickname",
+    "nicknameDesc": "Your nickname is shared to other members using VERNECT services",
+    "nicknameChange": "Edit nickname"
+  },
+  "account": {
+    "title": "Account details",
+    "desc": "Manage your account and password",
+    "email": "Account",
+    "emailDesc": "You cannot change an email address you used for registration",
+    "password": "Password",
+    "passwordDesc": "Periodic password changes increase security",
+    "passwordChange": "Edit password",
+    "marketing": "Receive promotional offers",
+    "marketingAgree": "Agree",
+    "marketingDisagree": "Disagree",
+    "marketingChange": "Change promotional marketing agreement",
+    "secession": "Withdrawal"
+  },
+  "additional": {
+    "title": "Additional user information",
+    "desc": "The additional user information is used in verification process if the user forgets email address",
+    "birth": "Date of birth",
+    "birthEmpty": "Date of birth is not updated",
+    "birthChange": "Edit date of birth",
+    "contact": "Contact details",
+    "contactEmpty": "Contact detail is not updated",
+    "contactChange": "Edit contact details",
+    "recoveryEmail": "Recovery email address",
+    "recoveryEmailEmpty": "Recovery email address is not updated",
+    "recoveryEmailChange": "Edit recovery email addresss"
+  },
+  "imageChangeModal": {
+    "title": "Update profile picture",
+    "desc": "Your profile picture is shared to all them VIRNECT users",
+    "caution": "Up to 5Mb of Jpg or Png files can be uploaded",
+    "upload": "Upload image file",
+    "delete": "Delete",
+    "submit": "Image update",
+    "message": {
+      "success": "Succesfully uploaded image",
+      "fail": "Failed to upload image file"
+    }
+  },
+  "nameChangeModal": {
+    "title": "Name settings",
+    "desc": "If you change the name",
+    "caution": "* For the purpose of account security",
+    "lastName": "Last name",
+    "firstName": "Given name",
+    "submit": "Edit",
+    "message": {
+      "success": "Succesfully updated your name",
+      "fail": "Failed to update your name"
+    }
+  },
+  "nicknameChangeModal": {
+    "title": "Edit Nickname",
+    "desc": "When edit your nickname",
+    "nickname": "Nickname",
+    "submit": "Edit",
+    "message": {
+      "success": "Succesfully updated your nickname",
+      "fail": "Failed to edit your nickname"
+    }
+  },
+  "passwordChangeModal": {
+    "title": "Edit password",
+    "desc": "When changing the password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "newPasswordRepeatPlaceholder": "Re-enter your new password",
+    "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types.<br>- Uppercase letter<br>- Lowercase letter<br>- Number<br>- Special character ( . , !, @, #, $, % )<br>Also your password must not contain consecutive numbers and more than three of same characters.",
+    "submit": "Edit",
+    "message": {
+      "success": "Succesfully updated your password",
+      "fail": "Failed to edit your nickname",
+      "wrong": "Wrong password",
+      "duplicate": "You cannot use the previously used password for your new password",
+      "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter<br>- Lowercase letter<br>- Number<br>- Special character ( . "
+    }
+  },
+  "birthChangeModal": {
+    "title": "Edit date of birth",
+    "birth": "Date of birth",
+    "year": "Year",
+    "month": "Month",
+    "day": "Day",
+    "submit": "Edit",
+    "message": {
+      "success": "Succesfully updated your date of birth",
+      "fail": "Failed to update your date of birth"
+    }
+  },
+  "marketInfoReceive": {
+    "title": "Agree to receive promotional offers",
+    "contents": "Receive emails about VIRNECT's new products",
+    "message": {
+      "success": "Succesfully updated your promotional marketing agreement",
+      "fail": "Failed to update"
+    }
+  },
+  "secession": {
+    "title": "Withdrawal",
+    "password": "Password",
+    "passwordDesk": "Enter password",
+    "secessionReason": "Reason for withdrawal",
+    "secessionReasonDesk": "Select the main reason for withdrawing your membership",
+    "secessionSelect": [
+      "Personal information leakage concerns",
+      "Not satisfied with our products and services",
+      "Price is too expensive",
+      "Infrequent use of our service"
+    ],
+    "secessionReasonEtc": "Please state the reason for your withdrawl from the membership",
+    "notice": "Withdrawal precautions",
+    "noticeLists": [
+      "Plans and licenses are subject to the terms and conditions.",
+      "After withdrawal",
+      "However"
+    ],
+    "done": "I agree to all the terms of membership withdrawal and proceed with membership withdrawal.",
+    "message": {
+      "success": "Succesfully completed membership withdrawal",
+      "fail": "Wrong passwrod"
+    }
+  },
+  "contactChangeModal": {
+    "title": "Edit contact details",
+    "contact": "Contact details",
+    "contactPlaceholder": "Please enter your phone number",
+    "submit": "Edit",
+    "message": {
+      "success": "succesfully updated your contact details",
+      "fail": "Failed update"
+    }
+  },
+  "recoveryEmailChangeModal": {
+    "title": "Edit recovery email address",
+    "recoveryEmail": "Recovery email address",
+    "submit": "Edit",
+    "message": {
+      "success": "Succesfully updated your recovery email address",
+      "fail": "Failed to update your recovery email address"
+    }
+  }
+}

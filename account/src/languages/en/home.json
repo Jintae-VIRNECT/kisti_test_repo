@@ -1,0 +1,27 @@
+{
+  "title": {
+    "welcome": "Welcome to VIRNECT {username}!",
+    "description": "Set up your privacy and security settings and start using VIRNECT products and services."
+  },
+  "workspace": {
+    "title": "My Workspace",
+    "name": "Workspace Name",
+    "desc": "Workspace Description",
+    "descEmpty": "There is no description in the Workspace"
+  },
+  "payment": {
+    "title": "Subscription Payment Information"
+  },
+  "usingPlan": {
+    "title": "My Current Plan",
+    "desc": "Your current plan details"
+  },
+  "workspacePlan": {
+    "title": "My Workspace plan",
+    "desc": "Plans you purchased"
+  },
+  "LoggedInDevice": {
+    "title": "Devices being logged in",
+    "desc": "Details of devices that are logged in with your account"
+  }
+}

@@ -141,7 +141,7 @@ export default {
   .contents {
     padding-left: 27px;
     color: #5e6b81;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>

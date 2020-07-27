@@ -19,24 +19,36 @@
             <dl class="horizon">
               <dt>{{ $t('payment.will.price') }}</dt>
               <dd class="price">
-                <span>{{ (200000).toLocaleString() }}</span>
+                <span>{{ autoPayments.price.toLocaleString() }}</span>
                 <span>{{ $t('payment.monetaryUnit') }}</span>
               </dd>
               <el-divider />
               <dt>{{ $t('payment.will.dueDate') }}</dt>
-              <dd>{{ new Date() | dateFormat }}</dd>
+              <dd>{{ autoPayments.nextPayDate | dateFormat }}</dd>
               <el-divider />
               <dt>{{ $t('payment.will.way') }}</dt>
-              <dd>
-                <span>{{ '신용카드' }}</span>
+              <dd v-if="autoPayments.payFlag === 'Y'">
+                <span>{{ autoPayments.way }}</span>
                 <span class="sub">
                   {{ $t('payment.will.autoPaymentEveryMonth') }}
                 </span>
               </dd>
             </dl>
-            <el-button type="simple" class="wide">
+            <!-- 결제정보 상세보기 -->
+            <el-button
+              v-if="autoPayments.items.length"
+              type="simple"
+              class="wide"
+              @click="showAutoPaymentInfoModal = true"
+            >
               {{ $t('common.more') }}
             </el-button>
+            <!-- 결제정보가 없을 경우 -->
+            <a v-else :href="$url.pay">
+              <el-button type="simple" class="wide">
+                {{ $t('common.payCenter') }}
+              </el-button>
+            </a>
           </el-card>
           <!-- 결제 수단 등록 & 변경 -->
           <el-card class="way">
@@ -44,22 +56,31 @@
               <dt>{{ $t('payment.way.change') }}</dt>
               <dd>
                 <p>{{ $t('payment.way.changeDesc') }}</p>
-                <el-button type="simple" class="wide">
-                  {{ $t('common.change') }}
-                </el-button>
               </dd>
               <el-divider />
-              <dt>{{ $t('payment.way.autoPayment') }}</dt>
-              <dd class="auto-payment">
-                <span>{{ $t('payment.way.autoPaymentNow') }}</span>
-                <el-button
-                  type="simple"
-                  @click="showAutoPaymentCancelModal = true"
-                >
-                  {{ $t('payment.way.autoPaymentCancel') }}
-                </el-button>
+              <dt>{{ $t('payment.way.cancel') }}</dt>
+              <dd>
+                <p>{{ $t('payment.way.cancelDesc') }}</p>
               </dd>
             </dl>
+            <!-- 자동 결제 해지 신청 취소 -->
+            <el-button
+              v-if="autoPayments.payFlag === 'N'"
+              type="simple"
+              class="wide"
+              @click="autoPaymentAbort"
+            >
+              {{ $t('payment.autoPaymentCancelModal.cancelRequestCancel') }}
+            </el-button>
+            <!-- 자동 결제 해지 -->
+            <el-button
+              v-else
+              type="simple"
+              class="wide"
+              @click="showAutoPaymentCancelModal = true"
+            >
+              {{ $t('payment.way.autoPaymentCancel') }}
+            </el-button>
           </el-card>
         </el-col>
         <!-- 결제 이력 -->
@@ -69,76 +90,126 @@
               <h3>{{ $t('payment.log.title') }}</h3>
             </div>
             <el-table
+              ref="table"
               :data="paymentLogs"
               class="clickable"
-              @row-click="showPaymentLogDetailModal = true"
+              @row-click="showLogDetail"
             >
-              <column-default
-                :label="$t('payment.log.column.no')"
-                prop="no"
-                sortable
-              />
+              <column-default :label="$t('payment.log.column.no')" prop="no" />
               <column-default
                 :label="$t('payment.log.column.way')"
                 prop="way"
-                :width="120"
-                sortable
+                :width="200"
               />
               <column-price
                 :label="$t('payment.log.column.price')"
                 prop="price"
                 :width="140"
-                sortable
               />
               <column-date
                 :label="$t('payment.log.column.paidDate')"
                 prop="paidDate"
                 :width="100"
-                sortable
               />
             </el-table>
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="paymentLogsTotal"
-              >
-              </el-pagination>
-            </el-row>
+            <searchbar-page
+              ref="page"
+              :value.sync="paymentLogsPage"
+              :total="paymentLogsTotal"
+            />
           </el-card>
         </el-col>
       </el-row>
     </div>
     <!-- 모달 -->
-    <auto-payment-cancel-modal :visible.sync="showAutoPaymentCancelModal" />
-    <payment-log-detail-modal :visible.sync="showPaymentLogDetailModal" />
+    <auto-payment-info-modal
+      :autoPaymentItems="autoPayments.items"
+      :visible.sync="showAutoPaymentInfoModal"
+    />
+    <auto-payment-cancel-modal
+      :autoPaymentId="autoPayments.id"
+      :autoPaymentItems="autoPayments.items"
+      :visible.sync="showAutoPaymentCancelModal"
+      @updated="autoPaymentsCancled"
+    />
   </div>
 </template>
 
 <script>
 import columnMixin from '@/mixins/columns'
 import filterMixin from '@/mixins/filters'
+import searchMixin from '@/mixins/search'
 import paymentService from '@/services/payment'
+import AutoPaymentInfoModal from '@/components/payment/AutoPaymentInfoModal'
 import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
-import PaymentLogDetailModal from '@/components/payment/PaymentLogDetailModal'
 
 export default {
-  mixins: [columnMixin, filterMixin],
+  mixins: [columnMixin, filterMixin, searchMixin],
   components: {
+    AutoPaymentInfoModal,
     AutoPaymentCancelModal,
-    PaymentLogDetailModal,
   },
   async asyncData() {
-    const { list, total } = await paymentService.searchPaymentLogs()
+    const promises = {
+      autoPayments: paymentService.getAutoPayments(),
+      logs: paymentService.searchPaymentLogs(),
+    }
     return {
-      paymentLogs: list,
-      paymentLogsTotal: total,
+      autoPayments: await promises.autoPayments,
+      paymentLogs: (await promises.logs).list,
+      paymentLogsTotal: (await promises.logs).total,
     }
   },
   data() {
     return {
+      paymentLogsPage: 1,
+      activeLog: null,
+      showAutoPaymentInfoModal: false,
       showAutoPaymentCancelModal: false,
       showPaymentLogDetailModal: false,
     }
+  },
+  methods: {
+    async changedSearchParams(searchParams) {
+      const { list, total } = await paymentService.searchPaymentLogs(
+        searchParams,
+      )
+      this.paymentLogs = list
+      this.paymentLogsTotal = total
+    },
+    async showLogDetail(log) {
+      const { slipLink } = await paymentService.getPaymentLogDetail(log.no)
+      if (slipLink) window.open(slipLink)
+    },
+    // 해지됨
+    async autoPaymentsCancled() {
+      this.autoPayments = await paymentService.getAutoPayments()
+    },
+    // 해지 신청 취소
+    autoPaymentAbort() {
+      this.$confirm(
+        this.$t('payment.autoPaymentCancelModal.cancelRequestCancelDesc'),
+        this.$t('payment.autoPaymentCancelModal.cancelRequestCancel'),
+      ).then(async () => {
+        try {
+          await paymentService.cancelAutoPaymentsAbort(this.autoPayments.id)
+          this.$notify.success({
+            message: this.$t(
+              'payment.autoPaymentCancelModal.cancelRequestCancelDone',
+            ),
+            position: 'bottom-left',
+            duration: 2000,
+          })
+          this.autoPayments = await paymentService.getAutoPayments()
+        } catch (e) {
+          this.$notify.error({
+            message: e,
+            position: 'bottom-left',
+            duration: 2000,
+          })
+        }
+      })
+    },
   },
 }
 </script>
@@ -168,10 +239,14 @@ export default {
     .sub {
       display: block;
       color: $font-color-desc;
-      font-size: 12.6px;
+      font-size: 13px;
     }
     & + .el-button {
       margin: 30px 0 10px;
+    }
+    & + a {
+      display: block;
+      margin: 60px 0 10px;
     }
   }
   .way {
@@ -183,12 +258,8 @@ export default {
       margin: 8px 0 16px;
       line-height: 20px;
     }
-    .auto-payment {
-      margin: 14px 0 8px;
-      .el-button {
-        float: right;
-        margin-top: -5px;
-      }
+    .el-button {
+      margin: 10px 0;
     }
   }
   // 모달 테이블

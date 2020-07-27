@@ -1,4 +1,6 @@
-export default async function({ req, store, redirect }) {
+import { url } from '@/plugins/context'
+
+export default async function({ req, store, redirect, error }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')
@@ -7,8 +9,8 @@ export default async function({ req, store, redirect }) {
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(
-        `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
-          req.headers.referer || req.headers.host,
+        `${url.console}?continue=${encodeURIComponent(
+          req.headers.referer || req.headers.host + req.url,
         )}`,
       )
     }
@@ -20,18 +22,14 @@ export default async function({ req, store, redirect }) {
       // 비정상 토큰
       if (/^Error: (8003|8005)/.test(e)) {
         return redirect(
-          `${process.env.LOGIN_SITE_URL}?continue=${encodeURIComponent(
+          `${url.console}?continue=${encodeURIComponent(
             req.headers.referer || req.headers.host,
           )}`,
         )
-      } else {
-        throw e
+      } else if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
       }
-    }
-
-    // 홈이 없어서 개인정보로 임시 리다이렉트
-    if (req.url === '/') {
-      return redirect('/profile')
+      error({ statusCode: e.statusCode, message: e.message })
     }
   }
 }

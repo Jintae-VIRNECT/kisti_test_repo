@@ -13,9 +13,25 @@
         <el-col class="container__left">
           <el-card>
             <div slot="header">
+              <h3>{{ $t('home.workspace.title') }}</h3>
+              <i
+                class="el-icon-caret-bottom"
+                v-if="!showWorkspaceInfo"
+                @click="showWorkspaceInfo = true"
+              />
+              <i
+                class="el-icon-caret-top"
+                v-if="showWorkspaceInfo"
+                @click="showWorkspaceInfo = false"
+              />
+            </div>
+            <workspace-info v-if="showWorkspaceInfo" />
+          </el-card>
+          <el-card>
+            <div slot="header">
               <h3>{{ $t('purchases.info.title') }}</h3>
             </div>
-            <purchases-info />
+            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
           </el-card>
         </el-col>
         <el-col class="container__right">
@@ -24,32 +40,10 @@
             <div slot="header">
               <h3>{{ $t('purchases.planMembersInfo.title') }}</h3>
             </div>
-            <el-table :data="planMembers">
-              <column-plan
-                :label="$t('purchases.planMembersInfo.column.name')"
-                prop="product"
-                productProp="product"
-                gradeProp="grade"
-              />
-              <column-user
-                :label="$t('purchases.planMembersInfo.column.user')"
-                prop="memberName"
-                nameProp="memberName"
-                imageProp="memberProfile"
-                :width="140"
-              />
-            </el-table>
-            <el-row type="flex" justify="center">
-              <el-pagination
-                layout="prev, pager, next"
-                :total="planMembersTotal"
-                @current-change="searchPlanMembers"
-              >
-              </el-pagination>
-            </el-row>
+            <purchases-plan-member-list />
           </el-card>
           <!-- 사용량 -->
-          <purchases-used />
+          <purchases-used :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
         </el-col>
       </el-row>
     </div>
@@ -57,30 +51,36 @@
 </template>
 
 <script>
-import purchasesService from '@/services/purchases'
+import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import purchasesInfo from '@/components/purchases/PurchasesInfo'
 import PurchasesUsed from '@/components/purchases/PurchasesUsed'
+import PurchasesPlanMemberList from '@/components/purchases/PurchasesPlanMemberList'
+import purchaseService from '@/services/purchases'
+import paymentService from '@/services/payment'
 import columnMixin from '@/mixins/columns'
 
 export default {
   mixins: [columnMixin],
   components: {
+    WorkspaceInfo,
     purchasesInfo,
     PurchasesUsed,
+    PurchasesPlanMemberList,
   },
   async asyncData() {
-    const { list, total } = await purchasesService.searchPlanMembers()
+    const promises = {
+      plansInfo: purchaseService.getWorkspacePlansInfo(),
+      paymentInfo: paymentService.getAutoPayments(),
+    }
     return {
-      planMembers: list,
-      planMembersTotal: total,
+      plansInfo: await promises.plansInfo,
+      paymentInfo: await promises.paymentInfo,
     }
   },
-  methods: {
-    async searchPlanMembers() {
-      const { list, total } = await purchasesService.searchPlanMembers()
-      this.planMembers = list
-      this.planMembersTotal = total
-    },
+  data() {
+    return {
+      showWorkspaceInfo: false,
+    }
   },
 }
 </script>
@@ -95,6 +95,12 @@ export default {
   }
   .el-progress-bar__inner {
     background: #007cfe;
+  }
+  .el-card__header i {
+    float: right;
+    margin-right: -8px;
+    padding: 5px 0;
+    cursor: pointer;
   }
 }
 </style>

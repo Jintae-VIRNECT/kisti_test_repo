@@ -1,8 +1,5 @@
 <template>
-  <el-card class="el-card--table">
-    <div slot="header">
-      <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
-    </div>
+  <div>
     <el-table ref="table" :data="plans">
       <column-plan
         :label="$t('workspace.usingPlanList.column.name')"
@@ -26,8 +23,14 @@
         sortable
       />
     </el-table>
-    <searchbar-page ref="page" :value.sync="plansPage" :total="plansTotal" />
-  </el-card>
+    <searchbar-page
+      v-if="!isHome"
+      ref="page"
+      :value.sync="plansPage"
+      :pageSize="6"
+      :total="plansTotal"
+    />
+  </div>
 </template>
 
 <script>
@@ -37,6 +40,9 @@ import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [columnMixin, searchMixin],
+  props: {
+    isHome: Boolean,
+  },
   data() {
     return {
       plans: [],
@@ -57,7 +63,9 @@ export default {
     },
   },
   beforeMount() {
-    this.searchUsingPlans()
+    this.searchUsingPlans({
+      size: this.isHome ? 5 : 6,
+    })
   },
 }
 </script>

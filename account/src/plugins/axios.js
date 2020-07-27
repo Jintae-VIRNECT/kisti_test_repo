@@ -1,7 +1,7 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { context, url } from '@/plugins/context'
 
 let axios = null
 /**
@@ -30,6 +30,7 @@ export async function api(name, option = {}) {
   }
 
   // GET, DELETE
+  params = params || {}
   if (method === 'get') params = { params }
   if (method === 'delete') params = { data: params }
 
@@ -43,47 +44,64 @@ export async function api(name, option = {}) {
     }
   }
 
-  if (process.client && $nuxt.$loading.start) $nuxt.$loading.start()
-  try {
-    const response = await axios[method](uri, params, { headers })
-    const { code, data, message, service } = response.data
-    if (process.client) $nuxt.$loading.finish()
+  // payletter api
+  if (/^\/billing/.test(uri)) {
+    try {
+      if (method === 'get') params.params.sitecode = 1
+      else if (method === 'delete') params.data.sitecode = 1
+      else params.sitecode = 1
 
-    if (code === 200) {
+      const response = await axios[method](uri, params, { headers })
+      const { data } = response.data
       return data
-    } else if (code === 8003 || code === 8005) {
-      if (process.client) location.href = urls.console[process.env.TARGET_ENV]
+    } catch (e) {
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(e)
+      console.error(`URL: ${uri}`)
+      const { code, message } = e.response.data.result
       throw new Error(`${code}: ${message}`)
-    } else {
-      const error = new Error(`${code}: ${message}`)
-      console.error(error)
-      throw error
     }
-  } catch (e) {
-    if (process.client) {
-      $nuxt.$loading.fail()
-      $nuxt.$loading.finish()
+  }
+  // platform api
+  else {
+    try {
+      const response = await axios[method](uri, params, { headers })
+      const { code, data, message, service } = response.data
+
+      if (code === 200) {
+        return data
+      } else if (code === 8003 || code === 8005) {
+        if (process.client) location.href = url.console
+        throw new Error(`${code}: ${message}`)
+      } else {
+        const error = new Error(`${code}: ${message}`)
+        console.error(error)
+        throw error
+      }
+    } catch (e) {
+      console.error(`URL: ${uri}`)
+      // timeout
+      if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
+        context.error(e)
+      }
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(e)
+      throw e
     }
-    console.error(`URL: ${uri}`)
-    throw e
   }
 }
 
-export default function({ app, $axios }, inject) {
+export default function({ $config, $axios }, inject) {
   // Create a custom axios instance
   axios = $axios.create({
-    baseURL: app.$env.API_GATEWAY_URL,
-    timeout: app.$env.API_TIMEOUT,
+    baseURL: $config.API_GATEWAY_URL,
+    timeout: $config.API_TIMEOUT,
     headers: { 'Content-Type': 'application/json' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
   })
 
-  /**
-   * Api gateway
-   * @param {String} name
-   * @param {Object} option
-   */
   inject('api', api)
 }

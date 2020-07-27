@@ -1,0 +1,52 @@
+{
+  "desc": "Register and manage the coupons issued from both online or offline.",
+  "banner": {
+    "subTitle": "14 Days Free Trial",
+    "mainTitle": "2 weeks of AR innovation",
+    "link": "Go to"
+  },
+  "addCouponCode": {
+    "title": "Register new coupons",
+    "label": "Enter coupon codes",
+    "placeholder": "Enter your coupon codes",
+    "submit": "Submit",
+    "cautionTitle": "Notes on coupon registration",
+    "cautionContent": [
+      "We do not include 0 or 1 numbers in coupon codes. Please be careful not to be confused with the letters O and I.",
+      "Since products given as coupons are applied in duplicate with existing products"
+    ]
+  },
+  "couponList": {
+    "title": "List of registered coupons",
+    "desc": "Click on the item to see the coupon menu",
+    "empty": "There is no registered coupon"
+  },
+  "column": {
+    "couponName": "Coupon name",
+    "registerDate": "Date of register",
+    "expireDate": "Valid date",
+    "usedDate": "Date when used",
+    "status": "Validity"
+  },
+  "status": {
+    "unuse": "Unused",
+    "use": "Used",
+    "expired": "Expired"
+  },
+  "message": {
+    "registerFail": "Failed to register the coupon",
+    "registerNotExist": "The coupon with the number you entered does not exist.",
+    "registerExpired": "Cannot register this coupon since the validity date has expired",
+    "registerAlready": "This coupon is already registered",
+    "registerSuccess": "Your coupon is registered succesfully",
+    "useFail": "Failed to use the coupon",
+    "useAlready": "This coupon has already been used",
+    "useExpired": "Cannot use this coupon since the validity date has expired",
+    "useSuccess": "The coupon has been used."
+  },
+  "useModal": {
+    "title": "Coupon screen",
+    "desc": "Would you like to use the coupon? Coupon will be applied immediately when used and cannot be canceled.",
+    "submit": "Submit to use coupons"
+  }
+}

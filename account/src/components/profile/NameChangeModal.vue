@@ -84,7 +84,7 @@ export default {
   }
   .caution {
     color: $font-color-desc;
-    font-size: 12.6px;
+    font-size: 13px;
   }
 }
 </style>

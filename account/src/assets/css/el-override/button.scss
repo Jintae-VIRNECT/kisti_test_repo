@@ -11,11 +11,11 @@
   background: $color-button;
 
   & > span {
-    font-size: 12.6px;
+    font-size: 13px;
   }
   &:hover,
   &:focus {
-    color: inherit;
+    color: $font-color-content;
     background: $color-button-hover;
   }
   &:active {

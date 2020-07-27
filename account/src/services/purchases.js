@@ -1,20 +1,37 @@
+import { api } from '@/plugins/axios'
 import PlanMember from '@/models/purchases/PlanMember'
+import PlansInfo from '@/models/purchases/PlansInfo'
+import workspaceService from '@/services/workspace'
 
 export default {
-  searchPlanMembers() {
-    const data = [0, 1, 2, 3, 4]
+  /**
+   * 라이센스 멤버 검색
+   * @param {Object} searchParams
+   */
+  async searchPlanMembers(searchParams = {}) {
+    const { workspaceUserLicenseInfoList, pageMeta } = await api(
+      'GET_LICENSE_MEMBERS',
+      {
+        route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
+        params: {
+          sort: 'plan,desc',
+          size: 8,
+          ...searchParams,
+        },
+      },
+    )
     return {
-      list: data.map(member => new PlanMember(member)),
-      total: data.length,
+      list: workspaceUserLicenseInfoList.map(member => new PlanMember(member)),
+      total: pageMeta.totalElements,
     }
   },
-  getStorageCapacity() {
-    return {
-      used: 68.44,
-      max: 100,
-      remain: 31.55,
-      default: 75,
-      extend: 25,
-    }
+  /**
+   * 워크스페이스 플랜 정보 조회
+   */
+  async getWorkspacePlansInfo() {
+    const data = await api('GET_WORKSPACE_PLAN_INFO', {
+      route: { workspaceId: workspaceService.getMasterWorkspaceInfo().uuid },
+    })
+    return new PlansInfo(data)
   },
 }

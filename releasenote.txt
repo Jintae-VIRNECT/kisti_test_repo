@@ -1,0 +1,12 @@
+RELEASE
+
+New Features
+워크스페이스 나가기 기능 추가
+
+Bug Fixes
+워크스페이스 생성 기능 장애 해결
+
+Limitation
+워크스페이스 생성은 로그인 시에만 가능
+
+Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

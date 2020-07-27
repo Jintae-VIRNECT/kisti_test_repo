@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=local nuxt",
-    "build": "cross-env NODE_ENV=$NODE_ENV nuxt build --modern=server",
+    "build": "nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$NODE_ENV nuxt start --modern=server",
     "generate": "nuxt generate"
   },
@@ -21,7 +21,6 @@
     "js-cookie": "^2.2.1",
     "lodash.clonedeep": "^4.5.0",
     "nuxt": "^2.0.0",
-    "nuxt-env": "^0.1.0",
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {

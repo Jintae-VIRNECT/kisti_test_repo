@@ -1,36 +1,37 @@
 import { api } from '@/plugins/axios'
 import Coupon from '@/models/coupon/Coupon'
 import profileService from '@/services/profile'
-import workspaceService from '@/services/workspace'
 
 export default {
-  async searchCoupons(searchParams) {
-    const { myCouponInfoList, pageMeta } = await api('GET_COUPONS', {
-      route: { userId: profileService.getMyProfile().uuid },
-      params: { size: 10, ...searchParams },
-    })
-    return {
-      list: myCouponInfoList.map(coupon => new Coupon(coupon)),
-      total: pageMeta.totalElements,
-    }
-  },
-  async addCouponCode(code) {
-    const data = await api('ADD_COUPON', {
+  /**
+   * 쿠폰 리스트 조회
+   * @param {Object} searchParams
+   */
+  async searchCoupons(searchParams = {}) {
+    const { couponholdinfos, totalcnt } = await api('GET_PAY_COUPONS', {
       params: {
-        couponSerialKey: code,
-        userId: profileService.getMyProfile().uuid,
+        userno: profileService.getMyProfile().userId,
+        pagesize: 10,
+        pageNo: searchParams.page || 1,
       },
     })
-    return data
+    return {
+      list: couponholdinfos.map(coupon => new Coupon(coupon)),
+      total: totalcnt,
+    }
   },
-  async useCoupon(couponId) {
-    const data = await api('USE_COUPON', {
+  /**
+   * 쿠폰 등록
+   * @param {String} code
+   */
+  async addCouponCode(code) {
+    const { userId, email, nickname } = profileService.getMyProfile()
+    const data = await api('ADD_PAY_COUPON', {
       params: {
-        couponId,
-        userId: profileService.getMyProfile().uuid,
-        workspaceId: workspaceService
-          .getMyWorkspaces()
-          .find(workspace => workspace.role === 'MASTER').uuid,
+        userno: userId,
+        userId: email,
+        username: nickname,
+        couponno: code,
       },
     })
     return data

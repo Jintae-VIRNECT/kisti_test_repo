@@ -19,7 +19,12 @@ export default {
   components: {
     TheHeader,
   },
-  data: function() {
+  head() {
+    return {
+      title: `VIRNECT | ${this.$t('menu.account')}`,
+    }
+  },
+  data() {
     return {
       showSection: {
         login: false,

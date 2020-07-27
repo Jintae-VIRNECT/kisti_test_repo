@@ -54,7 +54,7 @@ export default {
         email: profile.email,
         password: '',
       },
-      findPasswordUrl: `${process.env.LOGIN_SITE_URL}/find`,
+      findPasswordUrl: `${this.$config.console}/find`,
     }
   },
   methods: {

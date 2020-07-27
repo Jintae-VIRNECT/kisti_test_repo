@@ -1,20 +1,81 @@
-import Ticket from '@/models/payment/Ticket'
 import PaymentLog from '@/models/payment/PaymentLog'
 import PaymentLogDetail from '@/models/payment/PaymentLogDetail'
+import AutoPaymentInfo from '@/models/payment/AutoPaymentInfo'
+import Ticket from '@/models/payment/Ticket'
+import { api } from '@/plugins/axios'
+import profileServices from '@/services/profile'
 
 export default {
-  searchPaymentLogs() {
-    const data = [0, 1, 2, 3, 4]
+  /**
+   * 전체 상품 리스트 조회
+   */
+  async getAllTicketList() {
+    const { products } = await api('GET_PAYMENT_ITEMS')
+    return products.map(product => new Ticket(product))
+  },
+  /**
+   * 결제정보 목록 검색
+   * @param {Object} searchParams
+   */
+  async searchPaymentLogs(searchParams = {}) {
+    const data = await api('GET_PAYMENT_LOGS', {
+      params: {
+        userno: profileServices.getMyProfile().userId,
+        fromymd: '2020-01-01',
+        toymd: '2999-01-01',
+        pagesize: 10,
+        pageno: searchParams.page || 1,
+      },
+    })
     return {
-      list: data.map(() => new PaymentLog()),
-      total: 30,
+      list: data.payments.map(log => new PaymentLog(log)),
+      total: data.totalcnt,
     }
   },
-  getPaymentLogDetail() {
-    return new PaymentLogDetail()
+  /**
+   * 결제상세정보
+   * @param {String} no
+   */
+  async getPaymentLogDetail(no) {
+    const data = await api('GET_PAYMENT_LOG_DETAIL', {
+      params: {
+        userno: profileServices.getMyProfile().userId,
+        cashno: no,
+      },
+    })
+    return new PaymentLogDetail(data)
   },
-  getAutoPayments() {
-    const data = [0, 1, 2]
-    return data.map(() => new Ticket())
+  /**
+   * 내 정기결제 정보 가져오기
+   */
+  async getAutoPayments() {
+    const data = await api('GET_AUTO_PAYMENTS', {
+      params: { userno: profileServices.getMyProfile().userId },
+    })
+    return new AutoPaymentInfo(data)
+  },
+  /**
+   * 정기결제 해지하기
+   */
+  async cancelAutoPayments(no) {
+    const data = await api('CANCEL_AUTO_PAYMENTS', {
+      params: {
+        userno: profileServices.getMyProfile().userId,
+        MSeqNo: no,
+      },
+    })
+    return data
+  },
+  /**
+   * 정기결제 해지요청 취소
+   */
+  async cancelAutoPaymentsAbort(no) {
+    const data = await api('CANCEL_AUTO_PAYMENTS_ABORT', {
+      params: {
+        userno: profileServices.getMyProfile().userId,
+        MSeqNo: no,
+      },
+    })
+    return data
   },
 }

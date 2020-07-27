@@ -14,7 +14,7 @@ module.exports = {
     htmlAttrs: {
       lang: 'ko',
     },
-    title: 'account',
+    title: 'VIRNECT | Account',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -25,12 +25,7 @@ module.exports = {
   /**
    * Plugins
    */
-  modules: [
-    ['nuxt-i18n', lang],
-    '@nuxtjs/style-resources',
-    ['nuxt-env', { keys: [] }],
-    '@nuxtjs/axios',
-  ],
+  modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
   plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
   /*
    ** Customize style
@@ -54,12 +49,10 @@ module.exports = {
   /**
    * env
    */
-  env: {
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-    SSL_ENV: JSON.stringify(process.env.SSL_ENV),
+  debug: JSON.parse(env.NUXT_DEBUG),
+  env: { NODE_ENV: process.env.NODE_ENV },
+  publicRuntimeConfig: {
     TARGET_ENV: env.TARGET_ENV,
-    LOGIN_SITE_URL: env.LOGIN_SITE_URL,
-    PROMOTION_SITE_URL: env.PROMOTION_SITE_URL,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
   },
