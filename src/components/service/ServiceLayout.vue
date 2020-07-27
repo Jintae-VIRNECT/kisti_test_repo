@@ -59,9 +59,7 @@ export default {
     if (from.name !== 'workspace') {
       next({ name: 'workspace' })
     }
-    next(vm => {
-      vm.$store.dispatch('callReset')
-    })
+    next()
   },
   beforeRouteLeave(to, from, next) {
     next(vm => {

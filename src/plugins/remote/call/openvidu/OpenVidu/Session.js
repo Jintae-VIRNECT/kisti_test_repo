@@ -15,6 +15,7 @@
  * limitations under the License.
  *
  */
+import { logger as prodLogger } from 'utils/logger'
 var __extends =
   (this && this.__extends) ||
   (function() {
@@ -580,6 +581,7 @@ var Session = /** @class */ (function(_super) {
   Session.prototype.signal = function(signal) {
     var _this = this
     return new Promise(function(resolve, reject) {
+      prodLogger('signal', 'send::', signal.type)
       var signalMessage = {}
       if (signal.to && signal.to.length > 0) {
         var connectionIds_1 = []
@@ -892,6 +894,8 @@ var Session = /** @class */ (function(_super) {
   Session.prototype.onNewMessage = function(msg) {
     var _this = this
     logger.info('New signal: ' + JSON.stringify(msg))
+
+    prodLogger('signal', 'received::', msg.type)
     var strippedType = msg.type ? msg.type.replace(/^(signal:)/, '') : undefined
     if (msg.from) {
       // Signal sent by other client

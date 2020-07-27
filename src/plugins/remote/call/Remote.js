@@ -4,7 +4,7 @@ import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH, CONTROL } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 
 let OV
 
@@ -29,6 +29,7 @@ const _ = {
       allowUser = true
     }
     try {
+      Store.commit('callClear')
       OV = new OpenVidu()
       _.session = OV.initSession()
 
@@ -43,7 +44,7 @@ const _ = {
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
       }
-      logger('coturn::', iceServers)
+      debug('coturn::', iceServers)
 
       const options = {
         iceServers,
@@ -52,7 +53,7 @@ const _ = {
       }
 
       await _.session.connect(token, JSON.stringify(metaData), options)
-      Store.commit('callClear')
+
       Store.dispatch('updateAccount', {
         roleType: role,
       })
@@ -69,6 +70,7 @@ const _ = {
         mirror: false,
       })
       publisher.on('streamCreated', () => {
+        logger('room', 'publish success')
         _.publisher = publisher
         if (publishVideo) {
           // TODO:: 테스트 계정용!!!!

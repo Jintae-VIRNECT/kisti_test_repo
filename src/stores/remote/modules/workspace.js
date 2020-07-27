@@ -21,7 +21,6 @@ const mutations = {
     }
     if (state.workspaceList.length > 0) {
       state.current = state.workspaceList[0]
-      console.log('Current Workspace > ', state.current)
     }
   },
   [CHANGE_WORKSPACE](state, workspaceId) {

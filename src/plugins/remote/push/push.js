@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs'
 import { DESTINATION, KEY } from 'configs/push.config'
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
 const push = {
@@ -13,7 +13,10 @@ const push = {
   },
   init: workspaceId => {
     return new Promise((resolve, reject) => {
-      if (push._inited === true) return
+      if (push._inited === true) {
+        resolve()
+        return
+      }
       push._inited = true
 
       const config = {
@@ -23,9 +26,9 @@ const push = {
           passcode: 'guest',
         },
         debug: str => {
-          logger(str)
+          debug('::message::', str)
         },
-        reconnectDelay: 3000,
+        reconnectDelay: 10 * 1000,
         heartbeatIncoming: 0,
         heartbeatOutgoing: 0,
       }
@@ -35,8 +38,8 @@ const push = {
       Object.assign(push, client)
 
       client.onConnect = frame => {
-        logger('::message::', frame)
-        logger('::message::', client)
+        logger('message', 'connected')
+        debug('::message::', client, frame)
         client.subscribe(
           `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
           push.subscriber,
@@ -46,7 +49,13 @@ const push = {
 
       client.onStompError = frame => {
         console.error('Broker reported error: ' + frame.headers['message'])
-        logger('Additional details: ' + frame.body)
+        debug('Additional details: ' + frame.body)
+        reject()
+      }
+
+      client.onDisconnect = frame => {
+        logger('message', 'disconnected')
+        debug('Additional details: ' + frame.body)
         reject()
       }
 

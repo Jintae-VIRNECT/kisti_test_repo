@@ -8,13 +8,25 @@ import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
+import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {
-  session.on('streamCreated', async event => {
-    console.log('[session] stream created')
-    const streamObj = await getUserObject(event.stream)
+  session.on('streamCreated', event => {
+    logger('room', "participant's connected")
+    const streamObj = getUserObject(event.stream)
     Store.commit('addStream', streamObj)
+    getUserInfo({
+      userId: streamObj.id,
+    }).then(participant => {
+      console.log(participant)
+      Store.commit('updateParticipant', {
+        connectionId: streamObj.connectionId,
+        nickname: participant.nickname,
+        path: participant.profile,
+      })
+    })
     const subscriber = session.subscribe(event.stream, '', () => {
+      logger('room', 'participant subscribe successed')
       Store.commit('updateParticipant', {
         connectionId: streamObj.connectionId,
         stream: event.stream.mediaStream,
@@ -45,7 +57,7 @@ export const addSessionEventListener = session => {
   })
   /** session closed */
   session.on('sessionDisconnected', event => {
-    console.log('[session] disconnected :: ', event.reason)
+    logger('room', 'participant disconnect')
     _.clear()
     if (event.reason === 'sessionClosedByServer') {
       // TODO: MESSAGE
@@ -64,7 +76,7 @@ export const addSessionEventListener = session => {
   })
   // user leave
   session.on('streamDestroyed', event => {
-    console.log('[session] stream destroyed')
+    logger('room', 'participant destroy')
     const connectionId = event.stream.connection.connectionId
     Store.commit('removeStream', connectionId)
     removeSubscriber(event.stream.streamId)
@@ -140,6 +152,7 @@ export const addSessionEventListener = session => {
 
   /** 채팅 수신 */
   session.on(SIGNAL.CHAT, event => {
+    console.log('[session] receive session :: ' + SIGNAL.CHAT)
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -200,7 +213,7 @@ export const addSessionEventListener = session => {
   })
 }
 
-const getUserObject = async stream => {
+const getUserObject = stream => {
   let streamObj
   let connection = stream.connection
 
@@ -209,9 +222,6 @@ const getUserObject = async stream => {
   let uuid = metaData.clientData
   let roleType = metaData.roleType
 
-  const participant = await getUserInfo({
-    userId: uuid,
-  })
   let allowUser = false
   if (allowCamera.includes(_.account.email)) {
     allowUser = true
@@ -221,10 +231,11 @@ const getUserObject = async stream => {
     id: uuid,
     // stream: stream.mediaStream,
     stream: null,
-    // connection: stream.connection,
     connectionId: stream.connection.connectionId,
-    nickname: participant.nickname,
-    path: participant.profile,
+    // nickname: participant.nickname,
+    // path: participant.profile,
+    nickname: null,
+    path: null,
     audio: stream.audioActive,
     video: roleType === ROLE.WORKER || allowUser,
     speaker: true,
@@ -247,27 +258,3 @@ const getUserObject = async stream => {
 
   return streamObj
 }
-/*
-export const getStream = async constraints => {
-  if (!navigator.mediaDevices.getUserMedia) {
-    console.error('getUserMedia 없음')
-    return
-  }
-  try {
-    const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-
-    const streamTracks = {}
-    streamTracks.audioSource =
-      mediaStream.getAudioTracks().length > 0
-        ? mediaStream.getAudioTracks()[0]
-        : null
-    streamTracks.videoSource =
-      mediaStream.getVideoTracks().length > 0
-        ? mediaStream.getVideoTracks()[0]
-        : null
-    return streamTracks
-  } catch (err) {
-    console.error(err)
-  }
-}
-*/

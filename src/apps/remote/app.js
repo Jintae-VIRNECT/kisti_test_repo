@@ -21,7 +21,7 @@ import PUSH from 'plugins/remote/push'
 import { localStorage } from 'utils/storage'
 import { version } from '@/package.json'
 
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 
 Vue.use(DayJS)
 Vue.use(PUSH)
@@ -35,6 +35,7 @@ Vue.use(call, { Store })
 
 Vue.prototype.$localStorage = localStorage
 Vue.prototype.logger = logger
+Vue.prototype.debug = debug
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
