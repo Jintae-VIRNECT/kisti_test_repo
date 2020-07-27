@@ -13,9 +13,10 @@
 // instantaneous and time-decaying volumes available for inspection.
 // It also reports on the fraction of samples that were at or near
 // the top of the measurement range.
-import logger from 'utils/logger'
+import { debug } from 'utils/logger'
+const logType = 'SoundMeter'
 function SoundMeter(context) {
-  logger(context)
+  debug(logType, context)
   this.context = context
   this.instant = 0.0
   this.slow = 0.0
@@ -40,7 +41,7 @@ function SoundMeter(context) {
 }
 
 SoundMeter.prototype.connectToSource = function(stream, callback) {
-  logger('SoundMeter connecting')
+  debug(logType, 'SoundMeter connecting')
   try {
     this.mic = this.context.createMediaStreamSource(stream)
     this.mic.connect(this.script)
@@ -50,7 +51,7 @@ SoundMeter.prototype.connectToSource = function(stream, callback) {
       callback(null)
     }
   } catch (e) {
-    logger(e)
+    console.error(e)
     if (typeof callback !== 'undefined') {
       callback(e)
     }
@@ -58,7 +59,7 @@ SoundMeter.prototype.connectToSource = function(stream, callback) {
 }
 
 SoundMeter.prototype.connectToMedia = function(element, callback) {
-  logger('SoundMeter connecting')
+  debug(logType, 'SoundMeter connecting')
   try {
     this.mic = this.context.createMediaElementSource(element)
     this.mic.connect(this.script)
@@ -68,7 +69,7 @@ SoundMeter.prototype.connectToMedia = function(element, callback) {
       callback(null)
     }
   } catch (e) {
-    logger(e)
+    console.log(e)
     if (typeof callback !== 'undefined') {
       callback(e)
     }
@@ -79,10 +80,10 @@ SoundMeter.prototype.stop = function() {
   return new Promise(resolve => {
     this.mic.disconnect()
     this.script.disconnect()
-    logger(this.context.state)
-    logger(this.context)
+    debug(logType, this.context.state)
+    debug(logType, this.context)
     this.context.close().then(() => {
-      logger(this.context.state)
+      debug(logType, this.context.state)
       resolve()
     })
   })

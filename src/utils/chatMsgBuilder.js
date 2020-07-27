@@ -1,6 +1,9 @@
 import linkifyHtml from 'linkifyjs/html'
 import { TYPE, SUB_TYPE } from 'configs/chat.config'
-import logger from 'utils/logger'
+import { debug } from 'utils/logger'
+
+const logType = 'ChatMsgBuilder'
+
 class ChatMsg {
   constructor() {}
 }
@@ -24,7 +27,7 @@ class ChatMsgBuilder {
     if (TYPE.hasOwnProperty(type)) {
       this.msg.type = type
     } else {
-      throw 'ChatMsgBuilder :: wrong type!! type :' + `${type}`
+      console.error(logType, `wrong type : + ${type}`)
     }
     return this
   }
@@ -33,7 +36,7 @@ class ChatMsgBuilder {
     if (SUB_TYPE.hasOwnProperty(subType)) {
       this.msg.subType = subType
     } else {
-      throw 'ChatMsgBuilder :: wrong type!! subType :' + `${subType}`
+      console.error(logType, `wrong subType : + ${subType}`)
     }
     return this
   }
@@ -49,7 +52,7 @@ class ChatMsgBuilder {
     if (Array.isArray(file) && file.length > 0) {
       this.msg.file = file
     } else {
-      throw 'ChatMsgBuilder :: argument "file" is invalid'
+      console.error(logType, `wrong file : + ${file}`)
     }
     return this
   }
@@ -132,7 +135,7 @@ class ChatMsgBuilder {
 
     this.msg.date = new Date()
 
-    logger(this.msg)
+    debug(logType, this.msg)
     return this.msg
   }
 }

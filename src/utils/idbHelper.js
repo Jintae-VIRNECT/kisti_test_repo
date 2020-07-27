@@ -26,11 +26,11 @@ async function initIDB() {
       })
       initFlag = false
 
-      logger(logType, 'IDB init Success')
-      return true
+      logger(logType, 'init Success')
     }
+    return true
   } catch (e) {
-    console.error(logType, 'IDB init Failed')
+    console.error(logType, 'init Failed')
     console.error(e)
     return false
   }
@@ -106,7 +106,7 @@ async function getDataWithUserId(userId, dataHandler) {
     result = result.map(dataHandler)
   }
 
-  debug(result)
+  debug(logType, 'getDataWithUserId', result)
   return result
 }
 
@@ -115,7 +115,7 @@ async function getMediaChunkArrays(uuids) {
     .anyOf(uuids)
     .toArray()
 
-  debug(result)
+  debug(logType, 'getMediaChunkArrays', result)
   return result
 }
 

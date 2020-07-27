@@ -5,7 +5,7 @@ import urls from '@/server/urls'
 import jwtDecode from 'jwt-decode'
 import { setAuthorization, setBaseURL } from 'api/gateway/gateway'
 import Axios from 'axios'
-import logger from 'utils/logger'
+import { logger } from 'utils/logger'
 
 /**
  * 상태

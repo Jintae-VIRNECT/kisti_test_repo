@@ -4,7 +4,7 @@ import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { allowCamera } from 'utils/testing'
-import logger from 'utils/logger'
+import { logger } from 'utils/logger'
 
 let OV
 

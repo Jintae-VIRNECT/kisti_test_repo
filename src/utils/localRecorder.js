@@ -161,7 +161,7 @@ export default class LocalRecorder {
       }
 
       if (this.maxTime === null) {
-        debug('this.maxTime is null')
+        debug(logType, 'this.maxTime is null')
         this.maxTime = 60
       }
 
