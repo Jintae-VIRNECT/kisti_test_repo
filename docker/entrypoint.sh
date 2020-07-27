@@ -39,7 +39,7 @@ function set_parameter() {
     local REGEX="^${COMMENT}?\s*${PARAM}=.*"
 
     if grep --extended-regexp -q "$REGEX" "$FILE"; then
-        sed --regexp-extended -i "s+${REGEX}+${PARAM}=${VALUE}+" "$FILE"
+        sed --regexp-extended -i "s#${REGEX}#${PARAM}=${VALUE}#" "$FILE"
     else
         echo "${PARAM}=${VALUE}" >>"$FILE"
     fi
