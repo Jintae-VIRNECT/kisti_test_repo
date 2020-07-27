@@ -38,6 +38,9 @@ class ChatMsgBuilder {
     return this
   }
   setText(text) {
+    if (text) {
+      text = text.replace(/\</g, '&lt;')
+    }
     this.msg.text = text
     return this
   }

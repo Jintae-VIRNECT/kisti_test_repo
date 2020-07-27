@@ -1,52 +1,50 @@
 export default {
   /* Account */
-  LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
-  TOKEN: ['POST', 'https://192.168.6.3:8073/auth/oauth/token'],
-  ACCOUNT: ['GET', 'https://192.168.6.3:8073/users/info', { type: 'form' }],
+  LOGIN: ['POST', '/auth/signin'],
+  TOKEN: ['POST', '/auth/oauth/token'],
+  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
+  USER_INFO: ['GET', '/users/{userId}'],
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
+  HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
   GET_HISTORY_LIST: ['GET', '/media/history'],
   GET_HISTORY_ITEM: ['GET', '/media/history/{roomId}'],
   DELETE_HISTORY_ITEM: ['PUT', '/media/history/{roomId}'],
   DELETE_HISTORY_ALL: ['DELETE', '/media/history'],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: [
-    'GET',
-    'https://192.168.6.3:8073/workspaces/{workspaceId}/members?size={size}',
-  ],
+  GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
   // GET_MEMBER_LIST: ['GET', '/media/member/'],
+  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}'],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/media/room?paging={paging}'],
-  ROOM_INFO: ['GET', '/media/room/{roomId}'],
-  UPDATE_ROOM_INFO: ['PUT', '/media/room/{roomId}', { type: 'form' }],
-  LEAVE_ROOM: ['DELETE', '/media/room/{roomId}/participants/{participantsId}'],
-  PARTICIPANTS_LIST: ['GET', '/media/room/{roomId}/participants'],
-  INVITE_PARTICIPANTS_LIST: ['GET', '/media/room/participants'],
-  CREATE_ROOM: [
-    'POST',
-    '/media/room?workspaceId={workspaceId}',
-    { type: 'form' },
+  ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
+  CREATE_ROOM: ['POST', '/remote/room'],
+  JOIN_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/join'],
+  ROOM_INFO: ['GET', '/remote/room/{workspaceId}/{sessionId}'],
+  DELETE_ROOM: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/{userId}'],
+  LEAVE_ROOM: [
+    'DELETE',
+    '/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
   ],
-  DELETE_ROOM: ['DELETE', '/media/room/{roomId}'],
+  UPDATE_ROOM_INFO: ['POST', '/remote/room/{workspaceId}/{sessionId}/info'],
 
   /* CALL */
   GET_TOKEN: ['POST', '/media/tokens'],
+  INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],
+  KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
 
   /* LICENSE */
-  GET_LICENSE: [
-    'GET',
-    'https://192.168.6.3:8073/licenses/{workspaceId}/{userId}',
-  ],
+  GET_LICENSE: ['GET', '/licenses/{workspaceId}/{userId}'],
   /* MESSAGE */
-  SEND_PUSH: ['POST', 'https://192.168.6.3:8073/messages/push'],
+  SEND_PUSH: ['POST', '/messages/push'],
 
   /* CHAT FILE */
-  SEND_FILE: [
-    'POST',
-    'https://192.168.13.94:4443/file/upload',
-    { type: 'form' },
-  ],
+  SEND_FILE: ['POST', '/file/upload', { type: 'form' }],
+}
+
+export const wsUri = {
+  REMOTE: '/remote/websocket',
+  MESSAGE: '/message',
 }

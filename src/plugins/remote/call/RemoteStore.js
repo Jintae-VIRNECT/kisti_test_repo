@@ -177,7 +177,7 @@ const mutations = {
     state.chatList = []
   },
 
-  clear() {
+  callClear() {
     Object.assign(state, getDefaultState())
 
     return true
