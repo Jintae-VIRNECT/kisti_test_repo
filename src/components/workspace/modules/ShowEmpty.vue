@@ -55,6 +55,7 @@ export default {
   text-align: center;
 }
 .show-empty__image {
+  max-width: 37.786rem;
   // position: absolute;
   // top: 2.143rem;
   // left: 50%;

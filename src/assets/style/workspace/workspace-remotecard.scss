@@ -1,4 +1,5 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .card.groupcard {
   max-width: 25rem;
@@ -44,6 +45,7 @@
 .profile__name {
   font-weight: 500;
   font-size: 1.286rem;
+  word-break: break-all;
 }
 .profile__description {
   display: -webkit-box;

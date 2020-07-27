@@ -92,9 +92,13 @@ const sender = async function(constant, params, headers = {}, custom) {
     logger(method.toUpperCase(), url, parameter, headers)
     const request = {
       method: method,
-      data: parameter,
       url: url,
       ...option,
+    }
+    if (method === 'get') {
+      request['params'] = parameter.params
+    } else {
+      request['data'] = parameter
     }
     const response = await axios(request)
     return receiver(response)

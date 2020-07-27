@@ -7,7 +7,7 @@
       마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
       들려드리겠습니다.
     </p>
-    <div class="setting-horizon-wrapper align-center">
+    <div class="setting-horizon-wrapper">
       <div class="mic-item">
         <button class="btn" @click="toggleMicTestMode">
           {{ micTestWord }}
@@ -24,7 +24,6 @@
           @action="toggleMicTestMode"
         ></toggle-button>
       </div>
-
       <div class="mic-item progress">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
@@ -68,9 +67,12 @@ export default {
     ProgressBar,
   },
   computed: {
-    ...mapGetters(['mic']),
+    ...mapGetters(['mic', 'speaker']),
     micId() {
       return this.mic['deviceId']
+    },
+    speakerId() {
+      return this.speaker['deviceId']
     },
     soundWidth() {
       if (this.micTestMode) {
@@ -86,6 +88,11 @@ export default {
         this.handleInputAudioStream(newMic)
       },
       immediate: true,
+    },
+    speakerId: {
+      handler(newSpeaker) {
+        this.setOutputDevice(newSpeaker)
+      },
     },
   },
   methods: {
@@ -125,15 +132,13 @@ export default {
       this.micTestMode = !this.micTestMode
       this.$refs['audioComponent'].muted = !this.micTestMode
     },
+    setOutputDevice(newSpeaker) {
+      this.$refs['audioComponent'].setSinkId(newSpeaker)
+    },
   },
 }
 </script>
 <style lang="scss" scoped>
-.align-center {
-  align-items: center;
-  justify-content: start;
-}
-
 .label-margin-bottom {
   margin-bottom: 2.857rem;
 }
@@ -143,7 +148,7 @@ export default {
 
 .mic-item {
   flex: 0;
-  margin: 0 0.714rem;
+  margin: auto 0.714rem;
   &:first-child {
     margin-left: 0;
   }

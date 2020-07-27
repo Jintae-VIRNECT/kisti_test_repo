@@ -4,6 +4,7 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const logger = require('./logger')
+const config = require('./config')
 
 var ServerModule = (function() {
   'use strict'
@@ -11,7 +12,7 @@ var ServerModule = (function() {
   let instance
 
   const NODE_ENV = process.env.NODE_ENV || 'production'
-  const SSL_ENV = NODE_ENV === 'production' ? 'public' : 'private'
+  const SSL_ENV = config.getSSLEnv() || 'public'
   const PORT = process.env.PORT || 8886
 
   function start(app) {
