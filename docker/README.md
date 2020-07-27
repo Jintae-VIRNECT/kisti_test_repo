@@ -55,19 +55,22 @@ Ignore the "*Server Error*" message: this is expected, and it actually proves th
 - KMS_EXTERNAL_ADDRESS
 - KMS_MIN_PORT, KMS_MAX_PORT
 - KMS_MTU
+- KMS_DTLS_PEM_CERT_RSA, KMS_DTLS_PEM_CERT_ECDSA
 
 example
 
 ```
 docker run --name remote-mediaserver -d -p 8888:8888 \
     -e GST_DEBUG="Kurento*:5" \
-    -e KMS_STUN_IP=stun.l.google.com\
-    -e KMS_STUN_PORT=19302 \
-    -e KMS_TURN_URL=user@password:turn-url:3478 \
-    -e KMS_EXTERNAL_ADDRESS=192.168.0.1 \
+    -e KMS_STUN_IP=<stun-url> \
+    -e KMS_STUN_PORT=<stun-port> \
+    -e KMS_TURN_URL=<user@password:turn-url:port> \
+    -e KMS_EXTERNAL_ADDRESS=<public_ip> \
     -e KMS_MIN_PORT=40000 \
     -e KMS_MAX_PORT=50000 \
     -e KMS_MTU=1200 \
+    -e KMS_DTLS_PEM_CERT_RSA=/etc/kurento/cert/cert+pem.pem \
+    -v ${PWD}/cert/cert.pem:/etc/kurento/cert/cert+pem.pem \
     virnect/remote-mediaserver
 ```
 

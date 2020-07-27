@@ -15,6 +15,8 @@ ENV KMS_NETWORK_INTERFACES ""
 ENV KMS_STUN_IP ""
 ENV KMS_STUN_PORT ""
 ENV KMS_TURN_URL ""
+ENV KMS_DTLS_PEM_CERT_RSA ""
+ENV KMS_DTLS_PEM_CERT_ECDSA ""
 
 RUN apt-get update && \
     apt-get install --no-install-recommends --yes gnupg && \
