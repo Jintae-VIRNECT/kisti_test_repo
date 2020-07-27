@@ -238,11 +238,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
         //SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
-
-
         SpringApplication.run(ServiceServerApplication.class, args);
 
-        disableSslVerification();
+        //disableSslVerification();
     }
 
     public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {

@@ -6,16 +6,3 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.30")
     testImplementation(group="org.mockito", name="mockito-core", version="2.23.4")
 }
-/*configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}*/
-
-/*
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}*/

@@ -1,83 +1,64 @@
-plugins {
-    java
-    //kotlin("jvm") version "1.3.72"
-}
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-allprojects {
-    group = "com.virnect"
-    version = "0.2.1"
-
+buildscript {
     repositories {
         mavenCentral()
     }
 }
 
+plugins {
+    //java
+    //change version to 2.2.5.RELEASE //2.3.1.RELEASE
+    id("org.springframework.boot") version "2.2.5.RELEASE" apply false
+    id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
+    kotlin("jvm") version "1.3.72" apply false
+    kotlin("plugin.spring") version "1.3.72" apply false
+    kotlin("plugin.jpa") version "1.3.72" apply false
+    id("java")
+}
+
+allprojects {
+    group = "com.virnect"
+    version = "2.0.0"
+
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "1.8"
+        }
+    }
+}
+
 subprojects {
-    apply(plugin = "java")
-    apply(plugin = "maven-publish")
-
-    configure<JavaPluginConvention> {
+    apply {
+        plugin("java")
+        plugin("io.spring.dependency-management")
+    }
+    /*configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
-    }
+    }*/
 
     repositories {
-        mavenLocal()
-        /*maven {
-            url = uri("http://repo.maven.apache.org/maven2")
-        }*/
+        mavenCentral()
     }
-
-    /*publishing {
-        publications {
-            maven(MavenPublication) {
-                from(components.java)
-            }
-        }de
-    }
-*/
-    /*tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }*/
-
-    /*tasks {
-        compileJava {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        compileTestKotlin {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-    }*/
-
-    /*apply plugin: 'maven-publish'
-
-    repositories {
-        mavenLocal()
-        maven {
-            url = uri('http://repo.maven.apache.org/maven2')
-        }
-    }
-
-    sourceCompatibility = '1.8'
-
-    configurations.all {
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                from(components.java)
-            }
-        }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }*/
 }
 project(":service-server") {
+    dependencies {
+        implementation(project(":service-client"))
+        implementation(project(":service-java-client"))
+    }
+    /*val jar: Jar by tasks
+    val bootJar: BootJar by tasks
+
+    bootJar.enabled = false
+    jar.enabled = true*/
 
 }
-
 project(":service-client") {
 
 }
@@ -85,10 +66,4 @@ project(":service-client") {
 project(":service-java-client") {
 
 }
-
-dependencies {
-    //implementation(kotlin("stdlib-jdk8"))
-    testImplementation("junit", "junit", "4.12")
-}
-
-
+/**/
