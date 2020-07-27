@@ -216,11 +216,14 @@ export default {
       margin-top: 20px;
       margin-left: -6px;
     }
-    .el-progress-circle path:first-child {
+    .el-progress--circle path:first-child {
       stroke: #a4c7ff;
     }
-    .el-progress-circle path:last-child {
+    .el-progress--circle path:last-child {
       stroke: #007cfe;
+    }
+    .el-progress--circle[aria-valuenow='0'] path:first-child {
+      stroke: #e6e9ee;
     }
     .el-col {
       position: relative;
