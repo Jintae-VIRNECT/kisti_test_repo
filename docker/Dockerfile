@@ -36,6 +36,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./docker/entrypoint.sh ./docker/healthchecker.sh /
+COPY ./cert/cert+key.pem /etc/kurento/cert/cert+key.pem
 
 EXPOSE 8888
 
