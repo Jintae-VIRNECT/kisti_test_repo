@@ -1,10 +1,11 @@
 RELEASE
 
 New Features
-컨텐츠 V타겟 타입 추가
+- 컨텐츠 V타겟 타입 추가
 
 Bug Fixes
-파일 다운로드 함수 변경
+- 파일 다운로드 함수 변경
+- 지프킨 discovery client false
 
 Limitation
 없음
