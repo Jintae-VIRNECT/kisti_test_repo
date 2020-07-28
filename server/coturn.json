@@ -1,7 +1,7 @@
 {
   "local": [
     {
-      "url": "turn:remote:123456@192.168.13.51:3478",
+      "url": "turn:192.168.13.51:3478",
       "username": "remote",
       "credential": "123456"
     }
