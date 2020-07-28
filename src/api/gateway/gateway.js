@@ -80,23 +80,19 @@ const sender = async function(constant, params, headers = {}, custom) {
     ...headers,
   })
 
-  try {
-    debug(method.toUpperCase(), url, parameter, headers)
-    const request = {
-      method: method,
-      url: url,
-      ...option,
-    }
-    if (method === 'get') {
-      request['params'] = parameter
-    } else {
-      request['data'] = parameter
-    }
-    const response = await axios(request)
-    return receiver(response)
-  } catch (error) {
-    throw error.code
+  debug(method.toUpperCase(), url, parameter, headers)
+  const request = {
+    method: method,
+    url: url,
+    ...option,
   }
+  if (method === 'get') {
+    request['params'] = parameter
+  } else {
+    request['data'] = parameter
+  }
+  const response = await axios(request)
+  return receiver(response)
 }
 
 /**
@@ -125,11 +121,11 @@ const receiver = function(res) {
  * @param {Object} errCode
  */
 const errorHandler = function(err) {
-  console.error(err.message)
-  // const errorList = errorList
   const error = {}
   error.code = isNaN(parseInt(err.code)) ? err : parseInt(err.code)
-  error.message = error.message || 'Undefined Error.'
+  error.message = err.message || 'Undefined Error.'
+
+  console.error(`${error.message} (code: ${error.code})`)
 
   if (error.code in errorList) {
     // alert(error.message);
@@ -152,7 +148,7 @@ const errorHandler = function(err) {
     }
     return new Error(error.message)
   } else {
-    return err
+    return error
   }
 }
 

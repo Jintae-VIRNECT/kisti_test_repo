@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-import { logger as prodLogger } from 'utils/logger'
+import { logger as prodLogger, debug } from 'utils/logger'
 var __extends =
   (this && this.__extends) ||
   (function() {
@@ -1287,6 +1287,7 @@ var Session = /** @class */ (function(_super) {
             recorder: _this.openvidu.getRecorder(),
             device: 0,
           }
+          debug(joinParams)
           _this.openvidu.sendRequest('joinRoom', joinParams, function(
             error,
             response,
