@@ -41,6 +41,8 @@ import confirmMixin from 'mixins/confirm'
 import { EVENT } from 'configs/push.config'
 import { getMember } from 'api/service'
 
+import { getPermission } from 'utils/deviceCheck'
+
 export default {
   name: 'WorkspaceCreateRoom',
   mixins: [toastMixin, confirmMixin],
@@ -128,6 +130,13 @@ export default {
       this.loading = false
     },
     async startRemote(info) {
+      const permission = await getPermission()
+
+      if (!permission) {
+        this.$eventBus.emit('devicedenied:show')
+        return
+      }
+
       try {
         const selectedUser = []
         const selectedUserIds = []

@@ -24,6 +24,7 @@
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
+      <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
   </section>
 </template>
@@ -36,6 +37,7 @@ import auth from 'utils/auth'
 import { getLicense } from 'api/workspace/license'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
+import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 
 import { mapActions } from 'vuex'
 export default {
@@ -61,6 +63,7 @@ export default {
     WorkspaceWelcome,
     WorkspaceTab,
     RecordList,
+    DeviceDenied,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -71,6 +74,7 @@ export default {
       showCookie: !cookie,
       showList: false,
       hasLicense: true,
+      showDenied: false,
     }
   },
   methods: {
@@ -113,6 +117,9 @@ export default {
         this.setAllow(allow)
       }
     },
+    showDeviceDenied() {
+      this.showDenied = true
+    },
   },
 
   /* Lifecycles */
@@ -142,6 +149,11 @@ export default {
 
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('filelist:open', this.toggleList)
+    this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('filelist:open')
+    this.$eventBus.$off('devicedenied:show')
   },
 }
 </script>

@@ -36,7 +36,6 @@
           shareview: isExpert && currentView === 'drawing',
         }"
       ></user-list>
-      <device-denied :visible.sync="showDenied"></device-denied>
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -47,12 +46,10 @@ import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import CaptureModal from './modal/CaptureModal'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
 import localRecorderMixin from 'mixins/localRecorder'
-import { getPermission } from 'utils/deviceCheck'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -78,7 +75,6 @@ export default {
     ArView: () => import('./ServiceAr'),
     Share: () => import('./share/Share'),
     CaptureModal,
-    DeviceDenied,
   },
   data() {
     return {
@@ -110,12 +106,6 @@ export default {
 
   /* Lifecycles */
   async created() {
-    const permission = await getPermission()
-
-    if (!permission) {
-      this.showDenied = true
-    }
-
     window.onbeforeunload = () => {
       return true
     }

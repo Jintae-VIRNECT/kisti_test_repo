@@ -1,10 +1,17 @@
 import { joinRoom } from 'api/workspace'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
-
+import { getPermission } from 'utils/deviceCheck'
 export default {
   methods: {
     async join(room) {
+      const permission = await getPermission()
+
+      if (!permission) {
+        this.$eventBus.$emit('devicedenied:show')
+        return false
+      }
+
       this.logger('>>> JOIN ROOM')
       try {
         this.setRoomInfo(room)
