@@ -123,10 +123,10 @@ export default {
   },
   mounted() {
     this.$nextTick(async () => {
-      const license = await getLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-      )
+      const license = await getLicense({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
       this.license = license
 
       if (!license) {

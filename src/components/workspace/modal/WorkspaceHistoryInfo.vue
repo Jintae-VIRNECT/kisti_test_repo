@@ -37,7 +37,6 @@
         :room="room"
         :image.sync="image"
         :leader="leader"
-        @update="update"
       ></room-info>
 
       <participants-info
@@ -52,14 +51,13 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
 import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
 
 export default {
-  name: 'WorkspaceRoomInfo',
+  name: 'WorkspaceHistoryInfo',
   components: {
     Modal,
     Profile,
@@ -76,8 +74,8 @@ export default {
   },
   computed: {
     participants() {
-      if (this.room) {
-        return this.room.participants
+      if (this.history) {
+        return this.history.memberList
       } else {
         return []
       }
@@ -108,11 +106,7 @@ export default {
   watch: {
     visible(flag) {
       if (flag === true) {
-        if (this.history) {
-          this.initHistory()
-        } else {
-          this.initRemote()
-        }
+        this.initHistory()
       }
       this.visibleFlag = flag
     },
@@ -121,22 +115,13 @@ export default {
     },
   },
   methods: {
-    async initRemote() {
-      try {
-        this.room = await getRoomInfo({ roomId: this.roomId })
-        this.image = this.room.path
-        this.tabview = 'group'
-      } catch (err) {
-        console.error(err)
-      }
-    },
     async initHistory() {
       try {
         this.room = await getHistorySingleItem({
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,
         })
-        this.image = this.room.path
+        this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
         console.error(err)
@@ -147,17 +132,6 @@ export default {
     },
     beforeClose() {
       this.$emit('update:visible', false)
-    },
-    async update(params) {
-      try {
-        const updateRtn = await updateRoomInfo(params)
-        if (updateRtn) {
-          this.$emit('update:visible', false)
-        }
-      } catch (err) {
-        // 에러처리
-        console.error(err)
-      }
     },
   },
 

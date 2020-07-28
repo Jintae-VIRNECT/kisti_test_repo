@@ -6,17 +6,25 @@ export default {
   // ACCESS_TOKEN: ['POST', '/auth/accessToken'],
 
   /* Workspace - History */
-  GET_HISTORY_LIST: ['GET', 'https://192.168.6.4:4443/media/history'],
-  GET_HISTORY_ITEM: ['GET', 'https://192.168.6.4:4443/media/history/{roomId}'],
-  DELETE_HISTORY_ITEM: [
-    'PUT',
-    'https://192.168.6.4:4443/media/history/{roomId}',
+  HISTORY_LIST: ['GET', '/remote/history'],
+  HISTORY_ITEM: [
+    'GET',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{sessionId}',
   ],
-  DELETE_HISTORY_ALL: ['DELETE', 'https://192.168.6.4:4443/media/history'],
+  DELETE_HISTORY_ITEM: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}',
+  ],
+  DELETE_HISTORY_ALL: [
+    'DELETE',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{userId}',
+  ],
 
   /* Workspace - Member */
-  GET_MEMBER_LIST: ['GET', '/workspaces/{workspaceId}/members?size={size}'],
-  // GET_MEMBER_LIST: ['GET', 'https://192.168.6.4:4443/media/member/'],
+  MEMBER_LIST: [
+    'GET',
+    'https://192.168.13.36:5000/remote/members/{workspaceId}',
+  ],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', 'https://192.168.6.4:4443/media/room?paging={paging}'],
@@ -49,7 +57,10 @@ export default {
   GET_TOKEN: ['POST', 'https://192.168.6.4:4443/media/tokens'],
 
   /* LICENSE */
-  GET_LICENSE: ['GET', '/licenses/{workspaceId}/{userId}'],
+  GET_LICENSE: [
+    'GET',
+    'https://192.168.13.36:5000/remote/licenses/{workspaceId}/{userId}',
+  ],
   /* MESSAGE */
   SEND_PUSH: ['POST', '/messages/push'],
 }

@@ -6,13 +6,14 @@
       height="6.143rem"
       :menu="true"
       :history="history"
-      @openRoomInfo="openRoomInfo(history.roomId)"
-      @showDeleteDialog="showDeleteDialog(history.roomId)"
+      @openRoomInfo="openRoomInfo(history.sessionId)"
+      @showDeleteDialog="showDeleteDialog(history.sessionId)"
     ></history>
-    <roominfo-modal
-      :visible.sync="showRoomInfo"
-      :roomId="roomId"
-    ></roominfo-modal>
+    <history-info-modal
+      :visible.sync="showHistoryInfo"
+      :sessionId="sessionId"
+      :history="true"
+    ></history-info-modal>
     <create-room-modal
       :visible.sync="showRestart"
       :roomId="roomId"
@@ -26,7 +27,7 @@ import History from 'History'
 
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
+import HistoryInfoModal from '../../workspace/modal/WorkspaceHistoryInfo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
 
@@ -40,14 +41,15 @@ export default {
   components: {
     CreateRoomModal,
     History,
-    RoominfoModal,
+    HistoryInfoModal,
     DeviceDenied,
   },
   data() {
     return {
       showRestart: false,
-      showRoomInfo: false,
+      showHistoryInfo: false,
       roomId: 0,
+      sessionId: '',
       showDenied: false,
     }
   },
@@ -55,7 +57,7 @@ export default {
     list() {
       return this.getFilter(this.historyList, [
         'title',
-        'participants[].nickname',
+        'memberList[].nickname',
       ])
     },
   },
@@ -74,11 +76,11 @@ export default {
   },
   methods: {
     //상세보기
-    openRoomInfo(roomId) {
-      this.roomId = roomId
-      this.showRoomInfo = true
+    openRoomInfo(sessionId) {
+      this.sessionId = sessionId
+      this.showHistoryInfo = true
     },
-    showDeleteDialog(roomId) {
+    showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
@@ -86,29 +88,34 @@ export default {
         {
           text: '삭제하기',
           action: () => {
-            this.delete(roomId)
+            this.delete(sessionId)
             this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
           },
         },
         { text: '취소' },
       )
     },
-    async delete(roomId) {
+    async delete(sessionId) {
       this.$nextTick(() => {
         const pos = this.historyList.findIndex(room => {
-          return room.roomId === roomId
+          return room.sessionId === sessionId
         })
         this.historyList.splice(pos, 1)
       })
-      await deleteHistorySingleItem({ roomId })
+
+      await deleteHistorySingleItem({
+        workspaceId: this.workspace.uuid,
+        sessionIdList: [sessionId],
+        uuid: this.account.uuid,
+      })
     },
 
     //재시작
     async createRoom(roomId) {
-      const license = await getLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-      )
+      const license = await getLicense({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
 
       if (!license) {
         this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {

@@ -24,6 +24,7 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
 import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
+import auth from 'utils/auth'
 
 import confirmMixin from 'mixins/confirm'
 
@@ -56,7 +57,10 @@ export default {
     },
     async deleteList() {
       try {
-        await deleteAllHistory()
+        await deleteAllHistory({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
         this.historyList = []
       } catch (err) {
         console.error(err)
@@ -64,16 +68,17 @@ export default {
     },
     async getHistory() {
       try {
-        const param = {
-          page: 0,
-          paging: false,
-          size: 100,
-        }
         this.loading = true
 
-        const datas = await getHistoryList(param)
-        this.loading = false
-        this.historyList = datas.rooms
+        const authInfo = await auth.myInfo
+        if (authInfo) {
+          const datas = await getHistoryList({
+            userId: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+          this.loading = false
+          this.historyList = datas.roomHistoryInfoList
+        }
       } catch (err) {
         // 에러처리
         console.error(err)
