@@ -39,9 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		// Security for API REST
-		/*ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
+		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
 				.csrf().disable().authorizeRequests()
 				// /api
 				.antMatchers("/api/**").authenticated()
@@ -65,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			conf = conf.antMatchers("/recordings/**").authenticated();
 		}
 
-		conf.and().httpBasic();*/
+		conf.and().httpBasic();
 	}
 
 	@Bean

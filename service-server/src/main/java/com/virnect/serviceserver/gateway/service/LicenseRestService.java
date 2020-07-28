@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "license-server", url = "http://192.168.6.3:8081", fallbackFactory = LicenseRestFallbackFactory.class)
+@FeignClient(name = "license-server", url = "http://192.168.6.3:8632", fallbackFactory = LicenseRestFallbackFactory.class)
 public interface LicenseRestService {
 
     @GetMapping("/licenses/{workspaceId}/{userId}")

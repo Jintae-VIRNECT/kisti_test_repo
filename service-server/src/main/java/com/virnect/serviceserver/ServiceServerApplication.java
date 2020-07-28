@@ -57,8 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-@Import({ JsonRpcConfiguration.class })
 //@EnableWebSecurity
+@Import({ JsonRpcConfiguration.class })
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
@@ -209,7 +209,17 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     }
 
     public static void main(String[] args) throws Exception {
-        /*Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
+        // Set System property spring.profiles.active value
+        // Must be local, develop, staging or production.
+        // if no profiles set, falling back to default profiles
+        /*String profiles = System.getProperty("spring.profiles");
+        log.info("Using spring profile active is " + profiles);
+        if(profiles != null) {
+            log.info("Using spring profile active is " + profiles);
+            System.setProperty("spring.profiles.active", profiles);
+        }*/
+
+        Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
 
         if (CONFIG_PROPS.get("SERVER_PORT") != null) {
 
@@ -233,7 +243,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             // does get used in the public URL as well.
             System.setProperty("server.port", CONFIG_PROPS.get("service.https_port"));
 
-        }*/
+        }
 
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");

@@ -1,10 +1,12 @@
 package com.virnect.serviceserver.gateway.api;
 
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
+import com.virnect.serviceserver.gateway.dto.request.PushSendRequest;
 import com.virnect.serviceserver.gateway.dto.request.RoomProfileUpdateRequest;
 import com.virnect.serviceserver.gateway.dto.request.RoomRequest;
 import com.virnect.serviceserver.gateway.dto.response.RoomResponse;
 import com.virnect.serviceserver.gateway.dto.rest.LicenseInfoListResponse;
+import com.virnect.serviceserver.gateway.dto.rest.PushResponse;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
@@ -44,14 +46,31 @@ public class ValidationController {
             @PathVariable String workspaceId,
             @PathVariable String userId) {
 
-        log.info("REST API: POST {}/{}/{}/join {}", REST_PATH,
+        log.info("REST API: GET {}/licenses/{}/{}", REST_PATH,
                 workspaceId != null ? workspaceId.toString() : "{}",
                 userId != null ? userId : "{}");
         if(workspaceId.isEmpty() || userId.isEmpty()) {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<LicenseInfoListResponse> roomResponse = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
-        return ResponseEntity.ok(roomResponse);
+        ApiResponse<LicenseInfoListResponse> response = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행하는 API 입니다.")
+    @PostMapping(value = "message/push")
+    public ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(
+            @RequestBody @Valid PushSendRequest pushSendRequest,
+            BindingResult result) {
+
+        log.info("REST API: POST {}/message/push", REST_PATH);
+
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<PushResponse> response = this.remoteGatewayService.sendPushMessage(pushSendRequest);
+        return ResponseEntity.ok(response);
     }
 
 }

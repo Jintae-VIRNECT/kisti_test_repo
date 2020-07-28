@@ -6,7 +6,6 @@ hoon@virnect.com / Kim Kyung Hoon (Hoon)
 
 ## Description      
 ```
-Remote API Gateway Server 
 Remote API Service Server
 ```
 
@@ -26,21 +25,20 @@ $ ./gradlew clean build
 ## Build jar 
 
 ```
-$ ./gradlew bootJar
+$ ./gradlew bootJar (@deprecated)
+$ ./gradlew :service-server:clean :service-server:build -x test -Dspring.profiles=local
 ```
 
 ## Running the application
 
 ```shell script
-#Example: java - Dspring.profiles.active=develop -jar SMIC_CUSTOM-v1.0.jar
-java -Dspring.profiles.active=${profile env value} -jar ${SMIC_CUSTOM-v1.0.jar}
+java -Dspring.profiles.active=${profile env value} -jar ${RM-Service-v2.0.0.jar}
 ```
 
 ## Running the application with jar
 
 ```shell script
-#Example: java -jar build/libs/service-server-0.1.0.jar
-java -jar ${RM-Service-v1.0.jar}
+java -jar ${RM-Service-v2.0.0.jar}
 ```
 
 

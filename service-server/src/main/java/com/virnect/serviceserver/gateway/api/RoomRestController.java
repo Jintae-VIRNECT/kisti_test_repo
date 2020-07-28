@@ -10,12 +10,10 @@ import com.virnect.serviceserver.core.Session;
 import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import com.virnect.serviceserver.gateway.domain.MemberType;
 import com.virnect.serviceserver.gateway.dto.request.*;
-import com.virnect.serviceserver.gateway.dto.response.ResultResponse;
-import com.virnect.serviceserver.gateway.dto.response.RoomDetailInfoResponse;
-import com.virnect.serviceserver.gateway.dto.response.RoomInfoListResponse;
-import com.virnect.serviceserver.gateway.dto.response.RoomResponse;
+import com.virnect.serviceserver.gateway.dto.response.*;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
+import com.virnect.serviceserver.gateway.global.constants.PushConstrants;
 import com.virnect.serviceserver.gateway.global.constants.ServiceConstants;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
 import com.virnect.serviceserver.gateway.model.SessionData;
@@ -746,7 +744,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/member")
-    public ResponseEntity<ApiResponse<Boolean>> inviteMember(
+    public ResponseEntity<ApiResponse<InviteRoomResponse>> inviteMember(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid InviteRoomRequest inviteRoomRequest,
@@ -758,9 +756,7 @@ public class RoomRestController {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
-        ApiResponse<Boolean> apiResponse = this.remoteGatewayService.inviteRoom(workspaceId, sessionId, inviteRoomRequest);
-
+        ApiResponse<InviteRoomResponse> apiResponse = this.remoteGatewayService.inviteRoom(workspaceId, sessionId, inviteRoomRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
