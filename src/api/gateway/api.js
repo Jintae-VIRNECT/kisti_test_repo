@@ -7,24 +7,12 @@ export default {
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history'],
-  HISTORY_ITEM: [
-    'GET',
-    'https://192.168.13.36:5000/remote/history/{workspaceId}/{sessionId}',
-  ],
-  DELETE_HISTORY_ITEM: [
-    'DELETE',
-    'https://192.168.13.36:5000/remote/history/{workspaceId}',
-  ],
-  DELETE_HISTORY_ALL: [
-    'DELETE',
-    'https://192.168.13.36:5000/remote/history/{workspaceId}/{userId}',
-  ],
+  HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
+  DELETE_HISTORY_ITEM: ['DELETE', '/remote/history/{workspaceId}'],
+  DELETE_HISTORY_ALL: ['DELETE', '/remote/history/{workspaceId}/{userId}'],
 
   /* Workspace - Member */
-  MEMBER_LIST: [
-    'GET',
-    'https://192.168.13.36:5000/remote/members/{workspaceId}',
-  ],
+  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}'],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', 'https://192.168.6.4:4443/media/room?paging={paging}'],
@@ -57,10 +45,7 @@ export default {
   GET_TOKEN: ['POST', 'https://192.168.6.4:4443/media/tokens'],
 
   /* LICENSE */
-  GET_LICENSE: [
-    'GET',
-    'https://192.168.13.36:5000/remote/licenses/{workspaceId}/{userId}',
-  ],
+  GET_LICENSE: ['GET', '/remote/licenses/{workspaceId}/{userId}'],
   /* MESSAGE */
   SEND_PUSH: ['POST', '/messages/push'],
 }
