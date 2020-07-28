@@ -1360,8 +1360,14 @@ public class ContentService {
     private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize, String userUUID) {
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
-        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
         LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
+
+        //해당 워크스페이스가 라이선스를 가지고 있는 지 체크
+        if(response.getLicenseProductInfoList()==null){
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
+        }
+
+        //해당 유저가 메이크 제품 라이선스를 가지고 있는 지 체크
         response.getLicenseProductInfoList().stream()
                 .forEach(licenseProductInfoResponse -> {
                     if (licenseProductInfoResponse.getProductName().equals("MAKE")) {
@@ -1370,12 +1376,13 @@ public class ContentService {
                                     return licenseDetailInfoResponse.getUserId();
                                 }).collect(Collectors.toList());
                         if (!makeUserIdList.contains(userUUID)) {
-                            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT);
+                            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
                         }
                     }
                 });
+
+        // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
         Long maxCapacity = response.getMaxStorageSize();
-        //Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
 
         // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
         Long workspaceCapacity = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
