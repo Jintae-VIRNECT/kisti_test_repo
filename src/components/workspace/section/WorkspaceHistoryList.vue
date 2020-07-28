@@ -111,28 +111,6 @@ export default {
       this.sessionId = sessionId
       this.showRestart = !this.showRestart
     },
-    convertDate(date) {
-      if (date !== null && date !== '') {
-        const re = /T/gi
-        let cvtDate = date.replace(re, ' ')
-        cvtDate = this.$dayjs(cvtDate).format('YYYY.MM.DD')
-        const today = this.$dayjs().format('YYYY.MM.DD')
-        if (cvtDate === today) {
-          return 'Today'
-        } else {
-          return cvtDate
-        }
-      } else {
-        this.logger('WorkspaceHistoryList :: convertDate ::', date)
-      }
-    },
-    convertTime(totalUseTime) {
-      const min = Math.floor(totalUseTime / 60)
-      const minText = '분'
-      const sec = totalUseTime % 60
-      const secText = '초'
-      return `${min + minText + ' ' + sec + secText}`
-    },
   },
   created() {},
 }

@@ -80,7 +80,6 @@ export default {
           this.historyList = datas.roomHistoryInfoList
         }
       } catch (err) {
-        // 에러처리
         console.error(err)
       }
     },
