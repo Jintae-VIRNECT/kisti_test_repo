@@ -82,7 +82,6 @@ export default {
           text: '삭제하기',
           action: () => {
             this.delete(sessionId)
-            this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
           },
         },
         { text: '취소' },
@@ -96,11 +95,15 @@ export default {
         this.historyList.splice(pos, 1)
       })
 
-      await deleteHistorySingleItem({
+      const result = await deleteHistorySingleItem({
         workspaceId: this.workspace.uuid,
-        sessionIdList: [sessionId],
-        uuid: this.account.uuid,
+        sessionId: sessionId,
+        userId: this.account.uuid,
       })
+
+      if (result.data) {
+        this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
+      }
     },
 
     //재시작

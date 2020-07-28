@@ -15,7 +15,7 @@ export default {
   ],
   DELETE_HISTORY_ITEM: [
     'DELETE',
-    'https://192.168.13.36:5000/remote/history/{workspaceId}',
+    'https://192.168.13.36:5000/remote/history/{workspaceId}/{sessionId}/{userId}',
   ],
   DELETE_HISTORY_ALL: [
     'DELETE',
