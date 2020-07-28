@@ -24,6 +24,29 @@ export const getToken = async function({
 }
 
 /**
+ * 원격협업 멤버 내보내기
+ * @query {String} sessionId
+ * @query {String} workspaceId
+ * @param {String} leaderId
+ * @param {String} participantId
+ */
+export const kickoutMember = async ({
+  sessionId,
+  workspaceId,
+  leaderId,
+  participantId,
+}) => {
+  const returnVal = await http('KICKOUT_MEMBER', {
+    sessionId,
+    workspaceId,
+    leaderId,
+    participantId,
+  })
+
+  return returnVal
+}
+
+/**
  * 파일서버에 파일 전송
  *
  * @param {File}   file 전송할 파일 객체

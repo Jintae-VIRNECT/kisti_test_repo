@@ -59,13 +59,11 @@ export default {
     if (from.name !== 'workspace') {
       next({ name: 'workspace' })
     }
-    next(vm => {
-      vm.$store.dispatch('callReset')
-    })
+    next()
   },
   beforeRouteLeave(to, from, next) {
     next(vm => {
-      vm.$store.commit('clear')
+      vm.$Store.commit('callClear')
     })
   },
   mixins: [alarmMixin, localRecorderMixin],

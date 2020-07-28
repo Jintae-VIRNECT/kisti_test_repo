@@ -7,23 +7,24 @@
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
-    <record-setting
+    <setting-modal
       :visible.sync="status"
       :recording="recording"
-    ></record-setting>
+      :viewType="viewType"
+    ></setting-modal>
   </div>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
-import RecordSetting from '../../modal/ServiceLocalRecordSetting'
+import SettingModal from '../../modal/SettingModal'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 export default {
   name: 'SettingMenu',
   components: {
-    RecordSetting,
+    SettingModal,
   },
   mixins: [toolMixin, toastMixin],
   data() {
@@ -31,6 +32,9 @@ export default {
       status: false,
       recording: false,
     }
+  },
+  props: {
+    viewType: String,
   },
   computed: {
     ...mapGetters(['control']),
@@ -53,7 +57,7 @@ export default {
     setting() {
       if (!this.canRecord) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 로컬 녹화를 막았습니다. >> 문구정의 필요')
+        this.toastDefault('리더가 로컬 녹화를 막았습니다.')
         return
       }
       this.status = !this.status

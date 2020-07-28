@@ -4,15 +4,9 @@
       class="profilelist-user"
       :style="customStyle"
       v-for="user of showUsers"
-      :key="user.id"
+      :key="user.uuid"
     >
-      <tooltip
-        :content="
-          user.nickName && user.nickName.length === 0
-            ? user.name
-            : user.nickName
-        "
-      >
+      <tooltip :content="user.nickname">
         <div class="profilelist-user__image" slot="body">
           <profile
             :image="user.profile"
@@ -25,11 +19,7 @@
           :src="user.profile"
           slot="body"
         /> -->
-        <span>{{
-          user.nickName && user.nickName.length === 0
-            ? user.name
-            : user.nickName
-        }}</span>
+        <span>{{ user.nickname }}</span>
       </tooltip>
     </figure>
     <br />
@@ -45,7 +35,7 @@
         <figure
           class="profilelist-user otheruser"
           v-for="user of otherUsers"
-          :key="user.id"
+          :key="user.uuid"
         >
           <profile
             :image="user.profile"
@@ -56,9 +46,7 @@
             :src="user.profile"
             @error="onImageError"
           /> -->
-          <span class="profilelist-user__name ">{{
-            user.nickName.length === 0 ? user.name : user.nickName
-          }}</span>
+          <span class="profilelist-user__name ">{{ user.nickname }}</span>
         </figure>
       </div>
       <p slot="reference" class="profilelist-user__expend" :style="customStyle">

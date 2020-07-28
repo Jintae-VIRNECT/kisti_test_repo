@@ -36,15 +36,15 @@
         v-if="tabview === 'group'"
         :room="room"
         :image.sync="image"
-        :leader="leader"
+        :isLeader="isLeader"
         @update="update"
       ></room-info>
 
       <participants-info
         v-else
-        :participants="participants"
-        :leader="leader"
-        :roomId="roomId"
+        :participants="memberList"
+        :isLeader="isLeader"
+        :sessionId="sessionId"
       ></participants-info>
     </div>
   </modal>
@@ -53,7 +53,6 @@
 <script>
 import Modal from 'Modal'
 import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
-import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
@@ -75,9 +74,9 @@ export default {
     }
   },
   computed: {
-    participants() {
+    memberList() {
       if (this.room) {
-        return this.room.participants
+        return this.room.memberList
       } else {
         return []
       }
@@ -88,19 +87,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
-      // required: true,
-    },
     sessionId: {
       type: String,
       required: true,
     },
-    leader: {
-      type: Boolean,
-      default: false,
-    },
-    history: {
+    isLeader: {
       type: Boolean,
       default: false,
     },
@@ -108,35 +99,19 @@ export default {
   watch: {
     visible(flag) {
       if (flag === true) {
-        if (this.history) {
-          this.initHistory()
-        } else {
-          this.initRemote()
-        }
+        this.initRemote()
       }
       this.visibleFlag = flag
-    },
-    image(image) {
-      console.log(image)
     },
   },
   methods: {
     async initRemote() {
       try {
-        this.room = await getRoomInfo({ roomId: this.roomId })
-        this.image = this.room.path
-        this.tabview = 'group'
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    async initHistory() {
-      try {
-        this.room = await getHistorySingleItem({
-          workspaceId: this.workspace.uuid,
+        this.room = await getRoomInfo({
           sessionId: this.sessionId,
+          workspaceId: this.workspace.uuid,
         })
-        this.image = this.room.path
+        this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
         console.error(err)
@@ -152,7 +127,9 @@ export default {
       try {
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
-          this.$emit('update:visible', false)
+          this.$emit('updatedInfo', params)
+          this.initRemote()
+          // this.$emit('update:visible', false)
         }
       } catch (err) {
         // 에러처리

@@ -8,20 +8,6 @@ console.logger = (...value) => {
   console.groupEnd()
 }
 
-export const logger = (type = 'dev', ...value) => {
-  console.log(`${type}::`, ...value)
-}
-
-export const debug = (...value) => {
-  if (process.env.NODE_ENV === 'production') {
-    if (window.env && window.env === 'develop') {
-      console.log(...value)
-    }
-  } else {
-    console.logger(...value)
-  }
-}
-
 const getTrace = () => {
   var obj = {}
   Error.stackTraceLimit = 30
@@ -41,3 +27,21 @@ const getTrace = () => {
   /* 4. Error 객체로 Error 제거해서 trace 출력 */
   // console.log(obj.stack.replace(/Error/, 'Trace'))
 }
+/**
+ * type: dev / type
+ */
+export const logger = (type = 'dev', ...value) => {
+  console.log(`${type}::`, ...value)
+}
+
+export const debug = (...value) => {
+  if (process.env.NODE_ENV === 'production') {
+    if (window.env && window.env === 'develop') {
+      console.log(...value)
+    }
+  } else {
+    console.logger(...value)
+  }
+}
+
+export default logger

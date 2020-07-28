@@ -86,7 +86,7 @@
   font-weight: 400;
   font-family: $font_family2;
   font-style: normal;
-  src: local($font_family2), local("Roboto-Regular"),
+  src: local("Roboto Regular"), local("Roboto-Regular"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
       url("~assets/font/roboto/roboto-v20-latin-regular.woff2") format("woff2"),
     /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
@@ -115,6 +115,19 @@
       url("~assets/font/roboto/roboto-v20-latin-700.woff") format("woff");
 }
 
+/* noto-sans-sc-300 - chinese-simplified */
+@font-face {
+  font-weight: 300;
+  font-family: $font_family3;
+  font-style: normal;
+  src: local("Noto Sans SC Light"), local("NotoSansSC-Light"),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-300.woff2")
+      format("woff2"),
+    /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-300.woff")
+      format("woff");
+}
 /* noto-sans-sc-regular - chinese-simplified */
 @font-face {
   font-weight: 400;
@@ -139,19 +152,6 @@
       format("woff2"),
     /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
       url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-500.woff")
-      format("woff");
-}
-/* noto-sans-sc-300 - chinese-simplified */
-@font-face {
-  font-weight: 300;
-  font-family: $font_family3;
-  font-style: normal;
-  src: local("Noto Sans SC Light"), local("NotoSansSC-Light"),
-    /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-300.woff2")
-      format("woff2"),
-    /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-      url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-300.woff")
       format("woff");
 }
 /* noto-sans-sc-700 - chinese-simplified */

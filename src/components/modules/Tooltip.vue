@@ -177,11 +177,14 @@ export default {
   z-index: 3;
   // display: none;
   width: max-content;
-  padding: 0.714em 1.429em;
+  padding: 1em 1.429em;
   color: var(--tooltip-text-color);
   font-size: 0.929em;
   background-color: var(--tooltip-bg-color);
   border-radius: 4px;
+  > p {
+    line-height: 1em;
+  }
   .arrow {
     position: absolute;
     // display: none;

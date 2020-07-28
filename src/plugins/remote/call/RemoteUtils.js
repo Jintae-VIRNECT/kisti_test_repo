@@ -6,21 +6,38 @@ import { TYPE } from 'configs/chat.config'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
+import { getUserInfo } from 'api/common'
+import vue from 'apps/remote/app'
+import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
+    logger('room', "participant's connected")
     const streamObj = getUserObject(event.stream)
     Store.commit('addStream', streamObj)
+    getUserInfo({
+      userId: streamObj.id,
+    }).then(participant => {
+      console.log(participant)
+      Store.commit('updateParticipant', {
+        connectionId: streamObj.connectionId,
+        nickname: participant.nickname,
+        path: participant.profile,
+      })
+    })
     const subscriber = session.subscribe(event.stream, '', () => {
+      logger('room', 'participant subscribe successed')
       Store.commit('updateParticipant', {
         connectionId: streamObj.connectionId,
         stream: event.stream.mediaStream,
       })
       _.sendResolution()
-      _.control(CONTROL.POINTING, Store.getters['allow'].pointing)
-      _.control(CONTROL.LOCAL_RECORD, Store.getters['allow'].localRecording)
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
+      if (_.account.roleType === ROLE.EXPERT_LEADER) {
+        _.control(CONTROL.POINTING, Store.getters['allowPointing'])
+        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
+      }
     })
     addSubscriber(subscriber)
   })
@@ -38,9 +55,28 @@ export const addSessionEventListener = session => {
       })
     }
   })
+  /** session closed */
+  session.on('sessionDisconnected', event => {
+    logger('room', 'participant disconnect')
+    _.clear()
+    if (event.reason === 'sessionClosedByServer') {
+      // TODO: MESSAGE
+      vue.$toasted.error('리더가 협업을 삭제했습니다.', {
+        position: 'bottom-center',
+        duration: 5000,
+        action: {
+          icon: 'close',
+          onClick: (e, toastObject) => {
+            toastObject.goAway(0)
+          },
+        },
+      })
+    }
+    vue.$router.push({ name: 'workspace' })
+  })
   // user leave
   session.on('streamDestroyed', event => {
-    console.log('[session] stream destroyed')
+    logger('room', 'participant destroy')
     const connectionId = event.stream.connection.connectionId
     Store.commit('removeStream', connectionId)
     removeSubscriber(event.stream.streamId)
@@ -63,17 +99,6 @@ export const addSessionEventListener = session => {
       speaker: data.isOn,
     })
   })
-  /** AR 기능 사용 가능 여부 -> header에서 처리 */
-  // session.on(SIGNAL.AR_FEATURE, event => {
-  //   if (session.connection.connectionId === event.from.connectionId) return
-  //   const data = JSON.parse(event.data)
-  //   if (data.type === AR_FEATURE.FEATURE) {
-  //     Store.commit('updateParticipant', {
-  //       connectionId: event.from.connectionId,
-  //       hasArFeature: data.hasArFeature,
-  //     })
-  //   }
-  // })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
     if (session.connection.connectionId === event.from.connectionId) return
@@ -87,14 +112,6 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAMERA, event => {
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
-    // if (web_test && Store.getters['account'].roleType !== 'LEADER') {
-    //   _.camera({
-    //     currentZoomLevel: data.level + '',
-    //     maxZoomLevel: 5,
-    //     status: 1,
-    //   })
-    //   return
-    // }
     if (data.type !== CAMERA.STATUS) return
     Store.commit('deviceControl', {
       zoomLevel: parseFloat(data.currentZoomLevel),
@@ -135,6 +152,7 @@ export const addSessionEventListener = session => {
 
   /** 채팅 수신 */
   session.on(SIGNAL.CHAT, event => {
+    console.log('[session] receive session :: ' + SIGNAL.CHAT)
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -196,7 +214,6 @@ export const addSessionEventListener = session => {
 }
 
 const getUserObject = stream => {
-  const participants = Store.getters['roomParticipants']
   let streamObj
   let connection = stream.connection
 
@@ -205,13 +222,6 @@ const getUserObject = stream => {
   let uuid = metaData.clientData
   let roleType = metaData.roleType
 
-  const participant = participants.find(user => {
-    return user.uuid === uuid
-  })
-  if (participant === undefined) {
-    console.error('참여자 정보를 찾을 수 없습니다.')
-    return
-  }
   let allowUser = false
   if (allowCamera.includes(_.account.email)) {
     allowUser = true
@@ -221,10 +231,11 @@ const getUserObject = stream => {
     id: uuid,
     // stream: stream.mediaStream,
     stream: null,
-    // connection: stream.connection,
     connectionId: stream.connection.connectionId,
-    nickname: participant.nickname,
-    path: participant.path,
+    // nickname: participant.nickname,
+    // path: participant.profile,
+    nickname: null,
+    path: null,
     audio: stream.audioActive,
     video: roleType === ROLE.WORKER || allowUser,
     speaker: true,
@@ -247,27 +258,3 @@ const getUserObject = stream => {
 
   return streamObj
 }
-/*
-export const getStream = async constraints => {
-  if (!navigator.mediaDevices.getUserMedia) {
-    console.error('getUserMedia 없음')
-    return
-  }
-  try {
-    const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-
-    const streamTracks = {}
-    streamTracks.audioSource =
-      mediaStream.getAudioTracks().length > 0
-        ? mediaStream.getAudioTracks()[0]
-        : null
-    streamTracks.videoSource =
-      mediaStream.getVideoTracks().length > 0
-        ? mediaStream.getVideoTracks()[0]
-        : null
-    return streamTracks
-  } catch (err) {
-    console.error(err)
-  }
-}
-*/

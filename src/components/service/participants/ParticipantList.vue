@@ -15,7 +15,7 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible.sync="invite"></invite-modal>
+    <invite-modal :visible.sync="invite" :maxSelect="max"></invite-modal>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ import { maxParticipants } from 'utils/callOptions'
 import { ROLE } from 'configs/remote.config'
 
 import ParticipantVideo from './ParticipantVideo'
-import InviteModal from '../modal/ServiceInviteModal'
+import InviteModal from '../modal/InviteModal'
 export default {
   name: 'ParticipantList',
   components: {
@@ -34,21 +34,23 @@ export default {
   },
   data() {
     return {
-      max: maxParticipants,
       invite: false,
     }
   },
   computed: {
-    ...mapGetters(['participants', 'mainView']),
+    ...mapGetters(['participants', 'roomMember', 'mainView']),
     showInvite() {
       if (
         this.account.roleType === ROLE.EXPERT_LEADER &&
-        this.participants.length < this.max
+        this.roomMember.length < maxParticipants
       ) {
         return true
       } else {
         return false
       }
+    },
+    max() {
+      return maxParticipants - this.roomMember.length
     },
   },
   watch: {

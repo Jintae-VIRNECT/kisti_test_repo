@@ -30,7 +30,7 @@ module.exports = {
     Object.keys(urlsConfig).forEach(key => {
       urls[key] = urlsConfig[key][process.env.NODE_ENV]
     })
-    urls['coturn'] = coturnConfig
+    urls['coturn'] = coturnConfig[process.env.NODE_ENV]
     return urls
   },
 }

@@ -5,7 +5,7 @@
         협업 정보
       </p>
       <div class="roominfo-view__body">
-        <template v-if="leader">
+        <template v-if="isLeader">
           <input-row
             type="text"
             title="협업 이름"
@@ -54,13 +54,13 @@
       <div class="roominfo-view__footer">
         <div class="roominfo-view__data">
           <span class="data-title">협업 진행일</span>
-          <span class="data-value">2020.03.05</span>
+          <span class="data-value">{{ createdDate }}</span>
         </div>
         <div class="roominfo-view__data">
           <span class="data-title">시작 시간</span>
-          <span class="data-value">15:20:25</span>
+          <span class="data-value">{{ createdTime }}</span>
         </div>
-        <div class="roominfo-view__button" v-if="leader">
+        <div class="roominfo-view__button" v-if="isLeader">
           <button class="btn" :disabled="!canSave" @click="saveInfo">
             저장하기
           </button>
@@ -88,7 +88,7 @@ export default {
       type: String,
       default: '',
     },
-    leader: {
+    isLeader: {
       type: Boolean,
       default: false,
     },
@@ -97,6 +97,8 @@ export default {
     return {
       name: '',
       description: '',
+      createdDate: '',
+      createdTime: '',
     }
   },
   computed: {
@@ -108,7 +110,7 @@ export default {
       if (this.description !== this.room.description) {
         return true
       }
-      if (this.image !== this.room.path) {
+      if (this.image !== this.room.profile) {
         return true
       }
       return false
@@ -119,7 +121,9 @@ export default {
       handler(room) {
         this.name = room.title
         this.description = room.description
-        // this.imageUrl = room.path
+        // this.imageUrl = room.profile
+        this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
+        this.createdTime = this.$dayjs(room.activeDate).format('hh:mm:ss')
       },
       deep: true,
     },
@@ -137,8 +141,13 @@ export default {
       this.imageRemove()
     },
     saveInfo() {
-      const params = { name: this.name, description: this.description }
-      if (this.room.path !== this.imageUrl) {
+      const params = {
+        title: this.name,
+        description: this.description,
+        sessionId: this.room.sessionId,
+        workspaceId: this.workspace.uuid,
+      }
+      if (this.room.profile !== this.imageUrl) {
         params.image = this.imageFile
       }
       this.$emit('update', params)
@@ -150,7 +159,9 @@ export default {
     if (this.room) {
       this.name = this.room.title
       this.description = this.room.description
-      this.imageUrl = this.room.path
+      this.imageUrl = this.room.profile
+      this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')
+      this.createdTime = this.$dayjs(this.room.activeDate).format('hh:mm:ss')
     }
   },
 }

@@ -260,7 +260,7 @@ export default {
     font-weight: 500;
   }
   &:before {
-    content: '᛫\00a0';
+    content: '\00B7\00a0';
   }
 }
 .table__header {
@@ -271,7 +271,6 @@ export default {
 
 .table__title {
   color: #dedede;
-  font-weight: normal;
   font-size: 1.2857rem;
 }
 

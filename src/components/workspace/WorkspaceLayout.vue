@@ -9,13 +9,13 @@
       <div class="workspace-wrapper">
         <workspace-welcome
           ref="welcomeSection"
-          :license="license"
+          :license="hasLicense"
         ></workspace-welcome>
 
         <workspace-tab
           ref="tabSection"
           :fix="tabFix"
-          :license="license"
+          :license="hasLicense"
           @tabChange="tabChange"
         ></workspace-tab>
       </div>
@@ -45,7 +45,12 @@ export default {
     if (!auth.isLogin) {
       auth.login()
     } else {
+      // const res = await getLicense(
+      //   authInfo.workspace[0].uuid,
+      //   authInfo.account.uuid,
+      // )
       next(vm => {
+        // vm.hasLicense =
         vm.init(authInfo)
       })
     }
@@ -65,7 +70,7 @@ export default {
       tabTop: 0,
       showCookie: !cookie,
       showList: false,
-      license: true,
+      hasLicense: true,
     }
   },
   methods: {
@@ -77,14 +82,8 @@ export default {
       'setAllow',
     ]),
     init(authInfo) {
-      const account = authInfo.account
-      const urls = authInfo.urls
-      window.urls = urls
-      this.updateAccount(account.myInfo)
-      this.initWorkspace(account.myWorkspaces)
-      this.$nextTick(() => {
-        this.$push.connection(this.workspace.uuid)
-      })
+      this.updateAccount(authInfo.account)
+      this.initWorkspace(authInfo.workspace)
     },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
@@ -110,7 +109,6 @@ export default {
         this.setRecord(recordInfo)
       }
       const allow = this.$localStorage.getItem('allow')
-      console.log(allow)
       if (allow) {
         this.setAllow(allow)
       }
@@ -122,23 +120,25 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    this.$nextTick(async () => {
-      const license = await getLicense({
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-      this.license = license
+    // this.$nextTick(async () => {
+    //   const license = await getLicense({
+    //     workspaceId: this.workspace.uuid,
+    //     userId: this.account.uuid,
+    //   })
+    //   this.license = license
 
-      if (!license) {
-        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
-          text: '확인',
-          action: () => {
-            this.$eventBus.$emit('showLicensePage')
-          },
-        })
-        return false
-      }
-    })
+    //   if (!license) {
+    //     this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
+    //       text: '확인',
+    //       action: () => {
+    //         this.$eventBus.$emit('showLicensePage')
+    //       },
+    //     })
+    //     return false
+    //   }
+    // })
+    // BETA: 1hour logout setting
+    this.$parent.init()
 
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('filelist:open', this.toggleList)
