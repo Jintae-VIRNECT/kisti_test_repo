@@ -38,7 +38,7 @@ pipeline {
               steps {
                 sh 'git checkout ${GIT_TAG}'
                 sh 'cp coturn/Dockerfile.qa ./Dockerfile'
-                sh 'docker build -t rm-coturnserver:staging .'
+                sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
               }
             }
     
@@ -49,7 +49,7 @@ pipeline {
               steps {
                 sh 'git checkout ${GIT_TAG}'
                 sh 'cp coturn/Dockerfile.prod ./Dockerfile'
-                sh 'docker build -t rm-coturnserver:master .'
+                sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
               }
             }
     
@@ -101,7 +101,7 @@ pipeline {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                      docker.image("rm-coturnserver:staging").push("${GIT_TAG}")
+                      docker.image("rm-coturnserver:${GIT_TAG}").push("${GIT_TAG}")
                 }
               }
 
@@ -148,7 +148,7 @@ pipeline {
               catchError() {
                 script {
                   docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                        docker.image("rm-coturnserver:master").push("${GIT_TAG}")
+                        docker.image("rm-coturnserver:${GIT_TAG}").push("${GIT_TAG}")
                   }
                 }
 
