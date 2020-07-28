@@ -74,6 +74,10 @@ EXPOSE 5766
 # Relay Ports
 EXPOSE 49152-65535 49152-65535/udp
 
+COPY ./coturn/turnserver.conf /etc/turnserver.conf
+COPY ./cert/private.pem /etc/ssl/private.pem
+COPY ./cert/cert.pem /etc/ssl/cert.pem
+
 #COPY ./docker-entrypoint.sh /
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 
