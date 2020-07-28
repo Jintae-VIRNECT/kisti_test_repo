@@ -9,7 +9,7 @@ pipeline {
           steps {
             echo 'Pre-Build Stage'
             catchError() {
-              sh 'cp docker/Dockerfile ./'
+              sh 'cp coturn/Dockerfile ./'
             }    
           }
         }
@@ -37,6 +37,7 @@ pipeline {
               }
               steps {
                 sh 'git checkout ${GIT_TAG}'
+                sh 'cp coturn/Dockerfile.qa ./Dockerfile'
                 sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
               }
             }
@@ -47,6 +48,7 @@ pipeline {
               }
               steps {
                 sh 'git checkout ${GIT_TAG}'
+                sh 'cp coturn/Dockerfile.prod ./Dockerfile'
                 sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
               }
             }
@@ -85,7 +87,7 @@ pipeline {
               }
               steps {
                 sh 'count=`docker ps -a | grep rm-coturnserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
-                sh 'docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --external-ip=192.168.6.3  --restart=always -d --name=rm-coturnserver rm-coturnserver'
+                sh 'docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp -e --external-ip=192.168.6.3 --restart=always -d --name=rm-coturnserver rm-coturnserver'
                 sh 'docker image prune -a -f'
               }
             }
@@ -121,7 +123,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp -e --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -168,7 +170,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp -e --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
