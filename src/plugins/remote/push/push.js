@@ -28,9 +28,9 @@ const push = {
         debug: str => {
           debug('::message::', str)
         },
-        reconnectDelay: 10 * 1000,
+        reconnectDelay: 3 * 1000,
         heartbeatIncoming: 0,
-        heartbeatOutgoing: 0,
+        heartbeatOutgoing: 10 * 1000,
       }
 
       const client = new Client(config)
