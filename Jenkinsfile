@@ -48,7 +48,7 @@ pipeline {
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         catchError() {
-                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_STAGE'
+                            sh './gradlew :service-server:build -x test -Dspring.profiles=staging'
                         }
                         sh 'docker build -t rm-service:${GIT_TAG} .'
                     }
@@ -61,7 +61,7 @@ pipeline {
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         catchError() {
-                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_PROD'
+                            sh './gradlew :service-server:build -x test -Dspring.profiles=production'
                         }
                         sh 'docker build -t rm-service:${GIT_TAG} .'
                     }
