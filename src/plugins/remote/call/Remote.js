@@ -1,8 +1,8 @@
 import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
-import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH, CONTROL } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 import { allowCamera } from 'utils/testing'
 import { logger, debug } from 'utils/logger'
 
@@ -37,6 +37,7 @@ const _ = {
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
+        deviceType: DEVICE.WEB,
       }
 
       const iceServers = window.urls.coturn
