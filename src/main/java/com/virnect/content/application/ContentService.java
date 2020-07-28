@@ -42,6 +42,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -126,7 +127,7 @@ public class ContentService {
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
-        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize);
+        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize, uploadRequest.getUserUUID());
 
         // 1. 콘텐츠 업로드 파일 저장
         try {
@@ -385,7 +386,7 @@ public class ContentService {
         // 기존 컨텐츠 크기와 수정하려는 컨텐츠의 크기를 뺀다.
         Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
 
-        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
+        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
         // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
@@ -1356,11 +1357,25 @@ public class ContentService {
      * @param uploadContentSize
      * @return
      */
-    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize) {
+    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize, String userUUID) {
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
-        Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+        LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
+        response.getLicenseProductInfoList().stream()
+                .forEach(licenseProductInfoResponse -> {
+                    if (licenseProductInfoResponse.getProductName().equals("MAKE")) {
+                        List<String> makeUserIdList = licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseDetailInfoResponse -> StringUtils.hasText(licenseDetailInfoResponse.getUserId()))
+                                .map(licenseDetailInfoResponse -> {
+                                    return licenseDetailInfoResponse.getUserId();
+                                }).collect(Collectors.toList());
+                        if (!makeUserIdList.contains(userUUID)) {
+                            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT);
+                        }
+                    }
+                });
+        Long maxCapacity = response.getMaxStorageSize();
+        //Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
 
         // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
         Long workspaceCapacity = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);
