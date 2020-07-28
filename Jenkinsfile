@@ -35,7 +35,7 @@ pipeline {
                     }
                     steps {
                         catchError() {
-                            sh './gradlew :service-server:build -x test $SPRING_PROFILES_DEV'
+                            sh './gradlew :service-server:build -x test -Dspring.profiles=develop'
                         }
                         sh 'docker build -t rm-service .'
                     }
