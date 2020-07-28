@@ -8,28 +8,20 @@ import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
-import { logger, debug } from 'utils/logger'
+import { logger } from 'utils/logger'
 
 export const addSessionEventListener = session => {
+  session.on('connectionCreated', event => {
+    logger('room', 'connection created')
+    setUserObject(event)
+  })
   session.on('streamCreated', event => {
-    logger('room', "participant's connected")
-    const streamObj = getUserObject(event.stream)
-    Store.commit('addStream', streamObj)
-    getUserInfo({
-      userId: streamObj.id,
-    }).then(participant => {
-      console.log(participant)
-      Store.commit('updateParticipant', {
-        connectionId: streamObj.connectionId,
-        nickname: participant.nickname,
-        path: participant.profile,
-      })
-    })
     const subscriber = session.subscribe(event.stream, '', () => {
       logger('room', 'participant subscribe successed')
       Store.commit('updateParticipant', {
-        connectionId: streamObj.connectionId,
+        connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
+        audio: event.stream.audioActive,
       })
       _.sendResolution()
       _.mic(Store.getters['mic'].isOn)
@@ -84,6 +76,7 @@ export const addSessionEventListener = session => {
 
   /** 상대방 마이크 활성 정보 수신 */
   session.on(SIGNAL.MIC, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     Store.commit('updateParticipant', {
       connectionId: event.from.connectionId,
@@ -121,6 +114,7 @@ export const addSessionEventListener = session => {
   })
   /** 화면 해상도 설정 */
   session.on(SIGNAL.RESOLUTION, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
       connectionId: event.from.connectionId,
@@ -128,6 +122,7 @@ export const addSessionEventListener = session => {
   })
   /** 리더 컨트롤(pointing, local record) */
   session.on(SIGNAL.CONTROL, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === CONTROL.POINTING) {
       Store.commit('deviceControl', {
@@ -152,7 +147,6 @@ export const addSessionEventListener = session => {
 
   /** 채팅 수신 */
   session.on(SIGNAL.CHAT, event => {
-    console.log('[session] receive session :: ' + SIGNAL.CHAT)
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -209,52 +203,71 @@ export const addSessionEventListener = session => {
 
   /** 내보내기 */
   session.on('forceDisconnectByUser', event => {
-    console.log(event)
+    // console.log(event)
   })
 }
 
-const getUserObject = stream => {
-  let streamObj
-  let connection = stream.connection
+const setUserObject = event => {
+  let userObj
+  let connection = event.connection
 
   const metaData = JSON.parse(connection.data.split('%/%')[0])
 
   let uuid = metaData.clientData
   let roleType = metaData.roleType
+  let deviceType = metaData.deviceType
 
   let allowUser = false
   if (allowCamera.includes(_.account.email)) {
     allowUser = true
   }
 
-  streamObj = {
+  userObj = {
     id: uuid,
     // stream: stream.mediaStream,
     stream: null,
-    connectionId: stream.connection.connectionId,
+    connectionId: connection.connectionId,
     // nickname: participant.nickname,
     // path: participant.profile,
     nickname: null,
     path: null,
-    audio: stream.audioActive,
     video: roleType === ROLE.WORKER || allowUser,
+    audio: true,
     speaker: true,
     mute: false,
     status: 'good',
     roleType: roleType,
+    deviceType: deviceType,
     permission: 'default',
     hasArFeature: false,
   }
-  if (stream.videoActive) {
-    // Store.commit('updateResolution', {
-    //   connectionId: stream.connection.connectionId,
-    //   width: 0,
-    //   height: 0,
-    // })
-  }
-  if (Store.getters['account'].uuid === uuid) {
-    streamObj.me = true
+  const account = Store.getters['account']
+  if (account.uuid === uuid) {
+    userObj.nickname = account.nickname
+    userObj.path = account.profile
+    userObj.me = true
+    Store.commit('addStream', userObj)
+  } else {
+    logger('room', "participant's connected")
+    Store.commit('addStream', userObj)
+    getUserInfo({
+      userId: userObj.id,
+    }).then(participant => {
+      Store.commit('updateParticipant', {
+        connectionId: event.connection.connectionId,
+        nickname: participant.nickname,
+        path: participant.profile,
+      })
+      const chatObj = {
+        text: participant.nickname + '님이 대화에 참여하셨습니다.',
+        name: 'people',
+        date: new Date(),
+        uuid: null,
+        type: 'system',
+      }
+      Store.commit('addChat', chatObj)
+    })
   }
 
-  return streamObj
+  // return streamObj
 }

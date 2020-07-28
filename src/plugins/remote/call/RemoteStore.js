@@ -64,13 +64,6 @@ const mutations = {
       return
     }
     state.participants.push(payload)
-    state.chatList.push({
-      text: payload.nickname + '님이 대화에 참여하셨습니다.',
-      name: 'people',
-      date: new Date(),
-      uuid: null,
-      type: 'system',
-    })
     if ((!state.mainView || !state.mainView.stream) && payload.video) {
       state.mainView = payload
     }

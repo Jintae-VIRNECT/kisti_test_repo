@@ -43,7 +43,7 @@
         v-else
         :participants="participants"
         :leader="leader"
-        :roomId="roomId"
+        :sessionId="sessionId"
       ></participants-info>
     </div>
   </modal>
@@ -74,11 +74,7 @@ export default {
   },
   computed: {
     participants() {
-      if (this.history) {
-        return this.history.memberList
-      } else {
-        return []
-      }
+      return this.room.memberList
     },
   },
   props: {
@@ -95,10 +91,6 @@ export default {
       required: true,
     },
     leader: {
-      type: Boolean,
-      default: false,
-    },
-    history: {
       type: Boolean,
       default: false,
     },

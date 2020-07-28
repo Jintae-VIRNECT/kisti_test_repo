@@ -12,7 +12,6 @@
     <history-info-modal
       :visible.sync="showHistoryInfo"
       :sessionId="sessionId"
-      :history="true"
     ></history-info-modal>
     <create-room-modal
       :visible.sync="showRestart"
