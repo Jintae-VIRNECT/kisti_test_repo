@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info("CORS ENABLE CREDENTIALS : {}", corsConfiguration.getAllowCredentials().toString().toUpperCase());
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", corsConfiguration);
+		source.registerCorsConfiguration("/**", corsConfiguration.applyPermitDefaultValues());
 
 		http.cors().configurationSource(source);
 		http.csrf().disable().authorizeRequests();
