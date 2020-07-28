@@ -4,6 +4,8 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import Router from 'routers/remote'
 import Store from 'stores/remote/store'
+import * as Sentry from '@sentry/browser'
+import { Vue as VueIntegration } from '@sentry/integrations'
 
 import App from './app.vue'
 import globalMixin from 'mixins/global'
@@ -36,6 +38,19 @@ Vue.use(call, { Store })
 Vue.prototype.$localStorage = localStorage
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
+
+if ('active' === process.env.SENTRY) {
+  Sentry.init({
+    dsn:
+      'https://18c249a3501c43bbaf223c6b53f598ab@o280606.ingest.sentry.io/5354647',
+    integrations: [
+      new VueIntegration({
+        Vue,
+        attachProps: true,
+      }),
+    ],
+  })
+}
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
