@@ -131,7 +131,7 @@ export default {
     activeMemberList() {
       let activeMembers = []
       for (let member of this.room.memberList) {
-        if (member.memberStatus === STATUS.ONLINE) {
+        if (member.memberStatus === STATUS.LOAD) {
           activeMembers.push(member)
         }
       }
