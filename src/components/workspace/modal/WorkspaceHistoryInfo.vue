@@ -82,10 +82,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
-      // required: true,
-    },
     sessionId: {
       type: String,
       required: true,
@@ -102,9 +98,9 @@ export default {
       }
       this.visibleFlag = flag
     },
-    image(image) {
-      console.log(image)
-    },
+    // image(image) {
+    //   console.log(image)
+    // },
   },
   methods: {
     async initHistory() {

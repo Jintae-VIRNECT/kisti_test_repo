@@ -1,7 +1,7 @@
 <template>
   <section class="createroom-info">
     <profile-image
-      :image="imageURL"
+      :image.sync="imageURL"
       :deleteBtn="!!imageURL"
       @delete="imageRemove"
       size="6.143em"
@@ -112,6 +112,9 @@ export default {
       deep: true,
       handler: function(info) {
         console.log(info)
+        this.title = info.title
+        this.description = info.description
+        this.imageURL = info.profile
       },
     },
   },

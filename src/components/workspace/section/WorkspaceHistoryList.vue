@@ -6,6 +6,7 @@
       height="6.143rem"
       :menu="true"
       :history="history"
+      @createRoom="createRoom(history.sessionId)"
       @openRoomInfo="openRoomInfo(history.sessionId)"
       @showDeleteDialog="showDeleteDialog(history.sessionId)"
     ></history>
@@ -15,9 +16,8 @@
     ></history-info-modal>
     <create-room-modal
       :visible.sync="showRestart"
-      :roomId="roomId"
+      :sessionId="sessionId"
     ></create-room-modal>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </div>
 </template>
 
@@ -27,11 +27,8 @@ import History from 'History'
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import HistoryInfoModal from '../../workspace/modal/WorkspaceHistoryInfo'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import { getPermission } from 'utils/deviceCheck'
 
 import { deleteHistorySingleItem } from 'api/workspace/history'
-import { getLicense } from 'api/workspace/license'
 
 import confirmMixin from 'mixins/confirm'
 export default {
@@ -41,15 +38,12 @@ export default {
     CreateRoomModal,
     History,
     HistoryInfoModal,
-    DeviceDenied,
   },
   data() {
     return {
       showRestart: false,
       showHistoryInfo: false,
-      roomId: 0,
       sessionId: '',
-      showDenied: false,
     }
   },
   computed: {
@@ -110,29 +104,9 @@ export default {
     },
 
     //재시작
-    async createRoom(roomId) {
-      const license = await getLicense({
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-
-      if (!license) {
-        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
-          text: '확인',
-          action: () => {
-            this.$eventBus.$emit('showLicensePage')
-          },
-        })
-        return false
-      }
-
-      this.roomId = roomId
+    async createRoom(sessionId) {
+      this.sessionId = sessionId
       this.showRestart = !this.showRestart
-
-      const permission = await getPermission()
-      if (!permission && this.showRestart === true) {
-        this.showDenied = true
-      }
     },
     convertDate(date) {
       if (date !== null && date !== '') {

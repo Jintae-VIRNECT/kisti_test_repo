@@ -7,7 +7,6 @@ import {
 
 function getDefaultRoomInfo() {
   return {
-    roomId: null,
     sessionId: null,
     title: null,
     description: null,
@@ -22,7 +21,6 @@ const state = getDefaultRoomInfo()
 
 const mutations = {
   [ROOM_SET](state, payload) {
-    state.roomId = payload.roomId
     state.sessionId = payload.sessionId
     state.title = payload.title
     state.description = payload.description

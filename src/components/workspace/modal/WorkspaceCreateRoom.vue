@@ -64,16 +64,17 @@ export default {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
-      default: 0,
+    sessionId: {
+      type: String,
+      default: '',
     },
   },
   watch: {
     visible(flag) {
       if (flag) {
+        this.selection = []
         this.inviteRefresh()
-        if (this.roomId && this.roomId > 0) {
+        if (this.sessionId && this.sessionId.length > 0) {
           this.getInfo()
         }
       }
@@ -84,7 +85,15 @@ export default {
     ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
     async getInfo() {
       try {
-        this.roomInfo = await getHistorySingleItem({ roomId: this.roomId })
+        this.roomInfo = await getHistorySingleItem({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
+        })
+        for (let member of this.roomInfo.memberList) {
+          if (member.uuid !== this.account.uuid) {
+            this.selection.push(member)
+          }
+        }
       } catch (err) {
         console.error(err)
       }
@@ -117,7 +126,6 @@ export default {
         member => member.uuid !== this.account.uuid,
       )
       this.loading = false
-      this.selection = []
     },
     async startRemote(info) {
       try {
@@ -148,7 +156,6 @@ export default {
         )
 
         const roomInfo = {
-          roomId: createdRes.sessionId,
           sessionId: createdRes.sessionId,
           title: info.title,
           description: info.description,
@@ -164,7 +171,6 @@ export default {
 
           const contents = {
             roomSessionId: createdRes.sessionId,
-            roomId: createdRes.sessionId,
             title: info.title,
             nickName: this.account.nickname,
             profile: this.account.profile,

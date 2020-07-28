@@ -106,7 +106,6 @@ export default {
       }
     },
   },
-  watch: {},
   methods: {
     reset() {
       this.selection = []

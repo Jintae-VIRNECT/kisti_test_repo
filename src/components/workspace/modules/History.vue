@@ -29,7 +29,7 @@
     </div>
 
     <div class="widecard-tools">
-      <button class="btn small" @click="createRoom(history.roomId)">
+      <button class="btn small" @click="$emit('createRoom')">
         재시작
       </button>
       <popover
@@ -97,7 +97,7 @@ export default {
   },
   computed: {
     date() {
-      return this.$dayjs(this.history.startDate).calendar(null, {
+      return this.$dayjs(this.history.activeDate).calendar(null, {
         sameDay: 'A h:mm',
         lastDay: '[어제]',
         lastWeek: '[지난주] dddd',
