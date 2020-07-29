@@ -148,7 +148,7 @@ spring:
             - Header=Sec-WebSocket-Version, \d+
             - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
             - Header=Upgrade, websocket
-            - Path=/remote/websocket
+            - Path=/remote/websocket/**
           filters:
             - StripPrefix=0
             - name: Logging
