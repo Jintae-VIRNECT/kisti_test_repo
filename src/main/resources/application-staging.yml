@@ -164,10 +164,10 @@ spring:
                 postLogger: true
 
         - id: remote-service-server-websocket
-          uri: ws://remote-service-server
+          uri: lb:ws://remote-service-server
           predicates:
             - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, \w+\W+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
             - Header=Upgrade, websocket
             - Path=/remote/websocket/**
           filters:
