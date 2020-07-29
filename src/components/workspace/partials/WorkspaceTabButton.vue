@@ -1,12 +1,15 @@
 <template>
   <li class="workspace-tab__button">
-    <button :class="{ active: active }">
+    <button
+      :class="{ active: active, nolicense: !(hasLicense && !expireLicense) }"
+    >
       {{ text }}
     </button>
   </li>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceTabButton',
   props: {
@@ -22,7 +25,9 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['expireLicense']),
+  },
   watch: {},
   methods: {},
 
