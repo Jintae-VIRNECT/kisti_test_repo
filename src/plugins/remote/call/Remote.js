@@ -43,6 +43,7 @@ const _ = {
 
       const iceServers = window.urls.coturn
       const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
+
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
       }
