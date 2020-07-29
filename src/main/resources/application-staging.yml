@@ -182,6 +182,7 @@ spring:
             - Header=Sec-WebSocket-Version, \d+
             - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
             - Header=Upgrade, websocket
+            - Path=/message/**
           filters:
             - StripPrefix=0
             - name: Logging
@@ -189,6 +190,7 @@ spring:
                 messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
                 preLogger: true
                 postLogger: true
+                # 이 친구는 맨 아래로 보내야합니다.
 
       globalcors:
         cors-configurations:
