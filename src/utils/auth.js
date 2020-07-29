@@ -86,6 +86,11 @@ async function getUrls() {
   return res.data
 }
 
+const cookieClear = () => {
+  Cookies.remove('accessToken', { domain: '.virnect.com' })
+  Cookies.remove('refreshToken', { domain: '.virnect.com' })
+}
+
 /**
  * export
  */
@@ -132,15 +137,13 @@ class Auth {
     }
   }
   login() {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
+    cookieClear()
     const url = window.urls.console
     location.href = `${url}/?continue=${location.href}`
     return this
   }
   logout() {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
+    cookieClear()
     isLogin = false
     accessToken = null
     refreshToken = null
