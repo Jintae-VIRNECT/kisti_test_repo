@@ -24,7 +24,6 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
 import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
-import auth from 'utils/auth'
 
 import confirmMixin from 'mixins/confirm'
 

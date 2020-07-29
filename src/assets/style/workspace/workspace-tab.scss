@@ -68,6 +68,12 @@
       &:after {
         width: 100%;
       }
+      &.nolicense {
+        opacity: 0.25;
+        &:after {
+          width: 0;
+        }
+      }
     }
   }
 }

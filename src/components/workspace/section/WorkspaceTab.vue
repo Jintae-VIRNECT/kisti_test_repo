@@ -2,7 +2,7 @@
   <div class="workspace-tab">
     <nav
       class="workspace-tab__nav"
-      :class="{ fix: !!fix, nolicense: !hasLicense }"
+      :class="{ fix: !!fix, nolicense: !(hasLicense && !expireLicense) }"
     >
       <ul class="flex offsetwidth">
         <tab-button
@@ -14,7 +14,11 @@
         ></tab-button>
         <transition name="opacity">
           <li class="workspace-tab__side" v-if="fix">
-            <button v-if="hasLicense" class="btn" @click="createRoom">
+            <button
+              v-if="hasLicense && !expireLicense"
+              class="btn"
+              @click="createRoom"
+            >
               원격 협업 생성
             </button>
           </li>
@@ -22,11 +26,12 @@
       </ul>
     </nav>
     <component
-      v-if="hasLicense"
+      v-if="hasLicense && !expireLicense"
       :is="component"
       :class="{ fix: fix }"
     ></component>
-    <workspace-license v-else></workspace-license>
+    <workspace-license v-else-if="!hasLicense"></workspace-license>
+    <workspace-expire v-else></workspace-expire>
   </div>
 </template>
 
@@ -37,7 +42,9 @@ import WorkspaceRemote from '../tab/WorkspaceRemote'
 import WorkspaceUser from '../tab/WorkspaceUser'
 import WorkspaceSetting from '../tab/WorkspaceSetting'
 import WorkspaceLicense from './WorkspaceLicense'
+import WorkspaceExpire from './WorkspaceExpire'
 import ListBadge from 'ListBadge'
+import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceTab',
   components: {
@@ -48,6 +55,7 @@ export default {
     setting: WorkspaceSetting,
     ListBadge,
     WorkspaceLicense,
+    WorkspaceExpire,
   },
   data() {
     return {
@@ -71,6 +79,9 @@ export default {
       ],
       component: 'history',
     }
+  },
+  computed: {
+    ...mapGetters(['expireLicense']),
   },
   props: {
     fix: {

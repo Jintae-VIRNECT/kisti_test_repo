@@ -988,7 +988,7 @@ var OpenVidu = /** @class */ (function() {
         onconnected: onConnectSucces,
         ondisconnect: this.disconnectCallback.bind(this),
         onreconnecting: this.reconnectingCallback.bind(this),
-        onreconnected: onConnectSucces,
+        onreconnected: this.reconnectedCallback.bind(this),
       },
       rpc: {
         requestTimeout: 10000,

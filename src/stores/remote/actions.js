@@ -1,6 +1,5 @@
 import * as types from './mutation-types'
 import { VIEW, ACTION } from 'configs/view.config'
-import { expireCheck } from 'utils/expirecheck'
 
 export default {
   // account
@@ -14,9 +13,6 @@ export default {
     commit(types.INIT_WORKSPACE, infoList)
   },
   changeWorkspace({ commit }, workspace) {
-    commit(types.ACCOUNT_SET, {
-      licenseExpire: !expireCheck(workspace.renewalDate),
-    })
     commit(types.CHANGE_WORKSPACE, workspace)
   },
 
