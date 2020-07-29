@@ -48,7 +48,7 @@
           ></profile-list>
         </div>
       </div>
-      <button class="groupcard-button btn small" @click="$emit('join')">
+      <button class="groupcard-button btn small" @click="join">
         참가하기
       </button>
     </div>
@@ -85,9 +85,11 @@ import ProfileList from 'ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
 import { STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
+import mixinToast from 'mixins/toast'
 
 export default {
   name: 'RemoteCard',
+  mixins: [mixinToast],
   components: {
     Card,
     Profile,
@@ -147,6 +149,17 @@ export default {
     },
     updateInfo(info) {
       this.title = info.title
+    },
+    join() {
+      const idx = this.activeMemberList.findIndex(
+        member => member.uuid === this.account.uuid,
+      )
+      if (idx > -1) {
+        // TODO: MESSAGE
+        this.toastError('이미 참가중인 협업입니다.')
+        return
+      }
+      this.$emit('join')
     },
   },
 

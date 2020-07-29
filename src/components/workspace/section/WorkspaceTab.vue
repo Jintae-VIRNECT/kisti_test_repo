@@ -1,18 +1,20 @@
 <template>
   <div class="workspace-tab">
-    <nav class="workspace-tab__nav" :class="{ fix: !!fix }">
+    <nav
+      class="workspace-tab__nav"
+      :class="{ fix: !!fix, nolicense: !hasLicense }"
+    >
       <ul class="flex offsetwidth">
         <tab-button
           v-for="tab of tabComponents"
-          :license="license"
           :key="tab.name"
-          :active="license && component === tab.name"
+          :active="hasLicense && component === tab.name"
           :text="tab.text"
           @click.native="tabChange(tab.name)"
         ></tab-button>
         <transition name="opacity">
           <li class="workspace-tab__side" v-if="fix">
-            <button v-if="license" class="btn" @click="createRoom">
+            <button v-if="hasLicense" class="btn" @click="createRoom">
               원격 협업 생성
             </button>
           </li>
@@ -20,7 +22,7 @@
       </ul>
     </nav>
     <component
-      v-if="!showLicensePage"
+      v-if="hasLicense"
       :is="component"
       :class="{ fix: fix }"
     ></component>
@@ -49,7 +51,6 @@ export default {
   },
   data() {
     return {
-      showLicensePage: false,
       tabComponents: [
         {
           name: 'history',
@@ -76,10 +77,6 @@ export default {
       type: [Number, Boolean],
       default: false,
     },
-    license: {
-      type: Boolean,
-      default: true,
-    },
   },
   methods: {
     tabChange(tabName) {
@@ -92,17 +89,6 @@ export default {
     createRoom() {
       this.$eventBus.$emit('openCreateRoom')
     },
-    activeLicensePage() {
-      this.showLicensePage = true
-    },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.$eventBus.$on('showLicensePage', this.activeLicensePage)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('showLicensePage')
   },
 }
 </script>
