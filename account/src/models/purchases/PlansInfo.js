@@ -27,6 +27,9 @@ export default class PlansInfo extends Model {
     this.storage = mb2gb(json.currentUsageStorage)
     this.viewCount = json.currentUsageDownloadHit
     this.callTime = json.currentUsageCallTime
+    this.maxStorage = mb2gb(json.maxStorageSize)
+    this.maxViewCount = json.maxDownloadHit
+    this.maxCallTime = json.maxCallTime
     this.endDate = json.endDate
     this.planStatus = json.planStatus
     this.products = [

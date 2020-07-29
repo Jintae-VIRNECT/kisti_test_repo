@@ -75,9 +75,9 @@ export default {
     // 1달 무료 페이레터 제공 데이터가 없는 문제 예외처리
     if (!paymentInfo.items.length) {
       const licenseAvailable = {
-        callTime: plansInfo.callTime,
-        storage: plansInfo.storage,
-        viewCount: plansInfo.viewCount,
+        callTime: plansInfo.maxCallTime,
+        storage: plansInfo.maxStorage,
+        viewCount: plansInfo.maxViewCount,
       }
       paymentInfo.basisAvailable = licenseAvailable
       paymentInfo.maxAvailable = licenseAvailable
