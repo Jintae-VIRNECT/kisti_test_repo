@@ -132,6 +132,8 @@ class Auth {
     }
   }
   login() {
+    Cookies.remove('accessToken')
+    Cookies.remove('refreshToken')
     const url = window.urls.console
     location.href = `${url}/?continue=${location.href}`
     return this
