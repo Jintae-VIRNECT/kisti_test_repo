@@ -84,8 +84,8 @@ var OpenVidu = /** @class */ (function() {
      */
     this.ee = new EventEmitter()
     this.libraryVersion = packageJson.version
-    logger.info("'OpenVidu' initialized")
-    logger.info('openvidu-browser version: ' + this.libraryVersion)
+    // logger.info("'OpenVidu' initialized")
+    // logger.info('openvidu-browser version: ' + this.libraryVersion)
     if (platform.os.family === 'iOS' || platform.os.family === 'Android') {
       // Listen to orientationchange only on mobile devices
       window.addEventListener('orientationchange', function() {
@@ -988,7 +988,7 @@ var OpenVidu = /** @class */ (function() {
         onconnected: onConnectSucces,
         ondisconnect: this.disconnectCallback.bind(this),
         onreconnecting: this.reconnectingCallback.bind(this),
-        onreconnected: this.reconnectedCallback.bind(this),
+        onreconnected: onConnectSucces,
       },
       rpc: {
         requestTimeout: 10000,
