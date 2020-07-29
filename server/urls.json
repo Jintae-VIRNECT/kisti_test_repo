@@ -36,8 +36,8 @@
     "production": "https://api.virnect.com"
   },
   "remoteWs": {
-    "local": "wss://192.168.13.36:5000/remote/websocket",
-    "develop": "wss://192.168.13.36:5000/remote/websocket",
+    "local": "wss://192.168.6.3:8000/remote/websocket",
+    "develop": "wss://192.168.6.3:8000/remote/websocket",
     "staging": "wss://stgapi.virnect.com/remote/websocket",
     "production": "wss://api.virnect.com/remote/websocket"
   }
