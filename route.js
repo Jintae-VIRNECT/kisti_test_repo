@@ -13,7 +13,7 @@ function IsAllowBrowser(req) {
   const isEdge = userAgent.includes('Edg')
 
   const findSafari = userAgent.includes('Safari')
-  const isSafari = (!isChrome || !isChromeMobile) && findSafari ? true : false
+  const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
 
   return (isChrome || isEdge || isChromeMobile || IsHeartBeat) && !isSafari
 }
