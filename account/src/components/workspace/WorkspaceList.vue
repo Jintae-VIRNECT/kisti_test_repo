@@ -13,7 +13,7 @@
         prop="masterNickName"
         nameProp="masterNickName"
         imageProp="masterProfile"
-        :width="120"
+        :width="160"
         sortable
       />
       <column-date
