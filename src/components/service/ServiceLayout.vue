@@ -36,7 +36,6 @@
           shareview: isExpert && currentView === 'drawing',
         }"
       ></user-list>
-
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -78,7 +77,9 @@ export default {
     CaptureModal,
   },
   data() {
-    return {}
+    return {
+      showDenied: false,
+    }
   },
   computed: {
     ...mapGetters(['view', 'captureFile']),
@@ -104,7 +105,7 @@ export default {
   methods: {},
 
   /* Lifecycles */
-  created() {
+  async created() {
     window.onbeforeunload = () => {
       return true
     }
