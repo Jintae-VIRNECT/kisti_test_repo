@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
 public class RemoteGatewayService {
     private static final String TAG = "MemberRestController";
 
-    private final RemoteServiceRestService remoteServiceRestService;
+    //private final RemoteServiceRestService remoteServiceRestService;
 
     // feign client
     private final MessageRestService messageRestService;
@@ -122,7 +122,7 @@ public class RemoteGatewayService {
         }
     }
 
-    public ApiResponse<SessionListResponse> getSessionList(boolean webRtcStats) {
+    /*public ApiResponse<SessionListResponse> getSessionList(boolean webRtcStats) {
         //ApiResponse<SessionListResponse> response = this.remoteServiceRestService.getServiceSessions(webRtcStats);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -140,7 +140,7 @@ public class RemoteGatewayService {
             log.debug("getSessionList: has no any data");
         }
         return new ApiResponse<>(response);
-    }
+    }*/
 
     //===========================================  Template Session Services     =================================================//
 

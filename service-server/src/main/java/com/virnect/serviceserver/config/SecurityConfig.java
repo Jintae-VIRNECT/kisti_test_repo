@@ -35,16 +35,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-//@Configuration
+
 @Slf4j
+@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	/*@Autowired
-	RemoteServiceConfig remoteServiceConfig;*/
+	@Autowired
+	RemoteServiceConfig remoteServiceConfig;
 
-	@Override
+	/*@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// CORS Configuration
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -67,24 +68,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/**").permitAll();
 		http.httpBasic();
 		http.formLogin().disable();
-	}
+	}*/
 
-	/*@Override
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// Security for API REST
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
 				.csrf().disable().authorizeRequests()
 				// /api
-				.antMatchers("/api/**").authenticated()
+				.antMatchers("/api/**").permitAll()
 				// /config
 				.antMatchers(HttpMethod.GET, "/config/remoteservice-publicurl").permitAll()
-				.antMatchers(HttpMethod.GET, "/config/**").authenticated()
+				.antMatchers(HttpMethod.GET, "/config/**").permitAll()
 				// /cdr
-				.antMatchers(HttpMethod.GET, "/cdr/**").authenticated()
+				.antMatchers(HttpMethod.GET, "/cdr/**").permitAll()
 				// /accept-certificate
 				.antMatchers(HttpMethod.GET, "/accept-certificate").permitAll()
 				// Dashboard
-				.antMatchers(HttpMethod.GET, "/dashboard/**").authenticated();
+				.antMatchers(HttpMethod.GET, "/dashboard/**").permitAll();
 
 		// Security for recording layouts
 		conf.antMatchers("/layouts/**").authenticated();
@@ -97,9 +98,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		conf.and().httpBasic();
-	}*/
+	}
 
-	/*@Bean
+
+
+	@Bean
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
@@ -107,12 +110,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		config.addAllowedMethod(CorsConfiguration.ALL);
 		config.addAllowedHeader(CorsConfiguration.ALL);
 		config.setAllowCredentials(false);
-		*//*config.setAllowedOrigins(Arrays.asList("*"));
+		/*config.setAllowedOrigins(Arrays.asList("*"));
 		config.setAllowedHeaders(Arrays.asList("*"));
-		config.setAllowedMethods(Arrays.asList("*"));*//*
+		config.setAllowedMethods(Arrays.asList("*"));*/
 		source.registerCorsConfiguration("/**", config);
 		return new CorsFilter(source);
-	}*/
+	}
 
 	/*@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
