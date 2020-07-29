@@ -10,9 +10,12 @@ function IsAllowBrowser(req) {
   const isChromeMobile =
     userAgent.includes('CriOS') || userAgent.includes('mobileApp')
   const IsHeartBeat = userAgent.includes('ELB-HealthChecker/2.0')
-  const isEdge = userAgent.includes('Edge')
+  const isEdge = userAgent.includes('Edg')
 
-  return (isChrome || isChromeMobile || IsHeartBeat) && !isEdge
+  const findSafari = userAgent.includes('Safari')
+  const isSafari = (!isChrome || !isChromeMobile) && findSafari ? true : false
+
+  return (isChrome || isEdge || isChromeMobile || IsHeartBeat) && !isSafari
 }
 
 function IsMobileBrowser(req) {
