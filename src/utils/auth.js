@@ -87,8 +87,13 @@ async function getUrls() {
 }
 
 const cookieClear = () => {
-  Cookies.remove('accessToken', { domain: '.virnect.com' })
-  Cookies.remove('refreshToken', { domain: '.virnect.com' })
+  if (/\.?virnect\.com/.test(location.href)) {
+    Cookies.remove('accessToken', { domain: '.virnect.com' })
+    Cookies.remove('refreshToken', { domain: '.virnect.com' })
+  } else {
+    Cookies.remove('accessToken')
+    Cookies.remove('refreshToken')
+  }
 }
 
 /**
