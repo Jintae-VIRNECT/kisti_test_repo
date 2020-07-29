@@ -91,7 +91,7 @@ export default {
         for (const file of this.fileList) {
           const response = await sendFile({
             file: file.filedata,
-            roomId: this.roomInfo.roomId,
+            sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
           })
 

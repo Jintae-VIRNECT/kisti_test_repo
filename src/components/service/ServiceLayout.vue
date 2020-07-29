@@ -36,7 +36,6 @@
           shareview: isExpert && currentView === 'drawing',
         }"
       ></user-list>
-
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -59,13 +58,11 @@ export default {
     if (from.name !== 'workspace') {
       next({ name: 'workspace' })
     }
-    next(vm => {
-      vm.$store.dispatch('callReset')
-    })
+    next()
   },
   beforeRouteLeave(to, from, next) {
     next(vm => {
-      vm.$store.commit('clear')
+      vm.$Store.commit('callClear')
     })
   },
   mixins: [alarmMixin, localRecorderMixin],
@@ -80,7 +77,9 @@ export default {
     CaptureModal,
   },
   data() {
-    return {}
+    return {
+      showDenied: false,
+    }
   },
   computed: {
     ...mapGetters(['view', 'captureFile']),
@@ -106,13 +105,15 @@ export default {
   methods: {},
 
   /* Lifecycles */
-  created() {
+  async created() {
     window.onbeforeunload = () => {
       return true
     }
+    window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
+    window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
 
     this.stopRecord()
     this.$eventBus.$off('startLocalRecord')

@@ -2,47 +2,72 @@ import http from 'api/gateway'
 
 /**
  * 최근 협업 목록 요청
- * @param {Object} param params for http request
- * @param {Number} param.page history page number
- * @param {Boolean} param.paging history paging option
- * @param {Number} param.size history paging size
+ * @param {Number} page size 대로 나눠진 페이지를 조회할 번호(1부터 시작)
+ * @param {Boolean} paging 검색 결과 페이지네이션 여부
+ * @param {Number} size 페이징 사이즈
+ * @param {String} sort 정렬 옵션 데이터
+ * @param {String} userId 필수값
+ * @param {String} workspaceId 필수값
+ *
  */
-export const getHistoryList = async function(param) {
-  const returnVal = await http('GET_HISTORY_LIST', param)
+export const getHistoryList = async function({
+  page = 1,
+  paging = false,
+  size = 10,
+  sort = 'createdDate,desc',
+  userId,
+  workspaceId,
+}) {
+  const returnVal = await http('HISTORY_LIST', {
+    page,
+    paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
 
   return returnVal
 }
 
 /**
  * 최근 협업 목록중 단일 항목에 대한 세부 내용 요청
- * @param {Object} param params for http request
- * @param {Number} param.roomId history room id for request
- *
+ * @param {String} workspaceId 워크스페이스 id
+ * @param {String} sessionId 세션 id
  */
-export const getHistorySingleItem = async function(param) {
-  const { roomId } = param
-  const returnVal = await http('GET_HISTORY_ITEM', { roomId })
+export const getHistorySingleItem = async function({ workspaceId, sessionId }) {
+  const returnVal = await http('HISTORY_ITEM', { workspaceId, sessionId })
 
   return returnVal
 }
 
 /**
  * 최근 협업 목록중 단일 항목 제거
- * @param {Object} param
- * @param {Number} roomId roomId for delete
+ * @param {String} workspaceId 워크스페이스 id
+ * @param {String} sessionId 삭제할 히스토리 세션 Id
+ * @param {String} uuid 유저 id
  */
-export const deleteHistorySingleItem = async function(param) {
-  const { roomId } = param
-  const returnVal = await http('DELETE_HISTORY_ITEM', { roomId })
+export const deleteHistorySingleItem = async function({
+  workspaceId,
+  sessionId,
+  userId,
+}) {
+  const returnVal = await http('DELETE_HISTORY_ITEM', {
+    workspaceId,
+    sessionId,
+    userId,
+  })
 
   return returnVal
 }
 
 /**
  * 최근 협업 목록 모두 삭제
+ * @param {String} workspaceId 워크스페이스 id
+ * @param {String} userId 유저 id
  */
-export const deleteAllHistory = async function() {
-  const returnVal = await http('DELETE_HISTORY_ALL')
+export const deleteAllHistory = async function({ workspaceId, userId }) {
+  const returnVal = await http('DELETE_HISTORY_ALL', { workspaceId, userId })
 
   return returnVal
 }

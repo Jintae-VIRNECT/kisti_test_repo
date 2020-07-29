@@ -86,8 +86,10 @@ button {
 html,
 body {
   height: 100%;
+  font-weight: 300;
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  line-height: 1.6;
 }
 
 button {
@@ -132,12 +134,7 @@ section {
 }
 
 body {
-  height: 100%;
   color: #fff;
-  font-weight: 300;
-  font-size: 14px;
-  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
-  line-height: 1.6;
   &:lang(en) {
     // font-family: $roboto, $noto, sans-serif;
   }
@@ -183,7 +180,7 @@ select,
 input,
 textarea {
   // @include inline;
-  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  font: inherit;
   vertical-align: middle;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -192,7 +189,7 @@ textarea {
 
 button,
 input[type="submit"] {
-  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
+  font: inherit;
   background: transparent;
   border: 0;
   outline: none;

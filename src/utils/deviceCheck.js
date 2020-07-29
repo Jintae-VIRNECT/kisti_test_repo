@@ -20,5 +20,6 @@ export const getPermission = async () => {
     return true
   } catch (err) {
     console.error(err)
+    return false
   }
 }

@@ -7,15 +7,11 @@
       @onScroll="onScroll"
     >
       <div class="workspace-wrapper">
-        <workspace-welcome
-          ref="welcomeSection"
-          :license="license"
-        ></workspace-welcome>
+        <workspace-welcome ref="welcomeSection"></workspace-welcome>
 
         <workspace-tab
           ref="tabSection"
           :fix="tabFix"
-          :license="license"
           @tabChange="tabChange"
         ></workspace-tab>
       </div>
@@ -24,6 +20,7 @@
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
+      <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
   </section>
 </template>
@@ -36,8 +33,9 @@ import auth from 'utils/auth'
 import { getLicense } from 'api/workspace/license'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
-
+import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { mapActions } from 'vuex'
+
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
@@ -45,9 +43,21 @@ export default {
     if (!auth.isLogin) {
       auth.login()
     } else {
-      next(vm => {
-        vm.init(authInfo)
-      })
+      const res = await getLicense({ userId: authInfo.account.uuid })
+      const workspaces = res.myPlanInfoList.filter(
+        plan => plan.planProduct === 'REMOTE',
+      )
+      if (workspaces.length === 0) {
+        next(vm => {
+          vm.license = false
+          vm.init(authInfo)
+        })
+      } else {
+        next(vm => {
+          vm.license = true
+          vm.init(authInfo, workspaces)
+        })
+      }
     }
   },
   mixins: [confirmMixin],
@@ -56,6 +66,7 @@ export default {
     WorkspaceWelcome,
     WorkspaceTab,
     RecordList,
+    DeviceDenied,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -66,25 +77,28 @@ export default {
       showCookie: !cookie,
       showList: false,
       license: true,
+      showDenied: false,
     }
   },
   methods: {
     ...mapActions([
       'updateAccount',
       'initWorkspace',
+      'changeWorkspace',
       'setDevices',
       'setRecord',
       'setAllow',
     ]),
-    init(authInfo) {
-      const account = authInfo.account
-      const urls = authInfo.urls
-      window.urls = urls
-      this.updateAccount(account.myInfo)
-      this.initWorkspace(account.myWorkspaces)
-      this.$nextTick(() => {
-        this.$push.connection(this.workspace.uuid)
+    init(authInfo, workspaces) {
+      this.updateAccount({
+        ...authInfo.account,
+        licenseEmpty: this.license,
       })
+      if (workspaces) {
+        this.initWorkspace(workspaces)
+        // BETA: 1hour logout setting
+        this.$parent.init()
+      }
     },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
@@ -110,10 +124,12 @@ export default {
         this.setRecord(recordInfo)
       }
       const allow = this.$localStorage.getItem('allow')
-      console.log(allow)
       if (allow) {
         this.setAllow(allow)
       }
+    },
+    showDeviceDenied() {
+      this.showDenied = true
     },
   },
 
@@ -122,26 +138,13 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    this.$nextTick(async () => {
-      const license = await getLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-      )
-      this.license = license
-
-      if (!license) {
-        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
-          text: '확인',
-          action: () => {
-            this.$eventBus.$emit('showLicensePage')
-          },
-        })
-        return false
-      }
-    })
-
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('filelist:open', this.toggleList)
+    this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('filelist:open')
+    this.$eventBus.$off('devicedenied:show')
   },
 }
 </script>

@@ -16,6 +16,9 @@
     width: calc(100% - 0.714rem);
     background-color: #0c0c0c;
   }
+  &.nolicense {
+    pointer-events: none;
+  }
 }
 .workspace-tab__side {
   position: absolute;
@@ -64,12 +67,6 @@
       opacity: 1;
       &:after {
         width: 100%;
-      }
-    }
-    &.nolicense {
-      cursor: default;
-      &:hover {
-        opacity: 0.25;
       }
     }
   }

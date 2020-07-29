@@ -96,6 +96,7 @@
 import { mapActions } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { sendPush } from 'api/common/message'
+import { getRoomInfo } from 'api/workspace'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -105,10 +106,11 @@ import NoticeItem from './NoticeItem'
 
 import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin],
   components: {
     Switcher,
     Popover,
@@ -119,7 +121,7 @@ export default {
   data() {
     return {
       onPush: true,
-      key: this.$route.name,
+      key: '',
       alarmList: [],
     }
   },
@@ -142,7 +144,7 @@ export default {
       console.log('notice list refresh logic')
     },
     async alarmListener(listen) {
-      if (!this.onPush) return
+      // if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -184,25 +186,51 @@ export default {
 
       await sendPush(EVENT.INVITE_DENIED, [userId], contents)
     },
-    acceptInvite(body) {
-      const contents = {
-        nickName: this.account.nickname,
+    async acceptInvite(body) {
+      if (this.$call.session !== null) {
+        // TODO: MESSAGE
+        alert('통화를 종료하고 참여해주세요')
+        return
       }
-
-      sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
-      this.joinRoom(body.contents.roomId)
+      const params = {
+        workspaceId: this.workspace.uuid,
+        sessionId: body.contents.roomSessionId,
+      }
+      try {
+        const room = await getRoomInfo(params)
+        this.join(room)
+        const contents = {
+          nickName: this.account.nickname,
+        }
+        sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
+      } catch (err) {
+        if (err.code === 4002) {
+          this.toastError('이미 삭제된 협업입니다.')
+          // this.toastError('협업에 참가가 불가능합니다.')
+        }
+      }
+    },
+    pushInit() {
+      if (!this.hasLicense) return
+      const push = this.$localStorage.getItem('push')
+      this.key = this.$route.name
+      if (push === 'true') {
+        this.onPush = true
+      } else if (push === 'false') {
+        this.onPush = false
+      }
+      this.$nextTick(async () => {
+        await this.$push.init(this.workspace.uuid)
+        this.$push.addListener(this.key, this.alarmListener)
+      })
     },
   },
 
   /* Lifecycles */
   mounted() {
-    const push = this.$localStorage.getItem('push')
-    if (push === 'true') {
-      this.onPush = true
-    } else if (push === 'false') {
-      this.onPush = false
-    }
-    this.$push.addListener(this.key, this.alarmListener)
+    this.$nextTick(() => {
+      this.pushInit()
+    })
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)

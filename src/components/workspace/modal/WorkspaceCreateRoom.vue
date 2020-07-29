@@ -20,6 +20,7 @@
         :selection="selection"
         @userSelect="selectUser"
         @inviteRefresh="inviteRefresh"
+        :loading="loading"
       ></create-room-invite>
     </div>
   </modal>
@@ -31,14 +32,16 @@ import { mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { getMemberList } from 'api/workspace/member'
-import { createRoom, getRoomInfo } from 'api/workspace/room'
+import { createRoom } from 'api/workspace/room'
 import { sendPush } from 'api/common/message'
 import { ROLE } from 'configs/remote.config'
 import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { KEY, EVENT } from 'configs/push.config'
+import { EVENT } from 'configs/push.config'
+import { getMember } from 'api/service'
+
+import { getPermission } from 'utils/deviceCheck'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -55,6 +58,7 @@ export default {
       users: [],
       maxSelect: 2,
       roomInfo: {},
+      loading: false,
     }
   },
   props: {
@@ -62,16 +66,17 @@ export default {
       type: Boolean,
       default: false,
     },
-    roomId: {
-      type: Number,
-      default: 0,
+    sessionId: {
+      type: String,
+      default: '',
     },
   },
   watch: {
     visible(flag) {
       if (flag) {
+        this.selection = []
         this.inviteRefresh()
-        if (this.roomId && this.roomId > 0) {
+        if (this.sessionId && this.sessionId.length > 0) {
           this.getInfo()
         }
       }
@@ -79,10 +84,18 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'roomClear']),
+    ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
     async getInfo() {
       try {
-        this.roomInfo = await getHistorySingleItem({ roomId: this.roomId })
+        this.roomInfo = await getHistorySingleItem({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
+        })
+        for (let member of this.roomInfo.memberList) {
+          if (member.uuid !== this.account.uuid) {
+            this.selection.push(member)
+          }
+        }
       } catch (err) {
         console.error(err)
       }
@@ -106,60 +119,84 @@ export default {
       }
     },
     async inviteRefresh() {
-      const inviteList = await getMemberList({
+      this.loading = true
+      const inviteList = await getMember({
+        size: 100,
         workspaceId: this.workspace.uuid,
       })
-      this.users = inviteList.memberInfoList
-      this.selection = []
+      this.users = inviteList.memberInfoList.filter(
+        member => member.uuid !== this.account.uuid,
+      )
+      this.loading = false
     },
     async startRemote(info) {
+      const permission = await getPermission()
+
+      if (!permission) {
+        this.$eventBus.emit('devicedenied:show')
+        return
+      }
+
       try {
         const selectedUser = []
+        const selectedUserIds = []
 
         for (let select of this.selection) {
-          selectedUser.push(select.uuid)
+          selectedUser.push({
+            id: select.uuid,
+            uuid: select.uuid,
+            email: select.email,
+          })
+          selectedUserIds.push(select.uuid)
         }
-        selectedUser.push(this.account.uuid)
 
-        const createdRoom = await createRoom({
+        const createdRes = await createRoom({
           file: info.imageFile,
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
+          leaderEmail: this.account.email,
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
         })
+        const connRes = await this.$call.connect(
+          createdRes.token,
+          ROLE.EXPERT_LEADER,
+        )
 
-        const joinRtn = await this.$call.join(createdRoom, ROLE.EXPERT_LEADER)
-        if (joinRtn) {
+        const roomInfo = {
+          sessionId: createdRes.sessionId,
+          title: info.title,
+          description: info.description,
+          leaderId: this.account.uuid,
+          participantsCount: selectedUser.length + 1,
+          maxParticipantCount: 3,
+          memberList: [...selectedUser, this.account],
+        }
+
+        this.setRoomInfo(roomInfo)
+        if (connRes) {
           this.$eventBus.$emit('popover:close')
 
           const contents = {
-            roomSessionId: createdRoom.sessionId,
-            roomId: createdRoom.roomId,
+            roomSessionId: createdRes.sessionId,
             title: info.title,
             nickName: this.account.nickname,
             profile: this.account.profile,
           }
 
-          const rtn = await sendPush(EVENT.INVITE, selectedUser, contents)
-          console.log(rtn)
+          await sendPush(EVENT.INVITE, selectedUserIds, contents)
 
-          const roomInfo = await getRoomInfo({
-            roomId: createdRoom.roomId,
-          })
-
-          this.setRoomInfo(roomInfo)
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })
         } else {
           this.roomClear()
-          console.error('>>>join room 실패')
+          console.error('join room 실패')
         }
       } catch (err) {
         this.roomClear()
-        console.log(err)
+        console.error(err)
       }
     },
   },

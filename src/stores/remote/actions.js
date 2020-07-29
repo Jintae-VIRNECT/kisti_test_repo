@@ -1,5 +1,6 @@
 import * as types from './mutation-types'
 import { VIEW, ACTION } from 'configs/view.config'
+import { expireCheck } from 'utils/expirecheck'
 
 export default {
   // account
@@ -10,11 +11,13 @@ export default {
     commit(types.ACCOUNT_CLEAR)
   },
   initWorkspace({ commit }, infoList) {
-    console.log(infoList)
     commit(types.INIT_WORKSPACE, infoList)
   },
-  changeWorkspace({ commit }, id) {
-    commit(types.CHANGE_WORKSPACE, id)
+  changeWorkspace({ commit }, workspace) {
+    commit(types.ACCOUNT_SET, {
+      licenseExpire: !expireCheck(workspace.renewalDate),
+    })
+    commit(types.CHANGE_WORKSPACE, workspace)
   },
 
   callReset({ commit }) {
@@ -130,22 +133,6 @@ export default {
    */
   setLocalRecordTarget({ commit }, payload) {
     commit(types.SETTINGS.SET_LOCAL_RECORD_TARGET, payload)
-  },
-
-  /**
-   * set room info
-   * @param {Object} payload // room info
-   */
-  setRoomInfo({ commit }, payload) {
-    commit(types.ROOM_SET, payload)
-  },
-
-  /**
-   * clear room info
-   * @param {*} payload
-   */
-  roomClear({ commit }) {
-    commit(types.ROOM_CLEAR)
   },
 
   /**

@@ -12,8 +12,8 @@ const state = {
     isOn: true,
   },
   localRecordInfo: {
-    time: null,
-    interval: '60',
+    time: '60',
+    interval: '1',
     resolution: '480p',
   },
   allow: {
@@ -69,6 +69,8 @@ const getters = {
   speaker: state => state.speaker,
   localRecord: state => state.localRecordInfo,
   allow: state => state.allow,
+  allowLocalRecord: state => state.allow.localRecording,
+  allowPointing: state => state.allow.pointing,
   language: state => state.language,
 
   //screen stream for local recording

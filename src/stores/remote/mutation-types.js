@@ -36,6 +36,8 @@ export const SET_DEVICE = 'SET_DEVICE'
 
 // room
 export const ROOM_SET = 'ROOM_SET'
+export const ADD_ROOM_MEMBER = 'ADD_ROOM_MEMBER'
+export const REMOVE_ROOM_MEMBER = 'REMOVE_ROOM_MEMBER'
 export const ROOM_CLEAR = 'ROOM_CLEAR'
 
 //list search

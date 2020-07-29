@@ -1,7 +1,7 @@
 <template>
   <popover
     placement="bottom-end"
-    :width="300"
+    width="21.429rem"
     trigger="click"
     popperClass="popover-profile"
   >
@@ -37,7 +37,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import urls from '@/server/urls'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
@@ -50,14 +49,14 @@ export default {
   computed: {
     ...mapGetters(['account']),
     urlLink() {
-      return urls.workstation[process.env.TARGET_ENV]
+      return window.urls.workstation
     },
   },
   methods: {
     link(url) {
-      this.$eventBus.$emit('popover:close')
+      window.open(url)
       this.$nextTick(() => {
-        window.open(url)
+        this.$eventBus.$emit('popover:close')
       })
     },
     logout() {

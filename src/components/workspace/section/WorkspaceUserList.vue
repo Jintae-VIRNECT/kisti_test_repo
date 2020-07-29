@@ -2,7 +2,8 @@
   <div class="grid-container">
     <member-card
       v-for="userinfo in list"
-      :key="userinfo.uuid"
+      :key="'user_' + userinfo.uuid"
+      :user="userinfo"
       :name="userinfo.nickName"
       :imageUrl="userinfo.profile"
       :email="userinfo.email"

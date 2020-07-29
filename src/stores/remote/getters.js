@@ -1,6 +1,7 @@
 export default {
   account: state => state.account,
   workspace: state => state.workspace.current,
+  workspaceList: state => state.workspace.workspaceList,
 
   // oncall
   view: state => state.oncall.view,
@@ -19,9 +20,6 @@ export default {
   deviceType: state => state.device.type,
 
   searchFilter: state => state.sort.search.filter,
-
-  roomInfo: state => state.room,
-  roomParticipants: state => state.room.participants,
 
   historyList: state => state.files.historyList,
   fileList: state => state.files.fileList,

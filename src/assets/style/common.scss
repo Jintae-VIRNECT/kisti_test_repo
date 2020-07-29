@@ -1,8 +1,6 @@
 @charset "utf-8";
 
 @import "mixin";
-@import "font";
-@import "reset";
 
 html,
 body {
@@ -131,4 +129,17 @@ body.modal-open {
   @include tablet {
     display: none;
   }
+}
+
+.tab-view__search {
+  margin-right: 1.071em;
+}
+.loading-leave-active {
+  transition: opacity ease 0.4s;
+}
+.loading-leave {
+  opacity: 1;
+}
+.loading-leave-to {
+  opacity: 0;
 }

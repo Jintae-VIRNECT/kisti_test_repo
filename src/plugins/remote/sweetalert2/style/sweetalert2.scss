@@ -14,7 +14,7 @@ body {
   }
 
   &.swal2-height-auto {
-    height: auto !important; // #781 #1107
+    // height: auto !important; // #781 #1107
   }
 
   &.swal2-no-backdrop {
@@ -97,7 +97,7 @@ body {
   bottom: 0;
   left: 0;
 
-  z-index: 1060;
+  z-index: 1000;
   // centering
   display: flex;
   flex-direction: row;
@@ -261,7 +261,7 @@ body {
   flex-direction: column;
   justify-content: center;
   box-sizing: border-box;
-  width: $swal2-width;
+  min-width: $swal2-width;
   max-width: 100%;
   padding: $swal2-padding;
   // font-size: $swal2-font-size;
@@ -510,10 +510,11 @@ body {
     line-height: 1.6;
     word-wrap: break-word;
     > div {
+      padding: 0 3.571em;
       color: $swal2-content-color;
       font-weight: 500;
       font-size: 1.286em;
-      white-space: pre;
+      white-space: pre-line;
       text-align: center;
     }
   }
