@@ -3,6 +3,7 @@ RELEASE
 
 New Features
 - 운영 토큰 인증키 변경
+- remote service server 추가
 
 Bug Fixes
 - zipkin discovery client false 활성화
