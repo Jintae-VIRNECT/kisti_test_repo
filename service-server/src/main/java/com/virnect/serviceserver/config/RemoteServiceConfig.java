@@ -117,7 +117,7 @@ public class RemoteServiceConfig {
 	private String dotenvPath;
 	private String domainOrPublicIp;
 	private String remoteServicePublicUrl;
-	private String remoteServicePublicwss;
+	//private String remoteServicePublicwss;
 	private Integer httpsPort;
 	private String remoteServiceSecret;
 	private String certificateType;
@@ -551,7 +551,7 @@ public class RemoteServiceConfig {
 		if (domain != null && !domain.isEmpty()) {
 			this.domainOrPublicIp = domain;
 			this.remoteServicePublicUrl = "https://" + domain;
-			this.remoteServicePublicwss = "wss://" + getValue("service.gateway");
+			//this.remoteServicePublicwss = "wss://" + getValue("service.gateway");
 			if (this.httpsPort != null && this.httpsPort != 443) {
 				this.remoteServicePublicUrl += (":" + this.httpsPort);
 			}
@@ -613,7 +613,7 @@ public class RemoteServiceConfig {
 		this.setFinalUrl(finalUrl);
 		ServiceServerApplication.httpUrl = this.getFinalUrl();
 		//
-		ServiceServerApplication.wsUrl = this.remoteServicePublicwss;
+		//ServiceServerApplication.wsUrl = this.remoteServicePublicwss;
 	}
 
 	public List<String> checkKmsUris() {
