@@ -77,9 +77,7 @@ public class SwaggerConfiguration {
                 //.paths(PathSelectors.ant("/remote/**"))
                 .build()
                 .additionalModels(typeResolver.resolve(ErrorCode.class))
-                .groupName(groupName)
                 .apiInfo(apiInfo(title, version));
-
     }
 
     /*@Bean
