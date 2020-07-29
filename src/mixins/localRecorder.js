@@ -101,6 +101,8 @@ export default {
       this.recorder = new LocalRecorder()
 
       if (!(await this.initRecorder())) {
+        this.recorder.stopRecord()
+        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         return false
       }
       this.recorder.startRecord()
@@ -122,7 +124,15 @@ export default {
         ),
       }
 
-      config.streams = await this.getStreams()
+      try {
+        config.streams = await this.getStreams()
+      } catch (e) {
+        //TODO : MESSAGE
+        //필요한 영상, 음성을 가지고 오지 못했을 때에 대한 처리가 필요함.
+        console.error(e)
+        return false
+      }
+
       config.maxTime = this.localRecord.time
       config.interval = this.localRecord.interval
       config.roomTitle = this.roomInfo.title
