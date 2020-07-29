@@ -133,7 +133,7 @@ export default {
       const permission = await getPermission()
 
       if (!permission) {
-        this.$eventBus.emit('devicedenied:show')
+        this.$eventBus.$emit('devicedenied:show')
         return
       }
 
