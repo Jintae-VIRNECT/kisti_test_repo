@@ -21,7 +21,6 @@ export const addSessionEventListener = session => {
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
-        audio: event.stream.audioActive,
       })
       _.sendResolution()
       _.mic(Store.getters['mic'].isOn)
@@ -63,8 +62,8 @@ export const addSessionEventListener = session => {
           },
         },
       })
+      vue.$router.push({ name: 'workspace' })
     }
-    vue.$router.push({ name: 'workspace' })
   })
   // user leave
   session.on('streamDestroyed', event => {

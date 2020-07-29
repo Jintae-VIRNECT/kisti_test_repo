@@ -1,21 +1,16 @@
 {
   "local": [
     {
-      "url": "turn:192.168.13.51:3478",
+      "url": "turn:192.168.6.3:3478",
       "username": "remote",
-      "credential": "123456"
+      "credential": "remote"
     }
   ],
   "develop": [
     {
-      "url": "turn:turn.virnectremote.com:3478?transport=udp",
-      "username": "virnect",
-      "credential": "virnect"
-    },
-    {
-      "url": "turn:turn.virnectremote.com:3478?transport=tcp",
-      "username": "virnect",
-      "credential": "virnect"
+      "url": "turn:192.168.6.3:3478",
+      "username": "remote",
+      "credential": "remote"
     }
   ],
   "staging": [

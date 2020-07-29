@@ -28,17 +28,5 @@
     "develop": "http://192.168.6.3:7070",
     "staging": "https://stgpay.virnect.com",
     "production": "https://pay.virnect.com"
-  },
-  "media": {
-    "local": "https://192.168.6.4:4443/",
-    "develop": "https://192.168.6.4:4443/",
-    "staging": "https://stgapi.virnect.com",
-    "production": "https://api.virnect.com"
-  },
-  "remoteWs": {
-    "local": "wss://192.168.6.3:8000/remote/websocket",
-    "develop": "wss://192.168.6.3:8000/remote/websocket",
-    "staging": "wss://stgapi.virnect.com/remote/websocket",
-    "production": "wss://api.virnect.com/remote/websocket"
   }
 }

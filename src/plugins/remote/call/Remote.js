@@ -5,6 +5,7 @@ import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { allowCamera } from 'utils/testing'
 import { logger, debug } from 'utils/logger'
+import { wsUri } from 'api/gateway/api'
 
 let OV
 
@@ -41,7 +42,7 @@ const _ = {
       }
 
       const iceServers = window.urls.coturn
-      const wsUri = window.urls.remoteWs
+      const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
       }
@@ -49,7 +50,7 @@ const _ = {
 
       const options = {
         iceServers,
-        wsUri,
+        wsUri: ws,
         role: 'PUSLISHER',
       }
 

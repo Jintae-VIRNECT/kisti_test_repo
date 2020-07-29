@@ -3,7 +3,7 @@
   "version": "0.7.4",
   "private": true,
   "description": "remote-webclient",
-  "author": "delbert@virnect.com",
+  "author": "wooka@virnect.com",
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",

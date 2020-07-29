@@ -177,6 +177,7 @@ export default {
         this.$el.querySelector('audio').muted = val
       }
     },
+    participant() {},
   },
   methods: {
     ...mapMutations(['setMainView']),
