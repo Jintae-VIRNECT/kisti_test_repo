@@ -26,7 +26,7 @@ import History from 'History'
 
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import HistoryInfoModal from '../../workspace/modal/WorkspaceHistoryInfo'
+import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
 
 import { deleteHistorySingleItem } from 'api/workspace/history'
 
