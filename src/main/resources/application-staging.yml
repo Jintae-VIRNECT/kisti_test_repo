@@ -137,20 +137,6 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: rabbitmq-websocket
-          uri: ws://10.0.10.143:15674
-          predicates:
-            - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
-            - Header=Upgrade, websocket
-          filters:
-            - StripPrefix=0
-            - name: Logging
-              args:
-                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
-                preLogger: true
-                postLogger: true
-
         - id: remote-record-server
           uri: lb:http://remote-record-server
           predicates:
@@ -169,7 +155,7 @@ spring:
             - Header=Sec-WebSocket-Version, \d+
             - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
             - Header=Upgrade, websocket
-            - Path=/remote/websocket
+            - Path=/remote/websocket/**
           filters:
             - StripPrefix=0
             - name: Logging
@@ -190,15 +176,35 @@ spring:
                 preLogger: true
                 postLogger: true
 
+        - id: rabbitmq-websocket
+          uri: ws://10.0.10.143:15674
+          predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
+            - Header=Upgrade, websocket
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
+                preLogger: true
+                postLogger: true
+
       globalcors:
         cors-configurations:
           "[/**]":
             allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
+              - "https://stgworkstation.virnect.com"
+              - "https://stgwww.virnect.com"
+              - "https://stgconsole.virnect.com"
+              - "https://stgaccount.virnect.com"
+              - "https://stgadmin.virnect.com"
+              - "https://stgdownload.virnect.com"
+              - "https://stgremote.virnect.com"
+              - "https://stgpay.virnect.com"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
       x-forwarded:
