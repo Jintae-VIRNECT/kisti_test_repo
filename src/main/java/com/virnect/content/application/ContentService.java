@@ -42,7 +42,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -1363,19 +1362,22 @@ public class ContentService {
         LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
 
         //해당 워크스페이스가 라이선스를 가지고 있는 지 체크
-        if(response.getLicenseProductInfoList()==null){
+        if (response.getLicenseProductInfoList() == null) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
+        }
+
+        //해당 워크스페이스가 메이크 제품 라이선스를 가지고 있는 지 체크
+        Boolean makePlanExist = response.getLicenseProductInfoList().stream().anyMatch(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE"));
+        if (!makePlanExist) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
         }
 
         //해당 유저가 메이크 제품 라이선스를 가지고 있는 지 체크
         response.getLicenseProductInfoList().stream()
                 .forEach(licenseProductInfoResponse -> {
                     if (licenseProductInfoResponse.getProductName().equals("MAKE")) {
-                        List<String> makeUserIdList = licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseDetailInfoResponse -> StringUtils.hasText(licenseDetailInfoResponse.getUserId()))
-                                .map(licenseDetailInfoResponse -> {
-                                    return licenseDetailInfoResponse.getUserId();
-                                }).collect(Collectors.toList());
-                        if (!makeUserIdList.contains(userUUID)) {
+                        Boolean makeUserExist = licenseProductInfoResponse.getLicenseInfoList().stream().anyMatch(licenseDetailInfoResponse -> licenseDetailInfoResponse.getUserId().equals(userUUID));
+                        if (!makeUserExist) {
                             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
                         }
                     }
