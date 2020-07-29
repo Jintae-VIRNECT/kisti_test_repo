@@ -156,11 +156,11 @@ export default {
         return
       }
 
-      const permission = await getPermission()
-      if (!permission) {
-        this.showDenied = true
-        return
-      }
+      // const permission = await getPermission()
+      // if (!permission) {
+      //   this.showDenied = true
+      //   return
+      // }
       this.$emit('startRemote', {
         title: this.title,
         description: this.description,

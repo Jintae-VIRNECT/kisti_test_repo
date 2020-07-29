@@ -1,6 +1,6 @@
 <template>
   <li class="workspace-tab__button">
-    <button :class="{ active: active, nolicense: !license }">
+    <button :class="{ active: active }">
       {{ text }}
     </button>
   </li>
@@ -17,10 +17,6 @@ export default {
     active: {
       type: Boolean,
       default: false,
-    },
-    license: {
-      type: Boolean,
-      default: true,
     },
   },
   data() {

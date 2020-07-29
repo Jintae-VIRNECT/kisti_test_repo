@@ -18,7 +18,11 @@
       </div>
       <div class="card-profile--email">{{ email }}</div>
 
-      <role v-if="role && license" :role="role" :opt="opt"></role>
+      <role
+        v-if="role && role.length > 0 && license"
+        :role="role"
+        :opt="opt"
+      ></role>
       <role
         v-else-if="license === false"
         :role="'라이선스 만료'"

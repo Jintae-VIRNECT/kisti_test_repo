@@ -210,20 +210,26 @@ export default {
         }
       }
     },
+    pushInit() {
+      if (!this.hasLicense) return
+      const push = this.$localStorage.getItem('push')
+      this.key = this.$route.name
+      if (push === 'true') {
+        this.onPush = true
+      } else if (push === 'false') {
+        this.onPush = false
+      }
+      this.$nextTick(async () => {
+        await this.$push.init(this.workspace.uuid)
+        this.$push.addListener(this.key, this.alarmListener)
+      })
+    },
   },
 
   /* Lifecycles */
   mounted() {
-    const push = this.$localStorage.getItem('push')
-    this.key = this.$route.name
-    if (push === 'true') {
-      this.onPush = true
-    } else if (push === 'false') {
-      this.onPush = false
-    }
-    this.$nextTick(async () => {
-      await this.$push.init(this.workspace.uuid)
-      this.$push.addListener(this.key, this.alarmListener)
+    this.$nextTick(() => {
+      this.pushInit()
     })
   },
   beforeDestroy() {

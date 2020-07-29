@@ -64,7 +64,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['account', 'workspace', 'deviceType']),
+    ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
     isMobileChrome() {
       const userAgent = navigator.userAgent
       const isChromeMobile =

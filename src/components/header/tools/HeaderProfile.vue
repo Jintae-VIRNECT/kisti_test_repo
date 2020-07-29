@@ -54,9 +54,9 @@ export default {
   },
   methods: {
     link(url) {
-      this.$eventBus.$emit('popover:close')
+      window.open(url)
       this.$nextTick(() => {
-        window.open(url)
+        this.$eventBus.$emit('popover:close')
       })
     },
     logout() {

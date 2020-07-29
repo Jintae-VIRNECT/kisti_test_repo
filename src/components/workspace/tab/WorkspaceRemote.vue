@@ -53,7 +53,13 @@ export default {
       ])
     },
   },
-  watch: {},
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid !== oldVal.uuid) {
+        this.refresh()
+      }
+    },
+  },
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear']),
     async refresh() {
@@ -107,17 +113,24 @@ export default {
       })
     },
     async leaveoutRoom(sessionId) {
-      const rtn = await leaveRoom({
-        sessionId,
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
-
-      if (rtn) {
-        this.refresh()
-        this.$nextTick(() => {
-          this.$eventBus.$emit('popover:close')
+      try {
+        const rtn = await leaveRoom({
+          sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
         })
+
+        if (rtn) {
+          this.refresh()
+          this.$nextTick(() => {
+            this.$eventBus.$emit('popover:close')
+          })
+        }
+      } catch (err) {
+        // if (err.code === 4015) {
+        //   // TODO: MESSAGE
+        //   this.toastError('리더는 협업을 나갈 수 없습니다.')
+        // }
       }
     },
   },
