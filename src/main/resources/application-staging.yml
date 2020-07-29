@@ -137,20 +137,6 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: rabbitmq-websocket
-          uri: ws://10.0.10.143:15674
-          predicates:
-            - Header=Sec-WebSocket-Version, \d+
-            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
-            - Header=Upgrade, websocket
-          filters:
-            - StripPrefix=0
-            - name: Logging
-              args:
-                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
-                preLogger: true
-                postLogger: true
-
         - id: remote-record-server
           uri: lb:http://remote-record-server
           predicates:
@@ -187,6 +173,20 @@ spring:
             - name: Logging
               args:
                 messagePrefix: "REMOTE_SERVICE_SERVER"
+                preLogger: true
+                postLogger: true
+
+        - id: rabbitmq-websocket
+          uri: ws://10.0.10.143:15674
+          predicates:
+            - Header=Sec-WebSocket-Version, \d+
+            - Header=Sec-WebSocket-Key, [a-zA-Z0-9+=/]+
+            - Header=Upgrade, websocket
+          filters:
+            - StripPrefix=0
+            - name: Logging
+              args:
+                messagePrefix: "RABBITMQ_MESSAGE_WEBSOCKET"
                 preLogger: true
                 postLogger: true
 
