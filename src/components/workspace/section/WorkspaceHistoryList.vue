@@ -70,6 +70,7 @@ export default {
   methods: {
     //상세보기
     openRoomInfo(sessionId) {
+      this.$eventBus.$emit('popover:close')
       this.sessionId = sessionId
       this.showHistoryInfo = true
     },
