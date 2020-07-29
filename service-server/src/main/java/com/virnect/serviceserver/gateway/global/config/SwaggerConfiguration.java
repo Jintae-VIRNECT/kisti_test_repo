@@ -1,5 +1,11 @@
 package com.virnect.serviceserver.gateway.global.config;
 
+import com.fasterxml.classmate.TypeResolver;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.serviceserver.gateway.global.error.ErrorCode;
+import com.virnect.serviceserver.gateway.global.error.ErrorResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -21,10 +27,14 @@ import java.util.List;
 @Profile({"develop", "local"})
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfiguration {
+    private final TypeResolver typeResolver;
+    private final ObjectMapper objectMapper;
+
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-                .contact(new Contact("Contact Me", "www.example.com", "foo@example.com"))
+                .contact(new Contact("김경", "https://virnect.com", "hoon@virnect.com"))
                 .description("Remote Service API Docs")
                 .version(version)
                 .title(title)
@@ -35,8 +45,17 @@ public class SwaggerConfiguration {
     @Bean
     public List<ResponseMessage> globalResponseMessage() {
         ArrayList<ResponseMessage> responseMessages = new ArrayList<>();
+        for (ErrorCode errorCode : ErrorCode.values()) {
+            try {
+                responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode()).message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode))).build());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+        /*responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
         responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
+        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());*/
         return responseMessages;
     }
 
@@ -49,11 +68,15 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.POST, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.PUT, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.gateway.api"))
-                //.paths(PathSelectors.any())
-                .paths(PathSelectors.ant("/remote/**"))
+                .paths(PathSelectors.any())
+                //.paths(PathSelectors.ant("/remote/**"))
                 .build()
+                .additionalModels(typeResolver.resolve(ErrorCode.class))
                 .groupName(groupName)
                 .apiInfo(apiInfo(title, version));
 
