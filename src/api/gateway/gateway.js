@@ -7,14 +7,14 @@
 import { merge } from 'lodash'
 import Cookies from 'js-cookie'
 import API from './api'
-import { debug } from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
 
-console.log(`ENV: ${process.env.TARGET_ENV}`)
+logger('ENV', process.env.TARGET_ENV)
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 
