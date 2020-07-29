@@ -15,26 +15,16 @@
   ],
   "staging": [
     {
-      "url": "turn:turn.virnectremote.com:3478?transport=udp",
-      "username": "virnect",
-      "credential": "virnect"
-    },
-    {
-      "url": "turn:turn.virnectremote.com:3478?transport=tcp",
-      "username": "virnect",
-      "credential": "virnect"
+      "url": "turn:13.209.253.107:3478",
+      "username": "remote",
+      "credential": "remote"
     }
   ],
   "production": [
     {
-      "url": "turn:turn.virnectremote.com:3478?transport=udp",
-      "username": "virnect",
-      "credential": "virnect"
-    },
-    {
-      "url": "turn:turn.virnectremote.com:3478?transport=tcp",
-      "username": "virnect",
-      "credential": "virnect"
+      "url": "turn:3.34.157.168:3478",
+      "username": "remote",
+      "credential": "remote"
     }
   ]
 }
