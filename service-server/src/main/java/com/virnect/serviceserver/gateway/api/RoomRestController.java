@@ -501,16 +501,14 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
+        /*if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
             throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-        }
+        }*/
 
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
-        ApiResponse<ResultResponse> apiResponse = new ApiResponse<>(resultResponse);
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId, userId);
         //apiResponse = this.remoteGatewayService.removeAllRoom(workspaceId);
-        apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId, userId);
-
         if(apiResponse.getData().getResult()) {
             Session session = this.sessionManager.getSession(sessionId);
             if (session != null) {
