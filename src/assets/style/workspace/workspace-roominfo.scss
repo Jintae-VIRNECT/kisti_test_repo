@@ -68,16 +68,16 @@
   &.regist {
     margin-right: 1.143em;
     padding: 0.857em 3.071em;
-    color: $color_primary;
+    color: rgba($color_primary, 0.7);
     font-size: 1.071em;
-    border-color: $color_primary;
+    border-color: rgba($color_primary, 0.7);
     &:focus {
       color: $color_primary;
       border-color: $color_primary;
     }
     &:hover {
-      color: rgba($color_primary, 0.5);
-      border-color: rgba($color_primary, 0.5);
+      color: $color_primary;
+      border-color: $color_primary;
     }
     &:active {
       color: rgba($color_primary, 0.8);
