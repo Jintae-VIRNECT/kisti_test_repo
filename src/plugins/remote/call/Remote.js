@@ -435,7 +435,7 @@ const _ = {
 }
 
 export const addSubscriber = subscriber => {
-  console.log(subscriber)
+  // console.log(subscriber)
   _.subscribers.push(subscriber)
 }
 
