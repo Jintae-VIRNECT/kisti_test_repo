@@ -7,6 +7,7 @@ console.logger = (...value) => {
   getTrace(value)
   console.groupEnd()
 }
+const isDev = window.localStorage.getItem('env') === 'develop'
 
 const getTrace = () => {
   var obj = {}
@@ -36,7 +37,7 @@ export const logger = (type = 'dev', ...value) => {
 
 export const debug = (...value) => {
   if (process.env.NODE_ENV === 'production') {
-    if (window.env && window.env === 'develop') {
+    if ((window.env && window.env === 'develop') || isDev) {
       console.log(...value)
     }
   } else {
