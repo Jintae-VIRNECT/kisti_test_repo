@@ -7,13 +7,14 @@
 import { merge } from 'lodash'
 import Cookies from 'js-cookie'
 import API from './api'
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 import axios from '../axios'
+import errorList from './gateway.error.json'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
 
-console.log(`ENV: ${process.env.TARGET_ENV}`)
+logger('ENV', process.env.TARGET_ENV)
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 
@@ -66,18 +67,9 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      logger(option)
+      debug(option)
     } else {
       option.headers['Content-Type'] = 'application/json'
-
-      //Extract params
-      if ('get' !== method) {
-        // parameter = JSON.stringify(parameter)
-      } else {
-        parameter = {
-          params: parameter,
-        }
-      }
     }
   }
 
@@ -88,23 +80,19 @@ const sender = async function(constant, params, headers = {}, custom) {
     ...headers,
   })
 
-  try {
-    logger(method.toUpperCase(), url, parameter, headers)
-    const request = {
-      method: method,
-      url: url,
-      ...option,
-    }
-    if (method === 'get') {
-      request['params'] = parameter.params
-    } else {
-      request['data'] = parameter
-    }
-    const response = await axios(request)
-    return receiver(response)
-  } catch (error) {
-    throw error
+  debug(method.toUpperCase(), url, parameter, headers)
+  const request = {
+    method: method,
+    url: url,
+    ...option,
   }
+  if (method === 'get') {
+    request['params'] = parameter
+  } else {
+    request['data'] = parameter
+  }
+  const response = await axios(request)
+  return receiver(response)
 }
 
 /**
@@ -117,13 +105,13 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        logger(res.data['data'])
+        debug(res.data['data'])
         return res.data['data']
       } else {
         return true
       }
     } else {
-      errorHandler(res.data)
+      throw errorHandler(res.data)
     }
   }
 }
@@ -133,43 +121,47 @@ const receiver = function(res) {
  * @param {Object} errCode
  */
 const errorHandler = function(err) {
-  console.error(err)
-  const errorList = ErrorList
   const error = {}
-  error.code = isNaN(parseInt(err)) ? err : parseInt(err)
-  error.message = errorList[error.code] || 'Undefined Error.'
+  error.code = isNaN(parseInt(err.code)) ? err : parseInt(err.code)
+  error.message = err.message || 'Undefined Error.'
+
+  console.error(`${error.message} (code: ${error.code})`)
 
   if (error.code in errorList) {
     // alert(error.message);
     switch (error.code) {
       case 9999:
+        // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      // case 8005:
       case 8003:
-        // 토근만료, 갱신
+      case 8005:
+        // console.error(error.message)
+        Cookies.remove('accessToken')
+        Cookies.remove('refreshToken')
+        window.location.reload()
         break
       // case 'Network Error':
       //   sessionStorage.clear()
       //   window.location.reload()
       //   break
     }
-    // throw new Error(error.message)
+    return new Error(error.message)
   } else {
-    throw err
-    // window.sessionStorage.clear()
-    // window.location.href = "/"
+    return error
   }
 }
 
 export const setAuthorization = accessToken => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  logger('TOKEN::', axios.defaults.headers)
+  debug('TOKEN::', axios.defaults.headers)
 }
 
 export const setBaseURL = baseURL => {
   axios.defaults.baseURL = baseURL
-  logger('BASE_URL::', baseURL)
+  axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+
+  debug('BASE_URL::', baseURL)
 }
 
 export default sender

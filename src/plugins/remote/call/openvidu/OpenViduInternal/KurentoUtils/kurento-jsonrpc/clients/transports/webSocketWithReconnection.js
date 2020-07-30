@@ -6,12 +6,15 @@ var CONNECTING = 0
 var OPEN = 1
 var CLOSING = 2
 var CLOSED = 3
+import { debug } from 'utils/logger'
 function WebSocketWithReconnection(config) {
   var closing = false
   var registerMessageHandler
   var wsUri = config.uri
   var reconnecting = false
   var ws = new WebSocket(wsUri)
+  debug('WS:::', wsUri)
+  debug('WS:::', ws)
   ws.onopen = function() {
     Logger.debug('WebSocket connected to ' + wsUri)
     if (config.onconnected) {

@@ -1,7 +1,7 @@
 <template>
   <div class="main-body stream">
     <stream-tools></stream-tools>
-    <menus></menus>
+    <menus :viewType="viewType"></menus>
     <main-video></main-video>
   </div>
 </template>
@@ -10,6 +10,7 @@
 import StreamTools from './tools/StreamTools'
 import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
+import { VIEW } from 'configs/view.config'
 export default {
   name: 'ServiceStream',
   components: {
@@ -18,7 +19,9 @@ export default {
     MainVideo,
   },
   data() {
-    return {}
+    return {
+      viewType: VIEW.STREAM,
+    }
   },
   computed: {},
   watch: {},

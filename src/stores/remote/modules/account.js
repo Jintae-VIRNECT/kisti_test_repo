@@ -10,6 +10,7 @@ function getDefaultState() {
     serviceInfo: null,
     userType: null,
     roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
+    licenseEmpty: true,
   }
 }
 const state = getDefaultState()
@@ -36,7 +37,12 @@ const mutations = {
   },
 }
 
+const getters = {
+  hasLicense: state => state.licenseEmpty,
+}
+
 export default {
   state,
+  getters,
   mutations,
 }

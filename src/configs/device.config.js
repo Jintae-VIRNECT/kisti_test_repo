@@ -15,3 +15,11 @@ export const FLASH = {
   NO_PERMISSION: 4, // 권한 없음
   APP_IS_BACKGROUND: 5, // 앱 백그라운드 전환
 }
+
+export const DEVICE = {
+  WEB: 'DESKTOP',
+  MOBILE: 'MOBILE',
+  GLASSES: 'GLASSES',
+  HOLOLENS1: 'HOLOLENS1',
+  HOLOLENS2: 'HOLOLENS2',
+}

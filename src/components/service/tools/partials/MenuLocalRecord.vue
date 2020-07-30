@@ -16,7 +16,7 @@
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
 
@@ -31,12 +31,6 @@ export default {
 
   computed: {
     ...mapGetters(['control', 'localRecordStatus']),
-    ...mapState({
-      localRecordStatus: state => state.settings.localRecordStatus,
-    }),
-    lrStatus() {
-      return this.localRecordStatus
-    },
     canRecord() {
       if (this.disabled) {
         return false
@@ -52,7 +46,7 @@ export default {
     },
   },
   watch: {
-    lrStatus(status) {
+    localRecordStatus(status) {
       if (status === LCOAL_RECORD_STAUTS.START) {
         this.isRecording = true
       } else {
@@ -68,7 +62,7 @@ export default {
 
       if (!this.canRecord) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 로컬 녹화를 막았습니다. >> 문구정의 필요')
+        this.toastDefault('리더가 로컬 녹화를 막았습니다.')
         return false
       }
 

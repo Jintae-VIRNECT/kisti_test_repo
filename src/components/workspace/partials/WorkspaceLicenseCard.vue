@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import urls from '@/server/urls'
 export default {
   data() {
     return {
@@ -95,7 +94,7 @@ export default {
   },
   methods: {
     buy() {
-      window.location = urls.pay[process.env.TARGET_ENV]
+      window.location = window.urls.pay
     },
   },
 }

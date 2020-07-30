@@ -15,6 +15,7 @@
  * limitations under the License.
  *
  */
+import { logger as prodLogger } from 'utils/logger'
 var __extends =
   (this && this.__extends) ||
   (function() {
@@ -316,6 +317,11 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "disconnected". Possible network disconnection',
           )
+          prodLogger(
+            'iceconnectionstate',
+            _this.id +
+              ' change to "disconnected". Possible network disconnection',
+          )
           break
         case 'failed':
           logger.error(
@@ -325,6 +331,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') to "failed"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' to "failed"')
           break
         case 'closed':
           logger.log(
@@ -334,6 +341,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "closed"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' change to "closed"')
           break
         case 'new':
           logger.log(
@@ -343,6 +351,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "new"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' change to "new"')
           break
         case 'checking':
           logger.log(
@@ -352,6 +361,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "checking"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' change to "checking"')
           break
         case 'connected':
           logger.log(
@@ -361,6 +371,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "connected"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' change to "connected"')
           break
         case 'completed':
           logger.log(
@@ -370,6 +381,7 @@ var WebRtcPeer = /** @class */ (function() {
               otherId +
               ') change to "completed"',
           )
+          prodLogger('iceconnectionstate', _this.id + ' change to "completed"')
           break
       }
     }

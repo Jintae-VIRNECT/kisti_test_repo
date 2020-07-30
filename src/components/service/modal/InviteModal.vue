@@ -10,7 +10,9 @@
   >
     <div class="invite-modal__body">
       <div v-if="!nouser" class="invite-modal__selected">
-        <p class="invite-modal__selected-title">선택한 멤버 (3/4)</p>
+        <p class="invite-modal__selected-title">
+          {{ `선택한 멤버 (${selection.length}/${maxSelect})` }}
+        </p>
         <profile-list
           v-if="selection.length > 0"
           :users="selection"
@@ -23,11 +25,13 @@
       <room-invite
         :users="users"
         :selection="selection"
+        :total="totalElements"
+        :loading="loading"
         @userSelect="selectUser"
-        @inviteRefresh="inviteRefresh"
+        @inviteRefresh="init"
       ></room-invite>
       <div class="invite-modal__footer">
-        <button class="btn" :disabled="selection.length === 0">
+        <button class="btn" :disabled="selection.length === 0" @click="invite">
           협업 요청
         </button>
       </div>
@@ -40,10 +44,12 @@ import Modal from 'Modal'
 import ProfileList from 'ProfileList'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
 
+import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import { inviteRoom, getMember } from 'api/service'
 export default {
-  name: 'ServiceInviteModal',
+  name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
   components: {
     Modal,
@@ -55,27 +61,9 @@ export default {
       selection: [],
       nouser: false,
       visibleFlag: false,
-      users: [
-        {
-          createdDate: '2020-04-17T03:54:09',
-          description: '테스트 유저 입니다.',
-          email: 'test2@test.com',
-          joinDate: '2020-05-12T06:42:36',
-          licenseProducts: Array(0),
-          loginLock: 'INACTIVE',
-          name: '홍길동2',
-          nickName: '왕밤빵2',
-          profile:
-            'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/profile/2020-06-01_944a433217aa4c7d93f27b9f4ffef223png',
-          role: 'MEMBER',
-          roleId: 3,
-          updatedDate: '2020-06-01T01:13:34',
-          userType: 'USER',
-          uuid: '4b260e69bd6fa9a583c9bbe40f5aceb3',
-        },
-      ],
-      maxSelect: 2,
-      roomInfo: {},
+      users: [],
+      totalElements: 0,
+      loading: false,
     }
   },
   props: {
@@ -83,16 +71,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    maxSelect: {
+      type: Number,
+      default: 0,
+    },
+  },
+  computed: {
+    ...mapGetters(['roomInfo', 'roomMember']),
   },
   watch: {
     visible(flag) {
       if (flag) {
-        this.inviteRefresh()
+        this.init()
       }
       this.visibleFlag = flag
     },
   },
   methods: {
+    ...mapActions(['addMember']),
     reset() {
       this.selection = []
     },
@@ -103,7 +99,8 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify('최대 2명까지 선택이 가능합니다.')
+          // TODO: MESSAGE
+          this.toastNotify('선택가능 멤버 명수를 초과했습니다.')
           return
         }
         this.selection.push(user)
@@ -111,8 +108,43 @@ export default {
         this.selection.splice(idx, 1)
       }
     },
-    async inviteRefresh() {
+    async init() {
+      this.loading = true
+      const res = await getMember({
+        size: 100,
+        workspaceId: this.workspace.uuid,
+      })
+      this.users = res.memberInfoList.filter(
+        member =>
+          this.roomMember.findIndex(part => part.uuid === member.uuid) < 0,
+      )
+      this.totalElements = res.pageMeta.totalElements - this.roomMember.length
+      this.loading = false
       this.selection = []
+    },
+    async invite() {
+      const participants = []
+      for (let select of this.selection) {
+        participants.push({
+          id: select.uuid,
+          email: select.email,
+        })
+      }
+      const params = {
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        leaderId: this.account.uuid,
+        participants,
+      }
+      const res = await inviteRoom(params)
+      if (res === true) {
+        this.addMember(this.selection)
+        // TODO: MESSAGE
+        this.toastNotify('협업 참가를 요청했습니다.')
+        this.$nextTick(() => {
+          this.visibleFlag = false
+        })
+      }
     },
   },
 

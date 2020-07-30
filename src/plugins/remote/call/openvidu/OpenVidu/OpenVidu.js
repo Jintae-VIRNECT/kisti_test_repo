@@ -84,8 +84,8 @@ var OpenVidu = /** @class */ (function() {
      */
     this.ee = new EventEmitter()
     this.libraryVersion = packageJson.version
-    logger.info("'OpenVidu' initialized")
-    logger.info('openvidu-browser version: ' + this.libraryVersion)
+    // logger.info("'OpenVidu' initialized")
+    // logger.info('openvidu-browser version: ' + this.libraryVersion)
     if (platform.os.family === 'iOS' || platform.os.family === 'Android') {
       // Listen to orientationchange only on mobile devices
       window.addEventListener('orientationchange', function() {

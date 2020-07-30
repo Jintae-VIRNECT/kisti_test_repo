@@ -68,16 +68,16 @@
   &.regist {
     margin-right: 1.143em;
     padding: 0.857em 3.071em;
-    color: $color_primary;
+    color: rgba($color_primary, 0.7);
     font-size: 1.071em;
-    border-color: $color_primary;
+    border-color: rgba($color_primary, 0.7);
     &:focus {
       color: $color_primary;
       border-color: $color_primary;
     }
     &:hover {
-      color: rgba($color_primary, 0.5);
-      border-color: rgba($color_primary, 0.5);
+      color: $color_primary;
+      border-color: $color_primary;
     }
     &:active {
       color: rgba($color_primary, 0.8);
@@ -115,7 +115,7 @@
 }
 .data-title {
   display: inline-block;
-  width: 5em;
+  width: 6em;
   color: rgba($color_text_main, 0.5);
   font-size: 0.929em;
 }
@@ -145,6 +145,10 @@
 .userinfo__button {
   flex: 0;
   margin-left: 4.429em;
+  &.me {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .roominfo-figure {

@@ -8,6 +8,7 @@
       v-if="image && image.length > 0"
       class="profile-image__image"
       :src="image"
+      @error="$emit('update:image', null)"
     />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
       이미지 삭제

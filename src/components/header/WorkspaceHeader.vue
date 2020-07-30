@@ -2,8 +2,10 @@
   <header class="header">
     <div class="header-workspace">
       <img class="header-logo" src="~assets/image/logo_symtext.svg" />
-      <!-- <div class="header-divider"></div>
-    <header-nav></header-nav> -->
+      <template v-if="hasLicense">
+        <div class="header-divider"></div>
+        <header-nav></header-nav>
+      </template>
 
       <header-tools></header-tools>
     </div>
@@ -11,12 +13,12 @@
 </template>
 
 <script>
-// import HeaderNav from './partials/HeaderWorkspaceNav'
+import HeaderNav from './partials/HeaderWorkspaceNav'
 import HeaderTools from './partials/HeaderWorkspaceTools'
 export default {
   name: 'WorkspaceHeader',
   components: {
-    // HeaderNav,
+    HeaderNav,
     HeaderTools,
   },
   data() {

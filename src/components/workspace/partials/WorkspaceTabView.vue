@@ -126,17 +126,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-.tab-view__search {
-  margin-right: 1.071em;
-}
-.loading-leave-active {
-  transition: opacity ease 0.4s;
-}
-.loading-leave {
-  opacity: 1;
-}
-.loading-leave-to {
-  opacity: 0;
-}
-</style>

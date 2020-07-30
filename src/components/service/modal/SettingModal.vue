@@ -141,11 +141,11 @@ import {
   localRecIntervalOpt,
   localRecordTarget,
   RECORD_TARGET,
-  LCOAL_RECORD_STAUTS,
+  // LCOAL_RECORD_STAUTS,
 } from 'utils/recordOptions'
 
 export default {
-  name: 'ServiceLocalRecordSetting',
+  name: 'SettingModal',
   mixins: [toastMixin],
   components: {
     Modal,
@@ -160,7 +160,6 @@ export default {
       pointing: false,
 
       visibleFlag: false,
-      toastFlag: false,
 
       recordTarget: RECORD_TARGET.WORKER,
 
@@ -179,20 +178,26 @@ export default {
       type: Boolean,
       default: false,
     },
+    viewType: String,
   },
 
   computed: {
     ...mapGetters([
+      'view',
       'localRecord',
-      'allow',
+      'allowLocalRecord',
+      'allowPointing',
       'screenStream',
-      'localRecordStatus',
     ]),
-    lrStatus() {
-      return this.localRecordStatus
-    },
     isLeader() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
+    isCurrentView() {
+      if (this.viewType === this.view) {
         return true
       } else {
         return false
@@ -205,23 +210,36 @@ export default {
       this.visibleFlag = flag
     },
     localRecording(flag) {
+      if (!this.isCurrentView) return
       this.setAllow({
         localRecording: !!flag,
       })
-      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecording', !!flag)
-      this.showToast()
     },
     pointing(flag) {
+      if (!this.isCurrentView) return
       this.setAllow({
         pointing: !!flag,
       })
-      this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
-      this.showToast()
+    },
+    allowLocalRecord(val, bVal) {
+      if (!this.isCurrentView) return
+      if (val !== bVal) {
+        this.$call.control(CONTROL.LOCAL_RECORD, !!val)
+        this.showToast()
+      }
+    },
+    allowPointing(val, bVal) {
+      if (!this.isCurrentView) return
+      if (val !== bVal) {
+        this.$call.control(CONTROL.POINTING, !!val)
+        this.showToast()
+      }
     },
 
     recordTarget(target) {
+      if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
           this.setLocalRecordTarget(target)
@@ -235,14 +253,6 @@ export default {
         default:
           console.error('recordTarget :: Unknown local record target', target)
           break
-      }
-    },
-
-    lrStatus(status) {
-      if (status === LCOAL_RECORD_STAUTS.START) {
-        this.isRecording = true
-      } else {
-        this.isRecording = false
       }
     },
   },
@@ -266,20 +276,13 @@ export default {
     },
 
     showToast() {
-      if (this.toastFlag) {
-        this.toastNotify('변경사항을 저장했습니다.')
-      }
+      this.toastNotify('변경사항을 저장했습니다.')
     },
   },
 
   created() {
-    this.localRecording = this.allow.localRecording
-    this.pointing = this.allow.pointing
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.toastFlag = true
-    })
+    this.localRecording = this.allowLocalRecord
+    this.pointing = this.allowPointing
   },
 }
 </script>

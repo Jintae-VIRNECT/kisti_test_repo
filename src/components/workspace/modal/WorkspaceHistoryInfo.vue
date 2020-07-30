@@ -36,14 +36,13 @@
         v-if="tabview === 'group'"
         :room="room"
         :image.sync="image"
-        :isLeader="isLeader"
-        @update="update"
+        :leader="leader"
       ></room-info>
 
       <participants-info
         v-else
-        :participants="memberList"
-        :isLeader="isLeader"
+        :participants="participants"
+        :leader="leader"
         :sessionId="sessionId"
       ></participants-info>
     </div>
@@ -52,13 +51,13 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
+import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
 
 export default {
-  name: 'WorkspaceRoomInfo',
+  name: 'WorkspaceHistoryInfo',
   components: {
     Modal,
     Profile,
@@ -74,12 +73,8 @@ export default {
     }
   },
   computed: {
-    memberList() {
-      if (this.room) {
-        return this.room.memberList
-      } else {
-        return []
-      }
+    participants() {
+      return this.room.memberList
     },
   },
   props: {
@@ -91,7 +86,7 @@ export default {
       type: String,
       required: true,
     },
-    isLeader: {
+    leader: {
       type: Boolean,
       default: false,
     },
@@ -99,17 +94,20 @@ export default {
   watch: {
     visible(flag) {
       if (flag === true) {
-        this.initRemote()
+        this.initHistory()
       }
       this.visibleFlag = flag
     },
+    // image(image) {
+    //   console.log(image)
+    // },
   },
   methods: {
-    async initRemote() {
+    async initHistory() {
       try {
-        this.room = await getRoomInfo({
-          sessionId: this.sessionId,
+        this.room = await getHistorySingleItem({
           workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
         })
         this.image = this.room.profile
         this.tabview = 'group'
@@ -122,19 +120,6 @@ export default {
     },
     beforeClose() {
       this.$emit('update:visible', false)
-    },
-    async update(params) {
-      try {
-        const updateRtn = await updateRoomInfo(params)
-        if (updateRtn) {
-          this.$emit('updatedInfo', params)
-          this.initRemote()
-          // this.$emit('update:visible', false)
-        }
-      } catch (err) {
-        // 에러처리
-        console.error(err)
-      }
     },
   },
 

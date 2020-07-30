@@ -1,7 +1,7 @@
 <template>
   <section class="createroom-info">
     <profile-image
-      :image="imageURL"
+      :image.sync="imageURL"
       :deleteBtn="!!imageURL"
       @delete="imageRemove"
       size="6.143em"
@@ -111,7 +111,9 @@ export default {
     roomInfo: {
       deep: true,
       handler: function(info) {
-        console.log(info)
+        this.title = info.title
+        this.description = info.description
+        this.imageURL = info.profile
       },
     },
   },
@@ -153,11 +155,11 @@ export default {
         return
       }
 
-      const permission = await getPermission()
-      if (!permission) {
-        this.showDenied = true
-        return
-      }
+      // const permission = await getPermission()
+      // if (!permission) {
+      //   this.showDenied = true
+      //   return
+      // }
       this.$emit('startRemote', {
         title: this.title,
         description: this.description,

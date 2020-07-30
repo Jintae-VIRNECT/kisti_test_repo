@@ -31,7 +31,13 @@ export default {
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid !== oldVal.uuid) {
+        this.getList()
+      }
+    },
+  },
   methods: {
     async getList() {
       try {
@@ -41,7 +47,9 @@ export default {
         this.loading = true
         const datas = await getMemberList(params)
         this.loading = false
-        this.memberList = datas.memberInfoList
+        this.memberList = datas.memberInfoList.filter(member => {
+          member.licenseProducts.findIndex
+        })
       } catch (err) {
         console.error(err)
       }

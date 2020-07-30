@@ -6,18 +6,18 @@
       height="6.143rem"
       :menu="true"
       :history="history"
-      @openRoomInfo="openRoomInfo(history.roomId)"
-      @showDeleteDialog="showDeleteDialog(history.roomId)"
+      @createRoom="createRoom(history.sessionId)"
+      @openRoomInfo="openRoomInfo(history.sessionId)"
+      @showDeleteDialog="showDeleteDialog(history.sessionId)"
     ></history>
-    <roominfo-modal
-      :visible.sync="showRoomInfo"
-      :roomId="roomId"
-    ></roominfo-modal>
+    <history-info-modal
+      :visible.sync="showHistoryInfo"
+      :sessionId="sessionId"
+    ></history-info-modal>
     <create-room-modal
       :visible.sync="showRestart"
-      :roomId="roomId"
+      :sessionId="sessionId"
     ></create-room-modal>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </div>
 </template>
 
@@ -26,12 +26,9 @@ import History from 'History'
 
 import searchMixin from 'mixins/filter'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import RoominfoModal from '../../workspace/modal/WorkspaceRoomInfo'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import { getPermission } from 'utils/deviceCheck'
+import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
 
 import { deleteHistorySingleItem } from 'api/workspace/history'
-import { getLicense } from 'api/workspace/license'
 
 import confirmMixin from 'mixins/confirm'
 export default {
@@ -40,22 +37,20 @@ export default {
   components: {
     CreateRoomModal,
     History,
-    RoominfoModal,
-    DeviceDenied,
+    HistoryInfoModal,
   },
   data() {
     return {
       showRestart: false,
-      showRoomInfo: false,
-      roomId: 0,
-      showDenied: false,
+      showHistoryInfo: false,
+      sessionId: '',
     }
   },
   computed: {
     list() {
       return this.getFilter(this.historyList, [
         'title',
-        'participants[].nickname',
+        'memberList[].nickname',
       ])
     },
   },
@@ -74,11 +69,12 @@ export default {
   },
   methods: {
     //상세보기
-    openRoomInfo(roomId) {
-      this.roomId = roomId
-      this.showRoomInfo = true
+    openRoomInfo(sessionId) {
+      this.$eventBus.$emit('popover:close')
+      this.sessionId = sessionId
+      this.showHistoryInfo = true
     },
-    showDeleteDialog(roomId) {
+    showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
@@ -86,69 +82,35 @@ export default {
         {
           text: '삭제하기',
           action: () => {
-            this.delete(roomId)
-            this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
+            this.delete(sessionId)
           },
         },
         { text: '취소' },
       )
     },
-    async delete(roomId) {
+    async delete(sessionId) {
       this.$nextTick(() => {
         const pos = this.historyList.findIndex(room => {
-          return room.roomId === roomId
+          return room.sessionId === sessionId
         })
         this.historyList.splice(pos, 1)
       })
-      await deleteHistorySingleItem({ roomId })
+
+      const result = await deleteHistorySingleItem({
+        workspaceId: this.workspace.uuid,
+        sessionId: sessionId,
+        userId: this.account.uuid,
+      })
+
+      if (result.data) {
+        this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
+      }
     },
 
     //재시작
-    async createRoom(roomId) {
-      const license = await getLicense(
-        this.workspace.uuid,
-        await this.account.uuid,
-      )
-
-      if (!license) {
-        this.confirmDefault('라이선스가 만료되어 서비스 사용이 불가 합니다.​', {
-          text: '확인',
-          action: () => {
-            this.$eventBus.$emit('showLicensePage')
-          },
-        })
-        return false
-      }
-
-      this.roomId = roomId
+    async createRoom(sessionId) {
+      this.sessionId = sessionId
       this.showRestart = !this.showRestart
-
-      const permission = await getPermission()
-      if (!permission && this.showRestart === true) {
-        this.showDenied = true
-      }
-    },
-    convertDate(date) {
-      if (date !== null && date !== '') {
-        const re = /T/gi
-        let cvtDate = date.replace(re, ' ')
-        cvtDate = this.$dayjs(cvtDate).format('YYYY.MM.DD')
-        const today = this.$dayjs().format('YYYY.MM.DD')
-        if (cvtDate === today) {
-          return 'Today'
-        } else {
-          return cvtDate
-        }
-      } else {
-        this.logger('WorkspaceHistoryList :: convertDate ::', date)
-      }
-    },
-    convertTime(totalUseTime) {
-      const min = Math.floor(totalUseTime / 60)
-      const minText = '분'
-      const sec = totalUseTime % 60
-      const secText = '초'
-      return `${min + minText + ' ' + sec + secText}`
     },
   },
   created() {},

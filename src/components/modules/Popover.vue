@@ -81,7 +81,10 @@ export default {
     },
     popperClass: String,
     show: Function,
-    hide: Function,
+    hide: {
+      type: Function,
+      default: null,
+    },
     scrollHide: {
       type: Boolean,
       default: false,
@@ -251,8 +254,8 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('click', this.windowClickHandler)
-    this.$eventBus.$off('popover:scrollClose')
-    this.$eventBus.$off('popover:close')
+    this.$eventBus.$off('popover:scrollClose', this.hidePopover)
+    this.$eventBus.$off('popover:close', this.hidePopover)
 
     if (this.$refs['popover']) {
       this.$refs['popover'].remove()

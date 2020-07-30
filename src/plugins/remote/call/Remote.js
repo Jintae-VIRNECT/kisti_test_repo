@@ -1,10 +1,11 @@
 import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
-import { getToken } from 'api/workspace/call'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 import { allowCamera } from 'utils/testing'
-import logger from 'utils/logger'
+import { logger, debug } from 'utils/logger'
+import { wsUri } from 'api/gateway/api'
 
 let OV
 
@@ -17,16 +18,10 @@ const _ = {
   resolution: null,
   /**
    * join session
-   * @param {Object}
-   * @param {Object}
-   * @param {String}
+   * @param {String} token
+   * @param {String} role remote.config.ROLE
    */
-  join: async (roomInfo, role) => {
-    // role = ROLE.EXPERT
-    Store.commit('callClear')
-    Store.dispatch('updateAccount', {
-      roleType: role,
-    })
+  connect: async (token, role) => {
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
     // TODO: 영상 출력 허용 테스트 계정 이메일
@@ -35,14 +30,7 @@ const _ = {
       allowUser = true
     }
     try {
-      const params = {
-        sessionId: roomInfo.sessionId,
-        role: 'PUBLISHER',
-        data: {},
-        kurentoOptions: {},
-      }
-      const rtnValue = await getToken(params)
-
+      Store.commit('callClear')
       OV = new OpenVidu()
       _.session = OV.initSession()
 
@@ -50,19 +38,28 @@ const _ = {
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
+        deviceType: DEVICE.WEB,
       }
 
       const iceServers = window.urls.coturn
+      const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
+
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
       }
-      logger('coturn::', iceServers)
+      debug('coturn::', iceServers)
 
-      await _.session.connect(
-        rtnValue.token,
-        JSON.stringify(metaData),
+      const options = {
         iceServers,
-      )
+        wsUri: ws,
+        role: 'PUSLISHER',
+      }
+
+      await _.session.connect(token, JSON.stringify(metaData), options)
+
+      Store.dispatch('updateAccount', {
+        roleType: role,
+      })
       const publishVideo = role === ROLE.WORKER || allowUser
 
       const publisher = OV.initPublisher('', {
@@ -76,9 +73,8 @@ const _ = {
         mirror: false,
       })
       publisher.on('streamCreated', () => {
+        logger('room', 'publish success')
         _.publisher = publisher
-        _.mic(Store.getters['mic'].isOn)
-        _.speaker(Store.getters['speaker'].isOn)
         if (publishVideo) {
           // TODO:: 테스트 계정용!!!!
           Store.commit('updateResolution', {
@@ -86,7 +82,6 @@ const _ = {
             width: 0,
             height: 0,
           })
-          // Store.commit('addStream', getUserObject(publisher.stream))
           Store.commit('addStream', {
             id: _.account.uuid,
             stream: publisher.stream.mediaStream,
@@ -108,23 +103,23 @@ const _ = {
       })
 
       _.session.publish(publisher)
-      if (!publishVideo) {
-        Store.commit('addStream', {
-          id: _.account.uuid,
-          stream: null,
-          connectionId: publisher.stream.session.connection.connectionId,
-          nickname: _.account.nickname,
-          path: _.account.profile,
-          audio: false,
-          video: false,
-          speaker: true,
-          mute: false,
-          status: 'good',
-          roleType: role,
-          permission: 'default',
-          me: true,
-        })
-      }
+      // if (!publishVideo) {
+      //   Store.commit('addStream', {
+      //     id: _.account.uuid,
+      //     stream: null,
+      //     connectionId: publisher.stream.session.connection.connectionId,
+      //     nickname: _.account.nickname,
+      //     path: _.account.profile,
+      //     audio: false,
+      //     video: false,
+      //     speaker: true,
+      //     mute: false,
+      //     status: 'good',
+      //     roleType: role,
+      //     permission: 'default',
+      //     me: true,
+      //   })
+      // }
       return true
     } catch (err) {
       console.error(err)
@@ -136,6 +131,7 @@ const _ = {
    */
   leave: () => {
     try {
+      if (!_.session) return
       _.session.disconnect()
       _.account = null
       _.session = null
@@ -146,6 +142,16 @@ const _ = {
     } catch (err) {
       throw err
     }
+  },
+  /**
+   * leave session
+   */
+  clear: () => {
+    _.account = null
+    _.session = null
+    _.publisher = null
+    _.subscribers = []
+    _.resolution = null
   },
   /**
    * chatting
@@ -302,8 +308,9 @@ const _ = {
    * @param {Boolean} active
    */
   mic: active => {
-    if (!_.publisher) return
-    _.publisher.publishAudio(active)
+    if (_.publisher) {
+      _.publisher.publishAudio(active)
+    }
     const params = {
       isOn: active,
     }
@@ -428,7 +435,7 @@ const _ = {
 }
 
 export const addSubscriber = subscriber => {
-  console.log(subscriber)
+  // console.log(subscriber)
   _.subscribers.push(subscriber)
 }
 

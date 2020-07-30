@@ -115,7 +115,7 @@ export default {
           if (err.name === 'InvalidPDFException') {
             alert('Invalid PDF File')
           } else {
-            console.log(err)
+            // console.log(err)
           }
         })
     },

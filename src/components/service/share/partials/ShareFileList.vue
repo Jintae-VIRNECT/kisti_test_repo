@@ -89,7 +89,6 @@ export default {
             pages: new Array(1),
             loaded: 1,
           }
-          console.log(file)
 
           docItem.filedata = file
           docItem.loaded = 0

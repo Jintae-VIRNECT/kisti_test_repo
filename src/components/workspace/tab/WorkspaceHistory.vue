@@ -40,7 +40,13 @@ export default {
       loading: false,
     }
   },
-  watch: {},
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid !== oldVal.uuid && val.uuid) {
+        this.getHistory()
+      }
+    },
+  },
   methods: {
     showDeleteDialog() {
       this.confirmCancel(
@@ -56,7 +62,10 @@ export default {
     },
     async deleteList() {
       try {
-        await deleteAllHistory()
+        await deleteAllHistory({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
         this.historyList = []
       } catch (err) {
         console.error(err)
@@ -64,32 +73,23 @@ export default {
     },
     async getHistory() {
       try {
-        const param = {
-          page: 0,
-          paging: false,
-          size: 100,
-        }
         this.loading = true
-
-        const datas = await getHistoryList(param)
+        const datas = await getHistoryList({
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
         this.loading = false
-        this.historyList = datas.rooms
+        this.historyList = datas.roomHistoryInfoList
       } catch (err) {
-        // 에러처리
         console.error(err)
       }
     },
   },
 
-  /* Lifecycles */
-  mounted() {},
-  async created() {
-    this.getHistory()
-  },
-
-  beforeDestroy() {
-    this.$eventBus.$off('delete')
-    this.$eventBus.$off('refresh')
+  mounted() {
+    if (this.workspace.uuid) {
+      this.getHistory()
+    }
   },
 }
 </script>

@@ -1,11 +1,10 @@
 import { getAccount, tokenRequest } from 'api/common'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
-import urls from '@/server/urls'
 import jwtDecode from 'jwt-decode'
 import { setAuthorization, setBaseURL } from 'api/gateway/gateway'
-import Axios from 'axios'
-import logger from 'utils/logger'
+import axios from 'api/axios'
+import { debug } from 'utils/logger'
 
 /**
  * 상태
@@ -78,22 +77,23 @@ async function getMyInfo() {
 }
 
 async function getUrls() {
-  const axios = Axios.create({
-    timeout: process.env.NODE_ENV === 'production' ? 2000 : 10000,
-    withCredentials: false,
-    headers: {
-      'Access-Control-Allow-Origin': urls.api[process.env.TARGET_ENV],
-      'Content-Type': 'application/json',
-    },
-  })
-  const res = await axios.get('/urls')
+  const res = await axios.get(`${location.origin}/urls`)
 
-  logger('URLS::', res.data)
+  debug('URLS::', res.data)
 
-  // TODO: 서버 개발 완료 후 변경 필요
-  // setBaseURL(res.data.api)
-  setBaseURL(res.data.media)
+  setBaseURL(res.data.api)
+  window.urls = res.data
   return res.data
+}
+
+const cookieClear = () => {
+  if (/\.?virnect\.com/.test(location.href)) {
+    Cookies.remove('accessToken', { domain: '.virnect.com' })
+    Cookies.remove('refreshToken', { domain: '.virnect.com' })
+  } else {
+    Cookies.remove('accessToken')
+    Cookies.remove('refreshToken')
+  }
 }
 
 /**
@@ -123,11 +123,10 @@ class Auth {
     if (env === undefined) {
       env = 'local'
     }
-    let urls = {}
+    await getUrls()
 
     if (getTokensFromCookies()) {
       try {
-        urls = await getUrls()
         await getMyInfo(api)
         isLogin = true
         tokenRenewal()
@@ -138,28 +137,24 @@ class Auth {
       }
     }
     return {
-      urls: urls,
-      account: this,
+      account: this.myInfo,
+      workspace: this.myWorkspaces,
     }
   }
-  login(options = {}) {
-    const url = options.LOGIN_SITE_URL
-      ? options.LOGIN_SITE_URL
-      : urls.console[env]
+  login() {
+    cookieClear()
+    const url = window.urls.console
     location.href = `${url}/?continue=${location.href}`
     return this
   }
-  logout(options = {}) {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
+  logout() {
+    cookieClear()
     isLogin = false
     accessToken = null
     refreshToken = null
     myInfo = {}
     myWorkspaces = []
-    const url = options.LOGIN_SITE_URL
-      ? options.LOGIN_SITE_URL
-      : urls.console[env]
+    const url = window.urls.console
     location.href = `${url}/?continue=${location.href}`
     return this
   }

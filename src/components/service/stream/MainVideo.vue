@@ -201,7 +201,7 @@ export default {
       const video = this.$refs['mainVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
 
-      console.log(
+      this.debug(
         'current resolution: ',
         this.resolution.width,
         this.resolution.height,
@@ -228,7 +228,7 @@ export default {
       }
       this.videoSize.width = video.offsetWidth
       this.videoSize.height = video.offsetHeight
-      console.log('calc size: ', this.videoSize.width, this.videoSize.height)
+      this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
     },
     doCapture() {
       const videoEl = this.$refs['mainVideo']

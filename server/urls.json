@@ -5,6 +5,12 @@
     "staging": "https://stgapi.virnect.com",
     "production": "https://api.virnect.com"
   },
+  "wsapi": {
+    "local": "wss://192.168.6.3:8073",
+    "develop": "wss://192.168.6.3:8073",
+    "staging": "wss://stgapi.virnect.com",
+    "production": "wss://api.virnect.com"
+  },
   "console": {
     "local": "/account",
     "develop": "https://192.168.6.3:8883",
@@ -22,17 +28,5 @@
     "develop": "http://192.168.6.3:7070",
     "staging": "https://stgpay.virnect.com",
     "production": "https://pay.virnect.com"
-  },
-  "media": {
-    "local": "https://192.168.6.4:4443/",
-    "develop": "https://192.168.6.4:4443/",
-    "staging": "https://stgapi.virnect.com",
-    "production": "https://api.virnect.com"
-  },
-  "message": {
-    "local": "wss://192.168.6.3:8073/message",
-    "develop": "wss://192.168.6.3:8073/message",
-    "staging": "wss://stgapi.virnect.com/message",
-    "production": "wss://api.virnect.com/message"
   }
 }

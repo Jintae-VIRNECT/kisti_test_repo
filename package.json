@@ -1,9 +1,9 @@
 {
   "name": "remote-webclient",
-  "version": "0.7.4",
+  "version": "2.0.1",
   "private": true,
   "description": "remote-webclient",
-  "author": "delbert@virnect.com",
+  "author": "wooka@virnect.com",
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",
@@ -115,7 +115,9 @@
     "webpack-merge": "^4.2.2",
     "wildemitter": "^1.2.1",
     "wolfy87-eventemitter": "5.2.9",
-    "@stomp/stompjs": "^5.4.4"
+    "@stomp/stompjs": "^5.4.4",
+    "@sentry/browser": "^5.20.1",
+    "@sentry/integrations": "^5.19.2"
   },
   "bin": {
     "app": "./server.js"
