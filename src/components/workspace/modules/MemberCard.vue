@@ -18,11 +18,7 @@
       </div>
       <div class="card-profile--email">{{ email }}</div>
 
-      <role
-        v-if="role && role.length > 0 && license"
-        :role="role"
-        :opt="opt"
-      ></role>
+      <role v-if="showRole && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
         :role="'라이선스 만료'"
@@ -38,6 +34,7 @@
 <script>
 import Profile from 'Profile'
 import Role from 'Role'
+import { WORKSPACE_ROLE } from 'configs/status.config'
 export default {
   name: 'Card',
   components: {
@@ -80,6 +77,13 @@ export default {
     return {}
   },
   computed: {
+    showRole() {
+      if (this.role === WORKSPACE_ROLE.MEMBER) {
+        return false
+      } else {
+        return true
+      }
+    },
     cardWidth() {
       if (this.width === 'full') {
         return '100%'

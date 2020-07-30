@@ -2,7 +2,8 @@
   <section class="workspace-welcome">
     <div class="workspace-welcome__body offsetwidth">
       <p class="workspace-welcome__group">
-        리모트원격솔루션 <role :role="'Manager'"></role>
+        {{ workspace.title }}
+        <role v-if="showRole" :role="workspace.role"></role>
         <role
           v-if="hasLicense && expireLicense"
           role="라이선스 만료"
@@ -26,6 +27,7 @@
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import { mapGetters } from 'vuex'
+import { WORKSPACE_ROLE } from 'configs/status.config'
 export default {
   name: 'WorkspaceWelcome',
   components: {
@@ -48,6 +50,13 @@ export default {
       } else {
         return `${this.account.nickname} 님, <br />
         라이선스가 만료되었습니다.`
+      }
+    },
+    showRole() {
+      if (this.workspace.role === WORKSPACE_ROLE.MEMBER) {
+        return false
+      } else {
+        return true
       }
     },
   },

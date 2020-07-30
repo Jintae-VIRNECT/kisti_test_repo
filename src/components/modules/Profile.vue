@@ -8,22 +8,17 @@
         status
       }}</span> -->
     </div>
-    <figcaption
-      class="profile--text"
-      style="color: #fff;"
-      v-if="mainText && mainText.length > 0"
-    >
+    <figcaption class="profile--text" v-if="mainText && mainText.length > 0">
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="role && role.toLowerCase() === 'master'" :role="role">{{
-      'Master'
-    }}</role>
+    <role v-if="showRole" :role="role">{{ 'Master' }}</role>
   </figure>
 </template>
 
 <script>
 import Role from 'Role'
+import { WORKSPACE_ROLE } from 'configs/status.config'
 export default {
   name: 'Profile',
   components: {
@@ -60,6 +55,13 @@ export default {
     },
   },
   computed: {
+    showRole() {
+      if (this.role === WORKSPACE_ROLE.MEMBER) {
+        return false
+      } else {
+        return true
+      }
+    },
     useImage() {
       if (this.image && this.image.length > 0 && this.image !== 'default') {
         return this.image
@@ -113,6 +115,12 @@ export default {
   width: 100%;
   min-width: 0;
   margin: 0 0.714em 0 1.286em;
+}
+
+.profile.createroom-user__profile {
+  .profile--text {
+    max-width: 10em;
+  }
 }
 .profile--maintext {
   color: #fafafa;
