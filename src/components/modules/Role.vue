@@ -1,6 +1,6 @@
 <template>
   <figure class="role" v-if="role && role.length > 0" :class="opt">
-    {{ role }}
+    {{ role.toLowerCase() }}
   </figure>
 </template>
 
@@ -23,7 +23,6 @@ export default {
 <style lang="scss" scoped>
 @import '~assets/style/vars';
 .role {
-  height: fit-content;
   height: 1.43rem;
   margin: auto 0 auto 0.857rem;
   padding: 0.357em 0.714em;
@@ -32,6 +31,7 @@ export default {
   font-size: 0.857rem;
   font-family: 'Roboto';
   line-height: 0.857rem;
+  text-transform: capitalize;
   border: solid 1px $color_primary_400;
   border-radius: 0.857rem;
 

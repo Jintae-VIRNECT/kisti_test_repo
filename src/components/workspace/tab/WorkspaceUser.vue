@@ -48,7 +48,10 @@ export default {
         const datas = await getMemberList(params)
         this.loading = false
         this.memberList = datas.memberInfoList.filter(member => {
-          member.licenseProducts.findIndex
+          return (
+            member.licenseProducts.findIndex(license => license === 'REMOTE') >
+            -1
+          )
         })
       } catch (err) {
         console.error(err)
