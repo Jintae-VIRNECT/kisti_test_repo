@@ -126,7 +126,7 @@ public class ContentService {
         String workspaceUUID = uploadRequest.getWorkspaceUUID();
         Long contentSize = uploadRequest.getContent().getSize();
 
-        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize);
+        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, contentSize, uploadRequest.getUserUUID());
 
         // 1. 콘텐츠 업로드 파일 저장
         try {
@@ -385,7 +385,7 @@ public class ContentService {
         // 기존 컨텐츠 크기와 수정하려는 컨텐츠의 크기를 뺀다.
         Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
 
-        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize);
+        checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
         // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
@@ -1356,11 +1356,35 @@ public class ContentService {
      * @param uploadContentSize
      * @return
      */
-    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize) {
+    private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize, String userUUID) {
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
+        LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
+
+        //해당 워크스페이스가 라이선스를 가지고 있는 지 체크
+        if (response.getLicenseProductInfoList() == null) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
+        }
+
+        //해당 워크스페이스가 메이크 제품 라이선스를 가지고 있는 지 체크
+        Boolean makePlanExist = response.getLicenseProductInfoList().stream().anyMatch(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE"));
+        if (!makePlanExist) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+        }
+
+        //해당 유저가 메이크 제품 라이선스를 가지고 있는 지 체크
+        response.getLicenseProductInfoList().stream()
+                .forEach(licenseProductInfoResponse -> {
+                    if (licenseProductInfoResponse.getProductName().equals("MAKE")) {
+                        Boolean makeUserExist = licenseProductInfoResponse.getLicenseInfoList().stream().anyMatch(licenseDetailInfoResponse -> licenseDetailInfoResponse.getUserId().equals(userUUID));
+                        if (!makeUserExist) {
+                            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+                        }
+                    }
+                });
+
         // 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
-        Long maxCapacity = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxStorageSize();
+        Long maxCapacity = response.getMaxStorageSize();
 
         // 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
         Long workspaceCapacity = this.contentRepository.getWorkspaceStorageSize(workspaceUUID);

@@ -1,12 +1,12 @@
 RELEASE
 
 New Features
-컨텐츠 V타겟 타입 추가
 
 Bug Fixes
-파일 다운로드 함수 변경
+- 지프킨 discovery client false
+- 컨텐츠 업로드, 업데이트 시 사용자 make 라이선스 체크 로직 추가
 
 Limitation
-없음
+- 이력 테이블에 timeEntity값 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
