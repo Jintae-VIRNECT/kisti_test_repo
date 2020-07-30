@@ -22,12 +22,12 @@
             Release: {{ app.releaseTime | dateFormat }}
           </span>
           <span class="version">{{ app.version }}</span>
-          <el-button type="primary" @click="download(app.appUrl)">
+          <el-button type="primary" @click="download('app', app)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <el-button
             type="text"
-            @click="download(app.guideUrl)"
+            @click="download('guide', app)"
             :disabled="!app.guideUrl"
           >
             {{ $t('home.guideDownload') }}
@@ -58,11 +58,32 @@ export default defineComponent({
     /**
      * 다운로드
      */
-    function download(url) {
-      window.open(url)
-    }
     function link(url) {
       window.open(url)
+    }
+    async function download(type, app) {
+      let uri, downloadUrl
+      if (type === 'app') {
+        uri = 'DOWNLOAD_APP'
+        downloadUrl = app.appUrl
+      }
+      if (type === 'guide') {
+        uri = 'DOWNLOAD_GUIDE'
+        downloadUrl = app.guideUrl
+      }
+
+      try {
+        await this.$api(uri, {
+          route: { uuid: app.uuid },
+        })
+        window.open(downloadUrl)
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          duration: 2000,
+          showClose: true,
+        })
+      }
     }
 
     return { state, download, link }
@@ -84,7 +105,7 @@ function useTabs({ $route, $api }) {
 
   watchEffect(async () => {
     const { products, activeTab } = state
-    if (activeTab && !products[activeTab].length) {
+    if (activeTab) {
       const data = await $api('APP_LIST', {
         route: { productName: activeTab },
       })

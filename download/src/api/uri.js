@@ -7,5 +7,6 @@ module.exports = {
    * Download
    */
   APP_LIST: ['GET', '/download/list/{productName}'],
-  DOWNLOAD: ['GET', '/download/app/{id}'],
+  DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
+  DOWNLOAD_GUIDE: ['GET', '/download/guide/{uuid}'],
 }
