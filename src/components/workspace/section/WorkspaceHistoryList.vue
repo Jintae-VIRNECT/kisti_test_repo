@@ -77,10 +77,6 @@ export default {
     showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
 
-      if (this.checkBeta()) {
-        return false
-      }
-
       this.confirmCancel(
         '협업을 삭제 하시겠습니까?',
         {
@@ -102,8 +98,8 @@ export default {
 
       const result = await deleteHistorySingleItem({
         workspaceId: this.workspace.uuid,
-        sessionId: sessionId,
-        userId: this.account.uuid,
+        sessionIdList: [sessionId],
+        uuid: this.account.uuid,
       })
 
       if (result.data) {
