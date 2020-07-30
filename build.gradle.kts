@@ -7,8 +7,6 @@ buildscript {
 }
 
 plugins {
-    //java
-    //change version to 2.2.5.RELEASE //2.3.1.RELEASE
     id("org.springframework.boot") version "2.2.5.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
     kotlin("jvm") version "1.3.72" apply false
@@ -66,4 +64,3 @@ project(":service-client") {
 project(":service-java-client") {
 
 }
-/**/

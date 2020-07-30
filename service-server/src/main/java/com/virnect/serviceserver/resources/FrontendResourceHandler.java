@@ -20,7 +20,9 @@ package com.virnect.serviceserver.resources;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
@@ -35,10 +37,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Pablo Fuente (pablofuenteperez@gmail.com)
  */
 @Configuration
-public class FrontendResourceHandler extends WebMvcConfigurerAdapter {
+public class FrontendResourceHandler implements WebMvcConfigurer {
 
 	@Autowired
 	RemoteServiceConfig remoteServiceConfig;
+
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedOrigins("*")
+				.allowedMethods("*");
+
+	}
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
@@ -46,7 +57,7 @@ public class FrontendResourceHandler extends WebMvcConfigurerAdapter {
 				.setViewName("redirect:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/");
 		registry.addViewController("/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/")
 				.setViewName("forward:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/index.html");
-		super.addViewControllers(registry);
+		//super.addViewControllers(registry);
 	}
 
 }

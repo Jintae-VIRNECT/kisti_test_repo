@@ -4,7 +4,6 @@ ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
-#COPY ./upload ./upload
 #COPY ./build/service-server/libs/RM-Service-*.jar ./RM-Service-2.0.0.jar
 COPY ./service-server/build/libs/RM-Service-*.jar ./RM-Service-2.0.0.jar
 

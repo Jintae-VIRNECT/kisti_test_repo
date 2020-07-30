@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.virnect.serviceserver.core.EndReason;
 import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.core.Session;
@@ -18,16 +19,15 @@ import com.virnect.serviceserver.gateway.dto.SessionTokenResponse;
 import com.virnect.serviceserver.gateway.dto.request.*;
 import com.virnect.serviceserver.gateway.dto.response.*;
 import com.virnect.serviceserver.gateway.dto.rest.*;
+import com.virnect.serviceserver.gateway.dto.rpc.ClientMetaData;
 import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
 import com.virnect.serviceserver.gateway.global.common.ApiResponse;
 import com.virnect.serviceserver.gateway.global.constants.LicenseConstants;
+import com.virnect.serviceserver.gateway.global.constants.PushConstrants;
 import com.virnect.serviceserver.gateway.global.constants.ServiceConstants;
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
 import com.virnect.serviceserver.gateway.infra.file.Default;
-import com.virnect.serviceserver.gateway.service.LicenseRestService;
-import com.virnect.serviceserver.gateway.service.RemoteServiceRestService;
-import com.virnect.serviceserver.gateway.service.UserRestService;
-import com.virnect.serviceserver.gateway.service.WorkspaceRestService;
+import com.virnect.serviceserver.gateway.service.*;
 import com.virnect.serviceserver.kurento.core.KurentoSession;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -75,9 +75,10 @@ import java.util.stream.Collectors;
 public class RemoteGatewayService {
     private static final String TAG = "MemberRestController";
 
-    private final RemoteServiceRestService remoteServiceRestService;
+    //private final RemoteServiceRestService remoteServiceRestService;
 
     // feign client
+    private final MessageRestService messageRestService;
     private final LicenseRestService licenseRestService;
     private final UserRestService userRestService;
     private final WorkspaceRestService workspaceRestService;
@@ -103,6 +104,10 @@ public class RemoteGatewayService {
         return licenseRestService.getUserLicenseValidation(workspaceId, userId);
     }
 
+    public ApiResponse<PushResponse> sendPushMessage(PushSendRequest pushSendRequest) {
+        return messageRestService.sendPush(pushSendRequest);
+    }
+
     public MemberType getUserGrantValidity(String sessionId, String userId) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         if(room.getMembers().isEmpty()) {
@@ -117,7 +122,7 @@ public class RemoteGatewayService {
         }
     }
 
-    public ApiResponse<SessionListResponse> getSessionList(boolean webRtcStats) {
+    /*public ApiResponse<SessionListResponse> getSessionList(boolean webRtcStats) {
         //ApiResponse<SessionListResponse> response = this.remoteServiceRestService.getServiceSessions(webRtcStats);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -135,7 +140,7 @@ public class RemoteGatewayService {
             log.debug("getSessionList: has no any data");
         }
         return new ApiResponse<>(response);
-    }
+    }*/
 
     //===========================================  Template Session Services     =================================================//
 
@@ -722,14 +727,31 @@ public class RemoteGatewayService {
         log.info("session join and sessionEventHandler is here:[existingParticipants] {}", existingParticipants);
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
-        room.getMembers().forEach(member -> {
-            //participant.getClientMetadata().
+        JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ClientMetaData clientMetaData = null;
+        try {
+            clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        assert clientMetaData != null;
 
-            if(member.getUuid().equals(participant.getParticipantPublicId())) {
+        log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+        log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+        log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+
+        for (Member member:room.getMembers()) {
+            if(member.getUuid().equals(clientMetaData.getClientData())) {
+                member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
                 member.setMemberStatus(MemberStatus.LOAD);
             }
-        });
-
+           /* if(member.getUuid().equals(participant.getParticipantPublicId())) {
+                member.setMemberStatus(MemberStatus.LOAD);
+            }*/
+        }
         //Member member;
         /*if(existingParticipants.isEmpty()) {
             // set room members
@@ -917,8 +939,8 @@ public class RemoteGatewayService {
         }
     }
 
-    @Transactional
-    public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, @Valid InviteRoomRequest inviteRoomRequest) {
+    /*@Transactional
+    public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, InviteRoomRequest inviteRoomRequest) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
         if(!inviteRoomRequest.getParticipants().isEmpty()) {
@@ -941,6 +963,56 @@ public class RemoteGatewayService {
         roomRepository.save(room);
 
         return new ApiResponse<>(true);
+    }*/
+
+    @Transactional
+    public ApiResponse<InviteRoomResponse> inviteRoom(
+            String workspaceId ,
+            String sessionId,
+            InviteRoomRequest inviteRoomRequest) {
+
+        PushSendRequest pushSendRequest = new PushSendRequest();
+        pushSendRequest.setWorkspaceId(workspaceId);
+        pushSendRequest.setUserId(inviteRoomRequest.getLeaderId());
+        pushSendRequest.setEvent(PushConstrants.SEND_PUSH_ROOM_INVITE);
+        for (InviteRoomRequest.Participant participant: inviteRoomRequest.getParticipants()) {
+            pushSendRequest.getTargetUserIds().add(participant.getId());
+        }
+
+        //pushSendRequest.setContents();
+
+
+        ApiResponse<PushResponse> pushResponse = messageRestService.sendPush(pushSendRequest);
+        log.info("getPush message {}", pushResponse.toString());
+
+        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+
+        if(!inviteRoomRequest.getParticipants().isEmpty()) {
+            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
+                log.debug("getParticipants Id is {}", participant.toString());
+                Member member = Member.builder()
+                        .room(room)
+                        .workspaceId(workspaceId)
+                        .memberType(MemberType.UNKNOWN)
+                        .uuid(participant.getId())
+                        .email(participant.getEmail())
+                        .sessionId(room.getSessionId())
+                        .build();
+                room.getMembers().add(member);
+            }
+        } else {
+            log.debug("participants Id List is null");
+        }
+        roomRepository.save(room);
+
+        InviteRoomResponse inviteRoomResponse = new InviteRoomResponse();
+        inviteRoomResponse.setEvent(pushResponse.getData().getEvent());
+        inviteRoomResponse.setWorkspaceId(pushResponse.getData().getWorkspaceId());
+        inviteRoomResponse.setSessionId(sessionId);
+        inviteRoomResponse.setPublished(pushResponse.getData().isPublished());
+        inviteRoomResponse.setPublishDate(pushResponse.getData().getPublishDate());
+
+        return new ApiResponse<>(inviteRoomResponse);
     }
 
     /*public ApiResponse<Boolean> inviteRoomAccept(String workspaceId, String sessionId, String userId, Boolean accept, Locale locale) {

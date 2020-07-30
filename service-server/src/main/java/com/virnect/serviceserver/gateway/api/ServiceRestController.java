@@ -103,8 +103,6 @@ public class ServiceRestController {
         return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
     }
 
-
-
     @GetMapping(value = "config/version")
     public String getRemoteServiceServerVersion() {
         log.info("REST API: GET {}/version", REST_CONFIG_PATH);
