@@ -135,7 +135,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'roomClear']),
+    ...mapActions(['setRoomInfo']),
     clickNotice() {
       this.checkBeta()
     },

@@ -48,6 +48,7 @@ import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { inviteRoom, getMember } from 'api/service'
+import { getRoomInfo } from 'api/workspace'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -114,15 +115,20 @@ export default {
         size: 100,
         workspaceId: this.workspace.uuid,
       })
+      const roomInfo = await getRoomInfo({
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
       this.users = res.memberInfoList.filter(
         member =>
-          this.roomMember.findIndex(part => part.uuid === member.uuid) < 0,
+          roomInfo.memberList.findIndex(part => part.uuid === member.uuid) < 0,
       )
       this.totalElements = res.pageMeta.totalElements - this.roomMember.length
       this.loading = false
       this.selection = []
     },
     async invite() {
+      if (this.checkBeta()) return
       const participants = []
       for (let select of this.selection) {
         participants.push({
