@@ -51,6 +51,7 @@ export default {
     ...mapActions(['changeWorkspace']),
     changeSelect(workspace) {
       this.changeWorkspace(workspace)
+      this.$push.changeSubscribe(workspace)
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })

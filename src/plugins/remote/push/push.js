@@ -3,21 +3,26 @@ import { DESTINATION, KEY } from 'configs/push.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
+let client
+
 const push = {
   _inited: false,
   _listeners: [],
+  _subscription: null,
   subscriber: event => {
     for (let listener of push._listeners) {
       listener['cb'](event)
     }
   },
-  init: workspaceId => {
+  init: workspace => {
     return new Promise((resolve, reject) => {
       if (push._inited === true) {
         resolve()
         return
       }
       push._inited = true
+
+      const workspaceId = workspace.uuid
 
       const config = {
         brokerURL: `${window.urls.wsapi}${wsUri['MESSAGE']}`,
@@ -33,17 +38,23 @@ const push = {
         heartbeatOutgoing: 10 * 1000,
       }
 
-      const client = new Client(config)
+      client = new Client(config)
 
-      Object.assign(push, client)
+      // Object.assign(push, client)
 
       client.onConnect = frame => {
         logger('message', 'connected')
         debug('::message::', client, frame)
-        client.subscribe(
-          `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
-          push.subscriber,
-        )
+        if (!workspace.expire) {
+          debug(
+            'message::subscribe::',
+            `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
+          )
+          push._subscription = client.subscribe(
+            `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
+            push.subscriber,
+          )
+        }
         resolve()
       }
 
@@ -63,6 +74,27 @@ const push = {
 
       client.activate()
     })
+  },
+  changeSubscribe: workspace => {
+    if (push._inited === false) return
+    logger('message', 'change subscribe')
+    if (push._subscription) {
+      debug('message::unsubscribe::', push._subscription)
+      push._subscription.unsubscribe()
+      push._subscription = null
+    }
+    const workspaceId = workspace.uuid
+    if (workspace.expire) return
+
+    debug(
+      'message::subscribe::',
+      `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
+    )
+
+    push._subscription = client.subscribe(
+      `${DESTINATION.PUSH}.${KEY.SERVICE_TYPE}.${workspaceId}`,
+      push.subscriber,
+    )
   },
   addListener: (key, cb) => {
     if (typeof cb !== 'function') return
