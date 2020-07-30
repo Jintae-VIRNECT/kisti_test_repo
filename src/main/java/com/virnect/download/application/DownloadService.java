@@ -12,17 +12,9 @@ import com.virnect.download.infra.file.S3FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,12 +26,12 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
 
-    public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
+    public ApiResponse<Boolean> downloadApp(String uuid) {
         App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setAppDownloadCount(app.getAppDownloadCount() + 1);
         this.appRepository.save(app);
-
+/*
         if (app.getDevice().getType().getName().equals("Google Play")) {
             //링크 리턴
             URI redirectUri = new URI(app.getAppUrl());
@@ -57,15 +49,16 @@ public class DownloadService {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(this.fileUploadService.fileDownload(fileName));
-        }
+        }*/
+        return new ApiResponse<>(true);
     }
 
-    public ResponseEntity<byte[]> downloadGuide(String uuid) throws IOException {
+    public ApiResponse<Boolean> downloadGuide(String uuid) {
         App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
         app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
         this.appRepository.save(app);
-
+/*
         String fileName = FilenameUtils.getName(app.getGuideUrl());
 
         HttpHeaders headers = new HttpHeaders();
@@ -75,7 +68,9 @@ public class DownloadService {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(this.fileUploadService.fileDownload(fileName));
+                .body(this.fileUploadService.fileDownload(fileName));*/
+        return new ApiResponse<>(true);
+
     }
 
     public ApiResponse<AppInfoListResponse> getAppList(String productName, Locale locale) {
