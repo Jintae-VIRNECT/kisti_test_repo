@@ -27,9 +27,12 @@
         height: 36px;
         margin-top: 0;
         font-size: 14px;
-        background-color: $point;
-        border-color: $point;
+        // background-color: $point;
+        // border-color: $point;
         border-radius: 3px;
+        &.el-button--primary {
+            background: #1468e2;
+        }
     }
 }
 

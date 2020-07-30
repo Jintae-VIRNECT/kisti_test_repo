@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import axios from '../api/axios'
 import API from '../api/url'
+import Auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
 class AuthService {
 	login(user) {
@@ -54,6 +55,7 @@ class AuthService {
 			const response = await axios.post(API.auth.signup, user, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
+					Authorization: 'Bearer ' + Auth.accessToken,
 				},
 			})
 			return response.data

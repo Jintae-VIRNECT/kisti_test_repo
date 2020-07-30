@@ -115,14 +115,14 @@
 							>
 						</div>
 						<div v-else class="mailfind-before">
-							<div class="user-email-holder">
+							<div class="user-email-holder" v-for="(user, idx) of findUserData" :key="idx">
 								<p>
 									<i>{{ $t('login.email') }}:</i>
-									<span>{{ findUserData.email }}</span>
+									<span>{{ user.email }}</span>
 								</p>
 								<p>
 									<i>{{ $t('find.signupDate') }}:</i>
-									<span>{{ findUserData.signUpDate }}</span>
+									<span>{{ user.signUpDate }}</span>
 								</p>
 							</div>
 							<el-button
@@ -266,10 +266,7 @@ export default {
 			userEmail: null,
 			isFindEmail: null,
 			isCodeAuth: null,
-			findUserData: {
-				email: null,
-				signUpDate: null,
-			},
+			findUserData: [],
 			countryCodeLists: CountryCode.countryCode,
 		}
 	},
@@ -348,7 +345,8 @@ export default {
 				})
 				if (res.code === 200) {
 					this.isFindEmail = true
-					this.findUserData = res.data
+					this.findUserData = res.data.emailFindInfoList
+					// console.log(this.findUserData)
 				} else throw res
 			} catch (e) {
 				// console.log(e)
