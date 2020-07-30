@@ -45,11 +45,12 @@ public class DownloadController {
             @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "05d1-8795535abb40", required = true)
     })
     @GetMapping("/app/{uuid}")
-    public ResponseEntity<Object> downloadApp(@PathVariable("uuid") String uuid) throws IOException, URISyntaxException {
+    public ResponseEntity<ApiResponse<Boolean>> downloadApp(@PathVariable("uuid") String uuid) throws IOException, URISyntaxException {
         if (!StringUtils.hasText(uuid)) {
             throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        return this.downloadService.downloadApp(uuid);
+        ApiResponse<Boolean> apiResponse = this.downloadService.downloadApp(uuid);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(
@@ -60,11 +61,12 @@ public class DownloadController {
             @ApiImplicitParam(name = "uuid", value = "어플리케이션 식별자", dataType = "string", defaultValue = "05d1-8795535abb40", required = true)
     })
     @GetMapping("/guide/{uuid}")
-    public ResponseEntity<byte[]> downloadGuide(@PathVariable("uuid") String uuid) throws IOException {
+    public ResponseEntity<ApiResponse<Boolean>> downloadGuide(@PathVariable("uuid") String uuid) throws IOException {
         if (!StringUtils.hasText(uuid)) {
             throw new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        return this.downloadService.downloadGuide(uuid);
+        ApiResponse<Boolean> apiResponse = this.downloadService.downloadGuide(uuid);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @ApiOperation(
