@@ -70,6 +70,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     //public static final String WS_PATH = "/remoteservice";
     public static final String WS_PATH = "/remote/websocket";
     public static String wsUrl;
+    public static String wssUrl;
     public static String httpUrl;
     //public static String WS_GATEWAY_PATH = "wss://stgapi.virnect.com:8000";
 

@@ -17,6 +17,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findBySessionId(final String sessionId);
 
+    Optional<Member> findByWorkspaceIdAndSessionIdAndUuid(final String workspaceId, final String sessionId, final String uuid);
+
     List<Member> findAllBySessionId(final String sessionId);
 
     List<Member> findByWorkspaceIdAndSessionIdAndRoomNotNull(final String workspaceId, final String sessionId);
