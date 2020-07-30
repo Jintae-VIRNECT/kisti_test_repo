@@ -21,7 +21,7 @@ const _ = {
    * @param {String} token
    * @param {String} role remote.config.ROLE
    */
-  connect: async (token, role) => {
+  connect: async (configs, role) => {
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
     // TODO: 영상 출력 허용 테스트 계정 이메일
@@ -41,8 +41,9 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = window.urls.coturn
-      const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
+      const iceServers = configs.coturn || window.urls.coturn
+      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
+      // const ws = 'wss://192.168.13.36:8000/remote/websocket'
 
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
@@ -55,7 +56,7 @@ const _ = {
         role: 'PUSLISHER',
       }
 
-      await _.session.connect(token, JSON.stringify(metaData), options)
+      await _.session.connect(configs.token, JSON.stringify(metaData), options)
 
       Store.dispatch('updateAccount', {
         roleType: role,

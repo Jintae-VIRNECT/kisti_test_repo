@@ -32,7 +32,7 @@ export default {
           workspaceId: this.workspace.uuid,
         })
 
-        const joinRtn = await this.$call.connect(res.token, role)
+        const joinRtn = await this.$call.connect(res, role)
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
