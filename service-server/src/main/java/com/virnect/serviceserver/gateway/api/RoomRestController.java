@@ -512,7 +512,7 @@ public class RoomRestController {
         if (session != null) {
             log.info("REST API: DELETE closeSession");
             this.sessionManager.closeSession(sessionId, EndReason.sessionClosedByServer);
-            //apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
+            apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
             //return ResponseEntity.ok(apiResponse);
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
