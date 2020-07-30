@@ -15,8 +15,8 @@
         :key="name"
       >
         <el-card v-for="app in product" :key="app.id">
-          <h6 v-html="app.os" />
-          <h5 v-html="app.device" />
+          <h6 v-html="app.deviceType" />
+          <h5 v-html="app.deviceName" />
           <img :src="app.imageUrl" />
           <span class="release">
             Release: {{ app.releaseTime | dateFormat }}
