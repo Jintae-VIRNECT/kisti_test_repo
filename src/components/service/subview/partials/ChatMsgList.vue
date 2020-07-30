@@ -44,7 +44,9 @@ export default {
     },
     view() {
       setTimeout(() => {
-        this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+        if (this.$refs['chatListScrollbar']) {
+          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+        }
       }, 300)
     },
   },

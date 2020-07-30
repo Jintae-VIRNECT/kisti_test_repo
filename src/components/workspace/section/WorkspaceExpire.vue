@@ -43,6 +43,11 @@ export default {
       licenseData: licenseData.licenseInfo,
     }
   },
+  methods: {
+    purchase() {
+      location.href = window.urls.pay
+    },
+  },
 }
 </script>
 

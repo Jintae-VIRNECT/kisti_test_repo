@@ -51,10 +51,10 @@
     position: relative;
     width: 100%;
     height: 100%;
-    &:hover {
-      background-color: rgba($color_bg_item, 0.7);
-    }
     &.active {
+      background-color: rgba($color_bg_item, 0.4);
+    }
+    &:hover {
       background-color: rgba($color_bg_item, 0.7);
     }
   }

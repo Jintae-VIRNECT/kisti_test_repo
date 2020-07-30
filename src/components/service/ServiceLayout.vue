@@ -50,6 +50,7 @@ import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
 import localRecorderMixin from 'mixins/localRecorder'
+import Store from 'stores/remote/store'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -61,9 +62,9 @@ export default {
     next()
   },
   beforeRouteLeave(to, from, next) {
-    next(vm => {
-      vm.$Store.commit('callClear')
-    })
+    Store.commit('callClear')
+    Store.dispatch('callReset')
+    next()
   },
   mixins: [alarmMixin, localRecorderMixin],
   components: {

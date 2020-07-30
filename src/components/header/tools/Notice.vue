@@ -220,7 +220,7 @@ export default {
         this.onPush = false
       }
       this.$nextTick(async () => {
-        await this.$push.init(this.workspace.uuid)
+        await this.$push.init(this.workspace)
         this.$push.addListener(this.key, this.alarmListener)
       })
     },

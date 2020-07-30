@@ -9,10 +9,14 @@
           <input-row
             type="text"
             title="협업 이름"
-            :showCount="true"
             :count="20"
-            :value.sync="name"
-            validMessage="특수 문자는 협업 이름에서 제외시켜주세요."
+            :value.sync="title"
+            :valid.sync="titleValid"
+            validate="validName"
+            :validMessage="titleValidMessage"
+            @focusOut="checkEmpty"
+            required
+            showCount
           ></input-row>
           <input-row
             type="textarea"
@@ -43,7 +47,7 @@
         <template v-else>
           <figure class="roominfo-figure">
             <p class="roominfo-figure__title">협업 이름</p>
-            <p class="roominfo-figure__text">{{ name }}</p>
+            <p class="roominfo-figure__text">{{ title }}</p>
           </figure>
           <figure class="roominfo-figure">
             <p class="roominfo-figure__title">협업 설명</p>
@@ -95,16 +99,27 @@ export default {
   },
   data() {
     return {
-      name: '',
+      title: '',
       description: '',
       createdDate: '',
       createdTime: '',
+      titleValid: false,
     }
   },
   computed: {
+    titleValidMessage() {
+      if (this.title.length < 2) {
+        return '협업 이름은 2자 이상 입력해주세요.'
+      } else {
+        return '특수 문자는 협업 이름에서 제외시켜주세요.'
+      }
+    },
     canSave() {
       if (!this.room) return false
-      if (this.name !== this.room.title) {
+      if (this.titleValid) {
+        return false
+      }
+      if (this.title !== this.room.title) {
         return true
       }
       if (this.description !== this.room.description) {
@@ -119,7 +134,7 @@ export default {
   watch: {
     room: {
       handler(room) {
-        this.name = room.title
+        this.title = room.title
         this.description = room.description
         // this.imageUrl = room.profile
         this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
@@ -142,7 +157,7 @@ export default {
     },
     saveInfo() {
       const params = {
-        title: this.name,
+        title: this.title,
         description: this.description,
         sessionId: this.room.sessionId,
         workspaceId: this.workspace.uuid,
@@ -152,12 +167,17 @@ export default {
       }
       this.$emit('update', params)
     },
+    checkEmpty() {
+      if (this.title === '') {
+        this.title = this.room.title
+      }
+    },
   },
 
   /* Lifecycles */
   mounted() {
     if (this.room) {
-      this.name = this.room.title
+      this.title = this.room.title
       this.description = this.room.description
       this.imageUrl = this.room.profile
       this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')

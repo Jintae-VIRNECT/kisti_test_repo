@@ -69,7 +69,7 @@ SoundMeter.prototype.connectToMedia = function(element, callback) {
       callback(null)
     }
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     if (typeof callback !== 'undefined') {
       callback(e)
     }
