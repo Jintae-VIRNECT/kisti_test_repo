@@ -68,6 +68,7 @@ export default {
       this.loading = false
     },
     leave(sessionId) {
+      if (this.checkBeta()) return
       this.confirmCancel(
         '협업에서 나가시겠습니까?',
         {
@@ -80,6 +81,7 @@ export default {
       )
     },
     remove(sessionId) {
+      if (this.checkBeta()) return
       this.confirmCancel(
         '협업을 삭제 하시겠습니까?',
         {

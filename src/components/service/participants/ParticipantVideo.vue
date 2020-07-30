@@ -219,6 +219,8 @@ export default {
       })
     },
     disconnectUser(nickName) {
+      this.$eventBus.$emit('popover:close')
+      if (this.checkBeta()) return
       this.confirmCancel(
         `${nickName}님을 협업에서 제외 하시겠습니까?`,
         {

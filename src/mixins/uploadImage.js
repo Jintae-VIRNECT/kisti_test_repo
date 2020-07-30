@@ -48,6 +48,7 @@ export default {
       }
     },
     imageUpload() {
+      if (this.checkBeta()) return
       this.$refs['inputImage'].click()
     },
     imageRemove() {

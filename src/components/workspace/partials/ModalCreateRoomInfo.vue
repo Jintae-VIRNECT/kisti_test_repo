@@ -111,7 +111,6 @@ export default {
     roomInfo: {
       deep: true,
       handler: function(info) {
-        console.log(info)
         this.title = info.title
         this.description = info.description
         this.imageURL = info.profile
