@@ -1,12 +1,11 @@
 RELEASE
 
 New Features
-없음
 
 Bug Fixes
-없음
+- v 타겟 추가
 
 Limitation
-jvm 메모리 사이즈 변경 350mb -> 500mb
+- 이력 테이블에 TimeEntity 값 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
