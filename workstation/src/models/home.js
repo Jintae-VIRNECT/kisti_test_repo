@@ -4,16 +4,19 @@ export function install(app) {
       label: app.$t('home.install.remote'),
       path: `${app.$url.download}/remote`,
       image: require('assets/images/logo/logo-remote.svg'),
+      isLink: true,
     },
     {
       label: app.$t('home.install.make'),
       path: `${app.$url.download}/make`,
       image: require('assets/images/logo/logo-make.svg'),
+      isLink: true,
     },
     {
       label: app.$t('home.install.view'),
       path: `${app.$url.download}/view`,
       image: require('assets/images/logo/logo-view.svg'),
+      isLink: true,
     },
   ]
 }
