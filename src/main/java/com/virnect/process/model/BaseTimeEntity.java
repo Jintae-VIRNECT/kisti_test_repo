@@ -1,6 +1,7 @@
 package com.virnect.process.model;
 
 import lombok.Getter;
+import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @MappedSuperclass
+@Audited
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
