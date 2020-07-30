@@ -29,6 +29,7 @@ export default {
       // history stack
       canvas.on('object:added', event => {
         console.log('[Fabric] Object added')
+        this.debug(event)
         const object = event.target
 
         const objID = canvas.getObjects().length - 1

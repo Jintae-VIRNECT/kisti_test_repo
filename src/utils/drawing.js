@@ -112,6 +112,9 @@ export const getSignalParams = function getSignalParams(
   if (object) tId = object.tId
   let posX, posY
 
+  let left = object.left * status.posScale
+  let top = object.top * status.posScale
+
   switch (type) {
     /* 
     case 'drawMove':
@@ -147,8 +150,8 @@ export const getSignalParams = function getSignalParams(
       break */
     case DRAWING.LINE_DOWN:
     case AR_DRAWING.LINE_DOWN:
-      posX = normalizedPosX(object.left, status.imgWidth)
-      posY = normalizedPosY(object.top, status.imgHeight)
+      posX = normalizedPosX(left, status.imgWidth)
+      posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
@@ -161,8 +164,8 @@ export const getSignalParams = function getSignalParams(
       break
     case DRAWING.LINE_MOVE:
     case AR_DRAWING.LINE_MOVE:
-      posX = normalizedPosX(object.left, status.imgWidth)
-      posY = normalizedPosY(object.top, status.imgHeight)
+      posX = normalizedPosX(left, status.imgWidth)
+      posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
@@ -175,8 +178,8 @@ export const getSignalParams = function getSignalParams(
       break
     case DRAWING.LINE_UP:
     case AR_DRAWING.LINE_UP:
-      posX = normalizedPosX(object.left, status.imgWidth)
-      posY = normalizedPosY(object.top, status.imgHeight)
+      posX = normalizedPosX(left, status.imgWidth)
+      posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
@@ -188,8 +191,8 @@ export const getSignalParams = function getSignalParams(
       }
       break
     case DRAWING.TEXT_ADD:
-      posX = normalizedPosX(object.left, status.imgWidth)
-      posY = normalizedPosY(object.top, status.imgHeight)
+      posX = normalizedPosX(left, status.imgWidth)
+      posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
@@ -206,8 +209,8 @@ export const getSignalParams = function getSignalParams(
       }
       break
     case DRAWING.TEXT_UPDATE:
-      posX = normalizedPosX(object.left, status.imgWidth)
-      posY = normalizedPosY(object.top, status.imgHeight)
+      posX = normalizedPosX(left, status.imgWidth)
+      posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
