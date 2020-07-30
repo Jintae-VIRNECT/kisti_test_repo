@@ -7,7 +7,7 @@
           <img src="~assets/images/icon/ic-error.svg" />
         </el-tooltip>
       </h3>
-      <a :href="$url.pay">
+      <a :href="$url.pay" target="_blank">
         {{ $t('home.plansInfo.buy') }}
       </a>
     </div>
