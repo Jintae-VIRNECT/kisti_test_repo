@@ -186,6 +186,7 @@
     .chat-item__body {
       width: 100%;
       .chatbox {
+        width: fit-content;
         margin-left: auto;
         padding: 0.786rem 0.929rem;
         line-height: 1.57;
