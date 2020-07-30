@@ -491,68 +491,74 @@ public class RemoteGatewayService {
     }
 
     @Transactional
-    public ApiResponse<Boolean> removeRoom(String workspaceId, String sessionId) {
+    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId) {
         log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
         // Get Specific Room using Session ID
-        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
-                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
+                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
+        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setResult(false);
+        ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
 
-        // Room and Member History 저장
-        // Remote Room History Entity Create
-        /*.mediaMode(room.getMediaMode())
-                .recordingMode(room.getRecordingMode())
-                .defaultOutputMode(room.getDefaultOutputMode())
-                .defaultRecordingLayout(room.getDefaultRecordingLayout())
-                .recording(room.isRecording())*/
-        RoomHistory roomHistory = RoomHistory.builder()
-                .sessionId(room.getSessionId())
-                .title(room.getTitle())
-                .description(room.getDescription())
-                .profile(room.getProfile())
-                .leaderId(room.getLeaderId())
-                .workspaceId(room.getWorkspaceId())
-                .build();
-
-        // Set room member history
-        // Get Member List by Room Session Ids
-        List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-        // Mapping Member List Data to Member History List
-        for (Member member : memberList) {
-            MemberHistory memberHistory = MemberHistory.builder()
-                    .roomHistory(roomHistory)
-                    .workspaceId(member.getWorkspaceId())
-                    .uuid(member.getUuid())
-                    .email(member.getEmail())
-                    .memberType(member.getMemberType())
-                    .deviceType(member.getDeviceType())
-                    .sessionId(member.getSessionId())
-                    .startDate(member.getStartDate())
-                    .endDate(member.getEndDate())
-                    .durationSec(member.getDurationSec())
+        if(room == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
+        } else {
+            // Room and Member History 저장
+            // Remote Room History Entity Create
+            RoomHistory roomHistory = RoomHistory.builder()
+                    .sessionId(room.getSessionId())
+                    .title(room.getTitle())
+                    .description(room.getDescription())
+                    .profile(room.getProfile())
+                    .leaderId(room.getLeaderId())
+                    .workspaceId(room.getWorkspaceId())
                     .build();
-            memberHistoryRepository.save(memberHistory);
-            roomHistory.getMemberHistories().add(memberHistory);
+
+            // Set room member history
+            // Get Member List by Room Session Ids
+            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            // Mapping Member List Data to Member History List
+            for (Member member : memberList) {
+                MemberHistory memberHistory = MemberHistory.builder()
+                        .roomHistory(roomHistory)
+                        .workspaceId(member.getWorkspaceId())
+                        .uuid(member.getUuid())
+                        .email(member.getEmail())
+                        .memberType(member.getMemberType())
+                        .deviceType(member.getDeviceType())
+                        .sessionId(member.getSessionId())
+                        .startDate(member.getStartDate())
+                        .endDate(member.getEndDate())
+                        .durationSec(member.getDurationSec())
+                        .build();
+                memberHistoryRepository.save(memberHistory);
+                roomHistory.getMemberHistories().add(memberHistory);
+            }
+
+
+            //set active time
+            roomHistory.setActiveDate(room.getActiveDate());
+
+            //set un active  time
+            LocalDateTime endTime = LocalDateTime.now();
+            roomHistory.setUnactiveDate(endTime);
+
+            //time diff seconds
+            Duration duration = Duration.between(room.getActiveDate(), endTime);
+            roomHistory.setDurationSec(duration.getSeconds());
+
+            //save room history
+            roomHistoryRepository.save(roomHistory);
+
+            //delete room
+            roomRepository.delete(room);
+
+            resultResponse.setResult(true);
+            return new ApiResponse<>(resultResponse);
         }
-
-
-        //set active time
-        roomHistory.setActiveDate(room.getActiveDate());
-
-        //set un active  time
-        LocalDateTime endTime = LocalDateTime.now();
-        roomHistory.setUnactiveDate(endTime);
-
-        //time diff seconds
-        Duration duration = Duration.between(room.getActiveDate(), endTime);
-        roomHistory.setDurationSec(duration.getSeconds());
-
-        //save room history
-        roomHistoryRepository.save(roomHistory);
-
-        //delete room
-        roomRepository.delete(room);
-
-        return new ApiResponse<>(true);
     }
 
     @Transactional
@@ -684,6 +690,11 @@ public class RemoteGatewayService {
             if(member.getUuid().equals(joinRoomRequest.getUuid())) {
                 log.debug("Room has member Id is {}", member.getUuid());
 
+                if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                    response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                    return response;
+                }
+
                 SessionTokenResponse sessionTokenResponse = null;
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
@@ -813,6 +824,7 @@ public class RemoteGatewayService {
         /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
                 () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
         Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);;
 
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
@@ -821,27 +833,42 @@ public class RemoteGatewayService {
             response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
             response.setData(response.getData());
             return response;
+        } else if(member == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
         } else {
             if(room.getMembers().isEmpty()) {
                 response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
                 response.setData(response.getData());
                 return response;
             } else {
-                for (Member member : room.getMembers()) {
-                    if(member.getMemberType().equals(MemberType.LEADER)) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT);
-                        response.setData(response.getData());
-                        return response;
-                    }
+                for (Member roomMember : room.getMembers()) {
+                    if(member.getUuid().equals(roomMember.getUuid())) {
+                        if(member.getMemberType().equals(MemberType.LEADER)) {
+                            response.setErrorResponseData(ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT);
+                            response.setData(response.getData());
+                            return response;
+                        } else if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                            response.setData(response.getData());
+                            return response;
+                        } else {
+                            room.getMembers().remove(roomMember);
+                            roomRepository.save(room);
 
-                    if(member.getUuid().equals(userId)) {
+                            resultResponse.setResult(true);
+                            return new ApiResponse<>(resultResponse);
+                        }
+                    }
+                    /*if(roomMember.getUuid().equals(userId)) {
                         //this.memberRepository.delete(member);
-                        room.getMembers().remove(member);
+                        room.getMembers().remove(roomMember);
                         roomRepository.save(room);
 
                         resultResponse.setResult(true);
                         return new ApiResponse<>(resultResponse);
-                    }
+                    }*/
                 }
                 response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 response.setData(response.getData());
