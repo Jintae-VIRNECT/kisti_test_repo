@@ -3,10 +3,8 @@ RELEASE
 New Features
 
 Bug Fixes
-- 지프킨 discovery client false
-- 컨텐츠 업로드, 업데이트 시 사용자 make 라이선스 체크 로직 추가
 
 Limitation
-- 이력 테이블에 timeEntity값 추가
+- 컨텐츠 공유 시 컨텐츠 소유자 체크 로직 제외
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
