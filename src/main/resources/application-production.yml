@@ -20,6 +20,7 @@ spring:
         enabled: false
   zipkin:
     base-url: http://zipkin.virnect.com
+    discovery-client-enabled: false
 
 #logging:
 #  level:

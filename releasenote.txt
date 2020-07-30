@@ -1,12 +1,10 @@
 RELEASE
 
 New Features
-컨텐츠 V타겟 타입 추가
 
 Bug Fixes
-파일 다운로드 함수 변경
 
 Limitation
-없음
+- 컨텐츠 공유 시 컨텐츠 소유자 체크 로직 제외
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

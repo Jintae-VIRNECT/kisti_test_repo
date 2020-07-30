@@ -1,6 +1,7 @@
 package com.virnect.content.domain;
 
 import lombok.Getter;
+import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Abstract Time Entity for record datetime column on every table as column, All Entity should be extends this Entity Class
  */
+@Audited
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
