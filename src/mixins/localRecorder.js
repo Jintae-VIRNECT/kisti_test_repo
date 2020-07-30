@@ -159,6 +159,7 @@ export default {
       this.recorder.setStopCallback(() => {
         this.isRecording = false
         this.$eventBus.$emit('localRecord', false)
+        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       })
 
       this.recorder.setNoQuotaCallback(() => {
