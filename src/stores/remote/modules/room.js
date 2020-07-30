@@ -58,30 +58,30 @@ const mutations = {
   },
 }
 
-const actions = {
-  /**
-   * set room info
-   * @param {Object} payload // room info
-   */
-  setRoomInfo({ commit }, payload) {
-    commit(ROOM_SET, payload)
-  },
-  /**
-   * add room member
-   * @param {Array[Object]} payload // member info
-   */
-  addMember({ commit }, payload) {
-    commit(ADD_ROOM_MEMBER, payload)
-  },
+// const actions = {
+//   /**
+//    * set room info
+//    * @param {Object} payload // room info
+//    */
+//   // setRoomInfo({ commit }, payload) {
+//   //   commit(ROOM_SET, payload)
+//   // },
+//   /**
+//    * add room member
+//    * @param {Array[Object]} payload // member info
+//    */
+//   addMember({ commit }, payload) {
+//     commit(ADD_ROOM_MEMBER, payload)
+//   },
 
-  /**
-   * clear room info
-   * @param {*} payload
-   */
-  roomClear({ commit }) {
-    commit(ROOM_CLEAR)
-  },
-}
+//   /**
+//    * clear room info
+//    * @param {*} payload
+//    */
+//   roomClear({ commit }) {
+//     commit(ROOM_CLEAR)
+//   },
+// }
 
 const getters = {
   roomInfo: state => state,
@@ -90,7 +90,7 @@ const getters = {
 
 export default {
   state,
-  actions,
+  // actions,
   getters,
   mutations,
 }

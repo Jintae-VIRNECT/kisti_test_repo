@@ -103,7 +103,7 @@ export default {
       return this.undoList.length
     },
     receiveStackUndo(data) {
-      const owner = data.from
+      const owner = 'export'
       if (
         !(owner in this.receiveUndoList) ||
         this.receiveUndoList[owner].length === 0
@@ -150,7 +150,7 @@ export default {
       return this.redoList.length
     },
     receiveStackRedo(data) {
-      const owner = data.from
+      const owner = 'export'
       if (
         !(owner in this.receiveRedoList) ||
         this.receiveRedoList[owner].length === 0

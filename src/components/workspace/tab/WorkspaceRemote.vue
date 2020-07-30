@@ -61,14 +61,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'roomClear']),
+    ...mapActions(['setRoomInfo']),
     async refresh() {
       this.loading = true
       await this.init()
       this.loading = false
     },
     leave(sessionId) {
-      if (this.checkBeta()) return
+      // if (this.checkBeta()) return
       this.confirmCancel(
         '협업에서 나가시겠습니까?',
         {
@@ -81,7 +81,7 @@ export default {
       )
     },
     remove(sessionId) {
-      if (this.checkBeta()) return
+      // if (this.checkBeta()) return
       this.confirmCancel(
         '협업을 삭제 하시겠습니까?',
         {
@@ -101,18 +101,25 @@ export default {
       this.rooms = roomList.roomInfoList
     },
     async removeRoom(sessionId) {
-      const rtn = await deleteRoom({
-        sessionId,
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
+      try {
+        const rtn = await deleteRoom({
+          sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
 
-      this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        if (rtn) {
-          this.refresh()
+        this.$eventBus.$emit('popover:close')
+        this.$nextTick(() => {
+          if (rtn) {
+            this.refresh()
+          }
+        })
+      } catch (err) {
+        if (err.code === 4016) {
+          // TODO: MESSAGE
+          this.toastError('이미 참가중인 협업입니다.')
         }
-      })
+      }
     },
     async leaveoutRoom(sessionId) {
       try {
@@ -129,10 +136,13 @@ export default {
           })
         }
       } catch (err) {
-        // if (err.code === 4015) {
-        //   // TODO: MESSAGE
-        //   this.toastError('리더는 협업을 나갈 수 없습니다.')
-        // }
+        if (err.code === 4015) {
+          // TODO: MESSAGE
+          this.toastError('리더는 협업을 나갈 수 없습니다.')
+        } else if (err.code === 4016) {
+          // TODO: MESSAGE
+          this.toastError('이미 참가중인 협업입니다.')
+        }
       }
     },
   },

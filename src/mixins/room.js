@@ -2,7 +2,13 @@ import { joinRoom } from 'api/workspace'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { getPermission } from 'utils/deviceCheck'
+import toastMixin from 'mixins/toast'
+import { mapGetters } from 'vuex'
 export default {
+  mixins: [toastMixin],
+  computed: {
+    ...mapGetters(['roomClear']),
+  },
   methods: {
     async join(room) {
       const permission = await getPermission()
@@ -44,6 +50,9 @@ export default {
       } catch (err) {
         if (err.code === 4002) {
           this.toastError('이미 삭제된 협업입니다.')
+        } else if (err.code === 4016) {
+          // TODO: MESSAGE
+          this.toastError('이미 참가중인 협업입니다.')
         }
         this.roomClear()
       }
