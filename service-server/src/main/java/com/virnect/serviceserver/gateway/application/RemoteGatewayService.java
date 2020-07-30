@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.virnect.serviceserver.ServiceServerApplication;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.EndReason;
 import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.core.Session;
@@ -13,6 +15,7 @@ import com.virnect.serviceserver.gateway.dao.MemberRepository;
 import com.virnect.serviceserver.gateway.dao.RoomHistoryRepository;
 import com.virnect.serviceserver.gateway.dao.RoomRepository;
 import com.virnect.serviceserver.gateway.domain.*;
+import com.virnect.serviceserver.gateway.dto.CoturnResponse;
 import com.virnect.serviceserver.gateway.dto.PageMetadataResponse;
 import com.virnect.serviceserver.gateway.dto.SessionResponse;
 import com.virnect.serviceserver.gateway.dto.SessionTokenResponse;
@@ -76,7 +79,7 @@ public class RemoteGatewayService {
     private static final String TAG = "MemberRestController";
 
     //private final RemoteServiceRestService remoteServiceRestService;
-
+    private final RemoteServiceConfig config;
     // feign client
     private final MessageRestService messageRestService;
     private final LicenseRestService licenseRestService;
@@ -297,6 +300,14 @@ public class RemoteGatewayService {
         roomResponse.setSessionId(sessionResponse.getId());
         //roomResponse.setRoomId(sessionTokenResponse.getId());
         roomResponse.setToken(sessionTokenResponse.getToken());
+        roomResponse.setWss(ServiceServerApplication.wssUrl);
+        for (String coturnUrl: config.getCoturnUrisList()) {
+            CoturnResponse coturnResponse = new CoturnResponse();
+            coturnResponse.setUsername(config.getCoturnUsername());
+            coturnResponse.setCredential(config.getCoturnCredential());
+            coturnResponse.setUrl(coturnUrl);
+            roomResponse.getCoturn().add(coturnResponse);
+        }
         return new ApiResponse<>(roomResponse);
     }
 
@@ -705,6 +716,16 @@ public class RemoteGatewayService {
                 //not set session create at property
                 roomResponse.setSessionId(sessionId);
                 roomResponse.setToken(sessionTokenResponse.getToken());
+
+                roomResponse.setWss(ServiceServerApplication.wssUrl);
+                for (String coturnUrl: config.getCoturnUrisList()) {
+                    CoturnResponse coturnResponse = new CoturnResponse();
+                    coturnResponse.setUsername(config.getCoturnUsername());
+                    coturnResponse.setCredential(config.getCoturnCredential());
+                    coturnResponse.setUrl(coturnUrl);
+                    roomResponse.getCoturn().add(coturnResponse);
+                }
+
                 return new ApiResponse<>(roomResponse);
             } /*else {
                 throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_NOT_ALLOWED);
@@ -832,17 +853,34 @@ public class RemoteGatewayService {
     @Transactional
     public void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason) {
         log.info("session leave and sessionEventHandler is here:[participant] {}", participant);
+        log.info("session leave and sessionEventHandler is here:[reason] {}", participant.getClientMetadata());
         log.info("session leave and sessionEventHandler is here:[sessionId] {}", sessionId);
         log.info("session leave and sessionEventHandler is here:[remainingParticipants] {}", remainingParticipants);
         log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
         log.info("session leave and sessionEventHandler is here:[reason] {}", reason);
 
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+
+        JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ClientMetaData clientMetaData = null;
+        try {
+            clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        assert clientMetaData != null;
+
+        log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+        log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+        log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+
         if(room.getMembers().isEmpty()) {
             log.info("session leave and sessionEventHandler is here: room members empty");
         } else {
             for (Member member : room.getMembers()) {
-                if(member.getUuid().equals(participant.getParticipantPublicId())) {
+                if(member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setMemberStatus(MemberStatus.UNLOAD);
                     //set end time
                     LocalDateTime endTime = LocalDateTime.now();
@@ -857,7 +895,7 @@ public class RemoteGatewayService {
                     memberRepository.save(member);
                 }
             }
-            log.info("session leave and sessionEventHandler is here: room members not found");
+            //log.info("session leave and sessionEventHandler is here: room members not found");
         }
     }
 
@@ -1258,7 +1296,7 @@ public class RemoteGatewayService {
         List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findMemberHistoriesByWorkspaceIdAndUuid(workspaceId, userId);
         memberHistoryList.forEach(memberHistory -> {
             if(memberHistory.getRoomHistory() != null) {
-                memberHistory.getRoomHistory().setId(0L);
+                memberHistory.setRoomHistory(null);
                 this.memberHistoryRepository.save(memberHistory);
             }
         });
@@ -1290,8 +1328,7 @@ public class RemoteGatewayService {
                     () -> new RemoteServiceException(ErrorCode.ERR_HISTORY_ROOM_MEMBER_NOT_FOUND));
 
             if(memberHistory.getUuid().equals(roomHistoryDeleteRequest.getUuid())) {
-                //memberHistory.setRoomHistory(null);
-                memberHistory.getRoomHistory().setId(0L);
+                memberHistory.setRoomHistory(null);
                 this.memberHistoryRepository.save(memberHistory);
             }
         }
@@ -1301,8 +1338,12 @@ public class RemoteGatewayService {
 
     //
     public ApiResponse<WorkspaceMemberInfoListResponse> getMembers(String workspaceId, String filter, int page, int size) {
+        log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
         ApiResponse<WorkspaceMemberInfoListResponse> response = this.workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
-        log.debug("getUsers: " + response.getData().getMemberInfoList());
+        response.getData().getMemberInfoList().removeIf(memberInfoResponses ->
+                Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
+                || !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME));
+        //log.info("getUsers: " + response.getData().getMemberInfoList());
         return new ApiResponse<>(response.getData());
     }
     /*public ApiResponse<UserInfoListResponse> getUsers(boolean paging, PageRequest pageRequest) {
