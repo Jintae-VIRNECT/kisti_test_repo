@@ -851,7 +851,12 @@ public class ContentService {
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
         // 컨텐츠 소유자 확인
-        if (!content.getUserUUID().equals(userUUID)) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
+        /*
+        2020.07.30 [오후 12:21] 이상백
+        컨텐츠 상태 수정 -> 누가 올린지 신경 안 쓰고 가능
+        로 인해서 컨텐츠 공유시에 소유자 체크하는 로직 제외함.
+         */
+        //if (!content.getUserUUID().equals(userUUID)) throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
         // TODO : 제품 2.0 기능
 //        Type type = this.typeRepository.findByType(contentType).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT_TYPE));
