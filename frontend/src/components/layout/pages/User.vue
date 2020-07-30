@@ -133,9 +133,11 @@
 							user.mobile == null &&
 							user.recoveryEmail == null
 					"
-					>{{$t('user.confirm')}}</el-button
+					>{{ $t('user.confirm') }}</el-button
 				>
-				<el-button class="block-btn" @click="later">{{$t('user.later')}}</el-button>
+				<el-button class="block-btn" @click="later">{{
+					$t('user.later')
+				}}</el-button>
 			</el-col>
 		</el-row>
 	</div>
@@ -159,7 +161,7 @@ export default {
 			user: {
 				profile: '',
 				nickname: '',
-				countryCode: '',
+				countryCode: '+82',
 				mobile: '',
 				recoveryEmail: '',
 			},
@@ -297,9 +299,9 @@ export default {
 			done()
 		},
 		uploadImage(event) {
-			console.log(event)
+			// console.log(event)
 			const files = event.target.files
-			console.log(files[files.length - 1])
+			// console.log(files[files.length - 1])
 			this.formData.delete('profile') // profile는 컨텐츠 내의 이미지 리소스
 			this.validImage(event)
 				.then(imageData => {
