@@ -2,9 +2,11 @@
 RELEASE
 
 New Features
-pay.virnect.com으로 이동 url 업데이트
+-
 
 Bug Fixes
-리다이렉트 문제 수정
+계정정보 찾기 리스트로 출력
+메시지 박스 머튼 컬러 변경
+가입 포스트 헤더 토큰 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

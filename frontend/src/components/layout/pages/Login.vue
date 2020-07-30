@@ -148,10 +148,12 @@ export default {
 		autoLogin(check) {
 			if (check == true) {
 				this.rememberLogin = true
-				Cookies.set('auto', check, {domain:
-					location.hostname.split('.').length === 3
-						? location.hostname.replace(/.*?\./, '')
-						: location.hostname,})
+				Cookies.set('auto', check, {
+					domain:
+						location.hostname.split('.').length === 3
+							? location.hostname.replace(/.*?\./, '')
+							: location.hostname,
+				})
 			} else {
 				Cookies.remove('auto')
 			}
