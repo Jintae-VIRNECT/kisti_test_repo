@@ -137,6 +137,9 @@
   width: 100%;
   > .profile {
     flex: 1;
+    > .profile--text {
+      max-width: 10em;
+    }
   }
 }
 .userinfo__image {

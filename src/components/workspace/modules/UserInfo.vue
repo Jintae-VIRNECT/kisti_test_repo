@@ -5,6 +5,7 @@
   >
     <div class="roominfo-userinfo">
       <profile
+        class="profile-short"
         :image="user.profile"
         :mainText="user.nickname"
         :subText="user.email"

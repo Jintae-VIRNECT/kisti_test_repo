@@ -97,9 +97,20 @@ export default {
   },
   computed: {
     date() {
-      return this.$dayjs(this.history.activeDate).calendar(null, {
+      // console.log(
+      //   this.$dayjs(this.history.activeDate)
+      //     .calendar(Date.now(), {
+      //       sameDay: 'A h:mm',
+      //       lastDay: '[어제]',
+      //       nextDay: '[내일]',
+      //       lastWeek: '[지난주] dddd',
+      //       sameElse: 'YYYY.MM.DD',
+      //     }),
+      // )
+      return this.$dayjs(this.history.activeDate + '+00:00').calendar(null, {
         sameDay: 'A h:mm',
         lastDay: '[어제]',
+        nextDay: '[내일]',
         lastWeek: '[지난주] dddd',
         sameElse: 'YYYY.MM.DD',
       })

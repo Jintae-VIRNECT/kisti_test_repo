@@ -159,10 +159,7 @@ export default {
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
         })
-        const connRes = await this.$call.connect(
-          createdRes.token,
-          ROLE.EXPERT_LEADER,
-        )
+        const connRes = await this.$call.connect(createdRes, ROLE.EXPERT_LEADER)
 
         const roomInfo = {
           sessionId: createdRes.sessionId,

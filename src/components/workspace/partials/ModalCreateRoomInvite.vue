@@ -27,6 +27,7 @@
             @click.native="selectUser(user)"
           >
             <profile
+              class="profile-short"
               :image="user.profile"
               :mainText="user.nickName"
               :subText="user.email"
