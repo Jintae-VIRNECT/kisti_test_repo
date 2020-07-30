@@ -68,14 +68,23 @@ export default {
     PurchasesPlanMemberList,
   },
   async asyncData() {
-    const promises = {
-      plansInfo: purchaseService.getWorkspacePlansInfo(),
-      paymentInfo: paymentService.getAutoPayments(),
+    const [plansInfo, paymentInfo] = await Promise.all([
+      purchaseService.getWorkspacePlansInfo(),
+      paymentService.getAutoPayments(),
+    ])
+    // 1달 무료 페이레터 제공 데이터가 없는 문제 예외처리
+    if (!paymentInfo.items.length) {
+      const licenseAvailable = {
+        callTime: plansInfo.maxCallTime,
+        storage: plansInfo.maxStorage,
+        viewCount: plansInfo.maxViewCount,
+      }
+      paymentInfo.basisAvailable = licenseAvailable
+      paymentInfo.maxAvailable = licenseAvailable
     }
-    return {
-      plansInfo: await promises.plansInfo,
-      paymentInfo: await promises.paymentInfo,
-    }
+    // 예외처리 끝
+
+    return { plansInfo, paymentInfo }
   },
   data() {
     return {

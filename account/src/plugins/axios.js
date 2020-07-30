@@ -55,11 +55,17 @@ export async function api(name, option = {}) {
       const { data } = response.data
       return data
     } catch (e) {
-      if (process.client) $nuxt.$loading.fail()
-      else context.error(e)
       console.error(`URL: ${uri}`)
+      // timeout
+      if (e.code === 'ECONNABORTED') {
+        e.statusCode = 504
+        context.error(e)
+      }
       const { code, message } = e.response.data.result
-      throw new Error(`${code}: ${message}`)
+      const err = new Error(`${code}: ${message}`)
+      if (process.client) $nuxt.$loading.fail()
+      else context.error(err)
+      throw err
     }
   }
   // platform api

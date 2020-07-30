@@ -12,7 +12,7 @@
         prop="uuid"
         nameProp="nickname"
         imageProp="profile"
-        :width="140"
+        :width="180"
       />
     </el-table>
     <searchbar-page
