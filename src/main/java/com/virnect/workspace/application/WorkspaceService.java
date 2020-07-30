@@ -172,9 +172,10 @@ public class WorkspaceService {
     public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId, Pageable pageable) {
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
         Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByUserId(userId, pageable);
-        workspaceUserPage.forEach(workspaceUser -> {
+        for (WorkspaceUser workspaceUser : workspaceUserPage) {
             Workspace workspace = workspaceUser.getWorkspace();
             WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
+
             WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
 
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
@@ -183,14 +184,18 @@ public class WorkspaceService {
             workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceInfo.setMasterNickName(userInfoRestResponse.getNickname());
+            workspaceInfo.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
             workspaceList.add(workspaceInfo);
-        });
+        }
+
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
         pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
 
+        //master-manager-member 순으로 고정 정렬
+        workspaceList = workspaceList.stream().sorted(Comparator.comparing(WorkspaceInfoListResponse.WorkspaceInfo::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse));
     }
 

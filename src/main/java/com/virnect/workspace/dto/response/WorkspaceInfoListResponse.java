@@ -50,6 +50,8 @@ public class WorkspaceInfoListResponse {
         private String profile;
         @ApiModelProperty(value = "해당 워크스페이스의 마스터 유저 nickName", position = 11, example = "닉네임")
         private String masterNickName;
+        @ApiModelProperty(value = "해당 워크스페이스에서의 역할(MASTER,MANAGER,MEMBER) 번호", position = 12)
+        private Long roleId;
 
         @Override
         public String toString() {
