@@ -194,7 +194,7 @@ export default {
             message: errMsg
               ? errMsg
               : this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 2000,
+            duration: 4000,
             showClose: true,
           })
         }
