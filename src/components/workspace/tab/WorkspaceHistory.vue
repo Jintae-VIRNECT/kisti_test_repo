@@ -49,6 +49,10 @@ export default {
   },
   methods: {
     showDeleteDialog() {
+      if (this.checkBeta()) {
+        return false
+      }
+
       this.confirmCancel(
         '모든 목록을 삭제하시겠습니까?',
         {

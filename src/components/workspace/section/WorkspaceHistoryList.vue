@@ -77,6 +77,10 @@ export default {
     showDeleteDialog(sessionId) {
       this.$eventBus.$emit('popover:close')
 
+      if (this.checkBeta()) {
+        return false
+      }
+
       this.confirmCancel(
         '협업을 삭제 하시겠습니까?',
         {
