@@ -6,7 +6,7 @@ export default {
     file: {
       deep: true,
       handler(value) {
-        if (value && value.id) {
+        if (value && value.img) {
           setTimeout(() => {
             this.initCanvas()
           }, 500)
