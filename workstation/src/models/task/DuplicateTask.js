@@ -21,7 +21,7 @@ export default class DuplicateTask extends Model {
     this.startDate = dayjs.utc(task.schedule[0])
     this.endDate = dayjs.utc(task.schedule[1])
     this.position = task.position
-    this.targetType = 'QR'
+    this.targetType = originTask.targets.length && originTask.targets[0].type
     this.targetSetting = task.targetSetting
     this.subTaskList = subTasks.map(subTask => {
       return {

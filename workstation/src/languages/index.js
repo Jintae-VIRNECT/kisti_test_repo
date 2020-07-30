@@ -1,4 +1,7 @@
-import fs from 'fs'
+const dotenv = require('dotenv')
+const fs = require('fs')
+const filePath = `.env.${process.env.NODE_ENV.trim()}`
+const env = dotenv.parse(fs.readFileSync(filePath))
 
 import elementKo from 'element-ui/lib/locale/lang/ko'
 import elementEn from 'element-ui/lib/locale/lang/en'
@@ -38,9 +41,10 @@ module.exports = {
   detectBrowserLanguage: {
     useCookie: true,
     cookieKey: 'lang',
+    cookieDomain: '.virnect.com',
   },
   vueI18n: {
-    // fallbackLocale: 'ko',
+    fallbackLocale: env.TARGET_ENV === 'production' ? 'ko' : null,
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
       en: { ...elementEn, ...loader('/en') },

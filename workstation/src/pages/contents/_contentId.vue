@@ -32,14 +32,14 @@
           <div>
             <dt>{{ $t('contents.info.volume') }}</dt>
             <dd>{{ content.contentSize | byte2mb }}</dd>
-            <dt>{{ $t('contents.info.type') }}</dt>
-            <dd></dd>
+            <!-- <dt>{{ $t('contents.info.type') }}</dt>
+            <dd></dd> -->
           </div>
           <div>
             <dt>{{ $t('contents.info.createdDate') }}</dt>
             <dd>{{ content.createdDate | localDateFormat }}</dd>
-            <dt>{{ $t('contents.info.device') }}</dt>
-            <dd></dd>
+            <!-- <dt>{{ $t('contents.info.device') }}</dt>
+            <dd></dd> -->
           </div>
         </dl>
         <el-divider />

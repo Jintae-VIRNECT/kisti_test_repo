@@ -152,6 +152,7 @@
                 >
                   {{ $t('task.subTaskDetail.showIssue') }}
                 </el-button>
+                <span v-else>―</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -166,6 +167,7 @@
                 >
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>
+                <span v-else>―</span>
               </template>
             </el-table-column>
             <template slot="empty">
