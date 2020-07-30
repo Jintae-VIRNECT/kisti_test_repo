@@ -2,11 +2,9 @@
 RELEASE
 
 New Features
--
+회원가입 추가정보 컨트리 코드 셀렉티드
 
 Bug Fixes
-계정정보 찾기 리스트로 출력
-메시지 박스 머튼 컬러 변경
-가입 포스트 헤더 토큰 추가
+-
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
