@@ -900,43 +900,48 @@ public class RemoteGatewayService {
         log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
         log.info("session leave and sessionEventHandler is here:[reason] {}", reason);
 
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        ClientMetaData clientMetaData = null;
-        try {
-            clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        assert clientMetaData != null;
-
-        log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
-        log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
-        log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
-
-        if(room.getMembers().isEmpty()) {
-            log.info("session leave and sessionEventHandler is here: room members empty");
+        //Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
+        if(room == null) {
+            log.info("session leave and sessionEventHandler is faild. room data is null");
         } else {
-            for (Member member : room.getMembers()) {
-                if(member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setMemberStatus(MemberStatus.UNLOAD);
-                    //set end time
-                    LocalDateTime endTime = LocalDateTime.now();
-                    member.setEndDate(endTime);
 
-                    //time diff seconds
-                    Long totalDuration = member.getDurationSec();
-                    Duration duration = Duration.between(member.getStartDate(), endTime);
-                    member.setDurationSec(totalDuration + duration.getSeconds());
-
-                    //save member
-                    memberRepository.save(member);
-                }
+            JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ClientMetaData clientMetaData = null;
+            try {
+                clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
-            //log.info("session leave and sessionEventHandler is here: room members not found");
+            assert clientMetaData != null;
+
+            log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+            log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+            log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+
+            if (room.getMembers().isEmpty()) {
+                log.info("session leave and sessionEventHandler is here: room members empty");
+            } else {
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        member.setMemberStatus(MemberStatus.UNLOAD);
+                        //set end time
+                        LocalDateTime endTime = LocalDateTime.now();
+                        member.setEndDate(endTime);
+
+                        //time diff seconds
+                        Long totalDuration = member.getDurationSec();
+                        Duration duration = Duration.between(member.getStartDate(), endTime);
+                        member.setDurationSec(totalDuration + duration.getSeconds());
+
+                        //save member
+                        memberRepository.save(member);
+                    }
+                }
+                //log.info("session leave and sessionEventHandler is here: room members not found");
+            }
         }
     }
 
