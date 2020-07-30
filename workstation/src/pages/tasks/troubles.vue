@@ -36,7 +36,6 @@
             <column-default
               :label="$t('troubles.list.column.content')"
               prop="caption"
-              sortable="custom"
             />
             <column-user
               :label="$t('troubles.list.column.user')"
@@ -49,7 +48,6 @@
             <column-date
               :label="$t('troubles.list.column.reportedDate')"
               prop="reportedDate"
-              sortable="custom"
               type="time"
               :width="140"
             />

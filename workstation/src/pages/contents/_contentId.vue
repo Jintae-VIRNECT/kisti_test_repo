@@ -32,14 +32,14 @@
           <div>
             <dt>{{ $t('contents.info.volume') }}</dt>
             <dd>{{ content.contentSize | byte2mb }}</dd>
-            <dt>{{ $t('contents.info.type') }}</dt>
-            <dd></dd>
+            <!-- <dt>{{ $t('contents.info.type') }}</dt>
+            <dd></dd> -->
           </div>
           <div>
             <dt>{{ $t('contents.info.createdDate') }}</dt>
             <dd>{{ content.createdDate | localDateFormat }}</dd>
-            <dt>{{ $t('contents.info.device') }}</dt>
-            <dd></dd>
+            <!-- <dt>{{ $t('contents.info.device') }}</dt>
+            <dd></dd> -->
           </div>
         </dl>
         <el-divider />
@@ -173,9 +173,13 @@ export default {
         })
         this.$emit('updated')
         this.$router.replace('/contents')
-      } catch (e) {
+      } catch (errors) {
+        const e = errors[0]
         this.$message.error({
-          message: this.$t('contents.info.message.deleteFail') + `\n(${e})`,
+          message:
+            e.code === 4020
+              ? this.$t('contents.info.message.deleteShared')
+              : this.$t('contents.info.message.deleteFail') + `\n(${e.msg})`,
           duration: 2000,
           showClose: true,
         })

@@ -45,7 +45,6 @@
         <el-col class="container__right">
           <user-profile-card />
           <link-list-card
-            class="install-list"
             :icon="require('assets/images/icon/ic-phonelink.svg')"
             :title="$t('home.install.title')"
             :links="install"

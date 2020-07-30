@@ -173,8 +173,10 @@ export default {
           setTimeout(() => {
             this.$message.error({
               message:
-                this.$t('contents.info.message.deleteFail') +
-                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
+                e.code === 4020
+                  ? this.$t('contents.info.message.deleteShared')
+                  : this.$t('contents.info.message.deleteFail') +
+                    `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
               duration: 2000,
               showClose: true,
             })

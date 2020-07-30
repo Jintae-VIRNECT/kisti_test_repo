@@ -27,7 +27,7 @@
         <span>{{ trouble.workerName }}</span>
       </dd>
       <dt>{{ $t('troubles.list.column.reportedDate') }}</dt>
-      <dd>{{ trouble.reportedDate }}</dd>
+      <dd>{{ trouble.reportedDate | localTimeFormat }}</dd>
       <dt>{{ $t('troubles.list.column.content') }}</dt>
       <dd>{{ trouble.caption }}</dd>
     </dl>
@@ -36,8 +36,10 @@
 
 <script>
 import resultService from '@/services/result'
+import filters from '@/mixins/filters'
 
 export default {
+  mixins: [filters],
   async asyncData({ params }) {
     return {
       trouble: await resultService.getTroubleDetail(params.troubleId),

@@ -93,6 +93,9 @@ $the-sidebar-border: solid 1px #0d1d39;
   a {
     cursor: pointer;
   }
+  .avatar {
+    background: none;
+  }
 }
 .the-sidebar__logo {
   width: 36px;
@@ -105,7 +108,7 @@ $the-sidebar-border: solid 1px #0d1d39;
     display: block;
     width: 100%;
     height: 100%;
-    background-color: #e2e7ed;
+    // background-color: #e2e7ed;
     background-position: center;
     background-size: cover;
   }

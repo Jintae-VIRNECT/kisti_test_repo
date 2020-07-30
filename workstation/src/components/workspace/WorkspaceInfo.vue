@@ -52,7 +52,12 @@
     <el-divider />
     <!-- 플랜 별 사용자 수 -->
     <div class="plans">
-      <h6>{{ $t('workspace.info.planMemberCount') }}</h6>
+      <h6>
+        <span>{{ $t('workspace.info.planMemberCount') }}</span>
+        <a :href="$url.pay" target="_blank">
+          {{ $t('workspace.info.planPurchase') }}
+        </a>
+      </h6>
       <el-row>
         <el-col :span="20">
           <div class="plan">
@@ -182,6 +187,9 @@ export default {
       margin-bottom: 16px;
       font-size: 13px;
       line-height: 20px;
+      a {
+        float: right;
+      }
     }
     .el-col:nth-child(2n) {
       margin-bottom: 14px;

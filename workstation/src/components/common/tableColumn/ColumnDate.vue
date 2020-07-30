@@ -8,7 +8,7 @@
   >
     <template slot-scope="scope">
       <div class="column-date">
-        <span v-if="!format(scope.row[prop])">-</span>
+        <span v-if="!format(scope.row[prop])">―</span>
         <span
           v-if="format(scope.row[prop])"
           :style="type === 'time-narrow' ? { display: 'block' } : null"

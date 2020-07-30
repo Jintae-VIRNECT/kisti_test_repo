@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     "prettier/prettier": true,
     "order/properties-order": [],
-    "plugin/rational-order": [true, {}]
+    "plugin/rational-order": [true, {}],
+    "max-nesting-depth": 3
   }
 };

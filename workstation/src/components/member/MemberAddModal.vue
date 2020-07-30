@@ -173,23 +173,28 @@ export default {
         this.$emit('updated', this.form)
         this.showMe = false
       } catch (e) {
-        if (/^Error: 2003/.test(e)) {
+        const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
+        // 결제센터로
+        if (errCode === 2003) {
           this.$confirm(this.$t('members.add.message.noHavePlans'), {
             confirmButtonText: this.$t('common.paymentCenter'),
             customClass: 'no-title',
           }).then(() => {
             window.open(`${urls.pay[this.$config.TARGET_ENV]}`)
           })
-        } else if (/^Error: 1002/.test(e)) {
+        }
+        // 일반에러
+        else {
+          const errMsg = {
+            1002: this.$t('members.add.message.memberAlready'),
+            1007: this.$t('members.add.message.notHaveAnyPlan'),
+            1008: this.$t('members.add.message.memberOverflow'),
+          }[errCode]
           this.$message.error({
-            message: this.$t('members.add.message.memberAlready'),
-            duration: 2000,
-            showClose: true,
-          })
-        } else {
-          this.$message.error({
-            message: this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 2000,
+            message: errMsg
+              ? errMsg
+              : this.$t('members.add.message.inviteFail') + `\n(${e})`,
+            duration: 4000,
             showClose: true,
           })
         }

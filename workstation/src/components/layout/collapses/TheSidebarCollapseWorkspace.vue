@@ -70,6 +70,25 @@ export default {
 </script>
 
 <style lang="scss">
+.the-sidebar__collapse--workspace {
+  height: 100%;
+  .the-sidebar__collapse__body {
+    height: calc(100% - 90px);
+    overflow-y: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(74, 92, 129, 1);
+    border-radius: 5px;
+    opacity: 0.2;
+  }
+}
 .the-sidebar__collapse--workspace .the-sidebar__collapse__body > div {
   & > span {
     display: block;

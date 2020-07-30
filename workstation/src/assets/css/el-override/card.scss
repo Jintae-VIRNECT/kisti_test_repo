@@ -86,9 +86,6 @@
   .el-table::before {
     display: none;
   }
-  tr:last-child td {
-    border-bottom: none;
-  }
   .el-table__body-wrapper {
     min-height: 640px;
   }
