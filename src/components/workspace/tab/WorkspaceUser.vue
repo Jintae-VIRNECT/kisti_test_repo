@@ -47,12 +47,9 @@ export default {
         this.loading = true
         const datas = await getMemberList(params)
         this.loading = false
-        this.memberList = datas.memberInfoList.filter(member => {
-          return (
-            member.licenseProducts.findIndex(license => license === 'REMOTE') >
-            -1
-          )
-        })
+        this.memberList = datas.memberInfoList.filter(
+          member => member.uuid !== this.account.uuid,
+        )
       } catch (err) {
         console.error(err)
       }

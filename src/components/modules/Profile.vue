@@ -19,6 +19,7 @@
 <script>
 import Role from 'Role'
 import { WORKSPACE_ROLE } from 'configs/status.config'
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'Profile',
   components: {
@@ -56,7 +57,7 @@ export default {
   },
   computed: {
     showRole() {
-      if (this.role === WORKSPACE_ROLE.MEMBER) {
+      if (this.role === WORKSPACE_ROLE.MEMBER || this.role === ROLE.UNKNOWN) {
         return false
       } else {
         return true
@@ -117,7 +118,7 @@ export default {
   margin: 0 0.714em 0 1.286em;
 }
 
-.profile.createroom-user__profile {
+.profile.profile-short {
   .profile--text {
     max-width: 10em;
   }

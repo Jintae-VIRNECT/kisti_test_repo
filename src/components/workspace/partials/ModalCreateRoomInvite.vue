@@ -27,7 +27,7 @@
             @click.native="selectUser(user)"
           >
             <profile
-              class="createroom-user__profile"
+              class="profile-short"
               :image="user.profile"
               :mainText="user.nickName"
               :subText="user.email"
