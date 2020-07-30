@@ -491,12 +491,14 @@ public class RemoteGatewayService {
     }
 
     @Transactional
-    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId) {
+    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
         // Get Specific Room using Session ID
         /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
                 () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
         Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);;
+
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
         ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
@@ -505,7 +507,17 @@ public class RemoteGatewayService {
             response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
             response.setData(response.getData());
             return response;
+        } else if(member == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
         } else {
+            if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                response.setData(response.getData());
+                return response;
+            }
+
             // Room and Member History 저장
             // Remote Room History Entity Create
             RoomHistory roomHistory = RoomHistory.builder()
@@ -521,18 +533,18 @@ public class RemoteGatewayService {
             // Get Member List by Room Session Ids
             List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
             // Mapping Member List Data to Member History List
-            for (Member member : memberList) {
+            for (Member roomMember : memberList) {
                 MemberHistory memberHistory = MemberHistory.builder()
                         .roomHistory(roomHistory)
-                        .workspaceId(member.getWorkspaceId())
-                        .uuid(member.getUuid())
-                        .email(member.getEmail())
-                        .memberType(member.getMemberType())
-                        .deviceType(member.getDeviceType())
-                        .sessionId(member.getSessionId())
-                        .startDate(member.getStartDate())
-                        .endDate(member.getEndDate())
-                        .durationSec(member.getDurationSec())
+                        .workspaceId(roomMember.getWorkspaceId())
+                        .uuid(roomMember.getUuid())
+                        .email(roomMember.getEmail())
+                        .memberType(roomMember.getMemberType())
+                        .deviceType(roomMember.getDeviceType())
+                        .sessionId(roomMember.getSessionId())
+                        .startDate(roomMember.getStartDate())
+                        .endDate(roomMember.getEndDate())
+                        .durationSec(roomMember.getDurationSec())
                         .build();
                 memberHistoryRepository.save(memberHistory);
                 roomHistory.getMemberHistories().add(memberHistory);
@@ -821,8 +833,6 @@ public class RemoteGatewayService {
      */
     @Transactional
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
-        /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
-                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
         Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
         Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);;
 
