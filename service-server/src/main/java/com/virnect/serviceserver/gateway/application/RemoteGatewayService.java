@@ -576,57 +576,61 @@ public class RemoteGatewayService {
     @Transactional
     public void destroySession(KurentoSession session, EndReason reason) {
         log.info("session destroy and sessionEventHandler is here: {}", session.getSessionId());
-        Room room = roomRepository.findBySessionId(session.getSessionId()).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        // Room and Member History 저장
-        // Remote Room History Entity Create
-        RoomHistory roomHistory = RoomHistory.builder()
-                .sessionId(room.getSessionId())
-                .title(room.getTitle())
-                .description(room.getDescription())
-                .profile(room.getProfile())
-                .leaderId(room.getLeaderId())
-                .workspaceId(room.getWorkspaceId())
-                .build();
-
-        // Set room member history
-        // Get Member List by Room Session Ids
-        List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-        // Mapping Member List Data to Member History List
-        for (Member member : memberList) {
-            MemberHistory memberHistory = MemberHistory.builder()
-                    .roomHistory(roomHistory)
-                    .workspaceId(member.getWorkspaceId())
-                    .uuid(member.getUuid())
-                    .email(member.getEmail())
-                    .memberType(member.getMemberType())
-                    .deviceType(member.getDeviceType())
-                    .sessionId(member.getSessionId())
-                    .startDate(member.getStartDate())
-                    .endDate(member.getEndDate())
-                    .durationSec(member.getDurationSec())
+        //Room room = roomRepository.findBySessionId(session.getSessionId()).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        Room room = roomRepository.findBySessionId(session.getSessionId()).orElse(null);
+        if(room == null) {
+            log.info("session destroy and sessionEventHandler is faild. room data is null");
+        } else {
+            // Room and Member History 저장
+            // Remote Room History Entity Create
+            RoomHistory roomHistory = RoomHistory.builder()
+                    .sessionId(room.getSessionId())
+                    .title(room.getTitle())
+                    .description(room.getDescription())
+                    .profile(room.getProfile())
+                    .leaderId(room.getLeaderId())
+                    .workspaceId(room.getWorkspaceId())
                     .build();
-            memberHistoryRepository.save(memberHistory);
-            roomHistory.getMemberHistories().add(memberHistory);
+
+            // Set room member history
+            // Get Member List by Room Session Ids
+            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            // Mapping Member List Data to Member History List
+            for (Member member : memberList) {
+                MemberHistory memberHistory = MemberHistory.builder()
+                        .roomHistory(roomHistory)
+                        .workspaceId(member.getWorkspaceId())
+                        .uuid(member.getUuid())
+                        .email(member.getEmail())
+                        .memberType(member.getMemberType())
+                        .deviceType(member.getDeviceType())
+                        .sessionId(member.getSessionId())
+                        .startDate(member.getStartDate())
+                        .endDate(member.getEndDate())
+                        .durationSec(member.getDurationSec())
+                        .build();
+                memberHistoryRepository.save(memberHistory);
+                roomHistory.getMemberHistories().add(memberHistory);
+            }
+
+
+            //set active time
+            roomHistory.setActiveDate(room.getActiveDate());
+
+            //set un active  time
+            LocalDateTime endTime = LocalDateTime.now();
+            roomHistory.setUnactiveDate(endTime);
+
+            //time diff seconds
+            Duration duration = Duration.between(room.getActiveDate(), endTime);
+            roomHistory.setDurationSec(duration.getSeconds());
+
+            //save room history
+            roomHistoryRepository.save(roomHistory);
+
+            //delete room
+            roomRepository.delete(room);
         }
-
-
-        //set active time
-        roomHistory.setActiveDate(room.getActiveDate());
-
-        //set un active  time
-        LocalDateTime endTime = LocalDateTime.now();
-        roomHistory.setUnactiveDate(endTime);
-
-        //time diff seconds
-        Duration duration = Duration.between(room.getActiveDate(), endTime);
-        roomHistory.setDurationSec(duration.getSeconds());
-
-        //save room history
-        roomHistoryRepository.save(roomHistory);
-
-        //delete room
-        roomRepository.delete(room);
     }
 
     public ApiResponse<RoomDetailInfoResponse> getRoomInfoBySessionId(String workspaceId, String sessionId) {
