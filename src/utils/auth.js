@@ -29,8 +29,15 @@ function getTokensFromCookies() {
   return accessToken
 }
 function setTokensToCookies(response) {
-  Cookies.set('accessToken', response.accessToken)
-  Cookies.set('refreshToken', response.refreshToken)
+  const cookieOption = {
+    expires: response.expireIn / 3600000,
+    domain:
+      location.hostname.split('.').length === 3
+        ? location.hostname.replace(/.*?\./, '')
+        : location.hostname,
+  }
+  Cookies.set('accessToken', response.accessToken, cookieOption)
+  Cookies.set('refreshToken', response.refreshToken, cookieOption)
   accessToken = response.accessToken
   refreshToken = response.refreshToken
   setAuthorization(accessToken)
