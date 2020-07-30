@@ -65,12 +65,14 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .coupon-list {
+#__nuxt .el-card--table .el-card__body .coupon-list {
   &__body-wrapper {
     height: 640px;
   }
   td:last-child .cell {
-    overflow: visible;
+    & > div {
+      overflow: visible;
+    }
     span.EXPIRED {
       background: rgba(178, 185, 201, 0.3);
       border: none;
