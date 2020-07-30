@@ -15,7 +15,7 @@ export default {
       else return bool && bool.toLowerCase() !== 'no'
     },
     mb2gb(mb) {
-      return (mb / 1000).toFixed(2) * 1
+      return (mb / 1024).toFixed(2) * 1
     },
   },
 }
