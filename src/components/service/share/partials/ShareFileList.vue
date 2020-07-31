@@ -53,7 +53,6 @@ export default {
       sharingList: 'fileList',
     }),
   },
-  watch: {},
   methods: {
     ...mapActions(['addFile']),
     pdfView(file) {
