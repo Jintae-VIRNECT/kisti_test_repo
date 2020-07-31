@@ -35,7 +35,7 @@ router.get('/healthcheck', function(req, res) {
 router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/m/qrcode')
+      res.redirect('/support')
     } else {
       res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
@@ -48,7 +48,7 @@ router.get('/home', function(req, res) {
 router.get('/service', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/m/qrcode')
+      res.redirect('/support')
     } else {
       res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
