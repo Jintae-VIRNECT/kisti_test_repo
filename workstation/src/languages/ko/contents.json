@@ -18,6 +18,10 @@
     "shared": "활성화",
     "noShared": "비활성화"
   },
+  "targetTypes": {
+    "qr": "QR 코드",
+    "vtarget": "V 타겟"
+  },
   "info": {
     "title": "콘텐츠 정보",
     "id": "콘텐츠 ID",

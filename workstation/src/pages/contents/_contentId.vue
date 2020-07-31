@@ -57,7 +57,7 @@
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-if="content.target">
-            <span>{{ content.target.type }}</span>
+            <span>{{ content.targetType }}</span>
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
