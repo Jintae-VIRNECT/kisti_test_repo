@@ -7,7 +7,9 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${activeWorkspace.profile})`"
+              :style="
+                `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+              "
             />
           </div>
           <span>{{ activeWorkspace.name }}</span>

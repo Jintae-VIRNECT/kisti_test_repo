@@ -4,7 +4,9 @@
       <div class="avatar">
         <div
           class="image"
-          :style="`background-image: url(${workspaceInfo.info.profile})`"
+          :style="
+            `background-image: url(${workspaceInfo.info.profile}), url(${$defaultWorkspaceProfile})`
+          "
         />
       </div>
       <h5>{{ workspaceInfo.info.name }}</h5>

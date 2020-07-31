@@ -4,7 +4,9 @@
       <div class="the-sidebar__logo">
         <a
           @click.stop="openCollapse(logoCollapse)"
-          :style="`background-image: url(${activeWorkspace.profile})`"
+          :style="
+            `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+          "
         />
       </div>
       <div class="the-sidebar__upper">
