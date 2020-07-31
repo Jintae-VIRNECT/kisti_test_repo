@@ -47,9 +47,9 @@ export default {
         this.loading = true
         const datas = await getMemberList(params)
         this.loading = false
-        this.memberList = datas.memberInfoList.filter(member => {
-          member.licenseProducts.findIndex
-        })
+        this.memberList = datas.memberInfoList.filter(
+          member => member.uuid !== this.account.uuid,
+        )
       } catch (err) {
         console.error(err)
       }

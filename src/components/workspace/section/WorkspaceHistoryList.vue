@@ -98,8 +98,8 @@ export default {
 
       const result = await deleteHistorySingleItem({
         workspaceId: this.workspace.uuid,
-        sessionId: sessionId,
-        userId: this.account.uuid,
+        sessionIdList: [sessionId],
+        uuid: this.account.uuid,
       })
 
       if (result.data) {

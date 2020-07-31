@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 const axios = Axios.create({
-  timeout: process.env.NODE_ENV === 'production' ? 2000 : 10000,
+  timeout: process.env.NODE_ENV === 'production' ? 5000 : 10000,
   withCredentials: false,
   headers: {
     'Access-Control-Allow-Origin': '*',

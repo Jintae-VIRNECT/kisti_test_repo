@@ -7,10 +7,7 @@ export default {
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
   HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
-  DELETE_HISTORY_ITEM: [
-    'DELETE',
-    '/remote/history/{workspaceId}/{sessionId}/{userId}',
-  ],
+  DELETE_HISTORY_ITEM: ['DELETE', '/remote/history/{workspaceId}'],
   DELETE_HISTORY_ALL: ['DELETE', '/remote/history/{workspaceId}/{userId}'],
 
   /* Workspace - Member */

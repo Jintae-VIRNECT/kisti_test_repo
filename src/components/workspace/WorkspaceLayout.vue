@@ -95,6 +95,12 @@ export default {
         licenseEmpty: this.license,
       })
       if (workspaces) {
+        for (let workspace of workspaces) {
+          const info = authInfo.workspace.find(
+            work => work.uuid === workspace.workspaceId,
+          )
+          workspace['role'] = info.role
+        }
         this.initWorkspace(workspaces)
         // BETA: 1hour logout setting
         this.$parent.init()

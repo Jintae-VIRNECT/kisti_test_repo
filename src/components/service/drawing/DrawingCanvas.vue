@@ -149,31 +149,35 @@ export default {
      */
     initCanvas() {
       this.isInit = false
-      if (this.canvas === null) {
-        const canvas = new fabric.Canvas('drawingCanvas', {
-          backgroundColor: '#000000',
-          isDrawingMode:
-            !!this.viewAction && this.account.roleType === ROLE.EXPERT_LEADER,
-          freeDrawingCursor: 'default',
-        })
-
-        this.canvas = canvas
-
-        // 커서 설정
-        this.cursor = this.createCursor(this.canvas)
-
-        this.appendListener()
-      } else {
-        this.canvas.clear()
+      if (this.canvas) {
+        this.canvas.dispose()
+        this.canvas = null
       }
+
+      const canvas = new fabric.Canvas('drawingCanvas', {
+        backgroundColor: '#000000',
+        isDrawingMode:
+          !!this.viewAction && this.account.roleType === ROLE.EXPERT_LEADER,
+        freeDrawingCursor: 'default',
+      })
+
+      this.canvas = canvas
+
+      // 커서 설정
+      this.cursor = this.createCursor(this.canvas)
+
+      this.appendListener()
 
       // 배경이미지 설정
       const bgImage = new Image()
       bgImage.onload = () => {
         const fabricImage = new fabric.Image(bgImage)
         this.setBG(fabricImage).then(canvas => {
+          // console.log(canvas.getWidth(), canvas.getHeight())
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
+          this.origin.width = canvas.getWidth()
+          this.origin.height = canvas.getHeight()
 
           // 히스토리 초기화
           this.stackClear()
@@ -236,7 +240,12 @@ export default {
         scale: 1 / this.canvas.backgroundImage.scaleX,
         imgWidth: this.canvas.getWidth(),
         imgHeight: this.canvas.getHeight(),
+        // oriWidth: this.origin.width,
+        // oriHeight: this.origin.height,
+        posScale: this.canvas.getWidth() / this.origin.width,
       }
+      // console.log(state.imgWidth, state.imgHeight)
+      // console.log(this.canvas.getWidth(), this.origin.width)
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.id
 

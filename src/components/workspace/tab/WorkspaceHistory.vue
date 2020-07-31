@@ -78,8 +78,13 @@ export default {
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
         })
+        this.historyList = datas.roomHistoryInfoList.sort((roomA, roomB) => {
+          return (
+            new Date(roomB.activeDate).getTime() -
+            new Date(roomA.activeDate).getTime()
+          )
+        })
         this.loading = false
-        this.historyList = datas.roomHistoryInfoList
       } catch (err) {
         console.error(err)
       }

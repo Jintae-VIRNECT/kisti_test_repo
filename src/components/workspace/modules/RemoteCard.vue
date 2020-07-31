@@ -151,14 +151,6 @@ export default {
       this.title = info.title
     },
     join() {
-      const idx = this.activeMemberList.findIndex(
-        member => member.uuid === this.account.uuid,
-      )
-      if (idx > -1) {
-        // TODO: MESSAGE
-        this.toastError('이미 참가중인 협업입니다.')
-        return
-      }
       this.$emit('join')
     },
   },

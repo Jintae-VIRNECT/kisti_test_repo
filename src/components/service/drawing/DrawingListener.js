@@ -61,7 +61,7 @@ export default {
       this.receivePath.push(receiveParams)
 
       if (data.type === DRAWING.LINE_UP) {
-        const width = parseInt(data.width) / params.scale
+        const width = parseInt(data.width)
         // const width = parseInt(data.width)
         const pos = calcPosition(this.receivePath, width)
         const path = new fabric.Path(this.receivePath, {
@@ -73,7 +73,7 @@ export default {
           strokeMiterLimit: width,
           strokeLineCap: 'round',
           strokeLineJoin: 'round',
-          owner: data.from,
+          owner: 'export',
           hasControls: false,
           selectable: false,
           hoverCursor: 'default',
@@ -109,7 +109,7 @@ export default {
         hasControls: false,
         selectable: false,
         hoverCursor: 'auto',
-        owner: data.from,
+        owner: 'export',
       })
       this.canvas.add(object)
       this.canvas.renderAll()
@@ -124,13 +124,13 @@ export default {
     },
     clearAll(data) {
       this.canvas.getObjects().forEach(object => {
-        if (object.owner === data.from) {
+        if (object.owner === 'export') {
           object.canvas.remove(object)
         }
       })
       this.canvas.renderAll()
-      delete this.receiveUndoList[data.from]
-      delete this.receiveRedoList[data.from]
+      delete this.receiveUndoList['export']
+      delete this.receiveRedoList['export']
     },
   },
 

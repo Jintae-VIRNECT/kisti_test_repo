@@ -2,7 +2,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: calc(100% - #{$welcome_height});
+  // height: calc(100% - #{$welcome_height});
+  // height: calc(100% - 20rem);
 }
 
 .workspace-tab__nav {

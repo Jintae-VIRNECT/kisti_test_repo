@@ -94,4 +94,5 @@ export const ROLE = {
   EXPERT_LEADER: 'LEADER',
   EXPERT: 'EXPERT',
   WORKER: 'WORKER',
+  UNKNOWN: 'UNKNOWN',
 }
