@@ -12,4 +12,12 @@ export default function(con, inject) {
   url = new Url(con.$config.TARGET_ENV)
 
   inject('url', url)
+  inject(
+    'defaultWorkspaceProfile',
+    require('assets/images/workspace-profile.png'),
+  )
+  inject(
+    'defaultUserProfile',
+    require('assets/images/icon/ic-user-profile.svg'),
+  )
 }

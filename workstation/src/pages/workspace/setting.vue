@@ -69,7 +69,8 @@
                           <div
                             class="image"
                             :style="
-                              `background-image: url('${file || defaultFile}')`
+                              `background-image: url('${file ||
+                                $defaultWorkspaceProfile}')`
                             "
                           />
                           <i>
@@ -163,7 +164,6 @@ export default {
   data() {
     return {
       file: null,
-      defaultFile: require('assets/images/workspace-profile.png'),
       form: {
         name: '',
         description: '',

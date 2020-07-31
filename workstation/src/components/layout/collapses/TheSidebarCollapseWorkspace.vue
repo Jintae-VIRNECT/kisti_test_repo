@@ -16,7 +16,9 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${workspace.profile})`"
+              :style="
+                `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
+              "
             />
           </div>
           <span>{{ workspace.name }}</span>
