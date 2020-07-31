@@ -17,8 +17,8 @@ const state = {
     resolution: '480p',
   },
   allow: {
-    pointing: false,
-    localRecording: false,
+    pointing: true,
+    localRecording: true,
   },
 
   videoDevice: null,

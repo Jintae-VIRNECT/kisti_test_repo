@@ -111,9 +111,15 @@ export const getSignalParams = function getSignalParams(
   // if(object) tId = object.id;
   if (object) tId = object.tId
   let posX, posY
+  let left, top
 
-  let left = object.left * status.posScale
-  let top = object.top * status.posScale
+  if (status.posScale) {
+    left = object.left * status.posScale
+    top = object.top * status.posScale
+  } else {
+    left = object.left
+    top = object.top
+  }
 
   switch (type) {
     /* 
