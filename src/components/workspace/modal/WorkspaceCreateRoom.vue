@@ -124,9 +124,21 @@ export default {
         size: 100,
         workspaceId: this.workspace.uuid,
       })
-      this.users = inviteList.memberInfoList.filter(
-        member => member.uuid !== this.account.uuid,
-      )
+      this.users = inviteList.memberInfoList
+        .filter(member => member.uuid !== this.account.uuid)
+        .sort((a, b) => {
+          var nameA = a.name.toUpperCase()
+          var nameB = b.name.toUpperCase()
+          if (nameA < nameB) {
+            return -1
+          }
+          if (nameA > nameB) {
+            return 1
+          }
+
+          // 이름이 같을 경우
+          return 0
+        })
       this.loading = false
     },
     async startRemote(info) {
