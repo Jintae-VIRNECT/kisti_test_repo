@@ -1001,25 +1001,45 @@ public class RemoteGatewayService {
     }
 
     @Transactional
-    public ApiResponse<Boolean> kickFromRoom(String workspaceId, String sessionId, @Valid KickRoomRequest kickRoomRequest) {
+    public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
         log.info("ROOM INFO KICK USER BY LEADER ID => [{}]", kickRoomRequest.getLeaderId());
-        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
-                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
+                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
+        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, kickRoomRequest.getParticipantId()).orElse(null);;
 
-        if(room.getMembers().isEmpty()) {
-            throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
-        } else if(!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
-            throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setResult(false);
+        ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
+        if(room == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
+        } else if(member == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
         } else {
-            for (Member member : room.getMembers()) {
-                if(member.getUuid().equals(kickRoomRequest.getParticipantId())) {
-                    //this.memberRepository.delete(member);
-                    room.getMembers().remove(member);
-                    roomRepository.save(room);
-                    return new ApiResponse<>(true);
+            if (room.getMembers().isEmpty()) {
+                throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+            } else if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
+                throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+            } else {
+                for (Member roomMember : room.getMembers()) {
+                    if (roomMember.getUuid().equals(kickRoomRequest.getParticipantId())) {
+                        //this.memberRepository.delete(member);
+                        room.getMembers().remove(roomMember);
+                        roomRepository.save(room);
+
+                        resultResponse.setResult(true);
+                        return new ApiResponse<>(resultResponse);
+                    }
                 }
+                response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                response.setData(response.getData());
+                return response;
+                //throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
             }
-            throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
         }
     }
 
