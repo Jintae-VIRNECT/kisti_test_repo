@@ -289,6 +289,7 @@ const _ = {
    * @param {Object} params (문서참조)
    */
   arDrawing: (type, params = {}) => {
+    if (!_.session) return
     params.type = type
     params['from'] = _.account.uuid
     _.session.signal({

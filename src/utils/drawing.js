@@ -113,12 +113,23 @@ export const getSignalParams = function getSignalParams(
   let posX, posY
   let left, top
 
-  if (status.posScale) {
-    left = object.left * status.posScale
-    top = object.top * status.posScale
-  } else {
-    left = object.left
-    top = object.top
+  if (
+    ![
+      AR_DRAWING.UNDO,
+      AR_DRAWING.REDO,
+      AR_DRAWING.CLEAR,
+      DRAWING.UNDO,
+      DRAWING.REDO,
+      DRAWING.CLEAR_ALL,
+    ].includes(type)
+  ) {
+    if (status.posScale) {
+      left = object.left * status.posScale
+      top = object.top * status.posScale
+    } else {
+      left = object.left
+      top = object.top
+    }
   }
 
   switch (type) {

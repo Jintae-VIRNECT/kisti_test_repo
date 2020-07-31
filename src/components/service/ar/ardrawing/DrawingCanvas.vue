@@ -38,6 +38,10 @@ export default {
       cursor: null,
       undoList: [],
       redoList: [],
+      origin: {
+        width: 0,
+        height: 0,
+      },
     }
   },
   computed: {
@@ -73,6 +77,9 @@ export default {
             scaleX: canvasSize.scale,
             scaleY: canvasSize.scale,
           })
+          this.origin.width = canvasSize.width
+          this.origin.height = canvasSize.height
+          this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
 
           resolve(canvas)
@@ -147,6 +154,8 @@ export default {
         this.setBG(fabricImage).then(canvas => {
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
+          this.origin.width = canvas.getWidth()
+          this.origin.height = canvas.getHeight()
 
           // 히스토리 초기화
           this.stackClear()
@@ -214,6 +223,7 @@ export default {
     optimizeCanvasSize() {
       if (!this.file || !this.file.id) return
       const canvas = this.canvas
+      const cursor = this.cursor.canvas
       const image = canvas.backgroundImage
       const parent = this.$el.parentNode
 
@@ -224,11 +234,25 @@ export default {
         image.height,
       )
 
+      if (this.origin.width === 0) {
+        this.origin.width = canvasSize.width
+        this.origin.height = canvasSize.height
+      }
+
+      const scale = canvasSize.width / this.origin.width
+
+      this.origin.scale = scale
+
+      canvas.setZoom(scale)
+      cursor.setZoom(scale)
+
       canvas.setWidth(canvasSize.width)
       canvas.setHeight(canvasSize.height)
+      cursor.setWidth(canvas.getWidth())
+      cursor.setHeight(canvas.getHeight())
       canvas.backgroundImage.set({
-        scaleX: canvasSize.scale,
-        scaleY: canvasSize.scale,
+        scaleX: canvasSize.scale / scale,
+        scaleY: canvasSize.scale / scale,
       })
     },
   },
