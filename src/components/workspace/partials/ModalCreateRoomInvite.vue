@@ -29,7 +29,7 @@
             <profile
               class="profile-short"
               :image="user.profile"
-              :mainText="user.nickName"
+              :mainText="user.nickname || user.nickName"
               :subText="user.email"
               :role="user.role"
               :thumbStyle="{ width: '3em', height: '3em' }"
