@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['shareFile']),
+    ...mapGetters(['shareFile', 'fileList']),
     show() {
       if (this.list === 'file') {
         if (!this.file || !this.file.id) {
@@ -84,8 +84,14 @@ export default {
         }
       },
     },
+    'fileList.length': 'addFile',
   },
   methods: {
+    addFile(list, oldList) {
+      if (list > oldList) {
+        this.changeTab('file')
+      }
+    },
     changePdfView(fileInfo) {
       this.file = fileInfo
     },
