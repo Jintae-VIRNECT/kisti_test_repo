@@ -864,7 +864,7 @@ public class RoomRestController {
     )*/
     @ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/member")
-    public ResponseEntity<ApiResponse<Boolean>> kickOutMember(
+    public ResponseEntity<ApiResponse<ResultResponse>> kickOutMember(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid KickRoomRequest kickRoomRequest,
@@ -880,20 +880,25 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<Boolean> apiResponse = new ApiResponse<>(true);
+        //ApiResponse<Boolean> apiResponse = new ApiResponse<>(true);
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.kickFromRoom(workspaceId, sessionId, kickRoomRequest);
         Session session = this.sessionManager.getSessionWithNotActive(sessionId);
         if (session == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+            apiResponse.getData().setResult(false);
+            return ResponseEntity.ok(apiResponse);
         }
 
-        Participant participant = session.getParticipantByPublicId(kickRoomRequest.getParticipantId());
+        Participant participant = session.getParticipantByPublicId(kickRoomRequest.getConnectionId());
         if (participant != null) {
             this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByServer);
-            apiResponse = this.remoteGatewayService.kickFromRoom(workspaceId, sessionId, kickRoomRequest);
+            //apiResponse = this.remoteGatewayService.kickFromRoom(workspaceId, sessionId, kickRoomRequest);
             return ResponseEntity.ok(apiResponse);
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+            apiResponse.getData().setResult(false);
+            return ResponseEntity.ok(apiResponse);
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
     }
 
