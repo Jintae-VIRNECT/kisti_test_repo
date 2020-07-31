@@ -2,7 +2,8 @@
 RELEASE
 
 New Features
-회원가입 추가정보 컨트리 코드 셀렉티드
+로그인이 필요한 서비스입니다 모달
+이미지추가
 
 Bug Fixes
 -

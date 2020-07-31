@@ -28,6 +28,7 @@ import 'element/message-box.css'
 import 'element/dialog.css'
 
 import 'assets/css/common.scss'
+import 'assets/css/_override.scss'
 
 sync(store, router)
 Vue.config.productionTip = false
