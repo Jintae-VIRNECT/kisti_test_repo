@@ -1,4 +1,5 @@
 .drawing-box {
+  position: relative;
   flex: 1;
   width: 100%;
   height: calc(100% - #{$tool_height});
