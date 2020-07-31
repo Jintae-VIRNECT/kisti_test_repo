@@ -47,9 +47,9 @@ public class MemberRestController {
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size) {
-
         log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
 
+        //todo: after delete user itself
         ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.remoteGatewayService.getMembers(workspaceId, filter, page, size);
         log.debug(TAG, apiResponse.toString());
         return ResponseEntity.ok(apiResponse);

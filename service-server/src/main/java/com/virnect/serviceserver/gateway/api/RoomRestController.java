@@ -489,7 +489,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/{userId}")
-    public ResponseEntity<ApiResponse<Boolean>> deleteRoomById(
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId) {
@@ -501,20 +501,84 @@ public class RoomRestController {
             throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
+        /*if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
             throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+        }*/
+
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setResult(false);
+        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId, userId);
+        //apiResponse = this.remoteGatewayService.removeAllRoom(workspaceId);
+        if(apiResponse.getData().getResult()) {
+            Session session = this.sessionManager.getSession(sessionId);
+            if (session != null) {
+                log.info("REST API: DELETE closeSession");
+                this.sessionManager.closeSession(sessionId, EndReason.sessionClosedByServer);
+                //apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
+                //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+                return ResponseEntity.ok(apiResponse);
+            }
+
+            Session sessionNotActive = this.sessionManager.getSessionNotActive(sessionId);
+            if (sessionNotActive != null) {
+                try {
+                    if (sessionNotActive.closingLock.writeLock().tryLock(15, TimeUnit.SECONDS)) {
+                        try {
+                            log.info("REST API: DELETE close sessionNotActive");
+                            if (sessionNotActive.isClosed()) {
+                                //ResultResponse resultResponse = new ResultResponse();
+                                //resultResponse.setResult(false);
+                                //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                                apiResponse.getData().setResult(false);
+                                return ResponseEntity.ok(apiResponse);
+
+                            }
+
+                            this.sessionManager.closeSessionAndEmptyCollections(
+                                    sessionNotActive,
+                                    EndReason.sessionClosedByServer,
+                                    true);
+                            //apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
+                            return ResponseEntity.ok(apiResponse);
+                            //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+                        } finally {
+                            sessionNotActive.closingLock.writeLock().unlock();
+                        }
+                    } else {
+                        String errorMsg = "Timeout waiting for Session " + sessionId
+                                + " closing lock to be available for closing from DELETE /api/sessions";
+                        log.error(errorMsg);
+                        //apiResponse.setData(false);
+                        apiResponse.getData().setResult(false);
+                        return ResponseEntity.ok(apiResponse);
+                        //apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
+                        //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+                    }
+                } catch (InterruptedException e) {
+                    String errorMsg = "InterruptedException while waiting for Session " + sessionId
+                            + " closing lock to be available for closing from DELETE /api/sessions";
+                    log.error(errorMsg);
+                /*apiResponse.setData(false);
+                apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);*/
+                    apiResponse.getData().setResult(false);
+                    return ResponseEntity.ok(apiResponse);
+                }
+            } else {
+                //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                return ResponseEntity.ok(apiResponse);
+            }
+        } else {
+            return ResponseEntity.ok(apiResponse);
         }
 
-        ApiResponse<Boolean> apiResponse = new ApiResponse<>(true);
-        //apiResponse = this.remoteGatewayService.removeAllRoom(workspaceId);
-
-        Session session = this.sessionManager.getSession(sessionId);
+        /*Session session = this.sessionManager.getSession(sessionId);
         if (session != null) {
             log.info("REST API: DELETE closeSession");
             this.sessionManager.closeSession(sessionId, EndReason.sessionClosedByServer);
-            //apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
-            //return ResponseEntity.ok(apiResponse);
+            apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
+            //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+            return ResponseEntity.ok(apiResponse);
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -527,7 +591,12 @@ public class RoomRestController {
                         log.info("REST API: DELETE close sessionNotActive");
 
                         if (sessionNotActive.isClosed()) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                            //ResultResponse resultResponse = new ResultResponse();
+                            //resultResponse.setResult(false);
+                            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                            apiResponse.getData().setResult(false);
+                            return ResponseEntity.ok(apiResponse);
+
                         }
 
                         this.sessionManager.closeSessionAndEmptyCollections(
@@ -536,7 +605,8 @@ public class RoomRestController {
                                 true);
 
                         apiResponse = this.remoteGatewayService.removeRoom(workspaceId, sessionId);
-                        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+                        return ResponseEntity.ok(apiResponse);
+                        //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
                         //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } finally {
                         sessionNotActive.closingLock.writeLock().unlock();
@@ -545,21 +615,26 @@ public class RoomRestController {
                     String errorMsg = "Timeout waiting for Session " + sessionId
                             + " closing lock to be available for closing from DELETE /api/sessions";
                     log.error(errorMsg);
-                    apiResponse.setData(false);
-                    apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+                    //apiResponse.setData(false);
+                    apiResponse.getData().setResult(false);
+                    return ResponseEntity.ok(apiResponse);
+                    //apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
+                    //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
                 }
             } catch (InterruptedException e) {
                 String errorMsg = "InterruptedException while waiting for Session " + sessionId
                         + " closing lock to be available for closing from DELETE /api/sessions";
                 log.error(errorMsg);
-                apiResponse.setData(false);
+                *//*apiResponse.setData(false);
                 apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);*//*
+                apiResponse.getData().setResult(false);
+                return ResponseEntity.ok(apiResponse);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-        }
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+            return ResponseEntity.ok(apiResponse);
+        }*/
     }
 
     @ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")

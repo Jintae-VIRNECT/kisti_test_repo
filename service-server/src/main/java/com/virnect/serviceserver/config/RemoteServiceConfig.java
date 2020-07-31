@@ -118,6 +118,7 @@ public class RemoteServiceConfig {
 	private String domainOrPublicIp;
 	private String remoteServicePublicUrl;
 	//private String remoteServicePublicwss;
+	private String remoteWebsockUrl;
 	private Integer httpsPort;
 	private String remoteServiceSecret;
 	private String certificateType;
@@ -147,6 +148,10 @@ public class RemoteServiceConfig {
 	//
 	private List<String> kmsUrisList;
 	//
+	private String coturnUsername;
+	private String coturnCredential;
+	private List<String> coturnUrisList;
+	//
 	private String coturnIp;
 	private String coturnRedisIp;
 	private String coturnRedisDbname;
@@ -165,6 +170,18 @@ public class RemoteServiceConfig {
 	private boolean isTurnadminAvailable = false;
 
 	// Plain config properties getters
+
+	public String getCoturnUsername() {
+		return this.coturnUsername;
+	}
+
+	public String getCoturnCredential() {
+		return this.coturnCredential;
+	}
+
+	public List<String> getCoturnUrisList() {
+		return this.coturnUrisList;
+	}
 
 	public String getCoturnDatabaseDbname() {
 		return this.coturnRedisDbname;
@@ -449,6 +466,10 @@ public class RemoteServiceConfig {
 		checkDomainOrPublicIp();
 		populateSpringServerPort();
 
+		coturnUsername = getValue("service.coturn_name");
+		coturnCredential = getValue("service.coturn_credential");
+		coturnUrisList = checkCoturnUris();
+
 		coturnRedisDbname = getValue("service.coturn_redis_dbname");
 		coturnRedisPassword = getValue("service.coturn_redis_password");
 		coturnRedisConnectTimeout = getValue("service.coturn_redis_connect_timeout");
@@ -552,6 +573,7 @@ public class RemoteServiceConfig {
 			this.domainOrPublicIp = domain;
 			this.remoteServicePublicUrl = "https://" + domain;
 			//this.remoteServicePublicwss = "wss://" + getValue("service.gateway");
+			this.remoteWebsockUrl = getValue("service.wss");
 			if (this.httpsPort != null && this.httpsPort != 443) {
 				this.remoteServicePublicUrl += (":" + this.httpsPort);
 			}
@@ -613,7 +635,33 @@ public class RemoteServiceConfig {
 		this.setFinalUrl(finalUrl);
 		ServiceServerApplication.httpUrl = this.getFinalUrl();
 		//
-		//ServiceServerApplication.wsUrl = this.remoteServicePublicwss;
+		ServiceServerApplication.wssUrl = this.remoteWebsockUrl + ServiceServerApplication.WS_PATH;
+	}
+
+
+	public List<String> checkCoturnUris() {
+
+		String property = "service.coturn_uris";
+
+		return asCoturnUris(property, getValue(property));
+
+	}
+
+	public List<String> asCoturnUris(String property, String CoturnUris) {
+
+		if (CoturnUris == null || CoturnUris.isEmpty()) {
+			return Arrays.asList();
+		}
+
+		CoturnUris = CoturnUris.replaceAll("\\s", ""); // Remove all white spaces
+		CoturnUris = CoturnUris.replaceAll("\\\\", ""); // Remove previous escapes
+		CoturnUris = CoturnUris.replaceAll("\"", ""); // Remove previous double quotes
+		CoturnUris = CoturnUris.replaceFirst("^\\[", "[\\\""); // Escape first char
+		CoturnUris = CoturnUris.replaceFirst("\\]$", "\\\"]"); // Escape last char
+		CoturnUris = CoturnUris.replaceAll(",", "\\\",\\\""); // Escape middle uris
+
+		List<String> coturnUrisArray = asJsonStringsArray(property);
+		return coturnUrisArray;
 	}
 
 	public List<String> checkKmsUris() {

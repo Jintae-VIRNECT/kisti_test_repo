@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import springfox.documentation.annotations.ApiIgnore;
 
+//url = "http://192.168.6.3:8082"
 @FeignClient(name = "workspace-server", fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
     @GetMapping("/workspaces/{workspaceId}/members")

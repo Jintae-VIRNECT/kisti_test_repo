@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.virnect.serviceserver.ServiceServerApplication;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.EndReason;
 import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.core.Session;
@@ -13,6 +15,7 @@ import com.virnect.serviceserver.gateway.dao.MemberRepository;
 import com.virnect.serviceserver.gateway.dao.RoomHistoryRepository;
 import com.virnect.serviceserver.gateway.dao.RoomRepository;
 import com.virnect.serviceserver.gateway.domain.*;
+import com.virnect.serviceserver.gateway.dto.CoturnResponse;
 import com.virnect.serviceserver.gateway.dto.PageMetadataResponse;
 import com.virnect.serviceserver.gateway.dto.SessionResponse;
 import com.virnect.serviceserver.gateway.dto.SessionTokenResponse;
@@ -76,7 +79,7 @@ public class RemoteGatewayService {
     private static final String TAG = "MemberRestController";
 
     //private final RemoteServiceRestService remoteServiceRestService;
-
+    private final RemoteServiceConfig config;
     // feign client
     private final MessageRestService messageRestService;
     private final LicenseRestService licenseRestService;
@@ -297,6 +300,14 @@ public class RemoteGatewayService {
         roomResponse.setSessionId(sessionResponse.getId());
         //roomResponse.setRoomId(sessionTokenResponse.getId());
         roomResponse.setToken(sessionTokenResponse.getToken());
+        roomResponse.setWss(ServiceServerApplication.wssUrl);
+        for (String coturnUrl: config.getCoturnUrisList()) {
+            CoturnResponse coturnResponse = new CoturnResponse();
+            coturnResponse.setUsername(config.getCoturnUsername());
+            coturnResponse.setCredential(config.getCoturnCredential());
+            coturnResponse.setUrl(coturnUrl);
+            roomResponse.getCoturn().add(coturnResponse);
+        }
         return new ApiResponse<>(roomResponse);
     }
 
@@ -480,124 +491,146 @@ public class RemoteGatewayService {
     }
 
     @Transactional
-    public ApiResponse<Boolean> removeRoom(String workspaceId, String sessionId) {
+    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
         // Get Specific Room using Session ID
-        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
-                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
+                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
+        Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);;
 
-        // Room and Member History 저장
-        // Remote Room History Entity Create
-        /*.mediaMode(room.getMediaMode())
-                .recordingMode(room.getRecordingMode())
-                .defaultOutputMode(room.getDefaultOutputMode())
-                .defaultRecordingLayout(room.getDefaultRecordingLayout())
-                .recording(room.isRecording())*/
-        RoomHistory roomHistory = RoomHistory.builder()
-                .sessionId(room.getSessionId())
-                .title(room.getTitle())
-                .description(room.getDescription())
-                .profile(room.getProfile())
-                .leaderId(room.getLeaderId())
-                .workspaceId(room.getWorkspaceId())
-                .build();
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setResult(false);
+        ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
 
-        // Set room member history
-        // Get Member List by Room Session Ids
-        List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-        // Mapping Member List Data to Member History List
-        for (Member member : memberList) {
-            MemberHistory memberHistory = MemberHistory.builder()
-                    .roomHistory(roomHistory)
-                    .workspaceId(member.getWorkspaceId())
-                    .uuid(member.getUuid())
-                    .email(member.getEmail())
-                    .memberType(member.getMemberType())
-                    .deviceType(member.getDeviceType())
-                    .sessionId(member.getSessionId())
-                    .startDate(member.getStartDate())
-                    .endDate(member.getEndDate())
-                    .durationSec(member.getDurationSec())
+        if(room == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
+        } else if(member == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
+        } else {
+            if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                response.setData(response.getData());
+                return response;
+            }
+
+            // Room and Member History 저장
+            // Remote Room History Entity Create
+            RoomHistory roomHistory = RoomHistory.builder()
+                    .sessionId(room.getSessionId())
+                    .title(room.getTitle())
+                    .description(room.getDescription())
+                    .profile(room.getProfile())
+                    .leaderId(room.getLeaderId())
+                    .workspaceId(room.getWorkspaceId())
                     .build();
-            memberHistoryRepository.save(memberHistory);
-            roomHistory.getMemberHistories().add(memberHistory);
+
+            // Set room member history
+            // Get Member List by Room Session Ids
+            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            // Mapping Member List Data to Member History List
+            for (Member roomMember : memberList) {
+                MemberHistory memberHistory = MemberHistory.builder()
+                        .roomHistory(roomHistory)
+                        .workspaceId(roomMember.getWorkspaceId())
+                        .uuid(roomMember.getUuid())
+                        .email(roomMember.getEmail())
+                        .memberType(roomMember.getMemberType())
+                        .deviceType(roomMember.getDeviceType())
+                        .sessionId(roomMember.getSessionId())
+                        .startDate(roomMember.getStartDate())
+                        .endDate(roomMember.getEndDate())
+                        .durationSec(roomMember.getDurationSec())
+                        .build();
+                memberHistoryRepository.save(memberHistory);
+                roomHistory.getMemberHistories().add(memberHistory);
+            }
+
+
+            //set active time
+            roomHistory.setActiveDate(room.getActiveDate());
+
+            //set un active  time
+            LocalDateTime endTime = LocalDateTime.now();
+            roomHistory.setUnactiveDate(endTime);
+
+            //time diff seconds
+            Duration duration = Duration.between(room.getActiveDate(), endTime);
+            roomHistory.setDurationSec(duration.getSeconds());
+
+            //save room history
+            roomHistoryRepository.save(roomHistory);
+
+            //delete room
+            roomRepository.delete(room);
+
+            resultResponse.setResult(true);
+            return new ApiResponse<>(resultResponse);
         }
-
-
-        //set active time
-        roomHistory.setActiveDate(room.getActiveDate());
-
-        //set un active  time
-        LocalDateTime endTime = LocalDateTime.now();
-        roomHistory.setUnactiveDate(endTime);
-
-        //time diff seconds
-        Duration duration = Duration.between(room.getActiveDate(), endTime);
-        roomHistory.setDurationSec(duration.getSeconds());
-
-        //save room history
-        roomHistoryRepository.save(roomHistory);
-
-        //delete room
-        roomRepository.delete(room);
-
-        return new ApiResponse<>(true);
     }
 
     @Transactional
     public void destroySession(KurentoSession session, EndReason reason) {
         log.info("session destroy and sessionEventHandler is here: {}", session.getSessionId());
-        Room room = roomRepository.findBySessionId(session.getSessionId()).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        // Room and Member History 저장
-        // Remote Room History Entity Create
-        RoomHistory roomHistory = RoomHistory.builder()
-                .sessionId(room.getSessionId())
-                .title(room.getTitle())
-                .description(room.getDescription())
-                .profile(room.getProfile())
-                .leaderId(room.getLeaderId())
-                .workspaceId(room.getWorkspaceId())
-                .build();
-
-        // Set room member history
-        // Get Member List by Room Session Ids
-        List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-        // Mapping Member List Data to Member History List
-        for (Member member : memberList) {
-            MemberHistory memberHistory = MemberHistory.builder()
-                    .roomHistory(roomHistory)
-                    .workspaceId(member.getWorkspaceId())
-                    .uuid(member.getUuid())
-                    .email(member.getEmail())
-                    .memberType(member.getMemberType())
-                    .deviceType(member.getDeviceType())
-                    .sessionId(member.getSessionId())
-                    .startDate(member.getStartDate())
-                    .endDate(member.getEndDate())
-                    .durationSec(member.getDurationSec())
+        //Room room = roomRepository.findBySessionId(session.getSessionId()).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        Room room = roomRepository.findBySessionId(session.getSessionId()).orElse(null);
+        if(room == null) {
+            log.info("session destroy and sessionEventHandler is faild. room data is null");
+        } else {
+            // Room and Member History 저장
+            // Remote Room History Entity Create
+            RoomHistory roomHistory = RoomHistory.builder()
+                    .sessionId(room.getSessionId())
+                    .title(room.getTitle())
+                    .description(room.getDescription())
+                    .profile(room.getProfile())
+                    .leaderId(room.getLeaderId())
+                    .workspaceId(room.getWorkspaceId())
                     .build();
-            memberHistoryRepository.save(memberHistory);
-            roomHistory.getMemberHistories().add(memberHistory);
+
+            // Set room member history
+            // Get Member List by Room Session Ids
+            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            // Mapping Member List Data to Member History List
+            for (Member member : memberList) {
+                MemberHistory memberHistory = MemberHistory.builder()
+                        .roomHistory(roomHistory)
+                        .workspaceId(member.getWorkspaceId())
+                        .uuid(member.getUuid())
+                        .email(member.getEmail())
+                        .memberType(member.getMemberType())
+                        .deviceType(member.getDeviceType())
+                        .sessionId(member.getSessionId())
+                        .startDate(member.getStartDate())
+                        .endDate(member.getEndDate())
+                        .durationSec(member.getDurationSec())
+                        .build();
+                memberHistoryRepository.save(memberHistory);
+                roomHistory.getMemberHistories().add(memberHistory);
+            }
+
+
+            //set active time
+            roomHistory.setActiveDate(room.getActiveDate());
+
+            //set un active  time
+            LocalDateTime endTime = LocalDateTime.now();
+            roomHistory.setUnactiveDate(endTime);
+
+            //time diff seconds
+            Duration duration = Duration.between(room.getActiveDate(), endTime);
+            roomHistory.setDurationSec(duration.getSeconds());
+
+            //save room history
+            roomHistoryRepository.save(roomHistory);
+
+            //delete room
+            roomRepository.delete(room);
         }
-
-
-        //set active time
-        roomHistory.setActiveDate(room.getActiveDate());
-
-        //set un active  time
-        LocalDateTime endTime = LocalDateTime.now();
-        roomHistory.setUnactiveDate(endTime);
-
-        //time diff seconds
-        Duration duration = Duration.between(room.getActiveDate(), endTime);
-        roomHistory.setDurationSec(duration.getSeconds());
-
-        //save room history
-        roomHistoryRepository.save(roomHistory);
-
-        //delete room
-        roomRepository.delete(room);
     }
 
     public ApiResponse<RoomDetailInfoResponse> getRoomInfoBySessionId(String workspaceId, String sessionId) {
@@ -673,6 +706,11 @@ public class RemoteGatewayService {
             if(member.getUuid().equals(joinRoomRequest.getUuid())) {
                 log.debug("Room has member Id is {}", member.getUuid());
 
+                if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                    response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                    return response;
+                }
+
                 SessionTokenResponse sessionTokenResponse = null;
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
@@ -705,6 +743,16 @@ public class RemoteGatewayService {
                 //not set session create at property
                 roomResponse.setSessionId(sessionId);
                 roomResponse.setToken(sessionTokenResponse.getToken());
+
+                roomResponse.setWss(ServiceServerApplication.wssUrl);
+                for (String coturnUrl: config.getCoturnUrisList()) {
+                    CoturnResponse coturnResponse = new CoturnResponse();
+                    coturnResponse.setUsername(config.getCoturnUsername());
+                    coturnResponse.setCredential(config.getCoturnCredential());
+                    coturnResponse.setUrl(coturnUrl);
+                    roomResponse.getCoturn().add(coturnResponse);
+                }
+
                 return new ApiResponse<>(roomResponse);
             } /*else {
                 throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_NOT_ALLOWED);
@@ -789,9 +837,8 @@ public class RemoteGatewayService {
      */
     @Transactional
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
-        /*Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(
-                () -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));*/
         Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);;
 
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
@@ -800,27 +847,42 @@ public class RemoteGatewayService {
             response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
             response.setData(response.getData());
             return response;
+        } else if(member == null) {
+            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+            response.setData(response.getData());
+            return response;
         } else {
             if(room.getMembers().isEmpty()) {
                 response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
                 response.setData(response.getData());
                 return response;
             } else {
-                for (Member member : room.getMembers()) {
-                    if(member.getMemberType().equals(MemberType.LEADER)) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT);
-                        response.setData(response.getData());
-                        return response;
-                    }
+                for (Member roomMember : room.getMembers()) {
+                    if(member.getUuid().equals(roomMember.getUuid())) {
+                        if(member.getMemberType().equals(MemberType.LEADER)) {
+                            response.setErrorResponseData(ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT);
+                            response.setData(response.getData());
+                            return response;
+                        } else if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                            response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                            response.setData(response.getData());
+                            return response;
+                        } else {
+                            room.getMembers().remove(roomMember);
+                            roomRepository.save(room);
 
-                    if(member.getUuid().equals(userId)) {
+                            resultResponse.setResult(true);
+                            return new ApiResponse<>(resultResponse);
+                        }
+                    }
+                    /*if(roomMember.getUuid().equals(userId)) {
                         //this.memberRepository.delete(member);
-                        room.getMembers().remove(member);
+                        room.getMembers().remove(roomMember);
                         roomRepository.save(room);
 
                         resultResponse.setResult(true);
                         return new ApiResponse<>(resultResponse);
-                    }
+                    }*/
                 }
                 response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 response.setData(response.getData());
@@ -832,32 +894,54 @@ public class RemoteGatewayService {
     @Transactional
     public void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason) {
         log.info("session leave and sessionEventHandler is here:[participant] {}", participant);
+        log.info("session leave and sessionEventHandler is here:[reason] {}", participant.getClientMetadata());
         log.info("session leave and sessionEventHandler is here:[sessionId] {}", sessionId);
         log.info("session leave and sessionEventHandler is here:[remainingParticipants] {}", remainingParticipants);
         log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
         log.info("session leave and sessionEventHandler is here:[reason] {}", reason);
 
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-        if(room.getMembers().isEmpty()) {
-            log.info("session leave and sessionEventHandler is here: room members empty");
+        //Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
+        if(room == null) {
+            log.info("session leave and sessionEventHandler is faild. room data is null");
         } else {
-            for (Member member : room.getMembers()) {
-                if(member.getUuid().equals(participant.getParticipantPublicId())) {
-                    member.setMemberStatus(MemberStatus.UNLOAD);
-                    //set end time
-                    LocalDateTime endTime = LocalDateTime.now();
-                    member.setEndDate(endTime);
 
-                    //time diff seconds
-                    Long totalDuration = member.getDurationSec();
-                    Duration duration = Duration.between(member.getStartDate(), endTime);
-                    member.setDurationSec(totalDuration + duration.getSeconds());
-
-                    //save member
-                    memberRepository.save(member);
-                }
+            JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ClientMetaData clientMetaData = null;
+            try {
+                clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
-            log.info("session leave and sessionEventHandler is here: room members not found");
+            assert clientMetaData != null;
+
+            log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+            log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+            log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+
+            if (room.getMembers().isEmpty()) {
+                log.info("session leave and sessionEventHandler is here: room members empty");
+            } else {
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        member.setMemberStatus(MemberStatus.UNLOAD);
+                        //set end time
+                        LocalDateTime endTime = LocalDateTime.now();
+                        member.setEndDate(endTime);
+
+                        //time diff seconds
+                        Long totalDuration = member.getDurationSec();
+                        Duration duration = Duration.between(member.getStartDate(), endTime);
+                        member.setDurationSec(totalDuration + duration.getSeconds());
+
+                        //save member
+                        memberRepository.save(member);
+                    }
+                }
+                //log.info("session leave and sessionEventHandler is here: room members not found");
+            }
         }
     }
 
@@ -1258,7 +1342,7 @@ public class RemoteGatewayService {
         List<MemberHistory> memberHistoryList = this.memberHistoryRepository.findMemberHistoriesByWorkspaceIdAndUuid(workspaceId, userId);
         memberHistoryList.forEach(memberHistory -> {
             if(memberHistory.getRoomHistory() != null) {
-                memberHistory.getRoomHistory().setId(0L);
+                memberHistory.setRoomHistory(null);
                 this.memberHistoryRepository.save(memberHistory);
             }
         });
@@ -1290,8 +1374,7 @@ public class RemoteGatewayService {
                     () -> new RemoteServiceException(ErrorCode.ERR_HISTORY_ROOM_MEMBER_NOT_FOUND));
 
             if(memberHistory.getUuid().equals(roomHistoryDeleteRequest.getUuid())) {
-                //memberHistory.setRoomHistory(null);
-                memberHistory.getRoomHistory().setId(0L);
+                memberHistory.setRoomHistory(null);
                 this.memberHistoryRepository.save(memberHistory);
             }
         }
@@ -1301,8 +1384,12 @@ public class RemoteGatewayService {
 
     //
     public ApiResponse<WorkspaceMemberInfoListResponse> getMembers(String workspaceId, String filter, int page, int size) {
+        log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
         ApiResponse<WorkspaceMemberInfoListResponse> response = this.workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
-        log.debug("getUsers: " + response.getData().getMemberInfoList());
+        response.getData().getMemberInfoList().removeIf(memberInfoResponses ->
+                Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
+                || !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME));
+        //log.info("getUsers: " + response.getData().getMemberInfoList());
         return new ApiResponse<>(response.getData());
     }
     /*public ApiResponse<UserInfoListResponse> getUsers(boolean paging, PageRequest pageRequest) {
