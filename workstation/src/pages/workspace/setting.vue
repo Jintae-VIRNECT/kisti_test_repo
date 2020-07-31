@@ -123,9 +123,9 @@
                     >
                       {{ $t('workspace.setting.update') }}
                     </el-button>
-                    <el-button @click="showAddModal = true" v-else>
+                    <!-- <el-button @click="showAddModal = true" v-else>
                       {{ $t('workspace.setting.leave') }}
-                    </el-button>
+                    </el-button> -->
                   </el-form>
                 </el-col>
               </el-row>
