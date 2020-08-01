@@ -22,6 +22,7 @@ PACKAGES=(
   kms-core-dev
   kms-elements-dev
   kms-datachannelexample-dev
+  gstreamer1.5
 )
 
 sudo apt-get update
