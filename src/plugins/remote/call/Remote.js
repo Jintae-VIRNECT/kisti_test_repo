@@ -18,7 +18,7 @@ const _ = {
   resolution: null,
   /**
    * join session
-   * @param {String} token
+   * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
   connect: async (configs, role) => {
@@ -42,8 +42,9 @@ const _ = {
       }
 
       const iceServers = configs.coturn || window.urls.coturn
-      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
-      // const ws = 'wss://192.168.13.36:8000/remote/websocket'
+      // const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
+      const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
+      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'

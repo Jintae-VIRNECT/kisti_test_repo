@@ -15,7 +15,12 @@
   ],
   "staging": [
     {
-      "url": "turn:13.209.253.107:3478",
+      "url": "turn:13.209.253.107:3478?transport=udp",
+      "username": "remote",
+      "credential": "remote"
+    },
+    {
+      "url": "turn:13.209.253.107:3478?transport=tcp",
       "username": "remote",
       "credential": "remote"
     }
