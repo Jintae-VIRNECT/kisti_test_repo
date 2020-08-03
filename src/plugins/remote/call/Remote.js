@@ -41,9 +41,9 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || window.urls.coturn
-      // const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
-      const ws = `${window.urls.wsapi}${wsUri['REMOTE']}`
+      // const iceServers = configs.coturn || window.urls.coturn
+      const iceServers = window.urls.coturn
+      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       if (!iceServers) {
