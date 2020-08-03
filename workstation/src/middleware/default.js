@@ -7,10 +7,10 @@ export default async function({ req, store, redirect, error, $config }) {
 
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
-    // chrome only
-    const hasChrome = req.headers['user-agent'].indexOf('Chrome') !== -1
-    const hasEdge = req.headers['user-agent'].indexOf('Edge') !== -1
-    if (!hasChrome || hasEdge) {
+    // not support browser
+    const isIE = req.headers['user-agent'].indexOf('MSIE ') !== -1
+    const isOldEdge = req.headers['user-agent'].indexOf('Edge') !== -1
+    if (isIE || isOldEdge) {
       return error({ message: 'BrowserNotSupport' })
     }
 
