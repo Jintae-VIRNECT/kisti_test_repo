@@ -7,26 +7,31 @@
       <div v-for="(group, role) in workspaces" :key="role">
         <span>{{ $t(`menu.collapse.workspace.${role}`) }}</span>
         <span v-if="!workspaces[role].length">-</span>
-        <button
+        <el-tooltip
           v-for="workspace in workspaces[role]"
-          :class="isActive(workspace.uuid) ? 'selected' : ''"
           :key="workspace.uuid"
-          @click="workspaceActive(workspace.uuid)"
+          :content="workspace.name"
+          placement="top"
         >
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
-              "
+          <button
+            :class="isActive(workspace.uuid) ? 'selected' : ''"
+            @click="workspaceActive(workspace.uuid)"
+          >
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
+                "
+              />
+            </div>
+            <span>{{ workspace.name }}</span>
+            <img
+              v-if="isActive(workspace.uuid)"
+              src="~assets/images/icon/ic-check-circle.svg"
             />
-          </div>
-          <span>{{ workspace.name }}</span>
-          <img
-            v-if="isActive(workspace.uuid)"
-            src="~assets/images/icon/ic-check-circle.svg"
-          />
-        </button>
+          </button>
+        </el-tooltip>
       </div>
     </div>
   </div>

@@ -102,7 +102,7 @@ $the-sidebar-border: solid 1px #0d1d39;
 .the-sidebar__logo {
   width: 36px;
   height: 36px;
-  margin: 12px;
+  margin: 0 12px;
   overflow: hidden;
   border-radius: 50%;
 
@@ -119,6 +119,7 @@ $the-sidebar-border: solid 1px #0d1d39;
   position: relative;
   z-index: 2002;
   height: 100%;
+  padding-top: 12px;
   background-color: $the-sidebar-background;
   border-right: $the-sidebar-border;
 }
