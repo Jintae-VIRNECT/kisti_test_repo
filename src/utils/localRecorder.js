@@ -61,15 +61,9 @@ export default class LocalRecorder {
   }
 
   async initRecorder() {
-    //for group id
-    this.groupId = uuid()
-
     if (!(await IDBHelper.initIDB())) {
       return false
     }
-
-    //reset fileCount
-    this.fileCount = 0
 
     if ((await this.checkQuota()) === false) {
       return false
@@ -78,6 +72,12 @@ export default class LocalRecorder {
     if (this.streams.length <= 0) {
       return false
     }
+
+    //for group id
+    this.groupId = uuid()
+
+    //reset fileCount
+    this.fileCount = 0
 
     this.recorder = new MSR.MultiStreamRecorder(this.streams, this.options)
     this.recorder.mimeType = this.mimeType

@@ -90,23 +90,26 @@ export default {
       },
       deep: true,
     },
+    localRecordStatus(status) {
+      if (status === LCOAL_RECORD_STAUTS.START) {
+        this.startRecord()
+      } else {
+        const showMsg = true
+        this.stopRecord(showMsg)
+      }
+    },
   },
   methods: {
     ...mapActions(['setScreenStream', 'setLocalRecordStatus']),
 
-    /**
-     * init recorder and start
-     */
-    async recording() {
+    async startRecord() {
       this.recorder = new LocalRecorder()
 
-      if (!(await this.initRecorder())) {
-        this.recorder.stopRecord()
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+      if (await this.initRecorder()) {
+        this.recorder.startRecord()
+      } else {
         return false
       }
-      this.recorder.startRecord()
-      this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
     },
 
     /**
@@ -178,8 +181,6 @@ export default {
 
         return true
       } else {
-        this.isRecording = false
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
@@ -279,10 +280,5 @@ export default {
         this.stopRecord(showMsg)
       }
     },
-  },
-
-  mounted() {
-    this.$eventBus.$on('startLocalRecord', this.recording)
-    this.$eventBus.$on('stopLocalRecord', this.stopRecord)
   },
 }

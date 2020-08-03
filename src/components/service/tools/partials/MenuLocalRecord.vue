@@ -67,14 +67,9 @@ export default {
       }
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        const showMsg = true
-        // this.isRecording = false
-        this.$eventBus.$emit('stopLocalRecord', showMsg)
         this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         return false
       } else {
-        // this.isRecording = true
-        this.$eventBus.$emit('startLocalRecord')
         this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
       }
     },
