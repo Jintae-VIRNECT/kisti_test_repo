@@ -6,7 +6,17 @@
     <div class="the-sidebar__collapse__body">
       <div v-for="(group, role) in workspaces" :key="role">
         <span>{{ $t(`menu.collapse.workspace.${role}`) }}</span>
-        <span v-if="!workspaces[role].length">-</span>
+        <!-- 워크스페이스가 없을 경우 -->
+        <span v-if="!workspaces[role].length && role !== 'master'">-</span>
+        <!-- 마스터 워크스페이스가 없을 경우 -->
+        <button
+          v-if="!workspaces[role].length && role === 'master'"
+          class="create-workspace"
+          @click="$router.push('/start')"
+        >
+          <span>{{ $t('workspace.create') }}</span>
+        </button>
+
         <el-tooltip
           v-for="workspace in workspaces[role]"
           :key="workspace.uuid"
@@ -102,6 +112,10 @@ export default {
     margin: 8px 0;
     font-size: 12px;
     opacity: 0.6;
+  }
+  .create-workspace {
+    text-align: center;
+    background: #324461;
   }
   & > button {
     display: block;
