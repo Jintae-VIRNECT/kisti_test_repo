@@ -2,11 +2,9 @@
 RELEASE
 
 New Features
-영문 키 업데이트
-버전 표시
+-
 
 Bug Fixes
-일부 코드 리펙토링
-dotenv 정리
+버전 루트 build.config에 반영
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
