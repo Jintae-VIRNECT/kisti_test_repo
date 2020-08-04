@@ -47,9 +47,10 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
 
 export default {
-  mixins: [modalMixin, filters],
+  mixins: [modalMixin, filters, utils],
   props: {
     task: Object,
   },
@@ -66,12 +67,6 @@ export default {
     },
     download(url) {
       window.open(url)
-    },
-    print(url) {
-      const popup = window.open('', '_blank')
-      popup.document.write(`<img src="${url}" />`)
-      popup.document.close()
-      setTimeout(() => popup.print(), 1)
     },
   },
 }

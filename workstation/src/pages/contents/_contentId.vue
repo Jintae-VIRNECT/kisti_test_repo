@@ -104,9 +104,10 @@
 import contentService from '@/services/content'
 import { sharedStatus } from '@/models/content/Content'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utils],
   async asyncData({ params, store }) {
     const promise = {
       content: contentService.getContentInfo(params.contentId),
@@ -145,12 +146,6 @@ export default {
     },
     download(url) {
       window.open(url)
-    },
-    print(url) {
-      const popup = window.open('', '_blank')
-      popup.document.write(`<img src="${url}" />`)
-      popup.document.close()
-      setTimeout(() => popup.print(), 1)
     },
     registerTask() {
       this.$router.replace(`/tasks/new?contentId=${this.content.contentUUID}`)
