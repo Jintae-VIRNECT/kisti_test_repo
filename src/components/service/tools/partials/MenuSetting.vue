@@ -61,17 +61,12 @@ export default {
         return
       }
       this.status = !this.status
-      this.$eventBus.$emit('lcRecSet:show')
     },
     serverRecording(isStart) {
       this.logger('Server Record ::', isStart)
     },
     localRecording(isStart) {
-      if (isStart) {
-        this.recording = true
-      } else {
-        this.recording = false
-      }
+      this.recording = isStart
     },
   },
 

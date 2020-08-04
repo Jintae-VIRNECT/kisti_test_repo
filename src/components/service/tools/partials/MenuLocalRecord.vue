@@ -11,8 +11,6 @@
 </template>
 
 <script>
-// @TODO:detach related record logics - ykmo
-
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 

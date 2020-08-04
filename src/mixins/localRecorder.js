@@ -205,7 +205,9 @@ export default {
       } catch (e) {
         console.error(e)
       } finally {
+        //stop manually
         this.isRecording = false
+        this.$eventBus.$emit('localRecord', false)
         this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       }
     },
