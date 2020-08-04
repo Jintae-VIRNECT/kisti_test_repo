@@ -166,10 +166,10 @@ export default {
 .tooltip .tooltiptext {
   &.black {
     --tooltip-bg-color: #121517;
-    --tooltip-text-color: $color_text_sub;
+    --tooltip-text-color: #{$color_text_sub};
   }
   &.blue {
-    --tooltip-bg-color: $color_primary;
+    --tooltip-bg-color: #{$color_primary};
     --tooltip-text-color: #fff;
   }
 
