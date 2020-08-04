@@ -62,7 +62,8 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo = role === ROLE.WORKER || allowUser
+      const publishVideo =
+        role === ROLE.WORKER || role === ROLE.EXPERT || allowUser
 
       const publisher = OV.initPublisher('', {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
@@ -84,44 +85,14 @@ const _ = {
             width: 0,
             height: 0,
           })
-          Store.commit('addStream', {
-            id: _.account.uuid,
-            stream: publisher.stream.mediaStream,
-            // connection: stream.connection,
+          Store.commit('updateParticipant', {
             connectionId: publisher.stream.connection.connectionId,
-            nickname: _.account.nickname,
-            path: _.account.path,
-            audio: publisher.stream.audioActive,
-            video: true,
-            speaker: true,
-            mute: false,
-            status: 'good',
-            roleType: ROLE.EXPERT_LEADER,
-            permission: 'default',
-            hasArFeature: false,
-            me: true,
+            stream: publisher.stream.mediaStream,
           })
         }
       })
 
       _.session.publish(publisher)
-      // if (!publishVideo) {
-      //   Store.commit('addStream', {
-      //     id: _.account.uuid,
-      //     stream: null,
-      //     connectionId: publisher.stream.session.connection.connectionId,
-      //     nickname: _.account.nickname,
-      //     path: _.account.profile,
-      //     audio: false,
-      //     video: false,
-      //     speaker: true,
-      //     mute: false,
-      //     status: 'good',
-      //     roleType: role,
-      //     permission: 'default',
-      //     me: true,
-      //   })
-      // }
       return true
     } catch (err) {
       console.error(err)
