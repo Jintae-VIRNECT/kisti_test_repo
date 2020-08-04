@@ -76,7 +76,7 @@ const config = {
 		alias: {
 			'WC-Modules': resolve(__dirname, '../../WC-Modules/src'),
 			'@': resolve(__dirname, '../src'),
-			root: resolve(__dirname, '../../'),
+			root: resolve(__dirname, '../'),
 			api: join(__dirname, '../src/api'),
 			apps: join(__dirname, '../src/apps'),
 			assets: join(__dirname, '../src/assets'),
