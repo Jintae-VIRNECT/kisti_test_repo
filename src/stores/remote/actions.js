@@ -89,11 +89,15 @@ export default {
    * @param {Object} payload
    */
   setDevices({ commit }, payload) {
+    console.log(payload)
     if ('mic' in payload) {
       commit(types.SETTINGS.SET_MIC_DEVICE, payload['mic'])
     }
     if ('speaker' in payload) {
       commit(types.SETTINGS.SET_SPEAKER_DEVICE, payload['speaker'])
+    }
+    if ('video' in payload) {
+      commit(types.SETTINGS.SET_VIDEO_DEVICE, payload['video'])
     }
   },
   /**

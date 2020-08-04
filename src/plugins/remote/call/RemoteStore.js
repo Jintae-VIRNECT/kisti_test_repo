@@ -61,9 +61,9 @@ const mutations = {
         state.mainView = payload
       }
       state.initing = false
-      return
+    } else {
+      state.participants.push(payload)
     }
-    state.participants.push(payload)
     if ((!state.mainView || !state.mainView.stream) && payload.video) {
       state.mainView = payload
     }

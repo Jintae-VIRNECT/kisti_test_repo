@@ -5,21 +5,26 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <!-- <div class="participant-video__stream" v-if="participant.video">
+      <div
+        class="participant-video__stream"
+        v-if="participant.video && !isCurrent"
+      >
         <video
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
+          :muted="isMe"
         ></video>
-      </div> -->
-      <div class="participant-video__profile">
+      </div>
+      <div class="participant-video__profile" v-else>
         <audio
           v-if="!participant.video && !participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
+          :muted="isMe"
         ></audio>
         <img
           v-if="participant.path && participant.path !== 'default'"
@@ -170,6 +175,7 @@ export default {
   },
   watch: {
     speaker(val) {
+      if (this.isMe) return
       if (this.$el.querySelector('video')) {
         this.$el.querySelector('video').muted = val
       }
@@ -242,6 +248,9 @@ export default {
       await kickMember(params)
       // this.$call.disconnect(this.participant.connectionId)
     },
+  },
+  mounted() {
+    console.log(this.participant)
   },
 }
 </script>

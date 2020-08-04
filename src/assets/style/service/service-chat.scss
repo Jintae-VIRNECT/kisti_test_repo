@@ -278,7 +278,7 @@
     .emphasize {
       width: 30ch;
       overflow: hidden;
-      color: #6bb4f9;
+      color: $color_primary_500;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
@@ -603,7 +603,7 @@
 
 .chat-file-item__sub--valid-text {
   margin: 0px 0.2857rem 0px 0px;
-  color: #6bb4f9;
+  color: $color_primary_500;
   font-size: 0.9286rem;
   text-align: left;
 
@@ -628,7 +628,7 @@
   border-radius: 50%;
   &.active {
     background: url(~assets/image/call/chat/ic_chat_check.svg) center no-repeat;
-    background-color: #0f75f5;
+    background-color: $color_primary;
     border: none;
   }
 }

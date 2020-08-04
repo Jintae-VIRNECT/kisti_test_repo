@@ -47,10 +47,7 @@
           </template>
 
           <template v-else-if="tabview === 'video-record'">
-            <!-- <set-video
-            :videos="videoDevices"
-            @setVideo="setVideo"
-          ></set-video> -->
+            <set-video :videos="videoDevices"></set-video>
 
             <set-record></set-record>
             <set-resolution></set-resolution>
@@ -69,7 +66,7 @@ import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
-//import SetVideo from '../section/WorkspaceSetVideo'
+import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
 export default {
@@ -80,7 +77,7 @@ export default {
     SetRecord,
     SetResolution,
     MicTest,
-    //SetVideo,
+    SetVideo,
     DeviceDenied,
   },
   data() {

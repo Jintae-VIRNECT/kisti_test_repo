@@ -220,6 +220,8 @@ const setUserObject = event => {
   if (allowCamera.includes(_.account.email)) {
     allowUser = true
   }
+  const publishVideo =
+    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || allowUser
 
   userObj = {
     id: uuid,
@@ -230,7 +232,7 @@ const setUserObject = event => {
     // path: participant.profile,
     nickname: null,
     path: null,
-    video: roleType === ROLE.WORKER || allowUser,
+    video: publishVideo,
     audio: true,
     speaker: true,
     mute: false,

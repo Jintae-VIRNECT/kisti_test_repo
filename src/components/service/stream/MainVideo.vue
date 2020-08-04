@@ -11,7 +11,7 @@
         id="main-video"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
-        :muted="!speaker"
+        :muted="!speaker || mainView.id === account.uuid"
         autoplay
         playsinline
         loop
