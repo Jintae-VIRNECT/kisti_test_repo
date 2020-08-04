@@ -1,6 +1,6 @@
 {
   "name": "virnect-web-login",
-  "version": "1.4.20",
+  "version": "1.5.20",
   "private": true,
   "workspaces": [
     "frontend",
