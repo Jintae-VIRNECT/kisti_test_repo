@@ -169,7 +169,7 @@ export default {
     --tooltip-text-color: $color_text_sub;
   }
   &.blue {
-    --tooltip-bg-color: #0f75f5;
+    --tooltip-bg-color: $color_primary;
     --tooltip-text-color: #fff;
   }
 

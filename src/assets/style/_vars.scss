@@ -65,7 +65,7 @@ $color_bg_shadow_border: 1px solid #040810;
 
 $color_chat_bg_default: #26262a;
 $color_chat_header: #38383a;
-$color_chat_bg_me: #bfddff;
+$color_chat_bg_me: $color_primary_400;
 $color_chat_bg_opponent: #fafafa;
 
 $color_state_good_bg: rgba(#0e2805, 0.6);

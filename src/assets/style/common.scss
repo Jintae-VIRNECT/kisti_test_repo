@@ -49,7 +49,7 @@ body.modal-open {
     background-color: $color_primary_700;
   }
   &:active {
-    background-color: #003986;
+    background-color: $color_primary_dark;
   }
   &:disabled,
   &.disabled {

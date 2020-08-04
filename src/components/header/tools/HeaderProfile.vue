@@ -120,7 +120,7 @@ export default {
 .popover-profile__version {
   margin: 0.429rem 0 0.214rem;
   padding: 0.714rem;
-  color: #bfddff;
+  color: $color_primary_400;
   font-size: 0.857rem;
   text-align: center;
   border-top: solid 1px rgba($color_line_border, 0.06);
