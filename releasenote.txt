@@ -2,10 +2,11 @@
 RELEASE
 
 New Features
-로그인이 필요한 서비스입니다 모달
-이미지추가
+영문 키 업데이트
+버전 표시
 
 Bug Fixes
--
+일부 코드 리펙토링
+dotenv 정리
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

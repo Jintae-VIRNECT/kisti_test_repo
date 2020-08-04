@@ -46,6 +46,11 @@ const i18n = new VueI18n({
 	messages: messages,
 })
 
+const environment = 'font-size: 1.2rem;'
+console.log('%cprocess env: %s', environment, process.env.TARGET_ENV)
+const version = 'font-size: 2rem; color: #297af3;'
+console.log('%cVIRNECT Console %s', version, process.env.VERSION)
+
 new Vue({
 	el: '#app',
 	router,

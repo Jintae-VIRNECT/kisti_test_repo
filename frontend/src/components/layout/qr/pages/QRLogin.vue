@@ -52,7 +52,7 @@ export default {
 	methods: {
 		onDecode(result) {
 			this.result = result
-			console.log(this.result)
+			// console.log(this.result)
 		},
 		async onInit(promise) {
 			try {

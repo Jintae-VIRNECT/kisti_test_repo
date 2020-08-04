@@ -109,7 +109,7 @@ h3 {
 
 @media (max-width: $mobile) {
     h3 {
-        font-size: 40px;
+        // font-size: 40px;
         & + p {
             font-size: 15px;
         }

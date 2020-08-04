@@ -4,7 +4,6 @@ import Terms from 'components/layout/pages/Terms'
 import Signup from 'components/layout/pages/Signup'
 import User from 'components/layout/pages/User'
 import Find from 'components/layout/pages/Find'
-import Profile from 'components/layout/pages/Profile'
 import Complete from 'components/layout/pages/Complete'
 
 export default {
@@ -44,11 +43,6 @@ export default {
 			name: 'findTab',
 			component: Find,
 			props: true,
-		},
-		{
-			path: '/profile',
-			name: 'profile',
-			component: Profile,
 		},
 		{
 			path: '/complete',

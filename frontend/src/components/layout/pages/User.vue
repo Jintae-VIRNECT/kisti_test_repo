@@ -177,11 +177,6 @@ export default {
 			thumbnail: null,
 		}
 	},
-	// watch: {
-	// 	signup() {
-	// 		console.log(this.signup)
-	// 	},
-	// },
 	computed: {
 		disabled() {
 			return this.file === this.user.profile
@@ -235,7 +230,6 @@ export default {
 			try {
 				registerData = await AuthService.signUp(this.formData)
 				if (registerData.code === 200) {
-					// console.log(registerData)
 					setTimeout(() => {
 						window.scrollTo({
 							left: 0,
@@ -248,8 +242,8 @@ export default {
 				} else throw registerData
 			} catch (error) {
 				this.alertMessage(
-					'기타 오류', // 기타 오류
-					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`, // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
+					this.$t('user.etc.error.title'), // 기타 오류
+					this.$t('user.etc.error.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 					'error',
 				)
 			}
@@ -285,12 +279,11 @@ export default {
 					}
 					Cookies.set('accessToken', res.data.accessToken, cookieOption)
 					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
-					// localStorage.setItem('user', JSON.stringify(res.data))
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					'기타 오류',
-					`회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.`,
+					this.$t('user.etc.error.title'), // 기타 오류
+					this.$t('user.etc.error.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 					'error',
 				)
 			}
@@ -299,13 +292,10 @@ export default {
 			done()
 		},
 		uploadImage(event) {
-			// console.log(event)
 			const files = event.target.files
-			// console.log(files[files.length - 1])
 			this.formData.delete('profile') // profile는 컨텐츠 내의 이미지 리소스
 			this.validImage(event)
 				.then(imageData => {
-					// console.log(files[files.length - 1])
 					this.file = files[files.length - 1]
 					this.thumbnail = imageData
 				})
@@ -369,8 +359,8 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					'닉네임 설정 오류', // 닉네임 설정 오류
-					`닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.`, // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
+					this.$t('user.nickName.error.title'), // 닉네임 설정 오류
+					this.$t('user.nickName.error.message'), // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
 					'error',
 				)
 			}
