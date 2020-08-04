@@ -23,7 +23,7 @@ export default class LocalRecorder {
     this.maxTime = 60
     this.streams = []
     this.interval = 1
-    this.nickName = 'NONE'
+    this.nickname = 'NONE'
     this.userId = 'NONE'
   }
 
@@ -35,7 +35,7 @@ export default class LocalRecorder {
     this.maxTime = config.maxTime
     this.streams = config.streams
     this.interval = config.interval
-    this.nickName = config.nickName
+    this.nickname = config.nickname
     this.userId = config.userId
   }
 
@@ -133,7 +133,7 @@ export default class LocalRecorder {
       //make file name
       const fileNumber = this.getFileNumberString(this.fileCount)
       this.fileName =
-        this.today + '_' + fileNumber + '_' + this.nickName + '.mp4'
+        this.today + '_' + fileNumber + '_' + this.nickname + '.mp4'
 
       //get media chunk play time
       const currentTime = performance.now()
@@ -155,7 +155,7 @@ export default class LocalRecorder {
           blob.size,
           blob,
           this.userId,
-          this.nickName,
+          this.nickname,
           this.roomTitle,
         )
       }
