@@ -141,12 +141,8 @@ export default {
       config.roomTitle = this.roomInfo.title
 
       //get nickname
-      if (this.account && this.account.nickname) {
-        config.nickName = this.account.nickname
-      }
-
-      //get user uuid
-      if (this.account && this.account.uuid) {
+      if (this.account) {
+        config.nickname = this.account.nickname
         config.userId = this.account.uuid
       }
 
