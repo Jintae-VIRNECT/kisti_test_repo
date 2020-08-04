@@ -11,8 +11,7 @@
 					type="primary"
 					>{{ $t('complete.trial') }}</el-button
 				>
-				<el-button class="next-btn block-btn"
-					@click="payment" type="info">{{
+				<el-button class="next-btn block-btn" @click="payment" type="info">{{
 					$t('complete.payment')
 				}}</el-button>
 
@@ -25,24 +24,23 @@
 	</div>
 </template>
 <script>
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
 export default {
 	data() {
+		const env = process.env.TARGET_ENV
 		return {
-			couponUrl: urls.www[process.env.TARGET_ENV],
-			paymentUrl: urls.pay[process.env.TARGET_ENV],
-			workstationUrl: urls.workstation[process.env.TARGET_ENV],
+			urls: new Url(env),
 		}
 	},
 	methods: {
 		goWorkstation() {
-			location.replace(this.workstationUrl)
+			location.replace(this.urls.workstation)
 		},
 		trialCoupon() {
-			location.replace(`${this.couponUrl}/coupon`)
+			location.replace(`${this.urls.www}/coupon`)
 		},
 		payment() {
-			location.replace(`${this.paymentUrl}`)
+			location.replace(`${this.urls.pay}`)
 		},
 	},
 }

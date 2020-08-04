@@ -116,7 +116,7 @@
 						})
 					"
 					:disabled="!privacyAgree || !serviceAgree"
-					>다음</el-button
+					>{{ $t('login.next') }}</el-button
 				>
 			</el-col>
 		</el-row>
@@ -195,7 +195,7 @@ export default {
 		checkAll() {
 			if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
 				return true
-			}
+			} else return false
 		},
 	},
 }

@@ -10,11 +10,16 @@
     "findAccount": "Find your email account",
     "resetPassword": "Reset password",
     "signUp": "Sign up",
+    "needTo": {
+      "title": "로그인이 필요한 서비스입니다",
+      "contents": "로그인 페이지로 이동합니다."
+    },
     "accountError": {
       "title": "You have entered incorrect login information.",
       "contents": "Unauthorized. Please check the email address and password and try again.",
       "btn": "Confirmed"
     },
+    "next": "Next",
     "networkError": {
       "title": "Login error",
       "contents": "Please try again later"

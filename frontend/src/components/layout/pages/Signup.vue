@@ -207,11 +207,6 @@ import dayjs from 'dayjs'
 export default {
 	name: 'signup',
 	mixins: [mixin],
-	computed: {
-		loggedIn() {
-			return this.$store.state.auth.status.loggedIn
-		},
-	},
 	props: {
 		marketInfoReceive: Boolean,
 		policyAgree: Boolean,
@@ -252,23 +247,17 @@ export default {
 		}
 	},
 	computed: {
-		userBirth() {
-			let birth,
-				year = dayjs(this.birth.year),
-				month = dayjs(this.birth.month + 1),
-				date = dayjs(this.birth.date)
-			birth = year.format('YYYY-') + month.format('MM-') + date.format('DD')
-
-			this.signup.birth = birth
-			return birth
-		},
 		joinInfoComp() {
-			if (this.signup.joinInfo == '')
-				return (this.signup.joinInfo = this.joinInfo)
+			if (this.signup.joinInfo === '') {
+				this.signup.joinInfo = this.joinInfo
+				return this.joinInfo
+			} else return this.signup.joinInfo
 		},
 		serviceInfoComp() {
-			if (this.signup.serviceInfo == '')
-				return (this.signup.serviceInfo = this.serviceInfo)
+			if (this.signup.serviceInfo == '') {
+				this.signup.serviceInfo = this.serviceInfo
+				return this.serviceInfo
+			} else return this.signup.serviceInfo
 		},
 		nextBtn() {
 			let val = true
@@ -292,18 +281,11 @@ export default {
 			return val
 		},
 	},
-	mounted() {
-		if (this.loggedIn || !this.policyAgree) {
-			this.$router.push('/')
-		}
-		if (this.marketInfoReceive)
-			return (this.signup.marketInfoReceive = 'ACCEPT')
-		else return (this.signup.marketInfoReceive = 'REJECT')
-	},
 	methods: {
 		async checkAge() {
+			this.userBirth()
 			let today = dayjs()
-			let userAge = dayjs(this.userBirth)
+			let userAge = dayjs(this.signup.birth)
 			try {
 				let age = (await today.format('YYYY')) - userAge.format('YYYY')
 				if (age > 14) {
@@ -330,7 +312,7 @@ export default {
 						this.signup.password,
 						this.signup.firstName,
 						this.signup.lastName,
-						this.userBirth,
+						this.signup.birth,
 						this.marketInfoReceive,
 						this.joinInfoComp,
 						this.serviceInfoComp,
@@ -463,6 +445,22 @@ export default {
 				this.setCount = true
 			}, 10000)
 		},
+		userBirth() {
+			let birth,
+				year = dayjs(this.birth.year),
+				month = dayjs(this.birth.month + 1),
+				date = dayjs(this.birth.date)
+			birth = year.format('YYYY-') + month.format('MM-') + date.format('DD')
+			this.signup.birth = birth
+		},
+	},
+	mounted() {
+		if (!this.policyAgree) {
+			this.$router.push('/')
+		}
+		if (this.marketInfoReceive)
+			return (this.signup.marketInfoReceive = 'ACCEPT')
+		else return (this.signup.marketInfoReceive = 'REJECT')
 	},
 }
 </script>

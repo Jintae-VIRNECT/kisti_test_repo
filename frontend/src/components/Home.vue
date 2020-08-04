@@ -9,9 +9,9 @@
 		>
 			<img src="~assets/images/common/img-moveto-login@2x.png" />
 			<p class="popup-title">
-				<strong>로그인이 필요한 서비스입니다</strong>
+				<strong>{{ $t('login.needTo.title') }}</strong>
 			</p>
-			<p>로그인 페이지로 이동합니다.</p>
+			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
 			<TheHeader :showSection="showSection" :logoUrl="logoUrl" />

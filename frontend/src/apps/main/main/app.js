@@ -7,6 +7,7 @@ import store from '@/store'
 import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
 import messages from 'languages'
+import { version } from 'root/package.json'
 
 import locale from 'element-ui/lib/locale/lang/ko'
 import elementLocale from 'element-ui/lib/locale'
@@ -39,12 +40,19 @@ Vue.use(ElementUI, {
 })
 Vue.use(VueQrcodeReader)
 
+// Vue.prototype.$version = version
+
 Vue.use(VueI18n)
 const i18n = new VueI18n({
 	locale: 'ko',
 	fallbackLocale: process.env.TARGET_ENV === 'production' ? 'ko' : null,
 	messages: messages,
 })
+
+const environmentCss = 'font-size: 1.2rem;'
+console.log('%cprocess env: %s', environmentCss, process.env.TARGET_ENV)
+const versionCss = 'font-size: 2rem; color: #297af3;'
+console.log('%cVIRNECT Console %s', versionCss, version)
 
 new Vue({
 	el: '#app',
