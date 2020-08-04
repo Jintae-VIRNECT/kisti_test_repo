@@ -5,10 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div
-        class="participant-video__stream"
-        v-if="participant.video && !isCurrent"
-      >
+      <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay

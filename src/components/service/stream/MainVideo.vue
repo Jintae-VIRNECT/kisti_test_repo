@@ -192,8 +192,10 @@ export default {
           orientation: '',
         })
       }
-      this.loaded = true
-      this.optimizeVideoSize()
+      this.$nextTick(() => {
+        this.optimizeVideoSize()
+        this.loaded = true
+      })
     },
     optimizeVideoSize() {
       const mainWrapper = this.$el

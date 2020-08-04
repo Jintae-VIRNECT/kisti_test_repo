@@ -216,12 +216,8 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  let allowUser = false
-  if (allowCamera.includes(_.account.email)) {
-    allowUser = true
-  }
   const publishVideo =
-    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || allowUser
+    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || true
 
   userObj = {
     id: uuid,
