@@ -5,7 +5,6 @@ import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
 import { TYPE } from 'configs/chat.config'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
-import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
 import { logger } from 'utils/logger'

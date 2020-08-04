@@ -96,8 +96,14 @@ const mutations = {
     )
     if (idx >= 0) {
       // 메인뷰를 보고있으면 메인뷰 변경
-      if (participant[idx].connectionId === state.mainView.connectionId) {
-        const pIdx = state.participants.find(user => user.video === true)
+      if (
+        state.participants[idx].connectionId === state.mainView.connectionId
+      ) {
+        const pIdx = state.participants.findIndex(
+          user =>
+            user.connectionId !== state.mainView.connectionId &&
+            user.video === true,
+        )
         if (pIdx > -1) {
           state.mainView = state.participants[pIdx]
         } else {

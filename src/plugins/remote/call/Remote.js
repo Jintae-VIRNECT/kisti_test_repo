@@ -72,17 +72,16 @@ const _ = {
       publisher.on('streamCreated', () => {
         logger('room', 'publish success')
         _.publisher = publisher
-        if (publishVideo) {
-          // TODO:: 테스트 계정용!!!!
-          Store.commit('updateResolution', {
-            connectionId: publisher.stream.connection.connectionId,
-            width: 0,
-            height: 0,
-          })
-        }
+        const mediaStream = publisher.stream.mediaStream
+        const streamSize = mediaStream.getVideoTracks()[0].getSettings()
         Store.commit('updateParticipant', {
           connectionId: publisher.stream.connection.connectionId,
-          stream: publisher.stream.mediaStream,
+          stream: mediaStream,
+        })
+        _.sendResolution({
+          width: streamSize.width,
+          height: streamSize.height,
+          orientation: '',
         })
       })
 

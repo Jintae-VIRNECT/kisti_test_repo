@@ -11,6 +11,7 @@
         id="main-video"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
+        @loadeddata="optimizeVideoSize"
         :muted="!speaker || mainView.id === account.uuid"
         autoplay
         playsinline
@@ -184,14 +185,6 @@ export default {
   methods: {
     ...mapActions(['updateAccount', 'setCapture']),
     mediaPlay() {
-      if (this.mainView.me && this.mainView.stream) {
-        const videoEl = this.$el.querySelector('#main-video')
-        this.$call.sendResolution({
-          width: videoEl.offsetWidth,
-          height: videoEl.offsetHeight,
-          orientation: '',
-        })
-      }
       this.$nextTick(() => {
         this.optimizeVideoSize()
         this.loaded = true

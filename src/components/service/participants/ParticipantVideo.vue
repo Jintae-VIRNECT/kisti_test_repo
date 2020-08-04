@@ -246,8 +246,5 @@ export default {
       // this.$call.disconnect(this.participant.connectionId)
     },
   },
-  mounted() {
-    console.log(this.participant)
-  },
 }
 </script>
