@@ -26,7 +26,6 @@ import com.virnect.process.infra.file.FileUploadService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.jdbc.Work;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -92,7 +91,7 @@ public class TaskService {
          * 1.     컨텐츠 메타데이터 가져오기
          * 1-1.   에러처리
          * 2.     작업 정보 저장
-         * 
+         *
          * 3.     복제 (Duplicate) / 전환 (Transform) 분기
          * 3-1.   복제 (Duplicate)
          * 3-1-1. 컨텐츠 파일 복제 요청
@@ -267,6 +266,7 @@ public class TaskService {
 
     /**
      * 복제된 컨텐츠 삭제
+     *
      * @param contentUUID
      * @param userUUID
      */
@@ -283,6 +283,7 @@ public class TaskService {
 
     /**
      * 컨텐츠를 작업으로 복제(Duplicate)할 때 - 작업의 새로운 타겟을 만든다. (매뉴얼 + 작업 보고)
+     *
      * @param newProcess
      * @param targetType
      */
@@ -329,6 +330,7 @@ public class TaskService {
 
     /**
      * 컨텐츠를 작업으로 변환(Transform)할 때 - 기존 컨텐츠의 타겟을 작업 타겟으로 설정.( 메뉴얼 X, Only 작업 보고)
+     *
      * @param newProcess
      * @param contentTargetResponse
      */
@@ -357,6 +359,7 @@ public class TaskService {
 
     /**
      * 작업을 추가 작업으로 변환(Transform)할 때 - 기존 작업의 타겟을 작업 타겟으로 설정.
+     *
      * @param newProcess
      * @param contentTargetResponse
      */
@@ -616,7 +619,7 @@ public class TaskService {
 
             Target target = null;
 
-            if (!targetProcess.getTargetList().isEmpty()){
+            if (!targetProcess.getTargetList().isEmpty()) {
                 target = targetProcess.getTargetList().get(0);
             }
 
@@ -665,6 +668,7 @@ public class TaskService {
 
     /**
      * 신규 하위작업 존재 여부
+     *
      * @param workspaceUUID
      * @param workerUUID
      * @return
@@ -677,6 +681,7 @@ public class TaskService {
 
     /**
      * 컨텐츠 식별자로 작업조회
+     *
      * @param contentUUID
      * @return
      */
@@ -795,6 +800,7 @@ public class TaskService {
 
     /**
      * 작업 메타데이터 Builder
+     *
      * @param process
      * @param subProcessesId
      * @param workerUUID
@@ -824,6 +830,7 @@ public class TaskService {
 
     /**
      * 하위 작업 리스트 Builder
+     *
      * @param subProcesses
      * @param subProcessesId
      * @param workerUUID
@@ -852,6 +859,7 @@ public class TaskService {
 
     /**
      * 하위 작업 메타데이터 Builder
+     *
      * @param subProcess
      * @param workerUUID
      * @return
@@ -886,6 +894,7 @@ public class TaskService {
 
     /**
      * 스텝 리스트 Builder
+     *
      * @param jobs
      * @return
      */
@@ -901,6 +910,7 @@ public class TaskService {
 
     /**
      * 스텝 메타데이터 Builder
+     *
      * @param job
      * @return
      */
@@ -921,6 +931,7 @@ public class TaskService {
 
     /**
      * 페이퍼 리스트 Builder
+     *
      * @param reports
      * @return
      */
@@ -936,6 +947,7 @@ public class TaskService {
 
     /**
      * 페이퍼 메타데이터 Builder
+     *
      * @param report
      * @return
      */
@@ -949,6 +961,7 @@ public class TaskService {
 
     /**
      * 액션 리스트 Builder
+     *
      * @param items
      * @return
      */
@@ -964,6 +977,7 @@ public class TaskService {
 
     /**
      * 액션 메타데이터 Builder
+     *
      * @param item
      * @return
      */
@@ -1031,6 +1045,7 @@ public class TaskService {
 
     /**
      * 작업의 이슈 목록
+     *
      * @param userUUID
      * @param workspaceUUID
      * @param search
@@ -1055,6 +1070,7 @@ public class TaskService {
 
     /**
      * 워크스페이스의 이슈 목록 (troubleMemo)
+     *
      * @param myUUID
      * @param workspaceUUID
      * @param search
@@ -1148,6 +1164,7 @@ public class TaskService {
 
     /**
      * 페이퍼 목록 조회
+     *
      * @param userUUID
      * @param workspaceUUID
      * @param processId
@@ -1212,6 +1229,7 @@ public class TaskService {
 
     /**
      * 이슈와
+     *
      * @param uploadWorkResult
      * @return View에서 보고하는 내용을 저장(issue 포함)
      */
@@ -1424,6 +1442,7 @@ public class TaskService {
 
     /**
      * 전체 작업 목록 조회
+     *
      * @param workspaceUUID 워크스페이스 UUID
      * @param search        검색어
      * @param userUUID      사용자 UUID
@@ -1491,6 +1510,7 @@ public class TaskService {
 
     /**
      * 작업의 컨디션을 필터링
+     *
      * @param processList
      * @param filter
      * @param pageable
@@ -1545,6 +1565,7 @@ public class TaskService {
 
     /**
      * 작업 종료
+     *
      * @param taskId
      * @param actorUUID
      * @return
@@ -1573,6 +1594,7 @@ public class TaskService {
 
     /**
      * 작업 상세 정보
+     *
      * @param processId
      * @return
      */
@@ -1604,6 +1626,7 @@ public class TaskService {
 
     /**
      * 작업 및 하위의 모든 (세부작업, 단계 등) 정보를 업데이트.
+     *
      * @param editProcessRequest
      * @return
      */
@@ -1647,6 +1670,7 @@ public class TaskService {
 
     /**
      * 작업 내 하위작업 목록
+     *
      * @param processId
      * @param workspaceUUID
      * @param search
@@ -1713,6 +1737,7 @@ public class TaskService {
 
     /**
      * 하위 작업의 컨디션을 필터링
+     *
      * @param subProcessList
      * @param filter
      * @param pageable
@@ -1732,13 +1757,14 @@ public class TaskService {
 
     /**
      * 워크스페이스 전체의 하위 작업 목록 조회
+     *
      * @param workspaceUUID
      * @param processId
      * @param search
      * @param pageable
      * @return
      */
-    public ApiResponse<SubProcessesResponse> getSubProcesses(String workspaceUUID, Long processId, String search, Pageable pageable) {
+    public ApiResponse<SubProcessesResponse> getSubProcesses(String workspaceUUID, Long processId, String search, Pageable pageable, Conditions filter) {
         // 워크스페이스 전체의 세부공정목록조회
         // 검색어로 사용자 목록 조회
         //List<UserInfoResponse> userInfos = getUserInfoSearch(search);
@@ -1748,7 +1774,40 @@ public class TaskService {
             List<UserInfoResponse> userInfos = getUserInfo(search, workspaceUUID);
             userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         }
+
         Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(workspaceUUID, processId, search, userUUIDList, pageable);
+        if (filter != null && !filter.equals(Conditions.ALL)) {
+            List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream()
+                    .filter(subProcess -> subProcess.getConditions().equals(filter))
+                    .map(subProcess -> {
+                        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
+                        return SubProcessReportedResponse.builder()
+                                .taskId(subProcess.getProcess().getId())
+                                .taskName(subProcess.getProcess().getName())
+                                .subTaskId(subProcess.getId())
+                                .subTaskName(subProcess.getName())
+                                .conditions(subProcess.getConditions())
+                                .reportedDate(Optional.of(subProcess).map(SubProcess::getReportedDate).orElseGet(() -> LocalDateTime.parse("1500-01-01T00:00:00")))
+                                .workerUUID(userInfoResponse.getData().getUuid())
+                                .workerName(userInfoResponse.getData().getNickname())
+                                .workerProfile(userInfoResponse.getData().getProfile())
+                                .build();
+                    }).collect(Collectors.toList());
+
+            int totalPage = editSubProcessResponseList.size()/pageable.getPageSize();
+            if(editSubProcessResponseList.size()/pageable.getPageSize() >1){
+                totalPage =editSubProcessResponseList.size()/pageable.getPageSize() +1;
+            }
+
+            PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+                    .currentPage(pageable.getPageNumber())
+                    .currentSize(pageable.getPageSize())
+                    .totalPage(totalPage)
+                    .totalElements(editSubProcessResponseList.size())
+                    .build();
+            return new ApiResponse<>(new SubProcessesResponse(editSubProcessResponseList, pageMetadataResponse));
+        }
+
         List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
             ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
             return SubProcessReportedResponse.builder()
@@ -1763,7 +1822,6 @@ public class TaskService {
                     .workerProfile(userInfoResponse.getData().getProfile())
                     .build();
         }).collect(Collectors.toList());
-
         PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
                 .currentPage(pageable.getPageNumber())
                 .currentSize(pageable.getPageSize())
@@ -1775,6 +1833,7 @@ public class TaskService {
 
     /**
      * 하위 작업 상세조회
+     *
      * @param subProcessId
      * @return
      */
@@ -1808,6 +1867,7 @@ public class TaskService {
 
     /**
      * 내 작업 조회
+     *
      * @param workspaceUUID
      * @param workerUUID
      * @param processId
@@ -1820,7 +1880,7 @@ public class TaskService {
     public ApiResponse<MyWorkListResponse> getMyWorks(String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable) {
         Page<SubProcess> subProcessPage = this.subProcessRepository.getMyWorksInProcess(workspaceUUID, workerUUID, processId, search, pageable);
 //        Page<SubProcess> subProcessPage = this.subProcessRepository.findByWorkerUUID(workerUUID, pageable);
-        
+
         List<MyWorksResponse> myWorksResponseList = subProcessPage.stream().map(subProcess -> {
             // 신규작업확인 처리
             if (workerUUID.equals(subProcess.getWorkerUUID())) {
@@ -1868,6 +1928,7 @@ public class TaskService {
 
     /**
      * 타겟 데이터로 작업 조회
+     *
      * @param workspaceUUID
      * @param targetData
      * @param pageable
@@ -1916,6 +1977,7 @@ public class TaskService {
 
     /**
      * 하위 작업 수정
+     *
      * @param subProcessId
      * @param subProcessRequest
      * @return
@@ -2005,6 +2067,7 @@ public class TaskService {
 
     /**
      * 단계 목록 조회
+     *
      * @param userUUID
      * @param subProcessId
      * @param search
@@ -2020,7 +2083,7 @@ public class TaskService {
         // 작업 단건 조회
         Process process = this.processRepository.findById(subProcess.getProcess().getId())
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        
+
         Page<Job> jobPage = null;
 
         jobPage = this.jobRepository.getJobPage(myUUID, subProcessId, search, pageable);
@@ -2051,7 +2114,7 @@ public class TaskService {
 
             if (job.getIssueList().size() > 0) {
 
-                for (Issue issue : job.getIssueList()){
+                for (Issue issue : job.getIssueList()) {
                     JobResponse.Issue jobIssue = JobResponse.Issue.builder()
                             .issueId(issue.getId())
                             .caption(issue.getContent())
@@ -2087,6 +2150,7 @@ public class TaskService {
 
     /**
      * 단계 컨디션 필터링
+     *
      * @param jobPage
      * @param filter
      * @param pageable
@@ -2106,6 +2170,7 @@ public class TaskService {
 
     /**
      * 이슈 상세 조회
+     *
      * @param issueId
      * @return
      */
@@ -2157,6 +2222,7 @@ public class TaskService {
 
     /**
      * 페이지 상세 조회
+     *
      * @param reportId
      * @return
      */
@@ -2196,6 +2262,7 @@ public class TaskService {
 
     /**
      * 작업 삭제
+     *
      * @param checkProcessOwnerRequest
      * @return
      */
@@ -2237,6 +2304,7 @@ public class TaskService {
 
     /**
      * 사용자 검색 (이름, 이메일)
+     *
      * @param search
      * @return
      */
@@ -2255,6 +2323,7 @@ public class TaskService {
 
     /**
      * 워크스페이스 내 사용자 검색(닉네임, 이메일)
+     *
      * @param search
      * @param workspaceId
      * @return
@@ -2368,6 +2437,7 @@ public class TaskService {
 
     /**
      * 타겟으로 작업 정보 호출
+     *
      * @param targetData
      * @return
      */
@@ -2459,6 +2529,7 @@ public class TaskService {
 
     /**
      * 이미지 업로드 후 업로드 경로 반환
+     *
      * @param targetData
      * @return
      */
@@ -2466,7 +2537,7 @@ public class TaskService {
 
         String qrString = "";
 
-        try{
+        try {
             // 현재는 QR밖에 없어서 모든 데이터를 QR 이미지로 변환. 추후 다른 타입이 있을 경우 수정 필요.
             BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
 
@@ -2477,7 +2548,7 @@ public class TaskService {
 
             qrString = Base64.getEncoder().encodeToString(os.toByteArray());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -2488,6 +2559,7 @@ public class TaskService {
 
     /**
      * 워크스페이스 멤버 정보
+     *
      * @param workspaceUUID
      * @return
      */
@@ -2533,7 +2605,7 @@ public class TaskService {
             int percent = 0;
 
             if (subProcessList.size() > 0) {
-                percent = (int)(((double) ing / (double) subProcessList.size()) * 100);
+                percent = (int) (((double) ing / (double) subProcessList.size()) * 100);
             }
 
             WorkspaceUserInfoResponse response = WorkspaceUserInfoResponse.builder()
@@ -2591,6 +2663,7 @@ public class TaskService {
 
     /**
      * 컨텐츠UUID로 컨텐츠 다운로드
+     *
      * @param contentUUID
      * @param memberUUID
      * @return
@@ -2602,6 +2675,7 @@ public class TaskService {
 
     /**
      * 타겟 데이터로 컨텐츠 다운로드
+     *
      * @param targetData
      * @param memberUUID
      * @return
@@ -2616,6 +2690,7 @@ public class TaskService {
 
     /**
      * get방식에서 URLEncode된 값의 URLEncoding이 풀려서 오는 케이스를 체크.
+     *
      * @param targetData
      * @return
      */
@@ -2653,6 +2728,7 @@ public class TaskService {
 
     /**
      * sync시 필요한 데이터와 동일한 형태의 데이터를 만들기
+     *
      * @param taskId
      * @param subTaskIds
      * @return
@@ -2676,6 +2752,7 @@ public class TaskService {
 
     /**
      * 작업 싱크 메타데이터 Builder
+     *
      * @param process
      * @param subTaskIds
      * @return
@@ -2696,6 +2773,7 @@ public class TaskService {
 
     /**
      * 하위 작업 싱크 리스트 Bulider
+     *
      * @param subProcesses
      * @param subTaskIds
      * @return
@@ -2728,6 +2806,7 @@ public class TaskService {
 
     /**
      * 하위 작업 싱크 메타데이터 Builder
+     *
      * @param subProcess
      * @return
      */
@@ -2735,17 +2814,18 @@ public class TaskService {
     private WorkSyncResponse.SubProcessWorkResult buildSyncDataSubProcess(SubProcess subProcess) {
         WorkSyncResponse.SubProcessWorkResult build
                 = WorkSyncResponse.SubProcessWorkResult.builder()
-                      .id(subProcess.getId())
-                      .syncUserUUID(subProcess.getWorkerUUID())
-                      .priority(subProcess.getPriority())
-                      .steps(buildSyncJobList(subProcess.getJobList()))
-                      .build();
+                .id(subProcess.getId())
+                .syncUserUUID(subProcess.getWorkerUUID())
+                .priority(subProcess.getPriority())
+                .steps(buildSyncJobList(subProcess.getJobList()))
+                .build();
 
         return build;
     }
 
     /**
      * 스텝 싱크 리스트 Builder
+     *
      * @param jobs
      * @return
      */
@@ -2761,6 +2841,7 @@ public class TaskService {
 
     /**
      * 스텝 싱크 메타데이터 Builder
+     *
      * @param job
      * @return
      */
@@ -2776,6 +2857,7 @@ public class TaskService {
 
     /**
      * 페이퍼 싱크 리스트 Builder
+     *
      * @param reports
      * @return
      */
@@ -2791,6 +2873,7 @@ public class TaskService {
 
     /**
      * 페이퍼 싱크 메타데이터 Builder
+     *
      * @param report
      * @return
      */
@@ -2804,6 +2887,7 @@ public class TaskService {
 
     /**
      * 액션 싱크 리스트 Builder
+     *
      * @param items
      * @return
      */
@@ -2820,6 +2904,7 @@ public class TaskService {
 
     /**
      * 액션 싱크 메타데이터 Bulider
+     *
      * @param item
      * @return
      */
@@ -2836,6 +2921,7 @@ public class TaskService {
 
     /**
      * 트러블 메모 업로드
+     *
      * @param request
      * @return
      */
