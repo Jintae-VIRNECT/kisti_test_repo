@@ -24,11 +24,6 @@ const _ = {
   connect: async (configs, role) => {
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
-    // TODO: 영상 출력 허용 테스트 계정 이메일
-    let allowUser = false
-    if (allowCamera.includes(_.account.email)) {
-      allowUser = true
-    }
     try {
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -62,12 +57,11 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo =
-        role === ROLE.WORKER || role === ROLE.EXPERT || allowUser
+      const publishVideo = role === ROLE.WORKER || role === ROLE.EXPERT || true
 
       const publisher = OV.initPublisher('', {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
-        videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
+        videoSource: settingInfo.video ? settingInfo.video : undefined, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
         publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value
@@ -78,18 +72,17 @@ const _ = {
       publisher.on('streamCreated', () => {
         logger('room', 'publish success')
         _.publisher = publisher
-        if (publishVideo) {
-          // TODO:: 테스트 계정용!!!!
-          Store.commit('updateResolution', {
-            connectionId: publisher.stream.connection.connectionId,
-            width: 0,
-            height: 0,
-          })
-          Store.commit('updateParticipant', {
-            connectionId: publisher.stream.connection.connectionId,
-            stream: publisher.stream.mediaStream,
-          })
-        }
+        const mediaStream = publisher.stream.mediaStream
+        const streamSize = mediaStream.getVideoTracks()[0].getSettings()
+        Store.commit('updateParticipant', {
+          connectionId: publisher.stream.connection.connectionId,
+          stream: mediaStream,
+        })
+        _.sendResolution({
+          width: streamSize.width,
+          height: streamSize.height,
+          orientation: '',
+        })
       })
 
       _.session.publish(publisher)
@@ -162,6 +155,12 @@ const _ = {
     if (!_.session) return
     if (resolution) {
       _.resolution = resolution
+
+      Store.commit('updateResolution', {
+        connectionId: _.session.connection.connectionId,
+        width: resolution.width,
+        height: resolution.height,
+      })
     } else {
       resolution = _.resolution
     }

@@ -5,10 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div
-        class="participant-video__stream"
-        v-if="participant.video && !isCurrent"
-      >
+      <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -248,9 +245,6 @@ export default {
       await kickMember(params)
       // this.$call.disconnect(this.participant.connectionId)
     },
-  },
-  mounted() {
-    console.log(this.participant)
   },
 }
 </script>

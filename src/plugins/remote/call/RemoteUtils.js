@@ -5,7 +5,6 @@ import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
 import { TYPE } from 'configs/chat.config'
 
 import ChatMsgBuilder from 'utils/chatMsgBuilder'
-import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
 import { logger } from 'utils/logger'
@@ -216,12 +215,8 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  let allowUser = false
-  if (allowCamera.includes(_.account.email)) {
-    allowUser = true
-  }
   const publishVideo =
-    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || allowUser
+    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || true
 
   userObj = {
     id: uuid,
