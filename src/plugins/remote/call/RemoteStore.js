@@ -95,6 +95,15 @@ const mutations = {
       obj => obj.connectionId === connectionId,
     )
     if (idx >= 0) {
+      // 메인뷰를 보고있으면 메인뷰 변경
+      if (participant[idx].connectionId === state.mainView.connectionId) {
+        const pIdx = state.participants.find(user => user.video === true)
+        if (pIdx > -1) {
+          state.mainView = state.participants[pIdx]
+        } else {
+          state.mainView = {}
+        }
+      }
       let participant = state.participants.splice(idx, 1)
       state.chatList.push({
         text: participant[0].nickname + '님이 대화에서 나가셨습니다.',
@@ -103,15 +112,6 @@ const mutations = {
         uuid: null,
         type: 'system',
       })
-      // 메인뷰를 보고있으면 메인뷰 변경
-      if (participant[0].connectionId === state.mainView.connectionId) {
-        const pIdx = state.participants.find(user => user.video === true)
-        if (pIdx > -1) {
-          state.mainView = state.participants[0]
-        } else {
-          state.mainView = {}
-        }
-      }
     }
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(
