@@ -119,7 +119,7 @@ export default {
 				const diff = this.deadline - dayjs().unix()
 				this.remainTime = parseInt(dayjs.duration({ second: diff }).$ms / 1000)
 				if (this.remainTime <= 0) {
-					// console.log('만료')
+					// console.log('만료')d
 					this.isExpire = true
 					clearInterval(this.runnerID)
 				}
