@@ -3,7 +3,6 @@ import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
-import { allowCamera } from 'utils/testing'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 

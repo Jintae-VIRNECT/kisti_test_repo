@@ -2,7 +2,7 @@ import { getAccount, tokenRequest } from 'api/common'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
-import { setAuthorization, setBaseURL } from 'api/gateway/gateway'
+import { setBaseURL } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { debug } from 'utils/logger'
 
@@ -12,8 +12,6 @@ import { debug } from 'utils/logger'
 let env = null
 let api = null
 let isLogin = false
-let accessToken = null
-let refreshToken = null
 let myInfo = {}
 let myWorkspaces = []
 const intervalTime = 5 * 60 * 1000 // 5 minutes
@@ -23,11 +21,6 @@ let interval
 /**
  * 메소드
  */
-function getTokensFromCookies() {
-  accessToken = Cookies.get('accessToken')
-  refreshToken = Cookies.get('refreshToken')
-  return accessToken
-}
 function setTokensToCookies(response) {
   const cookieOption = {
     expires: response.expireIn / 3600000,
@@ -38,12 +31,11 @@ function setTokensToCookies(response) {
   }
   Cookies.set('accessToken', response.accessToken, cookieOption)
   Cookies.set('refreshToken', response.refreshToken, cookieOption)
-  accessToken = response.accessToken
-  refreshToken = response.refreshToken
-  setAuthorization(accessToken)
+  debug('TOKEN::', axios.defaults.headers)
 }
 
 const tokenInterval = async () => {
+  const accessToken = Cookies.get('accessToken')
   let expireTime = jwtDecode(accessToken).exp,
     now = parseInt(Date.now() / 1000)
 
@@ -51,7 +43,7 @@ const tokenInterval = async () => {
   if (expireTime - now < renewvalTime) {
     let params = {
       accessToken: accessToken,
-      refreshToken: refreshToken,
+      refreshToken: Cookies.get('refreshToken'),
     }
 
     let response = await tokenRequest(params)
@@ -93,7 +85,7 @@ async function getUrls() {
   return res.data
 }
 
-const cookieClear = () => {
+export const cookieClear = () => {
   if (/\.?virnect\.com/.test(location.href)) {
     Cookies.remove('accessToken', { domain: '.virnect.com' })
     Cookies.remove('refreshToken', { domain: '.virnect.com' })
@@ -112,12 +104,6 @@ class Auth {
   get isLogin() {
     return isLogin
   }
-  get accessToken() {
-    return accessToken
-  }
-  get refreshToken() {
-    return refreshToken
-  }
   get myInfo() {
     return clonedeep(myInfo)
   }
@@ -132,7 +118,7 @@ class Auth {
     }
     await getUrls()
 
-    if (getTokensFromCookies()) {
+    if (Cookies.get('accessToken')) {
       try {
         await getMyInfo(api)
         isLogin = true
@@ -157,8 +143,6 @@ class Auth {
   logout() {
     cookieClear()
     isLogin = false
-    accessToken = null
-    refreshToken = null
     myInfo = {}
     myWorkspaces = []
     const url = window.urls.console
