@@ -183,7 +183,7 @@ export default {
   background-color: var(--tooltip-bg-color);
   border-radius: 4px;
   > p {
-    line-height: 1em;
+    line-height: 1.8em;
   }
   .arrow {
     position: absolute;
