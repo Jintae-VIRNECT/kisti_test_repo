@@ -215,8 +215,7 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  const publishVideo =
-    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || true
+  const publishVideo = roleType === ROLE.WORKER
 
   userObj = {
     id: uuid,

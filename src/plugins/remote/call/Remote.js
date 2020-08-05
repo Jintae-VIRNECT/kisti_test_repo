@@ -3,7 +3,6 @@ import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
-import { allowCamera } from 'utils/testing'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
@@ -57,7 +56,7 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo = role === ROLE.WORKER || role === ROLE.EXPERT || true
+      const publishVideo = role === ROLE.WORKER
 
       const publisher = OV.initPublisher('', {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
@@ -73,16 +72,18 @@ const _ = {
         logger('room', 'publish success')
         _.publisher = publisher
         const mediaStream = publisher.stream.mediaStream
-        const streamSize = mediaStream.getVideoTracks()[0].getSettings()
         Store.commit('updateParticipant', {
           connectionId: publisher.stream.connection.connectionId,
           stream: mediaStream,
         })
-        _.sendResolution({
-          width: streamSize.width,
-          height: streamSize.height,
-          orientation: '',
-        })
+        if (publisher.properties.publishVideo) {
+          const streamSize = mediaStream.getVideoTracks()[0].getSettings()
+          _.sendResolution({
+            width: streamSize.width,
+            height: streamSize.height,
+            orientation: '',
+          })
+        }
       })
 
       _.session.publish(publisher)

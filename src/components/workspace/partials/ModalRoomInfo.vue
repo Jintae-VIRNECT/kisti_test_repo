@@ -60,10 +60,22 @@
           <span class="data-title">협업 진행일</span>
           <span class="data-value">{{ createdDate }}</span>
         </div>
-        <div class="roominfo-view__data">
+        <div class="roominfo-view__data" v-if="!isHistory">
           <span class="data-title">시작 시간</span>
           <span class="data-value">{{ createdTime }}</span>
         </div>
+        <template v-else>
+          <div class="roominfo-view__data">
+            <span class="data-title">시작 / 종료 시간</span>
+            <span class="data-value">{{
+              `${createdTime} / ${inactiveTime}`
+            }}</span>
+          </div>
+          <div class="roominfo-view__data">
+            <span class="data-title">진행시간</span>
+            <span class="data-value">{{ durationTime }}</span>
+          </div>
+        </template>
         <div class="roominfo-view__button" v-if="isLeader">
           <button class="btn" :disabled="!canSave" @click="saveInfo">
             저장하기
@@ -96,6 +108,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isHistory: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -103,6 +119,8 @@ export default {
       description: '',
       createdDate: '',
       createdTime: '',
+      inactiveTime: '',
+      durationTime: '',
       titleValid: false,
     }
   },
@@ -139,6 +157,12 @@ export default {
         // this.imageUrl = room.profile
         this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
         this.createdTime = this.$dayjs(room.activeDate).format('hh:mm:ss')
+        if (this.isHistory) {
+          this.inactiveTime = this.$dayjs(room.unactiveDate).format('hh:mm:ss')
+          this.durationTime = this.$dayjs(this.room.durationSec * 1000)
+            .utc()
+            .format('HH:mm:ss')
+        }
       },
       deep: true,
     },
@@ -182,6 +206,14 @@ export default {
       this.imageUrl = this.room.profile
       this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')
       this.createdTime = this.$dayjs(this.room.activeDate).format('hh:mm:ss')
+      if (this.isHistory) {
+        this.inactiveTime = this.$dayjs(this.room.unactiveDate).format(
+          'hh:mm:ss',
+        )
+        this.durationTime = this.$dayjs(this.room.durationSec * 1000)
+          .utc()
+          .format('HH:mm:ss')
+      }
     }
   },
 }
