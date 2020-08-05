@@ -123,7 +123,7 @@
                     >
                       {{ $t('workspace.setting.update') }}
                     </el-button>
-                    <el-button @click="showAddModal = true" v-else>
+                    <el-button @click="showLeaveModal = true" v-else>
                       {{ $t('workspace.setting.leave') }}
                     </el-button>
                   </el-form>
@@ -135,7 +135,7 @@
       </el-row>
     </div>
     <workspace-leave-modal
-      :visible.sync="showAddModal"
+      :visible.sync="showLeaveModal"
       :activeWorkspace="activeWorkspace"
       :myProfile="myProfile"
     />
@@ -168,7 +168,7 @@ export default {
         name: '',
         description: '',
       },
-      showAddModal: false,
+      showLeaveModal: false,
     }
   },
   methods: {
