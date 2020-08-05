@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     useOpacity() {
-      if (this.view === VIEW.DRAWING || this.viewAction === ACTION.AR_DRAWING) {
+      if (this.view === VIEW.DRAWING) {
         return true
       } else {
         return false
