@@ -61,7 +61,7 @@
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
-              @click="print(content.target.imgPath)"
+              @click="print(content.target.imgPath, content.targetSize)"
             />
             <img
               v-if="content.target.imgPath"

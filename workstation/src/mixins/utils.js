@@ -1,19 +1,18 @@
 export default {
   methods: {
-    print(url) {
+    print(url, size = 10) {
       const popup = window.open('', '_blank')
       popup.document.write(`
         <style>
           @media print {  
             @page {
               size: 210mm 297mm;
-              margin: 25mm;
-              margin-right: 45mm;
+              margin: 5mm;
             }
           }
           img {
-            width: 100mm;
-            height: 100mm;
+            width: ${size}cm;
+            height: ${size}cm;
             border: solid;
           }
         </style>

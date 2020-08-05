@@ -24,6 +24,7 @@ export default class Content extends Model {
     this.converted = json.converted
     this.targets = json.targets
     this.target = json.targets.length && json.targets[0]
+    this.targetSize = json.targetSize
     this.targetType = this.target
       ? app.i18n.t(
           targetTypes.find(({ value }) => value === this.target.type).label,
