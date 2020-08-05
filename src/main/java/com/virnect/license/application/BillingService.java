@@ -52,23 +52,23 @@ public class BillingService {
     private final LicenseRepository licenseRepository;
     private final LicenseAssignAuthInfoRepository licenseAssignAuthInfoRepository;
 
-    private static long MAX_USER_AMOUNT = 9; // 9 명
-    private static long MAX_CALL_TIME = 270; // 270 시간
-    private static long MAX_STORAGE_AMOUNT = 90000; // 90 기가
-    private static long MAX_DOWNLOAD_HITS = 1000000; // 10만 회
-    private static int LICENSE_EXPIRED_HOUR = 23; // 오후 11시
-    private static int LICENSE_EXPIRED_MINUTE = 59; // 59분
-    private static int LICENSE_EXPIRED_SECONDS = 59; // 59초
+    private static final long MAX_USER_AMOUNT = 9; // 9 명
+    private static final long MAX_CALL_TIME = 270; // 270 시간
+    private static final long MAX_STORAGE_AMOUNT = 90000; // 90 기가
+    private static final long MAX_DOWNLOAD_HITS = 1000000; // 10만 회
+    private static final int LICENSE_EXPIRED_HOUR = 23; // 오후 11시
+    private static final int LICENSE_EXPIRED_MINUTE = 59; // 59분
+    private static final int LICENSE_EXPIRED_SECONDS = 59; // 59초
+    private static final long LICENSE_ASSIGN_AUTH_CODE_TTL_MINUTE = 30; // 30분간 지급 인증 코드 유효
+    private static final long FIRST_WORKSPACE_DOWNLOAD_HITS = 5000; // 최초 워크스페이스 생성 시 다운로드  5000회 추가
 
-    private static long LICENSE_ASSIGN_AUTH_CODE_TTL_MINUTE = 30; // 30분간 지급 인증 코드 유효
-    
-    private static long FIRST_WORKSPACE_DOWNLOAD_HITS = 5000;
+    private static final String USER_REST_SERVICE_ERROR_LOG_FORMAT = "User service error response: [{}]";
 
     /**
      * 상품 지급 여부 검사
      *
-     * @param allocateCheckRequest
-     * @return
+     * @param allocateCheckRequest - 상품 지급 여부 조회 요청 데이터
+     * @return - 상품 지급 여부 결과 데이터
      */
     @Transactional
     public ApiResponse<LicenseProductAllocateCheckResponse> licenseAllocateCheckRequest(LicenseAllocateCheckRequest allocateCheckRequest) {
@@ -77,7 +77,7 @@ public class BillingService {
         // 1. 라이선스 지급 여부 검사 요청 사용자 정보 조회
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(allocateCheckRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData() == null) {
-            log.error("User service error response: [{}]", userInfoApiResponse.getMessage());
+            log.error(USER_REST_SERVICE_ERROR_LOG_FORMAT, userInfoApiResponse.getMessage());
             throw new BillingServiceException(ErrorCode.ERR_BILLING_LICENSE_SERVER_ERROR);
         }
 
@@ -143,8 +143,8 @@ public class BillingService {
     /**
      * 상품 지급
      *
-     * @param licenseAllocateRequest
-     * @return
+     * @param licenseAllocateRequest - 상품 지급 요청 데이터
+     * @return - 지급 상품 정보
      */
     @Transactional
     public ApiResponse<LicenseProductAllocateResponse> licenseAllocateRequest(LicenseProductAllocateRequest licenseAllocateRequest) {
@@ -157,7 +157,7 @@ public class BillingService {
         // 2. 지급 요청 사용자 정보 조회
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(licenseAllocateRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData() == null) {
-            log.error("[USER REST SERVICE ERROR RESPONSE]: [{}]", userInfoApiResponse.getMessage());
+            log.error(USER_REST_SERVICE_ERROR_LOG_FORMAT, userInfoApiResponse.getMessage());
             throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
         }
 
@@ -169,7 +169,7 @@ public class BillingService {
         // 5. 지급 요청 사용자, 워크스페이스 정보 조회
         ApiResponse<WorkspaceInfoListResponse> workspaceApiResponse = this.workspaceRestService.getMyWorkspaceInfoList(requestUserInfo.getUuid(), 50);
         if (workspaceApiResponse.getCode() != 200 || workspaceApiResponse.getData().getWorkspaceList() == null) {
-            log.error("User service error response: [{}]", workspaceApiResponse.getMessage());
+            log.error(USER_REST_SERVICE_ERROR_LOG_FORMAT, workspaceApiResponse.getMessage());
             throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
         }
 
@@ -278,14 +278,14 @@ public class BillingService {
     /**
      * 상품 지급 취소
      *
-     * @param licenseDeallocateRequest
-     * @return
+     * @param licenseDeallocateRequest - 상품 지급 취소 요청 데이터
+     * @return - 상품 지급 취소 처리 결과 정보
      */
     @Transactional
     public ApiResponse<LicenseProductDeallocateResponse> licenseDeallocateRequest(LicenseProductDeallocateRequest licenseDeallocateRequest) {
         ApiResponse<UserInfoRestResponse> userInfoApiResponse = this.userRestService.getUserInfoByUserPrimaryId(licenseDeallocateRequest.getUserId());
         if (userInfoApiResponse.getCode() != 200 || userInfoApiResponse.getData() == null) {
-            log.error("User service error response: [{}]", userInfoApiResponse.getMessage());
+            log.error(USER_REST_SERVICE_ERROR_LOG_FORMAT, userInfoApiResponse.getMessage());
             throw new BillingServiceException(ErrorCode.ERR_BILLING_LICENSE_DEALLOCATE_USER_NOT_FOUND);
         }
         // 1. 계정 정보 조회
@@ -340,8 +340,8 @@ public class BillingService {
     /**
      * 상품 정보 기반으로 등록
      *
-     * @param productList
-     * @param licensePlan
+     * @param productList - 지급 상품 정보 리스트
+     * @param licensePlan - 상품 지급 대상 라이선스 플랜 정보
      */
     @Transactional
     public void licenseRegisterByProduct(List<LicenseAllocateProductInfoResponse> productList, LicensePlan licensePlan) {
@@ -371,7 +371,7 @@ public class BillingService {
     /**
      * 라이선스 생성
      *
-     * @param licenseProduct
+     * @param licenseProduct - 제품 라이선스 정보
      */
     @Transactional
     public void licenseGenerateAndRegisterByLicenseProduct(LicenseProduct licenseProduct) {
