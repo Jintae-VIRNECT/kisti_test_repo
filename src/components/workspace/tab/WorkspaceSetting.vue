@@ -47,7 +47,7 @@
           </template>
 
           <template v-else-if="tabview === 'video-record'">
-            <set-video :videos="videoDevices"></set-video>
+            <!-- <set-video :videos="videoDevices"></set-video> -->
 
             <set-record></set-record>
             <set-resolution></set-resolution>
