@@ -19,7 +19,7 @@
     "noShared": "비활성화"
   },
   "targetTypes": {
-    "qr": "QR 코드",
+    "qr": "QR 타겟",
     "vtarget": "V 타겟"
   },
   "info": {
