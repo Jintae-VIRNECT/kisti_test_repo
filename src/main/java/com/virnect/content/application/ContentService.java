@@ -1211,8 +1211,8 @@ public class ContentService {
             }
 
             // task 정보
-            taskObj.addProperty("TargetSize", targetSize);          // targetSize
             taskObj.addProperty("id", taskId);          // id
+            taskObj.addProperty("targetSize", targetSize);          // targetSize
             taskObj.addProperty("name", taskName);        // name
             taskObj.addProperty("managerUUID", managerUUID);     // managerUUID
             taskObj.addProperty("subProcessTotal", subTaskTotal);    // subProcessTotal
