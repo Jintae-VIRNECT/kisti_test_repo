@@ -13,10 +13,14 @@ import (
 )
 
 type StartRecordingRequest struct {
-	SessionID          string `json:"sessionId"`
-	Resolution         string `json:"resolution,omitempty"`
-	Framerate          uint   `json:"framerate,omitempty"`
-	RecordingTimeLimit int    `json:"recordingTimeLimit,omitempty"`
+	// session id of room
+	SessionID string `json:"sessionId" validate:"required" example:"session_id"`
+	// video resolution
+	Resolution string `json:"resolution,omitempty" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
+	// video framerate
+	Framerate uint `json:"framerate,omitempty" mininum:"1" maxinum:"30" default:"20" example:"20"`
+	// recording time
+	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" mininum:"5" maxinum:"60" default:"5" example:"5"`
 }
 
 type StartRecordingResponse struct {
@@ -39,10 +43,6 @@ type ListRecordingResponse struct {
 // @Accept json
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
-// @Param sessionId body string true "session id"
-// @Param recordingTimeLimit body int false "recording time(in minute)" mininum(5) maxinum(60) default(5)
-// @Param resolution body string false "video resolution" enums(480p, 720p, 1080p) default(720p)
-// @Param framerate body int false "video framerate" mininum(1) maxinum(30) default(20)
 // @Success 200 {object} StartRecordingResponse
 // @Failure 400 {} json "{"error":"error message"}"
 // @Failure 429 {} json "{"error":"Too Many Recordings"}""
