@@ -58,7 +58,7 @@ const _ = {
       })
       const publishVideo = role === ROLE.WORKER
 
-      const publisher = OV.initPublisher('', {
+      const publishOptions = {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
         videoSource: publishVideo
           ? settingInfo.video
@@ -71,7 +71,10 @@ const _ = {
         frameRate: 30,
         insertMode: 'PREPEND',
         mirror: false,
-      })
+      }
+      debug('call::publish::', publishOptions)
+
+      const publisher = OV.initPublisher('', publishOptions)
       publisher.on('streamCreated', () => {
         logger('room', 'publish success')
         _.publisher = publisher
