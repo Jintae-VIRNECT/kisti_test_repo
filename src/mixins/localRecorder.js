@@ -73,8 +73,7 @@ export default {
       handler(now, before) {
         //if worker out -> then stop local recording
         if (now === false && before === true) {
-          const showMsg = true
-          this.stopRecord(showMsg)
+          this.$eventBus.$emit('localRecord', false)
         }
       },
     },
@@ -270,7 +269,8 @@ export default {
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
-        this.stopRecord(true)
+        const showMsg = true
+        this.stopRecord(showMsg)
       }
     },
   },
