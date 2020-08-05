@@ -6,27 +6,42 @@
     <div class="the-sidebar__collapse__body">
       <div v-for="(group, role) in workspaces" :key="role">
         <span>{{ $t(`menu.collapse.workspace.${role}`) }}</span>
-        <span v-if="!workspaces[role].length">-</span>
+        <!-- 워크스페이스가 없을 경우 -->
+        <span v-if="!workspaces[role].length && role !== 'master'">-</span>
+        <!-- 마스터 워크스페이스가 없을 경우 -->
         <button
-          v-for="workspace in workspaces[role]"
-          :class="isActive(workspace.uuid) ? 'selected' : ''"
-          :key="workspace.uuid"
-          @click="workspaceActive(workspace.uuid)"
+          v-if="!workspaces[role].length && role === 'master'"
+          class="create-workspace"
+          @click="$router.push('/start')"
         >
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
-              "
-            />
-          </div>
-          <span>{{ workspace.name }}</span>
-          <img
-            v-if="isActive(workspace.uuid)"
-            src="~assets/images/icon/ic-check-circle.svg"
-          />
+          <span>{{ $t('workspace.create') }}</span>
         </button>
+
+        <el-tooltip
+          v-for="workspace in workspaces[role]"
+          :key="workspace.uuid"
+          :content="workspace.name"
+          placement="top"
+        >
+          <button
+            :class="isActive(workspace.uuid) ? 'selected' : ''"
+            @click="workspaceActive(workspace.uuid)"
+          >
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
+                "
+              />
+            </div>
+            <span>{{ workspace.name }}</span>
+            <img
+              v-if="isActive(workspace.uuid)"
+              src="~assets/images/icon/ic-check-circle.svg"
+            />
+          </button>
+        </el-tooltip>
       </div>
     </div>
   </div>
@@ -97,6 +112,10 @@ export default {
     margin: 8px 0;
     font-size: 12px;
     opacity: 0.6;
+  }
+  .create-workspace {
+    text-align: center;
+    background: #324461;
   }
   & > button {
     display: block;

@@ -1,4 +1,5 @@
 import Model from '@/models/Model'
+import { app } from '@/plugins/context'
 
 export default class Content extends Model {
   /**
@@ -23,7 +24,11 @@ export default class Content extends Model {
     this.converted = json.converted
     this.targets = json.targets
     this.target = json.targets.length && json.targets[0]
-    this.targetType = json.targets.length ? json.targets[0].type : '-'
+    this.targetType = this.target
+      ? app.i18n.t(
+          targetTypes.find(({ value }) => value === this.target.type).label,
+        )
+      : '-'
     this.createdDate = json.createdDate
   }
 }
@@ -39,6 +44,20 @@ export const sharedStatus = [
   {
     value: 'NO',
     label: 'contents.sharedStatus.noShared',
+  },
+]
+
+/**
+ * 컨텐츠 타겟 타입
+ */
+export const targetTypes = [
+  {
+    value: 'QR',
+    label: 'contents.targetTypes.qr',
+  },
+  {
+    value: 'VTarget',
+    label: 'contents.targetTypes.vtarget',
   },
 ]
 

@@ -126,7 +126,7 @@ export default {
 #home .container {
   .main-banner {
     height: 190px;
-    padding: 20px;
+    padding: 12px 8px;
     color: #fff;
     background: url('~assets/images/img-home-banner.jpg');
     background-size: cover;
@@ -135,6 +135,10 @@ export default {
     & h6 {
       font-weight: 300;
       font-size: 20px;
+      font-family: $poppins;
+    }
+    & h5 {
+      font-size: 28px;
       font-family: $poppins;
     }
     & p {
