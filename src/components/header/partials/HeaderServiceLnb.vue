@@ -90,13 +90,13 @@ export default {
       }
     },
     hasLeader(hear, bHear) {
-      if (!hear && hear !== bHear) {
+      if (!hear && hear !== bHear && this.participants.length > 0) {
         this.toastDefault('리더가 협업을 종료했습니다.')
         this.setView(VIEW.STREAM)
       }
     },
     hasWorker(hear, bHear) {
-      if (!hear && hear !== bHear) {
+      if (!hear && hear !== bHear && this.participants.length > 0) {
         this.toastDefault('작업자가 협업을 종료했습니다.')
         if (this.view === VIEW.AR) {
           this.setView(VIEW.STREAM)

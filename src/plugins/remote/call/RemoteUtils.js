@@ -20,6 +20,7 @@ export const addSessionEventListener = session => {
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
+        video: event.stream.hasVideo,
       })
       _.sendResolution()
       _.mic(Store.getters['mic'].isOn)
@@ -215,8 +216,8 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  const publishVideo =
-    roleType === ROLE.WORKER || roleType === ROLE.EXPERT || true
+  const publishVideo = roleType === ROLE.WORKER
+  // const publishVideo = connection.stream.hasVideo
 
   userObj = {
     id: uuid,

@@ -166,10 +166,10 @@ export default {
 .tooltip .tooltiptext {
   &.black {
     --tooltip-bg-color: #121517;
-    --tooltip-text-color: $color_text_sub;
+    --tooltip-text-color: #{$color_text_sub};
   }
   &.blue {
-    --tooltip-bg-color: $color_primary;
+    --tooltip-bg-color: #{$color_primary};
     --tooltip-text-color: #fff;
   }
 
@@ -183,7 +183,7 @@ export default {
   background-color: var(--tooltip-bg-color);
   border-radius: 4px;
   > p {
-    line-height: 1em;
+    line-height: 1.8em;
   }
   .arrow {
     position: absolute;
