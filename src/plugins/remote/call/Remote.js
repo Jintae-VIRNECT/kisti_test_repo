@@ -60,7 +60,11 @@ const _ = {
 
       const publisher = OV.initPublisher('', {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
-        videoSource: settingInfo.video ? settingInfo.video : undefined, //screen ? 'screen' : undefined,  // TODO: setting value
+        videoSource: publishVideo
+          ? settingInfo.video
+            ? settingInfo.video
+            : undefined
+          : false, //screen ? 'screen' : undefined,  // TODO: setting value
         publishAudio: true,
         publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value
