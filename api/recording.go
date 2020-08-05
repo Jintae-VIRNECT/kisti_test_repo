@@ -21,6 +21,8 @@ type StartRecordingRequest struct {
 	Framerate uint `json:"framerate,omitempty" mininum:"1" maxinum:"30" default:"20" example:"20"`
 	// recording time
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" mininum:"5" maxinum:"60" default:"5" example:"5"`
+	// recording filename without extension
+	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00"`
 }
 
 type StartRecordingResponse struct {
@@ -54,6 +56,7 @@ func StartRecording(c *gin.Context) {
 		Resolution:         viper.GetString("record.defaultResolution"),
 		Framerate:          viper.GetUint("record.defaultFramerate"),
 		RecordingTimeLimit: viper.GetInt("record.defaultRecordingTimeLimit"),
+		RecordingFilename:  "",
 	}
 	err := c.BindJSON(&req)
 	if err != nil {
@@ -89,10 +92,11 @@ func StartRecording(c *gin.Context) {
 	}
 
 	param := recorder.RecordingParam{
-		SessionID:          req.SessionID,
-		Resolution:         req.Resolution,
-		Framerate:          req.Framerate,
-		RecordingTimeLimit: req.RecordingTimeLimit,
+		SessionID:  req.SessionID,
+		Resolution: req.Resolution,
+		Framerate:  req.Framerate,
+		TimeLimit:  req.RecordingTimeLimit,
+		Filename:   req.RecordingFilename,
 	}
 
 	recordingId, err := recorder.NewRecording(param)

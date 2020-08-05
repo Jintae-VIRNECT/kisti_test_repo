@@ -12,14 +12,14 @@ import (
 )
 
 type ContainerParam struct {
-	RecordingID        string
-	VideoID            string
-	VideoName          string
-	Resolution         string
-	Framerate          uint
-	VideoFormat        string
-	LayoutURL          string
-	RecordingTimeLimit int
+	RecordingID string
+	VideoID     string
+	VideoName   string
+	Resolution  string
+	Framerate   uint
+	VideoFormat string
+	LayoutURL   string
+	TimeLimit   int
 }
 
 var (
@@ -130,7 +130,7 @@ func RunContainer(param ContainerParam) (string, error) {
 		return "", ErrContainerInternal
 	}
 	now := time.Now().Unix()
-	endTime := now + int64(param.RecordingTimeLimit*60)
+	endTime := now + int64(param.TimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.RecordingID
 	createOpt.Config = &docker.Config{
@@ -140,8 +140,8 @@ func RunContainer(param ContainerParam) (string, error) {
 			"ONLY_VIDEO=" + "false",
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
-			"VIDEO_ID=" + param.RecordingID,
-			"VIDEO_NAME=" + param.RecordingID,
+			"VIDEO_ID=" + param.VideoID,
+			"VIDEO_NAME=" + param.VideoName,
 			"VIDEO_FORMAT=" + param.VideoFormat,
 			"RECORDING_JSON=" + "{}",
 		},

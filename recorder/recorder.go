@@ -27,10 +27,11 @@ type recording struct {
 }
 
 type RecordingParam struct {
-	SessionID          string
-	Resolution         string
-	Framerate          uint
-	RecordingTimeLimit int
+	SessionID  string
+	Resolution string
+	Framerate  uint
+	TimeLimit  int
+	Filename   string
 }
 
 type RecordingFileInfo struct {
@@ -68,15 +69,19 @@ func getSessionID(recordingID string) string {
 func NewRecording(param RecordingParam) (string, error) {
 	var recordingId = makeRecordingID(param.SessionID)
 
+	if len(param.Filename) == 0 {
+		param.Filename = param.SessionID
+	}
+
 	containerParam := dockerclient.ContainerParam{
-		RecordingID:        recordingId,
-		VideoID:            param.SessionID,
-		VideoName:          param.SessionID,
-		Resolution:         param.Resolution,
-		Framerate:          param.Framerate,
-		VideoFormat:        viper.GetString("record.defaultVideoFormat"),
-		LayoutURL:          viper.GetString("record.layoutURL"),
-		RecordingTimeLimit: param.RecordingTimeLimit,
+		RecordingID: recordingId,
+		VideoID:     recordingId,
+		VideoName:   param.Filename,
+		Resolution:  param.Resolution,
+		Framerate:   param.Framerate,
+		VideoFormat: viper.GetString("record.defaultVideoFormat"),
+		LayoutURL:   viper.GetString("record.layoutURL"),
+		TimeLimit:   param.TimeLimit,
 	}
 
 	containerID, err := dockerclient.RunContainer(containerParam)
@@ -84,7 +89,7 @@ func NewRecording(param RecordingParam) (string, error) {
 		return recordingId, ErrInternalError
 	}
 
-	timeout := time.Duration(param.RecordingTimeLimit) * time.Minute
+	timeout := time.Duration(param.TimeLimit) * time.Minute
 	timer := time.AfterFunc(timeout, func() {
 		timeoutCh <- recordingId
 	})
