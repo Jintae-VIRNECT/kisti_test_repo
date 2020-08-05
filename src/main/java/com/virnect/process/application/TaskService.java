@@ -216,6 +216,7 @@ public class TaskService {
             // 3-2-2. 컨텐츠의 타겟값을 가져옴
             ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
 
+            Float targetSize = contentTarget.getSize();
             // 3-2-3. 기존 컨텐츠 식별자 등록
             newProcess.setContentUUID(registerNewProcess.getContentUUID());
             newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
@@ -345,6 +346,7 @@ public class TaskService {
                     .process(newProcess)
                     .data(targetData)
                     .imgPath(imgPath)
+                    .size(contentTargetResponse.getSize())
                     .build();
 
             this.targetRepository.save(target);
@@ -1794,16 +1796,17 @@ public class TaskService {
                                 .build();
                     }).collect(Collectors.toList());
 
-            int totalPage = editSubProcessResponseList.size()/pageable.getPageSize();
-            if(editSubProcessResponseList.size()/pageable.getPageSize() >1){
-                totalPage =editSubProcessResponseList.size()/pageable.getPageSize() +1;
+            int totalElements = (int) subProcessPage.stream().filter(subProcess -> subProcess.getConditions().equals(filter)).count();
+            int totalPage = totalElements / pageable.getPageSize();
+            if (editSubProcessResponseList.size() % pageable.getPageSize() > 0) {
+                totalPage = totalPage + 1;
             }
 
             PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
                     .currentPage(pageable.getPageNumber())
                     .currentSize(pageable.getPageSize())
                     .totalPage(totalPage)
-                    .totalElements(editSubProcessResponseList.size())
+                    .totalElements(totalElements)
                     .build();
             return new ApiResponse<>(new SubProcessesResponse(editSubProcessResponseList, pageMetadataResponse));
         }
