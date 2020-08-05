@@ -109,6 +109,7 @@ export default {
         })
 
         this.$eventBus.$emit('popover:close')
+        this.confirmDefault('협업을 삭제하였습니다.')
         this.$nextTick(() => {
           if (rtn) {
             this.refresh()
