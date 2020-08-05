@@ -890,6 +890,14 @@ public class ContentService {
             targetResponseList.add(map);
         }
 
+        JsonParser jsonParse = new JsonParser();
+        JsonObject metaData = (JsonObject) jsonParse.parse(content.getMetadata());
+        JsonObject contents = metaData.getAsJsonObject("contents");
+        Float targetSize = 10f;
+        if (contents.get("targetSize") != null) {
+            targetSize = contents.get("targetSize").getAsFloat();
+        }
+
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                 .workspaceUUID(content.getWorkspaceUUID())
                 .contentUUID(content.getUuid())
@@ -904,6 +912,7 @@ public class ContentService {
                 .converted(content.getConverted())
                 .targets(targetResponseList)
                 .createdDate(content.getCreatedDate())
+                .targetSize(targetSize)
                 .build();
         return new ApiResponse<>(contentInfoResponse);
     }
@@ -1167,6 +1176,7 @@ public class ContentService {
         try {
             /*
              * TargetID
+             * TargetSize
              * PropertyInfo - 1
              *     - randomKey - sceneGroups -2
              *         - PropertyInfo - sceneGroup 정보 - 2-1
@@ -1194,7 +1204,14 @@ public class ContentService {
             String managerUUID = userUuid;   // DB에 저장 된 uploaderUUID 사용
             int subTaskTotal = propertyInfo1.keySet().size();         // SceneGroups 하위에 있는 SceneGroup의 갯수
 
-            // task 정보 채우기
+            // target size 정보
+            Float targetSize = 10f;
+            if (propertyObj.get("TargetSize") != null) {
+                targetSize = propertyObj.get("TargetSize").getAsFloat();
+            }
+
+            // task 정보
+            taskObj.addProperty("TargetSize", targetSize);          // targetSize
             taskObj.addProperty("id", taskId);          // id
             taskObj.addProperty("name", taskName);        // name
             taskObj.addProperty("managerUUID", managerUUID);     // managerUUID
@@ -1487,7 +1504,7 @@ public class ContentService {
         String qrString = "";
 
         try {
-            BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 240, 240);
+            BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
