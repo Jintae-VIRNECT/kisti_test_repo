@@ -58,6 +58,9 @@
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-if="content.target">
             <span>{{ content.targetType }}</span>
+            <el-tag class="content-size">
+              {{ content.targetSize }}x{{ content.targetSize }}
+            </el-tag>
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
@@ -212,6 +215,14 @@ export default {
   .register {
     float: right;
     padding: 8px 13px;
+  }
+  .content-size {
+    height: 24px;
+    margin-left: 4px;
+    color: $font-color-desc;
+    line-height: 22px;
+    background: transparent;
+    border-color: $font-color-desc;
   }
 }
 </style>

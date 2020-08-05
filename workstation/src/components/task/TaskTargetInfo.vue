@@ -25,21 +25,24 @@
       <el-divider />
       <dt>{{ $t('task.targetInfo.targetType') }}</dt>
       <dd>
-        <span>{{ taskInfo.targets[0].type }}</span>
+        <span>{{ taskInfo.targetType }}</span>
+        <el-tag class="content-size">
+          {{ taskInfo.targetSize }}x{{ taskInfo.targetSize }}
+        </el-tag>
         <img
-          v-if="taskInfo.targets[0].imgPath"
+          v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-print.svg"
-          @click="print(taskInfo.targets[0].imgPath)"
+          @click="print(taskInfo.target.imgPath, taskInfo.targetSize)"
         />
         <img
-          v-if="taskInfo.targets[0].imgPath"
+          v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-file-download.svg"
-          @click="download(taskInfo.targets[0].imgPath)"
+          @click="download(taskInfo.target.imgPath)"
         />
       </dd>
     </dl>
     <div class="qr">
-      <img :src="taskInfo.targets[0].imgPath" />
+      <img :src="taskInfo.target.imgPath" />
     </div>
   </el-dialog>
 </template>
@@ -57,7 +60,7 @@ export default {
   data() {
     return {
       taskInfo: {
-        targets: [{}],
+        target: {},
       },
     }
   },
@@ -82,6 +85,14 @@ export default {
   }
   .qr img {
     width: 100%;
+  }
+  .content-size {
+    height: 24px;
+    margin-left: 4px;
+    color: $font-color-desc;
+    line-height: 22px;
+    background: transparent;
+    border-color: $font-color-desc;
   }
 }
 </style>
