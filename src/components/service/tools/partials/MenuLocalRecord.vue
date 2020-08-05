@@ -11,8 +11,6 @@
 </template>
 
 <script>
-// @TODO:detach related record logics - ykmo
-
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 
@@ -45,19 +43,11 @@ export default {
       }
     },
   },
-  watch: {
-    localRecordStatus(status) {
-      if (status === LCOAL_RECORD_STAUTS.START) {
-        this.isRecording = true
-      } else {
-        this.isRecording = false
-      }
-    },
-  },
+  watch: {},
 
   methods: {
     ...mapActions(['setLocalRecordStatus']),
-    recording() {
+    async recording() {
       if (this.disabled) return false
 
       if (!this.canRecord) {
@@ -67,17 +57,21 @@ export default {
       }
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        const showMsg = true
-        // this.isRecording = false
-        this.$eventBus.$emit('stopLocalRecord', showMsg)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+        this.$eventBus.$emit('localRecord', false)
         return false
       } else {
-        // this.isRecording = true
-        this.$eventBus.$emit('startLocalRecord')
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
+        this.$eventBus.$emit('localRecord', true)
       }
     },
+    toggleButton(isStart) {
+      this.isRecording = isStart
+    },
+  },
+  mounted() {
+    this.$eventBus.$on('localRecord', this.toggleButton)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('localRecord')
   },
 }
 </script>

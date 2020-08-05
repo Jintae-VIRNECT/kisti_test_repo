@@ -141,7 +141,6 @@ import {
   localRecIntervalOpt,
   localRecordTarget,
   RECORD_TARGET,
-  // LCOAL_RECORD_STAUTS,
 } from 'utils/recordOptions'
 
 export default {

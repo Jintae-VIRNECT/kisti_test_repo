@@ -117,8 +117,6 @@ export default {
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
 
     this.stopRecord()
-    this.$eventBus.$off('startLocalRecord')
-    this.$eventBus.$off('stopLocalRecord')
   },
 }
 </script>
