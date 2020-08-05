@@ -37,6 +37,7 @@
         :room="room"
         :image.sync="image"
         :leader="leader"
+        :isHistory="true"
       ></room-info>
 
       <participants-info
@@ -98,9 +99,6 @@ export default {
       }
       this.visibleFlag = flag
     },
-    // image(image) {
-    //   console.log(image)
-    // },
   },
   methods: {
     async initHistory() {
