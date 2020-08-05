@@ -47,10 +47,10 @@ export default class LocalRecorder {
   }
 
   /**
-   * @param {Function} stopCallback
+   * @param {Function} stopSignal
    */
-  setStopCallback(stopCallback) {
-    this.stopCallback = stopCallback
+  setStopSignal(stopSignal) {
+    this.stopSignal = stopSignal
   }
 
   /**
@@ -112,10 +112,6 @@ export default class LocalRecorder {
         this.recorder.stop()
         this.recorder.clearRecordedData()
 
-        if (this.stopCallback) {
-          this.stopCallback()
-        }
-
         logger(logType, 'stop local record')
       }
     } catch (e) {
@@ -143,7 +139,7 @@ export default class LocalRecorder {
       this.totalPlayTime = this.totalPlayTime + playTime / 60
 
       if (!(await this.checkQuota())) {
-        this.stopRecord()
+        this.stopSignal()
         await IDBHelper.deleteGroupMediaChunk(this.groupId)
       } else {
         //insert IDB
@@ -166,7 +162,7 @@ export default class LocalRecorder {
       }
 
       if (this.totalPlayTime >= this.maxTime) {
-        this.stopRecord()
+        this.stopSignal()
       }
 
       this.fileCount++

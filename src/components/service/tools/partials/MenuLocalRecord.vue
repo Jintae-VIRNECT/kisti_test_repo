@@ -58,11 +58,9 @@ export default {
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
         this.$eventBus.$emit('localRecord', false)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         return false
       } else {
         this.$eventBus.$emit('localRecord', true)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
       }
     },
     toggleButton(isStart) {

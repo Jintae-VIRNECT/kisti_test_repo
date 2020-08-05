@@ -98,11 +98,12 @@ export default {
       this.recorder = new LocalRecorder()
 
       if (await this.initRecorder()) {
+        await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
         this.recorder.startRecord()
       } else {
         //TODO : MESSAGE
         //녹화 시작 실패시의 안내 메시지
-        this.stopRecord()
+        this.$eventBus.$emit('localRecord', false)
         return false
       }
     },
@@ -147,8 +148,7 @@ export default {
         )
       })
 
-      this.recorder.setStopCallback(async () => {
-        await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+      this.recorder.setStopSignal(() => {
         this.$eventBus.$emit('localRecord', false)
       })
 
@@ -198,7 +198,6 @@ export default {
         console.error(e)
       } finally {
         await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
-        this.$eventBus.$emit('localRecord', false)
       }
     },
 
@@ -260,24 +259,18 @@ export default {
     },
 
     stopLocalRecordByKeyPress(e) {
-      if (
-        e.key === 'Escape' &&
-        this.localRecordStatus === LCOAL_RECORD_STAUTS.START
-      ) {
-        const showMsg = true
-        this.stopRecord(showMsg)
+      if (e.key === 'Escape') {
+        this.$eventBus.$emit('localRecord', false)
       }
     },
     async toggleStatus(isStart) {
       if (isStart && this.localRecordStatus === LCOAL_RECORD_STAUTS.STOP) {
         this.startRecord()
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
       } else if (
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
         this.stopRecord(true)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       }
     },
   },
