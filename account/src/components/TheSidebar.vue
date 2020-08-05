@@ -71,6 +71,7 @@ $the-sidebar-item-height: 40px;
 
   .el-menu-item {
     height: $the-sidebar-item-height;
+    padding: 0 12px !important;
     color: #5e6b81;
     line-height: calc(#{$the-sidebar-item-height} - 3px);
     border-radius: 3px;
@@ -83,7 +84,7 @@ $the-sidebar-item-height: 40px;
       display: inline-block;
       width: 24px;
       height: 24px;
-      margin-right: 10px;
+      margin-right: 14px;
       background: #919db0;
     }
   }
