@@ -47,6 +47,7 @@ func SetupRouter() *gin.Engine {
 		{
 			file.DELETE("", api.RemoveRecordingFiles)
 			file.GET("", api.ListRecordingFiles)
+			file.GET("download/:id", api.DownloadRecordingFile)
 		}
 	}
 

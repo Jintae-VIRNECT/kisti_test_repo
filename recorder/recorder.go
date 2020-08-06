@@ -36,15 +36,16 @@ type RecordingParam struct {
 }
 
 type RecordingFileInfo struct {
-	SessionID  string      `json:"sessionId"`
-	Filename   string      `json:"filename"`
-	FullPath   string      `json:"fullPath"`
-	Duration   int         `json:"duration"`
-	Size       int         `json:"size"`
-	Resolution string      `json:"resolution"`
-	Framerate  uint        `json:"framerate"`
-	CreateTime string      `json:"ceateTime"`
-	UserData   interface{} `json:"userData,omitempty"`
+	RecordingID string      `json:"recordingId"`
+	SessionID   string      `json:"sessionId"`
+	Filename    string      `json:"filename"`
+	FullPath    string      `json:"fullPath"`
+	Duration    int         `json:"duration"`
+	Size        int         `json:"size"`
+	Resolution  string      `json:"resolution"`
+	Framerate   uint        `json:"framerate"`
+	CreateTime  string      `json:"ceateTime"`
+	UserData    interface{} `json:"userData,omitempty"`
 }
 
 var recorderMap = map[string]*recording{}
@@ -237,6 +238,20 @@ func RemoveRecordingFiles() (int, error) {
 	return count, err
 }
 
+func GetRecordingFilePath(recordingID string) (string, error) {
+	infoFile := viper.GetString("record.dir") + "/" + recordingID + "/.recording." + recordingID
+	if _, err := os.Stat(infoFile); os.IsNotExist(err) {
+		return "", ErrNotFoundRecordingID
+	}
+
+	info, err := readInfoFile(infoFile)
+	if err != nil {
+		return "", err
+	}
+
+	return info.FullPath, nil
+}
+
 func readInfoFile(file string) (RecordingFileInfo, error) {
 	info := RecordingFileInfo{}
 
@@ -254,7 +269,11 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	var result map[string]interface{}
 	json.Unmarshal([]byte(byteValue), &result)
 
-	_, ok := result["sessionId"]
+	_, ok := result["recordingId"]
+	if ok != true {
+		return info, errors.New("not found recordingId")
+	}
+	_, ok = result["sessionId"]
 	if ok != true {
 		return info, errors.New("not found sessionId")
 	}
@@ -270,6 +289,15 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	if ok != true {
 		return info, errors.New("not found size")
 	}
+	_, ok = result["resolution"]
+	if ok != true {
+		return info, errors.New("not found resolution")
+	}
+	_, ok = result["framerate"]
+	if ok != true {
+		return info, errors.New("not found framerate")
+	}
+
 	filenameWithPath := result["filename"].(string)
 	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
 	finfo, err := os.Stat(fullPath)
@@ -280,9 +308,10 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	stat := finfo.Sys().(*syscall.Stat_t)
 	ts := stat.Ctim
 
+	info.RecordingID = result["recordingId"].(string)
 	info.SessionID = result["sessionId"].(string)
 	info.Filename = filepath.Base(filenameWithPath)
-	info.FullPath = viper.GetString("record.dirOnHost") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
+	info.FullPath = fullPath
 	info.Duration = int(result["duration"].(float64))
 	info.Size = int(result["size"].(float64))
 	info.Resolution = result["resolution"].(string)
