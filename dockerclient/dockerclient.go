@@ -3,6 +3,7 @@ package dockerclient
 import (
 	"RM-RecordServer/logger"
 	"context"
+	"encoding/json"
 	"errors"
 	"strconv"
 	"time"
@@ -20,6 +21,8 @@ type ContainerParam struct {
 	VideoFormat string
 	LayoutURL   string
 	TimeLimit   int
+	SessionID   string
+	UserData    interface{}
 }
 
 var (
@@ -31,6 +34,12 @@ type Container struct {
 	ID          string
 	RecordingID string
 	EndTime     int64
+}
+
+type recordingJson struct {
+	SessionID string      `json:"sessionId"`
+	Filename  string      `json:"filename"`
+	UserData  interface{} `json:"userData,omitempty"`
 }
 
 func init() {
@@ -129,6 +138,14 @@ func RunContainer(param ContainerParam) (string, error) {
 		logger.Error("NewClientFromEnv:", err)
 		return "", ErrContainerInternal
 	}
+
+	filename := viper.GetString("record.dirOnDocker") + "/" + param.RecordingID + "/" + param.VideoName + "." + param.VideoFormat
+	recordingJson, err := json.Marshal(&recordingJson{SessionID: param.SessionID, UserData: param.UserData, Filename: filename})
+	if err != nil {
+		logger.Error("userdata parsing fail:", err)
+	}
+	logger.Debug(string(recordingJson))
+
 	now := time.Now().Unix()
 	endTime := now + int64(param.TimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
@@ -136,14 +153,14 @@ func RunContainer(param ContainerParam) (string, error) {
 	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
-			"URL=" + param.LayoutURL + "?sessionId=" + param.VideoID + "&secret=" + viper.GetString("record.secret"),
+			"URL=" + param.LayoutURL + "?sessionId=" + param.SessionID + "&secret=" + viper.GetString("record.secret"),
 			"ONLY_VIDEO=" + "false",
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
 			"VIDEO_ID=" + param.VideoID,
 			"VIDEO_NAME=" + param.VideoName,
 			"VIDEO_FORMAT=" + param.VideoFormat,
-			"RECORDING_JSON=" + "{}",
+			"RECORDING_JSON=" + string(recordingJson),
 		},
 		Labels: map[string]string{
 			"recordingId": param.RecordingID,

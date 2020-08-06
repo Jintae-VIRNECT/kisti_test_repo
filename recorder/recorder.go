@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -32,14 +31,17 @@ type RecordingParam struct {
 	Framerate  uint
 	TimeLimit  int
 	Filename   string
+	UserData   interface{}
 }
 
 type RecordingFileInfo struct {
-	Filename   string `json:"filename"`
-	FullPath   string `json:"fullPath"`
-	Duration   int    `json:"duration"`
-	Size       int    `json:"size"`
-	CreateTime string `json:"ceateTime"`
+	SessionID  string      `json:"sessionId"`
+	Filename   string      `json:"filename"`
+	FullPath   string      `json:"fullPath"`
+	Duration   int         `json:"duration"`
+	Size       int         `json:"size"`
+	CreateTime string      `json:"ceateTime"`
+	UserData   interface{} `json:"userData,omitempty"`
 }
 
 var recorderMap = map[string]*recording{}
@@ -82,6 +84,8 @@ func NewRecording(param RecordingParam) (string, error) {
 		VideoFormat: viper.GetString("record.defaultVideoFormat"),
 		LayoutURL:   viper.GetString("record.layoutURL"),
 		TimeLimit:   param.TimeLimit,
+		SessionID:   param.SessionID,
+		UserData:    param.UserData,
 	}
 
 	containerID, err := dockerclient.RunContainer(containerParam)
@@ -205,8 +209,7 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 		if info.IsDir() {
 			return nil
 		}
-		ext := ".info"
-		if filepath.Ext(path) == ext {
+		if filepath.HasPrefix(filepath.Base(path), ".recording") {
 			files = append(files, path)
 		}
 		return nil
@@ -247,9 +250,23 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	var result map[string]interface{}
 	json.Unmarshal([]byte(byteValue), &result)
 
-	format := result["format"].(map[string]interface{})
-	duration, _ := strconv.ParseFloat(format["duration"].(string), 32)
-	filenameWithPath := format["filename"].(string)
+	_, ok := result["sessionId"]
+	if ok != true {
+		return info, errors.New("not found sessionId")
+	}
+	_, ok = result["filename"]
+	if ok != true {
+		return info, errors.New("not found filename")
+	}
+	_, ok = result["duration"]
+	if ok != true {
+		return info, errors.New("not found duration")
+	}
+	_, ok = result["size"]
+	if ok != true {
+		return info, errors.New("not found size")
+	}
+	filenameWithPath := result["filename"].(string)
 	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
 	finfo, err := os.Stat(fullPath)
 	if err != nil {
@@ -259,11 +276,15 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	stat := finfo.Sys().(*syscall.Stat_t)
 	ts := stat.Ctim
 
+	info.SessionID = result["sessionId"].(string)
 	info.Filename = filepath.Base(filenameWithPath)
 	info.FullPath = viper.GetString("record.dirOnHost") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
-	info.Duration = int(duration)
-	info.Size, _ = strconv.Atoi(format["size"].(string))
+	info.Duration = int(result["duration"].(float64))
+	info.Size, _ = result["size"].(int)
 	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
+	if userData, ok := result["userData"]; ok == true {
+		info.UserData = userData.(interface{})
+	}
 
 	return info, nil
 }
