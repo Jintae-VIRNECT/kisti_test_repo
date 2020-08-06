@@ -66,7 +66,7 @@ export default {
         const image = new Image()
         image.onload = () => {
           const canvas = document.createElement('canvas')
-          const max_size = 4096
+          const max_size = 1028 * 1028 * 5
           // 최대 기준을 1280으로 잡음.
           let width = image.width
           let height = image.height

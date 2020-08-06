@@ -131,6 +131,9 @@ export const getSignalParams = function getSignalParams(
       top = object.top
     }
   }
+  if (!('widthScale' in status)) {
+    status['widthScale'] = 1
+  }
 
   switch (type) {
     /* 
@@ -174,7 +177,7 @@ export const getSignalParams = function getSignalParams(
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
-        width: status.width,
+        width: status.width / status.widthScale,
         posX,
         posY,
       }
@@ -188,7 +191,7 @@ export const getSignalParams = function getSignalParams(
       params = {
         aId,
         color: hexToAHEX(status.color, status.opacity),
-        width: status.width,
+        width: status.width / status.widthScale,
         posX,
         posY,
       }
@@ -202,7 +205,7 @@ export const getSignalParams = function getSignalParams(
       params = {
         aId: aId - 1,
         color: hexToAHEX(status.color, status.opacity),
-        width: status.width,
+        width: status.width / status.widthScale,
         posX,
         posY,
       }
