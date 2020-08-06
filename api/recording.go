@@ -5,7 +5,6 @@ import (
 	"RM-RecordServer/recorder"
 	"RM-RecordServer/util"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -15,15 +14,15 @@ import (
 
 type StartRecordingRequest struct {
 	// session id of room
-	SessionID string `json:"sessionId" validate:"required" example:"session_id"`
+	SessionID string `json:"sessionId" binding:"required" example:"session_id"`
 	// token
-	Token string `json:"token" validate:"required" example:"wss://192.168.6.3:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
+	Token string `json:"token" binding:"required" example:"wss://192.168.6.3:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
 	// video resolution
-	Resolution string `json:"resolution,omitempty" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
+	Resolution string `json:"resolution,omitempty" binding:"oneof=480p 720p 1080p" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
 	// video framerate
-	Framerate uint `json:"framerate,omitempty" mininum:"1" maxinum:"30" default:"20" example:"20"`
+	Framerate uint `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
 	// recording time
-	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" mininum:"5" maxinum:"60" default:"5" example:"5"`
+	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
 	// recording filename without extension
 	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00"`
 	// user data in json format
@@ -63,12 +62,13 @@ func StartRecording(c *gin.Context) {
 		RecordingTimeLimit: viper.GetInt("record.defaultRecordingTimeLimit"),
 		RecordingFilename:  "",
 	}
-	err := c.BindJSON(&req)
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		logger.Error("bind json fail:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	logger.Debugf("StartRecording:%+v", req)
 
 	_, err = json.Marshal(req.UserData)
@@ -96,17 +96,13 @@ func StartRecording(c *gin.Context) {
 		return
 	}
 
-	err = checkValidation(&req)
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	resolution, _ := convertResolution(req.Resolution)
+	logger.Debug("resolution:", resolution)
 
 	param := recorder.RecordingParam{
 		SessionID:  req.SessionID,
 		Token:      req.Token,
-		Resolution: req.Resolution,
+		Resolution: resolution,
 		Framerate:  req.Framerate,
 		TimeLimit:  req.RecordingTimeLimit,
 		Filename:   req.RecordingFilename,
@@ -121,28 +117,6 @@ func StartRecording(c *gin.Context) {
 	}
 
 	c.JSON(200, StartRecordingResponse{recordingId})
-}
-
-func checkValidation(req *StartRecordingRequest) error {
-	if req.SessionID == "" {
-		return errors.New("sessionId is mandatory")
-	}
-
-	if req.RecordingTimeLimit < 5 || req.RecordingTimeLimit > 60 {
-		return errors.New("recordingTimeLimit is invalid(min:5, max:60)")
-	}
-
-	if req.Framerate > 30 {
-		return errors.New("framerate is invalid(max:30)")
-	}
-
-	resolution, err := convertResolution(req.Resolution)
-	if err != nil {
-		return err
-	}
-	req.Resolution = resolution
-
-	return nil
 }
 
 func convertResolution(resolution string) (string, error) {
