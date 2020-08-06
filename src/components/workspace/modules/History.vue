@@ -109,9 +109,10 @@ export default {
       // )
       return this.$dayjs(this.history.activeDate + '+00:00').calendar(null, {
         sameDay: 'A h:mm',
-        lastDay: '[어제]',
-        nextDay: '[내일]',
-        lastWeek: '[지난주] dddd',
+        lastDay: '[어제] A',
+        nextDay: '[내일] A',
+        // lastWeek: '[지난] dddd',
+        lastWeek: 'YYYY.MM.DD',
         sameElse: 'YYYY.MM.DD',
       })
     },
