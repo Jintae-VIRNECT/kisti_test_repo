@@ -6,7 +6,6 @@ import (
 	"RM-RecordServer/util"
 	"encoding/json"
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -49,11 +48,11 @@ type ListRecordingResponse struct {
 // @Accept json
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
-// @Success 200 {object} StartRecordingResponse
-// @Failure 400 {} json "{"error":"error message"}"
-// @Failure 429 {} json "{"error":"Too Many Recordings"}""
-// @Failure 500 {} json "{"error":"error message"}"
-// @Failure 507 {} json "{"error":"not enough free space"}"
+// @Success 200 {object} response
+// @Failure 1001 {} json "{"error":"Too Many Recordings"}""
+// @Failure 1002 {} json "{"error":"not enough free space"}"
+// @Failure 8001 {} json "{"error":"error message"}"
+// @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [post]
 func StartRecording(c *gin.Context) {
 	req := StartRecordingRequest{
@@ -65,7 +64,7 @@ func StartRecording(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		logger.Error("bind json fail:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
 
@@ -74,7 +73,7 @@ func StartRecording(c *gin.Context) {
 	_, err = json.Marshal(req.UserData)
 	if err != nil {
 		logger.Error("userdata parsing fail:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
 
@@ -82,7 +81,7 @@ func StartRecording(c *gin.Context) {
 	cur := recorder.GetNumCurrentRecordings()
 	if max <= cur {
 		logger.Errorf("too many recording: current: %d limit:%d", cur, max)
-		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too Many Recordings"})
+		sendResponseWithError(c, NewErrorTooManyRecordings())
 		return
 	}
 
@@ -92,7 +91,7 @@ func StartRecording(c *gin.Context) {
 			float64(diskUsage.All)/float64(util.GB),
 			float64(diskUsage.Used)/float64(util.GB),
 			float64(diskUsage.Free)/float64(util.GB))
-		c.JSON(http.StatusInsufficientStorage, gin.H{"error": "not enough free space"})
+		sendResponseWithError(c, NewErrorInsufficientStorage())
 		return
 	}
 
@@ -112,11 +111,11 @@ func StartRecording(c *gin.Context) {
 	recordingId, err := recorder.NewRecording(param)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
 
-	c.JSON(200, StartRecordingResponse{recordingId})
+	sendResponseWithSuccess(c, StartRecordingResponse{recordingId})
 }
 
 func convertResolution(resolution string) (string, error) {
@@ -137,8 +136,8 @@ func convertResolution(resolution string) (string, error) {
 // @tags Recording
 // @Produce json
 // @Param id path string true "recording id"
-// @Success 200 {} json
-// @Failure 404 {} json "{ "error": "not found id" }"
+// @Success 200 {} {object} response
+// @Failure 1000 {} json "{ "error": "not found id" }"
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
 	recordingID := c.Param("id")
@@ -147,27 +146,27 @@ func StopRecording(c *gin.Context) {
 	exist := recorder.ExistRecordingID(recordingID)
 	if exist == false {
 		logger.Error("stop recording: ", recorder.ErrNotFoundRecordingID.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": recorder.ErrNotFoundRecordingID.Error()})
+		sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		return
 	}
 
 	recorder.DelRecording(recordingID, "stop")
 
-	c.Writer.WriteHeader(200)
+	sendResponseWithSuccess(c, nil)
 }
 
 // @Summary List Recordings
 // @Description List Recordings
 // @tags Recording
 // @Produce json
-// @Success 200 {object} ListRecordingResponse
-// @Failure 500 {} json "{"error":"error message"}"
+// @Success 200 {object} response
+// @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {
 	body := ListRecordingResponse{make([]string, 0)}
 	list := recorder.ListRecordingIDs()
 	logger.Debug("ListRecordings:", list)
-	c.JSON(200, gin.H{
-		"recordingIds": append(body.RecordingIDs, list...),
-	})
+	body.RecordingIDs = append(body.RecordingIDs, list...)
+
+	sendResponseWithSuccess(c, body)
 }

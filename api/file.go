@@ -4,7 +4,6 @@ import (
 	"RM-RecordServer/logger"
 	"RM-RecordServer/recorder"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -24,36 +23,34 @@ type RemoveRecordingFilesResponse struct {
 // @Description List Recordings Files
 // @tags Recording File
 // @Produce json
-// @Success 200 {object} ListRecordingFilesResponse
-// @Failure 500 {} json "{"error":"error message"}"
+// @Success 200 {object} response
+// @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [get]
 func ListRecordingFiles(c *gin.Context) {
 	list, err := recorder.ListRecordingFiles()
 	if err != nil {
 		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
-	response := ListRecordingFilesResponse{FileInfos: list, Count: len(list)}
-	c.JSON(200, response)
+	sendResponseWithSuccess(c, ListRecordingFilesResponse{FileInfos: list, Count: len(list)})
 }
 
 // @Summary Remove All Recording Files
 // @Description Remove All Recordings Files
 // @tags Recording File
 // @Produce json
-// @Success 200 {object} RemoveRecordingFilesResponse
-// @Failure 500 {} json "{"error":"error message"}"
+// @Success 200 {object} response
+// @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [delete]
 func RemoveRecordingFiles(c *gin.Context) {
 	count, err := recorder.RemoveRecordingFiles()
 	if err != nil {
 		logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
-	response := RemoveRecordingFilesResponse{count}
-	c.JSON(200, response)
+	sendResponseWithSuccess(c, RemoveRecordingFilesResponse{count})
 }
 
 // @Summary Download Recording File
@@ -61,22 +58,22 @@ func RemoveRecordingFiles(c *gin.Context) {
 // @tags Recording File
 // @Produce json
 // @Param id path string true "recording id"
-// @Failure 404 {} json "{ "error": "not found id" }"
-// @Failure 500 {} json "{"error":"error message"}"
+// @Failure 1000 {} json "{ "error": "not found id" }"
+// @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file/download/{id} [get]
 func DownloadRecordingFile(c *gin.Context) {
 	recordingID := c.Param("id")
 
 	filePath, err := recorder.GetRecordingFilePath(recordingID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, err.Error())
+		sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		return
 	}
 	logger.Debug("file:", filePath)
 
 	file, err := os.Open(filePath) // open a file
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
 	defer file.Close()
@@ -89,7 +86,7 @@ func DownloadRecordingFile(c *gin.Context) {
 	logger.Info("begin download:", filePath)
 	_, err = io.Copy(c.Writer, file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
 	logger.Info("end download:", filePath)
