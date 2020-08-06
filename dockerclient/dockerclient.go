@@ -39,9 +39,11 @@ type Container struct {
 }
 
 type recordingJson struct {
-	SessionID string      `json:"sessionId"`
-	Filename  string      `json:"filename"`
-	UserData  interface{} `json:"userData,omitempty"`
+	SessionID  string      `json:"sessionId"`
+	Filename   string      `json:"filename"`
+	Framerate  uint        `json:"framerate"`
+	Resolution string      `json:"resolution"`
+	UserData   interface{} `json:"userData,omitempty"`
 }
 
 func init() {
@@ -141,13 +143,22 @@ func RunContainer(param ContainerParam) (string, error) {
 		return "", ErrContainerInternal
 	}
 
+	// make recording json
 	filename := viper.GetString("record.dirOnDocker") + "/" + param.RecordingID + "/" + param.VideoName + "." + param.VideoFormat
-	recordingJson, err := json.Marshal(&recordingJson{SessionID: param.SessionID, UserData: param.UserData, Filename: filename})
+	recordingJson, err := json.Marshal(
+		&recordingJson{
+			SessionID:  param.SessionID,
+			UserData:   param.UserData,
+			Filename:   filename,
+			Framerate:  param.Framerate,
+			Resolution: param.Resolution,
+		})
 	if err != nil {
 		logger.Error("userdata parsing fail:", err)
 	}
 	logger.Debug(string(recordingJson))
 
+	// make url
 	baseUrl, err := url.Parse(param.LayoutURL)
 	params := url.Values{}
 	params.Add("sessionId", param.SessionID)

@@ -41,6 +41,8 @@ type RecordingFileInfo struct {
 	FullPath   string      `json:"fullPath"`
 	Duration   int         `json:"duration"`
 	Size       int         `json:"size"`
+	Resolution string      `json:"resolution"`
+	Framerate  uint        `json:"framerate"`
 	CreateTime string      `json:"ceateTime"`
 	UserData   interface{} `json:"userData,omitempty"`
 }
@@ -283,6 +285,8 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	info.FullPath = viper.GetString("record.dirOnHost") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
 	info.Duration = int(result["duration"].(float64))
 	info.Size = int(result["size"].(float64))
+	info.Resolution = result["resolution"].(string)
+	info.Framerate = uint(result["framerate"].(float64))
 	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
 	if userData, ok := result["userData"]; ok == true {
 		info.UserData = userData.(interface{})
