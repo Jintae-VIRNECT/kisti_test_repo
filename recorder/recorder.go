@@ -27,6 +27,7 @@ type recording struct {
 
 type RecordingParam struct {
 	SessionID  string
+	Token      string
 	Resolution string
 	Framerate  uint
 	TimeLimit  int
@@ -77,6 +78,7 @@ func NewRecording(param RecordingParam) (string, error) {
 
 	containerParam := dockerclient.ContainerParam{
 		RecordingID: recordingId,
+		Token:       param.Token,
 		VideoID:     recordingId,
 		VideoName:   param.Filename,
 		Resolution:  param.Resolution,

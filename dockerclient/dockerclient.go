@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 
 type ContainerParam struct {
 	RecordingID string
+	Token       string
 	VideoID     string
 	VideoName   string
 	Resolution  string
@@ -146,6 +148,14 @@ func RunContainer(param ContainerParam) (string, error) {
 	}
 	logger.Debug(string(recordingJson))
 
+	baseUrl, err := url.Parse(param.LayoutURL)
+	params := url.Values{}
+	params.Add("sessionId", param.SessionID)
+	params.Add("secret", viper.GetString("record.secret"))
+	params.Add("token", param.Token)
+	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
+	logger.Debug(baseUrl.String())
+
 	now := time.Now().Unix()
 	endTime := now + int64(param.TimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
@@ -153,7 +163,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
-			"URL=" + param.LayoutURL + "?sessionId=" + param.SessionID + "&secret=" + viper.GetString("record.secret"),
+			"URL=" + param.LayoutURL + "?" + baseUrl.String(),
 			"ONLY_VIDEO=" + "false",
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),

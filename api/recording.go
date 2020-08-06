@@ -16,6 +16,8 @@ import (
 type StartRecordingRequest struct {
 	// session id of room
 	SessionID string `json:"sessionId" validate:"required" example:"session_id"`
+	// token
+	Token string `json:"token" validate:"required" example:"wss://192.168.6.3:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
 	// video resolution
 	Resolution string `json:"resolution,omitempty" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
 	// video framerate
@@ -103,6 +105,7 @@ func StartRecording(c *gin.Context) {
 
 	param := recorder.RecordingParam{
 		SessionID:  req.SessionID,
+		Token:      req.Token,
 		Resolution: req.Resolution,
 		Framerate:  req.Framerate,
 		TimeLimit:  req.RecordingTimeLimit,
