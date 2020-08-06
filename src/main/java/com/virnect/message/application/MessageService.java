@@ -15,10 +15,17 @@ import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Project: PF-Message
@@ -120,6 +127,32 @@ public class MessageService {
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getDeadMessage(Message deadMessage) throws IOException {
         log.info(deadMessage.toString());
+    }
+
+    public ApiResponse<Boolean> sendAttachmentMail(MailSendRequest mailSendRequest, MultipartFile multipartFile) throws MessagingException, IOException {
+        for (String receiver : mailSendRequest.getReceivers()) {
+            MailHistory mailHistory = MailHistory.builder()
+                    .receiver(receiver)
+                    .sender(MailSender.MASTER.getSender())
+                    .contents(mailSendRequest.getHtml())
+                    .subject(mailSendRequest.getSubject())
+                    .resultCode(HttpStatus.OK.value())
+                    .build();
+            mailService.sendAttachmentMail(receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml(), multipartFile);
+
+            log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
+
+            this.mailHistoryRepository.save(mailHistory);
+        }
+
+        return new ApiResponse<>(true);
+    }
+
+    public Resource downloadFile(String fileName) throws MalformedURLException {
+        Path file = Paths.get("upload/").resolve(fileName);
+        Resource resource = new UrlResource(file.toUri());
+        return resource;
+
     }
 }
 

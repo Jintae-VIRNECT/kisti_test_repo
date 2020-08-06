@@ -20,7 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -94,4 +96,29 @@ public class MessageController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(
+            value = "첨부파일 메일 전송"
+    )
+    @PostMapping("/mail/attachment")
+    public ResponseEntity<ApiResponse<Boolean>> sendAttachmentMail(@ModelAttribute @Valid MailSendRequest mailSendRequest, @RequestParam MultipartFile multipartFile, BindingResult bindingResult) throws MessagingException, IOException {
+        if (bindingResult.hasErrors()) {
+            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<Boolean> apiResponse = messageService.sendAttachmentMail(mailSendRequest, multipartFile);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /*@ApiOperation(
+            value = "이미지 조회"
+    )
+    @ApiImplicitParam(name = "fileName", value = "파일 이름", dataType = "string", type = "path", defaultValue = "1.PNG", required = true)
+    @GetMapping("/upload/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
+
+        Resource resource = this.messageService.downloadFile(fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }*/
 }
