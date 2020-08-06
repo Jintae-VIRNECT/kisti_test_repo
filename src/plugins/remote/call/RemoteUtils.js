@@ -199,11 +199,6 @@ export const addSessionEventListener = session => {
 
     Store.commit('addChat', chatBuilder.build())
   })
-
-  /** 내보내기 */
-  session.on('forceDisconnectByUser', event => {
-    // console.log(event)
-  })
 }
 
 const setUserObject = event => {

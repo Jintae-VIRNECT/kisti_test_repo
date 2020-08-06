@@ -61,7 +61,8 @@ export default {
       this.receivePath.push(receiveParams)
 
       if (data.type === DRAWING.LINE_UP) {
-        const width = parseInt(data.width)
+        const width =
+          parseFloat(data.width) * (this.origin.width / this.img.width)
         // const width = parseInt(data.width)
         const pos = calcPosition(this.receivePath, width)
         const path = new fabric.Path(this.receivePath, {

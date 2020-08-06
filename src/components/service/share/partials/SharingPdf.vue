@@ -30,10 +30,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import toastMixin from 'mixins/toast'
 import PDFJS from 'pdfjs-dist'
 PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
 export default {
   name: 'SharingPdf',
+  mixins: [toastMixin],
   components: {},
   data() {
     return {
@@ -91,7 +93,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addPdfPage', 'removePdfPage']),
+    ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile']),
     init() {
       if (
         this.docPages.length !== 0 &&
@@ -111,12 +113,16 @@ export default {
           }
         })
         .catch(err => {
-          console.error(err)
           if (err.name === 'InvalidPDFException') {
-            alert('Invalid PDF File')
+            this.toastError('Invalid PDF File.')
+          } else if (err.name === 'PasswordException') {
+            this.toastError('암호화된 파일은 지원하지 않습니다.')
           } else {
-            // console.log(err)
+            console.error(err)
           }
+          setTimeout(() => {
+            this.remove()
+          }, 3000)
         })
     },
     async getPage(index) {

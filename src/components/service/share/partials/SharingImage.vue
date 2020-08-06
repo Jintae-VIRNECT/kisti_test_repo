@@ -52,10 +52,46 @@ export default {
     ...mapActions(['addHistory', 'removeFile']),
     init() {
       const fileReader = new FileReader()
-      fileReader.onload = e => {
-        this.imageData = e.target.result
+      fileReader.onload = async e => {
+        let imgUrl = e.target.result
+        if (this.fileInfo.filedata.size > 1024 * 1024 * 5) {
+          imgUrl = await this.resizing(imgUrl)
+        }
+        this.imageData = imgUrl
       }
       fileReader.readAsDataURL(this.fileData)
+    },
+    resizing(imageUrl) {
+      return new Promise(resolve => {
+        const image = new Image()
+        image.onload = () => {
+          const canvas = document.createElement('canvas')
+          const max_size = 1028 * 1028 * 5
+          // 최대 기준을 1280으로 잡음.
+          let width = image.width
+          let height = image.height
+
+          if (width > height) {
+            // 가로가 길 경우
+            if (width > max_size) {
+              height *= max_size / width
+              width = max_size
+            }
+          } else {
+            // 세로가 길 경우
+            if (height > max_size) {
+              width *= max_size / height
+              height = max_size
+            }
+          }
+          canvas.width = width
+          canvas.height = height
+          canvas.getContext('2d').drawImage(image, 0, 0, width, height)
+          const dataUrl = canvas.toDataURL('image/jpeg')
+          resolve(dataUrl)
+        }
+        image.src = imageUrl
+      })
     },
     getHistoryObject() {
       // 모바일 수신부 타입: Int32

@@ -32,7 +32,7 @@ export default {
 <style lang="scss">
 .video-tools {
   position: absolute;
-  bottom: 0;
+  bottom: -2px;
   left: 0;
   display: flex;
   width: 100%;
