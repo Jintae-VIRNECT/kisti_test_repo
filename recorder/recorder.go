@@ -282,7 +282,7 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	info.Filename = filepath.Base(filenameWithPath)
 	info.FullPath = viper.GetString("record.dirOnHost") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
 	info.Duration = int(result["duration"].(float64))
-	info.Size, _ = result["size"].(int)
+	info.Size = int(result["size"].(float64))
 	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
 	if userData, ok := result["userData"]; ok == true {
 		info.UserData = userData.(interface{})
