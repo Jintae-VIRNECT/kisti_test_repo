@@ -176,7 +176,8 @@ public class TaskService {
             }
 
             // 3-1-5. 타겟 등록
-            addTargetToProcess(newProcess, registerNewProcess.getTargetType());
+            //addTargetToProcess(newProcess, registerNewProcess.getTargetType());
+            addTargetToProcess(newProcess, contentDuplicate.getData().getTargetType());//타겟 타입을 클라에서 받지 않고 contents 서버로 부터 받는 것으로 수정
 
             ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(contentDuplicate.getData().getContentUUID());
 
@@ -216,7 +217,6 @@ public class TaskService {
             // 3-2-2. 컨텐츠의 타겟값을 가져옴
             ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
 
-            Float targetSize = contentTarget.getSize();
             // 3-2-3. 기존 컨텐츠 식별자 등록
             newProcess.setContentUUID(registerNewProcess.getContentUUID());
             newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
@@ -574,7 +574,8 @@ public class TaskService {
             }
 
             // 타겟
-            addTargetToProcess(newProcess, duplicateRequest.getTargetType());
+            //addTargetToProcess(newProcess, duplicateRequest.getTargetType());
+            addTargetToProcess(newProcess, contentDuplicate.getData().getTargetType());
 
             // addSubProcessOnProcess에 들어갈 객체
             ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
