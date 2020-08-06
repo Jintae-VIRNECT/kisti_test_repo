@@ -132,21 +132,21 @@ public abstract class MediaEndpoint {
 		if (kurentoTokenOptions != null) {
 			this.maxRecvKbps = kurentoTokenOptions.getVideoMaxRecvBandwidth() != null
 					? kurentoTokenOptions.getVideoMaxRecvBandwidth()
-					: this.remoteServiceConfig.getVideoMaxRecvBandwidth();
+					: this.remoteServiceConfig.remoteServiceProperties.getVideoMaxRecvBandwidth();
 			this.minRecvKbps = kurentoTokenOptions.getVideoMinRecvBandwidth() != null
 					? kurentoTokenOptions.getVideoMinRecvBandwidth()
-					: this.remoteServiceConfig.getVideoMinRecvBandwidth();
+					: this.remoteServiceConfig.remoteServiceProperties.getVideoMinRecvBandwidth();
 			this.maxSendKbps = kurentoTokenOptions.getVideoMaxSendBandwidth() != null
 					? kurentoTokenOptions.getVideoMaxSendBandwidth()
-					: this.remoteServiceConfig.getVideoMaxSendBandwidth();
+					: this.remoteServiceConfig.remoteServiceProperties.getVideoMaxSendBandwidth();
 			this.minSendKbps = kurentoTokenOptions.getVideoMinSendBandwidth() != null
 					? kurentoTokenOptions.getVideoMinSendBandwidth()
-					: this.remoteServiceConfig.getVideoMinSendBandwidth();
+					: this.remoteServiceConfig.remoteServiceProperties.getVideoMinSendBandwidth();
 		} else {
-			this.maxRecvKbps = this.remoteServiceConfig.getVideoMaxRecvBandwidth();
-			this.minRecvKbps = this.remoteServiceConfig.getVideoMinRecvBandwidth();
-			this.maxSendKbps = this.remoteServiceConfig.getVideoMaxSendBandwidth();
-			this.minSendKbps = this.remoteServiceConfig.getVideoMinSendBandwidth();
+			this.maxRecvKbps = this.remoteServiceConfig.remoteServiceProperties.getVideoMaxRecvBandwidth();
+			this.minRecvKbps = this.remoteServiceConfig.remoteServiceProperties.getVideoMinRecvBandwidth();
+			this.maxSendKbps = this.remoteServiceConfig.remoteServiceProperties.getVideoMaxSendBandwidth();
+			this.minSendKbps = this.remoteServiceConfig.remoteServiceProperties.getVideoMinSendBandwidth();
 		}
 	}
 
@@ -289,9 +289,9 @@ public abstract class MediaEndpoint {
 				public void onSuccess(WebRtcEndpoint result) throws Exception {
 					webEndpoint = result;
 
-					if (remoteServiceConfig.getCoturnIp() != null && !remoteServiceConfig.getCoturnIp().isEmpty()
+					if (remoteServiceConfig.remoteServiceProperties.getCoturnIp() != null && !remoteServiceConfig.remoteServiceProperties.getCoturnIp().isEmpty()
 							&& remoteServiceConfig.isTurnadminAvailable()) {
-						webEndpoint.setStunServerAddress(remoteServiceConfig.getCoturnIp());
+						webEndpoint.setStunServerAddress(remoteServiceConfig.remoteServiceProperties.getCoturnIp());
 						webEndpoint.setStunServerPort(3478);
 					}
 

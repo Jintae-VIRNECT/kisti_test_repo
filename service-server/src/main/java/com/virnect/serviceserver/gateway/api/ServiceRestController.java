@@ -62,7 +62,7 @@ public class ServiceRestController {
         log.info("REST API: GET {}", REST_CONFIG_PATH);
 
         JsonObject json = new JsonObject();
-        json.addProperty("version", remoteServiceBuildInfo.getVersion());
+        /*json.addProperty("version", remoteServiceBuildInfo.getVersion());
         json.addProperty("domain_or_public_ip", remoteServiceConfig.getDomainOrPublicIp());
         json.addProperty("https_port", remoteServiceConfig.getHttpsPort());
         json.addProperty("remote_service_publicurl", remoteServiceConfig.getRemoteServicePublicUrl());
@@ -98,7 +98,7 @@ public class ServiceRestController {
                 webhookEvents.add(eventName.name());
             }
             json.add("remote_service_webhook_events", webhookEvents);
-        }
+        }*/
 
         return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
     }
@@ -118,13 +118,15 @@ public class ServiceRestController {
     @GetMapping(value = "config/recording")
     public Boolean getRemoteServiceRecordingEnabled() {
         log.info("REST API: GET {}/recording", REST_CONFIG_PATH);
-        return remoteServiceConfig.isRecordingModuleEnabled();
+        //return remoteServiceConfig.isRecordingModuleEnabled();
+        return true;
     }
 
     @GetMapping(value = "config/recording-path")
     public String getRemoteServiceRecordingPath() {
         log.info("REST API: GET {}/recording-path", REST_CONFIG_PATH);
-        return remoteServiceConfig.getRemoteServiceRecordingPath();
+        //return remoteServiceConfig.getRemoteServiceRecordingPath();
+        return "";
     }
 
     @GetMapping(value = "config/cdr")

@@ -151,7 +151,7 @@ public class KurentoSessionManager extends SessionManager {
 
 			// If Recording default layout is COMPOSED_QUICK_START
 			Recording.OutputMode defaultOutputMode = kSession.getSessionProperties().defaultOutputMode();
-			if (remoteServiceConfig.isRecordingModuleEnabled() && defaultOutputMode.equals(Recording.OutputMode.COMPOSED_QUICK_START)) {
+			if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled() && defaultOutputMode.equals(Recording.OutputMode.COMPOSED_QUICK_START)) {
 				recordingManager.startComposedQuickStartContainer(kSession);
 			}
 
@@ -269,13 +269,13 @@ public class KurentoSessionManager extends SessionManager {
 						// recording. Will be stopped after in method
 						// "SessionManager.closeSessionAndEmptyCollections"
 						if (remainingParticipants.isEmpty()) {
-							if (remoteServiceConfig.isRecordingModuleEnabled()
+							if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 									&& MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode())
 									&& (this.recordingManager.sessionIsBeingRecorded(sessionId))) {
 								// Start countdown to stop recording. Will be aborted if a Publisher starts
 								// before timeout
 								log.info("Last participant left. Starting {} seconds countdown for stopping recording of session {}",
-										this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout(), sessionId);
+										this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingAutostopTimeout(), sessionId);
 								recordingManager.initAutomaticRecordingStopThread(session);
 							} else {
 								try {
@@ -303,7 +303,7 @@ public class KurentoSessionManager extends SessionManager {
 											sessionId);
 								}
 							}
-						} else if (remainingParticipants.size() == 1 && remoteServiceConfig.isRecordingModuleEnabled()
+						} else if (remainingParticipants.size() == 1 && remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 								&& MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode())
 								&& this.recordingManager.sessionIsBeingRecorded(sessionId)
 								&& ProtocolElements.RECORDER_PARTICIPANT_PUBLICID
@@ -311,10 +311,10 @@ public class KurentoSessionManager extends SessionManager {
 							// RECORDER participant is the last one standing. Start countdown
 							log.info(
 									"Last participant left. Starting {} seconds countdown for stopping recording of session {}",
-									this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout(), sessionId);
+									this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingAutostopTimeout(), sessionId);
 							recordingManager.initAutomaticRecordingStopThread(session);
 
-						} else if (remainingParticipants.size() == 1 && remoteServiceConfig.isRecordingModuleEnabled()
+						} else if (remainingParticipants.size() == 1 && remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 								&& MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode())
 								&& session.getSessionProperties().defaultOutputMode().equals(Recording.OutputMode.COMPOSED_QUICK_START)
 								&& ProtocolElements.RECORDER_PARTICIPANT_PUBLICID
@@ -421,7 +421,7 @@ public class KurentoSessionManager extends SessionManager {
 					kSession.getSessionId(), mediaOptions, sdpAnswer, participants, transactionId, e);
 		}
 
-		if (this.remoteServiceConfig.isRecordingModuleEnabled()
+		if (this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 				&& MediaMode.ROUTED.equals(kSession.getSessionProperties().mediaMode())
 				&& kSession.getActivePublishers() == 0) {
 

@@ -152,7 +152,7 @@ public class ComposedRecordingService extends RecordingService {
 
 		String layoutUrl = this.getLayoutUrl(recording);
 
-		envs.add("DEBUG_MODE=" + remoteServiceConfig.isRemoteServiceRecordingDebug());
+		envs.add("DEBUG_MODE=" + remoteServiceConfig.remoteServiceProperties.isRemoteServiceRecordingDebug());
 		envs.add("URL=" + layoutUrl);
 		envs.add("ONLY_VIDEO=" + !properties.hasAudio());
 		envs.add("RESOLUTION=" + properties.resolution());
@@ -172,7 +172,7 @@ public class ComposedRecordingService extends RecordingService {
 			Volume volume1 = new Volume("/recordings");
 			List<Volume> volumes = new ArrayList<>();
 			volumes.add(volume1);
-			Bind bind1 = new Bind(remoteServiceConfig.getRemoteServiceRecordingPath(), volume1);
+			Bind bind1 = new Bind(remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath(), volume1);
 			List<Bind> binds = new ArrayList<>();
 			binds.add(bind1);
 			containerId = dockerManager.runContainer(container, containerName, null, volumes, binds, "host", envs, null,
@@ -204,7 +204,7 @@ public class ComposedRecordingService extends RecordingService {
 				recording.getSessionId());
 
 		CompositeWrapper compositeWrapper = new CompositeWrapper((KurentoSession) session,
-				"file://" + this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/" + properties.name()
+				"file://" + this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/" + properties.name()
 						+ ".webm");
 		this.composites.put(session.getSessionId(), compositeWrapper);
 
@@ -297,7 +297,7 @@ public class ComposedRecordingService extends RecordingService {
 			stopAndRemoveRecordingContainer(recording, containerId, 30);
 			recording = updateRecordingAttributes(recording);
 
-			final String folderPath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/";
+			final String folderPath = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/";
 			final String metadataFilePath = folderPath + RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
 			this.sealRecordingMetadataFileAsReady(recording, recording.getSize(), recording.getDuration(),
 					metadataFilePath);
@@ -328,7 +328,7 @@ public class ComposedRecordingService extends RecordingService {
 			log.warn(
 					"Existing recording {} does not have an active session associated. This means the recording "
 							+ "has been automatically stopped after last user left and {} seconds timeout passed",
-					recording.getId(), this.remoteServiceConfig.getRemoteServiceRecordingAutostopTimeout());
+					recording.getId(), this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingAutostopTimeout());
 			sessionId = recording.getSessionId();
 		} else {
 			sessionId = session.getSessionId();
@@ -357,7 +357,7 @@ public class ComposedRecordingService extends RecordingService {
 		finalRecordingArray[0] = recording;
 		try {
 			this.recordingDownloader.downloadRecording(finalRecordingArray[0], null, () -> {
-				String filesPath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + finalRecordingArray[0].getId()
+				String filesPath = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + finalRecordingArray[0].getId()
 						+ "/";
 				File videoFile = new File(filesPath + finalRecordingArray[0].getName() + ".webm");
 				long finalSize = videoFile.length();
@@ -414,7 +414,7 @@ public class ComposedRecordingService extends RecordingService {
 
 	protected Recording updateRecordingAttributes(Recording recording) {
 		try {
-			RecordingInfoUtils infoUtils = new RecordingInfoUtils(this.remoteServiceConfig.getRemoteServiceRecordingPath()
+			RecordingInfoUtils infoUtils = new RecordingInfoUtils(this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath()
 					+ recording.getId() + "/" + recording.getId() + ".info");
 
 			if (!infoUtils.hasVideo()) {
@@ -445,7 +445,7 @@ public class ComposedRecordingService extends RecordingService {
 			try {
 				Thread.sleep(150);
 				timeout++;
-				File f = new File(this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/"
+				File f = new File(this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/"
 						+ recording.getName() + ".mp4");
 				isPresent = ((f.isFile()) && (f.length() > 0));
 			} catch (InterruptedException e) {
@@ -469,7 +469,7 @@ public class ComposedRecordingService extends RecordingService {
 	}
 
 	protected String getLayoutUrl(Recording recording) throws RemoteServiceException {
-		String secret = remoteServiceConfig.getRemoteServiceSecret();
+		String secret = remoteServiceConfig.remoteServiceProperties.getRemoteServiceSecret();
 
 		// Check if "customLayout" property defines a final URL
 		if (RecordingLayout.CUSTOM.equals(recording.getRecordingLayout())) {
@@ -481,7 +481,7 @@ public class ComposedRecordingService extends RecordingService {
 							url.toString());
 					return this.processCustomLayoutUrlFormat(url, recording.getSessionId());
 				} catch (MalformedURLException e) {
-					String layoutPath = remoteServiceConfig.getRemoteServiceRecordingCustomLayout() + layout;
+					String layoutPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingCustomLayout() + layout;
 					layoutPath = layoutPath.endsWith("/") ? layoutPath : (layoutPath + "/");
 					log.info(
 							"\"customLayout\" property is defined as \"{}\". Using a different custom layout than the default one. Expected path: {}",
@@ -503,9 +503,9 @@ public class ComposedRecordingService extends RecordingService {
 			}
 		}
 
-		boolean recordingComposedUrlDefined = remoteServiceConfig.getRemoteServiceRecordingComposedUrl() != null
-				&& !remoteServiceConfig.getRemoteServiceRecordingComposedUrl().isEmpty();
-		String recordingUrl = recordingComposedUrlDefined ? remoteServiceConfig.getRemoteServiceRecordingComposedUrl()
+		boolean recordingComposedUrlDefined = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl() != null
+				&& !remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl().isEmpty();
+		String recordingUrl = recordingComposedUrlDefined ? remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl()
 				: remoteServiceConfig.getFinalUrl();
 		recordingUrl = recordingUrl.replaceFirst("https://", "");
 		boolean startsWithHttp = recordingUrl.startsWith("http://");
@@ -590,7 +590,7 @@ public class ComposedRecordingService extends RecordingService {
 				finalUrl += "&sessionId=" + shortSessionId;
 			}
 			if (!hasSecret) {
-				finalUrl += "&secret=" + remoteServiceConfig.getRemoteServiceSecret();
+				finalUrl += "&secret=" + remoteServiceConfig.remoteServiceProperties.getRemoteServiceSecret();
 			}
 		}
 

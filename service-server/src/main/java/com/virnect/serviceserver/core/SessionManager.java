@@ -411,7 +411,8 @@ public abstract class SessionManager {
 	 * <strong>Dev advice:</strong> Send notifications to all participants to inform
 	 * that their session has been forcibly closed.
 	 *
-	 * @see SessionManmager#closeSession(String)
+	 * @see SessionManager#closeSession(String, EndReason)
+	 *
 	 */
 	@PreDestroy
 	public void close() {
@@ -427,7 +428,7 @@ public abstract class SessionManager {
 
 	@PostConstruct
 	private void startSessionGarbageCollector() {
-		if (remoteServiceConfig.getSessionGarbageInterval() == 0) {
+		if (remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval() == 0) {
 			log.info("Garbage collector for non active sessions is disabled (property 'REMOTE_SESSIONS_GARBAGE_INTERVAL' is 0)");
 			return;
 		}
@@ -443,7 +444,7 @@ public abstract class SessionManager {
 				final Session sessionNotActive = iter.next().getValue();
 				final String sessionId = sessionNotActive.getSessionId();
 				long sessionExistsSince = currentMillis - sessionNotActive.getStartTime();
-				if (sessionExistsSince > (remoteServiceConfig.getSessionGarbageThreshold() * 1000)) {
+				if (sessionExistsSince > (remoteServiceConfig.remoteServiceProperties.getSessionGarbageThreshold() * 1000)) {
 					try {
 						if (sessionNotActive.closingLock.writeLock().tryLock(15, TimeUnit.SECONDS)) {
 							try {
@@ -477,11 +478,12 @@ public abstract class SessionManager {
 					log.warn("Possible ghost session {}", sessionActive.getSessionId());
 				}
 			}
-		}, () -> new Long(remoteServiceConfig.getSessionGarbageInterval() * 1000)).updateTimer();
+		}, () -> (long) (remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval() * 1000)).updateTimer();
+				//new Long(remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval() * 1000)).updateTimer();
 
 		log.info(
 				"Garbage collector for non active sessions initialized. Running every {} seconds and cleaning up non active Sessions more than {} seconds old",
-				remoteServiceConfig.getSessionGarbageInterval(), remoteServiceConfig.getSessionGarbageThreshold());
+				remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval(), remoteServiceConfig.remoteServiceProperties.getSessionGarbageThreshold());
 	}
 
 	/**
@@ -542,7 +544,7 @@ public abstract class SessionManager {
 
 	public void closeSessionAndEmptyCollections(Session session, EndReason reason, boolean stopRecording) {
 
-		if (remoteServiceConfig.isRecordingModuleEnabled()) {
+		if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
 			if (stopRecording && this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 				try {
 					recordingManager.stopRecording(session, null, RecordingManager.finalReason(reason));
@@ -590,7 +592,7 @@ public abstract class SessionManager {
 	private void initializeCollections(String sessionId) {
 		this.sessionidParticipantpublicidParticipant.putIfAbsent(sessionId, new ConcurrentHashMap<>());
 		this.sessionidFinalUsers.putIfAbsent(sessionId, new ConcurrentHashMap<>());
-		if (this.remoteServiceConfig.isRecordingModuleEnabled()) {
+		if (this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
 			this.sessionidAccumulatedRecordings.putIfAbsent(sessionId, new ConcurrentLinkedQueue<>());
 		}
 	}
