@@ -39,7 +39,7 @@ public class RecordingCustomLayoutsResourceHandler implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String customLayoutsPath = remoteServiceConfig.getRemoteServiceRecordingCustomLayout();
+		String customLayoutsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingCustomLayout();
 		registry.addResourceHandler("/layouts/custom/**").addResourceLocations("file:" + customLayoutsPath);
 	}
 

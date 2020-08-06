@@ -53,7 +53,7 @@ public class ComposedQuickStartRecordingService extends ComposedRecordingService
 
         List<String> envs = new ArrayList<>();
 
-        envs.add("DEBUG_MODE=" + remoteServiceConfig.isRemoteServiceRecordingDebug());
+        envs.add("DEBUG_MODE=" + remoteServiceConfig.remoteServiceProperties.isRemoteServiceRecordingDebug());
         envs.add("RESOLUTION=" + properties.resolution());
         envs.add("ONLY_VIDEO=" + !properties.hasAudio());
         envs.add("FRAMERATE=30");
@@ -119,7 +119,7 @@ public class ComposedQuickStartRecordingService extends ComposedRecordingService
 
         recording = updateRecordingAttributes(recording);
 
-        final String folderPath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/";
+        final String folderPath = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/";
         final String metadataFilePath = folderPath + RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
         this.sealRecordingMetadataFileAsReady(recording, recording.getSize(), recording.getDuration(),
                 metadataFilePath);
@@ -180,7 +180,7 @@ public class ComposedQuickStartRecordingService extends ComposedRecordingService
         String layoutUrl = this.getLayoutUrl(recording);
 
         List<String> envs = new ArrayList<>();
-        envs.add("DEBUG_MODE=" + remoteServiceConfig.isRemoteServiceRecordingDebug());
+        envs.add("DEBUG_MODE=" + remoteServiceConfig.remoteServiceProperties.isRemoteServiceRecordingDebug());
         envs.add("RECORDING_TYPE=COMPOSED_QUICK_START");
         envs.add("RESOLUTION=" + properties.resolution());
         envs.add("URL=" + layoutUrl);
@@ -194,7 +194,7 @@ public class ComposedQuickStartRecordingService extends ComposedRecordingService
             Volume volume1 = new Volume("/recordings");
             List<Volume> volumes = new ArrayList<>();
             volumes.add(volume1);
-            Bind bind1 = new Bind(remoteServiceConfig.getRemoteServiceRecordingPath(), volume1);
+            Bind bind1 = new Bind(remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath(), volume1);
             List<Bind> binds = new ArrayList<>();
             binds.add(bind1);
             containerId = dockerManager.runContainer(container, containerName, null, volumes, binds, "host", envs, null,

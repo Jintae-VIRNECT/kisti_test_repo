@@ -45,7 +45,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -59,12 +65,14 @@ import com.virnect.serviceserver.cdr.CDREventName;
 import com.virnect.serviceserver.config.Dotenv.DotenvFormatException;
 import com.virnect.serviceserver.recording.RecordingNotification;
 
-@Component
-//@ConfigurationProperties(prefix = "service")
+//@Component
+//@EnableConfigurationProperties(RemoteServiceProperties.class)
+@Configuration
+@EnableConfigurationProperties(RemoteServiceProperties.class)
+//@ComponentScan(value = "com.virnect.serviceserver")
 public class RemoteServiceConfig {
 
 	public static class Error {
-
 		private String property;
 		private String value;
 		private String message;
@@ -98,18 +106,39 @@ public class RemoteServiceConfig {
 
 	private static final boolean SHOW_PROPERTIES_AS_ENV_VARS = true;
 
+	//private List<Error> configErrors = new ArrayList<>();
 	private List<Error> configErrors = new ArrayList<>();
 
-	private Map<String, String> configProps = new HashMap<>();
+
+	//private Map<String, String> configProps = new HashMap<>();
 
 	private List<String> userConfigProps;
 
-	private Map<String, ?> propertiesSource;
+	@Autowired
+	public RemoteServiceProperties remoteServiceProperties;
+
+	/*public final RemoteServiceProperties remoteServiceProperties;
 
 	@Autowired
-	protected Environment env;
+	public RemoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
+		this.remoteServiceProperties = remoteServiceProperties;
+	}*/
 
-	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
+	/*@Bean
+	@ConditionalOnMissingBean
+	public RemoteServiceProperties remoteServiceProperties(RemoteServiceProperties remoteServiceProperties) {
+		//var serviceProperties = ServiceProperties()
+		//return new RemoteServiceProperties();
+		return remoteServiceProperties;
+	}*/
+
+
+	//private Map<String, ?> propertiesSource;
+
+	/*@Autowired
+	protected Environment env;*/
+
+	/*@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
 	protected String springProfile;
 
 
@@ -160,18 +189,15 @@ public class RemoteServiceConfig {
 
 
 	protected int remoteServiceSessionsGarbageInterval;
-	protected int remoteServiceSessionsGarbageThreshold;
+	protected int remoteServiceSessionsGarbageThreshold;*/
 
 
 	// Derived properties
-
-	public static String finalUrl;
-
-	private boolean isTurnadminAvailable = false;
+	/*public static String finalUrl;
+	private boolean isTurnadminAvailable = false;*/
 
 	// Plain config properties getters
-
-	public String getCoturnUsername() {
+	/*public String getCoturnUsername() {
 		return this.coturnUsername;
 	}
 
@@ -311,52 +337,75 @@ public class RemoteServiceConfig {
 
 	public String getSpringProfile() {
 		return springProfile;
+	}*/
+
+	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
+	protected String springProfile;
+
+	public String getSpringProfile() {
+		return springProfile;
 	}
 
 	public String getFinalUrl() {
-		return finalUrl;
+		//return finalUrl;
+		return this.remoteServiceProperties.getFinalUrl();
 	}
 
-	public void setFinalUrl(String finalUrlParam) {
-		finalUrl = finalUrlParam.endsWith("/") ? (finalUrlParam) : (finalUrlParam + "/");
+	public List<String> getKmsUris() {
+		return this.remoteServiceProperties.getKmsUris();
 	}
+
+	public boolean isCdrEnabled() {
+		return this.remoteServiceProperties.isCdrEnabled();
+	}
+
+	public boolean isWebhookEnabled() {
+		return this.remoteServiceProperties.isWebhookEnabled();
+	}
+
+	/*public void setFinalUrl(String finalUrlParam) {
+		finalUrl = finalUrlParam.endsWith("/") ? (finalUrlParam) : (finalUrlParam + "/");
+	}*/
 
 	public boolean isTurnadminAvailable() {
-		return this.isTurnadminAvailable;
+		//return this.isTurnadminAvailable;
+		return this.remoteServiceProperties.isTurnadminAvailable();
 	}
 
 	public void setTurnadminAvailable(boolean available) {
-		this.isTurnadminAvailable = available;
+		//this.isTurnadminAvailable = available;
+		this.remoteServiceProperties.setTurnadminAvailable(available);
 	}
 
 	public RemoteServiceRole[] getRolesFromRecordingNotification() {
 		RemoteServiceRole[] roles;
-		switch (this.remoteServiceRecordingNotification) {
-		case none:
-			roles = new RemoteServiceRole[0];
-			break;
-		case moderator:
-			roles = new RemoteServiceRole[] { RemoteServiceRole.MODERATOR };
-			break;
-		case publisher_moderator:
-			roles = new RemoteServiceRole[] { RemoteServiceRole.PUBLISHER, RemoteServiceRole.MODERATOR };
-			break;
-		case all:
-			roles = new RemoteServiceRole[] { RemoteServiceRole.SUBSCRIBER, RemoteServiceRole.PUBLISHER, RemoteServiceRole.MODERATOR };
-			break;
-		default:
-			roles = new RemoteServiceRole[] { RemoteServiceRole.PUBLISHER, RemoteServiceRole.MODERATOR };
+		switch (this.remoteServiceProperties.getRemoteServiceRecordingNotification()) {
+			case none:
+				roles = new RemoteServiceRole[0];
+				break;
+			case moderator:
+				roles = new RemoteServiceRole[]{RemoteServiceRole.MODERATOR};
+				break;
+			case all:
+				roles = new RemoteServiceRole[]{RemoteServiceRole.SUBSCRIBER, RemoteServiceRole.PUBLISHER, RemoteServiceRole.MODERATOR};
+				break;
+			case publisher_moderator:
+			default:
+				roles = new RemoteServiceRole[]{RemoteServiceRole.PUBLISHER, RemoteServiceRole.MODERATOR};
 		}
 		return roles;
 	}
 
 	public boolean isRemoteServiceSecret(String secret) {
-		return secret.equals(this.getRemoteServiceSecret());
+		return secret.equals(this.remoteServiceProperties.getRemoteServiceSecret());
 	}
 
 	public String getCoturnDatabaseString() {
-		return "\"ip=" + this.coturnRedisIp + " dbname=" + this.coturnRedisDbname + " password="
-				+ this.coturnRedisPassword + " connect_timeout=" + this.coturnRedisConnectTimeout + "\"";
+		return "\"ip=" + this.remoteServiceProperties.getCoturnDatabaseIp() +
+				" dbname=" + this.remoteServiceProperties.getCoturnDatabaseDbname() +
+				" password=" + this.remoteServiceProperties.getCoturnDatabasePassword() +
+				" connect_timeout=" + this.remoteServiceProperties.getCoturnDatabaseConnectTimeout() +
+				"\"";
 	}
 
 	public boolean remoteServiceRecordingCustomLayoutChanged(String path) {
@@ -368,35 +417,36 @@ public class RemoteServiceConfig {
 	}
 
 	// Properties management methods
-
-	public RemoteServiceConfig deriveWithAdditionalPropertiesSource(Map<String, ?> propertiesSource) {
+	/*public RemoteServiceConfig deriveWithAdditionalPropertiesSource(Map<String, ?> propertiesSource) {
 		RemoteServiceConfig config = newRemoteServiceConfig();
 		config.propertiesSource = propertiesSource;
 		config.env = env;
 		return config;
-	}
+	}*/
 
-	protected RemoteServiceConfig newRemoteServiceConfig() {
+	/*protected RemoteServiceConfig newRemoteServiceConfig() {
 		return new RemoteServiceConfig();
-	}
+	}*/
 
 	public List<Error> getConfigErrors() {
-		return configErrors;
+		//return configErrors;
+		return this.remoteServiceProperties.getPropertiesErrors();
 	}
 
 	public Map<String, String> getConfigProps() {
-		return configProps;
+		//return configProps;
+		return this.remoteServiceProperties.configProps;
 	}
 
 	public List<String> getUserProperties() {
 		return userConfigProps;
 	}
 
-	private String getValue(String property) {
+	/*private String getValue(String property) {
 		return this.getValue(property, true);
-	}
+	}*/
 
-	private String getValue(String property, boolean storeInConfigProps) {
+	/*private String getValue(String property, boolean storeInConfigProps) {
 		String value = null;
 		if (propertiesSource != null) {
 			Object valueObj = propertiesSource.get(property);
@@ -411,7 +461,7 @@ public class RemoteServiceConfig {
 			this.configProps.put(property, value);
 		}
 		return value;
-	}
+	}*/
 
 	public String getPropertyName(String propertyName) {
 		if (SHOW_PROPERTIES_AS_ENV_VARS) {
@@ -421,25 +471,31 @@ public class RemoteServiceConfig {
 		}
 	}
 
-	protected void addError(String property, String msg) {
-
+	/*protected void addError(String property, String msg) {
 		String value = null;
 
 		if (property != null) {
-			value = getValue(property);
+			//value = getValue(property);
+			value = remoteServiceProperties.getValue(property);
 		}
 
 		this.configErrors.add(new Error(property, value, msg));
-	}
+	}*/
 
 	public void checkConfiguration(boolean loadDotenv) {
 		try {
-			this.checkConfigurationProperties(loadDotenv);
+			if(loadDotenv) {
+				this.remoteServiceProperties.setDotenvPath();
+				populatePropertySourceFromDotenv();
+			}
+			this.remoteServiceProperties.checkConfigurationProperties(loadDotenv);
 		} catch (Exception e) {
 			log.error("Exception checking configuration", e);
-			addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
+			//addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
+			this.remoteServiceProperties.addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
 		}
-		userConfigProps = new ArrayList<>(configProps.keySet());
+		//userConfigProps = new ArrayList<>(configProps.keySet());
+		userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
 		userConfigProps.removeAll(getNonUserProperties());
 	}
 
@@ -454,8 +510,7 @@ public class RemoteServiceConfig {
 	}
 
 	// Properties
-
-	protected void checkConfigurationProperties(boolean loadDotenv) {
+	/*protected void checkConfigurationProperties(boolean loadDotenv) {
 
 		if (loadDotenv) {
 			dotenvPath = getValue("DOTENV_PATH");
@@ -499,9 +554,9 @@ public class RemoteServiceConfig {
 
 		kmsUrisList = checkKmsUris();
 
-		/**
+		*//**
 		 * check later...
-		 */
+		 *//*
 		checkCoturnIp();
 
 		coturnRedisIp = asOptionalInetAddress("service.coturn_redis_ip");
@@ -510,9 +565,9 @@ public class RemoteServiceConfig {
 
 		checkCertificateType();
 
-	}
+	}*/
 
-	private void checkCertificateType() {
+	/*private void checkCertificateType() {
 		String property = "service.certificate_type";
 		certificateType = asNonEmptyString(property);
 
@@ -522,9 +577,9 @@ public class RemoteServiceConfig {
 				addError(property, "Invalid value '" + certificateType + "'. Valid values are " + validValues);
 			}
 		}
-	}
+	}*/
 
-	private void checkCoturnIp() {
+	/*private void checkCoturnIp() {
 		String property = "COTURN_IP";
 		coturnIp = asOptionalIPv4OrIPv6(property);
 
@@ -535,9 +590,9 @@ public class RemoteServiceConfig {
 				log.error("Can't get Domain name from RemoteService public Url: " + e.getMessage());
 			}
 		}
-	}
+	}*/
 
-	private void checkWebhook() {
+	/*private void checkWebhook() {
 		remoteServiceWebhookEnabled = asBoolean("service.remote_webhook");
 		remoteServiceWebhookEndpoint = asOptionalURL("service.remote_webhook_endpoint");
 		webhookHeadersList = checkWebhookHeaders();
@@ -546,9 +601,9 @@ public class RemoteServiceConfig {
 		if (remoteServiceWebhookEnabled && (remoteServiceWebhookEndpoint == null || remoteServiceWebhookEndpoint.isEmpty())) {
 			addError("remoteService_WEBHOOK_ENDPOINT", "With remoteService_WEBHOOK=true, this property cannot be empty");
 		}
-	}
+	}*/
 
-	private void checkRemoteServiceRecordingNotification() {
+	/*private void checkRemoteServiceRecordingNotification() {
 		String recordingNotif = asNonEmptyString("service.remote_recording_notification");
 		try {
 			remoteServiceRecordingNotification = RecordingNotification.valueOf(recordingNotif);
@@ -556,9 +611,9 @@ public class RemoteServiceConfig {
 			//addError("OPENVIDU_RECORDING_NOTIFICATION", "Must be one of the values " + Arrays.asList(RecordingNotification.values()));
 			addError("service.remote_recording_notification", "Must be one of the values " + Arrays.asList(RecordingNotification.values()));
 		}
-	}
+	}*/
 
-	private void checkDomainOrPublicIp() {
+	/*private void checkDomainOrPublicIp() {
 		final String property = "service.domain_or_public_ip";
 		String domain = asOptionalInetAddress(property);
 
@@ -581,9 +636,9 @@ public class RemoteServiceConfig {
 		} else {
 			addError(property, "Cannot be empty");
 		}
-	}
+	}*/
 
-	private void checkHttpsPort() {
+	/*private void checkHttpsPort() {
 		String property = "service.https_port";
 		String httpsPort = getValue(property);
 		if (httpsPort == null) {
@@ -602,14 +657,14 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a valid port. Valid port range exceeded with value " + httpsPortNumber);
 			return;
 		}
-	}
+	}*/
 
 	/**
 	 * Will add to collection of configuration properties the property "SERVER_PORT"
 	 * only if property "SERVER_PORT" or "server.port" was explicitly defined. This
 	 * doesn't mean this property won't have a default value if not explicitly
 	 * defined (8080 is the default value given by Spring)
-	 */
+	 *//*
 	private void populateSpringServerPort() {
 		String springServerPort = getValue("server.port", false);
 		if (springServerPort == null) {
@@ -618,9 +673,9 @@ public class RemoteServiceConfig {
 		if (springServerPort != null) {
 			this.configProps.put("SERVER_PORT", springServerPort);
 		}
-	}
+	}*/
 
-	private void calculatePublicUrl() {
+	/*private void calculatePublicUrl() {
 		final String publicUrl = this.getRemoteServicePublicUrl();
 		if (publicUrl.startsWith("https://")) {
 			ServiceServerApplication.wsUrl = publicUrl.replace("https://", "wss://");
@@ -636,18 +691,18 @@ public class RemoteServiceConfig {
 		ServiceServerApplication.httpUrl = this.getFinalUrl();
 		//
 		ServiceServerApplication.wssUrl = this.remoteWebsockUrl + ServiceServerApplication.WS_PATH;
-	}
+	}*/
 
 
-	public List<String> checkCoturnUris() {
+	/*public List<String> checkCoturnUris() {
 
 		String property = "service.coturn_uris";
 
 		return asCoturnUris(property, getValue(property));
 
-	}
+	}*/
 
-	public List<String> asCoturnUris(String property, String CoturnUris) {
+	/*public List<String> asCoturnUris(String property, String CoturnUris) {
 
 		if (CoturnUris == null || CoturnUris.isEmpty()) {
 			return Arrays.asList();
@@ -694,9 +749,9 @@ public class RemoteServiceConfig {
 			}
 		}
 		return kmsUrisArray;
-	}
+	}*/
 
-	private List<Header> checkWebhookHeaders() {
+	/*private List<Header> checkWebhookHeaders() {
 		String property = "service.remote_webhook_headers";
 		List<String> headers = asJsonStringsArray(property);
 		List<Header> headerList = new ArrayList<>();
@@ -734,13 +789,13 @@ public class RemoteServiceConfig {
 			}
 		}
 		return eventList;
-	}
+	}*/
 
 	// -------------------------------------------------------
 	// Format Checkers
 	// -------------------------------------------------------
 
-	protected String asOptionalURL(String property) {
+	/*protected String asOptionalURL(String property) {
 		String optionalUrl = getValue(property);
 		try {
 			if (!optionalUrl.isEmpty()) {
@@ -751,9 +806,9 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a valid URL. " + e.getMessage());
 			return null;
 		}
-	}
+	}*/
 
-	protected String asNonEmptyString(String property) {
+	/*protected String asNonEmptyString(String property) {
 		String stringValue = getValue(property);
 		if (stringValue != null && !stringValue.isEmpty()) {
 			return stringValue;
@@ -761,13 +816,13 @@ public class RemoteServiceConfig {
 			addError(property, "Cannot be empty.");
 			return null;
 		}
-	}
+	}*/
 
-	protected String asOptionalString(String property) {
+	/*protected String asOptionalString(String property) {
 		return getValue(property);
-	}
+	}*/
 
-	protected boolean asBoolean(String property) {
+	/*protected boolean asBoolean(String property) {
 		String value = getValue(property);
 		if (value == null) {
 			addError(property, "Cannot be empty");
@@ -780,9 +835,9 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a boolean (true or false)");
 			return false;
 		}
-	}
+	}*/
 
-	protected Integer asNonNegativeInteger(String property) {
+	/*protected Integer asNonNegativeInteger(String property) {
 		try {
 			Integer integerValue = Integer.parseInt(getValue(property));
 
@@ -794,12 +849,12 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a non negative integer");
 			return 0;
 		}
-	}
+	}*/
 
 	/*
 	 * This method checks all types of Internet addresses (IPv4, IPv6 and Domains)
 	 */
-	protected String asOptionalInetAddress(String property) {
+	/*protected String asOptionalInetAddress(String property) {
 		String inetAddress = getValue(property);
 		if (inetAddress != null && !inetAddress.isEmpty()) {
 			try {
@@ -809,9 +864,9 @@ public class RemoteServiceConfig {
 			}
 		}
 		return inetAddress;
-	}
+	}*/
 
-	protected String asOptionalIPv4OrIPv6(String property) {
+	/*protected String asOptionalIPv4OrIPv6(String property) {
 		String ip = getValue(property);
 		if (ip != null && !ip.isEmpty()) {
 			boolean isIP;
@@ -829,9 +884,9 @@ public class RemoteServiceConfig {
 			}
 		}
 		return ip;
-	}
+	}*/
 
-	protected String asFileSystemPath(String property) {
+	/*protected String asFileSystemPath(String property) {
 		try {
 			String stringPath = this.asNonEmptyString(property);
 			Paths.get(stringPath);
@@ -844,9 +899,9 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a valid file system path. " + e.getMessage());
 			return null;
 		}
-	}
+	}*/
 
-	protected String asWritableFileSystemPath(String property) {
+	/*protected String asWritableFileSystemPath(String property) {
 		try {
 			String stringPath = this.asNonEmptyString(property);
 			Paths.get(stringPath);
@@ -867,9 +922,9 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a valid writable file system path. " + e.getMessage());
 			return null;
 		}
-	}
+	}*/
 
-	protected List<String> asJsonStringsArray(String property) {
+	/*protected List<String> asJsonStringsArray(String property) {
 		try {
 			Gson gson = new Gson();
 			JsonArray jsonArray = gson.fromJson(getValue(property), JsonArray.class);
@@ -882,9 +937,9 @@ public class RemoteServiceConfig {
 			addError(property, "Is not a valid strings array in JSON format. " + e.getMessage());
 			return Arrays.asList();
 		}
-	}
+	}*/
 
-	protected <E extends Enum<E>> E asEnumValue(String property, Class<E> enumType) {
+	/*protected <E extends Enum<E>> E asEnumValue(String property, Class<E> enumType) {
 		String value = this.getValue(property);
 		try {
 			return Enum.valueOf(enumType, value);
@@ -892,9 +947,9 @@ public class RemoteServiceConfig {
 			addError(property, "Must be one of " + Arrays.asList(enumType.getEnumConstants()));
 			return null;
 		}
-	}
+	}*/
 
-	public URI checkWebsocketUri(String uri) throws Exception {
+	/*public URI checkWebsocketUri(String uri) throws Exception {
 		try {
 			if (!uri.startsWith("ws://") || uri.startsWith("wss://")) {
 				throw new Exception("WebSocket protocol not found");
@@ -905,15 +960,15 @@ public class RemoteServiceConfig {
 			throw new RuntimeException(
 					"URI '" + uri + "' has not a valid WebSocket endpoint format: " + e.getMessage());
 		}
-	}
+	}*/
 
-	protected void checkUrl(String url) throws Exception {
+	/*protected void checkUrl(String url) throws Exception {
 		try {
 			new URL(url).toURI();
 		} catch (MalformedURLException | URISyntaxException e) {
 			throw new Exception("String '" + url + "' has not a valid URL format: " + e.getMessage());
 		}
-	}
+	}*/
 
 	protected void populatePropertySourceFromDotenv() {
 		File dotenvFile = this.getDotenvFile();
@@ -922,14 +977,19 @@ public class RemoteServiceConfig {
 				Dotenv dotenv = new Dotenv();
 				try {
 					dotenv.read(dotenvFile.toPath());
-					this.propertiesSource = dotenv.getAll();
+					//this.propertiesSource = dotenv.getAll();
+					this.remoteServiceProperties.propertiesSource = dotenv.getAll();
 					log.info("Configuration properties read from file {}", dotenvFile.getAbsolutePath());
 				} catch (IOException | DotenvFormatException e) {
 					log.error("Error reading properties from .env file: {}", e.getMessage());
-					addError(null, e.getMessage());
+					this.remoteServiceProperties.addError(null, e.getMessage());
+					//addError(null, e.getMessage());
 				}
 			} else {
-				log.error("RemoteService does not have read permissions over .env file at {}", this.getDotenvPath());
+				//log.error("RemoteService does not have read permissions over .env file at {}", this.getDotenvPath());
+				log.error(
+						"RemoteService does not have read permissions over .env file at {}",
+						this.remoteServiceProperties.getDotenvPath());
 			}
 		}
 	}
@@ -948,7 +1008,23 @@ public class RemoteServiceConfig {
 	}
 
 	public File getDotenvFile() {
-		if (getDotenvPath() != null && !getDotenvPath().isEmpty()) {
+		String envPath = this.remoteServiceProperties.getDotenvPath();
+		if (envPath != null && !envPath.isEmpty()) {
+			Path path = getDotenvFilePathFromDotenvPath(envPath);
+			String normalizePath = FilenameUtils.normalize(path.toAbsolutePath().toString());
+			File file = new File(normalizePath);
+
+			if (file.exists()) {
+				return file;
+			} else {
+				log.error(".env file not found at {}", file.getAbsolutePath().toString());
+			}
+
+		} else {
+			log.warn("DOTENV_PATH configuration property is not defined");
+		}
+		return null;
+		/*if (getDotenvPath() != null && !getDotenvPath().isEmpty()) {
 
 			Path path = getDotenvFilePathFromDotenvPath(getDotenvPath());
 			String normalizePath = FilenameUtils.normalize(path.toAbsolutePath().toString());
@@ -963,7 +1039,7 @@ public class RemoteServiceConfig {
 		} else {
 			log.warn("DOTENV_PATH configuration property is not defined");
 		}
-		return null;
+		return null;*/
 	}
 
 }

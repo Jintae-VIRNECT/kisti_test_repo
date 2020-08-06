@@ -51,7 +51,7 @@ public class TokenGeneratorDefault implements TokenGenerator {
 		if (this.remoteServiceConfig.isTurnadminAvailable()) {
 			turnCredentials = coturnCredentialsService.createUser();
 			if (turnCredentials != null) {
-				token += "&coturnIp=" + remoteServiceConfig.getCoturnIp();
+				token += "&coturnIp=" + remoteServiceConfig.remoteServiceProperties.getCoturnIp();
 				token += "&turnUsername=" + turnCredentials.getUsername();
 				token += "&turnCredential=" + turnCredentials.getCredential();
 			}
