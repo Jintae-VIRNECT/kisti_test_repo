@@ -88,6 +88,7 @@ const getters = {
   settingInfo: state => {
     return {
       mic: state.mic.deviceId,
+      micOn: state.mic.isOn,
       video: state.video.deviceId,
     }
   },

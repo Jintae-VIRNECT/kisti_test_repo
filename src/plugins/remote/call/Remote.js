@@ -65,7 +65,7 @@ const _ = {
             ? settingInfo.video
             : undefined
           : false, //screen ? 'screen' : undefined,  // TODO: setting value
-        publishAudio: true,
+        publishAudio: settingInfo.micOn,
         publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
