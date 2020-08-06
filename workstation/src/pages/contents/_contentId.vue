@@ -57,11 +57,14 @@
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-if="content.target">
-            <span>{{ content.targetType }}</span>
+            <span>{{ targetType2label(content.targetType) }}</span>
+            <el-tag class="content-size">
+              {{ content.targetSize }}x{{ content.targetSize }}
+            </el-tag>
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
-              @click="print(content.target.imgPath)"
+              @click="print(content.target.imgPath, content.targetSize)"
             />
             <img
               v-if="content.target.imgPath"
@@ -212,6 +215,14 @@ export default {
   .register {
     float: right;
     padding: 8px 13px;
+  }
+  .content-size {
+    height: 24px;
+    margin-left: 4px;
+    color: $font-color-desc;
+    line-height: 22px;
+    background: transparent;
+    border-color: $font-color-desc;
   }
 }
 </style>

@@ -70,7 +70,7 @@ export default {
           duration: 2000,
           showClose: true,
         })
-        this.$router.push('/')
+        location.href = '/'
       } catch (e) {
         this.$message.error({
           message: this.$t('workspace.setting.leaveInfo.fail') + `\n(${e})`,

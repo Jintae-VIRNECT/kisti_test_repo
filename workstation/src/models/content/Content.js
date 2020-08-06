@@ -24,11 +24,8 @@ export default class Content extends Model {
     this.converted = json.converted
     this.targets = json.targets
     this.target = json.targets.length && json.targets[0]
-    this.targetType = this.target
-      ? app.i18n.t(
-          targetTypes.find(({ value }) => value === this.target.type).label,
-        )
-      : '-'
+    this.targetSize = json.targetSize || 10
+    this.targetType = this.target.type
     this.createdDate = json.createdDate
   }
 }

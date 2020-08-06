@@ -50,7 +50,7 @@
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd>
-            <span>{{ content.targetType }}</span>
+            <span>{{ targetType2label(content.targetType) }}</span>
           </dd>
         </dl>
       </el-col>
