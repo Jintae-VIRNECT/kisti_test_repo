@@ -19,11 +19,32 @@
 }
 
 .service-wrapper {
+  position: relative;
   // display: flex;
   // flex-direction: column;
   // // display: flex;
   // // flex-direction: column;
   // min-height: 100%;
+}
+
+.subview-btn {
+  position: absolute;
+  top: 0.571rem;
+  right: 0.571rem;
+  z-index: 10;
+  width: 2.143rem;
+  height: 2.143rem;
+  background: no-repeat center/100% url("~assets/image/call/ic_dbl_arrow.svg");
+  transform: rotateY(180deg);
+  opacity: 0.3;
+  @include ir();
+  transition: all 0.3s;
+  &.hide {
+    transform: rotateY(0);
+  }
+  // @include tablet {
+  //   display: none;
+  // }
 }
 
 .main-wrapper {
@@ -35,6 +56,12 @@
   &.shareview {
     width: calc(100% - #{$subview_width + $share_width});
     margin-left: $share_width;
+  }
+  @include tablet {
+    width: 100%;
+    &.shareview {
+      width: calc(100% - #{$share_width});
+    }
   }
 }
 

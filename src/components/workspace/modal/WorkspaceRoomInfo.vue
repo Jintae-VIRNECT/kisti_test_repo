@@ -146,6 +146,7 @@ export default {
 <style lang="scss" src="assets/style/workspace/workspace-roominfo.scss"></style>
 
 <style lang="scss">
+@import '~assets/style/mixin';
 .modal.modal-roominfo {
   .modal--body {
     padding: 0;
@@ -154,9 +155,7 @@ export default {
   .modal--inner {
     display: flex;
     flex-direction: column;
-    @media screen and (max-width: 900px), (max-height: 790px) {
-      font-size: 12px;
-    }
+    @include modal();
   }
   .modal--header {
     flex: 0;

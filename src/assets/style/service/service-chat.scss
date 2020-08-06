@@ -300,8 +300,8 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/mdpi_ic_start_cowork.svg) center
-              no-repeat;
+            background: url(~assets/image/call/mdpi_ic_start_cowork.svg)
+              center/100% no-repeat;
             content: "";
           }
         }
@@ -313,7 +313,8 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/chat_ic_ppl.svg) center no-repeat;
+            background: url(~assets/image/call/chat_ic_ppl.svg) center/100%
+              no-repeat;
             content: "";
           }
         }
@@ -325,7 +326,8 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/chat_ic_ar.svg) center no-repeat;
+            background: url(~assets/image/call/chat_ic_ar.svg) center/100%
+              no-repeat;
             content: "";
           }
         }
@@ -337,7 +339,7 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/chat_ic_board.svg) center
+            background: url(~assets/image/call/chat_ic_board.svg) center/100%
               no-repeat;
             content: "";
           }
@@ -350,8 +352,8 @@
             left: -1.429rem;
             width: 1rem;
             height: 1rem;
-            background: url(~assets/image/call/chat_ic_filecancel.svg) center
-              no-repeat;
+            background: url(~assets/image/call/chat_ic_filecancel.svg)
+              center/100% no-repeat;
             content: "";
           }
         }
@@ -387,22 +389,25 @@
   height: 1.7143rem;
   margin-right: 0.4286rem;
   &.pdf {
-    background: url(~assets/image/call/chat_ic_pdf_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_pdf_b.svg) center/100% no-repeat;
   }
   &.txt {
-    background: url(~assets/image/call/chat_ic_file_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_file_b.svg) center/100% no-repeat;
   }
   &.jpg {
-    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center/100%
+      no-repeat;
   }
   &.png {
-    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center/100%
+      no-repeat;
   }
   &.mp3 {
-    background: url(~assets/image/call/chat_ic_mp3_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_mp3_b.svg) center/100% no-repeat;
   }
   &.video {
-    background: url(~assets/image/call/chat_ic_video_b.svg) center no-repeat;
+    background: url(~assets/image/call/chat_ic_video_b.svg) center/100%
+      no-repeat;
   }
 }
 
@@ -414,7 +419,7 @@
   font-size: 1.0714rem;
   white-space: nowrap;
   text-overflow: ellipsis;
-  background: url() no-repeat;
+  background: url() center/100% no-repeat;
 }
 
 .chat-item__file--size {
@@ -627,7 +632,8 @@
   border: 1px solid #979797;
   border-radius: 50%;
   &.active {
-    background: url(~assets/image/call/chat/ic_chat_check.svg) center no-repeat;
+    background: url(~assets/image/call/chat/ic_chat_check.svg) center/100%
+      no-repeat;
     background-color: $color_primary;
     border: none;
   }
@@ -653,7 +659,7 @@
   width: 2.2857rem;
   height: 100%;
   margin-right: 0.5714rem;
-  background: url(~assets/image/call/chat/ic_chat_cancel_select.svg) center
+  background: url(~assets/image/call/chat/ic_chat_cancel_select.svg) center/100%
     no-repeat;
 
   @include ir();

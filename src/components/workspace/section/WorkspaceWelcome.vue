@@ -1,15 +1,17 @@
 <template>
   <section class="workspace-welcome">
     <div class="workspace-welcome__body offsetwidth">
-      <p class="workspace-welcome__group">
-        {{ workspace.title }}
+      <div class="workspace-welcome__group">
+        <p>
+          {{ workspace.title }}
+        </p>
         <role v-if="showRole" :role="workspace.role"></role>
         <role
           v-if="hasLicense && expireLicense"
           role="라이선스 만료"
           :opt="'expired'"
         ></role>
-      </p>
+      </div>
       <p class="workspace-welcome__name" v-html="welcomeText"></p>
       <button
         v-if="hasLicense && !expireLicense"

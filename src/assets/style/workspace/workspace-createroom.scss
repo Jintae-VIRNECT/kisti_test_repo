@@ -1,11 +1,11 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .createroom-modal .modal--inner {
   max-width: 90vw;
   max-height: 90vh;
-  @media screen and (max-width: 1098px), (max-height: 849px) {
-    font-size: 12px;
-  }
+
+  @include modal();
 }
 
 .createroom {

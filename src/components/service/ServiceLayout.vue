@@ -2,7 +2,17 @@
   <section class="remote-layout">
     <header-section></header-section>
     <div class="remote-wrapper service-wrapper">
-      <sub-view></sub-view>
+      <transition name="subview">
+        <sub-view v-show="subviewHide || isScreenDesktop"></sub-view>
+      </transition>
+      <button
+        v-if="!isScreenDesktop"
+        class="subview-btn"
+        :class="{ hide: subviewHide }"
+        @click="subviewHide = !subviewHide"
+      >
+        {{ subviewHide ? '열기' : '닫기' }}
+      </button>
 
       <transition name="share">
         <share v-show="isExpert && currentView === 'drawing'"></share>
@@ -80,6 +90,7 @@ export default {
   data() {
     return {
       showDenied: false,
+      subviewHide: false,
     }
   },
   computed: {
@@ -161,5 +172,18 @@ export default {
 }
 .main-leave-to {
   opacity: 0;
+}
+
+.subview-enter-active,
+.subview-leave-active {
+  transition: transform ease 0.3s;
+}
+.subview-enter,
+.subview-leave-to {
+  transform: translateX(100%);
+}
+.subview-enter-to,
+.subview-leave {
+  transform: translateX(0);
 }
 </style>

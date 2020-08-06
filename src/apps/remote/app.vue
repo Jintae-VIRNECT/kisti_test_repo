@@ -11,6 +11,21 @@ export default {
   components: {
     RemoteLayout,
   },
+  methods: {
+    windowResizeHandler() {
+      const html = document.querySelector('html')
+      const windowWidth = window.innerWidth
+      let type = 'desktop'
+
+      if (windowWidth <= 1024) {
+        type = 'tablet'
+      } else if (windowWidth < 768) {
+        type = 'mobile'
+      }
+      this.$store.dispatch('setDeviceType', type)
+      html.setAttribute('data-screen', type)
+    },
+  },
 
   /* Lifecycles */
   created() {
@@ -23,9 +38,13 @@ export default {
     } else if (windowWidth < 768) {
       type = 'mobile'
     }
+    this.$store.dispatch('setDeviceType', type)
     html.setAttribute('data-screen', type)
-
+    window.addEventListener('resize', this.windowResizeHandler)
     this.mx_initLang()
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.windowResizeHandler)
   },
 }
 </script>
