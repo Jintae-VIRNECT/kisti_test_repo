@@ -25,7 +25,7 @@
       <el-divider />
       <dt>{{ $t('task.targetInfo.targetType') }}</dt>
       <dd>
-        <span>{{ taskInfo.targetType }}</span>
+        <span>{{ targetType2label(taskInfo.targetType) }}</span>
         <el-tag class="content-size">
           {{ taskInfo.targetSize }}x{{ taskInfo.targetSize }}
         </el-tag>

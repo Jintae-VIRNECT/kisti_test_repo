@@ -29,11 +29,7 @@ export default class Task extends Model {
     this.targets = json.targets
     this.target = json.targets.length && json.targets[0]
     this.targetSize = json.targetSize || 10
-    this.targetType = this.target
-      ? app.i18n.t(
-          targetTypes.find(({ value }) => value === this.target.type).label,
-        )
-      : '-'
+    this.targetType = this.target.type
   }
 }
 

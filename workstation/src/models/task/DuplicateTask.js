@@ -6,13 +6,11 @@ export default class DuplicateTask extends Model {
    * 작업 추가생성 폼
    * @param {string} workspaceUUID
    * @param {object} originTask
-   * @param {array} sceneGroups
    * @param {object} Task
    * @param {array} subTasks
    */
-  constructor({ workspaceUUID, originTask, sceneGroups, task, subTasks }) {
+  constructor({ workspaceUUID, originTask, task, subTasks }) {
     super()
-    console.log(sceneGroups)
     this.taskId = originTask.id
     this.workspaceUUID = workspaceUUID
     this.ownerUUID = originTask.contentManagerUUID

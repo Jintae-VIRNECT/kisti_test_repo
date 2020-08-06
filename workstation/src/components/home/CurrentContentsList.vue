@@ -28,6 +28,7 @@
       <column-default
         :label="$t('contents.allContents.column.targetType')"
         prop="targetType"
+        customFilter="targetType2label"
         :width="90"
       />
       <column-user

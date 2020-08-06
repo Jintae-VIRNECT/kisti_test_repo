@@ -57,7 +57,7 @@
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-if="content.target">
-            <span>{{ content.targetType }}</span>
+            <span>{{ targetType2label(content.targetType) }}</span>
             <el-tag class="content-size">
               {{ content.targetSize }}x{{ content.targetSize }}
             </el-tag>
