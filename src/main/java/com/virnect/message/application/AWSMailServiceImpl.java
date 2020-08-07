@@ -94,16 +94,16 @@ public class AWSMailServiceImpl implements MailService {
         msg.addBodyPart(wrap);
 
         //첨부파일
-        File convertFile = new File(fileName);
+        File convertFile = new File("버넥트 솔루션 도입 ROI 측정 결과.pdf");
         if (convertFile.createNewFile()) {
             FileOutputStream fos = new FileOutputStream(convertFile);
             fos.write(bytes);
             fos.close();
         }
-        DataSource dataSource = new ByteArrayDataSource(bytes, "application/octet-stream", fileName);
+        DataSource dataSource = new ByteArrayDataSource(bytes, "application/octet-stream", "버넥트 솔루션 도입 ROI 측정 결과.pdf");
         BodyPart bodyPart = new MimeBodyPart();
         bodyPart.setDataHandler(new DataHandler(dataSource));
-        bodyPart.setFileName(fileName);
+        bodyPart.setFileName("버넥트 솔루션 도입 ROI 측정 결과.pdf");
         msg.addBodyPart(bodyPart);
 
         try {
