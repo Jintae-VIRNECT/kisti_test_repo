@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -151,7 +152,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	}
 
 	// make recording json
-	filename := viper.GetString("record.dirOnDocker") + "/" + param.RecordingID + "/" + param.VideoName + "." + param.VideoFormat
+	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID, param.VideoName) + "." + param.VideoFormat
 	recordingJson, err := json.Marshal(
 		&recordingJson{
 			RecordingID: param.RecordingID,

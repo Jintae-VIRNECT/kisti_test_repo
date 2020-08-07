@@ -85,14 +85,31 @@ func StartRecording(c *gin.Context) {
 		return
 	}
 
-	diskUsage, err := util.DiskUsage(viper.GetString("record.dir"))
-	if float64(diskUsage.Free)/float64(util.GB) < viper.GetFloat64("record.diskFreeThreshold") {
-		logger.Errorf("not enough free space: all:%f used:%f free:%f",
-			float64(diskUsage.All)/float64(util.GB),
-			float64(diskUsage.Used)/float64(util.GB),
-			float64(diskUsage.Free)/float64(util.GB))
-		sendResponseWithError(c, NewErrorInsufficientStorage())
-		return
+	diskFreeThreshold := viper.GetFloat64("record.diskFreeThreshold")
+	if diskFreeThreshold > 0 {
+		diskUsage, _ := util.DiskUsage(viper.GetString("record.dir"))
+		if float64(diskUsage.Free)/float64(util.GB) < viper.GetFloat64("record.diskFreeThreshold") {
+			logger.Errorf("not enough free space: all:%f used:%f free:%f",
+				float64(diskUsage.All)/float64(util.GB),
+				float64(diskUsage.Used)/float64(util.GB),
+				float64(diskUsage.Free)/float64(util.GB))
+			sendResponseWithError(c, NewErrorInsufficientStorage())
+			return
+		}
+	}
+
+	diskUsageLimit := viper.GetFloat64("record.diskUsageLimit")
+	if diskUsageLimit > 0 {
+		usageSum := 0
+		infos, _ := recorder.ListRecordingFiles()
+		for _, info := range infos {
+			usageSum += info.Size
+		}
+		logger.Debug("recording file usage size:", usageSum)
+		if diskUsageLimit*util.GB < float64(usageSum) {
+			sendResponseWithError(c, NewErrorInsufficientStorage())
+			return
+		}
 	}
 
 	resolution, _ := convertResolution(req.Resolution)

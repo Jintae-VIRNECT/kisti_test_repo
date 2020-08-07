@@ -204,29 +204,30 @@ func GetNumCurrentRecordings() int {
 }
 
 func ListRecordingFiles() ([]RecordingFileInfo, error) {
-	var files []string
 	infos := []RecordingFileInfo{}
 	root := viper.GetString("record.dir")
 	if _, err := os.Stat(root); os.IsNotExist(err) {
 		logger.Error(err)
 		return infos, err
 	}
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-		if filepath.HasPrefix(filepath.Base(path), ".recording") {
-			files = append(files, path)
-		}
-		return nil
-	})
+
+	recDirs, err := ioutil.ReadDir(root)
 	if err != nil {
 		return infos, err
 	}
-	for _, file := range files {
-		info, err := readInfoFile(file)
+
+	for _, recDir := range recDirs {
+		recordingID := recDir.Name()
+		if ExistRecordingID(recordingID) {
+			continue
+		}
+		info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
 		if err != nil {
-			logger.Warn(err, " file:", file)
+			if os.IsNotExist(err) {
+				logger.Debug("skip file:", recordingID, "(empty directory)")
+			} else {
+				logger.Warn(err, " file:", recordingID)
+			}
 			continue
 		}
 		infos = append(infos, info)
@@ -252,12 +253,12 @@ func RemoveRecordingFile(file string) error {
 }
 
 func GetRecordingFilePath(recordingID string) (string, error) {
-	infoFile := viper.GetString("record.dir") + "/" + recordingID + "/.recording." + recordingID
+	infoFile := filepath.Join(viper.GetString("record.dir"), recordingID, ".recording."+recordingID)
 	if _, err := os.Stat(infoFile); os.IsNotExist(err) {
 		return "", ErrNotFoundRecordingID
 	}
 
-	info, err := readInfoFile(infoFile)
+	info, err := readInfoFile(recordingID, infoFile)
 	if err != nil {
 		return "", err
 	}
@@ -265,10 +266,10 @@ func GetRecordingFilePath(recordingID string) (string, error) {
 	return info.FullPath, nil
 }
 
-func readInfoFile(file string) (RecordingFileInfo, error) {
+func readInfoFile(recordingID string, path string) (RecordingFileInfo, error) {
 	info := RecordingFileInfo{}
 
-	infoFile, err := os.Open(file)
+	infoFile, err := os.Open(filepath.Join(path, ".recording."+recordingID))
 	if err != nil {
 		logger.Error("open file:", err)
 		return info, err
@@ -283,7 +284,7 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	json.Unmarshal([]byte(byteValue), &result)
 
 	if _, ok := result["recordingId"]; !ok {
-		result["recordingId"] = filepath.Base(filepath.Dir(file))
+		result["recordingId"] = recordingID
 	}
 
 	if _, ok := result["sessionId"]; !ok {
@@ -311,10 +312,10 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	}
 
 	filenameWithPath := result["filename"].(string)
-	fullPath := viper.GetString("record.dir") + "/" + strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker"))
-	finfo, err := os.Stat(fullPath)
+	fullPath := filepath.Join(viper.GetString("record.dir"), strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker")))
+
+	finfo, err := os.Stat(path)
 	if err != nil {
-		logger.Error(err)
 		return info, err
 	}
 	stat := finfo.Sys().(*syscall.Stat_t)
