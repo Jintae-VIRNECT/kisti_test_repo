@@ -30,6 +30,7 @@ allprojects {
             jvmTarget = "1.8"
         }
     }
+
 }
 
 subprojects {
@@ -49,6 +50,7 @@ project(":service-server") {
     dependencies {
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
+        implementation(project(":service-api"))
     }
     /*val jar: Jar by tasks
     val bootJar: BootJar by tasks
@@ -58,6 +60,9 @@ project(":service-server") {
 
 }
 project(":service-common") {
+
+}
+project(":service-api") {
 
 }
 project(":service-core") {

@@ -1,10 +1,10 @@
-package com.virnect.serviceserver.gateway.global.config;
+package com.virnect.api.config;
 
-/*import com.fasterxml.classmate.TypeResolver;
+import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.serviceserver.gateway.global.error.ErrorCode;
-import com.virnect.serviceserver.gateway.global.error.ErrorResponseMessage;
+import com.virnect.api.error.ErrorCode;
+import com.virnect.api.error.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +22,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
-import java.util.List;*/
+import java.util.List;
 
-/*
 @Profile({"develop", "local"})
 @Configuration
 @EnableSwagger2
@@ -54,11 +53,9 @@ public class SwaggerConfiguration {
             }
         }
         responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
-        */
-/*responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+        /*responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
         responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());*//*
-
+        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());*/
         return responseMessages;
     }
 
@@ -83,8 +80,7 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo(title, version));
     }
 
-    */
-/*@Bean
+    /*@Bean
     public Docket apiV2() {
         version = "V2";
         title = "victolee API " + version;
@@ -98,7 +94,5 @@ public class SwaggerConfiguration {
                 .build()
                 .apiInfo(apiInfo(title, version));
 
-    }*//*
-
+    }*/
 }
-*/

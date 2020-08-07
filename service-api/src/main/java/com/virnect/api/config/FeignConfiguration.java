@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.gateway.global.config;
+package com.virnect.api.config;
 
 import feign.Logger;
 import feign.Retryer;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 
-/*@Configuration
+@Configuration
 @EnableFeignClients(basePackages = "com.virnect.serviceserver.gateway.service")
 public class FeignConfiguration {
     // Feign retry set
@@ -22,11 +22,11 @@ public class FeignConfiguration {
         return Logger.Level.FULL;
     }
 
-    *//**
+    /**
      * RequestParam 에서 LocalDate, LocalDateTime, LocalTime 을 사용을 할 때 ISO formatter 로 보내기 위한 설정
      *
      * @see org.springframework.web.bind.annotation.RequestParam
-     *//*
+     */
     @Bean
     public FeignFormatterRegistrar localDateFeignFormatterRegister() {
         return registry -> {
@@ -35,4 +35,4 @@ public class FeignConfiguration {
             registrar.registerFormatters(registry);
         };
     }
-}*/
+}

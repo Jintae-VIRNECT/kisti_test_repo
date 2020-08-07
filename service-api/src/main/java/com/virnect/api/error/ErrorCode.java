@@ -1,11 +1,8 @@
-package com.virnect.serviceserver.gateway.global.error;
+package com.virnect.api.error;
 
-/*
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-*/
 
-/*
 @ApiModel
 public enum  ErrorCode {
     //원격협업 정보 관련 에러
@@ -42,12 +39,10 @@ public enum  ErrorCode {
     ERR_HISTORY_PRODUCT_VALIDITY(6004, "License has no product"),
     ERR_HISTORY_UNEXPECTED_TYPE(6005, "This license is not unexpected type"),
 
-    */
-/*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
+    /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
     ERR_USER_PASSWORD_CHANGE_DUPLICATE(4009, "Password is duplicated with previous password"),
-    ERR_USER_LEAVE_SERVICE(4008, "User Info Not Matched"),*//*
-
+    ERR_USER_LEAVE_SERVICE(4008, "User Info Not Matched"),*/
 
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
@@ -74,4 +69,3 @@ public enum  ErrorCode {
         return message;
     }
 }
-*/
