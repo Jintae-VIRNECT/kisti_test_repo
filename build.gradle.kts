@@ -57,10 +57,15 @@ project(":service-server") {
     jar.enabled = true*/
 
 }
+project(":service-common") {
+
+}
+project(":service-core") {
+
+}
 project(":service-client") {
 
 }
-
 project(":service-java-client") {
 
 }

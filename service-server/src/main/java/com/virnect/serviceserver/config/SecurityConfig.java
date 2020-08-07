@@ -88,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/dashboard/**").permitAll();
 
 		// Security for recording layouts
-		conf.antMatchers("/layouts/**").authenticated();
+		conf.antMatchers("/layouts/**").permitAll();
 
 		// Security for recorded video files
 		if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess()) {

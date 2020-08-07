@@ -239,7 +239,7 @@ public class RemoteGatewayService {
                 .recordingMode("MANUAL")
                 .defaultOutputMode("COMPOSED")
                 .defaultRecordingLayout("BEST_FIT")
-                .recording(false)
+                .recording(true)
                 .room(room)
                 .build();
 
