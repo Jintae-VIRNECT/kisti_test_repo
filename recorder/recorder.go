@@ -6,7 +6,6 @@ import (
 	"RM-RecordServer/util"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -44,7 +43,7 @@ type RecordingFileInfo struct {
 	Size        int         `json:"size"`
 	Resolution  string      `json:"resolution"`
 	Framerate   uint        `json:"framerate"`
-	CreateTime  string      `json:"ceateTime"`
+	CreateTime  int64       `json:"ceateTime"`
 	UserData    interface{} `json:"userData,omitempty"`
 }
 
@@ -59,9 +58,10 @@ var (
 
 var timeoutCh chan string
 
-func init() {
+func Init() {
 	timeoutCh = make(chan string, 512)
 	go timeoutHandler()
+	go garbageCollector()
 }
 
 func makeRecordingID(sessionID string) string {
@@ -208,6 +208,7 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 	infos := []RecordingFileInfo{}
 	root := viper.GetString("record.dir")
 	if _, err := os.Stat(root); os.IsNotExist(err) {
+		logger.Error(err)
 		return infos, err
 	}
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -225,6 +226,7 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 	for _, file := range files {
 		info, err := readInfoFile(file)
 		if err != nil {
+			logger.Warn(err, " file:", file)
 			continue
 		}
 		infos = append(infos, info)
@@ -236,6 +238,15 @@ func RemoveRecordingFiles() (int, error) {
 	count, err := util.RemoveContents(viper.GetString("record.dir"))
 	logger.Info("delete all recording files. count:", count)
 	return count, err
+}
+
+func RemoveRecordingFile(file string) {
+	logger.Info("delete recording file:", filepath.Dir(file))
+
+	err := os.RemoveAll(filepath.Dir(file))
+	if err != nil {
+		logger.Error("delete fail. ", err)
+	}
 }
 
 func GetRecordingFilePath(recordingID string) (string, error) {
@@ -269,33 +280,32 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	var result map[string]interface{}
 	json.Unmarshal([]byte(byteValue), &result)
 
-	_, ok := result["recordingId"]
-	if ok != true {
-		return info, errors.New("not found recordingId")
+	if _, ok := result["recordingId"]; !ok {
+		result["recordingId"] = filepath.Base(filepath.Dir(file))
 	}
-	_, ok = result["sessionId"]
-	if ok != true {
-		return info, errors.New("not found sessionId")
+
+	if _, ok := result["sessionId"]; !ok {
+		result["sessionId"] = ""
 	}
-	_, ok = result["filename"]
-	if ok != true {
-		return info, errors.New("not found filename")
+
+	if _, ok := result["filename"]; !ok {
+		result["filename"] = ""
 	}
-	_, ok = result["duration"]
-	if ok != true {
-		return info, errors.New("not found duration")
+
+	if _, ok := result["duration"]; !ok {
+		result["duration"] = 0.0
 	}
-	_, ok = result["size"]
-	if ok != true {
-		return info, errors.New("not found size")
+
+	if _, ok := result["size"]; !ok {
+		result["size"] = 0.0
 	}
-	_, ok = result["resolution"]
-	if ok != true {
-		return info, errors.New("not found resolution")
+
+	if _, ok := result["resolution"]; !ok {
+		result["resolution"] = ""
 	}
-	_, ok = result["framerate"]
-	if ok != true {
-		return info, errors.New("not found framerate")
+
+	if _, ok := result["framerate"]; !ok {
+		result["framerate"] = 0.0
 	}
 
 	filenameWithPath := result["filename"].(string)
@@ -316,10 +326,40 @@ func readInfoFile(file string) (RecordingFileInfo, error) {
 	info.Size = int(result["size"].(float64))
 	info.Resolution = result["resolution"].(string)
 	info.Framerate = uint(result["framerate"].(float64))
-	info.CreateTime = fmt.Sprintln(time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC())
+	info.CreateTime = time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC().Unix()
 	if userData, ok := result["userData"]; ok == true {
 		info.UserData = userData.(interface{})
 	}
 
 	return info, nil
+}
+
+func garbageCollector() {
+	period := viper.GetInt("record.recordingFilePeriod")
+	if period == 0 {
+		logger.Info("disable recording file garbageCollector")
+		return
+	}
+	period = period * 24 * 60 * 60
+
+	gcPeriod := viper.GetInt("general.garbageCollectPeriod")
+	ticker := time.NewTicker(time.Duration(gcPeriod) * time.Hour)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		now := time.Now().UTC().Unix()
+		list, err := ListRecordingFiles()
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+
+		for _, info := range list {
+			remainDays := int64(period) - (now - info.CreateTime)
+			logger.Debug("recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateTime, " remain:", remainDays)
+			if remainDays < 0 {
+				RemoveRecordingFile(info.FullPath)
+			}
+		}
+	}
 }

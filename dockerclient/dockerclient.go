@@ -52,7 +52,13 @@ func init() {
 }
 
 func garbageCollector() {
-	ticker := time.NewTicker(1 * time.Minute)
+	period := viper.GetInt("general.garbageCollectPeriod")
+	if period == 0 {
+		logger.Info("disable docker containers garbageCollector")
+		return
+	}
+
+	ticker := time.NewTicker(time.Duration(period) * time.Hour)
 	defer ticker.Stop()
 	for range ticker.C {
 		go func() {
@@ -61,11 +67,11 @@ func garbageCollector() {
 				logger.Error("NewClientFromEnv:", err)
 				return
 			}
-			now := time.Now().Unix()
+			now := time.Now().UTC().Unix()
 			filter := map[string][]string{
 				"label": []string{"recordingId"},
 			}
-			cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
+			cons, err := cli.ListContainers(docker.ListContainersOptions{All: true, Filters: filter})
 			for _, c := range cons {
 				endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 				if now > endTime+60 {
@@ -169,7 +175,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
 	logger.Debug(baseUrl.String())
 
-	now := time.Now().Unix()
+	now := time.Now().UTC().Unix()
 	endTime := now + int64(param.TimeLimit*60)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.RecordingID

@@ -66,8 +66,13 @@ func SetupRouter() *gin.Engine {
 // @description This is Remote Record Server API Document
 func main() {
 	readConfig()
+
 	logger.Init()
+
 	displayConfig()
+
+	recorder.Init()
+
 	restoreRecordingFromContainer()
 
 	err := dockerclient.DownloadDockerImage()
@@ -181,7 +186,7 @@ func swaggerMiddleware() gin.HandlerFunc {
 func restoreRecordingFromContainer() {
 	logger.Info("Start: Restore Recording From Container")
 	constainers := dockerclient.ListContainers()
-	now := time.Now().Unix()
+	now := time.Now().UTC().Unix()
 
 	for _, container := range constainers {
 		recordingTimeLimit := container.EndTime - now
