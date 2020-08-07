@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -74,7 +73,7 @@ public class AWSMailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendAttachmentMail(String receiver, String sender, String subject, String html, MultipartFile multipartFile) throws MessagingException, IOException {
+    public void sendAttachmentMail(String receiver, String sender, String subject, String html, byte[] bytes, String fileName) throws MessagingException, IOException {
 
         Session session = Session.getDefaultInstance(new Properties());
 
@@ -95,17 +94,16 @@ public class AWSMailServiceImpl implements MailService {
         msg.addBodyPart(wrap);
 
         //첨부파일
-        File convertFile = new File(multipartFile.getName());
+        File convertFile = new File(fileName);
         if (convertFile.createNewFile()) {
             FileOutputStream fos = new FileOutputStream(convertFile);
-            fos.write(multipartFile.getBytes());
+            fos.write(bytes);
             fos.close();
         }
-        DataSource dataSource = new ByteArrayDataSource(
-                multipartFile.getBytes(), "application/octet-stream", multipartFile.getOriginalFilename());
+        DataSource dataSource = new ByteArrayDataSource(bytes, "application/octet-stream", fileName);
         BodyPart bodyPart = new MimeBodyPart();
         bodyPart.setDataHandler(new DataHandler(dataSource));
-        bodyPart.setFileName(multipartFile.getOriginalFilename());
+        bodyPart.setFileName(fileName);
         msg.addBodyPart(bodyPart);
 
         try {
@@ -131,6 +129,7 @@ public class AWSMailServiceImpl implements MailService {
             System.err.println("Error message: " + ex.getMessage());
             ex.printStackTrace();
         }
+        convertFile.delete();
     }
 
 

@@ -2,6 +2,7 @@ package com.virnect.message.api;
 
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
+import com.virnect.message.dto.request.AttachmentMailRequest;
 import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -99,12 +101,12 @@ public class MessageController {
     @ApiOperation(
             value = "첨부파일 메일 전송"
     )
-    @PostMapping("/mail/attachment")
-    public ResponseEntity<ApiResponse<Boolean>> sendAttachmentMail(@ModelAttribute @Valid MailSendRequest mailSendRequest, @RequestParam MultipartFile multipartFile, BindingResult bindingResult) throws MessagingException, IOException {
+    @PostMapping(value = "/mail/attachment")
+    public ResponseEntity<ApiResponse<Boolean>> sendAttachmentMail(@RequestBody @Valid AttachmentMailRequest mailSendRequest, BindingResult bindingResult) throws MessagingException, IOException {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = messageService.sendAttachmentMail(mailSendRequest, multipartFile);
+        ApiResponse<Boolean> apiResponse = messageService.sendAttachmentMail(mailSendRequest);
         return ResponseEntity.ok(apiResponse);
     }
 

@@ -1,9 +1,13 @@
 package com.virnect.message.application;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.message.dao.MailHistoryRepository;
 import com.virnect.message.domain.MailHistory;
 import com.virnect.message.domain.MailSender;
+import com.virnect.message.dto.request.AttachmentMailRequest;
 import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
@@ -11,19 +15,29 @@ import com.virnect.message.global.common.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceEditor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -42,9 +56,11 @@ public class MessageService {
     private final MailHistoryRepository mailHistoryRepository;
     private final ObjectMapper objectMapper;
     private final RabbitTemplate rabbitTemplate;
+    private final AmazonS3 amazonS3Client;
 
     public static final String HEADER_X_RETRIES_COUNT = "x-retries-count";
     public static final int MAX_RETRY_COUNT = 2;
+    public static final String S3_BUCKET_NAME = "virnect-homepagestorage";
 
     public ApiResponse<Boolean> sendMail(MailSendRequest mailSendRequest) {
 
@@ -129,7 +145,11 @@ public class MessageService {
         log.info(deadMessage.toString());
     }
 
-    public ApiResponse<Boolean> sendAttachmentMail(MailSendRequest mailSendRequest, MultipartFile multipartFile) throws MessagingException, IOException {
+    public ApiResponse<Boolean> sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws MessagingException, IOException {
+        S3Object object = amazonS3Client.getObject(S3_BUCKET_NAME, "roi/"+FilenameUtils.getName(mailSendRequest.getMultipartFile()));
+        S3ObjectInputStream inputStream = object.getObjectContent();
+        byte[] bytes = IOUtils.toByteArray(inputStream, object.getObjectMetadata().getContentLength());
+
         for (String receiver : mailSendRequest.getReceivers()) {
             MailHistory mailHistory = MailHistory.builder()
                     .receiver(receiver)
@@ -138,7 +158,8 @@ public class MessageService {
                     .subject(mailSendRequest.getSubject())
                     .resultCode(HttpStatus.OK.value())
                     .build();
-            mailService.sendAttachmentMail(receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml(), multipartFile);
+
+            mailService.sendAttachmentMail(receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml(), bytes, FilenameUtils.getName(mailSendRequest.getMultipartFile()));
 
             log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
 
