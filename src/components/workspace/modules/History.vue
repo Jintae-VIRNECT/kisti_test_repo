@@ -107,14 +107,16 @@ export default {
       //       sameElse: 'YYYY.MM.DD',
       //     }),
       // )
-      return this.$dayjs(this.history.activeDate + '+00:00').calendar(null, {
-        sameDay: 'A h:mm',
-        lastDay: '[어제] A',
-        nextDay: '[내일] A',
-        // lastWeek: '[지난] dddd',
-        lastWeek: 'YYYY.MM.DD',
-        sameElse: 'YYYY.MM.DD',
-      })
+      return this.$dayjs(this.history.activeDate + '+00:00')
+        .local()
+        .calendar(null, {
+          sameDay: 'A h:mm',
+          lastDay: '[어제] A',
+          nextDay: '[내일] A',
+          // lastWeek: '[지난] dddd',
+          lastWeek: 'YYYY.MM.DD',
+          sameElse: 'YYYY.MM.DD',
+        })
     },
     time() {
       return this.$dayjs(this.history.durationSec * 1000).format('m분 s초')

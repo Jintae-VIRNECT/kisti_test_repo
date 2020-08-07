@@ -152,17 +152,7 @@ export default {
   watch: {
     room: {
       handler(room) {
-        this.title = room.title
-        this.description = room.description
-        // this.imageUrl = room.profile
-        this.createdDate = this.$dayjs(room.activeDate).format('YYYY.MM.DD')
-        this.createdTime = this.$dayjs(room.activeDate).format('hh:mm:ss')
-        if (this.isHistory) {
-          this.inactiveTime = this.$dayjs(room.unactiveDate).format('hh:mm:ss')
-          this.durationTime = this.$dayjs(this.room.durationSec * 1000)
-            .utc()
-            .format('HH:mm:ss')
-        }
+        this.init(room)
       },
       deep: true,
     },
@@ -176,6 +166,25 @@ export default {
     },
   },
   methods: {
+    init() {
+      this.title = this.room.title
+      this.description = this.room.description
+      // this.imageUrl = room.profile
+      this.createdDate = this.$dayjs(this.room.activeDate + '+00:00')
+        .local()
+        .format('YYYY.MM.DD')
+      this.createdTime = this.$dayjs(this.room.activeDate + '+00:00')
+        .local()
+        .format('hh:mm:ss')
+      if (this.isHistory) {
+        this.inactiveTime = this.$dayjs(this.room.unactiveDate + '+00:00')
+          .local()
+          .format('hh:mm:ss')
+        this.durationTime = this.$dayjs(this.room.durationSec * 1000)
+          .utc()
+          .format('HH:mm:ss')
+      }
+    },
     remove() {
       this.imageRemove()
     },
@@ -201,19 +210,7 @@ export default {
   /* Lifecycles */
   mounted() {
     if (this.room) {
-      this.title = this.room.title
-      this.description = this.room.description
-      this.imageUrl = this.room.profile
-      this.createdDate = this.$dayjs(this.room.activeDate).format('YYYY.MM.DD')
-      this.createdTime = this.$dayjs(this.room.activeDate).format('hh:mm:ss')
-      if (this.isHistory) {
-        this.inactiveTime = this.$dayjs(this.room.unactiveDate).format(
-          'hh:mm:ss',
-        )
-        this.durationTime = this.$dayjs(this.room.durationSec * 1000)
-          .utc()
-          .format('HH:mm:ss')
-      }
+      this.init()
     }
   },
 }
