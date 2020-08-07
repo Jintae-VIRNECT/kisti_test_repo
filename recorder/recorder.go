@@ -234,19 +234,21 @@ func ListRecordingFiles() ([]RecordingFileInfo, error) {
 	return infos, nil
 }
 
-func RemoveRecordingFiles() (int, error) {
+func RemoveRecordingFileAll() (int, error) {
 	count, err := util.RemoveContents(viper.GetString("record.dir"))
 	logger.Info("delete all recording files. count:", count)
 	return count, err
 }
 
-func RemoveRecordingFile(file string) {
+func RemoveRecordingFile(file string) error {
 	logger.Info("delete recording file:", filepath.Dir(file))
 
 	err := os.RemoveAll(filepath.Dir(file))
 	if err != nil {
 		logger.Error("delete fail. ", err)
+		return err
 	}
+	return nil
 }
 
 func GetRecordingFilePath(recordingID string) (string, error) {

@@ -37,14 +37,14 @@ func ListRecordingFiles(c *gin.Context) {
 }
 
 // @Summary Remove All Recording Files
-// @Description Remove All Recordings Files
+// @Description Remove All Recording Files
 // @tags Recording File
 // @Produce json
 // @Success 200 {object} response
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [delete]
-func RemoveRecordingFiles(c *gin.Context) {
-	count, err := recorder.RemoveRecordingFiles()
+func RemoveRecordingFileAll(c *gin.Context) {
+	count, err := recorder.RemoveRecordingFileAll()
 	if err != nil {
 		logger.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
@@ -53,12 +53,40 @@ func RemoveRecordingFiles(c *gin.Context) {
 	sendResponseWithSuccess(c, RemoveRecordingFilesResponse{count})
 }
 
+// @Summary Remove Recording File
+// @Description Remove Recording File
+// @tags Recording File
+// @Produce json
+// @Param id path string true "recording id"
+// @Success 200 {object} response
+// @Failure 1000 {} json "{"error":"not found id"}"
+// @Failure 9999 {} json "{"error":"error message"}"
+// @Router /remote/recorder/file/{id} [delete]
+func RemoveRecordingFile(c *gin.Context) {
+	recordingID := c.Param("id")
+
+	filePath, err := recorder.GetRecordingFilePath(recordingID)
+	if err != nil {
+		sendResponseWithError(c, NewErrorNotFoundRecordingID())
+		return
+	}
+	logger.Debug("file:", filePath)
+
+	err = recorder.RemoveRecordingFile(filePath)
+	if err != nil {
+		logger.Error(err)
+		sendResponseWithError(c, NewErrorInternalServer(err))
+		return
+	}
+	sendResponseWithSuccess(c, nil)
+}
+
 // @Summary Download Recording File
 // @Description Download Recording File
 // @tags Recording File
 // @Produce json
 // @Param id path string true "recording id"
-// @Failure 1000 {} json "{ "error": "not found id" }"
+// @Failure 1000 {} json "{"error":"not found id"}"
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file/download/{id} [get]
 func DownloadRecordingFile(c *gin.Context) {

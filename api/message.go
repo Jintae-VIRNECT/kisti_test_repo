@@ -29,7 +29,7 @@ type empty struct {
 }
 
 func NewErrorNotFoundRecordingID() *responseError {
-	return &responseError{code: ErrNotFoundRecordingID, message: "Not Found RecordingID"}
+	return &responseError{code: ErrNotFoundRecordingID, message: "Not Found Recording ID"}
 }
 
 func NewErrorTooManyRecordings() *responseError {
