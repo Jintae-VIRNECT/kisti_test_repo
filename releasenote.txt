@@ -1,13 +1,10 @@
 RELEASE
 
 New Features
-지프킨 연동
+첨부파일 메일 전송
 
 Bug Fixes
-없음
 
 Limitation
-푸시 메세지 규격 변경
-푸시 메세지 라우팅 exchange 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
