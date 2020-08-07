@@ -32,7 +32,6 @@
 </template>
 <script>
 import RSelect from 'RemoteSelect'
-import Popover from 'Popover'
 import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
 import { localRecResOpt } from 'utils/recordOptions'
@@ -45,7 +44,6 @@ export default {
   },
   components: {
     RSelect,
-    Popover,
     Tooltip,
   },
   computed: {

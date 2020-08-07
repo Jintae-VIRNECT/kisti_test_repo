@@ -57,6 +57,14 @@ export const localRecIntervalOpt = [
     value: '1',
     text: '1분',
   },
+  {
+    value: '5',
+    text: '5분',
+  },
+  {
+    value: '10',
+    text: '10분',
+  },
 ]
 
 export const localRecordTarget = [
