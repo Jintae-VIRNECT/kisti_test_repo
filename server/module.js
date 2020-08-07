@@ -72,6 +72,11 @@ var ServerModule = (function() {
     logger.log(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
     logger.log(`NODE ENV: ${NODE_ENV}`, 'LISTENING')
     logger.log(`SSL ENV: ${SSL_ENV}`, 'LISTENING')
+
+    const urls = config.getUrls()
+    Object.keys(urls).forEach(key => {
+      logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
+    })
   }
 
   function onProcessError(err) {
