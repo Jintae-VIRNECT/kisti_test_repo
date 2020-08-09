@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 
 @Configuration
-@EnableFeignClients(basePackages = "com.virnect.serviceserver.gateway.service")
+@EnableFeignClients(basePackages = "com.virnect.api.feign")
 public class FeignConfiguration {
     // Feign retry set
     @Bean

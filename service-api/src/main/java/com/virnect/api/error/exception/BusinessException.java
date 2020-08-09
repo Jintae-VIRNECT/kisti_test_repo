@@ -1,6 +1,7 @@
 package com.virnect.api.error.exception;
 
-import com.virnect.serviceserver.gateway.global.error.ErrorCode;
+
+import com.virnect.api.error.ErrorCode;
 
 public class BusinessException extends RuntimeException {
     private final ErrorCode errorCode;

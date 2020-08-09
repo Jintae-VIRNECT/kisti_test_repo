@@ -5,6 +5,14 @@ plugins {
     kotlin("plugin.spring")
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
 
 
 ext {
@@ -21,7 +29,11 @@ dependencyManagement {
 
 dependencies {
     //implementation(kotlin("stdlib-jdk8"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("junit", "junit", "4.12")

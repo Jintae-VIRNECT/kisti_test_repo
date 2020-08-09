@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-                .contact(new Contact("김경", "https://virnect.com", "hoon@virnect.com"))
+                .contact(new Contact("Kim Kyung Hoon", "https://virnect.com", "hoon@virnect.com"))
                 .description("Remote Service API Docs")
                 .version(version)
                 .title(title)
@@ -72,7 +72,7 @@ public class SwaggerConfiguration {
                 .globalResponseMessage(RequestMethod.PUT, globalResponseMessage())
                 .globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.gateway.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.virnect.api.rest"))
                 .paths(PathSelectors.any())
                 //.paths(PathSelectors.ant("/remote/**"))
                 .build()
