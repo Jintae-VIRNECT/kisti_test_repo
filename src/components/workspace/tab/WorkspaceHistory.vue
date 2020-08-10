@@ -11,7 +11,7 @@
     :showDeleteButton="true"
     :showRefreshButton="true"
     :deleteButtonText="'전체삭제'"
-    :listCount="pageMeta.totalElements"
+    :listCount="historyList.length"
     :loading="loading"
     @refresh="init"
     @delete="deleteAll"
@@ -192,7 +192,7 @@ export default {
         const datas = await getHistoryList({
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
-          paging: true,
+          paging: false,
           page,
         })
         this.pageMeta = datas.pageMeta
