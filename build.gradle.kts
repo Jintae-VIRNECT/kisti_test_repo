@@ -65,7 +65,7 @@ project(":service-common") {
 project(":service-api") {
 
 }
-project(":service-core") {
+project(":service-kms") {
 
 }
 project(":service-client") {

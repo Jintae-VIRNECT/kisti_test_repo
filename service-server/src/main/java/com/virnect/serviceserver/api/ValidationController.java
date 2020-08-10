@@ -1,10 +1,12 @@
-package com.virnect.api.rest;
+package com.virnect.serviceserver.api;
 
-import com.virnect.api.ApiResponse;
-import com.virnect.api.dto.request.PushSendRequest;
-import com.virnect.api.dto.rest.LicenseInfoListResponse;
-import com.virnect.api.dto.rest.PushResponse;
-import com.virnect.api.error.ErrorCode;
+import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
+import com.virnect.serviceserver.gateway.dto.request.PushSendRequest;
+import com.virnect.serviceserver.gateway.dto.rest.LicenseInfoListResponse;
+import com.virnect.serviceserver.gateway.dto.rest.PushResponse;
+import com.virnect.serviceserver.gateway.exception.RemoteServiceException;
+import com.virnect.serviceserver.gateway.global.common.ApiResponse;
+import com.virnect.serviceserver.gateway.global.error.ErrorCode;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

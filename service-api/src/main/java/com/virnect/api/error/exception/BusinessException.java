@@ -3,7 +3,7 @@ package com.virnect.api.error.exception;
 
 import com.virnect.api.error.ErrorCode;
 
-public class BusinessException extends RuntimeException {
+public abstract class BusinessException extends RuntimeException {
     private final ErrorCode errorCode;
 
     public BusinessException(String message, ErrorCode errorCode) {

@@ -1,6 +1,6 @@
 package com.virnect.api.dto.response;
 
-import com.virnect.serviceserver.gateway.dto.CoturnResponse;
+import com.virnect.api.dto.CoturnResponse;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

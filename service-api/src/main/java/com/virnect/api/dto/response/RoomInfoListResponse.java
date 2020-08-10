@@ -1,6 +1,6 @@
 package com.virnect.api.dto.response;
 
-import com.virnect.serviceserver.gateway.dto.PageMetadataResponse;
+import com.virnect.api.dto.PageMetadataResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

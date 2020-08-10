@@ -1,8 +1,9 @@
-package com.virnect.api.rest;
+package com.virnect.serviceserver.api;
 
 
 import com.virnect.api.ApiResponse;
 import com.virnect.api.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.api.service.MemberService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class MemberRestController {
-    private static final String TAG = "MemberRestController";
+    private static final String TAG = MemberRestController.class.getSimpleName();
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/member";
-    private final RemoteGatewayService remoteGatewayService;
+
+    private final MemberService memberService;
 
     private HttpHeaders getResponseHeaders() {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -45,7 +47,7 @@ public class MemberRestController {
         log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
 
         //todo: after delete user itself
-        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.remoteGatewayService.getMembers(workspaceId, filter, page, size);
+        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberService.getMembers(workspaceId, filter, page, size);
         log.debug(TAG, apiResponse.toString());
         return ResponseEntity.ok(apiResponse);
     }

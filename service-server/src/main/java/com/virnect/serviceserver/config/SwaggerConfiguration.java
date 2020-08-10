@@ -1,4 +1,4 @@
-package com.virnect.api.config;
+package com.virnect.serviceserver.config;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-                .contact(new Contact("Kim Kyung Hoon", "https://virnect.com", "hoon@virnect.com"))
+                .contact(new Contact("김경", "https://virnect.com", "hoon@virnect.com"))
                 .description("Remote Service API Docs")
                 .version(version)
                 .title(title)
@@ -53,9 +53,10 @@ public class SwaggerConfiguration {
             }
         }
         responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
-        /*responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
         responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());*/
+        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
+
         return responseMessages;
     }
 
@@ -72,27 +73,11 @@ public class SwaggerConfiguration {
                 .globalResponseMessage(RequestMethod.PUT, globalResponseMessage())
                 .globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.api.rest"))
+                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.gateway.api"))
                 .paths(PathSelectors.any())
                 //.paths(PathSelectors.ant("/remote/**"))
                 .build()
                 .additionalModels(typeResolver.resolve(ErrorCode.class))
                 .apiInfo(apiInfo(title, version));
     }
-
-    /*@Bean
-    public Docket apiV2() {
-        version = "V2";
-        title = "victolee API " + version;
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.victolee.swaggerexam.api.v2"))
-                .paths(PathSelectors.ant("/v2/api/**"))
-                .build()
-                .apiInfo(apiInfo(title, version));
-
-    }*/
 }

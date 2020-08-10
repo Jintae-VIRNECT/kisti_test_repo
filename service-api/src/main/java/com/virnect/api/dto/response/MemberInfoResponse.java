@@ -1,8 +1,8 @@
 package com.virnect.api.dto.response;
 
-import com.virnect.serviceserver.gateway.domain.DeviceType;
-import com.virnect.serviceserver.gateway.domain.MemberStatus;
-import com.virnect.serviceserver.gateway.domain.MemberType;
+import com.virnect.api.dao.DeviceType;
+import com.virnect.api.dao.MemberStatus;
+import com.virnect.api.dao.MemberType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

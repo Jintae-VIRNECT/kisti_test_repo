@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.gateway.exception;
 
+/*
 import com.virnect.serviceserver.gateway.global.error.ErrorCode;
 import com.virnect.serviceserver.gateway.global.error.exception.BusinessException;
 
@@ -15,3 +16,4 @@ public class RemoteServiceException extends BusinessException {
         return this.error;
     }
 }
+*/

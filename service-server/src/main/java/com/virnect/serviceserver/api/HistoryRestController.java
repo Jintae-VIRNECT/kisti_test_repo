@@ -1,5 +1,4 @@
-package com.virnect.api.rest;
-
+package com.virnect.serviceserver.api;
 
 import com.virnect.api.ApiResponse;
 import com.virnect.api.dto.request.PageRequest;
@@ -8,6 +7,8 @@ import com.virnect.api.dto.response.ResultResponse;
 import com.virnect.api.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.api.dto.response.RoomHistoryInfoListResponse;
 import com.virnect.api.error.ErrorCode;
+import com.virnect.api.error.exception.RestServiceException;
+import com.virnect.api.service.HistoryService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -25,11 +26,12 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class HistoryRestController {
-    private static final String TAG = "HistoryRestControllers";
+    private static final String TAG = HistoryRestController.class.getSimpleName();
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/history";
 
-    private final RemoteGatewayService remoteGatewayService;
+    //private final RemoteGatewayService remoteGatewayService;
+    private final HistoryService historyService;
 
 
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
@@ -49,7 +51,8 @@ public class HistoryRestController {
             @ApiIgnore PageRequest pageable
     ) {
         log.info("REST API: GET {}/{}{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
-        ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.remoteGatewayService.getRoomHistoryInfoList(workspaceId, userId, paging, pageable.of());
+        //ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.historyService.getRoomHistoryInfoList(workspaceId, userId, paging, pageable.of());
+        ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.historyService.getRoomHistoryInfoList(workspaceId, userId, paging, pageable);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -60,9 +63,9 @@ public class HistoryRestController {
             @PathVariable("sessionId") String sessionId) {
         log.info("REST API: DELETE {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", sessionId != null ? sessionId : "{}");
         if (sessionId.isEmpty()) {
-            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RoomHistoryDetailInfoResponse> apiResponse = this.remoteGatewayService.getRoomHistoryDetailInfo(workspaceId, sessionId);
+        ApiResponse<RoomHistoryDetailInfoResponse> apiResponse = this.historyService.getRoomHistoryDetailInfo(workspaceId, sessionId);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -73,10 +76,10 @@ public class HistoryRestController {
             @PathVariable("userId") String userId) {
         log.info("REST API: DELETE {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
         if(userId.isEmpty()) {
-            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeAllRoomHistory(workspaceId, userId);
+        ApiResponse<ResultResponse> apiResponse = this.historyService.removeAllRoomHistory(workspaceId, userId);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -90,10 +93,10 @@ public class HistoryRestController {
 
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<ResultResponse> apiResponse = this.remoteGatewayService.removeRoomHistory(workspaceId, roomHistoryDeleteRequest);
+        ApiResponse<ResultResponse> apiResponse = this.historyService.removeRoomHistory(workspaceId, roomHistoryDeleteRequest);
         return ResponseEntity.ok(apiResponse);
     }
 

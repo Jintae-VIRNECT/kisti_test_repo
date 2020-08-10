@@ -1,4 +1,4 @@
-package com.virnect.api.rest;
+package com.virnect.serviceserver.api;
 
 import com.google.gson.JsonObject;
 import com.virnect.serviceserver.config.RemoteServiceBuildInfo;
