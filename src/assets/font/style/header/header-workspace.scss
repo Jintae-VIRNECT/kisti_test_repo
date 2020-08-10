@@ -1,0 +1,144 @@
+.header-workspace {
+  display: flex;
+  height: 100%;
+}
+
+.header-divider {
+  width: 1px;
+  height: 1.571rem;
+  margin: auto 1.429rem auto 0;
+  background-color: rgba(#d8d8d8, 0.2);
+}
+
+.header-workspace-lnb {
+  height: 100%;
+  .popover--wrapper {
+    height: 100%;
+  }
+  .header-workspace-selector {
+    position: relative;
+    height: 100%;
+    padding-right: 1.786rem;
+    color: #dcdcdc;
+    font-weight: 500;
+    font-size: 1.143rem;
+    background: transparent;
+    &::after {
+      position: absolute;
+      top: 50%;
+      right: 0.357rem;
+      width: 0.714rem;
+      height: 0.929rem;
+      background: url(~assets/image/ic_dropdown.svg) 50% no-repeat;
+      transform: translateY(-50%);
+      content: "";
+    }
+  }
+}
+
+.header-lnb-selector.popover {
+  background-color: $color_bg_sub;
+  border: solid 1px $color_darkgray_400;
+  border-radius: 0.286rem;
+  // transform: translateX(40px);
+  > .popover--body {
+    padding: 0.429rem 0;
+  }
+}
+.header-lnb-selector__button {
+  height: 4rem;
+  > button {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    &.active {
+      background-color: rgba($color_bg_item, 0.4);
+    }
+    &:hover {
+      background-color: rgba($color_bg_item, 0.7);
+    }
+  }
+}
+.header-lnb-selector__check {
+  position: absolute;
+  top: 50%;
+  left: 1.2rem;
+  width: 1.714rem;
+  height: 1.714rem;
+  border: solid 2px #555557;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  &.active {
+    border-color: $color_primary;
+    &::after {
+      position: absolute;
+      top: 0.214rem;
+      left: 0.5rem;
+      display: block;
+
+      /*Make it a small rectangle so the border will create an L-shape*/
+      width: 4px;
+      height: 0.571rem;
+
+      /*Add a white border on the bottom and left, creating that 'L' */
+      border: solid $color_primary;
+      border-width: 0 2px 2px 0;
+
+      /*Rotate the L 45 degrees to turn it into a checkmark*/
+      transform: rotate(45deg);
+      content: "";
+    }
+  }
+}
+.header-lnb-selector__title {
+  display: -webkit-box;
+  // height: 2.6em;
+  padding: 0 1rem 0 4rem;
+  overflow: hidden;
+  color: $color_text;
+  font-weight: 500;
+  // line-height: 1.3em;
+  text-align: left;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.header-lnb-selector__description {
+  padding-left: 4.429rem;
+  color: rgba($color_text_sub, 0.76);
+  font-size: 0.857rem;
+  text-align: left;
+}
+
+.header-workspace-tools {
+  position: absolute;
+  right: 0;
+  display: flex;
+  height: 100%;
+  padding: 0.786rem 1.214rem;
+  > .tooltip,
+  > .popover--wrapper {
+    margin-left: 0.571rem;
+    > .profile {
+      margin: 0.143rem 0.143rem 0.143rem 0.929rem;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+  .notice {
+    position: relative;
+    &::after {
+      position: absolute;
+      top: 0.286rem;
+      right: 0.286rem;
+      width: 0.429rem;
+      height: 0.429rem;
+      background-color: $color_red;
+      border-radius: 50%;
+      content: "";
+    }
+  }
+}

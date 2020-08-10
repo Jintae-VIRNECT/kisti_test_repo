@@ -1,0 +1,52 @@
+.drawing-box {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: calc(100% - #{$tool_height});
+}
+
+.drawing-canvas {
+  position: relative;
+  top: 50%;
+  width: fit-content;
+  max-width: 100%;
+  height: fit-content;
+  max-height: 100%;
+  margin: auto;
+  transform: translateY(-50%);
+}
+
+.drawing-box__empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: $color_bg;
+  // background: url(~assets/image/img_novideo.svg) 50% 120px no-repeat;
+  &.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $color_bg;
+  }
+}
+.drawing-box__empty-inner {
+  margin: auto;
+  text-align: center;
+  user-select: none;
+  > p {
+    color: $color_text;
+    font-weight: 500;
+    font-size: 1.214rem;
+    &.description {
+      margin: 1rem auto 1.857rem;
+      color: rgba($color_text, 0.46);
+      font-weight: 300;
+      font-size: 1.143rem;
+    }
+  }
+}
