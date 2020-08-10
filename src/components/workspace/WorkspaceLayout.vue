@@ -5,6 +5,7 @@
       classes="remote-wrapper"
       ref="wrapperScroller"
       @onScroll="onScroll"
+      :onMaxScroll="handleMaxScroll"
     >
       <div class="workspace-wrapper">
         <workspace-welcome ref="welcomeSection"></workspace-welcome>
@@ -105,6 +106,9 @@ export default {
         // BETA: 1hour logout setting
         this.$parent.init()
       }
+    },
+    handleMaxScroll(event) {
+      this.$eventBus.$emit('scroll:end', event)
     },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {

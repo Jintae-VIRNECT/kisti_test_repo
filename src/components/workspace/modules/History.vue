@@ -45,10 +45,7 @@
             </button>
           </li>
           <li>
-            <button
-              class="group-pop__button"
-              @click="$emit('showDeleteDialog')"
-            >
+            <button class="group-pop__button" @click="$emit('deleteHistory')">
               목록삭제
             </button>
           </li>
