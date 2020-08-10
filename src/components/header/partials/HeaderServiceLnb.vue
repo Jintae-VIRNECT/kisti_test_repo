@@ -80,13 +80,15 @@ export default {
   },
   watch: {
     shareFile(file, oldFile) {
-      if (
-        file &&
-        file.id &&
-        file.id !== oldFile.id &&
-        this.currentView !== 'drawing'
-      ) {
-        this.drawingNotice = true
+      if (file && file.id && file.id !== oldFile.id) {
+        this.addChat({
+          name: file.fileName,
+          status: 'drawing',
+          type: 'system',
+        })
+        if (this.currentView !== 'drawing') {
+          this.drawingNotice = true
+        }
       }
     },
     hasLeader(hear, bHear) {
@@ -105,7 +107,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setView']),
+    ...mapActions(['setView', 'addChat']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
       if (type === this.currentView) return
@@ -193,6 +195,10 @@ export default {
         this.toastDefault(
           '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
         )
+        this.addChat({
+          status: 'ar-deny',
+          type: 'system',
+        })
       }
     },
     permissionCheck() {
@@ -266,6 +272,12 @@ export default {
               connectionId: receive.from.connectionId,
               hasArFeature: data.hasArFeature,
             })
+            if (data.hasArFeature === false) {
+              this.addChat({
+                status: 'ar-unsupport',
+                type: 'system',
+              })
+            }
           }
         }
       } else {

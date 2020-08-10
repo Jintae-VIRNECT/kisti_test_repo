@@ -61,9 +61,14 @@
       </transition>
     </div>
     <transition name="opacity">
-      <div class="main-video__empty" v-if="loaded && cameraStatus !== -1">
+      <div
+        class="main-video__empty"
+        v-if="
+          (loaded && cameraStatus === 'off') || cameraStatus === 'background'
+        "
+      >
         <transition name="opacity">
-          <div class="main-video__empty-inner" v-if="cameraStatus === 'off'">
+          <div class="main-video__empty-inner">
             <img src="~assets/image/img_video_stop.svg" />
             <p>영상을 정지하였습니다.</p>
             <p class="inner-discription" v-if="cameraStatus === 'background'">
@@ -144,7 +149,7 @@ export default {
         } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
           return 'background'
         }
-        return -1
+        return 'on'
       } else {
         return -1
       }
@@ -181,9 +186,33 @@ export default {
         }
       },
     },
+    cameraStatus(status, oldStatus) {
+      if (status === oldStatus || oldStatus === -1) return
+      if (!this.mainView || !this.mainView.id) return
+      if (status === 'off') {
+        if (oldStatus === 'background') return
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-stop',
+          type: 'system',
+        })
+      } else if (status === 'background') {
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-background',
+          type: 'system',
+        })
+      } else if (status === 'on') {
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-start',
+          type: 'system',
+        })
+      }
+    },
   },
   methods: {
-    ...mapActions(['updateAccount', 'setCapture']),
+    ...mapActions(['updateAccount', 'setCapture', 'addChat']),
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()
