@@ -1,9 +1,8 @@
 package com.virnect.serviceserver.api;
 
 
-import com.virnect.api.ApiResponse;
-import com.virnect.api.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.api.service.MemberService;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.serviceserver.service.MemberService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;

@@ -48,9 +48,10 @@ subprojects {
 }
 project(":service-server") {
     dependencies {
+        implementation(project(":service-kms"))
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
-        implementation(project(":service-api"))
+        //implementation(project(":service-api"))
     }
     /*val jar: Jar by tasks
     val bootJar: BootJar by tasks
@@ -62,9 +63,9 @@ project(":service-server") {
 project(":service-common") {
 
 }
-project(":service-api") {
+/*project(":service-api") {
 
-}
+}*/
 project(":service-kms") {
 
 }

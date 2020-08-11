@@ -29,7 +29,7 @@ dependencyManagement {
 
 dependencies {
     //implementation(kotlin("stdlib-jdk8"))
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    api("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("junit", "junit", "4.12")
 

@@ -3,7 +3,6 @@ package com.virnect.serviceserver.api;
 import com.google.gson.JsonObject;
 import com.virnect.serviceserver.config.RemoteServiceBuildInfo;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +22,6 @@ public class ServiceRestController {
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_SERVICE_PATH = "/remote/service";
     private static final String REST_CONFIG_PATH = "/remote/config";
-    private final RemoteGatewayService remoteGatewayService;
 
    /* @ApiOperation(value = "Send Signal to a Session", notes = "특정 세션의 접속 사용자 에게 커스텀 데이터를 보내는 API 입니다.")
     @PostMapping(value = "signal/{workspaceId}/{sessionId}")

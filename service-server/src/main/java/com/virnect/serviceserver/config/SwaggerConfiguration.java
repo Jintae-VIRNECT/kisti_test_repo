@@ -3,8 +3,8 @@ package com.virnect.serviceserver.config;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.api.error.ErrorCode;
-import com.virnect.api.error.ErrorResponseMessage;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,7 +73,7 @@ responseMessages.add(new ResponseMessageBuilder().code(200).message("success").b
                 .globalResponseMessage(RequestMethod.PUT, globalResponseMessage())
                 .globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.gateway.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.api"))
                 .paths(PathSelectors.any())
                 //.paths(PathSelectors.ant("/remote/**"))
                 .build()

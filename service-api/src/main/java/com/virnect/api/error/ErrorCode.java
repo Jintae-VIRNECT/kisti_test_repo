@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel
 public enum  ErrorCode {
+    ERR_SUCCESS(200, "anyway ok"),
+
+
     //원격협업 정보 관련 에러
     ERR_ROOM_INFO(4000, "Room Info Error"),
     ERR_ROOM_INFO_ACCESS(4001, "Room info access fail"),

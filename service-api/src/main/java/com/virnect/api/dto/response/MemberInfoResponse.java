@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
+
 @Getter
 @Setter
 @ApiModel
@@ -15,7 +17,10 @@ public class MemberInfoResponse {
     @ApiModelProperty(value = "사용자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String uuid;
 
-    @ApiModelProperty(value = "사용자 이메일", position = 1, example = "example@remote.com")
+    @ApiModelProperty(name = "사용자 접속 식별자", position = 1)
+    private String connectionId;
+
+    @ApiModelProperty(value = "사용자 이메일", position = 2, example = "example@remote.com")
     private String email;
 
     @ApiModelProperty(value = "사용자 이름", position = 3, example = "길동")
