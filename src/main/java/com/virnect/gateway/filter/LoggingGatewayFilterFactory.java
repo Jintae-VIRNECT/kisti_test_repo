@@ -25,7 +25,6 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<LoggingGatewayFilterFactory.Config> {
-    private static String MESSAGE_DIVIDE_LINE = "-----------------------------------------------------------------------------------------------------------------------------------------";
 
     public LoggingGatewayFilterFactory() {
         super(Config.class);

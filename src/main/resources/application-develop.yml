@@ -52,7 +52,7 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: amdin-server
+        - id: admin-server
           uri: lb:http://admin-server
           predicates:
             - Path=/admin/**

@@ -46,7 +46,7 @@ spring:
                 postLogger: true
         #            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
 
-        - id: amdin-server
+        - id: admin-server
           uri: lb://admin-server
           predicates:
             - Path=/admin/**
