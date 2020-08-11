@@ -1,29 +1,25 @@
 <template>
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-    <remote-layout msg="remote" />
+    <remote-layout />
+    <remote-footer></remote-footer>
   </div>
 </template>
 
 <script>
 // import RemoteLayout from '../components/layout/RemoteLayout'
 import RemoteLayout from '../../components/layout/RemoteLayout'
+import RemoteFooter from '../../components/footer/RemoteFooter'
 
 export default {
   name: 'App',
   components: {
     RemoteLayout,
+    RemoteFooter,
   },
 }
 </script>
 
-<style>
-#app {
-  margin-top: 60px;
-  color: #2c3e50;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+<style lang="scss">
+@import '../../assets/style/layout.scss';
 </style>

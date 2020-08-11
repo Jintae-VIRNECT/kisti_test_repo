@@ -1,26 +1,29 @@
 <template>
-  <div class="offsetwidth">
+  <div class="remote-layout offsetwidth">
     <!-- <remote-header></remote-header> -->
     <remote-record-list></remote-record-list>
-    <!-- <remote-footer></remote-footer> -->
   </div>
 </template>
 
 <script>
 // import RemoteHeader from '../header/RemoteHeader'
-// import RemoteFooter from '../footer/RemoteFooter'
+
 import RemoteRecordList from '../record/RemoteRecordList'
 export default {
+  name: 'RemoteLayout',
   components: {
     // RemoteHeader,
-    // RemoteFooter,
+
     RemoteRecordList,
   },
 }
 </script>
 
 <style lang="scss">
-@import '../../assets/style/layout.scss';
+@import '../../assets/style/remote.scss';
+.remote-layout {
+  height: 1080px;
+}
 .offsetwidth {
   position: relative;
   width: 100%;

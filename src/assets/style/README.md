@@ -9,23 +9,6 @@
 
 ```
 /src/assets/style/
-|-- account/
-|-- account.scss
-|-- admin/
-|-- admin.scss
-|-- mobileApp/
-|-- service/
-|-- service.scss
-|-- support.scss
-|-- plugin/
-    |-- vue-toasted.scss
-    `-- material-icons.scss
-|-- _vars.scss
-|-- _mixin.scss
-|-- _font.scss
-|-- _reset.scss
-|-- common.scss
-`-- policy.scss
 
 ```
 
