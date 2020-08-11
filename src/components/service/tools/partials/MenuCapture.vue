@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="캡쳐 후 공유"
+    :text="$t('service.capture_share')"
     :active="status"
     :disabled="disabled"
     :src="require('assets/image/ic_capture.svg')"

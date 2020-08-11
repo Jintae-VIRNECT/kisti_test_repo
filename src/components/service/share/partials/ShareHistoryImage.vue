@@ -10,10 +10,12 @@
       @click="select"
     >
       <img :src="imgInfo.img" />
-      <div class="sharing-image__item-active"><p>공유중</p></div>
+      <div class="sharing-image__item-active">
+        <p>{{ $t('service.share_current') }}</p>
+      </div>
     </button>
     <button class="sharing-image__remove" @click="deleteImage">
-      이미지 삭제
+      {{ $t('service.share_delete') }}
     </button>
     <p class="sharing-image__name">{{ imgInfo.fileName }}</p>
   </li>
@@ -55,13 +57,13 @@ export default {
     deleteImage() {
       if (this.shareFile.id === this.imgInfo.id) return
       this.confirmCancel(
-        '선택한 저작된 이미지를 삭제하시겠습니까?​',
+        this.$t('service.share_delete_confirm'),
         {
-          text: '확인',
+          text: this.$t('button.confirm'),
           action: this.remove,
         },
         {
-          text: '취소',
+          text: this.$t('button.cancel'),
         },
       )
     },

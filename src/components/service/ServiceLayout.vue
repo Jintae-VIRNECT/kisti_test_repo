@@ -11,7 +11,7 @@
         :class="{ hide: subviewHide }"
         @click="subviewHide = !subviewHide"
       >
-        {{ subviewHide ? '열기' : '닫기' }}
+        {{ subviewHide ? this.$t('button.open') : this.$t('button.close') }}
       </button>
 
       <transition name="share">

@@ -67,8 +67,8 @@
 
     "create_remote": "원격 협업 생성하기",
     "create_remote_profile_regist": "협업 프로필 등록",
-    "create_remote_name_input": "그룹이름을 입력해 주세요.",
-    "create_remote_description_input": "그룹이름을 입력해 주세요.",
+    "create_remote_name_input": "그룹 이름을 입력해 주세요.",
+    "create_remote_description_input": "그룹 설명을 입력해 주세요.",
     "create_remote_selected": "선택한 멤버",
     "create_remote_add_member": "멤버를 추가해 주세요.",
     "create_remote_selected_empty": "선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요.",
@@ -85,9 +85,24 @@
     "info_remote_start_end": "시작 / 종료 시간",
     "info_remote_duration": "진행 시간",
 
+    "record_file": "로컬 녹화 파일",
+    "record_file_title": "로컬 녹화 파일 리스트",
+    "record_filename": "파일명",
+    "record_time": "녹화된 시간",
+    "record_size": "파일 용량",
+    "record_remote": "협업 이름",
+    "record_description1": "완료된 로컬 녹화 파일은 사용하시는 PC의 시스템에 귀속되어 있습니다.",
+    "record_description2": "<strong>[다운로드]</strong> 시, 다운로드 경로는 브라우저의 설정을 따릅니다.",
+    "record_description3": "브라우저의 Private 모드로 로컬 녹화를 진행할 경우, 브라우저를 닫으면 녹화 파일은 자동 삭제됩니다.",
+    "record_nofile": "녹화 파일이 없습니다.",
+    "record_download": "선택 다운로드",
+    "record_remove": "선택 삭제",
+
     "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는 라이선스가 만료되었습니다.",
     "license_expire_description": "다음 라이선스 적용 전에 남은 기간 동안 Remote2.0을 사용하시려면 추가 라이선스를 구매하여 이용해 주세요.",
     "license_no_title": "VIRNECT Remote2.0을 사용할 수 있는 라이선스가 없습니다.",
-    "license_no_description": "VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. 워크스페이스 마스터에게 문의해주세요."
+    "license_no_description": "VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. 워크스페이스 마스터에게 문의해주세요.",
+
+    "cookie": "버넥트는 버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키를 사용합니다. 자세한 내용을 알아보려면<br>당사의 <a href='/policy/cookie' target='_blank'>쿠키 취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 이러한 쿠키 설정에 동의하는 것입니다."
   }
 }

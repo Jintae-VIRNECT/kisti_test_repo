@@ -18,7 +18,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 import { SIGNAL, AR_DRAWING, ROLE } from 'configs/remote.config'
-import web_test from 'utils/testing'
 
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
@@ -61,15 +60,8 @@ export default {
     receiveSignal(receive) {
       const data = JSON.parse(receive.data)
 
-      // 웹-웹 테스트용
       if (data.from === this.account.uuid) return
-      // if (data.to !== this.account.uuid) return
-      // if (web_test) {
-      //   if (data.type === AR_DRAWING.FRAME_REQUEST) {
-      //     this.doArCapture()
-      //     return
-      //   }
-      // }
+
       if (this.account.roleType !== ROLE.EXPERT_LEADER) {
         if (data.type === AR_DRAWING.START_DRAWING) {
           this.leaderDrawing = true

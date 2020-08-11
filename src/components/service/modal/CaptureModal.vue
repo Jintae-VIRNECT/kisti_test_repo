@@ -1,9 +1,9 @@
 <template>
   <div class="capture">
     <div class="capture-header">
-      <p class="capture-header__title">영상이 캡쳐되었습니다.</p>
+      <p class="capture-header__title">{{ $t('service.capture_message') }}</p>
       <button class="capture-header__close" @click="close">
-        닫기
+        {{ $t('button.close') }}
       </button>
     </div>
     <div class="capture-body">
@@ -14,15 +14,21 @@
         <button class="capture-tools_button" @click="recapture">
           <p>
             <img src="~assets/image/call/ic_recapture.svg" />
-            다시 찍기
+            {{ $t('service.capture_recapture') }}
           </p>
         </button>
         <button class="capture-tools_button" @click="save">
-          <p><img src="~assets/image/call/ic_download.svg" /> 이미지 저장</p>
+          <p>
+            <img src="~assets/image/call/ic_download.svg" />
+            {{ $t('service.capture_image_save') }}
+          </p>
         </button>
       </div>
       <button class="capture-share" @click="share">
-        <p><img src="~assets/image/call/ic_share.svg" /> 캡쳐 이미지 공유</p>
+        <p>
+          <img src="~assets/image/call/ic_share.svg" />
+          {{ $t('service.capture_image_share') }}
+        </p>
       </button>
     </div>
   </div>

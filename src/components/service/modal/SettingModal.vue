@@ -8,12 +8,14 @@
   >
     <div class="rec-setting">
       <template v-if="isLeader">
-        <p class="rec-setting--header">포인팅 설정</p>
+        <p class="rec-setting--header">{{ $t('service.setting_pointing') }}</p>
         <div class="rec-setting__row underbar">
-          <p class="rec-setting__text">참가자 포인팅</p>
+          <p class="rec-setting__text">
+            {{ $t('service.setting_pointing_participant') }}
+          </p>
 
           <r-check
-            :text="'참가자 포인팅 허용'"
+            :text="$t('service.setting_pointing_allow')"
             :value.sync="pointing"
           ></r-check>
         </div>
@@ -21,15 +23,17 @@
 
       <div class="rec-setting__row">
         <p class="rec-setting--header" :class="{ disable: recording }">
-          로컬 녹화 설정
+          {{ $t('service.setting_local_record') }}
         </p>
         <p v-if="recording" class="rec-setting--warning">
-          *로컬 녹화 중에서는 설정을 변경 할 수 없습니다.
+          {{ $t('service.setting_local_record_warning') }}
         </p>
       </div>
 
       <div class="rec-setting__row" :class="{ disable: recording }">
-        <p class="rec-setting__text">녹화대상</p>
+        <p class="rec-setting__text">
+          {{ $t('service.setting_record_target') }}
+        </p>
         <div class="rec-setting__selector">
           <r-radio
             :options="localRecordTarget"
@@ -40,7 +44,9 @@
         </div>
       </div>
       <div class="rec-setting__row" :class="{ disable: recording }">
-        <p class="rec-setting__text">최대 녹화 시간</p>
+        <p class="rec-setting__text">
+          {{ $t('service.setting_record_max_time') }}
+        </p>
         <r-select
           class="rec-setting__selector"
           @changeValue="changeSetting('time', $event)"
@@ -54,11 +60,11 @@
       <div class="rec-setting__row" :class="{ disable: recording }">
         <div class="rec-setting__text custom">
           <p>
-            녹화 간격
+            {{ $t('service.setting_record_interval') }}
           </p>
           <tooltip
             customClass="tooltip-guide"
-            content="장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에<br>녹화 파일을 시간 간격으로 나눠서 생성합니다."
+            :content="$t('service.setting_record_time_tooltip')"
             placement="right"
             effect="blue"
           >
@@ -83,11 +89,11 @@
       <div class="rec-setting__row" :class="{ disable: recording }">
         <div class="rec-setting__text custom">
           <p>
-            녹화 영상 해상도
+            {{ $t('service.setting_record_resolution') }}
           </p>
           <tooltip
             customClass="tooltip-guide"
-            content="720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다."
+            :content="$t('service.setting_record_resolution_tooltip')"
             placement="right"
             effect="blue"
           >
@@ -114,9 +120,11 @@
         v-if="isLeader"
         :class="{ disable: recording }"
       >
-        <p class="rec-setting__text">참가자 로컬 녹화</p>
+        <p class="rec-setting__text">
+          {{ $t('service.setting_local_record_participant') }}
+        </p>
         <r-check
-          :text="'참가자 로컬 녹화 허용'"
+          :text="$t('service.setting_local_record_allow')"
           :value.sync="localRecording"
         ></r-check>
       </div>
@@ -275,7 +283,7 @@ export default {
     },
 
     showToast() {
-      this.toastNotify('변경사항을 저장했습니다.')
+      this.toastNotify(this.$t('service.setting_save'))
     },
   },
 

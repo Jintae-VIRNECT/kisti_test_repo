@@ -25,7 +25,7 @@
           v-html="chatText"
         ></p>
         <button v-if="isFile" class="chat-item__file--button" @click="download">
-          <span class="button-text">다운로드</span>
+          <span class="button-text">{{ $t('button.download') }}</span>
         </button>
       </div>
       <span v-if="!hideTime" class="chat-item__body--time">{{
@@ -151,27 +151,37 @@ export default {
       if (this.chat.type === 'system') {
         switch (this.chat.status) {
           case 'create':
-            return '협업이 생성 되었습니다.'
+            return this.$t('service.chat_create')
           case 'invite':
-            return `<span class="emphasize">${this.chat.name}</span>님이 협업을 참가하였습니다.`
+            return this.$t('service.chat_invite', {
+              name: this.chat.name,
+            })
           case 'leave':
-            return `<span class="emphasize">${this.chat.name}</span>님이 협업을 종료하였습니다.`
+            return this.$t('service.chat_leave', {
+              name: this.chat.name,
+            })
           case 'stream-stop':
-            return `<span class="emphasize">${this.chat.name}</span>님이 동영상 전송을 정지하였습니다.`
+            return this.$t('service.chat_stream_stop', {
+              name: this.chat.name,
+            })
           case 'stream-start':
-            return `<span class="emphasize">${this.chat.name}</span>님이 동영상 전송을 재시작하였습니다.`
+            return this.$t('service.chat_stream_start', {
+              name: this.chat.name,
+            })
           case 'stream-background':
-            return `<span class="emphasize">${this.chat.name}</span>님이 백그라운드 상태여서 영상을 받을 수 없습니다.`
+            return this.$t('service.chat_stream_background', {
+              name: this.chat.name,
+            })
           case 'drawing':
-            return `<span class="emphasize">${this.chat.name}</span> 파일을 협업보드로 공유합니다.`
+            return this.$t('service.chat_drawing', { name: this.chat.name })
           case 'ar-deny':
-            return 'AR 기능 허가 요청을 거절했습니다. <br>통화를 다시 시작해야 AR 기능을 사용할 수 있습니다.'
+            return this.$t('service.chat_ar_deny')
           case 'ar-unsupport':
-            return 'AR 기능을 사용할 수 없는 장치입니다.'
+            return this.$t('service.chat_ar_unsupport')
           case 'ar-pointing':
-            return 'AR 포인팅을 시작합니다.'
+            return this.$t('service.chat_ar_pointing')
           case 'ar-area':
-            return 'AR 영역이 설정되었습니다.'
+            return this.$t('service.chat_ar_area')
         }
       }
       let chatText = this.chat.text ? this.chat.text : ''

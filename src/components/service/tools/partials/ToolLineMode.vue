@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="그리기 모드"
+    :text="$t('service.tool_drawing')"
     :disabled="disabled"
     :active="viewAction === DRAWING_LINE || viewAction === AR_DRAWING"
     :src="require('assets/image/ic-tool-draw.svg')"

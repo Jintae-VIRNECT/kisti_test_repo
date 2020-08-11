@@ -1,7 +1,7 @@
 <template>
   <modal
     :visible.sync="visibleFlag"
-    :title="'로컬 녹화 파일'"
+    :title="$t('workspace.record_file')"
     :showClose="true"
     :width="'67.1429rem'"
     :height="'50.5714rem'"
@@ -10,17 +10,18 @@
   >
     <div class="record-list">
       <div class="record-list__paragraph">
-        <p class="paragraph--text">
-          완료된 로컬 녹화 파일은 사용하시는 PC의 시스템에 귀속되어 있습니다.
-        </p>
-        <p class="paragraph--text">
-          <strong>[다운로드]</strong> 시, 다운로드 경로는 브라우저의 설정을
-          따릅니다.
-        </p>
-        <p class="paragraph--text">
-          브라우저의 Private 모드로 로컬 녹화를 진행할 경우, 브라우저를 닫으면
-          녹화 파일은 자동 삭제됩니다.
-        </p>
+        <p
+          class="paragraph--text"
+          v-html="$t('workspace.record_description1')"
+        ></p>
+        <p
+          class="paragraph--text"
+          v-html="$t('workspace.record_description2')"
+        ></p>
+        <p
+          class="paragraph--text"
+          v-html="$t('workspace.record_description3')"
+        ></p>
       </div>
 
       <div class="record-list__table">
@@ -31,20 +32,20 @@
           :datas="datas"
           :showTools="true"
           :renderOpts="getRenderOpts()"
-          :emptyText="'녹화 파일이 없습니다.'"
+          :emptyText="$t('workspace.record_nofile')"
         >
           <div class="table__header">
             <div class="table__title">
-              {{ tableTitle }}
+              {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
               <icon-button
-                text="선택 다운로드"
+                :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
                 @click="download"
               ></icon-button>
               <icon-button
-                text="선택 삭제"
+                :text="$t('workspace.record_remove')"
                 :imgSrc="require('assets/image/ic_delete.svg')"
                 @click="deleteItems"
               ></icon-button>
@@ -68,13 +69,21 @@ export default {
   data() {
     return {
       visibleFlag: false,
-      headers: ['파일명', '녹화된 시간', '파일 용량', '협업 이름'],
       columns: ['fileName', 'playTime', 'fileSize', 'roomName'],
       datas: [],
-      tableTitle: '로컬 녹화 파일 리스트',
       selectedArray: [],
       zipName: 'vremote_rec.zip',
     }
+  },
+  computed: {
+    headers() {
+      return [
+        this.$t('workspace.record_filename'),
+        this.$t('workspace.record_time'),
+        this.$t('workspace.record_size'),
+        this.$t('workspace.record_remote'),
+      ]
+    },
   },
   components: {
     Modal,
@@ -174,9 +183,9 @@ export default {
         let minutes = Math.floor((sec_num - hours * 3600) / 60)
         let seconds = sec_num - hours * 3600 - minutes * 60
 
-        let hText = '시간'
-        let mText = '분'
-        let sText = '초'
+        let hText = this.$t('date.hour')
+        let mText = this.$t('date.minute')
+        let sText = this.$t('date.second')
 
         if (hours === 0 && minutes === 0 && seconds < 1) {
           hours = ''

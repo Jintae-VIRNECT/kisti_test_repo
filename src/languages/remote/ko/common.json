@@ -14,6 +14,7 @@
     "restart": "재시작",
     "show_detail": "상세 보기",
     "remove_list": "목록 삭제",
+    "send": "보내기",
     "send_message": "메시지 보내기",
     "invite": "참가하기",
     "remove_room": "협업 삭제",
@@ -22,15 +23,22 @@
     "logout": "로그아웃",
     "accept": "수락",
     "refuse": "거절",
+    "open": "열기",
+    "close": "닫기",
+    "download": "다운로드",
     "license_purchase": "라이선스 구매"
   },
   "date": {
     "lastday": "[어제] A",
     "nextday": "[내일] A",
-    "time": "m분 s초"
+    "time": "m분 s초",
+    "hour": "시간",
+    "minute": "분",
+    "second": "초"
   },
   "common": {
     "leader": "리더",
+    "menu": "메뉴",
     "mic": "마이크",
     "notice": "알림",
     "speaker": "스피커",

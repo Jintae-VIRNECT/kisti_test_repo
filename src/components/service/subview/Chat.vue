@@ -14,7 +14,9 @@
             @click="toggleMenu('chat')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_chat_w.svg" />채팅
+              <img src="~assets/image/call/chat_ic_chat_w.svg" />{{
+                $t('service.chat')
+              }}
             </p>
           </button>
         </li>
@@ -24,7 +26,9 @@
             @click="toggleMenu('file')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_folder_w.svg" />파일
+              <img src="~assets/image/call/chat_ic_folder_w.svg" />{{
+                $t('service.file')
+              }}
             </p>
           </button>
         </li>

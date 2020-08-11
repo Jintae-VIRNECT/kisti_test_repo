@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="로컬 녹화"
+    :text="$t('service.record_local')"
     :active="isRecording"
     :disabled="!canRecord"
     :src="require('assets/image/ic_local_record.svg')"
@@ -52,7 +52,7 @@ export default {
 
       if (!this.canRecord) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 로컬 녹화를 막았습니다.')
+        this.toastDefault(this.$t('service.record_blocked'))
         return false
       }
 

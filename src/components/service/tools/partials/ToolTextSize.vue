@@ -1,7 +1,7 @@
 <template>
   <div>
     <tool-button
-      text="텍스트 크기 선택"
+      :text="$t('service.tool_text_select')"
       :disabled="disabled"
       :src="require('assets/image/ic-tool-txt-size.svg')"
       :active="status"
@@ -13,7 +13,7 @@
       <div class="picker--container" v-if="status" @click.stop>
         <tool-picker
           type="list"
-          :title="$t('service.controller_textsize_label')"
+          :title="$t('service.tool_text_size')"
           :list="sizes"
           :current="pick"
           class="text_size"

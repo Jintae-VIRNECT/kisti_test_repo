@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    :text="'플래시 켜기/끄기'"
+    :text="$t('service.tool_flash')"
     :disable="disable"
     :icActive="status"
     :src="require('assets/image/ic_flash_off.svg')"
@@ -55,12 +55,12 @@ export default {
     // ...mapMutations(['deviceUpdate']),
     clickHandler() {
       if (this.flashStatus === FLASH.FLASH_NONE) {
-        this.toastDefault('플래시가 없는 기기입니다.')
+        this.toastDefault(this.$t('service.flash_none'))
         return
       }
 
       if (this.flashStatus === FLASH.NO_PERMISSION) {
-        this.toastDefault('상대방이 플래시 제어 허가 요청을 거절하였습니다.')
+        this.toastDefault(this.$t('service.flash_no_permission'))
         return
       }
       const toStatus = !this.status
@@ -69,25 +69,23 @@ export default {
     flashListener(status) {
       // 응답
       if (parseInt(status) === FLASH.CAMERA_ZOOMING) {
-        this.toastNotice('상대방이 영상을 확대/축소하고 있습니다.')
+        this.toastNotice(this.$t('service.flash_controlling'))
         return
       }
       if (parseInt(status) === FLASH.NO_PERMISSION) {
-        this.toastDefault('상대방이 플래시 제어 허가 요청을 거절하였습니다.')
+        this.toastDefault(this.$t('service.flash_no_permission'))
       }
       if (parseInt(status) === FLASH.FLASH_NONE) {
-        this.toastDefault('플래시가 없는 기기입니다.')
+        this.toastDefault(this.$t('service.flash_none'))
       }
       if (parseInt(status) === FLASH.FLASH_ON) {
-        this.toastDefault('상대방 디바이스의 플래시 기능이 켜졌습니다.')
+        this.toastDefault(this.$t('service.flash_on'))
       }
       if (parseInt(status) === FLASH.FLASH_OFF) {
-        this.toastDefault('상대방 디바이스의 플래시 기능이 꺼졌습니다.')
+        this.toastDefault(this.$t('service.flash_off'))
       }
       if (parseInt(status) === FLASH.APP_IS_BACKGROUND) {
-        this.toastDefault(
-          '상대방 앱이 비활성화 상태입니다. 해당 작업을 실행할 수 없습니다.',
-        )
+        this.toastDefault(this.$t('service.flash_app_disable'))
       }
     },
     flashInfoListener(message) {

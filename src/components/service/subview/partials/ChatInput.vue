@@ -10,7 +10,7 @@
           >
             <img class="chat-input__preview-image" :src="file.imageUrl" />
             <button class="chat-input__preview-remove" @click="removeFile(idx)">
-              파일 삭제
+              {{ $t('service.file_remove') }}
             </button>
           </div>
         </div>
@@ -25,7 +25,7 @@
       @drop.stop.prevent="dropHandler"
     >
       <button class="chat-input__form-upload" @click="clickUpload">
-        파일 업로드
+        {{ $t('service.file_upload') }}
       </button>
       <input
         type="file"
@@ -39,11 +39,13 @@
       <textarea
         class="chat-input__form-write"
         v-model="inputText"
-        placeholder="메시지를 입력하세요."
+        :placeholder="$t('service.chat_input')"
         @keydown.enter.exact="doSend($event)"
       />
 
-      <button class="chat-input__form-button" @click="doSend()">보내기</button>
+      <button class="chat-input__form-button" @click="doSend()">
+        {{ $t('button.send') }}
+      </button>
     </div>
   </div>
 </template>
@@ -117,7 +119,7 @@ export default {
       }
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
-        this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
+        this.toastDefault(this.$t('service.file_upload_maxnum'))
         return
       }
       this.$refs['inputFile'].click()
@@ -133,7 +135,7 @@ export default {
         const sizeMB = file.size / 1024 / 1024
         if (sizeMB > 20) {
           // @TODO: MESSAGE
-          this.toastDefault('첨부 가능한 용량을 초과하였습니다.')
+          this.toastDefault(this.$t('service.file_upload_maxsize'))
           this.clearUploadFile()
           return false
         }
@@ -169,14 +171,14 @@ export default {
             oImg.onerror = () => {
               //이미지 아닐 시 처리.
               // @TODO: MESSAGE
-              this.toastDefault('해당 이미지는 지원하지 않습니다.')
+              this.toastDefault(this.$t('service.file_image_notsupport'))
             }
             oImg.src = docItem.imageUrl
           }
           oReader.readAsDataURL(file)
         } else {
           // @TODO: MESSAGE
-          this.toastDefault('지원하지 않는 파일 형식입니다.')
+          this.toastDefault(this.$t('service.file_type_notsupport'))
           this.clearUploadFile()
           return false
         }
@@ -205,7 +207,7 @@ export default {
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
-        this.toastDefault('현재 파일 업로드는 1개씩만 지원합니다.')
+        this.toastDefault(this.$t('service.file_upload_maxnum'))
         return
       } else {
         this.loadFile(file)
