@@ -94,6 +94,7 @@
   }
 
   .header-tools__leave {
+    width: 4.429rem;
     height: 100%;
     margin-left: 1.143rem;
     padding: 0.429rem 1rem;
@@ -101,5 +102,6 @@
     background: url(~assets/image/call/gnb_ic_callout.svg) center no-repeat
       $color_red;
     border-radius: 1.214rem;
+    @include ir();
   }
 }

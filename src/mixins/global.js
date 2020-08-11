@@ -103,7 +103,7 @@ export default {
       })
 
       //may add beta check condition
-      return true
+      return false
     },
     setTimeZone(time) {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')

@@ -17,7 +17,7 @@
 
     <div class="card-item hide-tablet">
       <div class="label label--noraml">
-        {{ $t('workspace.history_call_time') }}
+        {{ $t('workspace.history_call_time', { time: time }) }}
       </div>
     </div>
     <div class="card-item">

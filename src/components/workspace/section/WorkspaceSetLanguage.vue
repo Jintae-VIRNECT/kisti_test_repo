@@ -55,12 +55,6 @@ export default {
       this.mx_changeLang(language)
     },
   },
-  mounted() {
-    const lang = localStorage.getItem('language')
-    if (lang) {
-      this.mx_changeLang(lang)
-    }
-  },
 }
 </script>
 

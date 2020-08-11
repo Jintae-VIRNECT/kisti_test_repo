@@ -184,7 +184,7 @@ $share_savebtn_height: 2.929rem;
       content: "";
     }
     > .sharing-image__item-active {
-      display: table;
+      display: block;
     }
     & + .sharing-image__remove {
       display: none;
@@ -215,7 +215,8 @@ $share_savebtn_height: 2.929rem;
   font-size: 1.071rem;
   background-color: rgba($color_primary, 0.8);
   & > p {
-    display: table-cell;
+    display: inline-block;
+    line-height: 100%;
     text-align: center;
     vertical-align: middle;
   }

@@ -144,10 +144,9 @@ import toastMixin from 'mixins/toast'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
 import {
-  localRecTimeOpt,
+  localRecTime,
   localRecResOpt,
-  localRecIntervalOpt,
-  localRecordTarget,
+  localRecInterval,
   RECORD_TARGET,
 } from 'utils/recordOptions'
 
@@ -170,10 +169,7 @@ export default {
 
       recordTarget: RECORD_TARGET.WORKER,
 
-      localRecTimeOpt: localRecTimeOpt,
       localRecResOpt: localRecResOpt,
-      localRecIntervalOpt: localRecIntervalOpt,
-      localRecordTarget: localRecordTarget,
     }
   },
   props: {
@@ -196,6 +192,36 @@ export default {
       'allowPointing',
       'screenStream',
     ]),
+    localRecTimeOpt() {
+      const options = localRecTime.map(time => {
+        return {
+          value: time,
+          text: time + this.$t('date.minute'),
+        }
+      })
+      return options
+    },
+    localRecIntervalOpt() {
+      const options = localRecInterval.map(interval => {
+        return {
+          value: interval,
+          text: interval + this.$t('date.minute'),
+        }
+      })
+      return options
+    },
+    localRecordTarget() {
+      return [
+        {
+          text: this.$t('service.setting_record_stream'),
+          value: RECORD_TARGET.WORKER,
+        },
+        {
+          text: this.$t('service.setting_record_screen'),
+          value: RECORD_TARGET.SCREEN,
+        },
+      ]
+    },
     isLeader() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -288,6 +314,7 @@ export default {
   },
 
   created() {
+    console.log(localRecInterval)
     this.localRecording = this.allowLocalRecord
     this.pointing = this.allowPointing
   },

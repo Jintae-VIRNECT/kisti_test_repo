@@ -10,7 +10,9 @@
 
     <call-time></call-time>
 
-    <button class="header-tools__leave" @click="leave">나가기</button>
+    <button class="header-tools__leave" @click="leave">
+      {{ $t('button.leave') }}
+    </button>
   </div>
 </template>
 

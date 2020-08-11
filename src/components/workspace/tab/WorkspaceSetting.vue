@@ -5,17 +5,17 @@
         <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
         <div
           class="setting-nav__menu"
-          v-for="menu of menus"
+          v-for="(menu, idx) of menus"
           :key="menu.key"
-          :class="{ active: tabview === menu.key }"
-          @click="tabChange(menu.key, menu.text)"
+          :class="{ active: tabIdx === idx }"
+          @click="tabChange(idx)"
         >
           {{ menu.text }}
         </div>
       </div>
 
       <div class="setting-view">
-        <div class="setting-view__header">{{ headerText }}</div>
+        <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
 
         <div class="setting-view__body">
           <device-denied
@@ -23,7 +23,7 @@
             :modalLess="true"
           ></device-denied>
 
-          <template v-if="tabview === 'audio-video'">
+          <template v-if="menus[tabIdx].key === 'audio-video'">
             <set-audio
               :micDevices="micDevices"
               :speakerDevices="speakerDevices"
@@ -32,13 +32,13 @@
             <mic-test> </mic-test>
           </template>
 
-          <template v-else-if="tabview === 'video-record'">
+          <template v-else-if="menus[tabIdx].key === 'video-record'">
             <!-- <set-video :videos="videoDevices"></set-video> -->
 
             <set-record></set-record>
             <set-resolution></set-resolution>
           </template>
-          <template v-else-if="tabview === 'language'">
+          <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
           </template>
         </div>
@@ -68,8 +68,7 @@ export default {
   },
   data() {
     return {
-      tabview: 'audio-video',
-      headerText: this.$t('workspace.setting_audio'),
+      tabIdx: 0,
 
       showDenied: false,
 
@@ -98,16 +97,12 @@ export default {
     },
   },
   methods: {
-    tabChange(view, headerText) {
+    tabChange(idx) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset')
-      if (view === 'language') {
-        this.checkBeta()
-        return
-      }
+      // if (this.menus[idx].key === 'language' && this.checkBeta()) return
       this.$nextTick(() => {
-        this.tabview = view
-        this.headerText = headerText
+        this.tabIdx = idx
       })
     },
     async getMediaDevice() {

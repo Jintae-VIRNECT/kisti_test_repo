@@ -31,6 +31,7 @@
     "remote_list_description": "진행중인 협업참여 요청 대기 목록을 보여줍니다.",
     "remote_empty": "원격 협업 목록이 없습니다.",
     "remote_group_info": "그룹 정보",
+    "remote_connected_member": "접속한 멤버",
     "remote_already_removed": "이미 삭제된 협업입니다.",
     "remote_invite_impossible": "협업에 참가가 불가능합니다.",
     "remote_already_invite": "이미 참가중인 협업입니다.",

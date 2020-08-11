@@ -54,13 +54,10 @@
 import RSelect from 'RemoteSelect'
 import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
-import { localRecTimeOpt, localRecIntervalOpt } from 'utils/recordOptions'
+import { localRecTime, localRecInterval } from 'utils/recordOptions'
 export default {
   data() {
-    return {
-      localRecTimeOpt: localRecTimeOpt,
-      localRecIntervalOpt: localRecIntervalOpt,
-    }
+    return {}
   },
   components: {
     RSelect,
@@ -68,6 +65,24 @@ export default {
   },
   computed: {
     ...mapGetters(['localRecord']),
+    localRecTimeOpt() {
+      const options = localRecTime.map(time => {
+        return {
+          value: time,
+          text: time + this.$t('date.minute'),
+        }
+      })
+      return options
+    },
+    localRecIntervalOpt() {
+      const options = localRecInterval.map(interval => {
+        return {
+          value: interval,
+          text: interval + this.$t('date.minute'),
+        }
+      })
+      return options
+    },
   },
   methods: {
     ...mapActions(['setRecord']),

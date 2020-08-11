@@ -59,7 +59,13 @@ export default {
   },
   data() {
     return {
-      tabComponents: [
+      component: 'history',
+    }
+  },
+  computed: {
+    ...mapGetters(['expireLicense']),
+    tabComponents() {
+      return [
         {
           name: 'history',
           text: this.$t('workspace.history'),
@@ -76,12 +82,8 @@ export default {
           name: 'setting',
           text: this.$t('workspace.setting'),
         },
-      ],
-      component: 'history',
-    }
-  },
-  computed: {
-    ...mapGetters(['expireLicense']),
+      ]
+    },
   },
   props: {
     fix: {
