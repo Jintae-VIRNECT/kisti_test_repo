@@ -171,7 +171,6 @@ func RunContainer(param ContainerParam) (string, error) {
 	baseUrl, err := url.Parse(param.LayoutURL)
 	params := url.Values{}
 	params.Add("sessionId", param.SessionID)
-	params.Add("secret", viper.GetString("record.secret"))
 	params.Add("token", param.Token)
 	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
 	logger.Debug(baseUrl.String())
