@@ -5,9 +5,9 @@
     :placeholder="$t('workspace.search_room')"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
-    :emptyTitle="$t('workspace.history_empty')"
-    :emptyDescription="$t('workspace.tab_empty_description')"
-    :empty="historyList.length === 0"
+    :emptyTitle="emptyTitle"
+    :emptyDescription="emptyDescription"
+    :empty="list.length === 0"
     :showDeleteButton="true"
     :showRefreshButton="true"
     :deleteButtonText="$t('button.remove_all')"
@@ -90,6 +90,20 @@ export default {
         'memberList[].nickname',
       ])
     },
+    emptyTitle() {
+      if (this.historyList.length > 0) {
+        return this.$t('workspace.search_empty')
+      } else {
+        return this.$t('workspace.history_empty')
+      }
+    },
+    emptyDescription() {
+      if (this.historyList.length > 0) {
+        return ''
+      } else {
+        return this.$t('workspace.tab_empty_description')
+      }
+    },
   },
   watch: {
     workspace(val, oldVal) {
@@ -98,6 +112,7 @@ export default {
       }
     },
     searchFilter() {},
+    'list.length': 'scrollReset',
   },
   methods: {
     //상세보기
@@ -174,7 +189,7 @@ export default {
       const list = await this.getHistory()
       this.historyList = list
       this.loading = false
-      this.$eventBus.$emit('scroll:reset')
+      this.$eventBus.$emit('scroll:reset:workspace')
     },
     async moreHistory(event) {
       if (event.bottom !== true) return

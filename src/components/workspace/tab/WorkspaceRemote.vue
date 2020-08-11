@@ -4,10 +4,10 @@
     :description="$t('workspace.remote_list_description')"
     :placeholder="$t('workspace.search_room')"
     :emptyImage="require('assets/image/img_remote_empty.svg')"
-    :emptyTitle="$t('workspace.remote_empty')"
-    :emptyDescription="$t('workspace.tab_empty_description')"
+    :emptyTitle="emptyTitle"
+    :emptyDescription="emptyDescription"
     :listCount="rooms.length"
-    :empty="rooms.length === 0"
+    :empty="roomList.length === 0"
     :showRefreshButton="true"
     :loading="loading"
     @refresh="refresh"
@@ -52,6 +52,20 @@ export default {
         'memberList[].nickname',
       ])
     },
+    emptyTitle() {
+      if (this.rooms.length > 0) {
+        return this.$t('workspace.search_empty')
+      } else {
+        return this.$t('workspace.remote_empty')
+      }
+    },
+    emptyDescription() {
+      if (this.rooms.length > 0) {
+        return ''
+      } else {
+        return this.$t('workspace.tab_empty_description')
+      }
+    },
   },
   watch: {
     workspace(val, oldVal) {
@@ -59,6 +73,7 @@ export default {
         this.refresh()
       }
     },
+    'list.length': 'scrollReset',
   },
   methods: {
     ...mapActions(['setRoomInfo']),

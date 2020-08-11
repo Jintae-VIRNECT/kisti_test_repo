@@ -118,9 +118,12 @@ export default {
         this.tabFix = false
       }
     },
-    tabChange() {
+    scrollTop() {
       this.$refs['wrapperScroller'].scrollToY(0)
       this.tabFix = false
+    },
+    tabChange() {
+      this.scrollTop()
     },
     toggleList() {
       this.showList = true
@@ -154,10 +157,12 @@ export default {
       this.mx_changeLang(lang)
     }
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
   },
   beforeDestroy() {
+    this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
   },
