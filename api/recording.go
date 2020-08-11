@@ -48,7 +48,7 @@ type ListRecordingResponse struct {
 // @Accept json
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
-// @Success 200 {object} response
+// @Success 200 {object} response{data=StartRecordingResponse}
 // @Failure 1001 {} json "{"error":"Too Many Recordings"}""
 // @Failure 1002 {} json "{"error":"not enough free space"}"
 // @Failure 8001 {} json "{"error":"error message"}"
@@ -176,7 +176,7 @@ func StopRecording(c *gin.Context) {
 // @Description List Recordings
 // @tags Recording
 // @Produce json
-// @Success 200 {object} response
+// @Success 200 {object} response{data=ListRecordingResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {

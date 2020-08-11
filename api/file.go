@@ -23,7 +23,7 @@ type RemoveRecordingFilesResponse struct {
 // @Description List Recordings Files
 // @tags Recording File
 // @Produce json
-// @Success 200 {object} response
+// @Success 200 {object} response{data=ListRecordingFilesResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [get]
 func ListRecordingFiles(c *gin.Context) {
@@ -40,7 +40,7 @@ func ListRecordingFiles(c *gin.Context) {
 // @Description Remove All Recording Files
 // @tags Recording File
 // @Produce json
-// @Success 200 {object} response
+// @Success 200 {object} response{data=RemoveRecordingFilesResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [delete]
 func RemoveRecordingFileAll(c *gin.Context) {
