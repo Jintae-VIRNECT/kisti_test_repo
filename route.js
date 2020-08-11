@@ -82,6 +82,10 @@ router.get('/urls', function(req, res) {
   res.send(urls)
 })
 
+router.get('/record', function(req, res) {
+  res.sendFile(path.join(__dirname, '/record/record.html'))
+})
+
 router.get('/*', function(req, res) {
   res.redirect('/home')
 })

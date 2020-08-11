@@ -8,6 +8,7 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
 app.use(express.static(path.join(__dirname, 'dist')))
+app.use(express.static(path.join(__dirname, 'record')))
 
 app.use(route)
 

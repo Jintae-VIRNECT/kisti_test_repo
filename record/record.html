@@ -1,0 +1,47 @@
+<html>
+
+<head>
+    <script src="./openvidu-browser-dev.js"></script>
+</head>
+
+<body>
+    <div id="videos"></div>
+</body>
+
+<script>
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token");
+    let options = url.searchParams.get("options");
+    
+    const TOKEN = token
+    //"wss://192.168.6.3:8000?sessionId=ses_PvxWe21rKY&token=tok_PJ6RnigJnFA8r2LO&role=PUBLISHER&version=2.0.0&recorder=true"
+
+    var OV = new OpenVidu();
+    var session = OV.initSession();
+    const metaData = {}
+
+    options = JSON.parse(options)
+    // {
+    //     iceServers: [
+    //                     {
+    //                         credential: "remote",
+    //                         url: "turn:192.168.6.3:3478",
+    //                         username: "remote"
+    //                     }],
+    //     role: "PUSLISHER",
+    //     wsUri: "wss://192.168.6.3:8073/remote/websocket",
+    // }
+
+    session.on("streamCreated", (event) => {
+        if (event.stream.videoActive == true) {
+            session.subscribe(event.stream, 'videos');
+        }
+    });
+    console.log(TOKEN)
+    console.log(metaData)
+    session.connect(TOKEN, metaData, options)
+        .then(() => { console.log('Recorder participant connected') })
+        .catch(error => { console.error(error) });
+</script>
+
+</html>

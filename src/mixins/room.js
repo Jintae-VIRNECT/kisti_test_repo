@@ -20,7 +20,7 @@ export default {
 
       this.logger('>>> JOIN ROOM')
       try {
-        this.setRoomInfo(room)
+        // this.setRoomInfo(room)
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
         )
@@ -37,6 +37,12 @@ export default {
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
         })
+
+        room.token = res.token
+        room.coturn = res.coturn
+        room.wss = res.wss
+
+        this.setRoomInfo(room)
 
         const joinRtn = await this.$call.connect(res, role)
         if (joinRtn) {

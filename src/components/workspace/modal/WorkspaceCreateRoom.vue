@@ -181,6 +181,9 @@ export default {
           participantsCount: selectedUser.length + 1,
           maxParticipantCount: 3,
           memberList: [...selectedUser, this.account],
+          token: createdRes.token,
+          coturn: createdRes.coturn,
+          wss: createdRes.wss,
         }
 
         this.setRoomInfo(roomInfo)
