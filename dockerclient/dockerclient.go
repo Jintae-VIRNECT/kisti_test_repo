@@ -197,17 +197,18 @@ func RunContainer(param ContainerParam) (string, error) {
 		},
 	}
 
+	// dev 서버에서는 build 후에 prune을 하고 있어 recording image가 삭제되어 있을 수 있다.
+	DownloadDockerImage()
+
 	createOpt.HostConfig = &docker.HostConfig{
 		Binds: []string{viper.GetString("record.dirOnHost") + ":" + viper.GetString("record.dirOnDocker")},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {
 		logger.Error("CreateContainer:", err)
-
 		if err == docker.ErrContainerAlreadyExists {
 			return "", ErrContainerAlreadyExists
 		}
-
 		return "", ErrContainerInternal
 	}
 
