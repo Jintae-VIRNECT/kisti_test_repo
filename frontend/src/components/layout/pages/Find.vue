@@ -21,9 +21,7 @@
 						</button>
 					</div>
 					<div class="find-body" v-if="tab == 'email'">
-						<p class="info-text">
-							{{ mailFindText }}
-						</p>
+						<p class="info-text" v-html="mailFindText"></p>
 
 						<div v-if="isFindEmail === null">
 							<el-radio v-model="tabCategory" label="1">{{
@@ -115,7 +113,11 @@
 							>
 						</div>
 						<div v-else class="mailfind-before">
-							<div class="user-email-holder" v-for="(user, idx) of findUserData" :key="idx">
+							<div
+								class="user-email-holder"
+								v-for="(user, idx) of findUserData"
+								:key="idx"
+							>
 								<p>
 									<i>{{ $t('login.email') }}:</i>
 									<span>{{ user.email }}</span>
@@ -310,7 +312,7 @@ export default {
 			else return true
 		},
 		mailFindText() {
-			if (this.isFindEmail) return this.$t('find.authCode.error.nobody')
+			if (this.isFindEmail) return this.$t('find.EmailFindText.after')
 			// 입력하신 정보와 일치하는 회원의 정보입니다. 정보 보호를 위해 앞 4자리만 보여집니다.
 			else return this.$t('find.EmailFindText.before')
 			//회원 정보에 등록된 사용자 정보로 이메일을 찾습니다. 원하는 방법을 선택해 주세요.
