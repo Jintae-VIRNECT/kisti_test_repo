@@ -1,17 +1,18 @@
 <template>
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-    <hello-world msg="INDEX" />
+    <remote-layout msg="remote" />
   </div>
 </template>
 
 <script>
-import HelloWorld from '../../components/HelloWorld'
+// import RemoteLayout from '../components/layout/RemoteLayout'
+import RemoteLayout from '../../components/layout/RemoteLayout'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
+    RemoteLayout,
   },
 }
 </script>

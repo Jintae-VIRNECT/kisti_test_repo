@@ -1,17 +1,17 @@
 <template>
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-    <hello-world msg="dashboard" />
+    <dash-board-layout msg="dashboard" />
   </div>
 </template>
 
 <script>
-import HelloWorld from '../../components/HelloWorld'
+import DashBoardLayout from '../../components/layout/DashBoardLayout'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
+    DashBoardLayout,
   },
 }
 </script>

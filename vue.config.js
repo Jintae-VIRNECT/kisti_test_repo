@@ -1,22 +1,26 @@
+const path = require('path')
+
 module.exports = {
   pages: {
-    index: {
-      entry: 'src/pages/index/index.js',
-      template: 'public/index.html',
-      filename: 'index.html',
-      title: 'index',
-    },
     dashboard: {
       entry: 'src/pages/dashboard/dashboard.js',
       template: 'public/dashboard.html',
       filename: 'dashboard.html',
       title: 'dashboard',
     },
-    remote: {
-      entry: 'src/pages/remote/remote.js',
-      template: 'public/remote.html',
-      filename: 'remote.html',
+    index: {
+      entry: 'src/pages/index/remote.js',
+      template: 'public/index.html',
+      filename: 'index.html',
       title: 'remote',
+    },
+  },
+  configureWebpack: {
+    resolve: {
+      modules: ['node_modules', 'modules'],
+      alias: {
+        '@': path.join(__dirname, '../src'),
+      },
     },
   },
 }
