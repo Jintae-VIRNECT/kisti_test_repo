@@ -19,7 +19,7 @@
               class="btn"
               @click="createRoom"
             >
-              원격 협업 생성
+              {{ $t('workspace.create_room') }}
             </button>
           </li>
         </transition>
@@ -62,19 +62,19 @@ export default {
       tabComponents: [
         {
           name: 'history',
-          text: '최근 기록',
+          text: this.$t('workspace.history'),
         },
         {
           name: 'remote',
-          text: '원격 협업',
+          text: this.$t('workspace.remote'),
         },
         {
           name: 'user',
-          text: '멤버',
+          text: this.$t('workspace.user'),
         },
         {
           name: 'setting',
-          text: '환경 설정',
+          text: this.$t('workspace.setting'),
         },
       ],
       component: 'history',

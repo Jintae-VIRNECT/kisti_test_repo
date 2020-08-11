@@ -1,6 +1,8 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">언어 선택</div>
+    <div class="setting__title">
+      {{ $t('workspace.setting_language_choice') }}
+    </div>
     <div class="radio-custom">
       <r-radio
         :options="radioOption.options"

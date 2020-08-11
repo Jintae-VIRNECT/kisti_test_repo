@@ -21,12 +21,12 @@
       <role v-if="showRole && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
-        :role="'라이선스 만료'"
+        :role="$t('workspace.expire_license')"
         :opt="opt"
       ></role>
     </div>
     <div v-if="showMessageButton" class="card-bottom">
-      <p>메시지 보내기</p>
+      <p>{{ $t('button.send_message') }}</p>
     </div>
   </div>
 </template>

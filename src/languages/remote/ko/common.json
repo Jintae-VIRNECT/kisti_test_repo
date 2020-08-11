@@ -1,15 +1,56 @@
 {
-  "today": "오늘",
-  "yesterday": "어제",
-  "new_window": "새창 열림",
-  "select": "선택",
-  "confirm": "확인",
-  "cancel": "취소",
-  "save": "저장",
-  "cookie_policy": "버넥트는 버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키를 사용합니다. 자세한 내용을 알아보려면<br>당사의 <a href='/policy/cookie' target='_blank'>쿠키 취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 이러한 쿠키 설정에 동의하는 것입니다.",
-  "not_found": {
-    "not_found_page": "<span style=\"font-size:28px;font-weight:bold;\">앗! </span> 요청하신 페이지를 찾을 수 없습니다.",
-    "require_url": "요청하신 주소를 다시한번 확인 부탁드립니다.",
-    "go_to_virnect": "VIRNECT Remote로 가기"
+  "button": {
+    "remove_all": "전체삭제",
+    "exit": "종료",
+    "confirm": "확인",
+    "cancel": "취소",
+    "remove": "삭제하기",
+    "leave": "나가기",
+    "start": "시작하기",
+    "refresh": "새로고침",
+    "image_regist": "이미지 등록",
+    "image_remove": "이미지 삭제",
+    "save": "저장하기",
+    "restart": "재시작",
+    "show_detail": "상세 보기",
+    "remove_list": "목록 삭제",
+    "send_message": "메시지 보내기",
+    "invite": "참가하기",
+    "remove_room": "협업 삭제",
+    "leave_room": "협업 나가기",
+    "kickout": "내보내기",
+    "logout": "로그아웃",
+    "accept": "수락",
+    "refuse": "거절",
+    "license_purchase": "라이선스 구매"
+  },
+  "date": {
+    "lastday": "[어제] A",
+    "nextday": "[내일] A",
+    "time": "m분 s초"
+  },
+  "common": {
+    "leader": "리더",
+    "mic": "마이크",
+    "notice": "알림",
+    "speaker": "스피커",
+    "video": "영상",
+    "local_record_file": "로컬 녹화 파일"
+  },
+  "alarm": {
+    "no_alarm": "수신받은 알람이 없습니다.",
+    "saved_duration": "알림은 30일 동안 보관됩니다.",
+    "notice_already_call": "통화를 종료하고 참여해주세요.",
+    "expire_title": "[만료안내]",
+    "expire_time": "라이선스 만료 <em>[{time}분]</em> 남았습니다.",
+    "expire_logout": "라이선스가 만료되었습니다.<br> 1분 뒤에 자동 종료됩니다.",
+    "invite_fail_title": "[협업 참가 실패]",
+    "invite_fail_maxuser": "최대 참가인원이 초과하였습니다.",
+    "member_name": "{name} 님",
+    "invite_request": "참가자로 협업을 요청하였습니다.",
+    "invite_refuse": "협업 요청을 거절하였습니다.",
+    "invite_refuse_name": "<em>[{name}] </em>님이<br> 협업 요청을 거절하였습니다.",
+    "invite_accept_name": "<em>[{name}] </em>님이<br> 협업 요청을 수락하였습니다.",
+    "file_link": "파일 링크 전달드립니다."
   }
 }

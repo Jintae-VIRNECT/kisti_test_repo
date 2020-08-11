@@ -1,11 +1,11 @@
 <template>
   <tab-view
-    title="진행중인 원격협업"
-    description="진행중인 협업참여 요청 대기 목록을 보여줍니다."
-    placeholder="협업, 멤버 이름 검색"
+    :title="$t('workspace.remote_title')"
+    :description="$t('workspace.remote_list_description')"
+    :placeholder="$t('workspace.search_room')"
     :emptyImage="require('assets/image/img_remote_empty.svg')"
-    emptyTitle="원격 협업 목록이 없습니다."
-    emptyDescription="원격 협업을 시작해보세요."
+    :emptyTitle="$t('workspace.remote_empty')"
+    :emptyDescription="$t('workspace.tab_empty_description')"
     :listCount="rooms.length"
     :empty="rooms.length === 0"
     :showRefreshButton="true"
@@ -70,27 +70,27 @@ export default {
     leave(sessionId) {
       // if (this.checkBeta()) return
       this.confirmCancel(
-        '협업에서 나가시겠습니까?',
+        this.$t('workspace.confirm_remote_leave'),
         {
-          text: '나가기',
+          text: this.$t('button.leave'),
           action: () => {
             this.leaveoutRoom(sessionId)
           },
         },
-        { text: '취소' },
+        { text: this.$t('button.cancel') },
       )
     },
     remove(sessionId) {
       // if (this.checkBeta()) return
       this.confirmCancel(
-        '협업을 삭제 하시겠습니까?',
+        this.$t('workspace.confirm_remove_room'),
         {
-          text: '확인',
+          text: this.$t('button.confirm'),
           action: () => {
             this.removeRoom(sessionId)
           },
         },
-        { text: '취소' },
+        { text: this.$t('button.cancel') },
       )
     },
     async init() {
@@ -109,7 +109,7 @@ export default {
         })
 
         this.$eventBus.$emit('popover:close')
-        this.confirmDefault('협업을 삭제하였습니다.')
+        this.confirmDefault(this.$t('workspace.confirm_removed_room'))
         this.$nextTick(() => {
           if (rtn) {
             this.refresh()
@@ -118,7 +118,7 @@ export default {
       } catch (err) {
         if (err.code === 4016) {
           // TODO: MESSAGE
-          this.toastError('이미 참가중인 협업입니다.')
+          this.toastError(this.$t('workspace.confirm_remote_already'))
         }
       }
     },
@@ -139,10 +139,10 @@ export default {
       } catch (err) {
         if (err.code === 4015) {
           // TODO: MESSAGE
-          this.toastError('리더는 협업을 나갈 수 없습니다.')
+          this.toastError(this.$t('workspace.confirm_remote_leader_leave'))
         } else if (err.code === 4016) {
           // TODO: MESSAGE
-          this.toastError('이미 참가중인 협업입니다.')
+          this.toastError(this.$t('workspace.confirm_remote_already'))
         }
       }
     },

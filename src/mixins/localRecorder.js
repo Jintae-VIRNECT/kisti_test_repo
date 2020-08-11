@@ -142,9 +142,7 @@ export default {
 
       //set callbacks
       this.recorder.setStartCallback(() => {
-        this.toastDefault(
-          '로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.',
-        )
+        this.toastDefault(this.$t('service.record_start_message'))
       })
 
       this.recorder.setStopSignal(() => {
@@ -152,9 +150,7 @@ export default {
       })
 
       this.recorder.setNoQuotaCallback(() => {
-        this.toastDefault(
-          'PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​',
-        )
+        this.toastDefault(this.$t('service.record_fail_memory'))
       })
 
       this.recorder.setConfig(config)
@@ -188,9 +184,7 @@ export default {
           }
 
           if (showMsg) {
-            this.toastDefault(
-              '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
-            )
+            this.toastDefault(this.$t('service.record_end_message'))
           }
         }
       } catch (e) {

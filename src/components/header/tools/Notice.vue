@@ -8,7 +8,7 @@
     <toggle-button
       customClass="header-tools__notice toggle-header"
       slot="reference"
-      description="알림"
+      :description="$t('common.notice')"
       size="2.429rem"
       :toggle="false"
       :active="false"
@@ -19,7 +19,7 @@
 
     <div>
       <div class="popover-notice__header">
-        <span>알림</span>
+        <span>{{ $t('common.notice') }}</span>
         <switcher text="Push" :value.sync="onPush">Push</switcher>
       </div>
       <div class="popover-notice__body">
@@ -78,17 +78,17 @@
         <div class="popover-notice__empty" v-else>
           <div class="popover-notice__empty-box">
             <img src="~assets/image/img_noalarm.svg" />
-            <span>수신받은 알람이 없습니다.</span>
+            <span>{{ $t('alarm.no_alarm') }}</span>
           </div>
         </div>
       </div>
       <div class="popover-notice__footer">
-        <span>알림은 30일 동안 보관됩니다.</span>
+        <span>{{ $t('alarm.saved_duration') }}</span>
       </div>
     </div>
-    <audio preload="auto" ref="noticeAudio">
+    <!-- <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio>
+    </audio> -->
   </popover>
 </template>
 
@@ -154,7 +154,7 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
-          this.$refs['noticeAudio'].play()
+          // this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
             () => this.acceptInvite(body),
@@ -189,7 +189,7 @@ export default {
     async acceptInvite(body) {
       if (this.$call.session !== null) {
         // TODO: MESSAGE
-        alert('통화를 종료하고 참여해주세요')
+        this.toastError(this.$t('alarm.notice_already_call'))
         return
       }
       const params = {
@@ -205,9 +205,10 @@ export default {
         sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
       } catch (err) {
         if (err.code === 4002) {
-          this.toastError('이미 삭제된 협업입니다.')
-          // this.toastError('협업에 참가가 불가능합니다.')
+          this.toastError(this.$t('workspace.remote_already_removed'))
+          return
         }
+        this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
     pushInit() {

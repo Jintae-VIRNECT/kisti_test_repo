@@ -2,13 +2,13 @@
   <section class="roominfo-view">
     <div>
       <p class="roominfo-view__title">
-        협업 정보
+        {{ $t('workspace.info_remote') }}
       </p>
       <div class="roominfo-view__body">
         <template v-if="isLeader">
           <input-row
             type="text"
-            title="협업 이름"
+            :title="$t('workspace.remote_name')"
             :count="20"
             :value.sync="title"
             :valid.sync="titleValid"
@@ -20,12 +20,12 @@
           ></input-row>
           <input-row
             type="textarea"
-            title="협업 설명"
+            :title="$t('workspace.remote_description')"
             :showCount="true"
             :count="50"
             :value.sync="description"
           ></input-row>
-          <input-row type="buttons" title="이미지 등록">
+          <input-row type="buttons" :title="$t('button.image_regist')">
             <div>
               <input
                 ref="inputImage"
@@ -36,49 +36,59 @@
                 @change="uploadImage($event)"
               />
               <button class="btn line imageinput regist" @click="imageUpload">
-                이미지 등록
+                {{ $t('button.image_regist') }}
               </button>
               <button class="btn line imageinput delete" @click="remove">
-                이미지 삭제
+                {{ $t('button.image_remove') }}
               </button>
             </div>
           </input-row>
         </template>
         <template v-else>
           <figure class="roominfo-figure">
-            <p class="roominfo-figure__title">협업 이름</p>
+            <p class="roominfo-figure__title">
+              {{ $t('workspace.remote_name') }}
+            </p>
             <p class="roominfo-figure__text">{{ title }}</p>
           </figure>
           <figure class="roominfo-figure">
-            <p class="roominfo-figure__title">협업 설명</p>
+            <p class="roominfo-figure__title">
+              {{ $t('workspace.remote_description') }}
+            </p>
             <p class="roominfo-figure__text">{{ description }}</p>
           </figure>
         </template>
       </div>
       <div class="roominfo-view__footer">
         <div class="roominfo-view__data">
-          <span class="data-title">협업 진행일</span>
+          <span class="data-title">{{ $t('workspace.info_remote_date') }}</span>
           <span class="data-value">{{ createdDate }}</span>
         </div>
         <div class="roominfo-view__data" v-if="!isHistory">
-          <span class="data-title">시작 시간</span>
+          <span class="data-title">{{
+            $t('workspace.info_remote_start')
+          }}</span>
           <span class="data-value">{{ createdTime }}</span>
         </div>
         <template v-else>
           <div class="roominfo-view__data">
-            <span class="data-title">시작 / 종료 시간</span>
+            <span class="data-title">{{
+              $t('workspace.info_remote_start_end')
+            }}</span>
             <span class="data-value">{{
               `${createdTime} / ${inactiveTime}`
             }}</span>
           </div>
           <div class="roominfo-view__data">
-            <span class="data-title">진행시간</span>
+            <span class="data-title">{{
+              $t('workspace.info_remote_duration')
+            }}</span>
             <span class="data-value">{{ durationTime }}</span>
           </div>
         </template>
         <div class="roominfo-view__button" v-if="isLeader">
           <button class="btn" :disabled="!canSave" @click="saveInfo">
-            저장하기
+            {{ $t('button.save') }}
           </button>
         </div>
       </div>
@@ -127,9 +137,9 @@ export default {
   computed: {
     titleValidMessage() {
       if (this.title.length < 2) {
-        return '협업 이름은 2자 이상 입력해주세요.'
+        return this.$t('workspace.remote_name_valid1')
       } else {
-        return '특수 문자는 협업 이름에서 제외시켜주세요.'
+        return this.$t('workspace.remote_name_valid2')
       }
     },
     canSave() {

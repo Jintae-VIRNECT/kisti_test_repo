@@ -1,16 +1,16 @@
 <template>
   <tab-view
-    title="최근 통화 목록"
-    description="최근 통화 목록은 30일 동안 보관됩니다."
-    placeholder="협업, 멤버 이름 검색"
+    :title="$t('workspace.history_title')"
+    :description="$t('workspace.history_description')"
+    :placeholder="$t('workspace.search_room')"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
-    emptyTitle="최근 통화 목록이 없습니다."
-    emptyDescription="원격 협업을 시작해보세요."
+    :emptyTitle="$t('workspace.history_empty')"
+    :emptyDescription="$t('workspace.tab_empty_description')"
     :empty="historyList.length === 0"
     :showDeleteButton="true"
     :showRefreshButton="true"
-    :deleteButtonText="'전체삭제'"
+    :deleteButtonText="$t('button.remove_all')"
     :listCount="historyList.length"
     :loading="loading"
     @refresh="init"
@@ -110,14 +110,14 @@ export default {
       this.$eventBus.$emit('popover:close')
 
       this.confirmCancel(
-        '협업을 삭제 하시겠습니까?',
+        this.$t('workspace.confirm_remove_room'),
         {
-          text: '삭제하기',
+          text: this.$t('button.remove'),
           action: () => {
             this.delete(sessionId)
           },
         },
-        { text: '취소' },
+        { text: this.$t('button.cancel') },
       )
     },
     async delete(sessionId) {
@@ -135,7 +135,9 @@ export default {
       })
 
       if (result.data) {
-        this.confirmDefault('협업을 삭제하였습니다.​', { text: '확인' })
+        this.confirmDefault(this.$t('workspace.confirm_removed_room'), {
+          text: this.$t('button.confirm'),
+        })
       }
     },
 
@@ -146,14 +148,14 @@ export default {
     },
     deleteAll() {
       this.confirmCancel(
-        '모든 목록을 삭제하시겠습니까?',
+        this.$t('workspace.confirm_remove_all'),
         {
-          text: '삭제하기',
+          text: this.$t('button.remove'),
           action: () => {
             this.deleteList()
           },
         },
-        { text: '취소' },
+        { text: this.$t('button.cancel') },
       )
     },
     async deleteList() {

@@ -1,9 +1,13 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">로컬 녹화 설정</div>
+    <div class="setting__title">
+      {{ $t('workspace.setting_record_choice') }}
+    </div>
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">
-        <p class="setting__label">최대 녹화 시간</p>
+        <p class="setting__label">
+          {{ $t('workspace.setting_record_maxtime') }}
+        </p>
         <r-select
           class="setting__r-selecter"
           @changeValue="setRecLength"
@@ -17,10 +21,12 @@
 
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
-          <p class="setting__label">녹화 간격</p>
+          <p class="setting__label">
+            {{ $t('workspace.setting_record_interval') }}
+          </p>
           <tooltip
             customClass="tooltip-guide"
-            content="장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에<br>녹화 파일을 시간 간격으로 나눠서 생성합니다."
+            :content="$t('workspace.setting_record_interval_tooltip')"
             placement="right"
             effect="blue"
           >

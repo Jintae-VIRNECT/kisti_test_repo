@@ -2,29 +2,15 @@
   <div class="tab-view">
     <div class="setting-wrapper offsetwidth">
       <div class="setting-nav">
-        <div class="setting-nav__header">환경설정</div>
+        <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
         <div
           class="setting-nav__menu"
-          :class="{ active: tabview === 'audio-video' }"
-          @click="tabChange('audio-video', '오디오 설정')"
+          v-for="menu of menus"
+          :key="menu.key"
+          :class="{ active: tabview === menu.key }"
+          @click="tabChange(menu.key, menu.text)"
         >
-          오디오 설정
-        </div>
-
-        <div
-          class="setting-nav__menu"
-          :class="{ active: tabview === 'video-record' }"
-          @click="tabChange('video-record', '녹화 설정')"
-        >
-          녹화 설정
-        </div>
-
-        <div
-          class="setting-nav__menu"
-          :class="{ active: tabview === 'language' }"
-          @click="tabChange('language', '언어 설정')"
-        >
-          언어 설정
+          {{ menu.text }}
         </div>
       </div>
 
@@ -83,7 +69,7 @@ export default {
   data() {
     return {
       tabview: 'audio-video',
-      headerText: '오디오 설정',
+      headerText: this.$t('workspace.setting_audio'),
 
       showDenied: false,
 
@@ -92,6 +78,24 @@ export default {
       micDevices: [],
       speakerDevices: [],
     }
+  },
+  computed: {
+    menus() {
+      return [
+        {
+          key: 'audio-video',
+          text: this.$t('workspace.setting_audio'),
+        },
+        {
+          key: 'video-record',
+          text: this.$t('workspace.setting_record'),
+        },
+        {
+          key: 'language',
+          text: this.$t('workspace.setting_language'),
+        },
+      ]
+    },
   },
   methods: {
     tabChange(view, headerText) {

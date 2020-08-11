@@ -8,7 +8,11 @@ export default {
      * @param {String} text
      * @param {Object} confirm { text, action }
      */
-    confirmDefault(text, confirm = { text: '확인' }, options = {}) {
+    confirmDefault(
+      text,
+      confirm = { text: this.$t('button.confirm') },
+      options = {},
+    ) {
       Alert.fire({
         text: text,
         confirmButtonText: confirm.text,
@@ -31,7 +35,11 @@ export default {
      * @param {Object} confirm { text, action }
      * @param {Object} cancel { text, action }
      */
-    confirmCancel(text, confirm = { text: '확인' }, cancel = { text: '취소' }) {
+    confirmCancel(
+      text,
+      confirm = { text: this.$t('button.confirm') },
+      cancel = { text: this.$t('button.cancel') },
+    ) {
       Alert.fire({
         text: text,
         showCancelButton: true,
