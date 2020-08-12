@@ -187,7 +187,12 @@ export default {
     async init() {
       this.loading = true
       const list = await this.getHistory()
-      this.historyList = list
+      this.historyList = list.sort((roomA, roomB) => {
+        return (
+          new Date(roomB.activeDate).getTime() -
+          new Date(roomA.activeDate).getTime()
+        )
+      })
       this.loading = false
       this.$eventBus.$emit('scroll:reset:workspace')
     },
