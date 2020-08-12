@@ -17,7 +17,6 @@
       <member-card
         v-for="userinfo in list"
         :key="'user_' + userinfo.uuid"
-        :user="userinfo"
         :name="userinfo.nickName"
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
@@ -81,9 +80,17 @@ export default {
         this.loading = true
         const datas = await getMemberList(params)
         this.loading = false
-        this.memberList = datas.memberInfoList.filter(
-          member => member.uuid !== this.account.uuid,
-        )
+        this.memberList = datas.memberInfoList
+          .filter(member => member.uuid !== this.account.uuid)
+          .sort((A, B) => {
+            if (A.role === 'MASTER') {
+              return -1
+            } else if (A.role === 'MANAGER' && B.role === 'USER') {
+              return -1
+            } else {
+              return 0
+            }
+          })
       } catch (err) {
         console.error(err)
       }
