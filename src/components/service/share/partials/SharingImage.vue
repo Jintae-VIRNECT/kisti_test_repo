@@ -4,7 +4,11 @@
       <img :src="imageData" />
     </button>
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove" @click="deleteImage">
+    <button
+      v-if="pdfPage < 0"
+      class="sharing-image__remove"
+      @click="deleteImage"
+    >
       {{ $t('service.share_delete') }}
     </button>
   </li>
@@ -46,6 +50,11 @@ export default {
       } else {
         return {}
       }
+    },
+  },
+  watch: {
+    fileData() {
+      this.init()
     },
   },
   methods: {

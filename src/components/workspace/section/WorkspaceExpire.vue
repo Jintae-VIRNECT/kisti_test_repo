@@ -1,12 +1,15 @@
 <template>
   <section class="workspace-license">
     <div class="workspace-license__description expire">
-      <p class="workspace-license__description--title">
-        {{ $t('workspace.license_expire_title') }}
-      </p>
-      <p class="workspace-license__description--sub-title">
-        {{ $t('workspace.license_expire_description') }}
-      </p>
+      <img src="~assets/image/workspace/img_licenseexpire.svg" />
+      <p
+        class="workspace-license__description--title"
+        v-html="$t('workspace.license_expire_title')"
+      ></p>
+      <p
+        class="workspace-license__description--sub-title"
+        v-html="$t('workspace.license_expire_description')"
+      ></p>
       <button
         class="workspace-license__description--purchase btn"
         @click="purchase"

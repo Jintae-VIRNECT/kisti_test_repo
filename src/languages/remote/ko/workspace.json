@@ -100,10 +100,10 @@
     "record_download": "선택 다운로드",
     "record_remove": "선택 삭제",
 
-    "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는 라이선스가 만료되었습니다.",
-    "license_expire_description": "다음 라이선스 적용 전에 남은 기간 동안 Remote2.0을 사용하시려면 추가 라이선스를 구매하여 이용해 주세요.",
-    "license_no_title": "VIRNECT Remote2.0을 사용할 수 있는 라이선스가 없습니다.",
-    "license_no_description": "VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. 워크스페이스 마스터에게 문의해주세요.",
+    "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 라이선스가 만료되었습니다.",
+    "license_expire_description": "다음 라이선스 적용 전에 남은 기간 동안 Remote2.0을 사용하시려면<br> 추가 라이선스를 구매하여 이용해 주세요.",
+    "license_no_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 워크스페이스가 없습니다.",
+    "license_no_description": "워크스페이스 마스터에게 문의해주세요.",
 
     "cookie": "버넥트는 버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키를 사용합니다. 자세한 내용을 알아보려면<br>당사의 <a href='/policy/cookie' target='_blank'>쿠키 취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 이러한 쿠키 설정에 동의하는 것입니다."
   }

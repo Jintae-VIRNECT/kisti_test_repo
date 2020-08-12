@@ -71,9 +71,11 @@
           <div class="main-video__empty-inner">
             <img src="~assets/image/img_video_stop.svg" />
             <p>{{ $t('service.stream_stop') }}</p>
-            <p class="inner-discription" v-if="cameraStatus === 'background'">
-              {{ $t('service.stream_background') }}
-            </p>
+            <p
+              class="inner-discription"
+              v-if="cameraStatus === 'background'"
+              v-html="$t('service.stream_background')"
+            ></p>
             <p class="inner-discription" v-else>
               {{ $t('service.stream_stoped') }}
             </p>
