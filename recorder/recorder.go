@@ -253,12 +253,8 @@ func RemoveRecordingFile(file string) error {
 }
 
 func GetRecordingFilePath(recordingID string) (string, error) {
-	infoFile := filepath.Join(viper.GetString("record.dir"), recordingID, ".recording."+recordingID)
-	if _, err := os.Stat(infoFile); os.IsNotExist(err) {
-		return "", ErrNotFoundRecordingID
-	}
-
-	info, err := readInfoFile(recordingID, infoFile)
+	root := viper.GetString("record.dir")
+	info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
 	if err != nil {
 		return "", err
 	}
