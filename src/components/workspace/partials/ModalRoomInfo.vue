@@ -180,16 +180,16 @@ export default {
       this.title = this.room.title
       this.description = this.room.description
       // this.imageUrl = room.profile
-      this.createdDate = this.$dayjs(this.room.activeDate + '+00:00')
-        .local()
-        .format('YYYY.MM.DD')
-      this.createdTime = this.$dayjs(this.room.activeDate + '+00:00')
-        .local()
-        .format('hh:mm:ss')
+      this.createdDate = this.$dayjs(this.room.activeDate + '+00:00').format(
+        'YYYY.MM.DD',
+      )
+      this.createdTime = this.$dayjs(this.room.activeDate + '+00:00').format(
+        'HH:mm:ss',
+      )
       if (this.isHistory) {
-        this.inactiveTime = this.$dayjs(this.room.unactiveDate + '+00:00')
-          .local()
-          .format('hh:mm:ss')
+        this.inactiveTime = this.$dayjs(
+          this.room.unactiveDate + '+00:00',
+        ).format('HH:mm:ss')
         this.durationTime = this.$dayjs(this.room.durationSec * 1000)
           .utc()
           .format('HH:mm:ss')
