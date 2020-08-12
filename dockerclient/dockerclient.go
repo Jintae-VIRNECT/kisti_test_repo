@@ -24,7 +24,7 @@ type ContainerParam struct {
 	LayoutURL   string
 	TimeLimit   int
 	SessionID   string
-	UserData    interface{}
+	MetaData    interface{}
 }
 
 var (
@@ -44,7 +44,7 @@ type recordingJson struct {
 	Filename    string      `json:"filename"`
 	Framerate   uint        `json:"framerate"`
 	Resolution  string      `json:"resolution"`
-	UserData    interface{} `json:"userData,omitempty"`
+	MetaData    interface{} `json:"metaData,omitempty"`
 }
 
 func init() {
@@ -156,13 +156,13 @@ func RunContainer(param ContainerParam) (string, error) {
 		&recordingJson{
 			RecordingID: param.RecordingID,
 			SessionID:   param.SessionID,
-			UserData:    param.UserData,
+			MetaData:    param.MetaData,
 			Filename:    filename,
 			Framerate:   param.Framerate,
 			Resolution:  param.Resolution,
 		})
 	if err != nil {
-		logger.Error("userdata parsing fail:", err)
+		logger.Error("metaData parsing fail:", err)
 	}
 	logger.Debug(string(recordingJson))
 
@@ -221,7 +221,7 @@ func RunContainer(param ContainerParam) (string, error) {
 }
 
 func StopContainer(containerID string) error {
-	go stopAndRemoveContainer(containerID)
+	stopAndRemoveContainer(containerID)
 	return nil
 }
 
@@ -237,35 +237,31 @@ func stopAndRemoveContainer(containerID string) {
 		cancel()
 	})
 
-	go func(containerID string, ctx context.Context) {
-		defer func() {
-			logger.Info("stop container:", containerID)
-		}()
-
-		cmd := docker.CreateExecOptions{
-			Cmd:          []string{"bash", "-c", "echo 'q' > stop"},
-			Container:    containerID,
-			AttachStdout: true,
-			AttachStderr: true,
-		}
-		if exec, err := cli.CreateExec(cmd); err == nil {
-			err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
-			if err != nil {
-				logger.Error("StartExec:", err)
-			}
-
-			rc, err := cli.WaitContainerWithContext(containerID, ctx)
-			if err != nil {
-				logger.Error("WaitContainer:", err)
-			}
-			logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
-		} else {
-			logger.Error("CreateExec:", err)
-		}
-
-		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: containerID, Force: true})
+	cmd := docker.CreateExecOptions{
+		Cmd:          []string{"bash", "-c", "echo 'q' > stop"},
+		Container:    containerID,
+		AttachStdout: true,
+		AttachStderr: true,
+	}
+	if exec, err := cli.CreateExec(cmd); err == nil {
+		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
 		if err != nil {
-			logger.Error("RemoveContainer:", err)
+			logger.Error("StartExec:", err)
 		}
-	}(containerID, ctx)
+
+		rc, err := cli.WaitContainerWithContext(containerID, ctx)
+		if err != nil {
+			logger.Error("WaitContainer:", err)
+		}
+		logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
+	} else {
+		logger.Error("CreateExec:", err)
+	}
+
+	logger.Info("stop container:", containerID)
+
+	err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: containerID, Force: true})
+	if err != nil {
+		logger.Error("RemoveContainer:", err)
+	}
 }

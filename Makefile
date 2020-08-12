@@ -26,6 +26,9 @@ check: swag
 	@go vet ./...
 	@go fmt ./...
 
+test:
+	go test ./...
+
 clean:
 	rm -fr build/${TARGET}*
 

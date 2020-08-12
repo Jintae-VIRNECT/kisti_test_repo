@@ -24,8 +24,8 @@ type StartRecordingRequest struct {
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
 	// recording filename without extension
 	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00"`
-	// user data in json format
-	UserData interface{} `json:"userData,omitempty"`
+	// meta data in json format
+	MetaData interface{} `json:"metaData,omitempty"`
 }
 
 type StartRecordingResponse struct {
@@ -70,9 +70,9 @@ func StartRecording(c *gin.Context) {
 
 	logger.Debugf("StartRecording:%+v", req)
 
-	_, err = json.Marshal(req.UserData)
+	_, err = json.Marshal(req.MetaData)
 	if err != nil {
-		logger.Error("userdata parsing fail:", err)
+		logger.Error("metaData parsing fail:", err)
 		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
@@ -101,7 +101,7 @@ func StartRecording(c *gin.Context) {
 	diskUsageLimit := viper.GetFloat64("record.diskUsageLimit")
 	if diskUsageLimit > 0 {
 		usageSum := 0
-		infos, _ := recorder.ListRecordingFiles()
+		infos, _, _ := recorder.ListRecordingFiles(nil, true)
 		for _, info := range infos {
 			usageSum += info.Size
 		}
@@ -122,7 +122,7 @@ func StartRecording(c *gin.Context) {
 		Framerate:  req.Framerate,
 		TimeLimit:  req.RecordingTimeLimit,
 		Filename:   req.RecordingFilename,
-		UserData:   req.UserData,
+		MetaData:   req.MetaData,
 	}
 
 	recordingId, err := recorder.NewRecording(param)
@@ -167,7 +167,7 @@ func StopRecording(c *gin.Context) {
 		return
 	}
 
-	recorder.DelRecording(recordingID, "stop")
+	recorder.StopRecording(recordingID, "stop")
 
 	sendResponseWithSuccess(c, nil)
 }

@@ -1,17 +1,12 @@
 package recorder
 
 import (
+	"RM-RecordServer/database"
 	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
 	"RM-RecordServer/util"
-	"encoding/json"
-	"errors"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/spf13/viper"
@@ -31,7 +26,7 @@ type RecordingParam struct {
 	Framerate  uint
 	TimeLimit  int
 	Filename   string
-	UserData   interface{}
+	MetaData   interface{}
 }
 
 type RecordingFileInfo struct {
@@ -43,22 +38,22 @@ type RecordingFileInfo struct {
 	Size        int         `json:"size"`
 	Resolution  string      `json:"resolution"`
 	Framerate   uint        `json:"framerate"`
-	CreateTime  int64       `json:"ceateTime"`
-	UserData    interface{} `json:"userData,omitempty"`
+	CreateAt    time.Time   `json:"createAt"`
+	MetaData    interface{} `json:"metaData,omitempty"`
 }
 
 var recorderMap = map[string]*recording{}
 var recorderMapMux sync.RWMutex
 
-var (
-	ErrRecordingIDAlreadyExists = errors.New("Recording ID Already Exists")
-	ErrNotFoundRecordingID      = errors.New("Not Found Recording ID")
-	ErrInternalError            = errors.New("Internal Error")
-)
-
 var timeoutCh chan string
 
 func Init() {
+	driver := viper.GetString("database.driver")
+	param := viper.GetString("database.param")
+	if len(driver) > 0 && len(param) > 0 {
+		db = database.NewTable(driver, param)
+	}
+
 	timeoutCh = make(chan string, 512)
 	go timeoutHandler()
 	go garbageCollector()
@@ -90,7 +85,7 @@ func NewRecording(param RecordingParam) (string, error) {
 		LayoutURL:   viper.GetString("record.layoutURL"),
 		TimeLimit:   param.TimeLimit,
 		SessionID:   param.SessionID,
-		UserData:    param.UserData,
+		MetaData:    param.MetaData,
 	}
 
 	containerID, err := dockerclient.RunContainer(containerParam)
@@ -123,7 +118,7 @@ func FindRecording(recordingID string) (string, error) {
 	return "", ErrNotFoundRecordingID
 }
 
-func DelRecording(recordingID string, reason string) error {
+func StopRecording(recordingID string, reason string) error {
 	logger.Infof("recording stop. (id:%s reason:%s)", recordingID, reason)
 
 	recorderMapMux.Lock()
@@ -137,6 +132,8 @@ func DelRecording(recordingID string, reason string) error {
 	r.timeout.Stop()
 
 	dockerclient.StopContainer(r.containerID)
+
+	insertIntoDB(recordingID)
 
 	delete(recorderMap, recordingID)
 	return nil
@@ -191,7 +188,7 @@ func timeoutHandler() {
 	for {
 		select {
 		case recordingID := <-timeoutCh:
-			DelRecording(recordingID, "timeout")
+			StopRecording(recordingID, "timeout")
 		}
 	}
 }
@@ -201,136 +198,6 @@ func GetNumCurrentRecordings() int {
 	defer recorderMapMux.RUnlock()
 
 	return len(recorderMap)
-}
-
-func ListRecordingFiles() ([]RecordingFileInfo, error) {
-	infos := []RecordingFileInfo{}
-	root := viper.GetString("record.dir")
-	if _, err := os.Stat(root); os.IsNotExist(err) {
-		logger.Error(err)
-		return infos, err
-	}
-
-	recDirs, err := ioutil.ReadDir(root)
-	if err != nil {
-		return infos, err
-	}
-
-	for _, recDir := range recDirs {
-		recordingID := recDir.Name()
-		if ExistRecordingID(recordingID) {
-			continue
-		}
-		info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
-		if err != nil {
-			if os.IsNotExist(err) {
-				logger.Debug("skip file:", recordingID, "(empty directory)")
-			} else {
-				logger.Warn(err, " file:", recordingID)
-			}
-			continue
-		}
-		infos = append(infos, info)
-	}
-	return infos, nil
-}
-
-func RemoveRecordingFileAll() (int, error) {
-	count, err := util.RemoveContents(viper.GetString("record.dir"))
-	logger.Info("delete all recording files. count:", count)
-	return count, err
-}
-
-func RemoveRecordingFile(file string) error {
-	logger.Info("delete recording file:", filepath.Dir(file))
-
-	err := os.RemoveAll(filepath.Dir(file))
-	if err != nil {
-		logger.Error("delete fail. ", err)
-		return err
-	}
-	return nil
-}
-
-func GetRecordingFilePath(recordingID string) (string, error) {
-	root := viper.GetString("record.dir")
-	info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
-	if err != nil {
-		return "", err
-	}
-
-	return info.FullPath, nil
-}
-
-func readInfoFile(recordingID string, path string) (RecordingFileInfo, error) {
-	info := RecordingFileInfo{}
-
-	infoFile, err := os.Open(filepath.Join(path, ".recording."+recordingID))
-	if err != nil {
-		logger.Error("open file:", err)
-		return info, err
-	}
-	defer infoFile.Close()
-	byteValue, err := ioutil.ReadAll(infoFile)
-	if err != nil {
-		logger.Error("json parse file:", err)
-		return info, err
-	}
-	var result map[string]interface{}
-	json.Unmarshal([]byte(byteValue), &result)
-
-	if _, ok := result["recordingId"]; !ok {
-		result["recordingId"] = recordingID
-	}
-
-	if _, ok := result["sessionId"]; !ok {
-		result["sessionId"] = ""
-	}
-
-	if _, ok := result["filename"]; !ok {
-		result["filename"] = ""
-	}
-
-	if _, ok := result["duration"]; !ok {
-		result["duration"] = 0.0
-	}
-
-	if _, ok := result["size"]; !ok {
-		result["size"] = 0.0
-	}
-
-	if _, ok := result["resolution"]; !ok {
-		result["resolution"] = ""
-	}
-
-	if _, ok := result["framerate"]; !ok {
-		result["framerate"] = 0.0
-	}
-
-	filenameWithPath := result["filename"].(string)
-	fullPath := filepath.Join(viper.GetString("record.dir"), strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker")))
-
-	finfo, err := os.Stat(path)
-	if err != nil {
-		return info, err
-	}
-	stat := finfo.Sys().(*syscall.Stat_t)
-	ts := stat.Ctim
-
-	info.RecordingID = result["recordingId"].(string)
-	info.SessionID = result["sessionId"].(string)
-	info.Filename = filepath.Base(filenameWithPath)
-	info.FullPath = fullPath
-	info.Duration = int(result["duration"].(float64))
-	info.Size = int(result["size"].(float64))
-	info.Resolution = result["resolution"].(string)
-	info.Framerate = uint(result["framerate"].(float64))
-	info.CreateTime = time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC().Unix()
-	if userData, ok := result["userData"]; ok == true {
-		info.UserData = userData.(interface{})
-	}
-
-	return info, nil
 }
 
 func garbageCollector() {
@@ -347,17 +214,17 @@ func garbageCollector() {
 
 	for range ticker.C {
 		now := time.Now().UTC().Unix()
-		list, err := ListRecordingFiles()
+		list, _, err := ListRecordingFiles(nil, true)
 		if err != nil {
 			logger.Error(err)
 			continue
 		}
 
 		for _, info := range list {
-			remainDays := int64(period) - (now - info.CreateTime)
-			logger.Debug("recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateTime, " remain:", remainDays)
+			remainDays := int64(period) - (now - time.Time(info.CreateAt).Unix())
+			logger.Debug("recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt, " remain:", remainDays)
 			if remainDays < 0 {
-				RemoveRecordingFile(info.FullPath)
+				removeFile(info.FullPath)
 			}
 		}
 	}
