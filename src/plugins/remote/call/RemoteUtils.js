@@ -2,7 +2,6 @@ import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
-import { TYPE } from 'configs/chat.config'
 
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
@@ -176,8 +175,8 @@ export const addSessionEventListener = session => {
     Store.commit('addChat', {
       type:
         session.connection.connectionId === event.from.connectionId
-          ? TYPE.ME
-          : TYPE.OPPONENT,
+          ? 'me'
+          : 'opponent',
       name: participants[idx].nickname,
       profile: participants[idx].path,
       uuid: event.from.connectionId,
