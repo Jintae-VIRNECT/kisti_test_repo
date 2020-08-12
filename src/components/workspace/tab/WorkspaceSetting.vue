@@ -100,7 +100,7 @@ export default {
     tabChange(idx) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset:workspace')
-      // if (this.menus[idx].key === 'language' && this.checkBeta()) return
+      if (this.menus[idx].key === 'language' && this.checkBeta()) return
       this.$nextTick(() => {
         this.tabIdx = idx
       })
