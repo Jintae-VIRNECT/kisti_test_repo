@@ -133,6 +133,9 @@ export default {
     position: absolute;
     bottom: 0;
     margin: 0;
+    color: #f2f2f2;
+    font-weight: 300;
+    border-color: #ccc;
   }
 }
 
