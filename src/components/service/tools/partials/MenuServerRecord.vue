@@ -2,7 +2,7 @@
   <menu-button
     text="서버 녹화"
     :active="isRecording"
-    :disabled="disabled"
+    :disabled="!canRecord"
     :src="require('assets/image/ic_record_off.svg')"
     :icActive="isRecording"
     :activeSrc="require('assets/image/ic_record_ing.svg')"
@@ -11,69 +11,50 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import toolMixin from './toolMixin'
-import { startServerRecord, stopServerRecord } from 'api/workspace/record'
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'ServerRecordMenu',
   mixins: [toolMixin],
   data() {
     return {
       isRecording: false,
-      recordId: -1,
     }
   },
   computed: {
-    ...mapGetters(['roomInfo']),
+    canRecord() {
+      if (this.disabled) {
+        return false
+      }
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {},
   methods: {
     recording() {
-      if (this.disabled) return
-      // if (this.checkBeta()) {
-      //   return false
-      // }
+      if (this.disabled) return false
+
       if (!this.isRecording) {
-        this.record()
         this.$eventBus.$emit('serverRecord', true)
       } else {
-        this.stop()
         this.$eventBus.$emit('serverRecord', false)
       }
     },
-    async record() {
-      this.isRecording = true
-      let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
-
-      let options = {
-        iceServers: this.roomInfo.coturn,
-        role: 'PUSLISHER',
-        wsUri: this.roomInfo.wss,
-      }
-      let token = `?&token=${
-        this.roomInfo.token
-      }&recorder=true&options=${JSON.stringify(options)}`
-
-      console.log(
-        await startServerRecord({
-          framerate: 20,
-          recordingFilename: today + '.mp4',
-          recordingTimeLimit: 5,
-          resolution: '720p',
-          sessionId: this.roomInfo.sessionId,
-          token: token,
-          userData: {},
-        }),
-      )
-    },
-    async stop() {
-      this.isRecording = false
-      await stopServerRecord(this.recordId)
+    toggleButton(isStart) {
+      this.isRecording = isStart
     },
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('serverRecord', this.toggleButton)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('serverRecord')
+  },
 }
 </script>

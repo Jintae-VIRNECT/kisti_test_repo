@@ -7033,6 +7033,7 @@ var StreamManager = (function (_super) {
             throw new Error("The provided 'targetElement' couldn't be resolved to any HTML element: " + targetElement);
         }
         var video = document.createElement('video');
+        video.muted = true
         this.initializeVideoProperties(video);
         var insMode = !!insertMode ? insertMode : VideoInsertMode_1.VideoInsertMode.APPEND;
         switch (insMode) {

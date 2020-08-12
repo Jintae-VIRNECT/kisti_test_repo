@@ -93,7 +93,7 @@ export default {
   methods: {
     ...mapActions(['setScreenStream', 'setLocalRecordStatus']),
 
-    async startRecord() {
+    async startLocalRecord() {
       this.recorder = new LocalRecorder()
 
       if (await this.initRecorder()) {
@@ -177,7 +177,7 @@ export default {
      * stop recorder
      * @param {Boolean} showMsg show toast msg
      */
-    async stopRecord(showMsg) {
+    async stopLocalRecord(showMsg) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -262,20 +262,20 @@ export default {
         this.$eventBus.$emit('localRecord', false)
       }
     },
-    async toggleStatus(isStart) {
+    async toggleLocalRecord(isStart) {
       if (isStart && this.localRecordStatus === LCOAL_RECORD_STAUTS.STOP) {
-        this.startRecord()
+        this.startLocalRecord()
       } else if (
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
         const showMsg = true
-        this.stopRecord(showMsg)
+        this.stopLocalRecord(showMsg)
       }
     },
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.toggleStatus)
+    this.$eventBus.$on('localRecord', this.toggleLocalRecord)
   },
   beforeDestroy() {
     this.$eventBus.$off('localRecord')

@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <div id="videos"></div>
+    <div autoplay id="videos"></div>
 </body>
 
 <script>
@@ -31,10 +31,21 @@
     //     role: "PUSLISHER",
     //     wsUri: "wss://192.168.6.3:8073/remote/websocket",
     // }
+    //"str_CAM_OTmN_con_YJAFBzGmP3"
 
+    let subscriber
     session.on("streamCreated", (event) => {
+        console.log('event::',event)
         if (event.stream.videoActive == true) {
-            session.subscribe(event.stream, 'videos');
+            // document.querySelector('#videos').srcObject = event.stream;
+            // document.querySelector('#videos').play()
+            subscriber = session.subscribe(event.stream, 'videos');
+            subscriber.on('videoElementCreated',(event)=>{
+                console.log('videoElementCreated')
+                document.querySelector('video').muted = false
+                document.querySelector('video').play()
+            })
+
         }
     });
     console.log(TOKEN)
