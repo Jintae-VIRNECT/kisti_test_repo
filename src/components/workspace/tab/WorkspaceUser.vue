@@ -85,7 +85,9 @@ export default {
           .sort((A, B) => {
             if (A.role === 'MASTER') {
               return -1
-            } else if (A.role === 'MANAGER' && B.role === 'USER') {
+            } else if (B.role === 'MASTER') {
+              return 1
+            } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
               return -1
             } else {
               return 0
