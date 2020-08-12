@@ -33,11 +33,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 import PDFJS from 'pdfjs-dist'
 PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
 export default {
   name: 'SharingPdf',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {},
   data() {
     return {
