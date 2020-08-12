@@ -62,6 +62,11 @@ export default {
         width: 0,
         height: 0,
       },
+      img: {
+        width: 0,
+        height: 0,
+      },
+      scaleWidth: 0,
     }
   },
   computed: {
@@ -69,6 +74,9 @@ export default {
     uuid() {
       return this.account.uuid
     },
+    // scaleWidth() {
+    //   return this.tools.lineWidth / this.origin.scale
+    // },
   },
   methods: {
     /* initialize */
@@ -99,6 +107,7 @@ export default {
           })
           this.origin.width = canvasSize.width
           this.origin.height = canvasSize.height
+          this.scaleWidth = this.tools.lineWidth
           this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
@@ -178,6 +187,8 @@ export default {
           this.cursor.canvas.setHeight(canvas.getHeight())
           this.origin.width = canvas.getWidth()
           this.origin.height = canvas.getHeight()
+          this.img.width = bgImage.width
+          this.img.height = bgImage.height
 
           // 히스토리 초기화
           this.stackClear()
@@ -235,7 +246,7 @@ export default {
       const state = {
         color: this.tools.color,
         opacity: this.tools.opacity,
-        width: this.tools.lineWidth,
+        width: this.scaleWidth,
         size: this.tools.fontSize,
         scale: 1 / this.canvas.backgroundImage.scaleX,
         imgWidth: this.canvas.getWidth(),
@@ -243,6 +254,7 @@ export default {
         // oriWidth: this.origin.width,
         // oriHeight: this.origin.height,
         posScale: this.canvas.getWidth() / this.origin.width,
+        widthScale: this.origin.width / this.img.width,
       }
       // console.log(state.imgWidth, state.imgHeight)
       // console.log(this.canvas.getWidth(), this.origin.width)
@@ -292,6 +304,7 @@ export default {
       const scale = canvasSize.width / this.origin.width
 
       this.origin.scale = scale
+      this.scaleWidth = this.tools.lineWidth / scale
 
       canvas.setZoom(scale)
       cursor.setZoom(scale)
@@ -300,6 +313,10 @@ export default {
       canvas.setHeight(canvasSize.height)
       cursor.setWidth(canvas.getWidth())
       cursor.setHeight(canvas.getHeight())
+      canvas.freeDrawingBrush.width = this.scaleWidth
+      if (this.cursor) {
+        this.cursor.setRadius(this.scaleWidth / 2)
+      }
       canvas.backgroundImage.set({
         scaleX: canvasSize.scale / scale,
         scaleY: canvasSize.scale / scale,

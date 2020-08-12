@@ -56,15 +56,13 @@ const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
 Vue.prototype.$version = version
 
-const app = new Vue({
+export default new Vue({
   el: '#container',
   router: Router,
   store: Store,
   i18n,
   render: h => h(App),
 })
-
-export default app
 
 setTimeout(
   console.log.bind(

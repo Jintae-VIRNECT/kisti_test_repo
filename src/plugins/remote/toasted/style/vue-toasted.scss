@@ -166,9 +166,9 @@
         }
       }
       &.disabled {
-        color: #bfddff;
+        color: $color_primary_400;
         font-weight: normal;
-        background-color: rgba(#bfddff, 0.06);
+        background-color: rgba($color_primary_400, 0.06);
         border: none;
       }
     }

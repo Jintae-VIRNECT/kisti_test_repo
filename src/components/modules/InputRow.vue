@@ -3,12 +3,16 @@
     <p class="inputrow-title valid" v-if="valid" :class="{ required }">
       {{ validMessage }}
     </p>
-    <p class="inputrow-title" v-else :class="{ required }">{{ title }}</p>
+    <p class="inputrow-title" v-else :class="{ required }">
+      {{ title ? title : $t('workspace.remote_name') }}
+    </p>
     <input
       v-if="type === 'text'"
       class="inputrow-input input"
       type="text"
-      :placeholder="placeholder"
+      :placeholder="
+        placeholder ? placeholder : $t('workspace.create_remote_name_input')
+      "
       v-model="inputText"
       :maxlength="count"
       @focusout="$emit('focusOut')"
@@ -18,7 +22,9 @@
       ref="inputTextarea"
       class="inputrow-input textarea"
       type="text"
-      :placeholder="placeholder"
+      :placeholder="
+        placeholder ? placeholder : $t('workspace.create_remote_name_input')
+      "
       v-model="inputText"
       :maxlength="count"
     />
@@ -49,11 +55,11 @@ export default {
     },
     title: {
       type: String,
-      default: '협업 이름',
+      default: null,
     },
     placeholder: {
       type: String,
-      default: '그룹이름을 입력해 주세요.',
+      default: null,
     },
     validate: {
       type: String,

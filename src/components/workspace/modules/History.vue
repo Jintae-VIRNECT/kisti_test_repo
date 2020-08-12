@@ -5,7 +5,11 @@
         :image="history.profile"
         :imageAlt="'profileImg'"
         :mainText="history.title"
-        :subText="`참석자 ${history.memberList.length}명`"
+        :subText="
+          $t('workspace.history_member_length', {
+            length: history.memberList.length,
+          })
+        "
         :thumbStyle="{ width: '3em', height: '3em' }"
         :group="true"
       ></profile>
@@ -13,7 +17,7 @@
 
     <div class="card-item hide-tablet">
       <div class="label label--noraml">
-        {{ `총 이용시간: ${time}` }}
+        {{ $t('workspace.history_call_time', { time: time }) }}
       </div>
     </div>
     <div class="card-item">
@@ -24,13 +28,15 @@
     <div class="card-item">
       <div class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
-        <span class="text">{{ `리더 : ${leader.nickname}` }}</span>
+        <span class="text">{{
+          `${$t('common.leader')} : ${leader.nickname}`
+        }}</span>
       </div>
     </div>
 
     <div class="widecard-tools">
       <button class="btn small" @click="$emit('createRoom')">
-        재시작
+        {{ $t('button.restart') }}
       </button>
       <popover
         trigger="click"
@@ -41,15 +47,12 @@
         <ul class="groupcard-popover">
           <li>
             <button class="group-pop__button" @click="$emit('openRoomInfo')">
-              상세 보기
+              {{ $t('button.show_detail') }}
             </button>
           </li>
           <li>
-            <button
-              class="group-pop__button"
-              @click="$emit('showDeleteDialog')"
-            >
-              목록삭제
+            <button class="group-pop__button" @click="$emit('deleteHistory')">
+              {{ $t('button.remove_list') }}
             </button>
           </li>
         </ul>
@@ -107,16 +110,21 @@ export default {
       //       sameElse: 'YYYY.MM.DD',
       //     }),
       // )
-      return this.$dayjs(this.history.activeDate + '+00:00').calendar(null, {
-        sameDay: 'A h:mm',
-        lastDay: '[어제]',
-        nextDay: '[내일]',
-        lastWeek: '[지난주] dddd',
-        sameElse: 'YYYY.MM.DD',
-      })
+      return this.$dayjs(this.history.activeDate + '+00:00')
+        .local()
+        .calendar(null, {
+          sameDay: 'A h:mm',
+          lastDay: this.$t('date.lastday'),
+          nextDay: this.$t('date.nextday'),
+          // lastWeek: '[지난] dddd',
+          lastWeek: 'YYYY.MM.DD',
+          sameElse: 'YYYY.MM.DD',
+        })
     },
     time() {
-      return this.$dayjs(this.history.durationSec * 1000).format('m분 s초')
+      return this.$dayjs(this.history.durationSec * 1000).format(
+        this.$t('date.time'),
+      )
     },
     leader() {
       return this.history.memberList.find(member => {

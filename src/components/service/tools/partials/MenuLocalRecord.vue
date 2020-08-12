@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="로컬 녹화"
+    :text="$t('service.record_local')"
     :active="isRecording"
     :disabled="!canRecord"
     :src="require('assets/image/ic_local_record.svg')"
@@ -11,8 +11,6 @@
 </template>
 
 <script>
-// @TODO:detach related record logics - ykmo
-
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 
@@ -45,39 +43,35 @@ export default {
       }
     },
   },
-  watch: {
-    localRecordStatus(status) {
-      if (status === LCOAL_RECORD_STAUTS.START) {
-        this.isRecording = true
-      } else {
-        this.isRecording = false
-      }
-    },
-  },
+  watch: {},
 
   methods: {
     ...mapActions(['setLocalRecordStatus']),
-    recording() {
+    async recording() {
       if (this.disabled) return false
 
       if (!this.canRecord) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 로컬 녹화를 막았습니다.')
+        this.toastDefault(this.$t('service.record_blocked'))
         return false
       }
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        const showMsg = true
-        // this.isRecording = false
-        this.$eventBus.$emit('stopLocalRecord', showMsg)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+        this.$eventBus.$emit('localRecord', false)
         return false
       } else {
-        // this.isRecording = true
-        this.$eventBus.$emit('startLocalRecord')
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
+        this.$eventBus.$emit('localRecord', true)
       }
     },
+    toggleButton(isStart) {
+      this.isRecording = isStart
+    },
+  },
+  mounted() {
+    this.$eventBus.$on('localRecord', this.toggleButton)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('localRecord')
   },
 }
 </script>

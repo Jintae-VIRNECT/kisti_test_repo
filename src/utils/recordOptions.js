@@ -14,28 +14,7 @@ export const LCOAL_RECORD_STAUTS = {
 }
 
 // Service Options
-export const localRecTimeOpt = [
-  {
-    value: '5',
-    text: '5분',
-  },
-  {
-    value: '10',
-    text: '10분',
-  },
-  {
-    value: '15',
-    text: '15분',
-  },
-  {
-    value: '30',
-    text: '30분',
-  },
-  {
-    value: '60',
-    text: '60분',
-  },
-]
+export const localRecTime = ['5', '10', '15', '30', '60']
 
 export const localRecResOpt = [
   {
@@ -52,23 +31,7 @@ export const localRecResOpt = [
   },
 ]
 
-export const localRecIntervalOpt = [
-  {
-    value: '1',
-    text: '1분',
-  },
-]
-
-export const localRecordTarget = [
-  {
-    text: '영상 녹화',
-    value: RECORD_TARGET.WORKER,
-  },
-  {
-    text: '화면 녹화',
-    value: RECORD_TARGET.SCREEN,
-  },
-]
+export const localRecInterval = ['1', '5', '10']
 
 /**
  *

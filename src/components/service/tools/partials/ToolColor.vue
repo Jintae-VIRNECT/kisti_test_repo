@@ -1,7 +1,7 @@
 <template>
   <div>
     <tool-button
-      text="색상 선택"
+      :text="$t('service.tool_color')"
       :active="status"
       @click.stop="clickHandler"
       :disabled="disabled"
@@ -47,7 +47,7 @@
 <script>
 import toolMixin from './toolMixin'
 import { color } from 'utils/callOptions'
-import { VIEW, ACTION } from 'configs/view.config'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'ToolLineColor',
@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     useOpacity() {
-      if (this.view === VIEW.DRAWING || this.viewAction === ACTION.AR_DRAWING) {
+      if (this.view === VIEW.DRAWING) {
         return true
       } else {
         return false

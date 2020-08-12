@@ -1,7 +1,7 @@
 <template>
   <div class="zoom">
     <tool-button
-      :text="'상대방 영상 확대/축소'"
+      :text="$t('service.tool_zoom')"
       :active="picker"
       :src="require('assets/image/ic_zoom.svg')"
       :activeSrc="require('assets/image/ic_zoom.svg')"
@@ -33,7 +33,7 @@
         </div>
         <div class="picker--container__division"></div>
         <button class="picker--container__close" @click="hidePicker">
-          닫기
+          {{ $t('button.close') }}
         </button>
       </div>
     </transition>
@@ -94,12 +94,12 @@ export default {
       const toPicker = this.picker
 
       if (this.cameraStatus === CAMERA.CAMERA_NONE) {
-        this.toastDefault('카메라가 없는 기기입니다.')
+        this.toastDefault(this.$t('service.camera_none'))
         return
       }
 
       if (this.cameraStatus === CAMERA.NO_PERMISSION) {
-        this.toastDefault('상대방이 카메라 제어 허가 요청을 거절하였습니다.')
+        this.toastDefault(this.$t('service.camera_no_permission'))
         return
       }
       this.$eventBus.$emit('control:close')
@@ -133,7 +133,7 @@ export default {
     },
     changeZoomLevel(level) {
       if (this.cameraStatus === -1) {
-        this.toastDefault('상대방 기기 제어 권한을 요청 중입니다.')
+        this.toastDefault(this.$t('service.camera_permission'))
         return
       }
       this.$call.zoom(level)
@@ -141,16 +141,14 @@ export default {
     cameraListener(status) {
       // 응답
       if (parseInt(status) === CAMERA.CAMERA_ZOOMING) {
-        this.toastNotice('상대방이 영상을 확대/축소하고 있습니다.')
+        this.toastNotice(this.$t('service.camera_zooming'))
         return
       }
       if (parseInt(status) === CAMERA.APP_IS_BACKGROUND) {
-        this.toastDefault(
-          '상대방 앱이 비활성화 상태입니다. 확대/축소 기능을 사용할 수 없습니다.',
-        )
+        this.toastDefault(this.$t('service.camera_app_disable'))
       }
       if (parseInt(status) === CAMERA.NO_PERMISSION) {
-        this.toastNotice('상대방이 카메라 제어 허가 요청을 거절하였습니다.')
+        this.toastNotice(this.$t('service.camera_no_permission'))
         this.hidePicker()
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <modal
-    title="원격협업 상세보기"
+    :title="$t('workspace.info_remote_detail')"
     width="64.286em"
     height="56.429em"
     :showClose="true"
@@ -22,14 +22,14 @@
           :class="{ active: tabview === 'group' }"
           @click="tabChange('group')"
         >
-          협업 정보
+          {{ $t('workspace.info_remote') }}
         </button>
         <button
           class="roominfo-nav__menu"
           :class="{ active: tabview === 'user' }"
           @click="tabChange('user')"
         >
-          참가자 정보
+          {{ $t('workspace.info_remote_member') }}
         </button>
       </section>
       <room-info
@@ -37,6 +37,7 @@
         :room="room"
         :image.sync="image"
         :leader="leader"
+        :isHistory="true"
       ></room-info>
 
       <participants-info
@@ -98,9 +99,6 @@ export default {
       }
       this.visibleFlag = flag
     },
-    // image(image) {
-    //   console.log(image)
-    // },
   },
   methods: {
     async initHistory() {
@@ -131,6 +129,7 @@ export default {
 <style lang="scss" src="assets/style/workspace/workspace-roominfo.scss"></style>
 
 <style lang="scss">
+@import '~assets/style/mixin';
 .modal.modal-roominfo {
   .modal--body {
     padding: 0;
@@ -139,9 +138,8 @@ export default {
   .modal--inner {
     display: flex;
     flex-direction: column;
-    @media screen and (max-width: 900px), (max-height: 790px) {
-      font-size: 12px;
-    }
+
+    @include modal();
   }
   .modal--header {
     flex: 0;

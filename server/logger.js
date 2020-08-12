@@ -8,7 +8,7 @@ log4js.configure({
       layout: {
         type: 'pattern',
         pattern:
-          `${chalk.default.green('[WEBCLIENT]')} - ` +
+          `${chalk.default.green('[RMWEB]')} - ` +
           `${chalk.default.white('[%d{yyyy-MM-dd hh:mm:ss}]')} - ` +
           `[%p] - ` +
           `${chalk.default.cyan(`[%c]`)} - ` +
@@ -17,7 +17,7 @@ log4js.configure({
     },
     file: {
       type: 'dateFile',
-      filename: './logs/webclient',
+      filename: './logs/rmweb',
       pattern: '.yyyy-MM-dd-hh.log',
       alwaysIncludePattern: true,
       layout: {

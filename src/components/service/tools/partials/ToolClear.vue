@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="삭제"
+    :text="$t('service.tool_clear')"
     :disabled="!isAvailable"
     :active="status"
     :src="require('assets/image/ic-tool-delete.svg')"

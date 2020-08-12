@@ -23,7 +23,7 @@
   display: flex;
   width: 100%;
   height: 100%;
-  background-color: $color_bg_display;
+  background-color: $color_bg;
   // background: url(~assets/image/img_novideo.svg) 50% 120px no-repeat;
   &.loading {
     position: absolute;
@@ -31,7 +31,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: $color_bg_display;
+    background-color: $color_bg;
   }
 }
 .drawing-box__empty-inner {

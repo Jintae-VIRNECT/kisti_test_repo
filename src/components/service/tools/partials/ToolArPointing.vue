@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="AR 포인팅"
+    :text="$t('service.ar_pointing')"
     :disabled="disabled"
     :active="viewAction === AR_POINTING"
     :src="require('assets/image/ic_ar_pointing.svg')"

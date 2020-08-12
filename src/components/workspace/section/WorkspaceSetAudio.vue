@@ -1,9 +1,9 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">입출력 장치</div>
+    <div class="setting__title">{{ $t('workspace.setting_inout_device') }}</div>
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">
-        <p class="setting__label">입력 장치</p>
+        <p class="setting__label">{{ $t('workspace.setting_input_device') }}</p>
         <r-select
           class="setting__r-selecter"
           v-on:changeValue="setMic"
@@ -16,7 +16,9 @@
       </figure>
 
       <figure class="setting__figure">
-        <p class="setting__label">출력 장치</p>
+        <p class="setting__label">
+          {{ $t('workspace.setting_output_device') }}
+        </p>
         <r-select
           ref="settingOutput"
           class="setting__r-selecter"

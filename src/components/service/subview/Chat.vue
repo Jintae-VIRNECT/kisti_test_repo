@@ -14,7 +14,9 @@
             @click="toggleMenu('chat')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_chat_w.svg" />채팅
+              <img src="~assets/image/call/chat_ic_chat_w.svg" />{{
+                $t('service.chat')
+              }}
             </p>
           </button>
         </li>
@@ -24,7 +26,9 @@
             @click="toggleMenu('file')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_folder_w.svg" />파일
+              <img src="~assets/image/call/chat_ic_folder_w.svg" />{{
+                $t('service.file')
+              }}
             </p>
           </button>
         </li>
@@ -43,11 +47,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { VIEW } from 'configs/view.config'
-import { TYPE, SUB_TYPE } from 'configs/chat.config'
+import { mapGetters, mapActions } from 'vuex'
+import { ACTION } from 'configs/view.config'
 
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
 
@@ -64,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo', 'view']),
+    ...mapGetters(['chatList', 'roomInfo', 'view', 'viewAction']),
     showChat() {
       if (this.show === 'chat') return true
       else return false
@@ -81,34 +83,29 @@ export default {
       },
       deep: true,
     },
-    view: {
-      handler(mode) {
-        switch (mode) {
-          case VIEW.DRAWING:
-            this.chatList.push(
-              new ChatMsgBuilder()
-                .setType(TYPE.SYSTEM)
-                .setSubType(SUB_TYPE.BOARD)
-                .setText('협업 보드를 사용합니다.')
-                .build(),
-            )
-            break
-          case VIEW.AR:
-            this.chatList.push(
-              new ChatMsgBuilder()
-                .setType(TYPE.SYSTEM)
-                .setSubType(SUB_TYPE.AR)
-                .setText('AR 기능을 사용합니다.')
-                .build(),
-            )
-            break
-          default:
-            break
+    viewAction(val, oldVal) {
+      if (val !== oldVal) {
+        if (val === ACTION.AR_POINTING) {
+          this.addChat({
+            status: 'ar-pointing',
+            type: 'system',
+          })
+          // AR 포인팅을 시작합니다.
+          return
         }
-      },
+        if (val === ACTION.AR_DRAWING) {
+          this.addChat({
+            status: 'ar-area',
+            type: 'system',
+          })
+          // AR 영역이 설정되었습니다.
+          return
+        }
+      }
     },
   },
   methods: {
+    ...mapActions(['addChat']),
     toggleMenu(menu) {
       if (this.checkBeta() && menu === 'file') {
         return false
@@ -120,13 +117,10 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    this.chatList.push(
-      new ChatMsgBuilder()
-        .setType(TYPE.SYSTEM)
-        .setSubType(SUB_TYPE.ALARM)
-        .setText('협업이 생성 되었습니다.')
-        .build(),
-    )
+    this.addChat({
+      type: 'system',
+      status: 'create',
+    })
   },
 }
 </script>

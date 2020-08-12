@@ -66,7 +66,13 @@
   > .tooltip,
   > .popover--wrapper {
     display: inline-block;
-    margin-left: 0.571rem;
+    margin: auto auto auto 0.571rem;
+  }
+  .header-tools__chatbox {
+    &.active {
+      background-color: #3a3b3f;
+      border-radius: 2px;
+    }
   }
   .header-tools__notice {
     position: relative;
@@ -94,6 +100,7 @@
   }
 
   .header-tools__leave {
+    width: 4.429rem;
     height: 100%;
     margin-left: 1.143rem;
     padding: 0.429rem 1rem;
@@ -101,5 +108,6 @@
     background: url(~assets/image/call/gnb_ic_callout.svg) center no-repeat
       $color_red;
     border-radius: 1.214rem;
+    @include ir();
   }
 }

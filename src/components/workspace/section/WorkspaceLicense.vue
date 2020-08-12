@@ -3,41 +3,17 @@
     <div class="workspace-license__description">
       <p class="workspace-license__description--title">
         <!-- 선택하신 워크스페이스에 -->
-        VIRNECT Remote2.0을 사용할 수 있는 라이선스가 없습니다.
+        {{ $t('workspace.license_no_title') }}
       </p>
       <p class="workspace-license__description--sub-title">
-        VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. 워크스페이스
-        마스터에게 문의해주세요.
+        {{ $t('workspace.license_no_description') }}
       </p>
     </div>
-    <!-- <section class="workspace-license__cards">
-      <workspace-license-card
-        v-for="(data, idx) in licenseData"
-        :key="idx"
-        :plan="data.plan"
-        :planName="data.planName"
-        :perCount="data.perCount"
-        :perPerice="data.perPerice"
-        :condition="data.condition"
-        :items="data.items"
-      >
-      </workspace-license-card>
-    </section> -->
   </section>
 </template>
 
 <script>
-// import WorkspaceLicenseCard from '../partials/WorkspaceLicenseCard'
-import licenseData from 'assets/json/license.json'
 export default {
-  components: {
-    // WorkspaceLicenseCard,
-  },
-  data() {
-    return {
-      licenseData: licenseData.licenseInfo,
-    }
-  },
   methods: {
     purchase() {
       location.href = window.urls.pay

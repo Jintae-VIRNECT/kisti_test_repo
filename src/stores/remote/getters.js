@@ -21,13 +21,6 @@ export default {
 
   searchFilter: state => state.sort.search.filter,
 
-  historyList: state => state.files.historyList,
-  fileList: state => state.files.fileList,
-  pdfPages: state => state.files.pdfPages,
-  shareFile: state => state.files.shareFile,
-  shareArImage: state => state.files.shareArImage,
-  captureFile: state => state.files.captureFile,
-
   //local record
   localRecordTarget: state => state.settings.localRecordTarget,
   localRecordStatus: state => state.settings.localRecordStatus,

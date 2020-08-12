@@ -1,63 +1,176 @@
 <template>
   <tab-view
-    title="최근 통화 목록"
-    description="최근 통화 목록은 30일 동안 보관됩니다."
-    placeholder="협업, 멤버 이름 검색"
+    :title="$t('workspace.history_title')"
+    :description="$t('workspace.history_description')"
+    :placeholder="$t('workspace.search_room')"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
-    emptyTitle="최근 통화 목록이 없습니다."
-    emptyDescription="원격 협업을 시작해보세요."
-    :empty="historyList.length === 0"
+    :emptyTitle="emptyTitle"
+    :emptyDescription="emptyDescription"
+    :empty="list.length === 0"
     :showDeleteButton="true"
     :showRefreshButton="true"
-    :deleteButtonText="'전체삭제'"
+    :deleteButtonText="$t('button.remove_all')"
     :listCount="historyList.length"
     :loading="loading"
-    @refresh="getHistory"
-    @delete="showDeleteDialog"
+    @refresh="init"
+    @delete="deleteAll"
   >
-    <workspace-history-list :historyList="historyList"></workspace-history-list>
+    <div class="list-wrapper">
+      <history
+        v-for="(history, index) in list"
+        :key="index"
+        height="6.143rem"
+        :menu="true"
+        :history="history"
+        @createRoom="createRoom(history.sessionId)"
+        @openRoomInfo="openRoomInfo(history.sessionId)"
+        @deleteHistory="deleteHistory(history.sessionId)"
+      ></history>
+      <history-info-modal
+        :visible.sync="showHistoryInfo"
+        :sessionId="sessionId"
+      ></history-info-modal>
+      <create-room-modal
+        :visible.sync="showRestart"
+        :sessionId="sessionId"
+      ></create-room-modal>
+      <loader :loading="paging"></loader>
+    </div>
   </tab-view>
 </template>
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
-import WorkspaceHistoryList from '../section/WorkspaceHistoryList'
-import { getHistoryList, deleteAllHistory } from 'api/workspace/history'
 
+import History from 'History'
+import Loader from 'Loader'
+
+import searchMixin from 'mixins/filter'
 import confirmMixin from 'mixins/confirm'
+import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
+
+import {
+  getHistoryList,
+  deleteAllHistory,
+  deleteHistorySingleItem,
+} from 'api/workspace'
 
 export default {
   name: 'WorkspaceHistory',
-  mixins: [confirmMixin],
+  mixins: [searchMixin, confirmMixin],
   components: {
+    Loader,
     TabView,
-    WorkspaceHistoryList,
+    CreateRoomModal,
+    History,
+    HistoryInfoModal,
   },
   data() {
     return {
       historyList: [],
       loading: false,
+      showRestart: false,
+      showHistoryInfo: false,
+      sessionId: '',
+      pageMeta: {
+        currentPage: 0,
+        currentSize: 0,
+        totalElements: 0,
+        totalPage: 0,
+      },
+      paging: false,
     }
+  },
+  computed: {
+    list() {
+      return this.getFilter(this.historyList, [
+        'title',
+        'memberList[].nickname',
+      ])
+    },
+    emptyTitle() {
+      if (this.historyList.length > 0) {
+        return this.$t('workspace.search_empty')
+      } else {
+        return this.$t('workspace.history_empty')
+      }
+    },
+    emptyDescription() {
+      if (this.historyList.length > 0) {
+        return ''
+      } else {
+        return this.$t('workspace.tab_empty_description')
+      }
+    },
   },
   watch: {
     workspace(val, oldVal) {
       if (val.uuid !== oldVal.uuid && val.uuid) {
-        this.getHistory()
+        this.init()
       }
     },
+    searchFilter() {},
+    'list.length': 'scrollReset',
   },
   methods: {
-    showDeleteDialog() {
+    //상세보기
+    openRoomInfo(sessionId) {
+      this.$eventBus.$emit('popover:close')
+      this.sessionId = sessionId
+      this.showHistoryInfo = true
+    },
+    deleteHistory(sessionId) {
+      this.$eventBus.$emit('popover:close')
+
       this.confirmCancel(
-        '모든 목록을 삭제하시겠습니까?',
+        this.$t('workspace.confirm_remove_room'),
         {
-          text: '삭제하기',
+          text: this.$t('button.remove'),
+          action: () => {
+            this.delete(sessionId)
+          },
+        },
+        { text: this.$t('button.cancel') },
+      )
+    },
+    async delete(sessionId) {
+      this.$nextTick(() => {
+        const pos = this.historyList.findIndex(room => {
+          return room.sessionId === sessionId
+        })
+        this.historyList.splice(pos, 1)
+      })
+
+      const result = await deleteHistorySingleItem({
+        workspaceId: this.workspace.uuid,
+        sessionIdList: [sessionId],
+        uuid: this.account.uuid,
+      })
+
+      if (result.data) {
+        this.confirmDefault(this.$t('workspace.confirm_removed_room'), {
+          text: this.$t('button.confirm'),
+        })
+      }
+    },
+
+    //재시작
+    async createRoom(sessionId) {
+      this.sessionId = sessionId
+      this.showRestart = !this.showRestart
+    },
+    deleteAll() {
+      this.confirmCancel(
+        this.$t('workspace.confirm_remove_all'),
+        {
+          text: this.$t('button.remove'),
           action: () => {
             this.deleteList()
           },
         },
-        { text: '취소' },
+        { text: this.$t('button.cancel') },
       )
     },
     async deleteList() {
@@ -71,20 +184,36 @@ export default {
         console.error(err)
       }
     },
-    async getHistory() {
+    async init() {
+      this.loading = true
+      const list = await this.getHistory()
+      this.historyList = list
+      this.loading = false
+      this.$eventBus.$emit('scroll:reset:workspace')
+    },
+    async moreHistory(event) {
+      if (event.bottom !== true) return
+      if (
+        this.historyList.length === 0 ||
+        this.pageMeta.currentPage === this.pageMeta.totalPage ||
+        this.paging === true
+      )
+        return
+      this.paging = true
+      const list = await this.getHistory(this.pageMeta.currentPage + 1)
+      this.historyList = this.historyList.concat(list)
+      this.paging = false
+    },
+    async getHistory(page = 0) {
       try {
-        this.loading = true
         const datas = await getHistoryList({
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
+          paging: false,
+          page,
         })
-        this.historyList = datas.roomHistoryInfoList.sort((roomA, roomB) => {
-          return (
-            new Date(roomB.activeDate).getTime() -
-            new Date(roomA.activeDate).getTime()
-          )
-        })
-        this.loading = false
+        this.pageMeta = datas.pageMeta
+        return datas.roomHistoryInfoList
       } catch (err) {
         console.error(err)
       }
@@ -93,8 +222,12 @@ export default {
 
   mounted() {
     if (this.workspace.uuid) {
-      this.getHistory()
+      this.init()
     }
+    this.$eventBus.$on('scroll:end', this.moreHistory)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('scroll:end', this.moreHistory)
   },
 }
 </script>

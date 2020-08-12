@@ -70,4 +70,7 @@ typings/
 dist/
 
 # package files
-remote-webclient-*
+rm-web-*
+
+# release note
+releasenote.txt

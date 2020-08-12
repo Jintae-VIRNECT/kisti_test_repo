@@ -1,7 +1,7 @@
 <template>
   <div>
     <tool-button
-      text="선 두께"
+      :text="$t('service.tool_width')"
       :active="status"
       :disabled="disabled"
       :src="require('assets/image/ic-tool-line-weight.svg')"
@@ -13,7 +13,7 @@
       <div v-if="status" class="picker--container" @click.stop>
         <tool-picker
           type="list"
-          :title="$t('service.controller_linesize_label')"
+          :title="$t('service.tool_drawing_width')"
           :list="sizes"
           :current="pick"
           class="line_width"

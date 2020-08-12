@@ -3,10 +3,10 @@
     <div class="chat-down__bar">
       <button class="chat-down__bar--cancel" @click="release"></button>
       <label v-if="selectedList.length > 0" class="chat-down__bar--count">{{
-        selectedList.length + ' 개 선택'
+        $t('service.file_choice_num', { number: selectedList.length })
       }}</label>
       <button class="chat-down__bar--button" @click="download">
-        다운로드
+        {{ $t('button.download') }}
       </button>
     </div>
   </div>

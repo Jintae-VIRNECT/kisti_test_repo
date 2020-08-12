@@ -3,7 +3,6 @@ import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
-import { allowCamera } from 'utils/testing'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
@@ -24,11 +23,6 @@ const _ = {
   connect: async (configs, role) => {
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
-    // TODO: 영상 출력 허용 테스트 계정 이메일
-    let allowUser = false
-    if (allowCamera.includes(_.account.email)) {
-      allowUser = true
-    }
     try {
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -41,8 +35,8 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      // const iceServers = configs.coturn || window.urls.coturn
-      const iceServers = window.urls.coturn
+      const iceServers = configs.coturn || window.urls.coturn
+      // const iceServers = window.urls.coturn
       const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
@@ -62,66 +56,44 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo = role === ROLE.WORKER || allowUser
+      const publishVideo = role === ROLE.WORKER
 
-      const publisher = OV.initPublisher('', {
+      const publishOptions = {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
-        videoSource: undefined, //screen ? 'screen' : undefined,  // TODO: setting value
-        publishAudio: true,
+        videoSource: publishVideo
+          ? settingInfo.video
+            ? settingInfo.video
+            : undefined
+          : false, //screen ? 'screen' : undefined,  // TODO: setting value
+        publishAudio: settingInfo.micOn,
         publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
         mirror: false,
-      })
+      }
+      debug('call::publish::', publishOptions)
+
+      const publisher = OV.initPublisher('', publishOptions)
       publisher.on('streamCreated', () => {
         logger('room', 'publish success')
         _.publisher = publisher
-        if (publishVideo) {
-          // TODO:: 테스트 계정용!!!!
-          Store.commit('updateResolution', {
-            connectionId: publisher.stream.connection.connectionId,
-            width: 0,
-            height: 0,
-          })
-          Store.commit('addStream', {
-            id: _.account.uuid,
-            stream: publisher.stream.mediaStream,
-            // connection: stream.connection,
-            connectionId: publisher.stream.connection.connectionId,
-            nickname: _.account.nickname,
-            path: _.account.path,
-            audio: publisher.stream.audioActive,
-            video: true,
-            speaker: true,
-            mute: false,
-            status: 'good',
-            roleType: ROLE.EXPERT_LEADER,
-            permission: 'default',
-            hasArFeature: false,
-            me: true,
+        const mediaStream = publisher.stream.mediaStream
+        Store.commit('updateParticipant', {
+          connectionId: publisher.stream.connection.connectionId,
+          stream: mediaStream,
+        })
+        if (publisher.properties.publishVideo) {
+          const streamSize = mediaStream.getVideoTracks()[0].getSettings()
+          _.sendResolution({
+            width: streamSize.width,
+            height: streamSize.height,
+            orientation: '',
           })
         }
       })
 
       _.session.publish(publisher)
-      // if (!publishVideo) {
-      //   Store.commit('addStream', {
-      //     id: _.account.uuid,
-      //     stream: null,
-      //     connectionId: publisher.stream.session.connection.connectionId,
-      //     nickname: _.account.nickname,
-      //     path: _.account.profile,
-      //     audio: false,
-      //     video: false,
-      //     speaker: true,
-      //     mute: false,
-      //     status: 'good',
-      //     roleType: role,
-      //     permission: 'default',
-      //     me: true,
-      //   })
-      // }
       return true
     } catch (err) {
       console.error(err)
@@ -191,6 +163,12 @@ const _ = {
     if (!_.session) return
     if (resolution) {
       _.resolution = resolution
+
+      Store.commit('updateResolution', {
+        connectionId: _.session.connection.connectionId,
+        width: resolution.width,
+        height: resolution.height,
+      })
     } else {
       resolution = _.resolution
     }

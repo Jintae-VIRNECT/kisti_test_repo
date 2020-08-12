@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="AR 캡쳐"
+    :text="$t('service.ar_capute')"
     :disabled="disabled"
     :active="active"
     :src="require('assets/image/ic_ar_capture.svg')"

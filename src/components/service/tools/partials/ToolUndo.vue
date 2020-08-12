@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="되돌리기"
+    :text="$t('service.tool_undo')"
     :disabled="!isAvailable"
     :active="status"
     :src="require('assets/image/ic-tool-undo.svg')"

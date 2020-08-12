@@ -1,7 +1,7 @@
 .tools {
   position: absolute;
   left: 50%;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex: 0;
   margin: 1rem auto;
@@ -18,12 +18,16 @@
   z-index: 2;
   flex: 0;
   width: fit-content;
+  min-height: 2.143rem;
   margin: 1.786rem 0 1.786rem auto;
 }
 
 .menus-box {
   display: flex;
   width: fit-content;
+  @include tablet {
+    display: none;
+  }
 }
 
 .picker {

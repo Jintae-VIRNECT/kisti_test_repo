@@ -20,7 +20,7 @@
           disabled: disabled,
         }"
       >
-        <span>저장하기</span>
+        <span>{{ $t('button.save') }}</span>
       </button>
     </div>
   </div>
@@ -62,13 +62,13 @@ export default {
     download() {
       if (!this.disabled) {
         this.confirmCancel(
-          '해당 저작된 이미지를 저장하시겠습니까?​',
+          this.$t('service.share_save'),
           {
-            text: '확인',
+            text: this.$t('button.confirm'),
             action: this.save,
           },
           {
-            text: '취소',
+            text: this.$t('button.cancel'),
           },
         )
       }

@@ -19,6 +19,7 @@
 }
 
 .service-wrapper {
+  position: relative;
   // display: flex;
   // flex-direction: column;
   // // display: flex;
@@ -35,6 +36,12 @@
   &.shareview {
     width: calc(100% - #{$subview_width + $share_width});
     margin-left: $share_width;
+  }
+  @include tablet {
+    width: 100%;
+    &.shareview {
+      width: calc(100% - #{$share_width});
+    }
   }
 }
 

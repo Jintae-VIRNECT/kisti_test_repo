@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="텍스트 모드"
+    :text="$t('service.tool_text')"
     :disabled="disabled"
     :active="viewAction === DRAWING_TEXT"
     :src="require('assets/image/ic-tool-txt.svg')"

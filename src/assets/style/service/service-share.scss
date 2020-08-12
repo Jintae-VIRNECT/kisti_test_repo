@@ -92,7 +92,7 @@ $share_savebtn_height: 2.929rem;
   margin: 1rem;
   font-weight: normal;
   font-size: 0.857rem;
-  background-color: #0f75f5;
+  background-color: $color_primary;
 
   > span {
     display: flex;
@@ -184,7 +184,7 @@ $share_savebtn_height: 2.929rem;
       content: "";
     }
     > .sharing-image__item-active {
-      display: table;
+      display: block;
     }
     & + .sharing-image__remove {
       display: none;
@@ -197,8 +197,8 @@ $share_savebtn_height: 2.929rem;
       left: -4px;
       width: calc(100% + 6px);
       height: calc(100% + 6px);
-      background-color: rgba(#0f75f5, 0.4);
-      border: solid 2px #0f75f5;
+      background-color: rgba($color_primary, 0.4);
+      border: solid 2px $color_primary;
       content: "";
     }
   }
@@ -215,7 +215,8 @@ $share_savebtn_height: 2.929rem;
   font-size: 1.071rem;
   background-color: rgba($color_primary, 0.8);
   & > p {
-    display: table-cell;
+    display: inline-block;
+    line-height: 100%;
     text-align: center;
     vertical-align: middle;
   }

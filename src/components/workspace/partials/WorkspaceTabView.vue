@@ -20,14 +20,14 @@
         <icon-button
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/ic_delete.svg')"
-          :text="deleteButtonText"
+          :text="deleteButtonText ? deleteButtonText : $t('button.remove')"
           @click="$emit('delete')"
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/ic_renew.svg')"
           animation="rotate360"
-          :text="'새로고침'"
+          :text="$t('button.refresh')"
           @click="$emit('refresh')"
         ></icon-button>
       </div>
@@ -113,7 +113,7 @@ export default {
     },
     deleteButtonText: {
       type: String,
-      default: '삭제하기',
+      default: null,
     },
     hideTitle: {
       type: Boolean,

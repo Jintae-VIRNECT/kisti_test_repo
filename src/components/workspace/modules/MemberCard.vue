@@ -13,20 +13,20 @@
           >{{ status }}</span
         >
       </div>
-      <div class="card-profile--name">
+      <p class="card-profile--name">
         {{ name }}
-      </div>
-      <div class="card-profile--email">{{ email }}</div>
+      </p>
+      <p class="card-profile--email">{{ email }}</p>
 
       <role v-if="showRole && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
-        :role="'라이선스 만료'"
+        :role="$t('workspace.expire_license')"
         :opt="opt"
       ></role>
     </div>
     <div v-if="showMessageButton" class="card-bottom">
-      <p>메시지 보내기</p>
+      <p>{{ $t('button.send_message') }}</p>
     </div>
   </div>
 </template>
@@ -130,6 +130,7 @@ export default {
   flex-direction: column;
   flex-grow: 3;
   align-items: center;
+  width: 100%;
   // min-height: 180px;
   margin-bottom: 0.714rem;
 }
@@ -144,15 +145,21 @@ export default {
 }
 
 .card-profile--name {
+  max-width: 100%;
   margin-top: 1.214rem;
   margin-bottom: 0.286rem;
+  padding: 0 25px;
   font-weight: 500;
   font-size: 1.071rem;
+  @include ellipsis();
 }
 .card-profile--email {
+  max-width: 100%;
   margin-bottom: 0.786rem;
+  padding: 0 25px;
   color: #98a0a6;
   font-size: 0.929rem;
+  @include ellipsis();
 }
 
 .card-profile--badge {

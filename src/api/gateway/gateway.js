@@ -10,6 +10,7 @@ import API from './api'
 import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
+import { cookieClear } from 'utils/auth'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -46,6 +47,10 @@ const sender = async function(constant, params, headers = {}, custom) {
     if (url === undefined) {
       throw new Error('Unknown API')
     }
+
+    // Token
+    const accessToken = Cookies.get('accessToken')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
 
     // URI 전환
     url = url.replace(/{(\w+)}/g, (match, $1) => {
@@ -137,8 +142,7 @@ const errorHandler = function(err) {
       case 8003:
       case 8005:
         // console.error(error.message)
-        Cookies.remove('accessToken')
-        Cookies.remove('refreshToken')
+        cookieClear()
         window.location.reload()
         break
       // case 'Network Error':
@@ -150,11 +154,6 @@ const errorHandler = function(err) {
   } else {
     return error
   }
-}
-
-export const setAuthorization = accessToken => {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-  debug('TOKEN::', axios.defaults.headers)
 }
 
 export const setBaseURL = baseURL => {

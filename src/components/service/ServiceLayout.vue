@@ -2,7 +2,9 @@
   <section class="remote-layout">
     <header-section></header-section>
     <div class="remote-wrapper service-wrapper">
-      <sub-view></sub-view>
+      <transition name="subview">
+        <sub-view v-show="chatBox || isScreenDesktop"></sub-view>
+      </transition>
 
       <transition name="share">
         <share v-show="isExpert && currentView === 'drawing'"></share>
@@ -83,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile']),
+    ...mapGetters(['view', 'captureFile', 'chatBox']),
     isExpert() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
@@ -117,8 +119,6 @@ export default {
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
 
     this.stopRecord()
-    this.$eventBus.$off('startLocalRecord')
-    this.$eventBus.$off('stopLocalRecord')
   },
 }
 </script>
@@ -161,5 +161,18 @@ export default {
 }
 .main-leave-to {
   opacity: 0;
+}
+
+.subview-enter-active,
+.subview-leave-active {
+  transition: transform ease 0.3s;
+}
+.subview-enter,
+.subview-leave-to {
+  transform: translateX(100%);
+}
+.subview-enter-to,
+.subview-leave {
+  transform: translateX(0);
 }
 </style>

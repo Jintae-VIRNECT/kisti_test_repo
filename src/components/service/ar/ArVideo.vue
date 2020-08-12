@@ -19,11 +19,11 @@
           <div class="ar-video__select-back"></div>
           <div class="ar-video__select-inner">
             <img src="~assets/image/call/ic-ar-field.svg" />
-            <p>AR 영역 설정</p>
-            <p class="description">
-              AR 영역을 설정합니다. 설정된 영역에서 <br />
-              AR 기능을 실행합니다.
-            </p>
+            <p>{{ $t('service.ar_area') }}</p>
+            <p
+              class="description"
+              v-html="$t('service.ar_area_description')"
+            ></p>
           </div>
         </button>
       </transition>
@@ -108,15 +108,11 @@ export default {
     currentAction(val) {
       if (this.view !== VIEW.AR) return
       if (val === 'pointing') {
-        this.toastDefault(
-          'AR 3D 화살표를 원하는 위치에 클릭하세요. 최대 30개의 화살표를 생성할 수 있습니다.',
-        )
+        this.toastDefault(this.$t('service.ar_pointing_max'))
       } else if (val === 'area') {
-        this.toastDefault(
-          'AR 영역을 설정합니다. 설정된 영역에서 AR 기능을 실행합니다.',
-        )
+        this.toastDefault(this.$t('service.ar_area_setting'))
       } else if (val === 'drawing') {
-        this.toastDefault('AR 영역이 설정되었습니다. AR 드로잉을 시작하세요.')
+        this.toastDefault(this.$t('service.ar_area_success'))
       }
     },
   },

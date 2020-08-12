@@ -5,6 +5,7 @@
       classes="remote-wrapper"
       ref="wrapperScroller"
       @onScroll="onScroll"
+      :onMaxScroll="handleMaxScroll"
     >
       <div class="workspace-wrapper">
         <workspace-welcome ref="welcomeSection"></workspace-welcome>
@@ -33,6 +34,7 @@ import auth from 'utils/auth'
 import { getLicense } from 'api/workspace/license'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
+import langMixin from 'mixins/language'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { mapActions } from 'vuex'
 
@@ -60,7 +62,7 @@ export default {
       }
     }
   },
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, langMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -106,6 +108,9 @@ export default {
         this.$parent.init()
       }
     },
+    handleMaxScroll(event) {
+      this.$eventBus.$emit('scroll:end', event)
+    },
     onScroll(scrollX, scrollY) {
       if (scrollY > this.tabTop) {
         this.tabFix = true
@@ -113,9 +118,12 @@ export default {
         this.tabFix = false
       }
     },
-    tabChange() {
+    scrollTop() {
       this.$refs['wrapperScroller'].scrollToY(0)
       this.tabFix = false
+    },
+    tabChange() {
+      this.scrollTop()
     },
     toggleList() {
       this.showList = true
@@ -144,11 +152,17 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
+    const lang = localStorage.getItem('language')
+    if (lang) {
+      this.mx_changeLang(lang)
+    }
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
   },
   beforeDestroy() {
+    this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
   },

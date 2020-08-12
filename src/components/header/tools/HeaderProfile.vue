@@ -25,10 +25,10 @@
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="fileList">로컬 녹화 파일</button>
+        <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
       <div class="popover-profile__link">
-        <button @click="logout">로그아웃</button>
+        <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
       <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
     </div>
@@ -120,7 +120,7 @@ export default {
 .popover-profile__version {
   margin: 0.429rem 0 0.214rem;
   padding: 0.714rem;
-  color: #bfddff;
+  color: $color_primary_400;
   font-size: 0.857rem;
   text-align: center;
   border-top: solid 1px rgba($color_line_border, 0.06);

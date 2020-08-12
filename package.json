@@ -1,8 +1,8 @@
 {
-  "name": "remote-webclient",
-  "version": "2.0.7",
+  "name": "rm-web",
+  "version": "2.0.8",
   "private": true,
-  "description": "remote-webclient",
+  "description": "rm-web",
   "author": "wooka@virnect.com",
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
@@ -10,7 +10,8 @@
     "build:develop": "set NODE_ENV=develop&& webpack --progress --config build/webpack.develop.conf.js",
     "start:develop": "set PORT=8885&& set NODE_ENV=develop&& node server.js",
     "start:local": "set NODE_ENV=local&& webpack-dev-server --progress --inline --hot --config build/webpack.local.conf.js",
-    "test": "jest"
+    "test": "jest",
+    "pkg": "pkg ."
   },
   "dependencies": {
     "autoprefixer": "^9.7.6",
