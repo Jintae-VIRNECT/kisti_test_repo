@@ -314,7 +314,6 @@ export default {
   },
 
   created() {
-    console.log(localRecInterval)
     this.localRecording = this.allowLocalRecord
     this.pointing = this.allowPointing
   },

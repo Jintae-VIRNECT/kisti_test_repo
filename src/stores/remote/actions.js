@@ -89,7 +89,6 @@ export default {
    * @param {Object} payload
    */
   setDevices({ commit }, payload) {
-    console.log(payload)
     if ('mic' in payload) {
       commit(types.SETTINGS.SET_MIC_DEVICE, payload['mic'])
     }
