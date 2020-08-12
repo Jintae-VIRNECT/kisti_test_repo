@@ -45,9 +45,11 @@ import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
 import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Drawing',
+  mixins: [confirmMixin],
   components: {
     DrawingCanvas,
   },
@@ -58,7 +60,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile', 'view']),
+    ...mapGetters([
+      'fileList',
+      'shareFile',
+      'view',
+      'participants',
+      'historyList',
+    ]),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -79,9 +87,28 @@ export default {
         }
       }
     },
+    'participants.length': 'participantChange',
   },
   methods: {
     ...mapActions(['showImage']),
+    participantChange(length, oldLength) {
+      if (this.account.roleType !== ROLE.EXPERT_LEADER) return
+      if (length > oldLength && this.shareFile && this.shareFile.id) {
+        if (!this.shareFile.json || this.shareFile.json.length === 0) {
+          this.refreshCanvas()
+          return
+        }
+        this.confirmDefault(this.$t('service.drawing_sync'), {
+          action: this.refreshCanvas,
+        })
+      }
+    },
+    refreshCanvas() {
+      const currentHistory = this.historyList.find(
+        history => history.id === this.shareFile.id,
+      )
+      this.showImage(currentHistory)
+    },
     addFile() {
       this.$eventBus.$emit('addFile')
     },
