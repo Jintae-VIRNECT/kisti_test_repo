@@ -1,5 +1,5 @@
 //Definition of workspace store
-import { SETTINGS } from '../mutation-types'
+import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
 import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
 
 const state = {
@@ -33,6 +33,8 @@ const state = {
 
   localRecordTarget: RECORD_TARGET.WORKER,
   localRecordStatus: LCOAL_RECORD_STAUTS.STOP,
+
+  chatBox: false,
 }
 
 const mutations = {
@@ -70,6 +72,10 @@ const mutations = {
   [SETTINGS.SET_LCOAL_RECORD_STAUTS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
   },
+
+  [TOGGLE_CHAT](state, flag) {
+    state.chatBox = flag
+  },
 }
 const getters = {
   mic: state => state.mic,
@@ -92,9 +98,18 @@ const getters = {
       video: state.video.deviceId,
     }
   },
+
+  chatBox: state => state.chatBox,
+}
+
+const actions = {
+  toggleChat({ commit }, flag) {
+    commit('TOGGLE_CHAT', flag)
+  },
 }
 export default {
   state,
   mutations,
   getters,
+  actions,
 }

@@ -1,5 +1,7 @@
 <template>
   <div class="header-tools">
+    <chat v-if="!isScreenDesktop"></chat>
+
     <!-- <stream></stream> -->
 
     <mic></mic>
@@ -26,6 +28,7 @@ import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
 import CallTime from '../tools/CallTime'
+import Chat from '../tools/Chat'
 
 export default {
   name: 'HeaderTools',
@@ -35,6 +38,7 @@ export default {
     Speaker,
     Notice,
     CallTime,
+    Chat,
   },
   data() {
     return {}

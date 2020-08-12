@@ -3,16 +3,8 @@
     <header-section></header-section>
     <div class="remote-wrapper service-wrapper">
       <transition name="subview">
-        <sub-view v-show="subviewHide || isScreenDesktop"></sub-view>
+        <sub-view v-show="chatBox || isScreenDesktop"></sub-view>
       </transition>
-      <button
-        v-if="!isScreenDesktop"
-        class="subview-btn"
-        :class="{ hide: subviewHide }"
-        @click="subviewHide = !subviewHide"
-      >
-        {{ subviewHide ? this.$t('button.open') : this.$t('button.close') }}
-      </button>
 
       <transition name="share">
         <share v-show="isExpert && currentView === 'drawing'"></share>
@@ -90,11 +82,10 @@ export default {
   data() {
     return {
       showDenied: false,
-      subviewHide: false,
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile']),
+    ...mapGetters(['view', 'captureFile', 'chatBox']),
     isExpert() {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         return true
