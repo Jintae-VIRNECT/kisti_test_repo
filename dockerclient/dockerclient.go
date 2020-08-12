@@ -173,7 +173,7 @@ func RunContainer(param ContainerParam) (string, error) {
 	params.Add("sessionId", param.SessionID)
 	params.Add("token", param.Token)
 	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
-	logger.Debug(baseUrl.String())
+	logger.Debug(param.LayoutURL + "?" + baseUrl.String())
 
 	now := time.Now().UTC().Unix()
 	endTime := now + int64(param.TimeLimit*60)
