@@ -31,7 +31,9 @@ export const addSessionEventListener = session => {
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
       if (_.account.roleType === ROLE.LEADER) {
-        // _.mainview(CONTROL.POINTING, Store.getters['allowPointing'])
+        if (Store.getters['viewForce'] === true) {
+          _.mainview(Store.getters['mainView'].uuid, true)
+        }
         _.control(CONTROL.POINTING, Store.getters['allowPointing'])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
       }

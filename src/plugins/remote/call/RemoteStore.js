@@ -238,7 +238,7 @@ const mutations = {
     }
     if (state.participants[idx].me === true && 'video' in param) {
       state.initing = false
-      if (param['video'] === true) {
+      if (param['video'] === true && (!state.mainView || !state.mainView.id)) {
         state.mainView = state.participants[idx]
       }
     }
