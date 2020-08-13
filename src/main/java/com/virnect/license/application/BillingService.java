@@ -83,25 +83,44 @@ public class BillingService {
 
         UserInfoRestResponse requestUserInfo = userInfoApiResponse.getData();
 
-        // 2. 사용자의 현재 사용중인 라이선스 플랜 조회
-        LicensePlan licensePlan = licensePlanRepository.findByUserIdAndPlanStatus(requestUserInfo.getUuid(), PlanStatus.ACTIVE);
         long calculateMaxCallTime = 0;
         long calculateMaxStorage = 0;
         long calculateMaxHit = 0;
 
-        // 3. 현재 사용 중인 라이선스 플랜 정보가 있는 경우
-        if (licensePlan != null) {
-            // 2.1  기존 라이선스 플랜의 서비스 이용 정보 추가
-            calculateMaxCallTime += licensePlan.getMaxCallTime();
-            calculateMaxStorage += licensePlan.getMaxStorageSize();
-            calculateMaxHit += licensePlan.getMaxDownloadHit();
-        }
+        // 리모트 제품 또는 통화 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfCallTimeProduct = allocateCheckRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("Remote") || p.getProductType().getName().equals("CallTime"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
 
-        // 4. 상품 주문 정보 추가 및 구매 정보 검사 (정기 결제가 아닌건에 대해서만 검증)
+        // 메이크 제품 또는 용량 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfStorageProduct = allocateCheckRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("Make") || p.getProductType().getName().equals("Storage"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
+
+        // 뷰 제품 또는 다운로드 횟수 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfDownloadHitProduct = allocateCheckRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("View") || p.getProductType().getName().equals("Hit"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
+        
+        // 주문 상품의 사용량과 수량 곱의 합산 사용량 정보
+        calculateMaxCallTime += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum() * amountOfCallTimeProduct;
+        calculateMaxStorage += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum() * amountOfStorageProduct;
+        calculateMaxHit += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum() * amountOfDownloadHitProduct;
+        
+        // 4. 신규 결제 건
         if (!allocateCheckRequest.isRegularRequest()) {
-            calculateMaxCallTime += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum();
-            calculateMaxStorage += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum();
-            calculateMaxHit += allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum();
+            // 2. 사용자의 현재 사용중인 라이선스 플랜 조회
+            LicensePlan licensePlan = licensePlanRepository.findByUserIdAndPlanStatus(requestUserInfo.getUuid(), PlanStatus.ACTIVE);
+            // 현재 사용 중인 라이선스 플랜 정보가 있는 경우
+            if (licensePlan != null) {
+                // 기존 라이선스 플랜의 서비스 이용 정보 추가
+                calculateMaxCallTime += licensePlan.getMaxCallTime();
+                calculateMaxStorage += licensePlan.getMaxStorageSize();
+                calculateMaxHit += licensePlan.getMaxDownloadHit();
+            }
 
             // 5. 최대 통화 수 , 최대 용량, 최대 다운로드 횟수 비교
             if (calculateMaxCallTime > MAX_CALL_TIME || calculateMaxStorage > MAX_STORAGE_AMOUNT || calculateMaxHit > MAX_DOWNLOAD_HITS) {
@@ -121,9 +140,12 @@ public class BillingService {
         licenseAssignAuthInfo.setUserName(requestUserInfo.getName());
         licenseAssignAuthInfo.setEmail(requestUserInfo.getEmail());
         licenseAssignAuthInfo.setAssignableCheckDate(assignDate);
-        licenseAssignAuthInfo.setTotalProductCallTime(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum());
-        licenseAssignAuthInfo.setTotalProductHit(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum());
-        licenseAssignAuthInfo.setTotalProductStorage(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum());
+//        licenseAssignAuthInfo.setTotalProductCallTime(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum());
+        licenseAssignAuthInfo.setTotalProductCallTime(calculateMaxCallTime);
+//        licenseAssignAuthInfo.setTotalProductHit(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum());
+        licenseAssignAuthInfo.setTotalProductHit(calculateMaxHit);
+//        licenseAssignAuthInfo.setTotalProductStorage(allocateCheckRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum());
+        licenseAssignAuthInfo.setTotalProductStorage(calculateMaxStorage);
         licenseAssignAuthInfo.setExpiredDate(Duration.ofMinutes(LICENSE_ASSIGN_AUTH_CODE_TTL_MINUTE).getSeconds());
         licenseAssignAuthInfo.setRegularRequest(allocateCheckRequest.isRegularRequest());
 
@@ -182,10 +204,28 @@ public class BillingService {
         // 7. 라이선스 플랜 정보 조회
         Optional<LicensePlan> userLicensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(requestUserInfo.getUuid(), workspaceInfo.getUuid(), PlanStatus.ACTIVE);
 
-        // 8. 지급 상품 서비스 이용 정보 계산 ( 통화 시간, 용량, 다운로드 횟수 )
-        Long calculateMaxCallTime = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum();
-        Long calculateMaxStorage = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum();
-        Long calculateMaxHit = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum();
+        // 리모트 제품 또는 통화 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfCallTimeProduct = licenseAllocateRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("Remote") || p.getProductType().getName().equals("CallTime"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
+
+        // 메이크 제품 또는 용량 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfStorageProduct = licenseAllocateRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("Make") || p.getProductType().getName().equals("Storage"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
+
+        // 뷰 제품 또는 다운로드 횟수 추가 서비스 이용권의 수량 합 가져오기
+        long amountOfDownloadHitProduct = licenseAllocateRequest.getProductList()
+                .stream()
+                .filter(p -> p.getProductType().getName().equals("View") || p.getProductType().getName().equals("Hit"))
+                .mapToLong(LicenseAllocateProductInfoResponse::getProductAmount).sum();
+
+        // 8. 지급 상품 서비스 총 이용 정보 계산 ( 통화 시간, 용량, 다운로드 횟수 )
+        Long calculateMaxCallTime = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductCallTime).sum() * amountOfCallTimeProduct;
+        Long calculateMaxStorage = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductStorage).sum() * amountOfStorageProduct;
+        Long calculateMaxHit = licenseAllocateRequest.getProductList().stream().mapToLong(LicenseAllocateProductInfoResponse::getProductHit).sum() * amountOfDownloadHitProduct;
 
         // 8.지급 인증 정보 확인 - 통화 횟수, 용량, 다운로드 횟수
         licenseAllocatePropertyValidationCheck(licenseAssignAuthInfo, calculateMaxCallTime, calculateMaxStorage, calculateMaxHit);
