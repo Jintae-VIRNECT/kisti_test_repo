@@ -90,7 +90,8 @@
   &.fix {
     margin-top: 3.571rem;
   }
-  .groupcard-list {
+  .groupcard-list,
+  .workcard-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     -webkit-column-gap: 0.571rem;
