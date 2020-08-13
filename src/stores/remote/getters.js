@@ -1,7 +1,5 @@
 export default {
   account: state => state.account,
-  workspace: state => state.workspace.current,
-  workspaceList: state => state.workspace.workspaceList,
 
   // oncall
   view: state => state.oncall.view,

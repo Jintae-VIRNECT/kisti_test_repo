@@ -2,7 +2,7 @@
   <header class="header">
     <div class="header-workspace">
       <img class="header-logo" src="~assets/image/logo_symtext.svg" />
-      <template v-if="hasLicense">
+      <template v-if="hasLicense && workspace && workspace.uuid">
         <div class="header-divider"></div>
         <header-nav></header-nav>
       </template>
