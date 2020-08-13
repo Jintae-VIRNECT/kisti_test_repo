@@ -1553,12 +1553,20 @@ public class TaskService {
             processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
             processInfoResponse.setSubTaskTotal(process.getSubProcessList().size());
 
+            /*
+            작업 조회에서 컨텐츠 용량이 필요해서 작업서버를 통해 조회하는 로직 추가
+            (VECHOSYS-1293)
+            */
+            long contentSize = this.contentRestService.getContentInfo(process.getContentUUID()).getData().getContentSize();
+            processInfoResponse.setContentSize(contentSize);
+
             List<ProcessTargetResponse> targetList = process.getTargetList().stream().map(target -> {
                 ProcessTargetResponse targetResponse = ProcessTargetResponse.builder()
                         .id(target.getId())
                         .type(target.getType())
                         .data(target.getData())
                         .imgPath(target.getImgPath())
+                        .size(target.getSize())
                         .build();
 
                 return targetResponse;
