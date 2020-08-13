@@ -2127,13 +2127,16 @@ public class TaskService {
                     .conditions(job.getConditions())
                     .build();
 
-
-            // report, issue는 job 하위에 1개씩만 생성하는 것으로 메이크와 협의됨.
+            //report도 issue 처럼 job 하위에 여러개 생성할 수 있으므로 report도 리스트로 리턴하는 것으로 수정함.(VECHOSYS-1287)
+            List<JobResponse.Paper> jobPaperList = new ArrayList<>();
             if (job.getReportList().size() > 0) {
-                JobResponse.Paper paper = JobResponse.Paper.builder()
-                        .id(job.getReportList().get(0).getId())
-                        .build();
-                jobResponse.setPaper(paper);
+                for(Report report : job.getReportList()){
+                    JobResponse.Paper jobPaper = JobResponse.Paper.builder()
+                            .id(report.getId())
+                            .build();
+                    jobPaperList.add(jobPaper);
+                }
+
             }
             List<JobResponse.Issue> jobIssueList = new ArrayList<>();
 
@@ -2152,6 +2155,7 @@ public class TaskService {
             }
             // null 값이 아닌 [] 값을 리턴하기 위해 밖으로 뺌.
             jobResponse.setIssueList(jobIssueList);
+            jobResponse.setPaperList(jobPaperList);
             return jobResponse;
         }).collect(Collectors.toList());
 
