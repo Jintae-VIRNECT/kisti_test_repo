@@ -23,9 +23,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['control']),
+    ...mapGetters(['control', 'viewForce']),
     canPointing() {
       if (this.disabled) {
+        return false
+      }
+      if (!this.viewForce) {
         return false
       }
       if (this.account.roleType === ROLE.LEADER) {
@@ -40,6 +43,16 @@ export default {
   },
   methods: {
     pointing() {
+      if (!this.viewForce) {
+        if (this.account.roleType === ROLE.LEADER) {
+          // TODO: MESSAGE
+          this.toastDefault('영상을 고정해야 포인팅이 가능합니다.')
+        } else {
+          // TODO: MESSAGE
+          this.toastDefault('리더가 영상을 고정해야 포인팅이 가능합니다.')
+        }
+        return
+      }
       if (!this.canPointing) {
         // TODO: MESSAGE
         this.toastDefault(this.$t('service.tool_pointing_block'))
