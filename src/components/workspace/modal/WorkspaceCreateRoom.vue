@@ -41,8 +41,6 @@ import confirmMixin from 'mixins/confirm'
 import { EVENT } from 'configs/push.config'
 import { getMember } from 'api/service'
 
-import { getPermission } from 'utils/deviceCheck'
-
 export default {
   name: 'WorkspaceCreateRoom',
   mixins: [toastMixin, confirmMixin],
@@ -142,13 +140,6 @@ export default {
       this.loading = false
     },
     async startRemote(info) {
-      const permission = await getPermission()
-
-      if (!permission) {
-        this.$eventBus.$emit('devicedenied:show')
-        return
-      }
-
       try {
         const selectedUser = []
         const selectedUserIds = []
@@ -206,6 +197,10 @@ export default {
       } catch (err) {
         if (err === 'nodevice') {
           this.toastError('연결된 디바이스를 찾을 수 없습니다.')
+        } else if (err.toLowerCase() === 'requested device not found') {
+          this.toastError('디바이스를 찾을 수 없습니다.')
+        } else if (err.toLowerCase() === 'device access deined') {
+          this.$eventBus.$emit('devicedenied:show')
         }
         this.roomClear()
         console.error(err)

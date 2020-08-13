@@ -5,6 +5,7 @@ import { SIGNAL, ROLE, CAMERA, FLASH, VIDEO } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
+import { getPermission } from 'utils/deviceCheck'
 
 let OV
 
@@ -23,14 +24,14 @@ const _ = {
   connect: async (configs, role) => {
     // const publishVideo = role !== ROLE.LEADER
     const devices = await navigator.mediaDevices.enumerateDevices()
-    const publishVideo =
+    const hasVideo =
       devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
       -1
-    const publishAudio =
+    const hasAudio =
       devices.findIndex(device => device.kind.toLowerCase() === 'audioinput') >
       -1
 
-    if (!publishAudio && !publishVideo) {
+    if (!hasAudio && !hasVideo) {
       throw 'nodevice'
     }
     _.account = Store.getters['account']
@@ -39,11 +40,16 @@ const _ = {
       devices.findIndex(device => device.deviceId === settingInfo.mic) > -1
         ? settingInfo.mic
         : undefined
-    let videoSource = publishVideo
+    let videoSource = hasVideo
       ? devices.findIndex(device => device.deviceId === settingInfo.video) > -1
         ? settingInfo.video
         : undefined
       : false
+
+    const permission = await getPermission(hasVideo)
+    if (permission !== true) {
+      throw permission
+    }
 
     try {
       Store.commit('callClear')
@@ -84,7 +90,7 @@ const _ = {
         audioSource: audioSource,
         videoSource: videoSource,
         publishAudio: settingInfo.micOn,
-        publishVideo: publishVideo,
+        publishVideo: settingInfo.videoOn,
         resolution: '1280x720', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
@@ -100,9 +106,11 @@ const _ = {
         Store.commit('updateParticipant', {
           connectionId: publisher.stream.connection.connectionId,
           stream: mediaStream,
-          video: publisher.stream.hasVideo,
+          hasVideo: publisher.stream.hasVideo,
+          video: publisher.stream.videoActive,
+          audio: publisher.stream.audioActive,
         })
-        if (publisher.properties.publishVideo) {
+        if (publisher.properties.hasVideo) {
           const streamSize = mediaStream.getVideoTracks()[0].getSettings()
           _.sendResolution({
             width: streamSize.width,
@@ -318,17 +326,35 @@ const _ = {
    * @WORNNING no used
    * my video stream control
    */
-  streamOnOff: active => {
+  video: active => {
+    if (!_.publisher) return
+    if (!_.publisher.stream.hasVideo) return
     _.publisher.publishVideo(active)
+
+    const params = {
+      type: CAMERA.STATUS,
+      currentZoomLevel: 1,
+      maxZoomLevel: 1,
+      status: active ? 1 : 0,
+    }
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: _.session.connection,
+        type: SIGNAL.CAMERA,
+      })
+    } catch (err) {
+      return false
+    }
   },
   /**
    * my mic control
    * @param {Boolean} active
    */
   mic: active => {
-    if (_.publisher) {
-      _.publisher.publishAudio(active)
-    }
+    if (!_.publisher) return
+    _.publisher.publishAudio(active)
+
     const params = {
       isOn: active,
     }

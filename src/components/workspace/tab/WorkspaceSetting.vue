@@ -135,7 +135,7 @@ export default {
     try {
       const permission = await getPermission()
 
-      if (permission) {
+      if (permission !== true) {
         await this.getMediaDevice()
       } else {
         this.showDenied = true

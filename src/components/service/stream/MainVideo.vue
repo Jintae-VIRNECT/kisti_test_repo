@@ -171,9 +171,9 @@ export default {
     },
     cameraStatus() {
       if (this.mainView && this.mainView.id) {
-        if (this.deviceInfo.cameraStatus === CAMERA.CAMERA_OFF) {
+        if (this.mainView.cameraStatus === CAMERA.CAMERA_OFF) {
           return 'off'
-        } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+        } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
           return 'background'
         }
         return 'on'
@@ -205,6 +205,7 @@ export default {
     mainView: {
       deep: true,
       handler(view) {
+        console.log(view)
         if (!view.id) {
           this.loaded = false
           const videoBox = this.$el.querySelector('.main-video__box')

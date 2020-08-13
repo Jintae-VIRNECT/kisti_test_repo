@@ -1,7 +1,6 @@
 import { joinRoom } from 'api/workspace'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
-import { getPermission } from 'utils/deviceCheck'
 import toastMixin from 'mixins/toast'
 import { mapGetters } from 'vuex'
 export default {
@@ -11,13 +10,6 @@ export default {
   },
   methods: {
     async join(room) {
-      const permission = await getPermission()
-
-      if (!permission) {
-        this.$eventBus.$emit('devicedenied:show')
-        return false
-      }
-
       this.logger('>>> JOIN ROOM')
       try {
         this.setRoomInfo(room)
@@ -52,6 +44,10 @@ export default {
         } else if (err.code === 4016) {
           // TODO: MESSAGE
           this.toastError(this.$t('workspace.remote_already_invite'))
+        } else if (err.toLowerCase() === 'requested device not found') {
+          this.toastError('디바이스를 찾을 수 없습니다.')
+        } else if (err.toLowerCase() === 'device access deined') {
+          this.$eventBus.$emit('devicedenied:show')
         } else {
           this.toastError(this.$t('workspace.remote_invite_impossible'))
         }

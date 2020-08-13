@@ -71,7 +71,6 @@ import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
 import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
-import { getPermission } from 'utils/deviceCheck'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
 
@@ -157,11 +156,6 @@ export default {
         return
       }
 
-      // const permission = await getPermission()
-      // if (!permission) {
-      //   this.showDenied = true
-      //   return
-      // }
       this.$emit('startRemote', {
         title: this.title,
         description: this.description,

@@ -2,7 +2,7 @@
   <div class="header-tools">
     <chat v-if="!isScreenDesktop"></chat>
 
-    <!-- <stream></stream> -->
+    <stream></stream>
 
     <mic></mic>
 
@@ -23,7 +23,7 @@ import { mapGetters } from 'vuex'
 import { DRAWING, AR_DRAWING, ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 
-// import Stream from '../tools/Stream'
+import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
@@ -33,7 +33,7 @@ import Chat from '../tools/Chat'
 export default {
   name: 'HeaderTools',
   components: {
-    // Stream,
+    Stream,
     Mic,
     Speaker,
     Notice,

@@ -96,6 +96,7 @@ const getters = {
       mic: state.mic.deviceId,
       micOn: state.mic.isOn,
       video: state.video.deviceId,
+      videoOn: state.video.isOn,
     }
   },
 

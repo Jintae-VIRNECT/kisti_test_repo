@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.video">
+      <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -14,15 +14,15 @@
           :muted="isMe"
         ></video>
       </div>
-      <div class="participant-video__profile" v-else>
-        <audio
-          v-if="!participant.video && !participant.me"
-          :srcObject.prop="participant.stream"
-          autoplay
-          playsinline
-          loop
-          :muted="isMe || mainView.id === participant.id"
-        ></audio>
+      <audio
+        v-else-if="!participant.me"
+        :srcObject.prop="participant.stream"
+        autoplay
+        playsinline
+        loop
+        :muted="isMe || mainView.id === participant.id"
+      ></audio>
+      <div class="participant-video__profile" v-if="showProfile">
         <img
           v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
@@ -59,21 +59,27 @@
           Leader
         </span>
       </div>
-      <div class="participant-video__device" v-if="!isMe">
+      <div class="participant-video__device">
         <img
-          :src="
-            participant.audio
-              ? require('assets/image/ic_mic_on.svg')
-              : require('assets/image/ic_mic_off.svg')
-          "
+          v-if="participant.hasVideo && !participant.video"
+          src="~assets/image/call/ic_video_off.svg"
         />
-        <img
-          :src="
-            participant.speaker
-              ? require('assets/image/ic_volume_on.svg')
-              : require('assets/image/ic_volume_off.svg')
-          "
-        />
+        <template v-if="!isMe">
+          <img
+            :src="
+              participant.audio
+                ? require('assets/image/ic_mic_on.svg')
+                : require('assets/image/ic_mic_off.svg')
+            "
+          />
+          <img
+            :src="
+              participant.speaker
+                ? require('assets/image/ic_volume_on.svg')
+                : require('assets/image/ic_volume_off.svg')
+            "
+          />
+        </template>
       </div>
       <div class="participant-video__name" :class="{ mine: isMe }">
         <div class="participant-video__name-text">
@@ -146,6 +152,15 @@ export default {
   },
   computed: {
     ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce']),
+    showProfile() {
+      if (!this.participant.hasVideo) {
+        return true
+      }
+      if (this.participant.hasVideo && !this.participant.video) {
+        return true
+      }
+      return false
+    },
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -209,7 +224,7 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.video) return
+      if (!this.participant.hasVideo) return
       if (this.account.roleType === ROLE.LEADER) {
         this.confirmCancel(
           '선택한 영상을 모든 참가자와 공유하시겠습니까? \n공유 시, 포인팅 기능을 사용할 수 있습니다.',

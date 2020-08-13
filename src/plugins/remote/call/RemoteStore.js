@@ -17,6 +17,11 @@ const getDefaultState = () => {
       // permission: 'default' / 'noAR' / false / true
       // hasArFeature
       // cameraStatus: 'default', // 'default': 초기세팅
+      // zoomLevel: 1, // zoom 레벨
+      // zoomMax: 5, // zoom 최대 레벨
+      // cameraStatus: 'default', // 'default': 초기세팅
+      // flash: false, // flash 제어
+      // flashStatus: 'default', // 'default': 초기세팅
     ],
     chatList: [
       // {
@@ -124,16 +129,6 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
-    appInfo: [
-      // {
-      //   connectionId: '',
-      //   zoomLevel: 1, // zoom 레벨
-      //   zoomMax: 5, // zoom 최대 레벨
-      //   cameraStatus: 'default', // 'default': 초기세팅
-      //   flash: false, // flash 제어
-      //   flashStatus: 'default', // 'default': 초기세팅
-      // }
-    ],
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
     cameraStatus: 'default', // 'default': 초기세팅
@@ -214,9 +209,15 @@ const mutations = {
 
   // device control
   deviceControl(state, params) {
+    const idx = state.participants.findIndex(
+      user => user.connectionId === params.connectionId,
+    )
+    if (idx < 0) return
     for (let key in params) {
-      if (key in state && params[key] !== null) {
-        state[key] = params[key]
+      if (key === 'connectionId') continue
+      state.participants[idx][key] = params[key]
+      if (state.participants[idx].id === state.mainView.id) {
+        state.mainView[key] = params[key]
       }
     }
   },

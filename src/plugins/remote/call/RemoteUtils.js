@@ -25,9 +25,12 @@ export const addSessionEventListener = session => {
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
-        video: event.stream.hasVideo,
+        hasVideo: event.stream.hasVideo,
+        video: event.stream.videoActive,
+        audio: event.stream.audioActive,
       })
       _.sendResolution()
+      _.video(Store.getters['video'].isOn)
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
       if (_.account.roleType === ROLE.LEADER) {
@@ -120,10 +123,16 @@ export const addSessionEventListener = session => {
   })
   /** 카메라 컨트롤(zoom) */
   session.on(SIGNAL.CAMERA, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type !== CAMERA.STATUS) return
+    // Store.commit('deviceControl', {
+    //   zoomLevel: parseFloat(data.currentZoomLevel),
+    //   zoomMax: parseInt(data.maxZoomLevel),
+    //   cameraStatus: parseInt(data.status),
+    // })
     Store.commit('deviceControl', {
+      connectionId: event.from.connectionId,
       zoomLevel: parseFloat(data.currentZoomLevel),
       zoomMax: parseInt(data.maxZoomLevel),
       cameraStatus: parseInt(data.status),
@@ -226,6 +235,7 @@ const setUserObject = event => {
     path: null,
     video: false,
     audio: true,
+    hasVideo: false,
     speaker: true,
     mute: false,
     status: 'good',
@@ -234,6 +244,10 @@ const setUserObject = event => {
     permission: 'default',
     hasArFeature: false,
     cameraStatus: 'default',
+    zoomLevel: 1, // zoom 레벨
+    zoomMax: 1, // zoom 최대 레벨
+    flash: false, // flash 제어
+    flashStatus: 'default', // 'default': 초기세팅
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

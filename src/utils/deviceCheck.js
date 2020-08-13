@@ -1,4 +1,4 @@
-export const getPermission = async () => {
+export const getPermission = async (video = true) => {
   try {
     const result = await Promise.all([
       navigator.permissions.query({ name: 'camera' }),
@@ -12,14 +12,13 @@ export const getPermission = async () => {
     }
 
     if (cameraState.state === 'prompt' || micState.state === 'prompt') {
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      })
+      await navigator.mediaDevices.getUserMedia({ audio: true, video })
     }
     return true
   } catch (err) {
-    console.error(err)
-    return false
+    if (typeof err === 'object') {
+      return err.message
+    }
+    return err
   }
 }
