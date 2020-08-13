@@ -21,8 +21,30 @@ const _ = {
    * @param {String} role remote.config.ROLE
    */
   connect: async (configs, role) => {
+    // const publishVideo = role !== ROLE.LEADER
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const publishVideo =
+      devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
+      -1
+    const publishAudio =
+      devices.findIndex(device => device.kind.toLowerCase() === 'audioinput') >
+      -1
+
+    if (!publishAudio && !publishVideo) {
+      throw 'nodevice'
+    }
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
+    let audioSource =
+      devices.findIndex(device => device.deviceId === settingInfo.mic) > -1
+        ? settingInfo.mic
+        : undefined
+    let videoSource = publishVideo
+      ? devices.findIndex(device => device.deviceId === settingInfo.video) > -1
+        ? settingInfo.video
+        : undefined
+      : false
+
     try {
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -57,15 +79,10 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      const publishVideo = role !== ROLE.LEADER || true
 
       const publishOptions = {
-        audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
-        videoSource: publishVideo
-          ? settingInfo.video
-            ? settingInfo.video
-            : undefined
-          : false, //screen ? 'screen' : undefined,  // TODO: setting value
+        audioSource: audioSource,
+        videoSource: videoSource,
         publishAudio: settingInfo.micOn,
         publishVideo: publishVideo,
         resolution: '1280x720', // TODO: setting value

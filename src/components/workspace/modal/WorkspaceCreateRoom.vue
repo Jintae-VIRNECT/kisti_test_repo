@@ -204,6 +204,9 @@ export default {
           console.error('join room fail')
         }
       } catch (err) {
+        if (err === 'nodevice') {
+          this.toastError('연결된 디바이스를 찾을 수 없습니다.')
+        }
         this.roomClear()
         console.error(err)
       }

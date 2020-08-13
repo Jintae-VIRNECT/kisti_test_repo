@@ -45,7 +45,9 @@ export default {
           console.error('>>>join room fail')
         }
       } catch (err) {
-        if (err.code === 4002) {
+        if (err === 'nodevice') {
+          this.toastError('연결된 디바이스를 찾을 수 없습니다.')
+        } else if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
         } else if (err.code === 4016) {
           // TODO: MESSAGE

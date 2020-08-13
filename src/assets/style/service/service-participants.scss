@@ -106,11 +106,12 @@
   }
 }
 
-.participant-video__device {
+.participant-video {
   position: absolute;
   top: 0.571rem;
   right: 0.571rem;
   cursor: default;
+  -webkit-user-select: none;
   > img {
     width: 1.286rem;
     height: 1.286rem;
@@ -180,6 +181,7 @@
   background: #18497c;
   border: solid 1px #0261c6;
   border-radius: 3px;
+  -webkit-user-select: none;
 }
 
 .participant-video__name {
@@ -194,6 +196,7 @@
   line-height: 2.143rem;
   text-align: center;
   background-color: rgba($color_darkgray_1000, 0.3);
+  -webkit-user-select: none;
   &.mine {
     padding-right: 1.429rem;
     > .participant-video__name-text {
