@@ -18,11 +18,101 @@ const getDefaultState = () => {
     ],
     chatList: [
       // {
-      //   text: '버넥트 리모트 팀 외 5명 원격통신 시작합니다.',
-      //   name: 'alarm',
+      //   name: '일이삼사',
+      //   status: 'create',
       //   date: new Date(),
       //   uuid: null,
       //   type: 'system',
+      //   subType: 'INIT',
+      // },
+      // {
+      //   name: '일이삼사',
+      //   status: 'invite',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   name: '일이삼사',
+      //   status: 'leave',
+      //   date: new Date(),
+      //   uuid: null,
+      //   type: 'system',
+      // },
+      // {
+      //   name: '일이삼사',
+      //   status: 'stream-stop',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   name: '하하하',
+      //   status: 'stream-start',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   name: '일이삼사',
+      //   status: 'stream-background',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   name: '파일명.png',
+      //   status: 'drawing',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   status: 'ar-deny',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   status: 'ar-unsupport',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   status: 'ar-pointing',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   status: 'ar-area',
+      //   date: new Date(),
+      //   type: 'system',
+      // },
+      // {
+      //   text: '텍스트',
+      //   name: '일이삼사',
+      //   date: new Date(),
+      //   uuid: 111,
+      //   type: 'ME',
+      // },
+      // {
+      //   text: '텟트',
+      //   name: '하하',
+      //   date: new Date(),
+      //   uuid: 111,
+      //   type: 'ME',
+      // },
+      // {
+      //   text: '텍스트',
+      //   name: '일이삼사',
+      //   date: new Date(),
+      //   uuid: 111,
+      //   type: 'OPPONENT',
+      //   profile:
+      //     'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/profile/2020-06-26_1ea7941341d4405380015fca00a58da2png',
+      // },
+      // {
+      //   text: '텍스트',
+      //   name: '일이삼사',
+      //   date: new Date(),
+      //   uuid: 111,
+      //   type: 'OPPONENT',
+      //   profile:
+      //     'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/profile/2020-06-26_1ea7941341d4405380015fca00a58da2png',
       // },
     ],
     resolutions: [
@@ -61,9 +151,9 @@ const mutations = {
         state.mainView = payload
       }
       state.initing = false
-      return
+    } else {
+      state.participants.push(payload)
     }
-    state.participants.push(payload)
     if ((!state.mainView || !state.mainView.stream) && payload.video) {
       state.mainView = payload
     }
@@ -95,23 +185,34 @@ const mutations = {
       obj => obj.connectionId === connectionId,
     )
     if (idx >= 0) {
-      let participant = state.participants.splice(idx, 1)
-      state.chatList.push({
-        text: participant[0].nickname + '님이 대화에서 나가셨습니다.',
-        name: 'people',
-        date: new Date(),
-        uuid: null,
-        type: 'system',
-      })
       // 메인뷰를 보고있으면 메인뷰 변경
-      if (participant[0].connectionId === state.mainView.connectionId) {
-        const pIdx = state.participants.find(user => user.video === true)
+      if (
+        state.participants[idx].connectionId === state.mainView.connectionId
+      ) {
+        const pIdx = state.participants.findIndex(
+          user =>
+            user.connectionId !== state.mainView.connectionId &&
+            user.video === true,
+        )
         if (pIdx > -1) {
-          state.mainView = state.participants[0]
+          state.mainView = state.participants[pIdx]
         } else {
           state.mainView = {}
+          state.isBackground = false
+          state.zoomLevel = 1 // zoom 레벨
+          state.zoomMax = 5 // zoom 최대 레벨
+          state.cameraStatus = 'default' // 'default': 초기세팅
+          state.flash = false // flash 제어
+          state.flashStatus = 'default' // 'default': 초기세팅
         }
       }
+      let participant = state.participants.splice(idx, 1)
+      state.chatList.push({
+        name: participant[0].nickname,
+        status: 'leave',
+        date: new Date(),
+        type: 'system',
+      })
     }
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(
@@ -159,7 +260,10 @@ const mutations = {
 
   // chat
   addChat(state, payload) {
-    state.chatList.push(payload)
+    state.chatList.push({
+      ...payload,
+      date: new Date(),
+    })
   },
   removeChat(state, payload) {
     const idx = state.chatList.findIndex(obj => obj.uuid === payload)
@@ -174,6 +278,12 @@ const mutations = {
     Object.assign(state, getDefaultState())
 
     return true
+  },
+}
+
+const actions = {
+  addChat({ commit }, payload) {
+    commit('addChat', payload)
   },
 }
 
@@ -204,4 +314,5 @@ export default {
   state,
   mutations,
   getters,
+  actions,
 }

@@ -61,55 +61,55 @@ export default {
       })
 
       /* Object - move */
-      canvas.on('object:moving', event => {
-        // console.log('[Fabric] Object moving');
-        const object = event.target
+      // canvas.on('object:moving', event => {
+      //   // console.log('[Fabric] Object moving');
+      //   const object = event.target
 
-        // if object is too big ignore
-        if (
-          object.currentHeight > object.canvas.height ||
-          object.currentWidth > object.canvas.width
-        ) {
-          return
-        }
-        object.setCoords()
-        // top-left  corner
-        if (
-          object.getBoundingRect().top < 0 ||
-          object.getBoundingRect().left < 0
-        ) {
-          object.top = Math.max(
-            object.top,
-            object.top - object.getBoundingRect().top,
-          )
-          object.left = Math.max(
-            object.left,
-            object.left - object.getBoundingRect().left,
-          )
-        }
-        // bot-right corner
-        if (
-          object.getBoundingRect().top + object.getBoundingRect().height >
-            object.canvas.height ||
-          object.getBoundingRect().left + object.getBoundingRect().width >
-            object.canvas.width
-        ) {
-          object.top = Math.min(
-            object.top,
-            object.canvas.height -
-              object.getBoundingRect().height +
-              object.top -
-              object.getBoundingRect().top,
-          )
-          object.left = Math.min(
-            object.left,
-            object.canvas.width -
-              object.getBoundingRect().width +
-              object.left -
-              object.getBoundingRect().left,
-          )
-        }
-      })
+      //   // if object is too big ignore
+      //   if (
+      //     object.currentHeight > object.canvas.height ||
+      //     object.currentWidth > object.canvas.width
+      //   ) {
+      //     return
+      //   }
+      //   object.setCoords()
+      //   // top-left  corner
+      //   if (
+      //     object.getBoundingRect().top < 0 ||
+      //     object.getBoundingRect().left < 0
+      //   ) {
+      //     object.top = Math.max(
+      //       object.top,
+      //       object.top - object.getBoundingRect().top,
+      //     )
+      //     object.left = Math.max(
+      //       object.left,
+      //       object.left - object.getBoundingRect().left,
+      //     )
+      //   }
+      //   // bot-right corner
+      //   if (
+      //     object.getBoundingRect().top + object.getBoundingRect().height >
+      //       object.canvas.height ||
+      //     object.getBoundingRect().left + object.getBoundingRect().width >
+      //       object.canvas.width
+      //   ) {
+      //     object.top = Math.min(
+      //       object.top,
+      //       object.canvas.height -
+      //         object.getBoundingRect().height +
+      //         object.top -
+      //         object.getBoundingRect().top,
+      //     )
+      //     object.left = Math.min(
+      //       object.left,
+      //       object.canvas.width -
+      //         object.getBoundingRect().width +
+      //         object.left -
+      //         object.getBoundingRect().left,
+      //     )
+      //   }
+      // })
       // canvas.on('object:moved', event => {
       //   console.log('[Fabric] Object moved')
       //   const object = event.target
@@ -181,9 +181,9 @@ export default {
         }
 
         if (
-          mouse.x > canvas.width ||
+          mouse.x > this.origin.width ||
           mouse.x < 0 ||
-          mouse.y > canvas.height ||
+          mouse.y > this.origin.height ||
           mouse.y < 0
         ) {
           return false

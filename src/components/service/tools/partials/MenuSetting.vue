@@ -1,7 +1,7 @@
 <template>
   <div>
     <menu-button
-      text="로컬 녹화 설정"
+      :text="$t('service.record_local_setting')"
       :active="status"
       :disabled="!canRecord"
       :src="require('assets/image/ic_setting.svg')"
@@ -57,21 +57,16 @@ export default {
     setting() {
       if (!this.canRecord) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 로컬 녹화를 막았습니다.')
+        this.toastDefault(this.$t('service.record_blocked'))
         return
       }
       this.status = !this.status
-      this.$eventBus.$emit('lcRecSet:show')
     },
     serverRecording(isStart) {
       this.logger('Server Record ::', isStart)
     },
     localRecording(isStart) {
-      if (isStart) {
-        this.recording = true
-      } else {
-        this.recording = false
-      }
+      this.recording = isStart
     },
   },
 

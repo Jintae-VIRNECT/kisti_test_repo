@@ -211,6 +211,16 @@
   }
 }
 
+// 모달 em 세팅
+@mixin modal {
+  @media screen and (max-width: 900px), (max-height: 790px) {
+    font-size: 12px;
+  }
+  @media screen and (max-width: $size_m_max) {
+    font-size: 10px;
+  }
+}
+
 // 프린트
 @mixin print {
   @media print {

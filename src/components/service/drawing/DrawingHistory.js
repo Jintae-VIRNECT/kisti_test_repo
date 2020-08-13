@@ -5,15 +5,16 @@ export default {
      * 이미지 목록 수정 메소드
      */
     updateHistory() {
-      const json = this.canvas.toJSON()
+      const json = this.canvas.toJSON().objects
       const thumbnail = this.canvas.lowerCanvasEl.toDataURL()
       // const thumbnail = this.resizeCanvas(this.canvas.lowerCanvasEl);
-
-      this.$store.dispatch('updateHistory', {
+      const params = {
         id: this.file.id,
         img: thumbnail,
         json: json,
-      })
+      }
+
+      this.$store.dispatch('updateHistory', params)
     },
 
     /**

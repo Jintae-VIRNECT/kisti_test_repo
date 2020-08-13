@@ -1,5 +1,7 @@
 <template>
   <div class="header-tools">
+    <chat v-if="!isScreenDesktop"></chat>
+
     <!-- <stream></stream> -->
 
     <mic></mic>
@@ -10,7 +12,9 @@
 
     <call-time></call-time>
 
-    <button class="header-tools__leave" @click="leave">나가기</button>
+    <button class="header-tools__leave" @click="leave">
+      {{ $t('button.leave') }}
+    </button>
   </div>
 </template>
 
@@ -24,6 +28,7 @@ import Mic from '../tools/Mic'
 import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
 import CallTime from '../tools/CallTime'
+import Chat from '../tools/Chat'
 
 export default {
   name: 'HeaderTools',
@@ -33,6 +38,7 @@ export default {
     Speaker,
     Notice,
     CallTime,
+    Chat,
   },
   data() {
     return {}

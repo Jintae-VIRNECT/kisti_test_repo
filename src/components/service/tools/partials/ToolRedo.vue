@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="재실행"
+    :text="$t('service.tool_redo')"
     :active="status"
     :disabled="!isAvailable"
     :src="require('assets/image/ic-tool-redo.svg')"

@@ -2,10 +2,7 @@ import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 
 import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
-import { TYPE } from 'configs/chat.config'
 
-import ChatMsgBuilder from 'utils/chatMsgBuilder'
-import { allowCamera } from 'utils/testing'
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
 import { logger } from 'utils/logger'
@@ -21,6 +18,7 @@ export const addSessionEventListener = session => {
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
+        video: event.stream.hasVideo,
       })
       _.sendResolution()
       _.mic(Store.getters['mic'].isOn)
@@ -153,20 +151,16 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = event.data
-
-    const chatBuilder = new ChatMsgBuilder()
-      .setName(participants[idx].nickname)
-      .setText(data)
-      .setType(TYPE.OPPONENT)
-      .setId(event.from.connectionId)
-      .setProfileImg(participants[idx].path ? participants[idx].path : null)
-
-    if (session.connection.connectionId === event.from.connectionId) {
-      // 본인
-      chatBuilder.setType(TYPE.ME)
-    }
-
-    Store.commit('addChat', chatBuilder.build())
+    Store.commit('addChat', {
+      type:
+        session.connection.connectionId === event.from.connectionId
+          ? 'me'
+          : 'opponent',
+      name: participants[idx].nickname,
+      profile: participants[idx].path,
+      connectionId: event.from.connectionId,
+      text: data,
+    })
   })
 
   /** 채팅 파일 수신 */
@@ -178,31 +172,16 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = JSON.parse(event.data)
-
-    const chatBuilder = new ChatMsgBuilder()
-      .setType(TYPE.OPPONENT)
-      .setName(participants[idx].nickname)
-      .setId(event.from.connectionId)
-      .setProfileImg(participants[idx].path)
-      .setFile([
-        {
-          fileName: data.fileName,
-          fileSize: data.size,
-          fileUrl: data.fileDownloadUrl,
-        },
-      ])
-
-    if (session.connection.connectionId === event.from.connectionId) {
-      // 본인
-      chatBuilder.setType(TYPE.ME)
-    }
-
-    Store.commit('addChat', chatBuilder.build())
-  })
-
-  /** 내보내기 */
-  session.on('forceDisconnectByUser', event => {
-    // console.log(event)
+    Store.commit('addChat', {
+      type:
+        session.connection.connectionId === event.from.connectionId
+          ? 'me'
+          : 'opponent',
+      name: participants[idx].nickname,
+      profile: participants[idx].path,
+      uuid: event.from.connectionId,
+      text: data,
+    })
   })
 }
 
@@ -216,10 +195,8 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  let allowUser = false
-  if (allowCamera.includes(_.account.email)) {
-    allowUser = true
-  }
+  const publishVideo = roleType === ROLE.WORKER
+  // const publishVideo = connection.stream.hasVideo
 
   userObj = {
     id: uuid,
@@ -230,7 +207,7 @@ const setUserObject = event => {
     // path: participant.profile,
     nickname: null,
     path: null,
-    video: roleType === ROLE.WORKER || allowUser,
+    video: publishVideo,
     audio: true,
     speaker: true,
     mute: false,
@@ -258,10 +235,8 @@ const setUserObject = event => {
         path: participant.profile,
       })
       const chatObj = {
-        text: participant.nickname + '님이 대화에 참여하셨습니다.',
-        name: 'people',
-        date: new Date(),
-        uuid: null,
+        name: participant.nickname,
+        status: 'invite',
         type: 'system',
       }
       Store.commit('addChat', chatObj)

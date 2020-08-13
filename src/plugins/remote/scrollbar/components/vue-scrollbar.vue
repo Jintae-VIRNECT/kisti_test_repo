@@ -208,11 +208,11 @@ export default {
         elementSize.scrollAreaHeight - elementSize.scrollWrapperHeight
 
       // Max Scroll Down
-      const maxBottom = next > lowerEnd
+      const maxBottom = next > lowerEnd || next === lowerEnd
       if (maxBottom) next = lowerEnd
 
       // Max Scroll Up
-      const maxTop = next < 0
+      const maxTop = next < 0 || next === 0
       if (maxTop) next = 0
 
       // Update the Vertical Value if it's needed

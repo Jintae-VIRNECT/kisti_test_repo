@@ -24,11 +24,14 @@ export default {
     },
     logout() {
       this.$call.leave()
-      this.confirmDefault(
-        `접속을 종료합니다.​
-        서비스를 이용하시려면 다시 실행해 주세요`,
-        { text: '종료', action: Auth.logout },
-      )
+      this.$router.push({ name: 'workspace' })
+      this.$nextTick(() => {
+        this.confirmDefault(
+          `접속을 종료합니다.​
+          서비스를 이용하시려면 다시 실행해 주세요`,
+          { text: '종료', action: Auth.logout },
+        )
+      })
     },
     init() {
       if (!this.betaInterval) {

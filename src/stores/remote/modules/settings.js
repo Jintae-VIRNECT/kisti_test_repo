@@ -1,5 +1,5 @@
 //Definition of workspace store
-import { SETTINGS } from '../mutation-types'
+import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
 import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
 
 const state = {
@@ -8,6 +8,10 @@ const state = {
     isOn: false,
   },
   speaker: {
+    deviceId: null,
+    isOn: true,
+  },
+  video: {
     deviceId: null,
     isOn: true,
   },
@@ -29,6 +33,8 @@ const state = {
 
   localRecordTarget: RECORD_TARGET.WORKER,
   localRecordStatus: LCOAL_RECORD_STAUTS.STOP,
+
+  chatBox: false,
 }
 
 const mutations = {
@@ -38,6 +44,9 @@ const mutations = {
   [SETTINGS.SET_SPEAKER_DEVICE](state, speaker) {
     Object.assign(state.speaker, speaker)
   },
+  [SETTINGS.SET_VIDEO_DEVICE](state, video) {
+    Object.assign(state.video, video)
+  },
   [SETTINGS.SET_RECORD](state, recordInfo) {
     Object.assign(state.localRecordInfo, recordInfo)
   },
@@ -45,9 +54,9 @@ const mutations = {
     Object.assign(state.allow, allow)
   },
 
-  [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
-    state.videoDevice = videoDevice
-  },
+  // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
+  //   state.videoDevice = videoDevice
+  // },
   [SETTINGS.SET_LANGUAGE](state, language) {
     state.language = language
   },
@@ -63,10 +72,15 @@ const mutations = {
   [SETTINGS.SET_LCOAL_RECORD_STAUTS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
   },
+
+  [TOGGLE_CHAT](state, flag) {
+    state.chatBox = flag
+  },
 }
 const getters = {
   mic: state => state.mic,
   speaker: state => state.speaker,
+  video: state => state.video,
   localRecord: state => state.localRecordInfo,
   allow: state => state.allow,
   allowLocalRecord: state => state.allow.localRecording,
@@ -80,11 +94,22 @@ const getters = {
   settingInfo: state => {
     return {
       mic: state.mic.deviceId,
+      micOn: state.mic.isOn,
+      video: state.video.deviceId,
     }
+  },
+
+  chatBox: state => state.chatBox,
+}
+
+const actions = {
+  toggleChat({ commit }, flag) {
+    commit('TOGGLE_CHAT', flag)
   },
 }
 export default {
   state,
   mutations,
   getters,
+  actions,
 }

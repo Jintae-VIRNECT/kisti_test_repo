@@ -73,8 +73,7 @@ export default {
       handler(now, before) {
         //if worker out -> then stop local recording
         if (now === false && before === true) {
-          const showMsg = true
-          this.stopRecord(showMsg)
+          this.$eventBus.$emit('localRecord', false)
         }
       },
     },
@@ -94,19 +93,18 @@ export default {
   methods: {
     ...mapActions(['setScreenStream', 'setLocalRecordStatus']),
 
-    /**
-     * init recorder and start
-     */
-    async recording() {
+    async startRecord() {
       this.recorder = new LocalRecorder()
 
-      if (!(await this.initRecorder())) {
-        this.recorder.stopRecord()
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+      if (await this.initRecorder()) {
+        await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
+        this.recorder.startRecord()
+      } else {
+        //TODO : MESSAGE
+        //녹화 시작 실패시의 안내 메시지
+        this.$eventBus.$emit('localRecord', false)
         return false
       }
-      this.recorder.startRecord()
-      this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.START)
     },
 
     /**
@@ -114,7 +112,6 @@ export default {
      */
     async initRecorder() {
       const config = {}
-
       config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
       config.options = {
         video: getWH(
@@ -138,37 +135,26 @@ export default {
       config.roomTitle = this.roomInfo.title
 
       //get nickname
-      if (this.account && this.account.nickname) {
-        config.nickName = this.account.nickname
-      }
-
-      //get user uuid
-      if (this.account && this.account.uuid) {
+      if (this.account) {
+        config.nickname = this.account.nickname
         config.userId = this.account.uuid
       }
 
       //set callbacks
       this.recorder.setStartCallback(() => {
-        this.isRecording = true
-        this.$eventBus.$emit('localRecord', true)
-        this.toastDefault(
-          '로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.',
-        )
+        this.toastDefault(this.$t('service.record_start_message'))
       })
 
-      this.recorder.setStopCallback(() => {
-        this.isRecording = false
+      this.recorder.setStopSignal(() => {
         this.$eventBus.$emit('localRecord', false)
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       })
 
       this.recorder.setNoQuotaCallback(() => {
-        this.toastDefault(
-          'PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​',
-        )
+        this.toastDefault(this.$t('service.record_fail_memory'))
       })
 
       this.recorder.setConfig(config)
+
       if (await this.recorder.initRecorder()) {
         if (this.screenStream === null) {
           this.recorder.changeCanvasOrientation(this.resolution.orientation)
@@ -178,8 +164,6 @@ export default {
 
         return true
       } else {
-        this.isRecording = false
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
         logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
@@ -189,7 +173,7 @@ export default {
      * stop recorder
      * @param {Boolean} showMsg show toast msg
      */
-    stopRecord(showMsg) {
+    async stopRecord(showMsg) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -200,16 +184,13 @@ export default {
           }
 
           if (showMsg) {
-            this.toastDefault(
-              '로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.',
-            )
+            this.toastDefault(this.$t('service.record_end_message'))
           }
         }
       } catch (e) {
         console.error(e)
       } finally {
-        this.isRecording = false
-        this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
+        await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       }
     },
 
@@ -271,8 +252,15 @@ export default {
     },
 
     stopLocalRecordByKeyPress(e) {
-      if (
-        e.key === 'Escape' &&
+      if (e.key === 'Escape') {
+        this.$eventBus.$emit('localRecord', false)
+      }
+    },
+    async toggleStatus(isStart) {
+      if (isStart && this.localRecordStatus === LCOAL_RECORD_STAUTS.STOP) {
+        this.startRecord()
+      } else if (
+        !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
         const showMsg = true
@@ -280,9 +268,10 @@ export default {
       }
     },
   },
-
   mounted() {
-    this.$eventBus.$on('startLocalRecord', this.recording)
-    this.$eventBus.$on('stopLocalRecord', this.stopRecord)
+    this.$eventBus.$on('localRecord', this.toggleStatus)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('localRecord')
   },
 }

@@ -1,21 +1,19 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
-const reader = require('./server/reader')
-const urls = reader.getURLs()
+const config = require('./server/config')
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers['user-agent']
   const isChrome = userAgent.includes('Chrome')
   const isChromeMobile =
     userAgent.includes('CriOS') || userAgent.includes('mobileApp')
-  const IsHeartBeat = userAgent.includes('ELB-HealthChecker/2.0')
   const isEdge = userAgent.includes('Edg')
 
   const findSafari = userAgent.includes('Safari')
   const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
 
-  return (isChrome || isEdge || isChromeMobile || IsHeartBeat) && !isSafari
+  return (isChrome || isEdge || isChromeMobile) && !isSafari
 }
 
 function IsMobileBrowser(req) {
@@ -80,7 +78,7 @@ router.get('/OSS', function(req, res) {
 
 router.get('/urls', function(req, res) {
   res.header('Content-Type', 'application/json')
-  res.send(urls)
+  res.send(JSON.stringify(config.getUrls()))
 })
 
 router.get('/*', function(req, res) {

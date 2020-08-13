@@ -2,11 +2,11 @@
   <section class="createroom-user">
     <div class="createroom-user__header">
       <p class="createroom-user__title">
-        선택 가능한 멤버 리스트
+        {{ $t('workspace.create_select_member_list') }}
         <span class="createroom-user__number">{{ totalNum }}</span>
       </p>
       <icon-button
-        text="새로고침"
+        :text="$t('button.refresh')"
         :imgSrc="require('assets/image/ic_renew.svg')"
         animation="rotate360"
         @click="refresh"
@@ -41,10 +41,10 @@
         <div class="createroom-user__empty-box">
           <img src="~assets/image/img_inviteuser_empty.svg" />
           <p class="createroom-user__empty-title">
-            협업 가능한 멤버가 없습니다.
+            {{ $t('workspace.create_select_empty_title') }}
           </p>
           <p class="createroom-user__empty-description">
-            협업 멤버를 추가해주세요.
+            {{ $t('workspace.create_select_empty_description') }}
           </p>
         </div>
       </div>

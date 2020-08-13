@@ -1,7 +1,7 @@
 <template>
   <section class="roominfo-view">
     <p class="roominfo-view__title">
-      참가자 정보
+      {{ $t('workspace.info_remote_member') }}
     </p>
     <div class="roominfo-view__body">
       <scroller>

@@ -20,7 +20,7 @@
         @click="$emit('kickout')"
         v-if="isLeader"
       >
-        내보내기
+        {{ $t('button.kickout') }}
       </button>
     </div>
   </wide-card>

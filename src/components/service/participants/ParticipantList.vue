@@ -10,7 +10,7 @@
         ></participant-video>
         <article v-if="showInvite" key="append">
           <div class="participant-video more" @click="more">
-            <p>추가 초대하기</p>
+            <p>{{ $t('service.participant_invite') }}</p>
           </div>
         </article>
       </transition-group>

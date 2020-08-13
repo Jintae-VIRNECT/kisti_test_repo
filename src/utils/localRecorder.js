@@ -23,7 +23,7 @@ export default class LocalRecorder {
     this.maxTime = 60
     this.streams = []
     this.interval = 1
-    this.nickName = 'NONE'
+    this.nickname = 'NONE'
     this.userId = 'NONE'
   }
 
@@ -35,7 +35,7 @@ export default class LocalRecorder {
     this.maxTime = config.maxTime
     this.streams = config.streams
     this.interval = config.interval
-    this.nickName = config.nickName
+    this.nickname = config.nickname
     this.userId = config.userId
   }
 
@@ -47,10 +47,10 @@ export default class LocalRecorder {
   }
 
   /**
-   * @param {Function} stopCallback
+   * @param {Function} stopSignal
    */
-  setStopCallback(stopCallback) {
-    this.stopCallback = stopCallback
+  setStopSignal(stopSignal) {
+    this.stopSignal = stopSignal
   }
 
   /**
@@ -61,15 +61,9 @@ export default class LocalRecorder {
   }
 
   async initRecorder() {
-    //for group id
-    this.groupId = uuid()
-
     if (!(await IDBHelper.initIDB())) {
       return false
     }
-
-    //reset fileCount
-    this.fileCount = 0
 
     if ((await this.checkQuota()) === false) {
       return false
@@ -78,6 +72,12 @@ export default class LocalRecorder {
     if (this.streams.length <= 0) {
       return false
     }
+
+    //for group id
+    this.groupId = uuid()
+
+    //reset fileCount
+    this.fileCount = 0
 
     this.recorder = new MSR.MultiStreamRecorder(this.streams, this.options)
     this.recorder.mimeType = this.mimeType
@@ -112,10 +112,6 @@ export default class LocalRecorder {
         this.recorder.stop()
         this.recorder.clearRecordedData()
 
-        if (this.stopCallback) {
-          this.stopCallback()
-        }
-
         logger(logType, 'stop local record')
       }
     } catch (e) {
@@ -133,7 +129,7 @@ export default class LocalRecorder {
       //make file name
       const fileNumber = this.getFileNumberString(this.fileCount)
       this.fileName =
-        this.today + '_' + fileNumber + '_' + this.nickName + '.mp4'
+        this.today + '_' + fileNumber + '_' + this.nickname + '.mp4'
 
       //get media chunk play time
       const currentTime = performance.now()
@@ -143,7 +139,7 @@ export default class LocalRecorder {
       this.totalPlayTime = this.totalPlayTime + playTime / 60
 
       if (!(await this.checkQuota())) {
-        this.stopRecord()
+        this.stopSignal()
         await IDBHelper.deleteGroupMediaChunk(this.groupId)
       } else {
         //insert IDB
@@ -155,7 +151,7 @@ export default class LocalRecorder {
           blob.size,
           blob,
           this.userId,
-          this.nickName,
+          this.nickname,
           this.roomTitle,
         )
       }
@@ -166,7 +162,7 @@ export default class LocalRecorder {
       }
 
       if (this.totalPlayTime >= this.maxTime) {
-        this.stopRecord()
+        this.stopSignal()
       }
 
       this.fileCount++

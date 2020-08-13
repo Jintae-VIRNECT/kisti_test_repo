@@ -80,7 +80,7 @@ export default {
   transition: width 0.25s ease;
   caret-color: $color_primary;
   &:focus {
-    width: 22.857rem;
+    width: 20.857rem;
     transition: width 0.25s ease;
   }
   &::placeholder {

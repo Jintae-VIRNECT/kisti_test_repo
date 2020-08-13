@@ -68,5 +68,8 @@ export default {
   &.toggle-header {
     background-size: 120%;
   }
+  &.toggle-header__small {
+    background-size: 70%;
+  }
 }
 </style>

@@ -19,9 +19,12 @@
 
 .workspace-welcome__group {
   display: flex;
-  color: rgba($color_primary_400, 0.82);
-  font-weight: 500;
-  font-size: 1.286rem;
+  > p {
+    color: rgba($color_primary_400, 0.82);
+    font-weight: 500;
+    font-size: 1.286rem;
+    @include ellipsis();
+  }
 }
 
 .workspace-welcome__name {

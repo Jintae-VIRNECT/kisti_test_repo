@@ -1,6 +1,7 @@
 import { INIT_WORKSPACE, CHANGE_WORKSPACE } from '../mutation-types'
 
 const expireCheck = time => {
+  if (process.env.TARGET_ENV !== 'production') return true
   const diff = new Date(time).getTime() - Date.now()
   return diff > 0
 }
@@ -11,7 +12,8 @@ const setWorkspaceObj = info => {
     profile: info.workspaceProfile,
     renewalDate: info.renewalDate,
     role: info.role,
-    expire: !expireCheck(info.renewalDate),
+    expire: false,
+    // expire: !expireCheck(info.renewalDate),
   }
 }
 

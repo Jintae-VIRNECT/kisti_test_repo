@@ -11,19 +11,17 @@
   >
     <div class="device-denied">
       <div class="device-denied--header">
-        카메라와 마이크 접근이 차단되었습니다.
+        {{ $t('workspace.access_deny') }}
       </div>
       <div class="device-denied__content">
         <div class="device-denieds__content--icon">
           <img src="~assets/image/call/gnb_ic_video_on.svg" />
         </div>
         <div class="device-denied__content--vbar"></div>
-        <div class="device-denied__content--text">
-          브라우저 주소창의
-          <span class="device-denied__content--emphasize">아이콘</span>을
-          클릭하여<br />
-          접근을 허용 후 새로고침 해주세요.
-        </div>
+        <div
+          class="device-denied__content--text"
+          v-html="$t('workspace.access_deny_description')"
+        ></div>
       </div>
     </div>
   </modal>

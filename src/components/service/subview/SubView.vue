@@ -1,6 +1,6 @@
 <template>
   <div class="subview-wrapper">
-    <transition name="subview">
+    <transition name="subvideo">
       <sub-video v-if="subView"></sub-video>
     </transition>
     <chat :class="{ subView }"></chat>
@@ -39,16 +39,16 @@ export default {
 }
 </script>
 <style>
-.subview-enter-active,
-.subview-leave-active {
+.subvideo-enter-active,
+.subvideo-leave-active {
   transition: left ease 0.4s;
 }
-.subview-enter,
-.subview-leave-to {
+.subvideo-enter,
+.subvideo-leave-to {
   opacity: 0;
 }
-.subview-enter-to,
-.subview-leave {
+.subvideo-enter-to,
+.subvideo-leave {
   opacity: 1;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <tooltip content="영상 on/off">
+  <tooltip :content="`${$t('common.video')} on/off`">
     <toggle-button
       slot="body"
-      description="영상 on/off"
+      :description="`${$t('common.video')} on/off`"
       size="2.429rem"
       :active="stream"
       :activeSrc="require('assets/image/call/gnb_ic_video_on.svg')"

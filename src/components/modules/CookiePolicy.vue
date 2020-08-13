@@ -1,12 +1,15 @@
 <template>
   <div class="cookie-policy">
     <div class="cookie-policy-wrapper">
-      <p class="cookie-policy-wrapper__text" v-html="text"></p>
+      <p
+        class="cookie-policy-wrapper__text"
+        v-html="$t('workspace.cookie')"
+      ></p>
       <button
         class="cookie-policy-wrapper__submit-button"
         @click="agreeCookie()"
       >
-        {{ '확인' }}
+        {{ $t('button.confirm') }}
       </button>
     </div>
   </div>
@@ -18,12 +21,6 @@ export default {
     agreeCookie() {
       this.$emit('update:visible', false)
     },
-  },
-  data() {
-    return {
-      text:
-        "버넥트는 버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키를 사용합니다. 자세한 내용을 알아보려면<br>당사의 <a href='/policy/cookie' target='_blank'>쿠키 취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 이러한 쿠키 설정에 동의하는 것입니다.",
-    }
   },
   /* Lifecycles */
   mounted() {

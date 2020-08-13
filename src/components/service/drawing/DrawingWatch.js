@@ -60,13 +60,22 @@ export default {
         this.cursor.setColor(hexToRGBA(this.tools.color, opacity))
       }
     },
-    'tools.lineWidth'(size) {
+    scaleWidth(size) {
       if (this.canvas) {
         this.canvas.freeDrawingBrush.width = size
       }
       if (this.cursor) {
         this.cursor.setRadius(size / 2)
       }
+    },
+    'tools.lineWidth'(size) {
+      this.scaleWidth = size / this.origin.scale
+      // if (this.canvas) {
+      //   this.canvas.freeDrawingBrush.width = this.scaleWidth
+      // }
+      // if (this.cursor) {
+      //   this.cursor.setRadius(this.scaleWidth / 2)
+      // }
     },
     undoList() {
       this.toolAble()

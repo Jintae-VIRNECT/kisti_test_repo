@@ -19,7 +19,7 @@
               class="btn"
               @click="createRoom"
             >
-              원격 협업 생성
+              {{ $t('workspace.create_room') }}
             </button>
           </li>
         </transition>
@@ -59,29 +59,31 @@ export default {
   },
   data() {
     return {
-      tabComponents: [
-        {
-          name: 'history',
-          text: '최근 기록',
-        },
-        {
-          name: 'remote',
-          text: '원격 협업',
-        },
-        {
-          name: 'user',
-          text: '멤버',
-        },
-        {
-          name: 'setting',
-          text: '환경 설정',
-        },
-      ],
       component: 'history',
     }
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    tabComponents() {
+      return [
+        {
+          name: 'history',
+          text: this.$t('workspace.history'),
+        },
+        {
+          name: 'remote',
+          text: this.$t('workspace.remote'),
+        },
+        {
+          name: 'user',
+          text: this.$t('workspace.user'),
+        },
+        {
+          name: 'setting',
+          text: this.$t('workspace.setting'),
+        },
+      ]
+    },
   },
   props: {
     fix: {

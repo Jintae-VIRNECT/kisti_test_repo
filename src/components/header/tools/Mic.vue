@@ -1,9 +1,9 @@
 <template>
-  <tooltip content="마이크 on/off">
+  <tooltip :content="`${$t('common.mic')} on/off`">
     <toggle-button
       slot="body"
       customClass="toggle-header"
-      description="마이크 on/off"
+      :description="`${$t('common.mic')} on/off`"
       size="2.429rem"
       :active="mic.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
