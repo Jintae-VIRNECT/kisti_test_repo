@@ -1,7 +1,10 @@
 <template>
   <section class="workspace-welcome">
-    <div class="workspace-welcome__body offsetwidth">
-      <div class="workspace-welcome__group">
+    <div
+      class="workspace-welcome__body offsetwidth"
+      :class="{ empty: !hasLicense }"
+    >
+      <div class="workspace-welcome__group" v-if="hasLicense">
         <p>
           {{ workspace.title }}
         </p>
