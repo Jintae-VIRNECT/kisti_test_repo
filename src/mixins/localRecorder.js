@@ -13,6 +13,11 @@ export default {
     return {
       recorder: null,
       workerJoined: false,
+
+      audioContext: null,
+      audioContextDes: null,
+      audioSourceMap: new Map(),
+      beforeIds: [],
     }
   },
   computed: {
@@ -61,20 +66,64 @@ export default {
   },
   watch: {
     participants: {
-      handler(participants) {
-        const checkWorker = participant => {
-          return participant.roleType === ROLE.WORKER
-        }
-        this.workerJoined = participants.some(checkWorker)
+      handler(now) {
+        const nowIds = now.map(participant => {
+          return participant.connectionId
+        })
+        console.log('nowIds::', nowIds)
+        console.log('beforeIds::', this.beforeIds)
+
+        let joins = nowIds.filter(x => !this.beforeIds.includes(x))
+        let leaves = this.beforeIds.filter(x => !nowIds.includes(x))
+
+        console.log('joins::', joins)
+        console.log('leaves::', leaves)
+
+        //connection
+        joins.forEach(joinId => {
+          this.participants.forEach(participant => {
+            if (participant.stream) {
+              let audioSource = this.audioContext.createMediaStreamSource(
+                participant.stream,
+              )
+              audioSource.connect(this.audioContextDes)
+              this.audioSourceMap.set(joinId, audioSource)
+            }
+          })
+        })
+
+        //disconnection
+        leaves.forEach(leaveId => {
+          const audioSource = this.audioSourceMap.get(leaveId)
+          audioSource.disconnect()
+          this.audioSourceMap.delete(leaveId)
+        })
+
+        this.beforeIds = now.map(participant => {
+          return participant.connectionId
+        })
+
+        // const checkWorker = participant => {
+        //   return participant.roleType === ROLE.WORKER
+        // }
+        // this.workerJoined = participants.some(checkWorker)
+        // participants.forEach(participant => {
+        //   if (participant.stream) {
+        //     let audioSource = this.audioContext.createMediaStreamSource(
+        //       participant.stream,
+        //     )
+        //     audioSource.connect(this.audioContextDes)
+        //   }
+        // })
       },
       deep: true,
     },
     workerJoined: {
       handler(now, before) {
         //if worker out -> then stop local recording
-        if (now === false && before === true) {
-          this.$eventBus.$emit('localRecord', false)
-        }
+        // if (now === false && before === true) {
+        //   this.$eventBus.$emit('localRecord', false)
+        // }
       },
     },
     resolutions: {
@@ -199,26 +248,27 @@ export default {
      */
     async getStreams() {
       const streams = []
-      const participantsAudioStream = []
+      // const participantsAudioStream = []
 
       //get participants audio stream
-      this.participants.forEach(participant => {
-        if (participant.stream) {
-          const audioTracks = participant.stream.getAudioTracks()
+      // this.participants.forEach(participant => {
+      //   if (participant.stream) {
+      //     const audioTracks = participant.stream.getAudioTracks()
 
-          if (audioTracks && audioTracks.length > 0) {
-            const audioStream = new MediaStream()
-            const audioTrack = participant.stream.getAudioTracks()[0]
+      //     if (audioTracks && audioTracks.length > 0) {
+      //       const audioStream = new MediaStream()
+      //       const audioTrack = participant.stream.getAudioTracks()[0]
 
-            audioStream.addTrack(audioTrack)
-            participantsAudioStream.push(audioStream)
-          }
-        }
-      })
+      //       audioStream.addTrack(audioTrack)
+      //       participantsAudioStream.push(audioStream)
+      //     }
+      //   }
+      // })
 
-      if (participantsAudioStream.length > 0) {
-        streams.push(...participantsAudioStream)
-      }
+      // if (participantsAudioStream.length > 0) {
+      //   streams.push(...participantsAudioStream)
+      // }
+      streams.push(this.audioContextDes.stream)
 
       switch (this.localRecordTarget) {
         case RECORD_TARGET.WORKER:
@@ -270,6 +320,18 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('localRecord', this.toggleStatus)
+
+    this.participants.forEach(participant => {
+      if (participant.stream) {
+        const audioSource = this.audioContext.createMediaStreamSource(
+          participant.stream,
+        )
+        audioSource.connect(this.audioContextDes)
+        this.audioSourceMap.set(participant.connectionId, audioSource)
+      }
+    })
+    this.audioContext = new AudioContext()
+    this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
   beforeDestroy() {
     this.$eventBus.$off('localRecord')
