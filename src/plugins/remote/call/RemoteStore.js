@@ -154,9 +154,6 @@ const mutations = {
     } else {
       state.participants.push(payload)
     }
-    if ((!state.mainView || !state.mainView.stream) && payload.video) {
-      state.mainView = payload
-    }
   },
   setStream(state, payload) {
     const idx = state.participants.findIndex(obj => obj.id === payload.id)
