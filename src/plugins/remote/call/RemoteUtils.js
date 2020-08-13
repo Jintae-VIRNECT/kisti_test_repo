@@ -1,7 +1,14 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 
-import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
+import {
+  SIGNAL,
+  CONTROL,
+  CAMERA,
+  FLASH,
+  ROLE,
+  VIDEO,
+} from 'configs/remote.config'
 
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
@@ -24,6 +31,7 @@ export const addSessionEventListener = session => {
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
       if (_.account.roleType === ROLE.LEADER) {
+        // _.mainview(CONTROL.POINTING, Store.getters['allowPointing'])
         _.control(CONTROL.POINTING, Store.getters['allowPointing'])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
       }
@@ -71,6 +79,16 @@ export const addSessionEventListener = session => {
     removeSubscriber(event.stream.streamId)
   })
 
+  /** 메인뷰 변경 */
+  session.on(SIGNAL.VIDEO, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    if (data.type === VIDEO.SHARE) {
+      Store.dispatch('setMainView', { id: data.id, force: true })
+    } else {
+      Store.dispatch('setMainView', { force: false })
+    }
+  })
   /** 상대방 마이크 활성 정보 수신 */
   session.on(SIGNAL.MIC, event => {
     if (session.connection.connectionId === event.from.connectionId) return

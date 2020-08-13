@@ -103,9 +103,10 @@ import { CAMERA } from 'configs/device.config'
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import shutterMixin from 'mixins/shutter'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'MainVideo',
-  mixins: [shutterMixin],
+  mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
     VideoTools,
@@ -136,6 +137,7 @@ export default {
       resolutions: 'resolutions',
       initing: 'initing',
       deviceInfo: 'deviceInfo',
+      viewForce: 'viewForce',
     }),
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -195,6 +197,12 @@ export default {
           videoBox.style.width = '100%'
         }
       },
+    },
+    viewForce(flag, oldFlag) {
+      if (flag === false && oldFlag === true) {
+        // TODO: MESSAGE
+        this.toastDefault('리더가 화면 전환을 중지했습니다?')
+      }
     },
     cameraStatus(status, oldStatus) {
       if (status === oldStatus || oldStatus === -1) return

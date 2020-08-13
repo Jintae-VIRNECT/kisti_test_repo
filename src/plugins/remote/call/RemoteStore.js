@@ -1,6 +1,7 @@
 const getDefaultState = () => {
   return {
     initing: true,
+    viewForce: false,
     mainView: {},
     participants: [
       // id: uuid,
@@ -139,10 +140,14 @@ const state = getDefaultState()
 
 const mutations = {
   // stream
-  setMainView(state, participantId) {
-    const idx = state.participants.findIndex(obj => obj.id === participantId)
+  setMainView(state, id) {
+    const idx = state.participants.findIndex(obj => obj.id === id)
     if (idx < 0) return
     state.mainView = state.participants[idx]
+  },
+  setMainViewForce(state, force) {
+    // if (!state.mainView || !state.mainView.id) return
+    state.viewForce = force
   },
   addStream(state, payload) {
     if (payload.me) {
@@ -282,9 +287,20 @@ const actions = {
   addChat({ commit }, payload) {
     commit('addChat', payload)
   },
+  setMainView({ commit }, payload) {
+    if ('id' in payload) {
+      commit('setMainView', payload.id)
+    }
+    if ('force' in payload) {
+      commit('setMainViewForce', payload.force)
+    } else {
+      commit('setMainViewForce', false)
+    }
+  },
 }
 
 const getters = {
+  viewForce: state => state.viewForce,
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,

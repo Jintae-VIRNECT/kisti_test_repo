@@ -1,7 +1,7 @@
 import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
+import { SIGNAL, ROLE, CAMERA, FLASH, VIDEO } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
@@ -182,12 +182,15 @@ const _ = {
   },
   /**
    * main view change (only leader)
+   * @param {String} uuid
+   * @param {Boolean} force true / false
    */
-  mainview: uuid => {
-    if (_.account.roleType !== ROLE.EXPERT_LEADER) return
+  mainview: (uuid, force = false) => {
+    if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
       id: uuid,
+      type: force ? VIDEO.SHARE : VIDEO.NORMAL,
     }
     _.session.signal({
       data: JSON.stringify(params),

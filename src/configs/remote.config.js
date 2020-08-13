@@ -17,6 +17,11 @@ export const SIGNAL = {
   FILE: 'signal:file',
 }
 
+export const VIDEO = {
+  NORMAL: 'normal',
+  SHARE: 'share',
+}
+
 export const CAMERA = {
   ZOOM: 'zoom',
   STATUS: 'status',

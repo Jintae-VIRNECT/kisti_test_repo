@@ -119,16 +119,17 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import Profile from 'Profile'
 import Popover from 'Popover'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 import { kickMember } from 'api/service'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   components: {
     Profile,
     Popover,
@@ -144,7 +145,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'roomInfo']),
+    ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce']),
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -183,7 +184,7 @@ export default {
     participant() {},
   },
   methods: {
-    ...mapMutations(['setMainView']),
+    ...mapActions(['setMainView']),
     hoverContents() {
       const status = this.$el.querySelector('.participant-video__network')
       if (!status) return
@@ -209,10 +210,32 @@ export default {
     },
     changeMain() {
       if (!this.participant.video) return
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
-        this.$call.mainview(this.participant.id)
+      if (this.account.roleType === ROLE.LEADER) {
+        this.confirmCancel(
+          '선택한 영상을 모든 참가자와 공유하시겠습니까? \n공유 시, 포인팅 기능을 사용할 수 있습니다.',
+          {
+            text: '일반 보기',
+            action: this.normalMain,
+          },
+          { text: '전체 공유', action: this.forceMain },
+        )
+      } else {
+        if (this.viewForce === true) {
+          this.toastDefault(
+            '전체 공유 상태에서는 다른 영상을 선택할 수 없습니다.​',
+          )
+          return
+        }
+        this.setMainView({ id: this.participant.id })
       }
-      this.setMainView(this.participant.id)
+    },
+    normalMain() {
+      this.setMainView({ id: this.participant.id })
+      this.$call.mainview(this.participant.id, false)
+    },
+    forceMain() {
+      this.$call.mainview(this.participant.id, true)
+      this.setMainView({ id: this.participant.id, force: true })
     },
     profileImageError(event) {
       event.target.style.display = 'none'
