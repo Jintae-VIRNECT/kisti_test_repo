@@ -1,7 +1,10 @@
 <template>
   <section class="workspace-welcome">
-    <div class="workspace-welcome__body offsetwidth">
-      <div class="workspace-welcome__group">
+    <div
+      class="workspace-welcome__body offsetwidth"
+      :class="{ empty: emptyWorkspace }"
+    >
+      <div class="workspace-welcome__group" v-if="!emptyWorkspace">
         <p>
           {{ workspace.title }}
         </p>
@@ -14,7 +17,7 @@
       </div>
       <p class="workspace-welcome__name" v-html="welcomeText"></p>
       <button
-        v-if="hasLicense && !expireLicense"
+        v-if="!emptyWorkspace && !expireLicense"
         class="btn"
         @click="createRoom"
       >
@@ -43,6 +46,13 @@ export default {
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    emptyWorkspace() {
+      if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
+        return true
+      } else {
+        return false
+      }
+    },
     welcomeText() {
       if (this.hasLicense && !this.expireLicense) {
         return this.$t('workspace.welcome', { name: this.account.nickname })
