@@ -177,7 +177,13 @@ public class TaskService {
 
             // 3-1-5. 타겟 등록
             //addTargetToProcess(newProcess, registerNewProcess.getTargetType());
-            addTargetToProcess(newProcess, contentDuplicate.getData().getTargetType());//타겟 타입을 클라에서 받지 않고 contents 서버로 부터 받는 것으로 수정
+            //컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
+            if (contentDuplicate.getData().getTargets().size() > 1) {
+                throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
+            }
+            float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
+            TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
+            addTargetToProcess(newProcess, targetSize, targetType);//타겟 타입을 클라에서 받지 않고 contents 서버로 부터 받는 것으로 수정
 
             ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(contentDuplicate.getData().getContentUUID());
 
@@ -288,7 +294,7 @@ public class TaskService {
      * @param newProcess
      * @param targetType
      */
-    private void addTargetToProcess(Process newProcess, final TargetType targetType) {
+    private void addTargetToProcess(Process newProcess, float targetSize, final TargetType targetType) {
         // 타겟데이터
         try {
             String targetData = UUID.randomUUID().toString();
@@ -314,6 +320,7 @@ public class TaskService {
                     .process(newProcess)
                     .data(urlEncoded)
                     .imgPath(imgPath)
+                    .size(targetSize)
                     .build();
 
             this.targetRepository.save(target);
@@ -575,7 +582,13 @@ public class TaskService {
 
             // 타겟
             //addTargetToProcess(newProcess, duplicateRequest.getTargetType());
-            addTargetToProcess(newProcess, contentDuplicate.getData().getTargetType());
+            //컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
+            if (contentDuplicate.getData().getTargets().size() > 1) {
+                throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
+            }
+            float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
+            TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
+            addTargetToProcess(newProcess, targetSize, targetType);
 
             // addSubProcessOnProcess에 들어갈 객체
             ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
