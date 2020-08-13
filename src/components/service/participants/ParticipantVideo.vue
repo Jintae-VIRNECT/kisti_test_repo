@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.video">
+      <!-- <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -13,15 +13,15 @@
           loop
           :muted="isMe"
         ></video>
-      </div>
-      <div class="participant-video__profile" v-else>
+      </div> -->
+      <div class="participant-video__profile">
         <audio
-          v-if="!participant.video && !participant.me"
+          v-if="!participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
-          :muted="isMe"
+          :muted="isMe && mainView.uuid === participant.uuid"
         ></audio>
         <img
           v-if="participant.path && participant.path !== 'default'"
