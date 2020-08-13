@@ -48,6 +48,17 @@ const mutations = {
     for (let workspace of infoList) {
       state.workspaceList.push(setWorkspaceObj(workspace))
     }
+    if (state.workspaceList.length > 0) {
+      const workspaceId = window.localStorage.getItem('workspace')
+      if (workspaceId) {
+        let idx = state.workspaceList.findIndex(
+          work => work.uuid === workspaceId,
+        )
+        if (idx > -1) {
+          state.current = state.workspaceList[idx]
+        }
+      }
+    }
   },
   [CHANGE_WORKSPACE](state, workspace) {
     state.current = workspace
