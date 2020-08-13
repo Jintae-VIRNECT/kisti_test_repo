@@ -91,7 +91,7 @@ export const CAPTURE_PERMISSION = {
 }
 
 export const ROLE = {
-  EXPERT_LEADER: 'LEADER',
+  LEADER: 'LEADER',
   EXPERT: 'EXPERT',
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
