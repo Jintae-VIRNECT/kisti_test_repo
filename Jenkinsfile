@@ -53,7 +53,7 @@ pipeline {
             branch 'develop_regular'
           }
           steps {
-            sh 'count=`docker ps | grep rm-web:regular | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web:regular && docker rm rm-web:regular; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'count=`docker ps | grep rm-web-regular | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web-regular && docker rm rm-web-regular; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8890:8890 --restart=always -e "NODE_ENV=develop" -d --name=rm-web-regular rm-web:regular'
             sh 'docker image prune -f'
           }
