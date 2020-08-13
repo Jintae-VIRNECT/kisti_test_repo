@@ -23,7 +23,7 @@ export const addSessionEventListener = session => {
       _.sendResolution()
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
-      if (_.account.roleType === ROLE.EXPERT_LEADER) {
+      if (_.account.roleType === ROLE.LEADER) {
         _.control(CONTROL.POINTING, Store.getters['allowPointing'])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
       }

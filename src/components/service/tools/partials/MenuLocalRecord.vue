@@ -33,7 +33,7 @@ export default {
       if (this.disabled) {
         return false
       }
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       }
       if (this.control.localRecord) {

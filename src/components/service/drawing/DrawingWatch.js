@@ -26,7 +26,7 @@ export default {
     },
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
-      if (this.canvas && this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.canvas && this.account.roleType === ROLE.LEADER) {
         this.canvas.isDrawingMode = value === 'line'
         this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
         this.canvas.defaultCursor = value === 'text' ? 'text' : 'default'

@@ -156,14 +156,14 @@ export default {
       return false
     },
     isLeader() {
-      if (this.participant.roleType === ROLE.EXPERT_LEADER) {
+      if (this.participant.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
       }
     },
     iamLeader() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
