@@ -195,7 +195,7 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  const publishVideo = roleType === ROLE.WORKER
+  const publishVideo = roleType === ROLE.WORKER || true
   // const publishVideo = connection.stream.hasVideo
 
   userObj = {

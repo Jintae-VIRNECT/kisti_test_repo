@@ -56,7 +56,7 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo = role === ROLE.WORKER
+      const publishVideo = role === ROLE.WORKER || true
 
       const publishOptions = {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
