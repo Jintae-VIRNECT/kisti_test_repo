@@ -213,9 +213,6 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  const publishVideo = roleType === ROLE.WORKER || true
-  // const publishVideo = connection.stream.hasVideo
-
   userObj = {
     id: uuid,
     // stream: stream.mediaStream,
@@ -225,7 +222,7 @@ const setUserObject = event => {
     // path: participant.profile,
     nickname: null,
     path: null,
-    video: publishVideo,
+    video: false,
     audio: true,
     speaker: true,
     mute: false,
@@ -234,6 +231,7 @@ const setUserObject = event => {
     deviceType: deviceType,
     permission: 'default',
     hasArFeature: false,
+    cameraStatus: 'default',
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

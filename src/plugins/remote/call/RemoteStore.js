@@ -12,10 +12,11 @@ const getDefaultState = () => {
       // audio: stream.audioActive,
       // video: stream.videoActive,
       // status: 'good',
-      // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
+      // deviceType: configs/device.config.DEVICE
       // permission: 'default' / 'noAR' / false / true
       // hasArFeature
+      // cameraStatus: 'default', // 'default': 초기세팅
     ],
     chatList: [
       // {
@@ -123,7 +124,16 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
-    isBackground: false,
+    appInfo: [
+      // {
+      //   connectionId: '',
+      //   zoomLevel: 1, // zoom 레벨
+      //   zoomMax: 5, // zoom 최대 레벨
+      //   cameraStatus: 'default', // 'default': 초기세팅
+      //   flash: false, // flash 제어
+      //   flashStatus: 'default', // 'default': 초기세팅
+      // }
+    ],
     zoomLevel: 1, // zoom 레벨
     zoomMax: 5, // zoom 최대 레벨
     cameraStatus: 'default', // 'default': 초기세팅
@@ -152,10 +162,6 @@ const mutations = {
   addStream(state, payload) {
     if (payload.me) {
       state.participants.splice(0, 0, payload)
-      if (payload.video) {
-        state.mainView = payload
-      }
-      state.initing = false
     } else {
       state.participants.push(payload)
     }
@@ -164,23 +170,6 @@ const mutations = {
     const idx = state.participants.findIndex(obj => obj.id === payload.id)
     if (idx < 0) return
     state.participants[idx].stream = payload.stream
-  },
-  updateStreamInfo(state, payload) {
-    const idx = state.participants.findIndex(obj => obj.id === payload.id)
-    if (idx < 0) return
-
-    let updateSession = state.participants[idx]
-
-    for (let key in payload) {
-      if (
-        key in updateSession &&
-        payload[key] !== null &&
-        payload[key] !== 'id'
-      ) {
-        updateSession[key] = payload[key]
-      }
-    }
-    state.participants.splice(idx, 1, updateSession)
   },
   removeStream(state, connectionId) {
     const idx = state.participants.findIndex(
@@ -200,7 +189,6 @@ const mutations = {
           state.mainView = state.participants[pIdx]
         } else {
           state.mainView = {}
-          state.isBackground = false
           state.zoomLevel = 1 // zoom 레벨
           state.zoomMax = 5 // zoom 최대 레벨
           state.cameraStatus = 'default' // 'default': 초기세팅
@@ -246,6 +234,12 @@ const mutations = {
         if (state.participants[idx].id === state.mainView.id) {
           state.mainView[key] = param[key]
         }
+      }
+    }
+    if (state.participants[idx].me === true && 'video' in param) {
+      state.initing = false
+      if (param['video'] === true) {
+        state.mainView = state.participants[idx]
       }
     }
   },

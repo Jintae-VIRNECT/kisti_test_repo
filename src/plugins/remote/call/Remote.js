@@ -57,7 +57,7 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      const publishVideo = role === ROLE.WORKER || true
+      const publishVideo = role !== ROLE.LEADER || true
 
       const publishOptions = {
         audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
@@ -83,6 +83,7 @@ const _ = {
         Store.commit('updateParticipant', {
           connectionId: publisher.stream.connection.connectionId,
           stream: mediaStream,
+          video: publisher.stream.hasVideo,
         })
         if (publisher.properties.publishVideo) {
           const streamSize = mediaStream.getVideoTracks()[0].getSettings()

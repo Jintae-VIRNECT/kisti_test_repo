@@ -33,11 +33,12 @@
 
         <!-- 포인팅 -->
         <pointing
+          v-if="viewForce"
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template v-if="allowTools">
+        <template v-if="viewForce && allowControl && allowTools">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>
@@ -47,16 +48,23 @@
     <div class="main-video__empty" v-if="!loaded">
       <transition name="opacity">
         <!-- 영상 연결중 -->
-        <div class="main-video__empty-inner" v-if="resolutions.length > 0">
+        <!-- <div class="main-video__empty-inner" v-if="resolutions.length > 0">
           <img src="~assets/image/img_video_connecting.svg" />
           <p>{{ $t('service.stream_connecting') }}</p>
-        </div>
+        </div> -->
         <!-- 영상이 없을 경우 -->
-        <div class="main-video__empty-inner" v-else>
+        <!-- <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
+          </p>
+        </div> -->
+        <div class="main-video__empty-inner">
+          <img src="~assets/image/img_novideo.svg" />
+          <p>{{ '참가자 리스트에서 영상을 선택해 주세요.​' }}</p>
+          <p class="inner-discription">
+            {{ `  ` }}
           </p>
         </div>
       </transition>
@@ -98,7 +106,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
@@ -139,6 +147,13 @@ export default {
       deviceInfo: 'deviceInfo',
       viewForce: 'viewForce',
     }),
+    allowControl() {
+      if (this.mainView.deviceType === DEVICE.WEB) {
+        return false
+      } else {
+        return true
+      }
+    },
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
