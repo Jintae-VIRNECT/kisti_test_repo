@@ -14,14 +14,14 @@
           :muted="isMe"
         ></video>
       </div>
-      <div class="participant-video__profile">
+      <div class="participant-video__profile" v-else>
         <audio
           v-if="!participant.video && !participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
-          :muted="isMe && mainView.uuid === participant.uuid"
+          :muted="isMe || mainView.id === participant.id"
         ></audio>
         <img
           v-if="participant.path && participant.path !== 'default'"
@@ -209,6 +209,9 @@ export default {
     },
     changeMain() {
       if (!this.participant.video) return
+      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        this.$call.mainview(this.participant.id)
+      }
       this.setMainView(this.participant.id)
     },
     profileImageError(event) {

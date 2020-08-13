@@ -56,6 +56,7 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
+      _.account.roleType = role
       const publishVideo = role === ROLE.WORKER || true
 
       const publishOptions = {
@@ -177,6 +178,21 @@ const _ = {
       data: JSON.stringify(resolution),
       to: _.session.connection,
       type: SIGNAL.RESOLUTION,
+    })
+  },
+  /**
+   * main view change (only leader)
+   */
+  mainview: uuid => {
+    if (_.account.roleType !== ROLE.EXPERT_LEADER) return
+    if (!uuid) uuid = _.account.uuid
+    const params = {
+      id: uuid,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.VIDEO,
     })
   },
   /**

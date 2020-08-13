@@ -1,4 +1,5 @@
 export const SIGNAL = {
+  VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
   POINTING: 'signal:pointing',
