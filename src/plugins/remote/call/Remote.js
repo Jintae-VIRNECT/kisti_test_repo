@@ -110,7 +110,7 @@ const _ = {
           video: publisher.stream.videoActive,
           audio: publisher.stream.audioActive,
         })
-        if (publisher.properties.hasVideo) {
+        if (publisher.properties.publishVideo) {
           const streamSize = mediaStream.getVideoTracks()[0].getSettings()
           _.sendResolution({
             width: streamSize.width,

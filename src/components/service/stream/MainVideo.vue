@@ -62,7 +62,7 @@
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
-          <p>{{ '참가자 리스트에서 영상을 선택해 주세요.​' }}</p>
+          <p>{{ '참가자 리스트에서 영상을 선택해 주세요.' }}</p>
           <p class="inner-discription">
             {{ `  ` }}
           </p>
@@ -205,7 +205,6 @@ export default {
     mainView: {
       deep: true,
       handler(view) {
-        console.log(view)
         if (!view.id) {
           this.loaded = false
           const videoBox = this.$el.querySelector('.main-video__box')
