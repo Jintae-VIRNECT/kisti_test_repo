@@ -55,6 +55,9 @@ export default {
             cancel.action()
           }
         } else if (result.dismiss === BACKDROP) {
+          if (cancel.backdrop === true) {
+            return
+          }
           if (typeof cancel.action === 'function') {
             cancel.action()
           }

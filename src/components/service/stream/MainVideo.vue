@@ -53,14 +53,14 @@
           <p>{{ $t('service.stream_connecting') }}</p>
         </div> -->
         <!-- 영상이 없을 경우 -->
-        <!-- <div class="main-video__empty-inner" v-else>
+        <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
-        </div> -->
-        <div class="main-video__empty-inner">
+        </div>
+        <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ '참가자 리스트에서 영상을 선택해 주세요.​' }}</p>
           <p class="inner-discription">

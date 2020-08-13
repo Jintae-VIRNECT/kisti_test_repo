@@ -217,7 +217,7 @@ export default {
             text: '일반 보기',
             action: this.normalMain,
           },
-          { text: '전체 공유', action: this.forceMain },
+          { text: '전체 공유', action: this.forceMain, backdrop: true },
         )
       } else {
         if (this.viewForce === true) {
