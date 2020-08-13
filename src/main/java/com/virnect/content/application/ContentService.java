@@ -174,6 +174,7 @@ public class ContentService {
                 }
             }
 
+
             // 4. 업로드 요청 컨텐츠 정보 저장
             this.contentRepository.save(content);
 
@@ -235,11 +236,18 @@ public class ContentService {
             }
         }
 
+        //content metadata 안의 targetsize 추출(VECHOSYS-1282)
+        JsonParser jsonParse = new JsonParser();
+        JsonObject propertyObj = (JsonObject) jsonParse.parse(content.getMetadata());
+        JsonObject contents = propertyObj.getAsJsonObject("contents");
+        float targetSize = contents.get("targetSize").getAsFloat();
+
         Target target = Target.builder()
                 .type(targetType)
                 .content(content)
                 .data(targetData)
                 .imgPath(imgPath)
+                .size(targetSize)
                 .build();
 
         content.addTarget(target);
@@ -1006,7 +1014,18 @@ public class ContentService {
                 .userUUID(userUUID)
                 .build();
 
-        return contentUpload(uploadRequest);
+        //return contentUpload(uploadRequest);
+        /*
+        컨텐츠 복제를 통한 작업 생성의 경우 target정보를 작업서버에서 생성하게 되는데, 이때 기준이 되는 값(targetSize, targetType)을 프론트에서 받지 않고
+        컨텐츠서버에서 받아 처리하기 위해 아래 코드를 수정함.(VECHOSYS-1282)
+         */
+        ContentUploadResponse contentUploadResponse = contentUpload(uploadRequest).getData();
+        List<ContentTargetResponse> contentTargetResponseList = content.getTargetList().stream()
+                .map(target -> this.modelMapper.map(target,ContentTargetResponse.class)).collect(Collectors.toList());
+
+        contentUploadResponse.setTargets(contentTargetResponseList);
+        return new ApiResponse<>(contentUploadResponse);
+
     }
 
     @Transactional(readOnly = true)

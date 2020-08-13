@@ -40,12 +40,16 @@ public class Target extends BaseTimeEntity {
     @JoinColumn(name = "content_id")
     private Content content;
 
+    @Column(name = "size")
+    private Float size;
+
     @Builder
-    public Target(TargetType type, String data, String imgPath, Content content) {
+    public Target(TargetType type, String data, String imgPath, Content content, Float size) {
         this.type = type;
         this.data = data;
         this.imgPath = imgPath;
         this.content = content;
+        this.size = size;
     }
 
     @Override
@@ -55,6 +59,7 @@ public class Target extends BaseTimeEntity {
                 ", type=" + type +
                 ", data='" + data + '\'' +
                 ", imgPath=" + imgPath + '\'' +
+                ", size=" + size + '\'' +
 //                ", content=" + content +
                 '}';
     }

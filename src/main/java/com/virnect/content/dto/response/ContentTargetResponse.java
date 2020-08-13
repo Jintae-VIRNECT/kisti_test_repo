@@ -1,7 +1,10 @@
 package com.virnect.content.dto.response;
 
 import com.virnect.content.domain.TargetType;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author hangkee.min (henry)
@@ -18,13 +21,15 @@ public class ContentTargetResponse {
     private TargetType type;
     private String data;
     private String imgPath;
+    private Float size;
 
     @Builder
-    public ContentTargetResponse(Long id, TargetType type, String data, String imgPath) {
+    public ContentTargetResponse(Long id, TargetType type, String data, String imgPath, Float size) {
         this.id = id;
         this.type = type;
         this.data = data;
         this.imgPath = imgPath;
+        this.size = size;
     }
 
     @Override
@@ -34,6 +39,7 @@ public class ContentTargetResponse {
                 ", type=" + type +
                 ", data='" + data + '\'' +
                 ", imgPath='" + imgPath + '\'' +
+                ", size='" + size + '\'' +
                 '}';
     }
 }
