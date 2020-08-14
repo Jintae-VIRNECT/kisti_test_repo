@@ -267,7 +267,7 @@ var OpenVidu = /** @class */ (function() {
             ? undefined
             : typeof properties.resolution !== 'undefined'
             ? properties.resolution
-            : '640x480',
+            : '1280X720',
         videoSource:
           typeof properties.videoSource !== 'undefined'
             ? properties.videoSource
@@ -281,7 +281,7 @@ var OpenVidu = /** @class */ (function() {
         mirror: true,
         publishAudio: true,
         publishVideo: true,
-        resolution: '640x480',
+        resolution: '1280X720',
       }
     }
     var publisher = new Publisher_1.Publisher(targetElement, properties, this)
@@ -785,10 +785,10 @@ var OpenVidu = /** @class */ (function() {
       if (videoSource === undefined) {
         myConstraints.constraints.video = {
           width: {
-            ideal: 640,
+            ideal: 1280,
           },
           height: {
-            ideal: 480,
+            ideal: 720,
           },
         }
       }

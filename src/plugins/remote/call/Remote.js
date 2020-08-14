@@ -91,9 +91,9 @@ const _ = {
         videoSource: videoSource,
         publishAudio: settingInfo.micOn,
         publishVideo: settingInfo.videoOn,
-        resolution: '1280x720', // TODO: setting value
-        // resolution: '1920x1080', // TODO: setting value
-        // resolution: '3840x2160', // TODO: setting value
+        resolution: settingInfo.quality,
+        // resolution: '1920x1080', // FHD
+        // resolution: '3840x2160', // 4K
         frameRate: 30,
         insertMode: 'PREPEND',
         mirror: false,
@@ -116,10 +116,16 @@ const _ = {
           const track = mediaStream.getVideoTracks()[0]
           const settings = track.getSettings()
           const capability = track.getCapabilities()
+          logger('call', `resolution::${settings.width}X${settings.height}`)
+          debug('call::setting::', settings)
+          debug('call::capability::', capability)
           if ('zoom' in capability) {
+            track.applyConstraints({
+              advanced: [{ zoom: 100 }],
+            })
             Store.commit('deviceControl', {
               connectionId: publisher.stream.connection.connectionId,
-              zoomLevel: parseFloat(settings.zoom / 100),
+              zoomLevel: 1,
               zoomMax: parseInt(capability.zoom.max / 100),
             })
           } else {

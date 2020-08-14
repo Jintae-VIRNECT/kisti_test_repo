@@ -64,7 +64,9 @@
 .setting-horizon-wrapper {
   display: flex;
   flex-wrap: wrap;
-  margin-top: -1.071rem;
+  &:first-child {
+    margin-top: -1.071rem;
+  }
 }
 
 .setting__title {

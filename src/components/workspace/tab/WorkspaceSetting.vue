@@ -27,14 +27,13 @@
             <set-audio
               :micDevices="micDevices"
               :speakerDevices="speakerDevices"
+              :videoDevices="videoDevices"
             ></set-audio>
 
             <mic-test> </mic-test>
           </template>
 
           <template v-else-if="menus[tabIdx].key === 'video-record'">
-            <!-- <set-video :videos="videoDevices"></set-video> -->
-
             <set-record></set-record>
             <set-resolution></set-resolution>
           </template>
@@ -52,7 +51,6 @@ import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
-import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission } from 'utils/deviceCheck'
 export default {
@@ -63,7 +61,6 @@ export default {
     SetRecord,
     SetResolution,
     MicTest,
-    SetVideo,
     DeviceDenied,
   },
   data() {
@@ -83,7 +80,8 @@ export default {
       return [
         {
           key: 'audio-video',
-          text: this.$t('workspace.setting_audio'),
+          // text: this.$t('workspace.setting_audio'),
+          text: '비디오 및 오디오 설정',
         },
         {
           key: 'video-record',
@@ -134,8 +132,9 @@ export default {
   async created() {
     try {
       const permission = await getPermission()
+      console.log(permission)
 
-      if (permission !== true) {
+      if (permission === true) {
         await this.getMediaDevice()
       } else {
         this.showDenied = true

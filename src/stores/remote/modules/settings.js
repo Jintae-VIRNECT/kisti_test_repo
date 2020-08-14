@@ -1,6 +1,7 @@
 //Definition of workspace store
 import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
 import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
+import { resolution } from 'utils/settingOptions'
 
 const state = {
   mic: {
@@ -14,6 +15,7 @@ const state = {
   video: {
     deviceId: null,
     isOn: true,
+    quality: '720',
   },
   localRecordInfo: {
     time: '60',
@@ -46,6 +48,7 @@ const mutations = {
   },
   [SETTINGS.SET_VIDEO_DEVICE](state, video) {
     Object.assign(state.video, video)
+    console.log(state.video)
   },
   [SETTINGS.SET_RECORD](state, recordInfo) {
     Object.assign(state.localRecordInfo, recordInfo)
@@ -92,11 +95,14 @@ const getters = {
 
   // used Remote.js
   settingInfo: state => {
+    let idx = resolution.findIndex(res => res.value === state.video.quality)
+    if (idx < 0) idx = 2
     return {
       mic: state.mic.deviceId,
       micOn: state.mic.isOn,
       video: state.video.deviceId,
       videoOn: state.video.isOn,
+      quality: resolution[idx].resolution,
     }
   },
 
