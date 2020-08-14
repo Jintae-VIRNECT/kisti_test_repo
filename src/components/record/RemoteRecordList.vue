@@ -14,10 +14,12 @@
 
 <script>
 import SearchBar from './RemoteSearchBar'
+import UserTable from './RemoteUserTable'
 export default {
   name: 'RemoteRecordList',
   components: {
     SearchBar,
+    UserTable,
   },
 }
 </script>
