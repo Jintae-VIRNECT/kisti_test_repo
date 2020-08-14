@@ -153,6 +153,9 @@ h2 {
     margin: 20px auto 0;
     padding-top: 44px;
     border-top: 2px solid #e6e9ee;
+    @media (max-width: $mobile) {
+        padding: 24px 0 0;
+    }
 }
 .qr-expire-count {
     color: #1655bf;
@@ -165,6 +168,8 @@ h2 {
     width: 300px;
     height: 300px;
     margin: 24px 0 28px;
+    border: solid 1px #e2e7ed;
+    border-radius: 2px;
     .el-image-viewer__close {
         color: #fff;
     }
@@ -182,6 +187,14 @@ h2 {
         }
         img {
             opacity: 0.1;
+        }
+    }
+    @media (max-width: $mobile) {
+        width: 100%;
+        height: auto;
+        margin: 12px 0 24px;
+        .qrcode--image__inner {
+            display: block;
         }
     }
 }
@@ -213,6 +226,7 @@ h2 {
         font-size: 13px;
     }
     @media (max-width: $mobile) {
+        margin: 24px 0;
         .title {
             position: relative;
             top: 0;
