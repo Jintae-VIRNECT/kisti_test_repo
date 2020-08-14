@@ -34,6 +34,7 @@ func SetupRouter() *gin.Engine {
 
 	r := gin.New()
 	r.Use(requestLoggerMiddleware())
+	r.Use(CustomRecovery())
 
 	recorder := r.Group("/remote/recorder")
 	{
