@@ -234,7 +234,8 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "컨텐츠 타겟 업데이트", notes = "컨텐츠에 이미 부여되어 있는 타겟의 데이터를 변경")
+    //컨텐츠:타겟=1:1 이므로 해당 api를 hidden처리함.(VECHOSYS-1282)
+    @ApiOperation(value = "컨텐츠 타겟 업데이트", notes = "컨텐츠에 이미 부여되어 있는 타겟의 데이터를 변경", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true, defaultValue = "58d6b7bd-cfc8-4abf-aab8-74b14dbad822"),
             @ApiImplicitParam(name = "oldTargetId", value = "변경 대상 타겟 아이디", dataType = "string", paramType = "query", required = true, defaultValue = "2"),
