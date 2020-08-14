@@ -20,14 +20,14 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../assets/style/remote.scss';
+@import '~@/assets/style/remote.scss';
 .remote-layout {
   height: 1080px;
 }
 .offsetwidth {
   position: relative;
   width: 100%;
-  max-width: 80%;
+  max-width: 66%;
   margin-right: auto;
   margin-left: auto;
 }
