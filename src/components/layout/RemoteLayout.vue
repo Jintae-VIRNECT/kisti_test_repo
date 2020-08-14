@@ -22,7 +22,8 @@ export default {
 <style lang="scss">
 @import '~@/assets/style/remote.scss';
 .remote-layout {
-  height: 1080px;
+  // height: 1080px;
+  min-height: calc(100vh - 50px);
 }
 .offsetwidth {
   position: relative;

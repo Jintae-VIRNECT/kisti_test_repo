@@ -12,16 +12,16 @@ export default {}
 
 <style lang="scss">
 .footer {
-  width: 1920px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 50px;
   background: #3c4049;
-  border-radius: 0px;
-
   & > p {
     color: #a1a6b0;
     font-weight: 500;
     font-size: 12px;
-    font-family: NotoSansCJKkr-Medium;
+    text-align: center;
   }
 }
 </style>
