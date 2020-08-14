@@ -125,18 +125,27 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAMERA, event => {
     // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
-    if (data.type !== CAMERA.STATUS) return
-    // Store.commit('deviceControl', {
-    //   zoomLevel: parseFloat(data.currentZoomLevel),
-    //   zoomMax: parseInt(data.maxZoomLevel),
-    //   cameraStatus: parseInt(data.status),
-    // })
-    Store.commit('deviceControl', {
-      connectionId: event.from.connectionId,
-      zoomLevel: parseFloat(data.currentZoomLevel),
-      zoomMax: parseInt(data.maxZoomLevel),
-      cameraStatus: parseInt(data.status),
-    })
+    if (data.type === CAMERA.ZOOM) {
+      if (data.to.findIndex(id => id === _.account.uuid) > -1) {
+        const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
+        track.applyConstraints({
+          advanced: [{ zoom: parseFloat(data.level) * 100 }],
+        })
+      }
+      Store.commit('deviceControl', {
+        connectionId: event.from.connectionId,
+        zoomLevel: parseFloat(data.level),
+      })
+      return
+    }
+    if (data.type === CAMERA.STATUS) {
+      Store.commit('deviceControl', {
+        connectionId: event.from.connectionId,
+        zoomLevel: parseFloat(data.currentZoomLevel),
+        zoomMax: parseInt(data.maxZoomLevel),
+        cameraStatus: parseInt(data.status),
+      })
+    }
   })
   /** 화면 해상도 설정 */
   session.on(SIGNAL.RESOLUTION, event => {

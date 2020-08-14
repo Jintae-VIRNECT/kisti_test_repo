@@ -38,7 +38,9 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template v-if="viewForce && allowControl && allowTools">
+        <template
+          v-if="(viewForce && allowTools) || account.uuid === mainView.id"
+        >
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>
@@ -106,7 +108,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA, DEVICE } from 'configs/device.config'
+import { CAMERA } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
@@ -147,13 +149,6 @@ export default {
       deviceInfo: 'deviceInfo',
       viewForce: 'viewForce',
     }),
-    allowControl() {
-      if (this.mainView.deviceType === DEVICE.WEB) {
-        return false
-      } else {
-        return true
-      }
-    },
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,

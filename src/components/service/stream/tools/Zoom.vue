@@ -63,22 +63,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['deviceInfo', 'mainView']),
+    ...mapGetters(['mainView']),
     zoomLevel() {
       if (this.mainView && this.mainView.id) {
-        return this.deviceInfo.zoomLevel
+        return this.mainView.zoomLevel
       }
       return 1
     },
     zoomMax() {
       if (this.mainView && this.mainView.id) {
-        return this.deviceInfo.zoomMax
+        return this.mainView.zoomMax
       }
       return 1
     },
     cameraStatus() {
       if (this.mainView && this.mainView.id) {
-        return this.deviceInfo.camera
+        return this.mainView.camera
       }
       return -1
     },
@@ -136,7 +136,7 @@ export default {
         this.toastDefault(this.$t('service.camera_permission'))
         return
       }
-      this.$call.zoom(level)
+      this.$call.zoom(level, this.mainView.id)
     },
     cameraListener(status) {
       // 응답

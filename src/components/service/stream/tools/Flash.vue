@@ -23,10 +23,10 @@ export default {
   },
   mixins: [toastMixin],
   computed: {
-    ...mapGetters(['mainView', 'deviceInfo']),
+    ...mapGetters(['mainView']),
     flashStatus() {
       if (this.mainView && this.mainView.id) {
-        return this.deviceInfo.flash
+        return this.mainView.flash
       }
       return -1
     },
@@ -64,7 +64,7 @@ export default {
         return
       }
       const toStatus = !this.status
-      this.$call.flash(toStatus)
+      this.$call.flash(toStatus, this.mainView.id)
     },
     flashListener(status) {
       // 응답

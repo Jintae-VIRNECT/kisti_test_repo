@@ -223,7 +223,7 @@ export default {
         return
       }
       this.$call.permission({
-        to: this.mainView.id,
+        to: [this.mainView.id],
       })
       this.toastDefault(this.$t('service.toast_request_permission'))
     },

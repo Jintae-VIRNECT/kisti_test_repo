@@ -92,6 +92,8 @@ const _ = {
         publishAudio: settingInfo.micOn,
         publishVideo: settingInfo.videoOn,
         resolution: '1280x720', // TODO: setting value
+        // resolution: '1920x1080', // TODO: setting value
+        // resolution: '3840x2160', // TODO: setting value
         frameRate: 30,
         insertMode: 'PREPEND',
         mirror: false,
@@ -111,10 +113,25 @@ const _ = {
           audio: publisher.stream.audioActive,
         })
         if (publisher.properties.publishVideo) {
-          const streamSize = mediaStream.getVideoTracks()[0].getSettings()
+          const track = mediaStream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          if ('zoom' in capability) {
+            Store.commit('deviceControl', {
+              connectionId: publisher.stream.connection.connectionId,
+              zoomLevel: parseFloat(settings.zoom / 100),
+              zoomMax: parseInt(capability.zoom.max / 100),
+            })
+          } else {
+            Store.commit('deviceControl', {
+              connectionId: publisher.stream.connection.connectionId,
+              zoomLevel: 1,
+              zoomMax: 1,
+            })
+          }
           _.sendResolution({
-            width: streamSize.width,
-            height: streamSize.height,
+            width: settings.width,
+            height: settings.height,
             orientation: '',
           })
         }
@@ -333,9 +350,7 @@ const _ = {
 
     const params = {
       type: CAMERA.STATUS,
-      currentZoomLevel: 1,
-      maxZoomLevel: 1,
-      status: active ? 1 : 0,
+      status: active ? CAMERA.CAMERA_ON : CAMERA.CAMERA_OFF,
     }
     try {
       _.session.signal({
@@ -393,11 +408,12 @@ const _ = {
    * other user's flash control
    * @param {Boolean} active
    */
-  flash: active => {
+  flash: (active, id) => {
     const params = {
       enable: active,
       from: _.account.uuid,
       type: FLASH.FLASH,
+      to: [id],
     }
     _.session.signal({
       data: JSON.stringify(params),
@@ -409,11 +425,12 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  zoom: level => {
+  zoom: (level, id) => {
     const params = {
       from: _.account.uuid,
       type: CAMERA.ZOOM,
       level: level,
+      to: [id],
     }
     _.session.signal({
       data: JSON.stringify(params),
