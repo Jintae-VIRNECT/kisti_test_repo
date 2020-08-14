@@ -8,19 +8,24 @@
     </section>
     <search-bar></search-bar>
     <user-table></user-table>
+    <pagination-tool :totalPage="5"></pagination-tool>
     <!-- 테이블 -->
+    <!-- 페이지네이션 툴 -->
   </div>
 </template>
 
 <script>
 import SearchBar from './RemoteSearchBar'
 import UserTable from './RemoteUserTable'
+import PaginationTool from './partials/RemotePaginationTool'
 export default {
   name: 'RemoteRecordList',
   components: {
     SearchBar,
     UserTable,
+    PaginationTool,
   },
+  // 유저 목록 호출 및 테이블 갱신
 }
 </script>
 
