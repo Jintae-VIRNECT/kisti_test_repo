@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.data;
 
 
-import com.virnect.serviceserver.api.ApiResponse;
+import com.virnect.data.ApiResponse;
 
 public abstract class RepoDecoder<EntityType, ResponseType> {
 

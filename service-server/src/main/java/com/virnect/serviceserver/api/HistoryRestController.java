@@ -1,13 +1,14 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.serviceserver.dto.request.PageRequest;
-import com.virnect.serviceserver.dto.request.RoomHistoryDeleteRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.service.HistoryService;
+import com.virnect.data.ApiResponse;
+import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.request.RoomHistoryDeleteRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.RoomHistoryDetailInfoResponse;
+import com.virnect.data.dto.response.RoomHistoryInfoListResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.service.HistoryService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;

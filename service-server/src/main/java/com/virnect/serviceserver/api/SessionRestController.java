@@ -1,15 +1,15 @@
 package com.virnect.serviceserver.api;
 
 import com.google.gson.JsonObject;
-import com.virnect.serviceserver.api.ApiResponse;
-import com.virnect.serviceserver.constants.ServiceConstants;
-import com.virnect.serviceserver.dto.request.*;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.RoomDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.RoomInfoListResponse;
-import com.virnect.serviceserver.dto.response.RoomResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
+import com.virnect.data.ApiResponse;
+import com.virnect.data.constraint.ServiceConstants;
+import com.virnect.data.dto.request.*;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.RoomDetailInfoResponse;
+import com.virnect.data.dto.response.RoomInfoListResponse;
+import com.virnect.data.dto.response.RoomResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import io.swagger.annotations.ApiImplicitParam;

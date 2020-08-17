@@ -5,19 +5,19 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.virnect.serviceserver.api.ApiResponse;
-import com.virnect.serviceserver.dao.*;
-import com.virnect.serviceserver.dto.CoturnResponse;
-import com.virnect.serviceserver.dto.PageMetadataResponse;
-import com.virnect.serviceserver.dto.SessionResponse;
-import com.virnect.serviceserver.dto.SessionTokenResponse;
-import com.virnect.serviceserver.dto.request.*;
-import com.virnect.serviceserver.dto.response.*;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.dto.rpc.ClientMetaData;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.feign.UserRestService;
-import com.virnect.serviceserver.service.SessionService;
+import com.virnect.data.ApiResponse;
+import com.virnect.data.dao.*;
+import com.virnect.data.dto.CoturnResponse;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.SessionResponse;
+import com.virnect.data.dto.SessionTokenResponse;
+import com.virnect.data.dto.request.*;
+import com.virnect.data.dto.response.*;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.rpc.ClientMetaData;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.feign.UserRestService;
+import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.Participant;
@@ -45,6 +45,8 @@ public class DataRepository {
     private final SessionService sessionService;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
+
+    //private final ImplementationTest implementationTest;
 
     public ApiResponse<RoomResponse> generateRoom(
             RoomRequest roomRequest,
@@ -74,6 +76,9 @@ public class DataRepository {
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
             @Override
             Room loadFromDatabase() {
+                //ImplementationTest implementationTest = new ImplementationTest<com.virnect.data.dto.response.RoomInfoResponse>();
+                //implementationTest.setData(new com.virnect.data.dto.response.RoomInfoListResponse());
+                com.virnect.data.dto.response.RoomInfoResponse empty = new com.virnect.data.dto.response.RoomInfoResponse();
                 return sessionService.createRoom(roomRequest, roomProfileUpdateRequest, finalSessionResponse);
             }
 

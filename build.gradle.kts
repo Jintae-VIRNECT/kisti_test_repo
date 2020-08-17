@@ -41,17 +41,27 @@ subprojects {
     /*configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
     }*/
+    dependencies {
+        //todo:
+    }
+
 
     repositories {
         mavenCentral()
     }
 }
 project(":service-server") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
     dependencies {
-        implementation(project(":service-kms"))
+        //implementation(project(":service-kms"))
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
-        //implementation(project(":service-api"))
+        implementation(project(":service-data"))
     }
     /*val jar: Jar by tasks
     val bootJar: BootJar by tasks
@@ -60,14 +70,23 @@ project(":service-server") {
     jar.enabled = true*/
 
 }
+project(":service-data") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+}
+
 project(":service-common") {
 
 }
-/*project(":service-api") {
-
-}*/
 project(":service-kms") {
-
+    dependencies {
+        //implementation(project(":service-kms"))
+        implementation(project(":service-client"))
+        implementation(project(":service-java-client"))
+    }
 }
 project(":service-client") {
 
