@@ -32,9 +32,9 @@ $color-primary-active: #0a51b7;
 
   &.is-active,
   &:hover:not(.is-disabled) {
-    color: $color-primary;
+    color: #1655bf;
   }
 }
 .el-tabs__active-bar {
-  background-color: $color-primary;
+  background-color: #1655bf;
 }

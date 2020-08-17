@@ -5,6 +5,9 @@ const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
 const path = require('path')
+const packageJson = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, 'package.json')),
+)
 
 module.exports = {
   /*
@@ -57,6 +60,7 @@ module.exports = {
   debug: JSON.parse(env.NUXT_DEBUG),
   env: { NODE_ENV: process.env.NODE_ENV },
   publicRuntimeConfig: {
+    VERSION: packageJson.version,
     TARGET_ENV: env.TARGET_ENV,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
