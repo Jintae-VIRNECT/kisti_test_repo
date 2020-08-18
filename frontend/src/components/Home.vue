@@ -24,6 +24,7 @@
 
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
+import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
 export default {
 	data() {
 		return {
@@ -47,7 +48,9 @@ export default {
 	},
 	mounted() {
 		const redirectTarget = this.$route.query.continue
-		if (redirectTarget) {
+		const urls = new Url(process.env.TARGET_ENV)
+		const needNotLogin = redirectTarget.match(urls.www)
+		if (redirectTarget && !needNotLogin) {
 			this.show = true
 			this.loginService()
 		}
