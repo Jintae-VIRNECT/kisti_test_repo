@@ -17,7 +17,6 @@ export default {
       audioContext: null,
       audioContextDes: null,
       audioSourceMap: new Map(),
-      beforeIds: [],
     }
   },
   computed: {
