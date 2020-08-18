@@ -20,6 +20,8 @@ const _ = {
   subscribers: [],
   // 필요여부 체크할 것
   resolution: null,
+  currentZoomLevel: 1,
+  maxZoomLevel: 1,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -126,20 +128,9 @@ const _ = {
             track.applyConstraints({
               advanced: [{ zoom: 100 }],
             })
-            Store.commit('deviceControl', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              zoomLevel: 1,
-              zoomMax: parseInt(capability.zoom.max / 100),
-              flash: FLASH_STATUE.FLASH_NONE,
-            })
-          } else {
-            Store.commit('deviceControl', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              zoomLevel: 1,
-              zoomMax: 1,
-              flash: FLASH_STATUE.FLASH_NONE,
-            })
+            _.maxZoomLevel = parseInt(capability.zoom.max / 100)
           }
+          _.video(_.publisher.stream.videoActive)
           _.sendResolution({
             width: settings.width,
             height: settings.height,
@@ -154,33 +145,6 @@ const _ = {
       console.error(err)
       return false
     }
-  },
-  /**
-   * leave session
-   */
-  leave: () => {
-    try {
-      if (!_.session) return
-      _.session.disconnect()
-      _.account = null
-      _.session = null
-      _.publisher = null
-      _.subscribers = []
-      _.resolution = null
-      // 필요여부 체크할 것
-    } catch (err) {
-      throw err
-    }
-  },
-  /**
-   * leave session
-   */
-  clear: () => {
-    _.account = null
-    _.session = null
-    _.publisher = null
-    _.subscribers = []
-    _.resolution = null
   },
   /**
    * chatting
@@ -362,6 +326,8 @@ const _ = {
     const params = {
       type: CAMERA.STATUS,
       status: active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF,
+      currentZoomLevel: _.currentZoomLevel,
+      maxZoomLevel: _.maxZoomLevel,
     }
     try {
       _.session.signal({
@@ -509,6 +475,31 @@ const _ = {
     } else {
       return {}
     }
+  },
+  /**
+   * leave session
+   */
+  leave: () => {
+    try {
+      if (!_.session) return
+      _.session.disconnect()
+      _.clear()
+      // 필요여부 체크할 것
+    } catch (err) {
+      throw err
+    }
+  },
+  /**
+   * leave session
+   */
+  clear: () => {
+    _.account = null
+    _.session = null
+    _.publisher = null
+    _.subscribers = []
+    _.resolution = null
+    _.currentZoomLevel = 1
+    _.maxZoomLevel = 1
   },
   /**
    * append session signal listener

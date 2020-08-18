@@ -11,6 +11,7 @@ const getDefaultState = () => {
       // path: path,
       // audio: stream.audioActive,
       // video: stream.videoActive,
+      // hasVideo: hasVideo,
       // status: 'good',
       // roleType: 'LEADER' / 'EXPERT'
       // deviceType: configs/device.config.DEVICE
@@ -128,11 +129,6 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
-    zoomLevel: 1, // zoom 레벨
-    zoomMax: 5, // zoom 최대 레벨
-    cameraStatus: 'default', // 'default': 초기세팅
-    flash: false, // flash 제어
-    flashStatus: 'default', // 'default': 초기세팅
 
     // user option
     allowLocalRecord: true,

@@ -52,7 +52,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'participants', 'view', 'shareFile']),
+    ...mapGetters([
+      'mainView',
+      'participants',
+      'view',
+      'shareFile',
+      'viewForce',
+    ]),
     currentView() {
       if (this.view === VIEW.STREAM) {
         return 'stream'
@@ -173,6 +179,10 @@ export default {
         this.setView(VIEW.DRAWING)
       }
       if (type === 'ar') {
+        if (this.viewForce === false) {
+          this.toastDefault('강제 공유 중인 영상이 없습니다.')
+          return
+        }
         this.permissionCheck()
       }
     },
@@ -211,7 +221,7 @@ export default {
         return
       }
       if (this.mainView.id === this.account.uuid) {
-        console.error(this.$t('service.toast_current_stream'))
+        this.toastDefault(this.$t('service.toast_unsupport_ar'))
         return
       }
       if (this.mainView.hasArFeature === false) {

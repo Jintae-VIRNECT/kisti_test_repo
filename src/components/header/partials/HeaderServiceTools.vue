@@ -2,7 +2,7 @@
   <div class="header-tools">
     <chat v-if="!isScreenDesktop"></chat>
 
-    <stream></stream>
+    <stream v-if="hasVideo"></stream>
 
     <mic></mic>
 
@@ -44,7 +44,17 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainView', 'mute', 'view']),
+    ...mapGetters(['mainView', 'mute', 'view', 'participants']),
+    hasVideo() {
+      if (this.$route.name === 'workspace') {
+        return true
+      }
+      if (this.participants.length > 0 && this.participants[0].hasVideo) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   methods: {
     leave() {

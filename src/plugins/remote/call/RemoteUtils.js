@@ -125,7 +125,6 @@ export const addSessionEventListener = session => {
   })
   /** 카메라 컨트롤(zoom) */
   session.on(SIGNAL.CAMERA, event => {
-    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === CAMERA.ZOOM) {
       if (data.to.findIndex(id => id === _.account.uuid) > -1) {
@@ -141,6 +140,9 @@ export const addSessionEventListener = session => {
       return
     }
     if (data.type === CAMERA.STATUS) {
+      if (session.connection.connectionId === event.from.connectionId) {
+        _.currentZoomLevel = parseFloat(data.currentZoomLevel)
+      }
       Store.commit('deviceControl', {
         connectionId: event.from.connectionId,
         zoomLevel: parseFloat(data.currentZoomLevel),
