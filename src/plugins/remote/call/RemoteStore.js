@@ -177,8 +177,10 @@ const mutations = {
         )
         if (pIdx > -1) {
           state.mainView = state.participants[pIdx]
+          state.viewForce = false
         } else {
           state.mainView = {}
+          state.viewForce = false
         }
       }
       let participant = state.participants.splice(idx, 1)
