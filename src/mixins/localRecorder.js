@@ -70,14 +70,9 @@ export default {
         const nowIds = now.map(participant => {
           return participant.connectionId
         })
-        console.log('nowIds::', nowIds)
-        console.log('beforeIds::', this.beforeIds)
 
         let joins = nowIds.filter(x => !this.beforeIds.includes(x))
         let leaves = this.beforeIds.filter(x => !nowIds.includes(x))
-
-        console.log('joins::', joins)
-        console.log('leaves::', leaves)
 
         //connection
         joins.forEach(joinId => {
@@ -102,29 +97,8 @@ export default {
         this.beforeIds = now.map(participant => {
           return participant.connectionId
         })
-
-        // const checkWorker = participant => {
-        //   return participant.roleType === ROLE.WORKER
-        // }
-        // this.workerJoined = participants.some(checkWorker)
-        // participants.forEach(participant => {
-        //   if (participant.stream) {
-        //     let audioSource = this.audioContext.createMediaStreamSource(
-        //       participant.stream,
-        //     )
-        //     audioSource.connect(this.audioContextDes)
-        //   }
-        // })
       },
       deep: true,
-    },
-    workerJoined: {
-      handler(now, before) {
-        //if worker out -> then stop local recording
-        // if (now === false && before === true) {
-        //   this.$eventBus.$emit('localRecord', false)
-        // }
-      },
     },
     resolutions: {
       handler() {
