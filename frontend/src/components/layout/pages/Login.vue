@@ -204,6 +204,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/css/mixin.scss';
+
 h1 {
 	margin-right: -2px;
 	margin-bottom: 39px;
@@ -212,5 +214,11 @@ h1 {
 
 .el-button {
 	margin-top: 30px;
+}
+
+@media (max-width: $mobile) {
+	.el-button.next-btn {
+		margin-top: 40px;
+	}
 }
 </style>

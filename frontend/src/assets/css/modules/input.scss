@@ -13,6 +13,9 @@
             content: "*";
         }
     }
+    @media (max-width: $mobile) {
+        margin-top: 24px;
+    }
 }
 
 .all-terms {

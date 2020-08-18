@@ -118,7 +118,7 @@
         font-weight: bold;
     }
     @media (max-width: $mobile) {
-        max-width: 100%;
+        max-width: calc(100% - 48px);
     }
 }
 .el-dialog__headerbtn {

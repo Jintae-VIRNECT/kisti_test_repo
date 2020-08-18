@@ -49,7 +49,18 @@ export default {
 	mounted() {
 		const redirectTarget = this.$route.query.continue
 		const urls = new Url(process.env.TARGET_ENV)
-		const needNotLogin = redirectTarget.match(urls.www)
+
+		// 자신으로 리다이렉트 제외
+		if (
+			redirectTarget === location.origin ||
+			redirectTarget === location.origin + '/'
+		) {
+			location.href = '/'
+			return false
+		}
+
+		// 로그인 필요 다이얼로그
+		const needNotLogin = redirectTarget && redirectTarget.match(urls.www)
 		if (redirectTarget && !needNotLogin) {
 			this.show = true
 			this.loginService()
