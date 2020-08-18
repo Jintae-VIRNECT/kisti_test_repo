@@ -182,22 +182,18 @@ export default {
 					} else {
 						location.href = urls.workstation[process.env.TARGET_ENV]
 					}
-					// location.href = urls.workstation[process.env.TARGET_ENV]
 				} catch (e) {
 					if (e.code === 2000) {
-						this.alertWindow(
-							this.$t('login.accountError.title'),
-							this.$t('login.accountError.contents'),
-							this.$t('login.accountError.btn'),
-						)
+						console.error(e)
 						this.loading = false
-						this.message = e.message
+						this.message = this.$t('login.accountError.contents')
 					} else {
 						this.alertMessage(
 							this.$t('login.networkError.title'),
 							this.$t('login.networkError.contents'),
 							'error',
 						)
+						this.message = e.message
 						this.loading = false
 					}
 				}
