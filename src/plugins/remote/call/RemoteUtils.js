@@ -33,6 +33,7 @@ export const addSessionEventListener = session => {
       _.video(Store.getters['video'].isOn)
       _.mic(Store.getters['mic'].isOn)
       _.speaker(Store.getters['speaker'].isOn)
+      _.flashStatus()
       if (_.account.roleType === ROLE.LEADER) {
         if (Store.getters['viewForce'] === true) {
           _.mainview(Store.getters['mainView'].uuid, true)
@@ -114,10 +115,11 @@ export const addSessionEventListener = session => {
   })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type !== FLASH.STATUS) return
     Store.commit('deviceControl', {
+      connectionId: event.from.connectionId,
       flash: data.status,
     })
   })
@@ -255,8 +257,7 @@ const setUserObject = event => {
     cameraStatus: 'default',
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
-    flash: false, // flash 제어
-    flashStatus: 'default', // 'default': 초기세팅
+    flash: 'default', // flash 제어
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

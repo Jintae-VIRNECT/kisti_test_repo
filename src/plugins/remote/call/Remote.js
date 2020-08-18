@@ -2,7 +2,7 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH, VIDEO } from 'configs/remote.config'
-import { DEVICE } from 'configs/device.config'
+import { DEVICE, FLASH as FLASH_STATUE } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 import { getPermission } from 'utils/deviceCheck'
@@ -127,12 +127,14 @@ const _ = {
               connectionId: publisher.stream.connection.connectionId,
               zoomLevel: 1,
               zoomMax: parseInt(capability.zoom.max / 100),
+              flash: FLASH_STATUE.FLASH_NONE,
             })
           } else {
             Store.commit('deviceControl', {
               connectionId: publisher.stream.connection.connectionId,
               zoomLevel: 1,
               zoomMax: 1,
+              flash: FLASH_STATUE.FLASH_NONE,
             })
           }
           _.sendResolution({
@@ -413,6 +415,23 @@ const _ = {
   /**
    * other user's flash control
    * @param {Boolean} active
+   */
+  flashStatus: (status = FLASH_STATUE.FLASH_NONE) => {
+    const params = {
+      status: status,
+      from: _.account.uuid,
+      type: FLASH.STATUS,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.FLASH,
+    })
+  },
+  /**
+   * other user's flash control
+   * @param {Boolean} active
+   * @param {String} id : target id
    */
   flash: (active, id) => {
     const params = {

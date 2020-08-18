@@ -2,8 +2,8 @@
   <div class="main-video">
     <div
       class="main-video__box"
-      @mouseenter="showTools = true"
-      @mouseleave="showTools = false"
+      @mouseenter="hoverTools = true"
+      @mouseleave="hoverTools = false"
       :class="{ shutter: showShutter }"
     >
       <!-- 메인 비디오 뷰 -->
@@ -38,9 +38,9 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template v-if="viewForce && allowTools">
+        <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="showTools"></video-tools>
+            <video-tools v-if="hoverTools"></video-tools>
           </transition>
         </template>
       </template>
@@ -106,7 +106,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
@@ -122,7 +122,7 @@ export default {
   data() {
     return {
       status: 'good', // good, normal, bad
-      showTools: false,
+      hoverTools: false,
       loaded: false,
       videoSize: {
         width: 0,
@@ -176,9 +176,16 @@ export default {
     },
     allowTools() {
       if (
+        this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
+        if (
+          this.mainView.flash === FLASH.FLASH_NONE &&
+          this.mainView.zoomMax === 1
+        ) {
+          return false
+        }
         return true
       } else {
         return false

@@ -39,7 +39,11 @@ export default {
     },
     disable() {
       const state = this.flashStatus
-      if (state === FLASH.FLASH_NONE || state === FLASH.NO_PERMISSION) {
+      if (
+        state === FLASH.FLASH_NONE ||
+        state === FLASH.NO_PERMISSION ||
+        state === 'default'
+      ) {
         return true
       } else {
         return false
@@ -86,20 +90,6 @@ export default {
       }
       if (parseInt(status) === FLASH.APP_IS_BACKGROUND) {
         this.toastDefault(this.$t('service.flash_app_disable'))
-      }
-    },
-    flashInfoListener(message) {
-      if ('status' in message) {
-        if (
-          message.status === FLASH.FLASH_OFF ||
-          message.status === FLASH.FLASH_ON ||
-          message.status === FLASH.FLASH_NONE
-        ) {
-          // this.flashStatus = parseInt(message.status)
-          this.deviceUpdate({
-            flashStatus: parseInt(message.status),
-          })
-        }
       }
     },
   },
