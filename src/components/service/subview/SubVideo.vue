@@ -27,7 +27,7 @@ export default {
   },
   props: {},
   computed: {
-    ...mapGetters(['mainView', 'deviceInfo', 'view', 'viewAction']),
+    ...mapGetters(['mainView', 'view', 'viewAction']),
     stream() {
       if (this.mainView && this.mainView.id) {
         if (this.view === VIEW.AR && this.viewAction !== ACTION.AR_DRAWING) {

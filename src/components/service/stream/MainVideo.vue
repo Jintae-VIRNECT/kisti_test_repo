@@ -144,7 +144,6 @@ export default {
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
-      deviceInfo: 'deviceInfo',
       viewForce: 'viewForce',
     }),
     resolution() {

@@ -179,11 +179,6 @@ const mutations = {
           state.mainView = state.participants[pIdx]
         } else {
           state.mainView = {}
-          state.zoomLevel = 1 // zoom 레벨
-          state.zoomMax = 5 // zoom 최대 레벨
-          state.cameraStatus = 'default' // 'default': 초기세팅
-          state.flash = false // flash 제어
-          state.flashStatus = 'default' // 'default': 초기세팅
         }
       }
       let participant = state.participants.splice(idx, 1)
@@ -296,15 +291,6 @@ const getters = {
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
-  deviceInfo: state => {
-    return {
-      zoomLevel: state.zoomLevel,
-      zoomMax: state.zoomMax,
-      cameraStatus: state.cameraStatus,
-      flash: state.flash,
-      flashStatus: state.flashStatus,
-    }
-  },
   control: state => {
     return {
       localRecord: state.allowLocalRecord,
