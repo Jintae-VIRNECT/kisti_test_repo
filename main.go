@@ -2,7 +2,7 @@ package main
 
 import (
 	"RM-RecordServer/api"
-	"RM-RecordServer/dockerclient"
+	"RM-RecordServer/data"
 	_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
@@ -20,6 +20,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -33,6 +35,7 @@ func SetupRouter() *gin.Engine {
 	}
 
 	r := gin.New()
+	r.Use(loggerMiddleware())
 	r.Use(requestLoggerMiddleware())
 	r.Use(CustomRecovery())
 
@@ -67,21 +70,20 @@ func SetupRouter() *gin.Engine {
 // @version 1.0
 // @description This is Remote Record Server API Document
 func main() {
+
+	// read configuration from config.ini
 	readConfig()
 
+	// initialize global logger
 	logger.Init()
 
+	// display configuration
 	displayConfig()
 
+	// initialize recorder
 	recorder.Init()
 
-	restoreRecordingFromContainer()
-
-	err := dockerclient.DownloadDockerImage()
-	if err != nil {
-		panic(err)
-	}
-
+	// setup gin router
 	router := SetupRouter()
 
 	srv := &http.Server{
@@ -144,13 +146,11 @@ func readConfig() {
 
 	var recDir string
 	if _, err := os.Stat("/.dockerenv"); err == nil {
-		logger.Info("running in docker container.")
 		recDir = viper.GetString("record.dirOnDocker")
 	} else {
 		recDir = viper.GetString("record.dirOnHost")
 	}
 	viper.Set("record.dir", recDir)
-	logger.Info("record Dir:", recDir)
 }
 
 func displayConfig() {
@@ -165,6 +165,8 @@ func requestLoggerMiddleware() gin.HandlerFunc {
 			c.Next()
 			return
 		}
+		log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 		var buf bytes.Buffer
 		tee := io.TeeReader(c.Request.Body, &buf)
 		body, _ := ioutil.ReadAll(tee)
@@ -173,7 +175,24 @@ func requestLoggerMiddleware() gin.HandlerFunc {
 		if len(body) > 0 {
 			logbuf = fmt.Sprintf("%s\nbody:%s", logbuf, string(body))
 		}
-		logger.Info(logbuf)
+		log.Info(logbuf)
+		c.Next()
+	}
+}
+
+func loggerMiddleware() gin.HandlerFunc {
+	const headerXRequestID = "X-Request-ID"
+	logger := logger.NewLogger()
+	return func(c *gin.Context) {
+		reqID := c.GetHeader(headerXRequestID)
+		if reqID == "" {
+			reqID = uuid.New().String()
+			c.Header(headerXRequestID, reqID)
+		}
+
+		logEntry := logrus.NewEntry(logger)
+		logEntry = logEntry.WithField("request_id", reqID)
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), data.ContextKeyLog, logEntry))
 		c.Next()
 	}
 }
@@ -183,16 +202,4 @@ func swaggerMiddleware() gin.HandlerFunc {
 		c.Request.RequestURI = c.Request.RequestURI + "/doc.json"
 		c.Next()
 	}
-}
-
-func restoreRecordingFromContainer() {
-	logger.Info("Start: Restore Recording From Container")
-	constainers := dockerclient.ListContainers()
-	now := time.Now().UTC().Unix()
-
-	for _, container := range constainers {
-		recordingTimeLimit := container.EndTime - now
-		recorder.RestoreRecording(container.RecordingID, container.ID, recordingTimeLimit)
-	}
-	logger.Info("End: Restore Recording From Container")
 }

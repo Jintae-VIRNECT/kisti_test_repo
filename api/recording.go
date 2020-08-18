@@ -1,13 +1,14 @@
 package api
 
 import (
-	"RM-RecordServer/logger"
+	"RM-RecordServer/data"
 	"RM-RecordServer/recorder"
 	"RM-RecordServer/util"
 	"encoding/json"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -55,6 +56,8 @@ type ListRecordingResponse struct {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [post]
 func StartRecording(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
 		Framerate:          viper.GetUint("record.defaultFramerate"),
@@ -63,16 +66,16 @@ func StartRecording(c *gin.Context) {
 	}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		logger.Error("bind json fail:", err)
+		log.Error("bind json fail:", err)
 		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
 
-	logger.Debugf("StartRecording:%+v", req)
+	log.Debugf("StartRecording:%+v", req)
 
 	_, err = json.Marshal(req.MetaData)
 	if err != nil {
-		logger.Error("metaData parsing fail:", err)
+		log.Error("metaData parsing fail:", err)
 		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
@@ -80,7 +83,7 @@ func StartRecording(c *gin.Context) {
 	max := viper.GetInt("record.numOfConcurrentRecordings")
 	cur := recorder.GetNumCurrentRecordings()
 	if max <= cur {
-		logger.Errorf("too many recording: current: %d limit:%d", cur, max)
+		log.Errorf("too many recording: current: %d limit:%d", cur, max)
 		sendResponseWithError(c, NewErrorTooManyRecordings())
 		return
 	}
@@ -89,7 +92,7 @@ func StartRecording(c *gin.Context) {
 	if diskFreeThreshold > 0 {
 		diskUsage, _ := util.DiskUsage(viper.GetString("record.dir"))
 		if float64(diskUsage.Free)/float64(util.GB) < viper.GetFloat64("record.diskFreeThreshold") {
-			logger.Errorf("not enough free space: all:%f used:%f free:%f",
+			log.Errorf("not enough free space: all:%f used:%f free:%f",
 				float64(diskUsage.All)/float64(util.GB),
 				float64(diskUsage.Used)/float64(util.GB),
 				float64(diskUsage.Free)/float64(util.GB))
@@ -101,11 +104,11 @@ func StartRecording(c *gin.Context) {
 	diskUsageLimit := viper.GetFloat64("record.diskUsageLimit")
 	if diskUsageLimit > 0 {
 		usageSum := 0
-		infos, _, _ := recorder.ListRecordingFiles(nil, true)
+		infos, _, _ := recorder.ListRecordingFiles(c.Request.Context(), nil, true)
 		for _, info := range infos {
 			usageSum += info.Size
 		}
-		logger.Debug("recording file usage size:", usageSum)
+		log.Debug("recording file usage size:", usageSum)
 		if diskUsageLimit*util.GB < float64(usageSum) {
 			sendResponseWithError(c, NewErrorInsufficientStorage())
 			return
@@ -113,7 +116,7 @@ func StartRecording(c *gin.Context) {
 	}
 
 	resolution, _ := convertResolution(req.Resolution)
-	logger.Debug("resolution:", resolution)
+	log.Debug("resolution:", resolution)
 
 	param := recorder.RecordingParam{
 		SessionID:  req.SessionID,
@@ -125,9 +128,9 @@ func StartRecording(c *gin.Context) {
 		MetaData:   req.MetaData,
 	}
 
-	recordingId, err := recorder.NewRecording(param)
+	recordingId, err := recorder.NewRecording(c.Request.Context(), param)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
@@ -157,17 +160,19 @@ func convertResolution(resolution string) (string, error) {
 // @Failure 1000 {} json "{ "error": "not found id" }"
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 	recordingID := c.Param("id")
-	logger.Debug("stop recording (id:", recordingID, ")")
+	log.Debug("stop recording (id:", recordingID, ")")
 
 	exist := recorder.ExistRecordingID(recordingID)
 	if exist == false {
-		logger.Error("stop recording: ", recorder.ErrNotFoundRecordingID.Error())
+		log.Error("stop recording: ", recorder.ErrNotFoundRecordingID.Error())
 		sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		return
 	}
 
-	recorder.StopRecording(recordingID, "stop")
+	recorder.StopRecording(c.Request.Context(), recordingID, "stop")
 
 	sendResponseWithSuccess(c, nil)
 }
@@ -180,9 +185,11 @@ func StopRecording(c *gin.Context) {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 	body := ListRecordingResponse{make([]string, 0)}
 	list := recorder.ListRecordingIDs()
-	logger.Debug("ListRecordings:", list)
+	log.Debug("ListRecordings:", list)
 	body.RecordingIDs = append(body.RecordingIDs, list...)
 
 	sendResponseWithSuccess(c, body)

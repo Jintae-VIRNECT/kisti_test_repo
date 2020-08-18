@@ -1,14 +1,17 @@
 package recorder
 
 import (
+	"RM-RecordServer/data"
 	"RM-RecordServer/database"
 	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
 	"RM-RecordServer/util"
+	"context"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -57,6 +60,13 @@ func Init() {
 	timeoutCh = make(chan string, 512)
 	go timeoutHandler()
 	go garbageCollector()
+
+	log := logger.NewLogger()
+	logEntry := logrus.NewEntry(log)
+	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
+	downloadDockerImage(ctx)
+	restoreRecordingFromContainer(ctx)
 }
 
 func makeRecordingID(sessionID string) string {
@@ -67,7 +77,7 @@ func getSessionID(recordingID string) string {
 	return strings.Split(recordingID, "-")[0]
 }
 
-func NewRecording(param RecordingParam) (string, error) {
+func NewRecording(ctx context.Context, param RecordingParam) (string, error) {
 	var recordingId = makeRecordingID(param.SessionID)
 
 	if len(param.Filename) == 0 {
@@ -88,7 +98,7 @@ func NewRecording(param RecordingParam) (string, error) {
 		MetaData:    param.MetaData,
 	}
 
-	containerID, err := dockerclient.RunContainer(containerParam)
+	containerID, err := dockerclient.RunContainer(ctx, containerParam)
 	if err != nil {
 		return recordingId, ErrInternalError
 	}
@@ -118,8 +128,10 @@ func FindRecording(recordingID string) (string, error) {
 	return "", ErrNotFoundRecordingID
 }
 
-func StopRecording(recordingID string, reason string) error {
-	logger.Infof("recording stop. (id:%s reason:%s)", recordingID, reason)
+func StopRecording(ctx context.Context, recordingID string, reason string) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	log.Infof("recording stop. (id:%s reason:%s)", recordingID, reason)
 
 	recorderMapMux.Lock()
 	defer recorderMapMux.Unlock()
@@ -131,19 +143,19 @@ func StopRecording(recordingID string, reason string) error {
 
 	r.timeout.Stop()
 
-	dockerclient.StopContainer(r.containerID)
+	dockerclient.StopContainer(ctx, r.containerID)
 
-	insertIntoDB(recordingID)
+	insertIntoDB(ctx, recordingID)
 
 	delete(recorderMap, recordingID)
 	return nil
 }
 
-func RestoreRecording(recordingID string, containerID string, recordingTimeLimit int64) {
+func RestoreRecording(ctx context.Context, recordingID string, containerID string, recordingTimeLimit int64) {
 	logger.Infof("RestoreRecording: recordingId:%s containerID:%s recordingTimeLimit:%d)", recordingID, containerID, recordingTimeLimit)
 
 	if recordingTimeLimit <= 0 {
-		dockerclient.StopContainer(containerID)
+		dockerclient.StopContainer(ctx, containerID)
 		return
 	}
 
@@ -181,6 +193,10 @@ func ExistRecordingID(recordingID string) bool {
 }
 
 func timeoutHandler() {
+	log := logger.NewLogger()
+	logEntry := logrus.NewEntry(log)
+	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
 	defer func() {
 		logger.Info("stop timeoutHandler")
 	}()
@@ -188,7 +204,7 @@ func timeoutHandler() {
 	for {
 		select {
 		case recordingID := <-timeoutCh:
-			StopRecording(recordingID, "timeout")
+			StopRecording(ctx, recordingID, "timeout")
 		}
 	}
 }
@@ -201,9 +217,13 @@ func GetNumCurrentRecordings() int {
 }
 
 func garbageCollector() {
+	log := logger.NewLogger()
+	logEntry := logrus.NewEntry(log)
+	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
 	period := viper.GetInt("record.recordingFilePeriod")
 	if period == 0 {
-		logger.Info("disable recording file garbageCollector")
+		log.Info("disable recording file garbageCollector")
 		return
 	}
 	period = period * 24 * 60 * 60
@@ -214,9 +234,9 @@ func garbageCollector() {
 
 	for range ticker.C {
 		now := time.Now().UTC().Unix()
-		list, _, err := ListRecordingFiles(nil, true)
+		list, _, err := ListRecordingFiles(ctx, nil, true)
 		if err != nil {
-			logger.Error(err)
+			log.Error(err)
 			continue
 		}
 
@@ -224,8 +244,29 @@ func garbageCollector() {
 			remainDays := int64(period) - (now - time.Time(info.CreateAt).Unix())
 			logger.Debug("recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt, " remain:", remainDays)
 			if remainDays < 0 {
-				removeFile(info.FullPath)
+				removeFile(ctx, info.FullPath)
 			}
 		}
 	}
+}
+
+func downloadDockerImage(ctx context.Context) {
+	err := dockerclient.DownloadDockerImage(ctx)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func restoreRecordingFromContainer(ctx context.Context) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	log.Info("Start: Restore Recording From Container")
+	constainers := dockerclient.ListContainers(ctx)
+	now := time.Now().UTC().Unix()
+
+	for _, container := range constainers {
+		recordingTimeLimit := container.EndTime - now
+		RestoreRecording(ctx, container.RecordingID, container.ID, recordingTimeLimit)
+	}
+	log.Info("End: Restore Recording From Container")
 }

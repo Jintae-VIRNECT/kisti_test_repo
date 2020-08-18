@@ -5,29 +5,66 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
-
-	"github.com/spf13/viper"
 
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var defaultLogger *logrus.Logger
+
+type logFunc func(...interface{})
+type logfFunc func(string, ...interface{})
+
+var (
+	Info   logFunc
+	Debug  logFunc
+	Trace  logFunc
+	Error  logFunc
+	Warn   logFunc
+	Infof  logfFunc
+	Debugf logfFunc
+	Tracef logfFunc
+	Errorf logfFunc
+	Warnf  logfFunc
+)
+
 func Init() {
+	defaultLogger = NewLogger()
+
+	Info = defaultLogger.Info
+	Debug = defaultLogger.Debug
+	Trace = defaultLogger.Trace
+	Error = defaultLogger.Error
+	Warn = defaultLogger.Warn
+	Infof = defaultLogger.Infof
+	Debugf = defaultLogger.Debugf
+	Tracef = defaultLogger.Tracef
+	Errorf = defaultLogger.Errorf
+	Warnf = defaultLogger.Warnf
+}
+
+func NewLogger() *logrus.Logger {
+	l := logrus.New()
+	initLogger(l)
+	return l
+}
+
+func initLogger(l *logrus.Logger) {
 	formatter := &logrus.TextFormatter{
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := filepath.Base(f.File)
-			return "", fmt.Sprint(filename, ":", f.Line)
+			return "", fmt.Sprint(" ", filename, ":", f.Line)
 		},
 		TimestampFormat: "20060102-150405.000000",
 		FullTimestamp:   true,
 		ForceColors:     true,
 	}
-	logrus.SetFormatter(formatter)
-	logrus.SetReportCaller(true)
+	l.SetFormatter(formatter)
+	l.SetReportCaller(true)
 
 	if viper.GetBool("log.stdout") {
-		logrus.SetOutput(os.Stdout)
+		l.SetOutput(os.Stdout)
 	} else {
 		lumberjackLogrotate := &lumberjack.Logger{
 			Filename:   viper.GetString("log.filename"),
@@ -36,38 +73,9 @@ func Init() {
 			MaxAge:     viper.GetInt("log.maxAge"),     // Max number of days to retain log files
 			Compress:   false,
 		}
-		logrus.SetOutput(lumberjackLogrotate)
+		l.SetOutput(lumberjackLogrotate)
 	}
 
-	SetLevel(viper.GetString("log.level"))
+	level, _ := logrus.ParseLevel(viper.GetString("log.level"))
+	l.SetLevel(level)
 }
-
-func SetLevel(level string) {
-	switch strings.ToUpper(level) {
-	case "TRACE":
-		logrus.SetLevel(logrus.TraceLevel)
-	case "DEBUG":
-		logrus.SetLevel(logrus.DebugLevel)
-	case "INFO":
-		logrus.SetLevel(logrus.InfoLevel)
-	case "WARN":
-		logrus.SetLevel(logrus.WarnLevel)
-	case "ERROR":
-		logrus.SetLevel(logrus.ErrorLevel)
-	default:
-		logrus.SetLevel(logrus.DebugLevel)
-	}
-}
-
-var (
-	Info   = logrus.Info
-	Infof  = logrus.Infof
-	Debug  = logrus.Debug
-	Debugf = logrus.Debugf
-	Trace  = logrus.Trace
-	Tracef = logrus.Tracef
-	Error  = logrus.Error
-	Errorf = logrus.Errorf
-	Warn   = logrus.Warn
-	Warnf  = logrus.Warnf
-)

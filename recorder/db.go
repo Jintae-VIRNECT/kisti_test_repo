@@ -3,24 +3,27 @@ package recorder
 import (
 	"RM-RecordServer/data"
 	"RM-RecordServer/database"
-	"RM-RecordServer/logger"
+	"context"
 	"encoding/json"
 	"errors"
 	"path/filepath"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 var db *database.RecordingFileDB
 
-func insertIntoDB(recordingID string) {
+func insertIntoDB(ctx context.Context, recordingID string) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 	if db == nil {
 		return
 	}
 	root := viper.GetString("record.dir")
-	info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
+	info, err := readInfoFile(ctx, recordingID, filepath.Join(root, recordingID))
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
+		return
 	}
 	metaData, _ := json.Marshal(info.MetaData)
 	if _, err := db.Create(
@@ -35,20 +38,24 @@ func insertIntoDB(recordingID string) {
 		string(metaData),
 		info.CreateAt,
 	); err != nil {
-		logger.Error(err)
+		log.Error(err)
 	}
 }
 
-func deleteOnDB(filter *data.Filter) {
+func deleteOnDB(ctx context.Context, filter *data.Filter) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	if db == nil {
 		return
 	}
 	if _, err := db.Delete(filter); err != nil {
-		logger.Error(err)
+		log.Error(err)
 	}
 }
 
-func queryFromDB(filter *data.Filter) ([]RecordingFileInfo, int, error) {
+func queryFromDB(ctx context.Context, filter *data.Filter) ([]RecordingFileInfo, int, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	infos := []RecordingFileInfo{}
 
 	if db == nil {
@@ -57,7 +64,8 @@ func queryFromDB(filter *data.Filter) ([]RecordingFileInfo, int, error) {
 
 	records, totalPages, err := db.Select(filter)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
+		return infos, 0, err
 	}
 
 	for _, r := range records {
@@ -73,7 +81,7 @@ func queryFromDB(filter *data.Filter) ([]RecordingFileInfo, int, error) {
 			CreateAt:    r.CreatedAt,
 			MetaData:    r.MetaData,
 		}
-		logger.Debug("CreateAt", r.CreatedAt)
+		log.Debug("CreateAt", r.CreatedAt)
 		infos = append(infos, info)
 	}
 

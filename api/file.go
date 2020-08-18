@@ -2,7 +2,6 @@ package api
 
 import (
 	"RM-RecordServer/data"
-	"RM-RecordServer/logger"
 	"RM-RecordServer/recorder"
 	"io"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type ListRecordingFilesResponse struct {
@@ -58,16 +58,17 @@ type Query struct {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [get]
 func ListRecordingFiles(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 	filter, err := setFilter(c)
 	if err != nil {
 		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
 		return
 	}
-	logger.Debugf("filter: %+v", filter)
+	log.Debugf("filter: %+v", filter)
 
-	list, totalPages, err := recorder.ListRecordingFiles(filter, false)
+	list, totalPages, err := recorder.ListRecordingFiles(c.Request.Context(), filter, false)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
@@ -83,6 +84,7 @@ func ListRecordingFiles(c *gin.Context) {
 }
 
 func setFilter(c *gin.Context) (*data.Filter, error) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 	filter := &data.Filter{}
 
 	if filename, ok := c.GetQuery("filename"); ok {
@@ -102,19 +104,19 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 	if sort, ok := c.GetQuery("order"); ok {
 		tmp := strings.Join(strings.Split(sort, "."), " ")
 		filter.OrderBy = &tmp
-		logger.Debug("sort:", *filter.OrderBy)
+		log.Debug("sort:", *filter.OrderBy)
 	}
 	if createdAt, ok := c.GetQueryArray("createdAt"); ok {
-		logger.Debug("createdAt: ", createdAt)
+		log.Debug("createdAt: ", createdAt)
 		filter.CreatedAt = make([]data.FilterTime, 2)
 		for _, t := range createdAt {
 			tokens := strings.SplitN(t, ":", 2)
-			logger.Debug(tokens)
+			log.Debug(tokens)
 			utc, err := time.Parse(time.RFC3339, tokens[1])
 			if err != nil {
 				return nil, err
 			}
-			logger.Debug(utc)
+			log.Debug(utc)
 
 			filter.CreatedAt = append(filter.CreatedAt, data.FilterTime{Op: tokens[0], Time: utc})
 		}
@@ -131,9 +133,11 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [delete]
 func RemoveRecordingFileAll(c *gin.Context) {
-	count, err := recorder.RemoveRecordingFileAll()
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
+	count, err := recorder.RemoveRecordingFileAll(c.Request.Context())
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
@@ -150,10 +154,12 @@ func RemoveRecordingFileAll(c *gin.Context) {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file/{id} [delete]
 func RemoveRecordingFile(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 	recordingID := c.Param("id")
-	err := recorder.RemoveRecordingFile(recordingID)
+	err := recorder.RemoveRecordingFile(c.Request.Context(), recordingID)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
 		if err == recorder.ErrNotFoundRecordingID {
 			sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		} else {
@@ -173,14 +179,16 @@ func RemoveRecordingFile(c *gin.Context) {
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file/download/{id} [get]
 func DownloadRecordingFile(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 	recordingID := c.Param("id")
 
-	filePath, err := recorder.GetRecordingFilePath(recordingID)
+	filePath, err := recorder.GetRecordingFilePath(c.Request.Context(), recordingID)
 	if err != nil {
 		sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		return
 	}
-	logger.Debug("file:", filePath)
+	log.Debug("file:", filePath)
 
 	file, err := os.Open(filePath) // open a file
 	if err != nil {
@@ -194,11 +202,11 @@ func DownloadRecordingFile(c *gin.Context) {
 	c.Header("Content-type", "application/octet-stream")
 	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
 
-	logger.Info("begin download:", filePath)
+	log.Info("begin download:", filePath)
 	_, err = io.Copy(c.Writer, file)
 	if err != nil {
 		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
-	logger.Info("end download:", filePath)
+	log.Info("end download:", filePath)
 }

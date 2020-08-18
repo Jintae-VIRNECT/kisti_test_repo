@@ -1,6 +1,7 @@
 package dockerclient
 
 import (
+	"RM-RecordServer/data"
 	"RM-RecordServer/logger"
 	"context"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	docker "github.com/fsouza/go-dockerclient"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -47,14 +49,18 @@ type recordingJson struct {
 	MetaData    interface{} `json:"metaData,omitempty"`
 }
 
-func init() {
+func Init() {
 	go garbageCollector()
 }
 
 func garbageCollector() {
+	log := logger.NewLogger()
+	logEntry := logrus.NewEntry(log)
+	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
 	period := viper.GetInt("general.garbageCollectPeriod")
 	if period == 0 {
-		logger.Info("disable docker containers garbageCollector")
+		log.Info("disable docker containers garbageCollector")
 		return
 	}
 
@@ -64,7 +70,7 @@ func garbageCollector() {
 		go func() {
 			cli, err := docker.NewClientFromEnv()
 			if err != nil {
-				logger.Error("NewClientFromEnv:", err)
+				log.Error("NewClientFromEnv:", err)
 				return
 			}
 			now := time.Now().UTC().Unix()
@@ -75,25 +81,27 @@ func garbageCollector() {
 			for _, c := range cons {
 				endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 				if now > endTime+60 {
-					logger.Infof("remove container which state is not running. id:%s state:%s recordId:%s createTime:%d endTime:%d",
+					log.Infof("remove container which state is not running. id:%s state:%s recordId:%s createTime:%d endTime:%d",
 						c.ID,
 						c.State,
 						c.Labels["recordingId"],
 						c.Created,
 						endTime)
-					StopContainer(c.ID)
+					StopContainer(ctx, c.ID)
 				}
 			}
 		}()
 	}
 }
 
-func ListContainers() []Container {
+func ListContainers(ctx context.Context) []Container {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	containers := []Container{}
 
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
-		logger.Error("NewClientFromEnv:", err)
+		log.Error("NewClientFromEnv:", err)
 		return containers
 	}
 
@@ -114,17 +122,19 @@ func ListContainers() []Container {
 	return containers
 }
 
-func DownloadDockerImage() error {
+func DownloadDockerImage(ctx context.Context) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
-		logger.Error("NewClientFromEnv:", err)
+		log.Error("NewClientFromEnv:", err)
 		return ErrContainerInternal
 	}
 
 	imageName := viper.GetString("record.dockerImage")
 	image, err := cli.InspectImage(imageName)
 	if image != nil {
-		logger.Info("already exist image:", imageName)
+		log.Info("already exist image:", imageName)
 		return nil
 	}
 
@@ -134,7 +144,7 @@ func DownloadDockerImage() error {
 		docker.AuthConfiguration{},
 	)
 	if err != nil {
-		logger.Error("PullImage:", err)
+		log.Error("PullImage:", err)
 		return ErrContainerInternal
 	}
 
@@ -143,10 +153,12 @@ func DownloadDockerImage() error {
 
 // https://OPENVIDUAPP:MY_SECRET@172.20.194.76:4443/dashboard/#/layout-best-fit/ses_R8y9uSOUn7/MY_SECRET/4443/false
 
-func RunContainer(param ContainerParam) (string, error) {
+func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
-		logger.Error("NewClientFromEnv:", err)
+		log.Error("NewClientFromEnv:", err)
 		return "", ErrContainerInternal
 	}
 
@@ -162,12 +174,12 @@ func RunContainer(param ContainerParam) (string, error) {
 			Resolution:  param.Resolution,
 		})
 	if err != nil {
-		logger.Error("metaData parsing fail:", err)
+		log.Error("metaData parsing fail:", err)
 	}
-	logger.Debug(string(recordingJson))
+	log.Debug(string(recordingJson))
 
 	url := param.LayoutURL + "?sessionId=" + param.SessionID + "&token=" + param.Token
-	logger.Info("url:", url)
+	log.Info("url:", url)
 
 	now := time.Now().UTC().Unix()
 	endTime := now + int64(param.TimeLimit*60)
@@ -192,14 +204,14 @@ func RunContainer(param ContainerParam) (string, error) {
 	}
 
 	// dev 서버에서는 build 후에 prune을 하고 있어 recording image가 삭제되어 있을 수 있다.
-	DownloadDockerImage()
+	DownloadDockerImage(ctx)
 
 	createOpt.HostConfig = &docker.HostConfig{
 		Binds: []string{viper.GetString("record.dirOnHost") + ":" + viper.GetString("record.dirOnDocker")},
 	}
 	container, err := cli.CreateContainer(createOpt)
 	if err != nil {
-		logger.Error("CreateContainer:", err)
+		log.Error("CreateContainer:", err)
 		if err == docker.ErrContainerAlreadyExists {
 			return "", ErrContainerAlreadyExists
 		}
@@ -208,27 +220,29 @@ func RunContainer(param ContainerParam) (string, error) {
 
 	err = cli.StartContainer(container.ID, &docker.HostConfig{})
 	if err != nil {
-		logger.Error("StartContainer:", err)
+		log.Error("StartContainer:", err)
 		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: container.ID})
 		if err != nil {
-			logger.Error("RemoveContainer:", err)
+			log.Error("RemoveContainer:", err)
 		}
 		return "", ErrContainerInternal
 	}
-	logger.Info("start container:", container.ID, " sessionId:", param.VideoID)
+	log.Info("start container:", container.ID, " sessionId:", param.VideoID)
 
 	return container.ID, nil
 }
 
-func StopContainer(containerID string) error {
-	stopAndRemoveContainer(containerID)
+func StopContainer(ctx context.Context, containerID string) error {
+	stopAndRemoveContainer(ctx, containerID)
 	return nil
 }
 
-func stopAndRemoveContainer(containerID string) {
+func stopAndRemoveContainer(ctx context.Context, containerID string) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
-		logger.Error("NewClientFromEnv:", err)
+		log.Error("NewClientFromEnv:", err)
 		return
 	}
 	var timeout = time.Duration(5) * time.Second
@@ -246,22 +260,22 @@ func stopAndRemoveContainer(containerID string) {
 	if exec, err := cli.CreateExec(cmd); err == nil {
 		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
 		if err != nil {
-			logger.Error("StartExec:", err)
+			log.Error("StartExec:", err)
 		}
 
 		rc, err := cli.WaitContainerWithContext(containerID, ctx)
 		if err != nil {
-			logger.Error("WaitContainer:", err)
+			log.Error("WaitContainer:", err)
 		}
-		logger.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
+		log.Debugf("WaitContainer: %d containerId:%s", rc, containerID)
 	} else {
-		logger.Error("CreateExec:", err)
+		log.Error("CreateExec:", err)
 	}
 
-	logger.Info("stop container:", containerID)
+	log.Info("stop container:", containerID)
 
 	err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: containerID, Force: true})
 	if err != nil {
-		logger.Error("RemoveContainer:", err)
+		log.Error("RemoveContainer:", err)
 	}
 }

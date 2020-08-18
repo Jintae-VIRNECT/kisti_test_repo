@@ -1,11 +1,11 @@
 package main
 
 import (
+	"RM-RecordServer/data"
 	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -51,12 +52,10 @@ func CustomRecovery() gin.HandlerFunc {
 }
 
 func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) gin.HandlerFunc {
-	var logger *log.Logger
-	if out != nil {
-		logger = log.New(out, "\n\n\x1b[31m", log.LstdFlags)
-	}
 	return func(c *gin.Context) {
 		defer func() {
+			log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
 			if err := recover(); err != nil {
 				// Check for a broken connection, as it is not really a
 				// condition that warrants a panic stack trace.
@@ -68,7 +67,7 @@ func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) gin.HandlerFun
 						}
 					}
 				}
-				if logger != nil {
+				if log != nil {
 					stack := stack(3)
 					httpRequest, _ := httputil.DumpRequest(c.Request, false)
 					headers := strings.Split(string(httpRequest), "\r\n")
@@ -79,12 +78,12 @@ func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) gin.HandlerFun
 						}
 					}
 					if brokenPipe {
-						logger.Printf("%s\n%s%s", err, string(httpRequest), reset)
+						log.Printf("%s\n%s%s", err, string(httpRequest), reset)
 					} else if IsDebugging() {
-						logger.Printf("[Recovery] %s panic recovered:\n%s\n%s\n%s%s",
+						log.Printf("[Recovery] %s panic recovered:\n%s\n%s\n%s%s",
 							timeFormat(time.Now()), strings.Join(headers, "\r\n"), err, stack, reset)
 					} else {
-						logger.Printf("[Recovery] %s panic recovered:\n%s\n%s%s",
+						log.Printf("[Recovery] %s panic recovered:\n%s\n%s%s",
 							timeFormat(time.Now()), err, stack, reset)
 					}
 				}

@@ -2,8 +2,8 @@ package recorder
 
 import (
 	"RM-RecordServer/data"
-	"RM-RecordServer/logger"
 	"RM-RecordServer/util"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"os"
@@ -12,43 +12,47 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func ListRecordingFiles(filter *data.Filter, onlyLocalStorage bool) ([]RecordingFileInfo, int, error) {
+func ListRecordingFiles(ctx context.Context, filter *data.Filter, onlyLocalStorage bool) ([]RecordingFileInfo, int, error) {
 	if db != nil && onlyLocalStorage == false {
-		return queryFromDB(filter)
+		return queryFromDB(ctx, filter)
 	} else {
-		infos, err := queryFromLocal()
+		infos, err := queryFromLocal(ctx)
 		return infos, 0, err
 	}
 }
 
-func RemoveRecordingFileAll() (int, error) {
-	deleteOnDB(nil)
+func RemoveRecordingFileAll(ctx context.Context) (int, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+	deleteOnDB(ctx, nil)
 
 	count, err := util.RemoveContents(viper.GetString("record.dir"))
-	logger.Info("delete all recording files. count:", count)
+	log.Info("delete all recording files. count:", count)
 
 	return count, err
 }
 
-func RemoveRecordingFile(recordingID string) error {
-	filter := &data.Filter{RecordingID: &recordingID}
-	deleteOnDB(filter)
+func RemoveRecordingFile(ctx context.Context, recordingID string) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
-	filePath, err := GetRecordingFilePath(recordingID)
+	filter := &data.Filter{RecordingID: &recordingID}
+	deleteOnDB(ctx, filter)
+
+	filePath, err := GetRecordingFilePath(ctx, recordingID)
 	if err != nil {
 		return ErrNotFoundRecordingID
 	}
-	logger.Infof("delete recording id:%s file:", recordingID, filePath)
+	log.Infof("delete recording id:%s file:%s", recordingID, filePath)
 
-	return removeFile(filePath)
+	return removeFile(ctx, filePath)
 }
 
-func GetRecordingFilePath(recordingID string) (string, error) {
+func GetRecordingFilePath(ctx context.Context, recordingID string) (string, error) {
 	root := viper.GetString("record.dir")
-	info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
+	info, err := readInfoFile(ctx, recordingID, filepath.Join(root, recordingID))
 	if err != nil {
 		return "", err
 	}
@@ -56,12 +60,14 @@ func GetRecordingFilePath(recordingID string) (string, error) {
 	return info.FullPath, nil
 }
 
-func queryFromLocal() ([]RecordingFileInfo, error) {
+func queryFromLocal(ctx context.Context) ([]RecordingFileInfo, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	infos := []RecordingFileInfo{}
 
 	root := viper.GetString("record.dir")
 	if _, err := os.Stat(root); os.IsNotExist(err) {
-		logger.Error(err)
+		log.Error(err)
 		return infos, err
 	}
 
@@ -75,12 +81,12 @@ func queryFromLocal() ([]RecordingFileInfo, error) {
 		if ExistRecordingID(recordingID) {
 			continue
 		}
-		info, err := readInfoFile(recordingID, filepath.Join(root, recordingID))
+		info, err := readInfoFile(ctx, recordingID, filepath.Join(root, recordingID))
 		if err != nil {
 			if os.IsNotExist(err) {
-				logger.Debug("skip file:", recordingID, "(empty directory)")
+				log.Debug("skip file:", recordingID, "(empty directory)")
 			} else {
-				logger.Warn(err, " file:", recordingID)
+				log.Warn(err, " file:", recordingID)
 			}
 			continue
 		}
@@ -90,30 +96,34 @@ func queryFromLocal() ([]RecordingFileInfo, error) {
 	return infos, nil
 }
 
-func removeFile(file string) error {
-	logger.Info("delete recording file:", filepath.Dir(file))
+func removeFile(ctx context.Context, file string) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	log.Info("delete recording file:", filepath.Dir(file))
 
 	err := os.RemoveAll(filepath.Dir(file))
 	if err != nil {
-		logger.Error("delete fail. ", err)
+		log.Error("delete fail. ", err)
 		return err
 	}
 
 	return nil
 }
 
-func readInfoFile(recordingID string, path string) (RecordingFileInfo, error) {
+func readInfoFile(ctx context.Context, recordingID string, path string) (RecordingFileInfo, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	info := RecordingFileInfo{}
 
 	infoFile, err := os.Open(filepath.Join(path, ".recording."+recordingID))
 	if err != nil {
-		logger.Error("open file:", err)
+		log.Error("open file:", err)
 		return info, err
 	}
 	defer infoFile.Close()
 	byteValue, err := ioutil.ReadAll(infoFile)
 	if err != nil {
-		logger.Error("json parse file:", err)
+		log.Error("json parse file:", err)
 		return info, err
 	}
 	var result map[string]interface{}
