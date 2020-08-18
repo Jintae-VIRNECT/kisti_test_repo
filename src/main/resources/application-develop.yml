@@ -79,7 +79,7 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: process-server
+        - id: task-server
           uri: lb:http://process-server
           predicates:
             - Path=/tasks/**
@@ -186,19 +186,6 @@ spring:
                 preLogger: true
                 postLogger: true
 
-        - id: link-server
-          uri: lb:http://link-server
-          predicates:
-            - Path=/link/**
-          filters:
-            - StripPrefix=1
-            - RewritePath=/link/v2/(?<segment>.*), /v2/$\{segment}
-            - name: Logging
-              args:
-                messagePrefix: "LINK_SERVER"
-                preLogger: true
-                postLogger: true
-
         - id: payletter-api-server
           uri: https://devpayapi.virnect.com
           predicates:
@@ -223,6 +210,7 @@ spring:
               - "*"
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+        - MessageEncryptDecryptFilter
       x-forwarded:
         prefix-enabled: false
       httpclient:

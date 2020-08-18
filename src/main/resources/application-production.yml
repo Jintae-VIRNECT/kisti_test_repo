@@ -189,6 +189,7 @@ spring:
             allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+        - MessageEncryptDecryptFilter
       x-forwarded:
         prefix-enabled: false
   zipkin:

@@ -1,4 +1,4 @@
-package com.virnect.gateway.security;
+package com.virnect.gateway.error;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -34,6 +34,18 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
         log.warn("[GATEWAY EXCEPTION HANDLER] : " + ex);
         String message = "";
+
+        // Gateway Security Related Exception Handling
+        if (ex.getClass() == GatewaySecurityException.class) {
+            message = errorMessage(((GatewaySecurityException) ex).getErrorCode());
+            ServerHttpResponse response = exchange.getResponse();
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            response.getHeaders().set("encrypt", "false");
+            DataBuffer dataBuffer = response.bufferFactory().wrap(message.getBytes(StandardCharsets.UTF_8));
+            return response.writeWith(Flux.just(dataBuffer));
+        }
+
+        // Jwt Related Exception Handling
         if (ex.getClass() == NullPointerException.class) {
             message = errorMessage(ErrorCode.ERR_API_AUTHENTICATION);
         } else if (ex.getClass() == ExpiredJwtException.class) {
