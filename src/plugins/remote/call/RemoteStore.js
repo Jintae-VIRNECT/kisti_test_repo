@@ -1,3 +1,5 @@
+import { ROLE } from 'configs/remote.config'
+
 const getDefaultState = () => {
   return {
     initing: true,
@@ -190,6 +192,9 @@ const mutations = {
         date: new Date(),
         type: 'system',
       })
+      if (participant[0].roleType === ROLE.LEADER) {
+        state.viewForce = false
+      }
     }
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(

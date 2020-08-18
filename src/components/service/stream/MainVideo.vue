@@ -215,7 +215,7 @@ export default {
     viewForce(flag, oldFlag) {
       if (flag === false && oldFlag === true) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 화면 전환을 중지했습니다?')
+        this.toastDefault('리더가 화면 고정을 해지했습니다.')
       }
     },
     cameraStatus(status, oldStatus) {
