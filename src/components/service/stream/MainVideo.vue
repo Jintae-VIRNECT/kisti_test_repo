@@ -38,9 +38,7 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template
-          v-if="(viewForce && allowTools) || account.uuid === mainView.id"
-        >
+        <template v-if="viewForce && allowTools">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
           </transition>

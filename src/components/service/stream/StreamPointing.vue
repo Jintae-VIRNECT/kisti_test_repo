@@ -79,7 +79,7 @@ export default {
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       this.$call.pointing({
-        to: this.mainView.id,
+        to: [this.mainView.id],
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
@@ -90,7 +90,7 @@ export default {
     },
     receivePointing(receive) {
       const data = JSON.parse(receive.data)
-      if (data.to !== this.mainView.id) return
+      if (data.to.findIndex(val => val === this.mainView.id) === -1) return
       let color = ahexToHEX(data.color)
       this.pointList.push({
         coords: [
