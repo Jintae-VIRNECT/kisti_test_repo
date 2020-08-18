@@ -25,12 +25,12 @@ public class Device extends TimeEntity {
     @Column(name = "device_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_type_id", nullable = false)
-    private DeviceType type;
-
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "dispaly_title", nullable = false)
+    private String displayTitle;
 
+    @Column(name = "type")
+    private String type;
 }
