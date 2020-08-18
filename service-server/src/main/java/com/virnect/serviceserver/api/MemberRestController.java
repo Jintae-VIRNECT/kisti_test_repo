@@ -2,6 +2,7 @@ package com.virnect.serviceserver.api;
 
 
 import com.virnect.data.ApiResponse;
+import com.virnect.data.api.IMemberRestAPI;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.service.MemberService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,21 +18,24 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/remote")
-public class MemberRestController {
+public class MemberRestController implements IMemberRestAPI {
     private static final String TAG = MemberRestController.class.getSimpleName();
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/member";
 
     private final MemberService memberService;
 
-    private HttpHeaders getResponseHeaders() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return responseHeaders;
+    @Override
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String filter, int page, int size) {
+        log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
+
+        //todo: after delete user itself
+        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberService.getMembers(workspaceId, filter, page, size);
+        log.debug(TAG, apiResponse.toString());
+        return ResponseEntity.ok(apiResponse);
     }
 
-    @ApiOperation(value = "Lookup Member Information List", notes = "워크스페이스 멤버 리스트를 조회하는 API 입니다.")
+    /*@ApiOperation(value = "Lookup Member Information List", notes = "워크스페이스 멤버 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "Page Index Number", dataType = "Integer", paramType = "query", defaultValue = "0"),
@@ -50,5 +54,5 @@ public class MemberRestController {
         ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberService.getMembers(workspaceId, filter, page, size);
         log.debug(TAG, apiResponse.toString());
         return ResponseEntity.ok(apiResponse);
-    }
+    }*/
 }

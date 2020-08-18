@@ -5,8 +5,8 @@ import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.MemberStatus;
 import com.virnect.data.dao.MemberType;
 import com.virnect.data.dao.RoomHistory;
-import com.virnect.data.data.MemberHistoryRepository;
-import com.virnect.data.data.RoomHistoryRepository;
+import com.virnect.data.repository.MemberHistoryRepository;
+import com.virnect.data.repository.RoomHistoryRepository;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomHistoryDeleteRequest;
@@ -52,6 +52,44 @@ public class HistoryService {
 
     //========================================== History Services =====================================//
     //public ApiResponse<RoomHistoryInfoListResponse> getRoomHistoryInfoList(String workspaceId, String userId, boolean paging, Pageable pageable) {
+    public MemberHistory getMemberHistory(String workspaceId, String sessionId, String userId) {
+        return this.memberHistoryRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);
+    }
+
+    public List<MemberHistory> getMemberHistoryList(String workspaceId, String userId) {
+        return this.memberHistoryRepository.findByWorkspaceIdAndUuid(workspaceId, userId);
+    }
+
+    public List<MemberHistory> getMemberHistoryList(String sessionId) {
+        return this.memberHistoryRepository.findAllBySessionId(sessionId);
+    }
+
+    public Page<MemberHistory> getMemberHistoryList(String workspaceId, String userId, Pageable pageable) {
+        return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(workspaceId, userId, pageable);
+    }
+
+    public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
+        return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+    }
+
+    @Transactional
+    public void removeRoomHistory(List<MemberHistory> memberHistoryList) {
+        memberHistoryList.forEach(memberHistory -> {
+            if(memberHistory.getRoomHistory() != null) {
+                memberHistory.setRoomHistory(null);
+                this.memberHistoryRepository.save(memberHistory);
+            }
+        });
+    }
+
+    @Transactional
+    public void removeRoomHistory(MemberHistory memberHistory) {
+        memberHistory.setRoomHistory(null);
+        this.memberHistoryRepository.save(memberHistory);
+    }
+
+
+
     public ApiResponse<RoomHistoryInfoListResponse> getRoomHistoryInfoList(String workspaceId, String userId, boolean paging, PageRequest pageable) {
         log.debug("getRoomHistoryInfoList");
         if (!paging) {

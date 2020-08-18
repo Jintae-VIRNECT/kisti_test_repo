@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 //url = "http://192.168.6.3:8081",
-@FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class)
+@FeignClient(name = "user-server", url = "http://192.168.6.3:8081", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
-
     //@ApiIgnore PageRequest pageRequest
     /**
      * User Information List

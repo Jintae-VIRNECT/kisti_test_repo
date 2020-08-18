@@ -2,10 +2,10 @@ package com.virnect.data.service;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.*;
-import com.virnect.data.data.MemberHistoryRepository;
-import com.virnect.data.data.MemberRepository;
-import com.virnect.data.data.RoomHistoryRepository;
-import com.virnect.data.data.RoomRepository;
+import com.virnect.data.repository.MemberHistoryRepository;
+import com.virnect.data.repository.MemberRepository;
+import com.virnect.data.repository.RoomHistoryRepository;
+import com.virnect.data.repository.RoomRepository;
 import com.virnect.data.dto.SessionResponse;
 import com.virnect.data.dto.request.JoinRoomRequest;
 import com.virnect.data.dto.request.ModifyRoomInfoRequest;
@@ -368,17 +368,17 @@ public class SessionService {
     }
 
     @Transactional
-    public void joinSession(String sessionId, ClientMetaData clientMetaData) {
+    public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
         for (Member member:room.getMembers()) {
             if(member.getUuid().equals(clientMetaData.getClientData())) {
                 member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                 member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                member.setConnectionId(connectionId);
                 member.setMemberStatus(MemberStatus.LOAD);
             }
         }
-
         roomRepository.save(room);
     }
 

@@ -5,7 +5,6 @@ import com.virnect.serviceserver.cdr.CDRLoggerFile;
 import com.virnect.serviceserver.cdr.CallDetailRecord;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.config.RemoteServiceProperties;
 import com.virnect.serviceserver.core.SessionEventsHandler;
 import com.virnect.serviceserver.core.SessionManager;
 import com.virnect.serviceserver.core.TokenGenerator;
@@ -26,7 +25,6 @@ import com.virnect.serviceserver.rpc.RpcHandler;
 import com.virnect.serviceserver.rpc.RpcNotificationService;
 import com.virnect.serviceserver.utils.*;
 import com.virnect.serviceserver.webhook.CDRLoggerWebhook;
-import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
 import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
@@ -37,15 +35,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.net.ssl.*;
@@ -63,6 +62,9 @@ import java.util.concurrent.Semaphore;
 //@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
+@ComponentScan(value = {"com.virnect.data", "com.virnect.serviceserver"})
+@EntityScan(value = {"com.virnect.data.dao"})
+@EnableJpaRepositories(value = {"com.virnect.data.repository"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
@@ -371,7 +373,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
 
-        String dashboardUrl = httpUrl + "dashboard/";
+        String dashboardUrl = httpUrl + "/dashboard/";
         String websocket = wsUrl + WS_PATH + "/";
 
         // @formatter:off

@@ -8,12 +8,18 @@ public final class PageRequest {
     private final static int PAGE_DEFAULT_SIZE = 20;
     private final static int PAGE_MAZ_SIZE = 50;
 
-    private int page = 1;
-    private int size = 20;
+    //private int page = 1;
+
+    private int page = 0;                           //page index starts 0
+    private int size = PAGE_MAZ_SIZE;               //page size is derived from max size
     private String sort;
 
-    public void setPage(int page) {
+    /*public void setPage(int page) {
         this.page = page <= 0 ? 1 : page;
+    }*/
+
+    public void setPage(int page) {
+        this.page = Math.max(page, 0);
     }
 
     public void setSize(int size) {
@@ -38,7 +44,9 @@ public final class PageRequest {
             properties = "createdDate";
         }
 
-        return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
+        return org.springframework.data.domain.PageRequest.of(page, size, Sort.Direction.valueOf(sort), properties);
+
+        //return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
     }
 
 }
