@@ -27,8 +27,9 @@ export const addSessionEventListener = session => {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
         hasVideo: event.stream.hasVideo,
-        video: event.stream.videoActive,
-        audio: event.stream.audioActive,
+        video: event.stream.hasVideo
+          ? event.stream.videoActive
+          : event.stream.hasVideo,
       })
       addSubscriber(subscriber)
       _.sendResolution()

@@ -33,9 +33,9 @@ export default {
 .video-tools {
   position: absolute;
   bottom: -2px;
-  left: 0;
+  left: -2px;
   display: flex;
-  width: 100%;
+  width: calc(100% + 4px);
   height: 80px;
   background: linear-gradient(-180deg, rgba(#000, 0) 0%, rgba(#000, 0.7) 100%);
 }

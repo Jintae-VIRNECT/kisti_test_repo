@@ -34,8 +34,8 @@ export default {
           return null
         } else {
           if (
-            this.deviceInfo.cameraStatus === CAMERA.CAMERA_ON ||
-            this.deviceInfo.cameraStatus === 'default'
+            this.mainView.cameraStatus === CAMERA.CAMERA_ON ||
+            this.mainView.cameraStatus === 'default'
           ) {
             return this.mainView.stream
           } else {
