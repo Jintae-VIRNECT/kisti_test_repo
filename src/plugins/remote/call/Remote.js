@@ -2,7 +2,11 @@ import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import { SIGNAL, ROLE, CAMERA, FLASH, VIDEO } from 'configs/remote.config'
-import { DEVICE, FLASH as FLASH_STATUE } from 'configs/device.config'
+import {
+  DEVICE,
+  FLASH as FLASH_STATUE,
+  CAMERA as CAMERA_STATUE,
+} from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 import { getPermission } from 'utils/deviceCheck'
@@ -100,19 +104,18 @@ const _ = {
       }
       debug('call::publish::', publishOptions)
 
-      const publisher = OV.initPublisher('', publishOptions)
-      publisher.on('streamCreated', () => {
+      _.publisher = OV.initPublisher('', publishOptions)
+      _.publisher.on('streamCreated', () => {
         logger('room', 'publish success')
-        _.publisher = publisher
-        const mediaStream = publisher.stream.mediaStream
+        const mediaStream = _.publisher.stream.mediaStream
         Store.commit('updateParticipant', {
-          connectionId: publisher.stream.connection.connectionId,
+          connectionId: _.publisher.stream.connection.connectionId,
           stream: mediaStream,
-          hasVideo: publisher.stream.hasVideo,
-          video: publisher.stream.videoActive,
-          audio: publisher.stream.audioActive,
+          hasVideo: _.publisher.stream.hasVideo,
+          video: _.publisher.stream.videoActive,
+          audio: _.publisher.stream.audioActive,
         })
-        if (publisher.properties.publishVideo) {
+        if (_.publisher.properties.publishVideo) {
           const track = mediaStream.getVideoTracks()[0]
           const settings = track.getSettings()
           const capability = track.getCapabilities()
@@ -124,14 +127,14 @@ const _ = {
               advanced: [{ zoom: 100 }],
             })
             Store.commit('deviceControl', {
-              connectionId: publisher.stream.connection.connectionId,
+              connectionId: _.publisher.stream.connection.connectionId,
               zoomLevel: 1,
               zoomMax: parseInt(capability.zoom.max / 100),
               flash: FLASH_STATUE.FLASH_NONE,
             })
           } else {
             Store.commit('deviceControl', {
-              connectionId: publisher.stream.connection.connectionId,
+              connectionId: _.publisher.stream.connection.connectionId,
               zoomLevel: 1,
               zoomMax: 1,
               flash: FLASH_STATUE.FLASH_NONE,
@@ -145,7 +148,7 @@ const _ = {
         }
       })
 
-      _.session.publish(publisher)
+      _.session.publish(_.publisher)
       return true
     } catch (err) {
       console.error(err)
@@ -358,7 +361,7 @@ const _ = {
 
     const params = {
       type: CAMERA.STATUS,
-      status: active ? CAMERA.CAMERA_ON : CAMERA.CAMERA_OFF,
+      status: active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF,
     }
     try {
       _.session.signal({
