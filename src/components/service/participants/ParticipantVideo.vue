@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <div class="participant-video__stream" v-if="participant.video">
+      <!-- <div class="participant-video__stream" v-if="participant.video">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -13,15 +13,15 @@
           loop
           :muted="isMe"
         ></video>
-      </div>
-      <div class="participant-video__profile" v-else>
+      </div> -->
+      <div class="participant-video__profile">
         <audio
-          v-if="!participant.video && !participant.me"
+          v-if="!participant.me"
           :srcObject.prop="participant.stream"
           autoplay
           playsinline
           loop
-          :muted="isMe"
+          :muted="isMe && mainView.uuid === participant.uuid"
         ></audio>
         <img
           v-if="participant.path && participant.path !== 'default'"
@@ -94,13 +94,13 @@
             class="participant-video__setting"
             :class="{ hover: hover, active: btnActive }"
           >
-            메뉴
+            {{ $t('common.menu') }}
           </button>
 
           <ul class="video-popover">
             <li>
               <button class="video-pop__button" @click="mute">
-                음소거
+                {{ $t('service.participant_mute') }}
               </button>
             </li>
             <li v-if="iamLeader">
@@ -108,7 +108,7 @@
                 class="video-pop__button"
                 @click="disconnectUser(account.nickname)"
               >
-                내보내기
+                {{ $t('service.participant_kick') }}
               </button>
             </li>
           </ul>
@@ -225,13 +225,13 @@ export default {
       this.$eventBus.$emit('popover:close')
       if (this.checkBeta()) return
       this.confirmCancel(
-        `${nickName}님을 협업에서 제외 하시겠습니까?`,
+        this.$t('service.participant_kick_confirm', { name: nickName }),
         {
-          text: '확인',
+          text: this.$t('button.confirm'),
           action: this.kick,
         },
         {
-          text: '취소',
+          text: this.$t('button.cancel'),
         },
       )
     },

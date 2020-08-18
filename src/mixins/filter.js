@@ -102,6 +102,9 @@ export default {
         return list
       }
     },
+    scrollReset() {
+      this.$eventBus.$emit('scroll:reset:workspace')
+    },
   },
   mounted() {
     // this.$eventBus.$emit('clear')

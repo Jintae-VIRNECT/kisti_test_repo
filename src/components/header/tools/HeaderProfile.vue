@@ -25,10 +25,10 @@
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="fileList">로컬 녹화 파일</button>
+        <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
       <div class="popover-profile__link">
-        <button @click="logout">로그아웃</button>
+        <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
       <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
     </div>

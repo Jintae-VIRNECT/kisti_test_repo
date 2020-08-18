@@ -1,6 +1,6 @@
 <template>
   <menu-button
-    text="서버 녹화"
+    :text="$t('service.record_server')"
     :active="isRecording"
     :disabled="!canRecord"
     :src="require('assets/image/ic_record_off.svg')"

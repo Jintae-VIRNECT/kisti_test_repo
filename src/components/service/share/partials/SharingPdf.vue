@@ -6,14 +6,16 @@
 
     <p class="sharing-image__name">{{ fileData.name }}</p>
     <button class="sharing-image__remove" @click.stop="deleteImage">
-      파일 삭제
+      {{ $t('service.file_remove') }}
     </button>
     <div
       class="sharing-image__loading"
       v-if="docPages.length === 0 || docPages.length !== totalPages"
     >
       <div class="loading-box">
-        <p class="loading-box__title">변환중</p>
+        <p class="loading-box__title">
+          {{ $t('service.share_loading') }}
+        </p>
         <div class="loading-box__progress">
           <div
             :style="{ width: `${(docPages.length / totalPages) * 100}%` }"
@@ -31,11 +33,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 import PDFJS from 'pdfjs-dist'
 PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
 export default {
   name: 'SharingPdf',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {},
   data() {
     return {
@@ -116,7 +119,7 @@ export default {
           if (err.name === 'InvalidPDFException') {
             this.toastError('Invalid PDF File.')
           } else if (err.name === 'PasswordException') {
-            this.toastError('암호화된 파일은 지원하지 않습니다.')
+            this.toastError(this.$t('service.share_locked'))
           } else {
             console.error(err)
           }
@@ -166,13 +169,13 @@ export default {
     },
     deleteImage() {
       this.confirmCancel(
-        '정말로 삭제하시겠습니까?',
+        this.$t('service.share_delete_real'),
         {
-          text: '확인',
+          text: this.$t('button.confirm'),
           action: this.remove,
         },
         {
-          text: '취소',
+          text: this.$t('button.cancel'),
         },
       )
     },

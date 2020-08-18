@@ -22,18 +22,22 @@
           @error="onImageErrorGroup"
         /> -->
         <p class="profile__name">{{ title ? title : room.title }}</p>
-        <p class="profile__leader">리더 : {{ leader.nickname }}</p>
+        <p class="profile__leader">
+          {{ `${$t('common.leader')} : ${leader.nickname}` }}
+        </p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
-          <p class="info__title">그룹 정보</p>
+          <p class="info__title">{{ $t('workspace.remote_group_info') }}</p>
           <p class="info__description">
             <b>{{ `접속 멤버 &nbsp;&nbsp;${activeMemberList.length}` }}</b>
             {{ `/ ${room.memberList.length}` }}
           </p>
         </div>
         <div class="info__section">
-          <p class="info__title">접속한 멤버</p>
+          <p class="info__title">
+            {{ $t('workspace.remote_connected_member') }}
+          </p>
           <profile-list
             :customStyle="{
               width: '2rem',
@@ -49,23 +53,23 @@
         </div>
       </div>
       <button class="groupcard-button btn small" @click="join">
-        참가하기
+        {{ $t('button.invite') }}
       </button>
     </div>
     <ul slot="menuPopover" class="groupcard-popover">
       <li>
         <button class="group-pop__button" @click="openRoomInfo">
-          상세 보기
+          {{ $t('button.show_detail') }}
         </button>
       </li>
       <li v-if="isLeader">
         <button class="group-pop__button" @click="$emit('remove')">
-          협업 삭제
+          {{ $t('button.remove_room') }}
         </button>
       </li>
       <li v-else>
         <button class="group-pop__button" @click="$emit('leave')">
-          협업 나가기
+          {{ $t('button.leave_room') }}
         </button>
       </li>
     </ul>

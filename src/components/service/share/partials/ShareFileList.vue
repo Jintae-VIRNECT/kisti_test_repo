@@ -4,7 +4,7 @@
       <ol class="upload-list">
         <li>
           <button class="upload-list__button" @click="addFileClick()">
-            파일추가
+            {{ $t('service.file_add') }}
           </button>
           <input
             type="file"
@@ -72,7 +72,7 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size > maxFileSize) {
-          alert(this.$t('service.call_upload_text2'))
+          alert(this.$t('service.file_maxsize'))
           this.clearUploadFile()
           return false
         }
@@ -98,7 +98,7 @@ export default {
           this.addFile(docItem)
           // this.sharingList.push(docItem)
         } else {
-          alert(this.$t('service.call_upload_text3'))
+          alert(this.$t('service.file_type'))
           return false
         }
       }

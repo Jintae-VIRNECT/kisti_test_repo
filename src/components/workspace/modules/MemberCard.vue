@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="{ no__button: !showMessageButton }">
+  <div class="card">
     <div class="card-center">
       <div class="card-profile--thumb">
         <profile
@@ -21,13 +21,13 @@
       <role v-if="showRole && license" :role="role" :opt="opt"></role>
       <role
         v-else-if="license === false"
-        :role="'라이선스 만료'"
+        :role="$t('workspace.expire_license')"
         :opt="opt"
       ></role>
     </div>
-    <div v-if="showMessageButton" class="card-bottom">
-      <p>메시지 보내기</p>
-    </div>
+    <!-- <div v-if="showMessageButton" class="card-bottom">
+      <p>{{ $t('button.send_message') }}</p>
+    </div> -->
   </div>
 </template>
 
@@ -63,10 +63,6 @@ export default {
     license: {
       type: Boolean,
       default: true,
-    },
-    showMessageButton: {
-      type: Boolean,
-      default: false,
     },
     showSignal: {
       type: Boolean,
@@ -114,25 +110,33 @@ export default {
   flex-direction: column;
   align-items: center;
   padding-top: 2.286rem;
+  padding-bottom: 1.429rem;
   background-color: rgba($color_darkgray_500, 0.9);
   border: solid 1px #3e3e42;
   border-radius: 2px;
-  &.no__button {
-    padding-bottom: 1.429rem;
-  }
 
   &:hover {
     background-color: $color_darkgray_500;
   }
 }
 .card-center {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-grow: 3;
   align-items: center;
   width: 100%;
   // min-height: 180px;
-  margin-bottom: 0.714rem;
+  margin-bottom: 0.571rem;
+  padding-bottom: 20px;
+  > .role {
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    color: #f2f2f2;
+    font-weight: 300;
+    border-color: #ccc;
+  }
 }
 
 .card-profile--thumb {
@@ -148,7 +152,7 @@ export default {
   max-width: 100%;
   margin-top: 1.214rem;
   margin-bottom: 0.286rem;
-  padding: 0 25px;
+  padding: 0 1.786rem;
   font-weight: 500;
   font-size: 1.071rem;
   @include ellipsis();
@@ -156,7 +160,7 @@ export default {
 .card-profile--email {
   max-width: 100%;
   margin-bottom: 0.786rem;
-  padding: 0 25px;
+  padding: 0 1.786rem;
   color: #98a0a6;
   font-size: 0.929rem;
   @include ellipsis();
@@ -192,13 +196,5 @@ export default {
 
   text-align: center;
   border-top: solid 1px rgba(#3e3e42, 0.92);
-}
-</style>
-
-<style lang="scss">
-.card {
-  .role {
-    margin: 0.571rem 0;
-  }
 }
 </style>

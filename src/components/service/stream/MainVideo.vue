@@ -44,13 +44,13 @@
       <transition name="opacity">
         <div class="main-video__empty-inner" v-if="resolutions.length > 0">
           <img src="~assets/image/img_video_connecting.svg" />
-          <p>영상 연결 중…</p>
+          <p>{{ $t('service.stream_connecting') }}</p>
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
-          <p>출력 할 영상이 없습니다.</p>
+          <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
-            접속중인 작업자가 없습니다.
+            {{ $t('service.stream_no_worker') }}
           </p>
         </div>
       </transition>
@@ -61,16 +61,23 @@
       </transition>
     </div>
     <transition name="opacity">
-      <div class="main-video__empty" v-if="loaded && cameraStatus !== -1">
+      <div
+        class="main-video__empty"
+        v-if="
+          (loaded && cameraStatus === 'off') || cameraStatus === 'background'
+        "
+      >
         <transition name="opacity">
-          <div class="main-video__empty-inner" v-if="cameraStatus === 'off'">
+          <div class="main-video__empty-inner">
             <img src="~assets/image/img_video_stop.svg" />
-            <p>영상을 정지하였습니다.</p>
-            <p class="inner-discription" v-if="cameraStatus === 'background'">
-              작업자의 Remote App이<br />백그라운드 상태입니다.
-            </p>
+            <p>{{ $t('service.stream_stop') }}</p>
+            <p
+              class="inner-discription"
+              v-if="cameraStatus === 'background'"
+              v-html="$t('service.stream_background')"
+            ></p>
             <p class="inner-discription" v-else>
-              작업자의 영상이 일시정지 상태입니다.
+              {{ $t('service.stream_stoped') }}
             </p>
           </div>
         </transition>
@@ -144,7 +151,7 @@ export default {
         } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
           return 'background'
         }
-        return -1
+        return 'on'
       } else {
         return -1
       }
@@ -181,9 +188,33 @@ export default {
         }
       },
     },
+    cameraStatus(status, oldStatus) {
+      if (status === oldStatus || oldStatus === -1) return
+      if (!this.mainView || !this.mainView.id) return
+      if (status === 'off') {
+        if (oldStatus === 'background') return
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-stop',
+          type: 'system',
+        })
+      } else if (status === 'background') {
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-background',
+          type: 'system',
+        })
+      } else if (status === 'on') {
+        this.addChat({
+          name: this.mainView.nickname,
+          status: 'stream-start',
+          type: 'system',
+        })
+      }
+    },
   },
   methods: {
-    ...mapActions(['updateAccount', 'setCapture']),
+    ...mapActions(['updateAccount', 'setCapture', 'addChat']),
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()

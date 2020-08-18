@@ -1,9 +1,9 @@
 <template>
-  <tooltip content="스피커 on/off">
+  <tooltip :content="`${$t('common.speaker')} on/off`">
     <toggle-button
       slot="body"
       customClass="toggle-header"
-      description="스피커 on/off"
+      :description="`${$t('common.speaker')} on/off`"
       size="2.429rem"
       :active="speaker.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_volum_on.svg')"

@@ -1,24 +1,27 @@
 <template>
   <section class="workspace-welcome">
-    <div class="workspace-welcome__body offsetwidth">
-      <div class="workspace-welcome__group">
+    <div
+      class="workspace-welcome__body offsetwidth"
+      :class="{ empty: emptyWorkspace }"
+    >
+      <div class="workspace-welcome__group" v-if="!emptyWorkspace">
         <p>
           {{ workspace.title }}
         </p>
         <role v-if="showRole" :role="workspace.role"></role>
         <role
           v-if="hasLicense && expireLicense"
-          role="라이선스 만료"
+          :role="$t('workspace.expire_license')"
           :opt="'expired'"
         ></role>
       </div>
       <p class="workspace-welcome__name" v-html="welcomeText"></p>
       <button
-        v-if="hasLicense && !expireLicense"
+        v-if="!emptyWorkspace && !expireLicense"
         class="btn"
         @click="createRoom"
       >
-        원격 협업 생성
+        {{ $t('workspace.create_room') }}
       </button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
@@ -43,15 +46,24 @@ export default {
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    emptyWorkspace() {
+      if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
+        return true
+      } else {
+        return false
+      }
+    },
     welcomeText() {
       if (this.hasLicense && !this.expireLicense) {
-        return `${this.account.nickname} 님, 반갑습니다.`
+        return this.$t('workspace.welcome', { name: this.account.nickname })
       } else if (!this.hasLicense) {
-        return `${this.account.nickname} 님, <br />
-        할당된 라이선스가 없습니다.`
+        return this.$t('workspace.welcome_license', {
+          name: this.account.nickname,
+        })
       } else {
-        return `${this.account.nickname} 님, <br />
-        라이선스가 만료되었습니다.`
+        return this.$t('workspace.welcome_expire', {
+          name: this.account.nickname,
+        })
       }
     },
     showRole() {

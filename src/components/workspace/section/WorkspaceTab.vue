@@ -2,31 +2,32 @@
   <div class="workspace-tab">
     <nav
       class="workspace-tab__nav"
-      :class="{ fix: !!fix, nolicense: !(hasLicense && !expireLicense) }"
+      :class="{ fix: !!fix, nolicense: !(hasWorkspace && !expireLicense) }"
     >
       <ul class="flex offsetwidth">
         <tab-button
           v-for="tab of tabComponents"
           :key="tab.name"
-          :active="hasLicense && component === tab.name"
+          :active="hasWorkspace && component === tab.name"
           :text="tab.text"
           @click.native="tabChange(tab.name)"
         ></tab-button>
         <transition name="opacity">
           <li class="workspace-tab__side" v-if="fix">
             <button
-              v-if="hasLicense && !expireLicense"
+              v-if="hasWorkspace && !expireLicense"
               class="btn"
               @click="createRoom"
             >
-              원격 협업 생성
+              {{ $t('workspace.create_room') }}
             </button>
           </li>
         </transition>
       </ul>
     </nav>
+    <workspace-select v-if="!workspace || !workspace.uuid"></workspace-select>
     <component
-      v-if="hasLicense && !expireLicense"
+      v-else-if="hasLicense && !expireLicense"
       :is="component"
       :class="{ fix: fix }"
     ></component>
@@ -41,8 +42,9 @@ import WorkspaceHistory from '../tab/WorkspaceHistory'
 import WorkspaceRemote from '../tab/WorkspaceRemote'
 import WorkspaceUser from '../tab/WorkspaceUser'
 import WorkspaceSetting from '../tab/WorkspaceSetting'
-import WorkspaceLicense from './WorkspaceLicense'
-import WorkspaceExpire from './WorkspaceExpire'
+import WorkspaceLicense from '../tab/WorkspaceLicense'
+import WorkspaceExpire from '../tab/WorkspaceExpire'
+import WorkspaceSelect from '../tab/WorkspaceSelect'
 import ListBadge from 'ListBadge'
 import { mapGetters } from 'vuex'
 export default {
@@ -56,32 +58,42 @@ export default {
     ListBadge,
     WorkspaceLicense,
     WorkspaceExpire,
+    WorkspaceSelect,
   },
   data() {
     return {
-      tabComponents: [
-        {
-          name: 'history',
-          text: '최근 기록',
-        },
-        {
-          name: 'remote',
-          text: '원격 협업',
-        },
-        {
-          name: 'user',
-          text: '멤버',
-        },
-        {
-          name: 'setting',
-          text: '환경 설정',
-        },
-      ],
       component: 'history',
     }
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    hasWorkspace() {
+      if (this.workspace && this.workspace.uuid && this.hasLicense) {
+        return true
+      } else {
+        return false
+      }
+    },
+    tabComponents() {
+      return [
+        {
+          name: 'history',
+          text: this.$t('workspace.history'),
+        },
+        {
+          name: 'remote',
+          text: this.$t('workspace.remote'),
+        },
+        {
+          name: 'user',
+          text: this.$t('workspace.user'),
+        },
+        {
+          name: 'setting',
+          text: this.$t('workspace.setting'),
+        },
+      ]
+    },
   },
   props: {
     fix: {

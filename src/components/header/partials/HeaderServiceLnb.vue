@@ -2,20 +2,20 @@
   <nav class="header-lnbs service">
     <ul class="flex">
       <lnb-button
-        text="실시간 공유"
+        :text="$t('service.stream')"
         :active="currentView === 'stream'"
         :image="require('assets/image/call/gnb_ic_shareframe.svg')"
         @click="goTab('stream')"
       ></lnb-button>
       <lnb-button
-        text="협업 보드"
+        :text="$t('service.drawing')"
         :active="currentView === 'drawing'"
         :notice="drawingNotice"
         :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
         @click="goTab('drawing')"
       ></lnb-button>
       <lnb-button
-        text="AR 기능"
+        :text="$t('service.ar')"
         :active="currentView === 'ar'"
         :notice="arNotice"
         :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
@@ -80,24 +80,26 @@ export default {
   },
   watch: {
     shareFile(file, oldFile) {
-      if (
-        file &&
-        file.id &&
-        file.id !== oldFile.id &&
-        this.currentView !== 'drawing'
-      ) {
-        this.drawingNotice = true
+      if (file && file.id && file.id !== oldFile.id) {
+        this.addChat({
+          name: file.fileName,
+          status: 'drawing',
+          type: 'system',
+        })
+        if (this.currentView !== 'drawing') {
+          this.drawingNotice = true
+        }
       }
     },
     hasLeader(hear, bHear) {
       if (!hear && hear !== bHear && this.participants.length > 0) {
-        this.toastDefault('리더가 협업을 종료했습니다.')
+        this.toastDefault(this.$t('service.toast_leave_leader'))
         this.setView(VIEW.STREAM)
       }
     },
     hasWorker(hear, bHear) {
       if (!hear && hear !== bHear && this.participants.length > 0) {
-        this.toastDefault('작업자가 협업을 종료했습니다.')
+        this.toastDefault(this.$t('service.toast_leave_worker'))
         if (this.view === VIEW.AR) {
           this.setView(VIEW.STREAM)
         }
@@ -105,7 +107,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setView']),
+    ...mapActions(['setView', 'addChat']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
       if (type === this.currentView) return
@@ -114,8 +116,8 @@ export default {
       if (this.account.roleType === ROLE.EXPERT_LEADER) {
         if (this.currentView === 'ar') {
           // TODO: MESSAGE
-          this.confirmCancel('AR 공유를 종료하시겠습니까?', {
-            text: '종료',
+          this.confirmCancel(this.$t('service.toast_exit_ar'), {
+            text: this.$t('button.exit'),
             action: () => {
               this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
               this.goTabConfirm(type)
@@ -126,8 +128,8 @@ export default {
         if (this.currentView === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
             // TODO: MESSAGE
-            this.confirmCancel('협업보드를 종료하시겠습니까?', {
-              text: '종료',
+            this.confirmCancel(this.$t('service.toast_exit_drawing'), {
+              text: this.$t('button.exit'),
               action: () => {
                 this.$call.drawing(DRAWING.END_DRAWING)
                 this.goTabConfirm(type)
@@ -140,7 +142,7 @@ export default {
       } // other user
       else {
         if (this.currentView === VIEW.AR) {
-          this.toastDefault('AR 공유 중에는 다른 메뉴로 이동할 수 없습니다.')
+          this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
         if (type === 'stream') {
@@ -151,13 +153,13 @@ export default {
             this.drawingNotice = false
             this.setView(VIEW.DRAWING)
           } else {
-            this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
+            this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
           }
           this.goDrawing()
         }
         if (type === 'ar') {
           if (!this.arNotice) {
-            this.toastDefault('AR 공유가 활성화되어 있지 않습니다.')
+            this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
             return
           }
         }
@@ -182,7 +184,7 @@ export default {
       if (this.shareFile && this.shareFile.id) {
         this.setView(VIEW.DRAWING)
       } else {
-        this.toastDefault('협업 보드가 활성화되어 있지 않습니다.')
+        this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
       }
     },
     permissionSetting(permission) {
@@ -190,9 +192,11 @@ export default {
         this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
         this.setView(VIEW.AR)
       } else if (permission === false) {
-        this.toastDefault(
-          '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
-        )
+        this.toastDefault(this.$t('service.toast_refused_ar'))
+        this.addChat({
+          status: 'ar-deny',
+          type: 'system',
+        })
       }
     },
     permissionCheck() {
@@ -203,29 +207,25 @@ export default {
       // }
       if (!this.mainView || !this.mainView.stream) {
         // TODO: MESSAGE
-        this.toastDefault('작업자가 존재하지 않습니다.')
+        this.toastDefault(this.$t('service.toast_no_worker'))
         return
       }
       if (this.mainView.id === this.account.uuid) {
-        console.error('본인 영상입니다.')
+        console.error(this.$t('service.toast_current_stream'))
         return
       }
       if (this.mainView.hasArFeature === false) {
-        this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
+        this.toastDefault(this.$t('service.toast_unsupport_ar'))
         return
       }
       if (this.mainView.permission === false) {
-        this.toastDefault(
-          '상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.',
-        )
+        this.toastDefault(this.$t('service.toast_refused_ar'))
         return
       }
       this.$call.permission({
         to: this.mainView.id,
       })
-      this.toastDefault(
-        '상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.',
-      )
+      this.toastDefault(this.$t('service.toast_request_permission'))
     },
 
     getPermissionCheck(receive) {
@@ -234,15 +234,6 @@ export default {
       // if (data.to !== this.account.uuid) return
       if (data.from === this.account.uuid) return
 
-      // 웹-웹 테스트용!!!
-      // if (web_test && data.type === CAPTURE_PERMISSION.REQUEST) {
-      //   this.$call.permission({
-      //     to: data.from,
-      //     type: CAPTURE_PERMISSION.RESPONSE,
-      //     isAllowed: true,
-      //   })
-      //   return
-      // }
       if (
         this.account.roleType === ROLE.EXPERT_LEADER &&
         data.type === CAPTURE_PERMISSION.RESPONSE
@@ -266,16 +257,22 @@ export default {
               connectionId: receive.from.connectionId,
               hasArFeature: data.hasArFeature,
             })
+            if (data.hasArFeature === false) {
+              this.addChat({
+                status: 'ar-unsupport',
+                type: 'system',
+              })
+            }
           }
         }
       } else {
         if (data.type === AR_FEATURE.START_AR_FEATURE) {
           // TODO: MESSAGE
-          this.toastDefault('리더가 AR 공유를 시작했습니다.')
+          this.toastDefault(this.$t('service.toast_ar_start'))
           this.setView(VIEW.AR)
         } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
           // TODO: MESSAGE
-          this.toastDefault('리더가 AR 공유를 종료했습니다.')
+          this.toastDefault(this.$t('service.toast_ar_exit'))
           this.setView(VIEW.STREAM)
         }
       }

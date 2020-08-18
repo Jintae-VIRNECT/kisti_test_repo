@@ -18,11 +18,11 @@
       class="btn normal createroom-info_regist-image"
       @click="imageUpload"
     >
-      협업 프로필 등록
+      {{ $t('workspace.create_remote_profile_regist') }}
     </button>
     <input-row
-      :title="'협업 이름'"
-      :placeholder="'그룹이름을 입력해 주세요.'"
+      :title="$t('workspace.remote_name')"
+      :placeholder="$t('workspace.create_remote_name_input')"
       :value.sync="title"
       :valid.sync="titleValid"
       validate="validName"
@@ -34,20 +34,24 @@
       showCount
     ></input-row>
     <input-row
-      :title="'협업 설명'"
-      :placeholder="'그룹 설명을 입력해주세요.'"
+      :title="$t('workspace.remote_description')"
+      :placeholder="$t('workspace.create_remote_description_input')"
       :value.sync="description"
       type="textarea"
       :count="50"
       showCount
     ></input-row>
-    <input-row v-if="!nouser" :title="'선택한 멤버'" required>
+    <input-row
+      v-if="!nouser"
+      :title="$t('workspace.create_remote_selected')"
+      required
+    >
       <profile-list
         v-if="selection.length > 0"
         :users="selection"
       ></profile-list>
       <p class="createroom-info__add-member" v-else>
-        멤버를 추가해 주세요.
+        {{ $t('workspace.create_remote_add_member') }}
       </p>
     </input-row>
     <button
@@ -55,7 +59,7 @@
       :class="{ disabled: btnDisabled }"
       @click="startRemote"
     >
-      시작하기
+      {{ $t('button.start') }}
     </button>
     <device-denied :visible.sync="showDenied"></device-denied>
   </section>
@@ -136,9 +140,9 @@ export default {
     },
     titleValidMessage() {
       if (this.title.length < 2) {
-        return '협업 이름은 2자 이상 입력해주세요.'
+        return this.$t('workspace.remote_name_valid1')
       } else {
-        return '특수 문자는 협업 이름에서 제외시켜주세요.'
+        return this.$t('workspace.remote_name_valid2')
       }
     },
   },
@@ -149,9 +153,7 @@ export default {
     },
     async startRemote() {
       if (this.btnDisabled) {
-        this.confirmDefault(
-          '선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요',
-        )
+        this.confirmDefault(this.$t('workspace.create_remote_selected_empty'))
         return
       }
 

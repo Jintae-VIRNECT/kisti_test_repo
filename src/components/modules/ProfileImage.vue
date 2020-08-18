@@ -11,7 +11,7 @@
       @error="$emit('update:image', null)"
     />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
-      이미지 삭제
+      {{ $t('button.image_remove') }}
     </button>
   </div>
 </template>

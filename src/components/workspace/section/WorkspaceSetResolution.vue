@@ -3,10 +3,12 @@
     <div class="setting-horizon-wrapper">
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
-          <p class="setting__label">녹화 영상 해상도</p>
+          <p class="setting__label">
+            {{ $t('workspace.setting_record_resolution') }}
+          </p>
           <tooltip
             customClass="tooltip-guide"
-            content="720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다."
+            :content="$t('workspace.setting_record_resolution_tooltip')"
             placement="right"
             effect="blue"
           >

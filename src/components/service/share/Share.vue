@@ -7,7 +7,7 @@
           :class="{ active: ['file', 'pdfview'].indexOf(list) > -1 }"
           @click="changeTab('file')"
         >
-          파일목록
+          {{ $t('service.file_list') }}
         </button>
       </li>
       <li>
@@ -16,7 +16,7 @@
           :class="{ active: list === 'history' }"
           @click="changeTab('history')"
         >
-          공유목록
+          {{ $t('service.share_list') }}
         </button>
       </li>
     </ul>

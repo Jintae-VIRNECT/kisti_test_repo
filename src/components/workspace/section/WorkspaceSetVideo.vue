@@ -1,8 +1,8 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">영상 설정</div>
+    <div class="setting__title">{{ $t('workspace.setting_video') }}</div>
     <div>
-      <p class="setting__label">카메라</p>
+      <p class="setting__label">{{ $t('workspace.setting_camera') }}</p>
       <r-select
         class="setting__r-selecter"
         v-on:changeValue="setVideo"

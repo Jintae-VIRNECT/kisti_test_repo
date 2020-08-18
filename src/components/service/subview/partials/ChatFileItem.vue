@@ -23,8 +23,7 @@
               class="chat-file-item__sub--valid-text"
               :class="{ invalid: !isValid }"
             >
-              유효기간
-              {{ validDate }}
+              {{ $t('service.file_validdatae') + validDate }}
               <span>{{ fileSize }}</span>
             </p>
           </div>

@@ -4,8 +4,12 @@
       <img :src="imageData" />
     </button>
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove" @click="deleteImage">
-      이미지 삭제
+    <button
+      v-if="pdfPage < 0"
+      class="sharing-image__remove"
+      @click="deleteImage"
+    >
+      {{ $t('service.share_delete') }}
     </button>
   </li>
 </template>
@@ -46,6 +50,11 @@ export default {
       } else {
         return {}
       }
+    },
+  },
+  watch: {
+    fileData() {
+      this.init()
     },
   },
   methods: {
@@ -121,18 +130,19 @@ export default {
 
         this.addHistory(history)
       } else {
-        alert('이미지가 로드중')
+        // TODO: MESSAGE
+        alert(this.$t('service.share_notready'))
       }
     },
     deleteImage() {
       this.confirmCancel(
-        '정말로 삭제하시겠습니까?',
+        this.$t('service.share_delete_real'),
         {
-          text: '확인',
+          text: this.$t('button.confirm'),
           action: this.remove,
         },
         {
-          text: '취소',
+          text: this.$t('button.cancel'),
         },
       )
     },

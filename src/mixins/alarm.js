@@ -56,8 +56,8 @@ export default {
      */
     alarmLicenseExpiration(time) {
       this.alarmInfo(
-        '[만료안내]',
-        `라이선스 만료 <em>[${time}분]</em> 남았습니다.`,
+        this.$t('alarm.expire_title'),
+        this.$t('alarm.expire_time', { time }),
       )
     },
     /**
@@ -70,12 +70,12 @@ export default {
         inviteNotify.text(
           buildTemplate({
             type: 'invite',
-            info: `${nickName} 님`,
-            description: '참가자로 협업을 요청하였습니다.',
+            info: this.$t('alarm.member_name', { name: nickName }),
+            description: this.$t('alarm.invite_request'),
             icon: profile,
             options: {
               changed: {
-                text: '협업 요청을 거절하였습니다.',
+                text: this.$t('alarm.invite_refuse'),
                 class: 'btn small disabled',
               },
             },
@@ -85,14 +85,14 @@ export default {
       }
       const inviteNotify = this.callNotify({
         type: 'invite',
-        info: `${nickName} 님`,
-        description: '참가자로 협업을 요청하였습니다.',
+        info: this.$t('alarm.member_name', { name: nickName }),
+        description: this.$t('alarm.invite_request'),
         icon: profile,
         duration: ALARM_DURATION_BUTTON,
         options: {
           action: [
             {
-              text: '수락',
+              text: this.$t('button.accept'),
               class: 'btn small',
               onClick: () => {
                 inviteNotify.goAway()
@@ -100,7 +100,7 @@ export default {
               },
             },
             {
-              text: '거절',
+              text: this.$t('button.refuse'),
               class: 'btn small sub',
               onClick: () => {
                 refuse()
@@ -118,7 +118,7 @@ export default {
     alarmInviteDenied(nickName) {
       this.alarmInfo(
         '',
-        `<em>[${nickName}] </em>님이<br> 협업 요청을 거절하였습니다.`,
+        this.$t('alarm.invite_refuse_name', { name: nickName }),
       )
     },
     /**
@@ -128,7 +128,7 @@ export default {
     alarmInviteAccepted(nickName) {
       this.alarmInfo(
         '',
-        `<em>[${nickName}] </em>님이<br> 협업 요청을 수락하였습니다.`,
+        this.$t('alarm.invite_accept_name', { name: nickName }),
       )
     },
     /**
@@ -137,19 +137,18 @@ export default {
     alarmLicense() {
       this.callNotify({
         type: 'license',
-        info: '[만료안내]',
-        description: '라이선스가 만료되었습니다.<br> 1분 뒤에 자동 종료됩니다.',
+        info: this.$t('alarm.expire_title'),
+        description: this.$t('alarm.expire_logout'),
       })
     },
     /**
      * TODO
      */
-    alarmMessage() {
+    alarmMessage(nickName, text) {
       this.callNotify({
         type: 'message',
-        info: 'Nari Han 님',
-        description:
-          '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십',
+        info: this.$t('alarm.member_name', { name: nickName }),
+        description: text,
         icon: require('assets/image/profile.png'),
       })
     },
@@ -159,18 +158,18 @@ export default {
     alarmFail() {
       this.callNotify({
         type: 'fail',
-        info: '[협업 참가 실패]',
-        description: '최대 참가인원이 초과하였습니다.',
+        info: this.$t('alarm.invite_fail_title'),
+        description: this.$t('alarm.invite_fail_maxuser'),
       })
     },
     /**
      * TODO
      */
-    alarmFile() {
+    alarmFile(nickName) {
       this.callNotify({
         type: 'file',
-        info: 'Nari Han 님',
-        description: '파일 링크 전달드립니다.',
+        info: this.$t('alarm.member_name', { name: nickName }),
+        description: this.$t('alarm.file_link'),
         icon: require('assets/image/profile.png'),
         filelink: 'https://virnect.com',
         filename: 'VIRNECT Remote WEB 2.0.PDF',

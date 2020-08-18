@@ -51,19 +51,19 @@ export default {
           })
         } else {
           this.roomClear()
-          console.error('>>>join room 실패')
+          console.error('>>>join room fail')
         }
       } catch (err) {
         if (err.code === 4002) {
-          this.toastError('이미 삭제된 협업입니다.')
+          this.toastError(this.$t('workspace.remote_already_removed'))
         } else if (err.code === 4016) {
           // TODO: MESSAGE
-          this.toastError('이미 참가중인 협업입니다.')
+          this.toastError(this.$t('workspace.remote_already_invite'))
+        } else {
+          this.toastError(this.$t('workspace.remote_invite_impossible'))
         }
         this.roomClear()
       }
-      // this.confirmDefault('이미 삭제된 협업입니다.')
-      // this.confirmDefault('협업에 참가가 불가능합니다.')
     },
   },
 }

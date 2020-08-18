@@ -12,6 +12,12 @@
   &.offsetwidth {
     margin: 2.143rem auto 0.714rem;
   }
+  &.empty {
+    display: flex;
+    > .workspace-welcome__name {
+      margin: auto 0;
+    }
+  }
   @include tablet {
     background: #12233a;
   }

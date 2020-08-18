@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    text="포인팅"
+    :text="$t('service.tool_pointing')"
     :active="viewAction === STREAM_POINTING"
     :disabled="!canPointing"
     :src="require('assets/image/ic_pointing.svg')"
@@ -42,7 +42,7 @@ export default {
     pointing() {
       if (!this.canPointing) {
         // TODO: MESSAGE
-        this.toastDefault('리더가 포인팅을 막았습니다.')
+        this.toastDefault(this.$t('service.tool_pointing_block'))
         return
       }
       if (this.viewAction !== ACTION.STREAM_POINTING) {

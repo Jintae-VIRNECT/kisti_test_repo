@@ -1,16 +1,15 @@
 <template>
   <section class="setting-section">
     <p class="setting__title">
-      마이크 테스트
+      {{ $t('workspace.setting_mic_test') }}
     </p>
     <p class="setting__label label-margin">
-      마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시
-      들려드리겠습니다.
+      {{ $t('workspace.setting_mic_test_description') }}
     </p>
     <div class="setting-horizon-wrapper">
       <div class="mic-item">
         <button class="btn" @click="toggleMicTestMode">
-          {{ micTestWord }}
+          {{ $t('workspace.setting_mic_test') }}
         </button>
       </div>
       <div class="mic-item">
@@ -50,7 +49,6 @@ export default {
       audioSoundVolume: 0,
 
       micTestMode: false,
-      micTestWord: '마이크 테스트',
       progress: {
         max: 100,
         value: 0,

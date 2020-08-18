@@ -22,23 +22,19 @@
     <div class="drawing-box__empty" v-if="show === 'upload'">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_fileshare.svg" />
-        <p>
-          파일을 더블클릭하면 <br />
-          상대방에게 공유를 시작합니다
-        </p>
+        <p v-html="$t('service.drawing_dblclick')"></p>
       </div>
     </div>
     <div class="drawing-box__empty" v-show="show === 'default'">
       <div class="drawing-box__empty-inner">
         <img src="~assets/image/call/img_file.svg" />
-        <p>
-          이미지 또는 PDF 파일을 여기 끌어다 놓거나 <br />
-          '불러오기'버튼을 사용하세요.
-        </p>
+        <p v-html="$t('service.drawing_drag')"></p>
         <p class="description">
-          20MB이하의 파일을 공유할 수 있습니다.
+          {{ $t('service.file_maxsize') }}
         </p>
-        <button class="btn" @click="addFile">불러오기</button>
+        <button class="btn" @click="addFile">
+          {{ $t('service.drawing_import') }}
+        </button>
       </div>
     </div>
   </div>
@@ -49,9 +45,11 @@ import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
 import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Drawing',
+  mixins: [confirmMixin],
   components: {
     DrawingCanvas,
   },
@@ -62,7 +60,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile', 'view']),
+    ...mapGetters([
+      'fileList',
+      'shareFile',
+      'view',
+      'participants',
+      'historyList',
+    ]),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -83,9 +87,28 @@ export default {
         }
       }
     },
+    'participants.length': 'participantChange',
   },
   methods: {
     ...mapActions(['showImage']),
+    participantChange(length, oldLength) {
+      if (this.account.roleType !== ROLE.EXPERT_LEADER) return
+      if (length > oldLength && this.shareFile && this.shareFile.id) {
+        if (!this.shareFile.json || this.shareFile.json.length === 0) {
+          this.refreshCanvas()
+          return
+        }
+        this.confirmDefault(this.$t('service.drawing_sync'), {
+          action: this.refreshCanvas,
+        })
+      }
+    },
+    refreshCanvas() {
+      const currentHistory = this.historyList.find(
+        history => history.id === this.shareFile.id,
+      )
+      this.showImage(currentHistory)
+    },
     addFile() {
       this.$eventBus.$emit('addFile')
     },

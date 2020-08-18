@@ -15,16 +15,16 @@
       <p class="notice-item__description" v-html="description"></p>
       <p class="notice-item__date">{{ date }}</p>
       <div class="notice-item__buttons" v-if="type === 'license'">
-        <button class="btn small">라이선스 구매</button>
+        <button class="btn small">{{ $t('button.license_purchase') }}</button>
       </div>
       <div class="notice-item__buttons" v-if="type === 'invite'">
-        <button class="btn small">수락</button>
-        <button class="btn small sub">거절</button>
+        <button class="btn small">{{ $t('button.accept') }}</button>
+        <button class="btn small sub">{{ $t('button.refuse') }}</button>
       </div>
       <div class="notice-item__buttons" v-if="type === 'file'">
         <button class="btn small sub filelink">{{ filename }}</button>
       </div>
-      <button class="notice-item__close">삭제</button>
+      <button class="notice-item__close">{{ $t('button.remove') }}</button>
     </figcaption>
   </figure>
 </template>

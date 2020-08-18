@@ -1,8 +1,8 @@
 <template>
   <modal
-    title="협업 참가 요청"
-    width="712px"
-    height="842px"
+    :title="$t('service.participant_invite_title')"
+    width="50.857em"
+    height="60.143em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -11,7 +11,12 @@
     <div class="invite-modal__body">
       <div v-if="!nouser" class="invite-modal__selected">
         <p class="invite-modal__selected-title">
-          {{ `선택한 멤버 (${selection.length}/${maxSelect})` }}
+          {{
+            $t('service.participant_invite_selected', {
+              num: selection.length,
+              max: maxSelect,
+            })
+          }}
         </p>
         <profile-list
           v-if="selection.length > 0"
@@ -19,7 +24,7 @@
           size="3.714em"
         ></profile-list>
         <p class="invite-modal__selected-empty" v-else>
-          멤버를 추가해 주세요.
+          {{ $t('service.participant_invite_add_member') }}
         </p>
       </div>
       <room-invite
@@ -32,7 +37,7 @@
       ></room-invite>
       <div class="invite-modal__footer">
         <button class="btn" :disabled="selection.length === 0" @click="invite">
-          협업 요청
+          {{ $t('service.participant_invite_require') }}
         </button>
       </div>
     </div>
@@ -101,7 +106,7 @@ export default {
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
           // TODO: MESSAGE
-          this.toastNotify('선택가능 멤버 명수를 초과했습니다.')
+          this.toastNotify(this.$t('service.participant_invite_max'))
           return
         }
         this.selection.push(user)
@@ -146,7 +151,7 @@ export default {
       if (res === true) {
         this.addMember(this.selection)
         // TODO: MESSAGE
-        this.toastNotify('협업 참가를 요청했습니다.')
+        this.toastNotify(this.$t('service.participant_invite_success'))
         this.$nextTick(() => {
           this.visibleFlag = false
         })

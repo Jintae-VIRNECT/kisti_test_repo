@@ -1,7 +1,7 @@
 <template>
   <div>
     <menu-button
-      text="로컬 녹화 목록"
+      :text="$t('service.record_local_list')"
       :active="showList"
       :src="require('assets/image/ic_local_record_list.svg')"
       @click="list"

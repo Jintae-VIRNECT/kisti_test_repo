@@ -1,7 +1,7 @@
 <template>
   <div>
     <tool-button
-      text="색상 선택"
+      :text="$t('service.tool_color')"
       :active="status"
       @click.stop="clickHandler"
       :disabled="disabled"

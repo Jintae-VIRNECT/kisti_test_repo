@@ -1,6 +1,6 @@
 <template>
   <modal
-    title="원격 협업 생성하기"
+    :title="$t('workspace.create_remote')"
     width="78.429em"
     height="54.286em"
     :showClose="true"
@@ -110,7 +110,7 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify('최대 2명까지 선택이 가능합니다.')
+          this.toastNotify(this.$t('workspace.create_max_member'))
           return
         }
         this.selection.push(user)
@@ -204,7 +204,7 @@ export default {
           })
         } else {
           this.roomClear()
-          console.error('join room 실패')
+          console.error('join room fail')
         }
       } catch (err) {
         this.roomClear()
