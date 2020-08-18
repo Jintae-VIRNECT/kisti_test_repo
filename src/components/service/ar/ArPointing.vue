@@ -36,7 +36,7 @@ export default {
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       const params = {
-        to: this.mainView.id,
+        to: [this.mainView.id],
         from: this.account.uuid,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,

@@ -12,7 +12,7 @@ import {
 
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
-import { logger } from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {
   session.on('connectionCreated', event => {
@@ -22,6 +22,7 @@ export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
     const subscriber = session.subscribe(event.stream, '', () => {
       logger('room', 'participant subscribe successed')
+      debug('room::', 'participant::', subscriber)
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
@@ -29,6 +30,7 @@ export const addSessionEventListener = session => {
         video: event.stream.videoActive,
         audio: event.stream.audioActive,
       })
+      addSubscriber(subscriber)
       _.sendResolution()
       _.video(Store.getters['video'].isOn)
       _.mic(Store.getters['mic'].isOn)
@@ -42,7 +44,6 @@ export const addSessionEventListener = session => {
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
       }
     })
-    addSubscriber(subscriber)
   })
   session.on('streamPropertyChanged', event => {
     if (event.changedProperty === 'audioActive') {

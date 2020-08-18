@@ -1,7 +1,14 @@
 import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE, CAMERA, FLASH, VIDEO } from 'configs/remote.config'
+import {
+  SIGNAL,
+  ROLE,
+  CAMERA,
+  FLASH,
+  VIDEO,
+  AR_FEATURE,
+} from 'configs/remote.config'
 import {
   DEVICE,
   FLASH as FLASH_STATUE,
@@ -263,9 +270,24 @@ const _ = {
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  arFeature: type => {
+  startArFeature: targetId => {
     const params = {
-      type: type,
+      type: AR_FEATURE.START_AR_FEATURE,
+      targetUserId: targetId,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: _.session.connection,
+      type: SIGNAL.AR_FEATURE,
+    })
+  },
+  /**
+   * AR feature status
+   * @param {String} type = remote.config.AR_FEATURE
+   */
+  stopArFeature: () => {
+    const params = {
+      type: AR_FEATURE.STOP_AR_FEATURE,
     }
     _.session.signal({
       data: JSON.stringify(params),

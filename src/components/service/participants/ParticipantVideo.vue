@@ -127,6 +127,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 import Profile from 'Profile'
 import Popover from 'Popover'
 import confirmMixin from 'mixins/confirm'
@@ -151,7 +152,7 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce']),
+    ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce', 'view']),
     showProfile() {
       if (!this.participant.hasVideo) {
         return true
@@ -199,7 +200,7 @@ export default {
     participant() {},
   },
   methods: {
-    ...mapActions(['setMainView']),
+    ...mapActions(['setMainView', 'addChat']),
     hoverContents() {
       const status = this.$el.querySelector('.participant-video__network')
       if (!status) return
@@ -226,15 +227,34 @@ export default {
     changeMain() {
       if (!this.participant.hasVideo) return
       if (this.account.roleType === ROLE.LEADER) {
+        if (this.view === VIEW.AR) {
+          if (this.participant.hasArFeature === false) {
+            this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
+            return
+          }
+          this.confirmCancel(
+            '선택하신 참가자로 AR 공유 시작 시,\n 현재 AR 작업은 모두 삭제됩니다. \n변경하시겠습니까?',
+            { text: '확인', action: this.changeAr },
+            {
+              text: '취소',
+            },
+          )
+          return
+        }
         this.confirmCancel(
           '선택한 영상을 모든 참가자와 공유하시겠습니까? \n공유 시, 포인팅 기능을 사용할 수 있습니다.',
+          { text: '전체 공유', action: this.forceMain },
           {
             text: '일반 보기',
             action: this.normalMain,
+            backdrop: true,
           },
-          { text: '전체 공유', action: this.forceMain, backdrop: true },
         )
       } else {
+        if (this.view === VIEW.AR) {
+          this.toastDefault('AR 공유 중에는 영상을 변경할 수 없습니다.')
+          return
+        }
         if (this.viewForce === true) {
           this.toastDefault(
             '전체 공유 상태에서는 다른 영상을 선택할 수 없습니다.​',
@@ -244,9 +264,46 @@ export default {
         this.setMainView({ id: this.participant.id })
       }
     },
+    changeAr() {
+      // 참가자 ar 가능 여부 체크
+      // 가능하면 퍼미션 체크
+      // 퍼미션 허용이면 전체 사용자 메인뷰 변경
+      // 신규 ar 공유 진행
+      if (this.participant.permission === true) {
+        // 메인뷰 변경
+
+        this.forceMain()
+      } else {
+        // 퍼미션 요청
+        this.$eventBus.$on('startAr', this.getPermission)
+        this.$call.permission({
+          to: [this.participant.id],
+        })
+        // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
+      }
+    },
+    getPermission(permission) {
+      if (permission === true) {
+        // this.forceMain()
+        // this.$call.stopArFeature()
+        this.$nextTick(() => {
+          this.forceMain()
+          // this.$call.startArFeature(this.participant.id)
+        })
+      } else {
+        this.toastDefault(this.$t('service.toast_refused_ar'))
+        this.addChat({
+          status: 'ar-deny',
+          type: 'system',
+        })
+      }
+      this.$nextTick(() => {
+        this.$eventBus.$off('startAr', this.getPermission)
+      })
+    },
     normalMain() {
-      this.setMainView({ id: this.participant.id })
       this.$call.mainview(this.participant.id, false)
+      this.setMainView({ id: this.participant.id })
     },
     forceMain() {
       this.$call.mainview(this.participant.id, true)

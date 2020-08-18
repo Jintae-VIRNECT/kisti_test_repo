@@ -5,7 +5,8 @@
         class="ar-video__stream"
         ref="arVideo"
         :srcObject.prop="mainView.stream"
-        @play="optimizeVideoSize"
+        @play="mediaPlay"
+        @loadeddata="optimizeVideoSize"
         :muted="!speaker"
         playsinline
         loop
@@ -121,12 +122,22 @@ export default {
     setArArea() {
       this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST)
     },
+    mediaPlay() {
+      this.$nextTick(() => {
+        this.optimizeVideoSize()
+      })
+    },
     optimizeVideoSize() {
       if (this.view !== VIEW.AR) return
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.ar-video__box')
       const video = this.$refs['arVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
+      this.debug(
+        'current resolution: ',
+        this.resolution.width,
+        this.resolution.height,
+      )
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
@@ -138,17 +149,18 @@ export default {
         // height에 맞춤
         videoBox.style.height = maxHeight + 'px'
         videoBox.style.width = maxHeight * scale + 'px'
-        video.style.height = maxHeight + 'px'
-        video.style.width = maxHeight * scale + 'px'
+        // video.style.height = maxHeight + 'px'
+        // video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
         videoBox.style.height = maxWidth / scale + 'px'
         videoBox.style.width = maxWidth + 'px'
-        video.style.height = maxWidth / scale + 'px'
-        video.style.width = maxWidth + 'px'
+        // video.style.height = maxWidth / scale + 'px'
+        // video.style.width = maxWidth + 'px'
       }
       this.videoSize.width = video.offsetWidth
       this.videoSize.height = video.offsetHeight
+      this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
     },
   },
 

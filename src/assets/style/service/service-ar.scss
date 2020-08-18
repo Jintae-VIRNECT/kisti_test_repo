@@ -17,6 +17,11 @@
   max-height: 100%;
   margin: auto;
   transform: translateY(-50%);
+  // border: solid 1px #ddd;
+  > video {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .ar-video__stream {

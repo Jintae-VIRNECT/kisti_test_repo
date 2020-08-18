@@ -125,7 +125,7 @@ export default {
           this.confirmCancel(this.$t('service.toast_exit_ar'), {
             text: this.$t('button.exit'),
             action: () => {
-              this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
+              this.$call.stopArFeature()
               this.goTabConfirm(type)
             },
           })
@@ -199,7 +199,7 @@ export default {
     },
     permissionSetting(permission) {
       if (permission === true) {
-        this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
+        this.$call.startArFeature(this.mainView.id)
         this.setView(VIEW.AR)
       } else if (permission === false) {
         this.toastDefault(this.$t('service.toast_refused_ar'))
@@ -252,7 +252,11 @@ export default {
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
         })
-        this.permissionSetting(data.isAllowed)
+        if (this.view !== VIEW.AR) {
+          this.permissionSetting(data.isAllowed)
+        } else {
+          this.$eventBus.$emit('startAr', data.isAllowed)
+        }
       }
     },
 
