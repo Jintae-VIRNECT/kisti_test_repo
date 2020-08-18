@@ -63,6 +63,7 @@ export default {
         width: 0,
         height: 0,
       },
+      loaded: false,
     }
   },
   computed: {
@@ -93,6 +94,25 @@ export default {
     },
   },
   watch: {
+    mainView: {
+      deep: true,
+      handler(view, oldView) {
+        if (!view.id) {
+          this.loaded = false
+          const videoBox = this.$el.querySelector('.main-video__box')
+          if (videoBox) {
+            videoBox.style.height = '100%'
+            videoBox.style.width = '100%'
+          }
+        }
+        if (view.id && oldView.id && view.id !== oldView.id) {
+          this.$refs['arVideo'].pause()
+          this.$nextTick(() => {
+            this.$refs['arVideo'].play()
+          })
+        }
+      },
+    },
     view(val) {
       if (val === VIEW.AR) {
         this.$refs['arVideo'].play()
@@ -125,6 +145,7 @@ export default {
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()
+        this.loaded = false
       })
     },
     optimizeVideoSize() {
