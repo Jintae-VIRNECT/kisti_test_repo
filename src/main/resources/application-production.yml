@@ -195,6 +195,8 @@ spring:
   zipkin:
     base-url: http://zipkin.virnect.com
     discovery-client-enabled: false
+  redis:
+    host: virnect-prod-redis.b84gc2.0001.apn2.cache.amazonaws.com
 eureka:
   instance:
     prefer-ip-address: true
@@ -204,3 +206,4 @@ eureka:
 
 jwt:
   secret: 2020-1356-virnect-platform-392
+

@@ -218,6 +218,8 @@ spring:
           use-insecure-trust-manager: true
   zipkin:
     base-url: http://192.168.6.3:9411
+  redis:
+    host: 192.168.6.3
 
 eureka:
   instance:
