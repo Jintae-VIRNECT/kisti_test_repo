@@ -25,7 +25,7 @@
 				<el-dialog
 					:title="$t('user.profileImage.imageSet')"
 					:visible.sync="profilePopup"
-					width="30%"
+					width="400px"
 					:before-close="handleClose"
 				>
 					<div>
@@ -375,6 +375,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/css/mixin.scss';
+
 .el-dialog {
 	border: solid 1px #e6e9ee;
 	border-radius: 4px;
@@ -393,6 +395,12 @@ export default {
 			-webkit-mask-size: 100%;
 			mask: url('~assets/images/common/ic-bg.svg') no-repeat;
 			mask-size: 100%;
+		}
+
+		@media (max-width: $mobile) {
+			width: 30vw;
+			height: 30vw;
+			margin: 16px auto;
 		}
 	}
 	&__wrapper {
@@ -417,6 +425,11 @@ export default {
 		font-size: 13px;
 		&.left-btn {
 			float: left;
+			@media (max-width: $mobile) {
+				display: block;
+				float: none;
+				margin: 0 auto 24px;
+			}
 		}
 	}
 }

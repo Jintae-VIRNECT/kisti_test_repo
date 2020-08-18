@@ -502,14 +502,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/css/mixin.scss';
+
 .row-bg > div {
 	width: 460px;
 	font-weight: 500;
+	@media (max-width: $mobile) {
+		padding-right: 0;
+		padding-left: 0;
+	}
 }
 .find-wrap {
 	margin-top: 52px;
 	border: 1px solid #eaedf3;
 	border-radius: 4px;
+
+	@media (max-width: $mobile) {
+		margin-top: 32px;
+		border: none;
+	}
 }
 .find-head {
 	font-size: 0;
@@ -547,6 +558,13 @@ export default {
 	padding-left: 40px;
 	font-size: 16px;
 	text-align: left;
+	@media (max-width: $mobile) {
+		padding-top: 28px;
+		padding-right: 24px;
+		padding-left: 24px;
+		font-size: 15px;
+	}
+
 	.info-text {
 		margin-bottom: 4px;
 		color: #103573;

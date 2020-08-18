@@ -52,6 +52,9 @@
     font-weight: 500;
     font-size: 13px;
     text-align: left;
+    @media (max-width: $mobile) {
+        width: calc(100% - 120px);
+    }
 
     p {
         position: relative;
