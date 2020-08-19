@@ -210,6 +210,9 @@ export default {
     },
     permissionSetting(permission) {
       if (permission === true) {
+        this.toastDefault(
+          this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+        )
         this.addChat({
           status: 'ar-start',
           name: this.mainView.nickname,
@@ -298,7 +301,9 @@ export default {
       } else {
         if (data.type === AR_FEATURE.START_AR_FEATURE) {
           // TODO: MESSAGE
-          this.toastDefault(this.$t('service.toast_ar_start'))
+          this.toastDefault(
+            this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+          )
           this.addChat({
             status: 'ar-start',
             name: this.mainView.nickname,
