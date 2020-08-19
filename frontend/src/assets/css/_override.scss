@@ -7,10 +7,16 @@
 // input.scss
 @import "modules/input.scss";
 
+// date-picker.scss
+@import "modules/date-picker.scss";
+
 .el-button {
     height: 50px;
     margin-top: 20px;
     border: 0;
+    @media (max-width: $mobile) {
+        border-radius: 4px;
+    }
 
     &.block-btn {
         display: block;
