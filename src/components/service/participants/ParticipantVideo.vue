@@ -325,8 +325,7 @@ export default {
     },
     disconnectUser(nickName) {
       this.$eventBus.$emit('popover:close')
-      if (this.checkBeta()) return
-      this.confirmCancel(
+      this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', { name: nickName }),
         {
           text: this.$t('button.confirm'),

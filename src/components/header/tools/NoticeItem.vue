@@ -57,7 +57,7 @@ export default {
   props: {
     // 구분 status, detail, section, 분류 상태 종류 정보
     accept: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false,
     },
     info: {
