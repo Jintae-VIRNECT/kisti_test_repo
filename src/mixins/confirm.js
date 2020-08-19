@@ -100,5 +100,44 @@ export default {
         }
       })
     },
+    /**
+     * 취소, 확인
+     * @param {String} title
+     * @param {String} text
+     * @param {Object} confirm { text, action }
+     * @param {Object} cancel { text, action }
+     */
+    serviceConfirmTitle(
+      title,
+      text,
+      confirm = { text: this.$t('button.confirm') },
+      cancel = { text: this.$t('button.cancel') },
+    ) {
+      Alert.fire({
+        title: title,
+        html: text,
+        customClass: 'service-confirm',
+        showCancelButton: true,
+        confirmButtonText: confirm.text,
+        cancelButtonText: cancel.text,
+      }).then(result => {
+        if (result.value) {
+          if (typeof confirm.action === 'function') {
+            confirm.action()
+          }
+        } else if (result.dismiss === CANCEL) {
+          if (typeof cancel.action === 'function') {
+            cancel.action()
+          }
+        } else if (result.dismiss === BACKDROP) {
+          if (cancel.backdrop === true) {
+            return
+          }
+          if (typeof cancel.action === 'function') {
+            cancel.action()
+          }
+        }
+      })
+    },
   },
 }

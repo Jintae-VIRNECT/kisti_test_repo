@@ -122,13 +122,24 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         if (this.currentView === 'ar') {
           // TODO: MESSAGE
-          this.confirmCancel(this.$t('service.toast_exit_ar'), {
-            text: this.$t('button.exit'),
-            action: () => {
-              this.$call.stopArFeature()
-              this.goTabConfirm(type)
+          this.serviceConfirmTitle(
+            'AR 저작 작업 종료',
+            '저작 중인 AR 작업이 모두 종료됩니다. <br> 그래도 종료 하시겠습니까?',
+            {
+              text: this.$t('button.exit'),
+              action: () => {
+                this.$call.stopArFeature()
+                this.goTabConfirm(type)
+              },
             },
-          })
+          )
+          // this.confirmCancel(this.$t('service.toast_exit_ar'), {
+          //   text: this.$t('button.exit'),
+          //   action: () => {
+          //     this.$call.stopArFeature()
+          //     this.goTabConfirm(type)
+          //   },
+          // })
           return
         }
         if (this.currentView === 'drawing') {
