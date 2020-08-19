@@ -1,21 +1,21 @@
 {
   "role": {
-    "master": "Master",
-    "manager": "Manager",
-    "member": "Member's account"
+    "master": "MASTER",
+    "manager": "MANAGER",
+    "member": "MEMBER"
   },
   "card": {
     "profile": "Profile",
     "setting": "Member settings",
-    "usingPlans": "Your plan details",
-    "links": "Go to XXX",
-    "contents": "Contents",
+    "usingPlans": "Plans in use",
+    "links": "Shortcuts",
+    "contents": "Content",
     "work": "Task",
     "paper": "Paper"
   },
   "allMembers": {
-    "title": "All of Workspace members",
-    "addMember": "Add member to Workspace"
+    "title": "Workspace member overview",
+    "addMember": "Add Members"
   },
   "setting": {
     "title": "Workspace member settings",
@@ -23,15 +23,15 @@
     "nickname": "Member's Workspace nickname",
     "email": "Member's Workspace account",
     "setting": "Member settings",
-    "role": "Workspace authority",
-    "roleDesc": "If you promote a member as a manager",
+    "role": "Role Level",
+    "roleDesc": "Promoting to Manager means that this member can invite other members create groups etc. However only Masters have access to edit payment and Workspace profile settings.",
     "givePlans": "Plan allocation",
-    "givePlansDesc": "Select and allocate product plan for the users to use in the Workspace",
+    "givePlansDesc": "Allocate plans for your new Workspace members.",
     "givePlansEmpty": "No allocation",
     "kick": "Remove",
     "submit": "Edit",
     "message": {
-      "updateFail": "Failed to update member details from the Workspace",
+      "updateFail": "Failed to update member details from the Workspace please try again later",
       "updateSuccess": "Succesfully updated selected member details"
     }
   },
@@ -41,39 +41,42 @@
     "back": "Go back",
     "submit": "Remove",
     "message": {
-      "kickFail": "Failed to remove Workspace member",
+      "kickFail": "Failed to remove Workspace member please try again later",
       "kickSuccess": "Succesfully removed selected member."
     }
   },
   "add": {
-    "title": "Add member to Workspace",
+    "title": "Add Workspace member",
     "desc": "Would you like other users to use VIRNECT products and services together?",
     "desc2": "Invite them to your Workspace",
-    "desc3": "You can purchase the plans in advance from the \"Purchase plans\" and easily provide the purhcased plans to the members who are going to join your Workspace. You may buy and assign the plans later when your invited member has joined your Workspace.",
+    "desc3": "Purchase plans in advance from \"Purchase plans\" and allocate them to your new members. You may purchase plans later after they have joined your Workspace.",
     "addUser": "Add user",
     "email": "Invitee's email address",
-    "emailDesc": "Please enter the email address of the person you want to invite. An invitation email for workspace will be sent to the email you entered. If the user who received the invitation email accepts the invitation",
+    "emailDesc": "Please enter the email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use VIRNECT Products together.",
     "emailPlaceholder": "Enter email address of invitee",
-    "addMember": "Add member",
+    "addMember": "Add another",
     "submit": "Send invitation email",
     "message": {
-      "inviteFail": "Failed to invite a member to Workspace",
+      "inviteFail": "Failed to invite a member to Workspace please try again later",
       "inviteSuccess": "Successfuly sent the invitation email",
-      "enoughPlan": "No plans available to assign to Workspace members",
+      "notHaveAnyPlan": "At least one plan must be allocated when inviting new workspace members.",
+      "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
       "memberOverflow": "Please note that total of 9 users including the \"Master\" member may participate the \"Public service\" with the Basic plan. Please change your plans if you need more members to use our products and services.",
-      "workspaceOverflow": "In Public Service"
+      "workspaceOverflow": "In Public Service one user can participate in up to 9 Workspaces. To join the selected Workspace please make yourself available first by leaving one of the Workspace you are in and request an invitation email to the Workspace master member.",
+      "memberAlready": "This member is already being participated in your workspace.",
+      "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans."
     }
   },
   "activity": {
-    "title": "Workspace member activity",
+    "title": "Member activity in Workspace",
     "column": {
       "member": "Workspace member",
-      "contentsCount": "Uploaded content count",
-      "subTasks": "Responsible subtasks",
-      "subTasksTooltip": "Subtasks in progress / assigned subtasks",
-      "progress": "Progress",
-      "reportedDate": "Time the recent report was made",
-      "link": "Go to Memeber's Activity"
+      "contentsCount": "Number of uploaded content",
+      "subTasks": "Subtasks",
+      "subTasksTooltip": "In progress / Assigned",
+      "progress": "Progress rate",
+      "reportedDate": "Recent report time",
+      "link": "Shortcuts"
     }
   }
 }

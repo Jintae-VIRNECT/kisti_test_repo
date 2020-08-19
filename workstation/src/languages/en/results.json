@@ -7,17 +7,17 @@
   "myPaper": "My paper",
   "myIssue": "My issues",
   "column": {
-    "taskName": "Task name",
-    "subTaskName": "Subtask name",
-    "stepName": "Phase name",
+    "taskName": "Task title",
+    "subTaskName": "Subtask title",
+    "stepName": "Step title",
     "issueTitle": "Issue title",
     "status": "Progress status",
-    "reporter": "Report made by",
-    "reportedDate": "Report date"
+    "reporter": "By whom",
+    "reportedDate": "Date"
   },
   "issueDetail": {
     "title": "Issue details",
-    "reporter": "Report made by",
+    "reporter": "By whom",
     "reportedDate": "Report time of issued task",
     "content": "Details of issued task"
   },

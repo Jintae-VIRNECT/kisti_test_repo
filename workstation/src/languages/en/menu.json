@@ -1,26 +1,26 @@
 {
-  "home": "Workstation Home",
-  "members": "Workspace user",
-  "contents": "Content management",
+  "home": "Home",
+  "members": "Manage Members",
+  "contents": "Manage Contents",
   "tasks": "Manage Tasks",
-  "workspaceSetting": "Workspace settings",
+  "workspaceSetting": "Settings",
   "collapse": {
     "workspace": {
       "title": "Workspace list",
-      "master": "Workspace master",
-      "manager": "Workspace manager",
-      "member": "Workspace member"
+      "master": "Master",
+      "manager": "Manager",
+      "member": "Member"
     },
     "members": {
-      "list": "Workspace member overview",
-      "activity": "Workspace member activity"
+      "list": "Member Overview",
+      "activity": "Member Activity"
     },
     "contents": {
-      "list": "List of overall contents"
+      "list": "Contents overview"
     },
     "tasks": {
-      "list": "Task list",
-      "results": "Task report management",
+      "list": "Task Overview",
+      "results": "Manage Reports",
       "troubles": "Trouble memo (TM)"
     }
   }

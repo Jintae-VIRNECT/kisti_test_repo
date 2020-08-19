@@ -1,0 +1,31 @@
+{
+  "title": "User Guide",
+  "makeGuide": {
+    "label": "Make user manaul",
+    "url": "https://file.virnect.com/Guide/make_user_guide.pdf"
+  },
+  "makeDemoContetns": {
+    "label": "AR demo content for Make",
+    "url": "https://file.virnect.com/Guide/make_demo_contents.zip"
+  },
+  "viewGuide": {
+    "label": "View user manual (mobile)",
+    "url": "https://file.virnect.com/Guide/view_mobile_user_guide.pdf"
+  },
+  "viewRealwearGuide": {
+    "label": "View user manual (RealWear)",
+    "url": "https://file.virnect.com/Guide/view_realwear_user_guide.pdf"
+  },
+  "remoteGuide": {
+    "label": "Remote user manual",
+    "url": "https://file.virnect.com/Guide/remote_user_guide.pdf"
+  },
+  "workstationGuide": {
+    "label": "Workstation user manual",
+    "url": "https://file.virnect.com/Guide/workstation_user_guide.pdf"
+  },
+  "purchaseGuide": {
+    "label": "Purchasement instructions",
+    "url": "https://file.virnect.com/Guide/purchase_user_guide.pdf"
+  }
+}
