@@ -56,10 +56,12 @@
     "invite_fail_title": "[협업 참가 실패]",
     "invite_fail_maxuser": "최대 참가인원이 초과하였습니다.",
     "member_name": "{name} 님",
+    "member_name_from": "<em>[{name}] </em> 님이",
     "invite_request": "참가자로 협업을 요청하였습니다.",
     "invite_refuse": "협업 요청을 거절하였습니다.",
     "invite_refuse_name": "<em>[{name}] </em>님이<br> 협업 요청을 거절하였습니다.",
     "invite_accept_name": "<em>[{name}] </em>님이<br> 협업 요청을 수락하였습니다.",
+    "invite_accept": "협업 요청을 수락하였습니다.",
     "file_link": "파일 링크 전달드립니다."
   }
 }
