@@ -31,6 +31,13 @@
         >
           {{ $t('workspace.info_remote_member') }}
         </button>
+        <button
+          class="roominfo-nav__menu"
+          :class="{ active: tabview === 'download' }"
+          @click="tabChange('download')"
+        >
+          {{ '다운로드' }}
+        </button>
       </section>
       <room-info
         v-if="tabview === 'group'"
@@ -41,11 +48,18 @@
       ></room-info>
 
       <participants-info
-        v-else
+        v-else-if="tabview === 'user'"
         :participants="participants"
         :leader="leader"
         :sessionId="sessionId"
       ></participants-info>
+
+      <room-download
+        v-else
+        :participants="participants"
+        :leader="leader"
+        :sessionId="sessionId"
+      ></room-download>
     </div>
   </modal>
 </template>
@@ -55,6 +69,7 @@ import Modal from 'Modal'
 import { getHistorySingleItem } from 'api/workspace/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
+import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 
 export default {
@@ -64,6 +79,7 @@ export default {
     Profile,
     RoomInfo,
     ParticipantsInfo,
+    RoomDownload,
   },
   data() {
     return {
