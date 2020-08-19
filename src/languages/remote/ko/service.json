@@ -31,7 +31,7 @@
     "participant_kick_confirm": "<em>{name}</em>님을 협업에서 제외 하시겠습니까?",
     "participant_invite": "추가 초대하기",
     "participant_invite_title": "협업 참가 요청",
-    "participant_invite_selected": "선택한 멤버 ({num}/{max})",
+    "participant_invite_selected": "선택한 멤버 (<em>{num}</em>/{max})",
     "participant_invite_add_member": "멤버를 추가해 주세요.",
     "participant_invite_require": "협업 요청",
     "participant_invite_max": "선택가능 멤버 명수를 초과했습니다.",

@@ -235,7 +235,12 @@ export default {
   }
 
   .modal--footer {
-    padding: 1.714em 2em 2.429em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1.357em 2.5em;
+    background-color: #313135;
+    border-top: solid 1px rgba(#7f7f7f, 0.27);
     // border-top: 1px solid #7f7f7f;
   }
 }

@@ -1,4 +1,5 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .invite-modal {
   position: relative;
@@ -14,17 +15,44 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding-bottom: 5.714em;
   > .createroom-user {
     flex: 1;
+    margin-bottom: 0;
   }
 }
 .invite-modal__footer {
-  display: inline-block;
-  flex: 0;
-  margin-bottom: 1.071em;
-  text-align: center;
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 3em;
+  > .profilelist {
+    align-self: center;
+    height: fit-content;
+    min-height: auto;
+    > .profilelist-user {
+      margin-left: 0.857em;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+  .profilelist-user__expend {
+    width: 2.143em;
+    height: 2.143em;
+    margin-left: 0.857em;
+    line-height: 2.143em;
+  }
   > .btn {
-    min-width: 33%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 14.571em;
+    height: 100%;
+    padding: 0.714em 3.286em;
+    font-weight: normal;
+    font-size: 1.071em;
+    line-height: 100%;
   }
 }
 
@@ -34,14 +62,79 @@
   font-size: 0.929em;
   line-height: 1.571em;
 }
-.invite-modal__selected {
-  flex: 0;
+
+.invite-modal__current {
   min-height: 6.429em;
   margin: 0.714em;
 }
+
+.invite-modal__current-title {
+  display: flex;
+  > p {
+    margin-right: 0.357em;
+    color: #d2d2d2;
+    font-weight: 500;
+    font-size: 1.143em;
+  }
+  .tooltip-guide {
+    align-self: center;
+    height: 100%;
+  }
+}
+.invite-modal__current-list {
+  margin-top: 1.071em;
+}
+
+.invite-modal__current-user {
+  width: fit-content;
+  height: fit-content;
+  margin-left: 0.429em;
+  // border: solid 1px transparent;
+  border-radius: 50%;
+  &:first-child {
+    margin-left: 0;
+  }
+
+  > .tooltip {
+    width: 100%;
+    height: 100%;
+  }
+}
+.invite-modal__profile {
+  position: relative;
+}
+
+.invite-modal__current-kickout {
+  @include ir;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1.429em;
+  height: 1.429em;
+  background-color: #ff3939;
+  border-radius: 50%;
+  &:after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.714em;
+    height: 1px;
+    background-color: #fff;
+    transform: translate(-50%, -50%);
+    content: "";
+  }
+}
+
+.invite-modal__selected {
+  min-height: 6.429em;
+}
 .invite-modal__selected-title {
-  margin-bottom: 1.143em;
+  align-self: center;
+  margin-right: 1.857em;
   color: #d2d2d2;
+  > em {
+    color: $color_primary_500;
+  }
 }
 .invite-modal__selected-empty {
   min-height: 3.714em;

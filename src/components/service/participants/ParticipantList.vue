@@ -40,10 +40,7 @@ export default {
   computed: {
     ...mapGetters(['participants', 'roomMember', 'mainView']),
     showInvite() {
-      if (
-        this.account.roleType === ROLE.LEADER &&
-        this.roomMember.length < maxParticipants
-      ) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false

@@ -172,7 +172,7 @@ export default {
   line-height: 2.714em;
   text-align: center;
   cursor: default;
-  @include profileMask(#3e3e44, 2px, #979fb0);
+  @include profileMask(#3e3e44, 1px, #979fb0);
 }
 </style>
 
