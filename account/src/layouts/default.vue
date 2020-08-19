@@ -26,6 +26,9 @@ export default {
   head() {
     return {
       title: `VIRNECT | ${this.$t('menu.account')}`,
+      htmlAttrs: {
+        lang: this.$i18n.locale,
+      },
     }
   },
   data() {

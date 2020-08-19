@@ -6,7 +6,7 @@
     "image": "Profile picture",
     "imageDesc": "Updating your profile picture makes it easier for other members to find you",
     "name": "Name",
-    "nameDesc": "Your name is used for - payment",
+    "nameDesc": "Your name is used for - payment purchase management and account security management.",
     "nameChange": "Edit Name",
     "nickname": "Nickname",
     "nicknameDesc": "Your nickname is shared to other members using VERNECT services",
@@ -53,40 +53,40 @@
   },
   "nameChangeModal": {
     "title": "Name settings",
-    "desc": "If you change the name",
-    "caution": "* For the purpose of account security",
+    "desc": "If you change the name the changed name is applied to VIRNECT products and services.",
+    "caution": "* For the purpose of account security frequent name changes may be restricted to the use of products and services. Also updating of changed name may take some time.",
     "lastName": "Last name",
     "firstName": "Given name",
     "submit": "Edit",
     "message": {
       "success": "Succesfully updated your name",
-      "fail": "Failed to update your name"
+      "fail": "Failed to update your name please try again later"
     }
   },
   "nicknameChangeModal": {
     "title": "Edit Nickname",
-    "desc": "When edit your nickname",
+    "desc": "When edit your nickname it will be applied to our products and services",
     "nickname": "Nickname",
     "submit": "Edit",
     "message": {
       "success": "Succesfully updated your nickname",
-      "fail": "Failed to edit your nickname"
+      "fail": "Failed to edit your nickname please try again later"
     }
   },
   "passwordChangeModal": {
     "title": "Edit password",
-    "desc": "When changing the password",
+    "desc": "When changing the password all the logins are logged out from the logged-in devices except the currently used device.",
     "newPassword": "New password",
     "newPasswordPlaceholder": "Enter your new password",
     "newPasswordRepeatPlaceholder": "Re-enter your new password",
-    "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types.<br>- Uppercase letter<br>- Lowercase letter<br>- Number<br>- Special character ( . , !, @, #, $, % )<br>Also your password must not contain consecutive numbers and more than three of same characters.",
+    "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter- Number <br>- Special character ( .  ! @ # $ % ).",
     "submit": "Edit",
     "message": {
       "success": "Succesfully updated your password",
-      "fail": "Failed to edit your nickname",
+      "fail": "Failed to edit your nickname please try again later",
       "wrong": "Wrong password",
       "duplicate": "You cannot use the previously used password for your new password",
-      "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter<br>- Lowercase letter<br>- Number<br>- Special character ( . "
+      "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter- Number <br>- Special character ( .  ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters."
     }
   },
   "birthChangeModal": {
@@ -98,15 +98,15 @@
     "submit": "Edit",
     "message": {
       "success": "Succesfully updated your date of birth",
-      "fail": "Failed to update your date of birth"
+      "fail": "Failed to update your date of birth please try again later"
     }
   },
   "marketInfoReceive": {
     "title": "Agree to receive promotional offers",
-    "contents": "Receive emails about VIRNECT's new products",
+    "contents": "Receive emails about VIRNECT's new products services and promotional offers.",
     "message": {
       "success": "Succesfully updated your promotional marketing agreement",
-      "fail": "Failed to update"
+      "fail": "Failed to update please try again later"
     }
   },
   "secession": {
@@ -125,8 +125,8 @@
     "notice": "Withdrawal precautions",
     "noticeLists": [
       "Plans and licenses are subject to the terms and conditions.",
-      "After withdrawal",
-      "However"
+      "After withdrawal the members' information such as service usage records product and service related data will be deleted. Please be aware that the wiped out data cannot be recovered.",
+      "However in accordance with the relevant laws and regulations the information that has the storage obligations specified in VIRNECT's personal information processing policy will be preserved for the period specified by the relevant laws and regulations."
     ],
     "done": "I agree to all the terms of membership withdrawal and proceed with membership withdrawal.",
     "message": {
@@ -150,7 +150,7 @@
     "submit": "Edit",
     "message": {
       "success": "Succesfully updated your recovery email address",
-      "fail": "Failed to update your recovery email address"
+      "fail": "Failed to update your recovery email address please try again later"
     }
   }
 }

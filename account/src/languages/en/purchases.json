@@ -9,13 +9,17 @@
     "arStorageCapacity": "AR storage capacity",
     "arContentsViewCount": "View counts of online AR content",
     "callTime": "Call duration",
-    "extendPurchasesInfo": "Purchase details of Additional Services",
+    "extendPurchasesInfo": "Purchase details of additional services",
+    "licenseExpireDate": "License expiry date",
+    "licenseExpireDateDesc": "This is not a automatic payment but a license expiry date information when using the services.",
     "nextPaymentDate": "Next payment date",
+    "nextPaymentDateDesc": "This is the next payment date information when using the automatic payment service.",
     "way": "Payment method",
-    "changePlans": "Change your plan and services"
+    "freePlan": "Free trial",
+    "changePlans": "Edit plans or services"
   },
   "planMembersInfo": {
-    "title": "Workspace Plan user details",
+    "title": "User information of Workspace plan",
     "column": {
       "name": "Plan type",
       "user": "User"
@@ -26,9 +30,9 @@
   "change": "Edit",
   "arStorage": {
     "used": "AR storage usage",
-    "usedDesc": "It may differ from the actual remaining capacity",
+    "usedDesc": "It may differ from the actual remaining capacity so please use it as a reference.",
     "capacity": "AR storage capacity",
-    "capacityDesc": "Uploading is not possible if the capacity is exceeded",
+    "capacityDesc": "Uploading is not possible if the capacity is exceeded and the remaining AR storage capacity will not be rolled over to the next month.",
     "max": "Overall storage capacity",
     "maxShort": "Overall storage capacity",
     "default": "Default storage allotment",
@@ -37,9 +41,9 @@
   },
   "arContent": {
     "used": "View counts usage in AR contents",
-    "usedDesc": "It may differ from the actual number of remaining view counts",
+    "usedDesc": "It may differ from the actual number of remaining view counts so please use it as a reference.",
     "capacity": "AR content view counts",
-    "capacityDesc": "When the view counts are all used",
+    "capacityDesc": "When the view counts are all used AR content cannot be viewed further and the remaining views are not rolled over to the next month.",
     "max": "Overall online AR contetn view counts",
     "maxShort": "Overall view counts",
     "default": "Default view count allotment",
@@ -48,9 +52,9 @@
   },
   "call": {
     "used": "Talk minutes used",
-    "usedDesc": "It may differ from the actual number of remaining minutes",
+    "usedDesc": "It may differ from the actual number of remaining minutes so please use it as a reference.",
     "capacity": "Talk minutes",
-    "capacityDesc": "When the Talk minutes are all used",
+    "capacityDesc": "When the Talk minutes are all used VIRNECT Remote cannot be used further and the remaining Talk minutes are not rolled over to the next month.",
     "max": "Total amount of Talk minutes",
     "maxShort": "Total amount of Talk minutes",
     "default": "Default Talk minutes allotment",

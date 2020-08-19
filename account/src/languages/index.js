@@ -35,7 +35,7 @@ function loader(foldername) {
  * i18n
  */
 module.exports = {
-  locales: ['ko', 'keyname'],
+  locales: ['ko', 'en', 'keyname'],
   defaultLocale: 'ko',
   strategy: 'no_prefix',
   detectBrowserLanguage: {
@@ -47,7 +47,7 @@ module.exports = {
     fallbackLocale: env.TARGET_ENV === 'production' ? 'ko' : null,
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
-      // en: { ...elementEn, ...loader('/en') },
+      en: { ...elementEn, ...loader('/en') },
     },
   },
 }
