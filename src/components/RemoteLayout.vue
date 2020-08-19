@@ -34,18 +34,18 @@ export default {
       })
     },
     init() {
-      if (!this.betaInterval) {
-        this.confirmDefault(
-          `베타 서비스를 진행 중 입니다.​
-        서비스를 진행하는 동안 접속 안정성이 낮을 수 있습니다.​
-        서비스 시간은 로그인 이후에 1시간 동안만 접속을 유지합니다.​`,
-          {
-            text: '확인',
-          },
-          { allowOutsideClick: false },
-        )
-        this.startInterval()
-      }
+      // if (!this.betaInterval) {
+      //   this.confirmDefault(
+      //     `베타 서비스를 진행 중 입니다.​
+      //   서비스를 진행하는 동안 접속 안정성이 낮을 수 있습니다.​
+      //   서비스 시간은 로그인 이후에 1시간 동안만 접속을 유지합니다.​`,
+      //     {
+      //       text: '확인',
+      //     },
+      //     { allowOutsideClick: false },
+      //   )
+      //   this.startInterval()
+      // }
     },
   },
 
