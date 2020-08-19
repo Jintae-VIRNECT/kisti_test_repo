@@ -143,6 +143,7 @@ export default {
             return 'board'
           case 'ar-deny':
           case 'ar-unsupport':
+          case 'ar-start':
           case 'ar-pointing':
           case 'ar-area':
             return 'ar'
@@ -191,8 +192,10 @@ export default {
             return this.$t('service.chat_ar_deny')
           case 'ar-unsupport':
             return this.$t('service.chat_ar_unsupport')
+          case 'ar-start':
+            return this.$t('service.chat_ar_start', { name: this.chat.name })
           case 'ar-pointing':
-            return this.$t('service.chat_ar_pointing')
+            return this.$t('service.chat_ar_pointing', { name: this.chat.name })
           case 'ar-area':
             return this.$t('service.chat_ar_area')
         }
