@@ -107,7 +107,7 @@
 					:data-placeholder="$t('signup.birth.year')"
 					v-validate="'required'"
 					:clearable="false"
-					@change="birth.month = birth.year"
+					:picker-options="pickerOptions"
 				></el-date-picker>
 
 				<el-date-picker
@@ -120,7 +120,6 @@
 					:data-placeholder="$t('signup.birth.month')"
 					v-validate="'required'"
 					:clearable="false"
-					@change="birth.date = birth.month"
 				></el-date-picker>
 
 				<el-date-picker
@@ -233,6 +232,11 @@ export default {
 				month: '',
 				date: '',
 			},
+			pickerOptions: {
+				disabledDate(time) {
+					return time.getTime() > Date.now()
+				},
+			},
 			joinInfo: '',
 			serviceInfo: '',
 			submitted: false,
@@ -279,6 +283,23 @@ export default {
 			if (this.joinInfoComp == '') return (val = false)
 			if (this.serviceInfoComp == '') return (val = false)
 			return val
+		},
+	},
+	watch: {
+		'birth.year'(newDate) {
+			const newYear = dayjs(newDate).year()
+			const newMonth = dayjs(newDate).month()
+			this.birth.month = dayjs(this.birth.month).year(newYear)
+			this.birth.date =
+				this.birth.date &&
+				dayjs(this.birth.date)
+					.year(newYear)
+					.month(newMonth)
+		},
+		'birth.month'(newDate) {
+			const newMonth = dayjs(newDate).month()
+			this.birth.date =
+				this.birth.date && dayjs(this.birth.date).month(newMonth)
 		},
 	},
 	methods: {

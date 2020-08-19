@@ -11,7 +11,7 @@
 				}}</a>
 				<!-- <router-link to="/register">도움말</router-link> -->
 			</div>
-			<p><strong>©VIRNECT CO.</strong>, LTD. All rights reserved.</p>
+			<p><strong>©VIRNECT CO., LTD</strong>. All rights reserved.</p>
 		</el-col>
 	</el-row>
 </template>

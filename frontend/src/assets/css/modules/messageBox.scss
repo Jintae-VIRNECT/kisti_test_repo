@@ -102,6 +102,16 @@
     .el-icon-close:before {
         color: #fff;
     }
+
+    @media (max-width: $mobile) {
+        min-width: 0;
+        max-width: calc(100% - 48px);
+        padding: 12px 16px 16px;
+
+        .el-message__icon {
+            display: none;
+        }
+    }
 }
 .el-dialog {
     max-width: 420px;
@@ -117,9 +127,23 @@
         color: $baseColor;
         font-weight: bold;
     }
+    @media (max-width: $mobile) {
+        max-width: calc(100% - 48px);
+        border-radius: 4px;
+        &__header {
+            padding: 16px 20px 4px;
+            border: none;
+        }
+        &__body {
+            padding: 0 20px;
+        }
+    }
 }
 .el-dialog__headerbtn {
     right: 24px;
+    @media (max-width: $mobile) {
+        top: 17px;
+    }
 }
 .el-icon-close:before {
     color: #0b1f48;

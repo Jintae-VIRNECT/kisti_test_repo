@@ -202,6 +202,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/css/mixin.scss';
+
 p {
 	font-family: 'NotoSansKR', 'Noto Sans';
 }
@@ -213,6 +215,10 @@ p {
 .terms-body {
 	margin-top: 55px;
 	text-align: left;
+	@media (max-width: $mobile) {
+		margin-top: 32px;
+	}
+
 	.el-checkbox {
 		display: block;
 		margin-top: 26px;

@@ -13,6 +13,9 @@
             content: "*";
         }
     }
+    @media (max-width: $mobile) {
+        margin-top: 24px;
+    }
 }
 
 .all-terms {
@@ -55,6 +58,13 @@
         color: #c7cfda;
         font-size: 16px;
         content: attr(data-placeholder);
+    }
+
+    @media (max-width: $mobile) {
+        width: calc(29% - 13px);
+        &.year-input {
+            width: 40%;
+        }
     }
 }
 

@@ -136,6 +136,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~element/image.css';
+@import '~assets/css/mixin.scss';
 
 p {
 	font-weight: 500;
@@ -143,5 +144,8 @@ p {
 }
 .container {
 	text-align: center;
+	@media (max-width: $mobile) {
+		padding: 96px 24px 24px;
+	}
 }
 </style>
